@@ -10,11 +10,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
+import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseSummary;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -68,7 +73,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
     @MockBean
     private UserService userService;
 
-    @MockBean
+    @Autowired
     private ManageDocumentService documentService;
 
     ManageDocumentsControllerMidEventTest() {
@@ -405,12 +410,35 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
             selectedHearingId, HearingBooking::toLabel);
 
         caseData = caseData.toBuilder()
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
             .hearingDetails(hearingBookings)
             .hearingDocumentsHearingList(hearingList)
                 .build();
 
-        postMidEvent(caseData, "initialise-manage-document-collections", USER_ROLES);
-        verify(documentService).initialiseHearingDocumentFields(any());
+        assertThat(extractCaseData(postMidEvent(caseData,
+            "initialise-manage-document-collections", USER_ROLES))
+            .getManageDocumentsCourtBundle())
+            .isEqualTo(CourtBundle.builder().hearing(selectedHearingBooking.toLabel()).build());
+
+        assertThat(extractCaseData(postMidEvent(
+                caseData.toBuilder().manageDocumentsHearingDocumentType(HearingDocumentType.CASE_SUMMARY).build(),
+            "initialise-manage-document-collections", USER_ROLES))
+            .getManageDocumentsCaseSummary())
+            .isEqualTo(CaseSummary.builder().hearing(selectedHearingBooking.toLabel()).build());
+
+        assertThat(extractCaseData(postMidEvent(
+            caseData.toBuilder()
+                .manageDocumentsHearingDocumentType(HearingDocumentType.POSITION_STATEMENT_CHILD).build(),
+            "initialise-manage-document-collections", USER_ROLES))
+            .getManageDocumentsPositionStatementChild())
+            .isEqualTo(PositionStatementChild.builder().hearing(selectedHearingBooking.toLabel()).build());
+
+        assertThat(extractCaseData(postMidEvent(
+            caseData.toBuilder()
+                .manageDocumentsHearingDocumentType(HearingDocumentType.POSITION_STATEMENT_RESPONDENT).build(),
+            "initialise-manage-document-collections", USER_ROLES))
+            .getManageDocumentsPositionStatementRespondent())
+            .isEqualTo(PositionStatementRespondent.builder().hearing(selectedHearingBooking.toLabel()).build());
     }
 
     @Test
