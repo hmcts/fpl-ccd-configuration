@@ -14,8 +14,7 @@ import static uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData.SAME_DAY;
 @Getter
 @RequiredArgsConstructor
 public enum CafcassRequestEmailContentProvider {
-    ORDER("Order",
-        (caseData, cafcassData) -> String.format(getSubject(),
+    ORDER((caseData, cafcassData) -> String.format(getSubject(),
                 caseData.getFamilyManCaseNumber(),
                 "new order"),
         (caseData, cafcassData) ->
@@ -23,8 +22,7 @@ public enum CafcassRequestEmailContentProvider {
                 cafcassData.getDocumentName()),
         CafcassEmailConfiguration::getRecipientForOrder),
 
-    COURT_BUNDLE("Court bundle",
-        (caseData, cafcassData) -> String.format(getSubject(),
+    COURT_BUNDLE((caseData, cafcassData) -> String.format(getSubject(),
                 caseData.getFamilyManCaseNumber(),
                 "new court bundle"),
         (caseData, cafcassData) ->
@@ -32,13 +30,11 @@ public enum CafcassRequestEmailContentProvider {
                 cafcassData.getHearingDetails()),
         CafcassEmailConfiguration::getRecipientForCourtBundle),
 
-    NEW_APPLICATION("New application",
-        CafcassRequestEmailContentProvider::getNewApplicationSubject,
+    NEW_APPLICATION(CafcassRequestEmailContentProvider::getNewApplicationSubject,
         CafcassRequestEmailContentProvider::getNewApplicationMessage,
         CafcassEmailConfiguration::getRecipientForNewApplication),
 
-    NEW_DOCUMENT("New document",
-        (caseData, cafcassData) -> String.format(getSubject(),
+    NEW_DOCUMENT((caseData, cafcassData) -> String.format(getSubject(),
         caseData.getFamilyManCaseNumber(),
         cafcassData.getEmailSubjectInfo()),
         (caseData, cafcassData) ->
@@ -47,8 +43,7 @@ public enum CafcassRequestEmailContentProvider {
                 cafcassData.getDocumentTypes()),
         CafcassEmailConfiguration::getRecipientForNewDocument),
 
-    ADDITIONAL_DOCUMENT("Additional document",
-        (caseData, cafcassData) -> String.format(getSubject(),
+    ADDITIONAL_DOCUMENT((caseData, cafcassData) -> String.format(getSubject(),
         caseData.getFamilyManCaseNumber(),
         cafcassData.getEmailSubjectInfo()),
         (caseData, cafcassData) ->
@@ -57,8 +52,7 @@ public enum CafcassRequestEmailContentProvider {
                 cafcassData.getDocumentTypes()),
         CafcassEmailConfiguration::getRecipientForAdditionlDocument),
 
-    LARGE_ATTACHEMENTS("Large document",
-        (caseData, cafcassData) -> String.format(getSubject(),
+    LARGE_ATTACHEMENTS((caseData, cafcassData) -> String.format(getSubject(),
             caseData.getFamilyManCaseNumber(),
             String.join(" - ",
                     "new large document added",
@@ -66,7 +60,6 @@ public enum CafcassRequestEmailContentProvider {
         CafcassRequestEmailContentProvider::getLargeApplicationMessage,
         CafcassEmailConfiguration::getRecipientForLargeAttachements);
 
-    private final String label;
     private final BiFunction<CaseData, CafcassData, String> type;
     private final BiFunction<CaseData, CafcassData, String> content;
     private final Function<CafcassEmailConfiguration, String> recipient;

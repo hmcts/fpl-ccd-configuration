@@ -120,6 +120,13 @@ class CafcassNotificationServiceTest {
         );
     }
 
+    private DocumentReference getDocumentReference() {
+        return DocumentReference.builder().binaryUrl(DOCUMENT_BINARY_URL)
+                .url(DOCUMENT_URL)
+                .filename(DOCUMENT_FILENAME)
+                .build();
+    }
+
     @Test
     void shouldNotifyUrgentNewApplicationRequest() {
         when(configuration.getRecipientForNewApplication()).thenReturn(RECIPIENT_EMAIL);
@@ -379,7 +386,6 @@ class CafcassNotificationServiceTest {
                 .thenReturn(DocumentReference.builder()
                         .filename(DOCUMENT_FILENAME)
                         .size(Long.MAX_VALUE)
-                        .url(DOCUMENT_URL)
                         .build());
 
 
@@ -403,7 +409,7 @@ class CafcassNotificationServiceTest {
 
         EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
-        assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- new large document added - Expert reports");
+        assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- new large document added - ADDITIONAL_DOCUMENT");
         assertThat(data.getMessage()).isEqualTo(
                 String.join("", "Large document(s) for this case was uploaded to the ",
                         "Public Law Portal entitled fileToSend.pdf. As this could ",
@@ -428,14 +434,13 @@ class CafcassNotificationServiceTest {
                 .thenReturn(DocumentReference.builder()
                         .filename(DOCUMENT_FILENAME)
                         .size(Long.MAX_VALUE - 100000)
-                        .url(DOCUMENT_URL)
+                        .binaryUrl(DOCUMENT_BINARY_URL)
                         .build());
 
         when(documentMetadataDownloadService.getDocumentMetadata(smallDocumentUrl))
                 .thenReturn(DocumentReference.builder()
                         .filename("small.pdf")
                         .size(10L)
-                        .url(smallDocumentUrl)
                         .binaryUrl(smallDocumentUrl)
                         .build());
 
@@ -466,6 +471,8 @@ class CafcassNotificationServiceTest {
         verify(emailService, times(2)).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
 
         List<EmailData> emailDataList = emailDataArgumentCaptor.getAllValues();
+        System.out.println(emailDataList);
+
 
         String largeDocMessage = String.join("", "Large document(s) for this case was uploaded to the ",
                 "Public Law Portal entitled fileToSend.pdf. As this could ",
@@ -481,16 +488,7 @@ class CafcassNotificationServiceTest {
                                 "Court Ref. FM1234.- additional documents",
                                 "Document attached is : small.pdf"),
                         tuple(RECIPIENT_EMAIL,
-                                "Court Ref. FM1234.- new large document added - Expert reports",
+                                "Court Ref. FM1234.- new large document added - ADDITIONAL_DOCUMENT",
                                 largeDocMessage));
     }
-
-    private DocumentReference getDocumentReference() {
-        return DocumentReference.builder().binaryUrl(DOCUMENT_BINARY_URL)
-                .url(DOCUMENT_URL)
-                .filename(DOCUMENT_FILENAME)
-                .type("Expert reports")
-                .build();
-    }
-
 }
