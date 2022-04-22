@@ -107,7 +107,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
         final PlacementEventData actualPlacementData = updatedCaseData.getPlacementEventData();
 
         final Placement expectedNewPlacement = newPlacement.toBuilder()
-            .application(sealedApplication)
+            .application(application)
             .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                 .type(LOCAL_AUTHORITY)
                 .recipientName(RECIPIENT_LOCAL_AUTHORITY)

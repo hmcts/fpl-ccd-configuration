@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfPlacementHearing;
-import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
@@ -267,8 +266,6 @@ public class PlacementService {
             if (isNull(applicationDocument)) {
                 throw new IllegalStateException("Missing placement application document");
             }
-
-            currentPlacement.setApplication(sealingService.sealDocument(applicationDocument, SealType.ENGLISH));
 
             currentPlacement.setPlacementUploadDateTime(time.now());
 
