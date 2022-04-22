@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -12,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.CourtBundleUploadedEmailCon
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class DocumentUploadedNotificationService {
+public class FurtherEvidenceNotificationService {
     private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final RepresentativesInbox representativesInbox;
     private final NotificationService notificationService;
@@ -61,11 +61,29 @@ public class DocumentUploadedNotificationService {
     }
 
     public Set<String> getRepresentativeEmails(CaseData caseData) {
-        List<RepresentativeRole.Type> roles = List.of(CAFCASS, RESPONDENT);
         HashSet<String> emails = representativesInbox.getRepresentativeEmailsFilteredByRole(caseData,
-            DIGITAL_SERVICE, roles);
+            DIGITAL_SERVICE, List.of(CAFCASS, RESPONDENT));
         emails.addAll(representativesInbox.getRespondentSolicitorEmails(caseData, DIGITAL_SERVICE));
         emails.addAll(representativesInbox.getChildrenSolicitorEmails(caseData, DIGITAL_SERVICE));
+        return emails;
+    }
+
+    public Set<String> getCafcassEmails(CaseData caseData) {
+        HashSet<String> emails = representativesInbox.getRepresentativeEmailsFilteredByRole(caseData,
+            DIGITAL_SERVICE, List.of(CAFCASS));
+        return emails;
+    }
+
+    public Set<String> getChildSolicitorEmails(CaseData caseData) {
+        HashSet<String> emails = new LinkedHashSet<>();
+        emails.addAll(representativesInbox.getChildrenSolicitorEmails(caseData, DIGITAL_SERVICE));
+        return emails;
+    }
+
+    public Set<String> getRespondentSolicitorEmails(CaseData caseData) {
+        HashSet<String> emails = representativesInbox.getRepresentativeEmailsFilteredByRole(caseData,
+            DIGITAL_SERVICE, List.of(RESPONDENT));
+        emails.addAll(representativesInbox.getRespondentSolicitorEmails(caseData, DIGITAL_SERVICE));
         return emails;
     }
 

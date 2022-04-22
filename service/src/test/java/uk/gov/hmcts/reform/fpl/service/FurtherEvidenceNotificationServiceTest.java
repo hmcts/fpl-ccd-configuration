@@ -45,7 +45,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
-class DocumentUploadedNotificationServiceTest {
+class FurtherEvidenceNotificationServiceTest {
     private static final String LOCAL_AUTHORITY = "LA";
     private static final Set<String> LOCAL_AUTHORITY_EMAILS = Set.of("la@example.com");
     private static final Long CASE_ID = 12345L;
@@ -131,7 +131,7 @@ class DocumentUploadedNotificationServiceTest {
     private RepresentativesInbox representativesInbox;
 
     @InjectMocks
-    private DocumentUploadedNotificationService documentUploadedNotificationService;
+    private FurtherEvidenceNotificationService furtherEvidenceNotificationService;
 
     @Nested
     class LocalAuthoritiesRecipients {
@@ -142,7 +142,7 @@ class DocumentUploadedNotificationServiceTest {
 
             when(localAuthorityRecipients.getRecipients(any())).thenReturn(LOCAL_AUTHORITY_EMAILS);
 
-            Set<String> actual = documentUploadedNotificationService.getLocalAuthoritiesRecipients(caseData);
+            Set<String> actual = furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData);
 
             assertThat(actual).isEqualTo(LOCAL_AUTHORITY_EMAILS);
 
@@ -157,7 +157,7 @@ class DocumentUploadedNotificationServiceTest {
 
             when(localAuthorityRecipients.getRecipients(any())).thenReturn(LOCAL_AUTHORITY_EMAILS);
 
-            Set<String> actual = documentUploadedNotificationService.getDesignatedLocalAuthorityRecipients(caseData);
+            Set<String> actual = furtherEvidenceNotificationService.getDesignatedLocalAuthorityRecipients(caseData);
 
             assertThat(actual).isEqualTo(LOCAL_AUTHORITY_EMAILS);
 
@@ -173,7 +173,7 @@ class DocumentUploadedNotificationServiceTest {
 
             when(localAuthorityRecipients.getRecipients(any())).thenReturn(LOCAL_AUTHORITY_EMAILS);
 
-            Set<String> actual = documentUploadedNotificationService.getSecondaryLocalAuthorityRecipients(caseData);
+            Set<String> actual = furtherEvidenceNotificationService.getSecondaryLocalAuthorityRecipients(caseData);
 
             assertThat(actual).isEqualTo(LOCAL_AUTHORITY_EMAILS);
 
@@ -200,7 +200,7 @@ class DocumentUploadedNotificationServiceTest {
         ))
             .thenReturn(newHashSet("rep@example.com", "rep2@example.com", "rep3@example.com",
                 "cafcass2@example.com"));
-        Set<String> actualRecipients = documentUploadedNotificationService.getRepresentativeEmails(caseData);
+        Set<String> actualRecipients = furtherEvidenceNotificationService.getRepresentativeEmails(caseData);
 
         assertThat(actualRecipients).containsExactlyInAnyOrder(
             REPRESENTATIVE_WITH_SERVICE_ACCESS_1.getEmail(),
@@ -217,7 +217,7 @@ class DocumentUploadedNotificationServiceTest {
             .thenReturn(newHashSet("sol1@email.com"));
         when(representativesInbox.getChildrenSolicitorEmails(caseData, DIGITAL_SERVICE))
             .thenReturn(newHashSet("sol2@email.com"));
-        Set<String> actualRecipients = documentUploadedNotificationService.getRepresentativeEmails(caseData);
+        Set<String> actualRecipients = furtherEvidenceNotificationService.getRepresentativeEmails(caseData);
 
         assertThat(actualRecipients).containsExactlyInAnyOrder(
             CHILD_1.getSolicitor().getEmail(),
@@ -228,7 +228,7 @@ class DocumentUploadedNotificationServiceTest {
     void shouldReturnEmptyRecipientsWhenCaseHasNotRepresentatives() {
         CaseData emptyCaseData = caseData();
 
-        Set<String> actualRecipients = documentUploadedNotificationService.getRepresentativeEmails(emptyCaseData);
+        Set<String> actualRecipients = furtherEvidenceNotificationService.getRepresentativeEmails(emptyCaseData);
 
         assertThat(actualRecipients).isEmpty();
     }
@@ -240,7 +240,7 @@ class DocumentUploadedNotificationServiceTest {
             REPRESENTATIVE_SERVED_BY_EMAIL,
             CAFCASS_SOLICITOR_SERVED_BY_EMAIL);
 
-        Set<String> actualRecipients = documentUploadedNotificationService.getRepresentativeEmails(emptyCaseData);
+        Set<String> actualRecipients = furtherEvidenceNotificationService.getRepresentativeEmails(emptyCaseData);
 
         assertThat(actualRecipients).isEmpty();
     }
@@ -259,7 +259,7 @@ class DocumentUploadedNotificationServiceTest {
             DOCUMENTS)).thenReturn(
             furtherEvidenceDocumentUploadedData);
 
-        documentUploadedNotificationService.sendNotification(caseData, recipients, "Sender", DOCUMENTS);
+        furtherEvidenceNotificationService.sendNotification(caseData, recipients, "Sender", DOCUMENTS);
 
         verify(notificationService).sendEmail(FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE, recipients,
             furtherEvidenceDocumentUploadedData, CASE_ID.toString());
@@ -279,7 +279,7 @@ class DocumentUploadedNotificationServiceTest {
             DOCUMENTS)).thenReturn(
             furtherEvidenceDocumentUploadedData);
 
-        documentUploadedNotificationService.sendNotification(caseData, recipients, "Sender", DOCUMENTS);
+        furtherEvidenceNotificationService.sendNotification(caseData, recipients, "Sender", DOCUMENTS);
 
         verify(notificationService).sendEmail(DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE, recipients,
             furtherEvidenceDocumentUploadedData, CASE_ID.toString());
@@ -291,7 +291,7 @@ class DocumentUploadedNotificationServiceTest {
 
         Set<String> recipients = Set.of();
 
-        documentUploadedNotificationService.sendNotification(caseData, recipients, "Sender", DOCUMENTS);
+        furtherEvidenceNotificationService.sendNotification(caseData, recipients, "Sender", DOCUMENTS);
 
         verifyNoInteractions(notificationService);
     }
@@ -308,7 +308,7 @@ class DocumentUploadedNotificationServiceTest {
         when(courtBundleUploadedEmailContentProvider.buildParameters(caseData, "1st Hearing")).thenReturn(
             courtBundleUploadedData);
 
-        documentUploadedNotificationService.sendNotificationForCourtBundleUploaded(caseData, recipients, "1st Hearing");
+        furtherEvidenceNotificationService.sendNotificationForCourtBundleUploaded(caseData, recipients, "1st Hearing");
 
         verify(notificationService).sendEmail(COURT_BUNDLE_UPLOADED_NOTIFICATION, recipients,
             courtBundleUploadedData, CASE_ID.toString());

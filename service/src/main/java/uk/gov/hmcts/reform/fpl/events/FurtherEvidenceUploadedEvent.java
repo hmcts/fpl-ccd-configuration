@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 @Getter
 @RequiredArgsConstructor
-public class DocumentUploadedEvent {
+public class FurtherEvidenceUploadedEvent {
     private final CaseData caseData;
     private final CaseData caseDataBefore;
     private final DocumentUploaderType userType;

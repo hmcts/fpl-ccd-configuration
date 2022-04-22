@@ -7,7 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
-import uk.gov.hmcts.reform.fpl.events.DocumentUploadedEvent;
+import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.DocumentUploadedNotificationService;
+import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
@@ -52,7 +52,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ContextConfiguration(classes = {
-    DocumentUploadedEventHandler.class, DocumentUploadedNotificationService.class,
+    FurtherEvidenceUploadedEventHandler.class, FurtherEvidenceNotificationService.class,
     FurtherEvidenceUploadedEmailContentProvider.class, CaseUrlService.class, EmailNotificationHelper.class,
     CourtBundleUploadedEmailContentProvider.class
 })
@@ -75,7 +75,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
     private static final EmailContent EMAIL_CONTENT_NO_DOC_NAMES = buildEmailContentNoDocumentNames();
 
     @Autowired
-    private DocumentUploadedEventHandler underTest;
+    private FurtherEvidenceUploadedEventHandler underTest;
 
     @Autowired
     private RepresentativesInbox representativesInbox;
@@ -99,7 +99,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
         when(representativesInbox.getRepresentativeEmailsFilteredByRole(CASE_DATA, DIGITAL_SERVICE, ROLES))
             .thenReturn(newHashSet("resp@example.com"));
 
-        underTest.sendDocumentsUploadedNotification(new DocumentUploadedEvent(
+        underTest.sendDocumentsUploadedNotification(new FurtherEvidenceUploadedEvent(
             CASE_DATA, CASE_DATA_BEFORE, DESIGNATED_LOCAL_AUTHORITY,
             UserDetails.builder().email(LA_EMAIL).forename("The").surname("Sender").build()
         ));
@@ -114,7 +114,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
 
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
 
-        underTest.sendDocumentsUploadedNotification(new DocumentUploadedEvent(
+        underTest.sendDocumentsUploadedNotification(new FurtherEvidenceUploadedEvent(
             CASE_DATA, CASE_DATA_BEFORE, SOLICITOR,
             UserDetails.builder().email(REP_EMAIL).forename("The").surname("Sender").build()
         ));
@@ -131,7 +131,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
         when(representativesInbox.getRepresentativeEmailsFilteredByRole(CASE_DATA, DIGITAL_SERVICE, ROLES))
             .thenReturn(newHashSet("resp@example.com"));
 
-        underTest.sendDocumentsUploadedNotification(new DocumentUploadedEvent(
+        underTest.sendDocumentsUploadedNotification(new FurtherEvidenceUploadedEvent(
             CASE_DATA, CASE_DATA_BEFORE, DESIGNATED_LOCAL_AUTHORITY,
             UserDetails.builder().email(LA_EMAIL).forename("The").surname("Sender").build()
         ));
@@ -146,7 +146,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
 
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
 
-        underTest.sendDocumentsUploadedNotification(new DocumentUploadedEvent(
+        underTest.sendDocumentsUploadedNotification(new FurtherEvidenceUploadedEvent(
             CASE_DATA, CASE_DATA_BEFORE, SOLICITOR,
             UserDetails.builder().email(REP_EMAIL).forename("The").surname("Sender").build()
         ));

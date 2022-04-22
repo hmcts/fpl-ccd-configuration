@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.interfaces.FurtherDocument;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Builder(toBuilder = true)
@@ -21,7 +20,6 @@ public class ApplicationDocument implements FurtherDocument {
     private String uploadedBy;
     private String documentName;
     private String includedInSWET;
-    private List<String> confidential;
 
     @JsonIgnore
     public boolean hasDocument() {
@@ -30,7 +28,7 @@ public class ApplicationDocument implements FurtherDocument {
 
     @JsonIgnore
     public boolean isConfidentialDocument() {
-        return confidential != null && confidential.contains("CONFIDENTIAL");
+        return true;
     }
 
     @JsonIgnore
