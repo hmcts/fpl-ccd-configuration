@@ -309,7 +309,7 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
     }
 
     protected void verifySendingNotificationToAllParties(NotificationClient notificationClient, String templateId,
-                                                         long caseId) throws NotificationClientException{
+                                                         long caseId) throws NotificationClientException {
         verifySendingNotification(notificationClient, templateId,
             TEST_CASE_ID, List.of(CHILD_SOLICITOR_1_EMAIL,
                 LOCAL_AUTHORITY_1_INBOX,
@@ -347,8 +347,8 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
             eq(notificationReference(caseId)));
 
         // unregistered respondent solicitor
-        verify(notificationClient, times(targets.contains(UNREGISTERED_RESPONDENT_SOLICITOR_2_EMAIL) ? 1 : 0)).
-            sendEmail(
+        verify(notificationClient, times(targets.contains(UNREGISTERED_RESPONDENT_SOLICITOR_2_EMAIL) ? 1 : 0))
+            .sendEmail(
                 eq(templateId),
                 eq(UNREGISTERED_RESPONDENT_SOLICITOR_2_EMAIL),
                 anyMap(),
@@ -362,8 +362,8 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
             eq(notificationReference(caseId)));
 
         // unregistered child solicitor
-        verify(notificationClient, times(targets.contains(UNREGISTERED_CHILD_SOLICITOR_2_EMAIL) ? 1 : 0)).
-            sendEmail(
+        verify(notificationClient, times(targets.contains(UNREGISTERED_CHILD_SOLICITOR_2_EMAIL) ? 1 : 0))
+            .sendEmail(
                 eq(templateId),
                 eq(UNREGISTERED_CHILD_SOLICITOR_2_EMAIL),
                 anyMap(),

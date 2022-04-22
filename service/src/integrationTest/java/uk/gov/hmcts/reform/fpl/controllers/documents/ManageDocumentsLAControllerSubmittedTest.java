@@ -68,7 +68,7 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     // Application Document
     @Test
     void shouldSendEmailsWhenApplicationDocumentUploadedByDesignatedLA()
-        throws NotificationClientException{
+        throws NotificationClientException {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
@@ -83,7 +83,7 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     // Respondent Statement
     @Test
     void shouldSendEmailsWhenConfidentialRespondentStatementUploadedByDesignatedLA()
-        throws NotificationClientException{
+        throws NotificationClientException {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
@@ -189,7 +189,7 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     // Application Document
     @Test
     void shouldSendEmailsWhenApplicationDocumentUploadedBySecondaryLA()
-        throws NotificationClientException{
+        throws NotificationClientException {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
@@ -204,7 +204,7 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     // Respondent Statement
     @Test
     void shouldSendEmailsWhenConfidentialRespondentStatementUploadedBySecondaryLA()
-        throws NotificationClientException{
+        throws NotificationClientException {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
@@ -304,13 +304,4 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
         DocumentReference documentReference = value.stream().findFirst().orElseThrow();
         assertThat(documentReference.getFilename()).isEqualTo("filename");
     }
-
-    // XXX
-//    @Test
-//    void shouldNotSendEmailsWhenConfidentialApplicationDocumentUploadedBySecondaryLA() {
-//        given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
-//        givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
-//        postSubmittedEvent(buildCallbackRequestForAddingApplicationDocument());
-//        verifyNoInteractions(notificationClient);
-//    }
 }

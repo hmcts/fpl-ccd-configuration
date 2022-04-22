@@ -100,7 +100,7 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID);
-        postSubmittedEvent(buildCallbackRequestForAddingRespondentStatement(true , true));
+        postSubmittedEvent(buildCallbackRequestForAddingRespondentStatement(true, true));
         verifyNoInteractions(notificationClient);
     }
 
