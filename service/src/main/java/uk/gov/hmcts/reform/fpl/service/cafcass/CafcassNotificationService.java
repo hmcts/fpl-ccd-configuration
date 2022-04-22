@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 
 import java.net.URLConnection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 
@@ -37,7 +38,7 @@ public class CafcassNotificationService {
     private final CafcassEmailConfiguration configuration;
     private final CaseUrlService caseUrlService;
     private final DocumentMetadataDownloadService documentMetadataDownloadService;
-    private final long maxAttachementSize;
+    private final long maxAttachmentSize;
     private static final long  MEGABYTE = 1024L * 1024L;
 
     @Autowired
@@ -47,13 +48,13 @@ public class CafcassNotificationService {
                                       CaseUrlService caseUrlService,
                                       DocumentMetadataDownloadService documentMetadataDownloadService,
                                       @Value("${cafcass.notification.maxMbAttachementSize:25}")
-                                      long maxAttachementSize) {
+                                      long maxAttachmentSize) {
         this.emailService = emailService;
         this.documentDownloadService = documentDownloadService;
         this.configuration = configuration;
         this.caseUrlService = caseUrlService;
         this.documentMetadataDownloadService = documentMetadataDownloadService;
-        this.maxAttachementSize = maxAttachementSize;
+        this.maxAttachmentSize = maxAttachmentSize;
     }
 
 
@@ -74,7 +75,7 @@ public class CafcassNotificationService {
                 .mapToLong(DocumentReference::getSize)
                 .sum();
 
-        if (totalDocSize / MEGABYTE  <= maxAttachementSize) {
+        if (totalDocSize / MEGABYTE  <= maxAttachmentSize) {
             sendAsAttachment(caseData, documentReferences, provider, cafcassData,
                     provider.getContent());
         } else {
@@ -110,18 +111,27 @@ public class CafcassNotificationService {
                 caseData.getId(),
                 totalDocSize / MEGABYTE);
 
-        documentReferences.stream()
+        Set<DocumentReference> updatedDocReferences = documentReferences.stream()
+                .map(documentReference -> {
+                    DocumentReference documentRef = documentMetaData.get(documentReference.getUrl());
+                    documentRef.setType(documentReference.getType());
+                    return documentRef;
+                }).collect(toSet());
+
+        updatedDocReferences.stream()
                 .map(DocumentReference::getUrl)
                 .map(documentMetaData::get)
                 .forEach(documentReference -> {
-                    if (documentReference.getSize() / MEGABYTE <= maxAttachementSize) {
+                    if (documentReference.getSize() / MEGABYTE <= maxAttachmentSize) {
                         String message = String.join(" : ",
                                 "Document attached is",
                                 documentReference.getFilename());
                         sendAsAttachment(caseData, Set.of(documentReference), provider, cafcassData,
                             (caseDataObj, cafcassDataObj) -> message);
                     } else {
-                        sendAsLink(caseData, documentReference, provider.name());
+                        sendAsLink(caseData, documentReference,
+                                Optional.ofNullable(documentReference.getType())
+                                        .orElse(provider.getLabel()));
                     }
                 });
     }
@@ -130,14 +140,14 @@ public class CafcassNotificationService {
                             final DocumentReference documentReferences,
                             final String notificationType) {
 
-        LargeFilesNotificationData largFileNotificationData = getLargFileNotificationData(
+        LargeFilesNotificationData largeFileNotificationData = getLargeFileNotificationData(
                 caseData, documentReferences, caseUrlService, notificationType);
 
         emailService.sendEmail(configuration.getSender(),
             EmailData.builder()
                 .recipient(LARGE_ATTACHEMENTS.getRecipient().apply(configuration))
-                .subject(LARGE_ATTACHEMENTS.getType().apply(caseData, largFileNotificationData))
-                .message(LARGE_ATTACHEMENTS.getContent().apply(caseData, largFileNotificationData))
+                .subject(LARGE_ATTACHEMENTS.getType().apply(caseData, largeFileNotificationData))
+                .message(LARGE_ATTACHEMENTS.getContent().apply(caseData, largeFileNotificationData))
                 .build()
         );
         log.info("For case id {} notification sent to Cafcass for {} and notification type {}",
@@ -146,10 +156,10 @@ public class CafcassNotificationService {
                 notificationType);
     }
 
-    private LargeFilesNotificationData getLargFileNotificationData(CaseData caseData,
-                                                                   DocumentReference documentReference,
-                                                                   CaseUrlService caseUrlService,
-                                                                   String notificationType) {
+    private LargeFilesNotificationData getLargeFileNotificationData(CaseData caseData,
+                                                                    DocumentReference documentReference,
+                                                                    CaseUrlService caseUrlService,
+                                                                    String notificationType) {
         return LargeFilesNotificationData.builder()
                 .familyManCaseNumber(caseData.getFamilyManCaseNumber())
                 .documentName(documentReference.getFilename())

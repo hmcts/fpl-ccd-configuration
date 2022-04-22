@@ -142,7 +142,11 @@ public class FurtherEvidenceUploadedEventHandler {
             Map<String, Set<DocumentReference>> newCourtBundles = courtBundles.stream()
                     .filter(newDoc -> !oldCourtBundleList.contains(newDoc))
                     .collect(groupingBy(CourtBundle::getHearing,
-                            mapping(CourtBundle::getDocument, toSet())));
+                            mapping(courtBundle -> {
+                                DocumentReference document = courtBundle.getDocument();
+                                document.setType(COURT_BUNDLE.getLabel());
+                                return document;
+                            }, toSet())));
 
             newCourtBundles
                     .forEach((key, value) ->
@@ -218,7 +222,6 @@ public class FurtherEvidenceUploadedEventHandler {
                 );
             }
         }
-
     }
 
     private DocumentInfo getNewApplicationDocument(CaseData caseData, CaseData caseDataBefore) {
@@ -230,7 +233,11 @@ public class FurtherEvidenceUploadedEventHandler {
                 .collect(toList());
 
         List<DocumentReference> documentReferences = newlyAddedApplicationDocs.stream()
-                .map(ApplicationDocument::getDocument)
+                .map(applicationDocument -> {
+                    DocumentReference document = applicationDocument.getDocument();
+                    document.setType(applicationDocument.getDocumentType().getLabel());
+                    return document;
+                })
                 .collect(toList());
 
         return newlyAddedApplicationDocs.stream()
@@ -253,7 +260,11 @@ public class FurtherEvidenceUploadedEventHandler {
             (oldBundle, newDoc) -> !unwrapElements(oldBundle).contains(newDoc));
 
         var documentReferences = supportingEvidenceBundles.stream()
-                .map(SupportingEvidenceBundle::getDocument)
+                .map(bundle -> {
+                    DocumentReference document = bundle.getDocument();
+                    document.setType(bundle.getType().getLabel());
+                    return document;
+                })
                 .collect(Collectors.toList());
 
         return supportingEvidenceBundles.stream()
@@ -369,7 +380,15 @@ public class FurtherEvidenceUploadedEventHandler {
                                          String type) {
         return newBundle.stream()
                 .filter(bundle -> !oldBundle.contains(bundle))
-                .map(SupportingEvidenceBundle::getDocument)
+                .map(bundle -> {
+                    DocumentReference document = bundle.getDocument();
+                    document.setType(
+                            Optional.ofNullable(bundle.getType())
+                                    .map(FurtherEvidenceType::getLabel)
+                                    .orElse(documentType)
+                    );
+                    return document;
+                })
                 .collect(Collectors.collectingAndThen(toList(),
                     data -> DocumentInfo.builder()
                         .documentReferences(data)
