@@ -270,7 +270,7 @@ public class FurtherEvidenceUploadedEventHandler {
         List<Element<ApplicationDocument>> beforeApplicationDocuments) {
         List<Element<ApplicationDocument>> newApplicationDocuments = new ArrayList<>();
         defaultIfNull(applicationDocuments, new ArrayList<Element<ApplicationDocument>>()).forEach(newDoc -> {
-            if (!beforeApplicationDocuments.contains(newDoc)) {
+            if (!defaultIfNull(beforeApplicationDocuments, List.of()).contains(newDoc)) {
                 newApplicationDocuments.add(newDoc);
             }
         });
@@ -282,7 +282,7 @@ public class FurtherEvidenceUploadedEventHandler {
         List<Element<SupportingEvidenceBundle>> beforeSupportingEvidenceBundle) {
         List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle = new ArrayList<>();
         defaultIfNull(supportingEvidenceBundle, new ArrayList<Element<SupportingEvidenceBundle>>()).forEach(newDoc -> {
-            if (!beforeSupportingEvidenceBundle.contains(newDoc)) {
+            if (!defaultIfNull(beforeSupportingEvidenceBundle, List.of()).contains(newDoc)) {
                 newSupportingEvidenceBundle.add(newDoc);
             }
         });
