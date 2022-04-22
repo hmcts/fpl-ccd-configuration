@@ -32,7 +32,7 @@ import java.util.Map;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
@@ -46,7 +46,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallbackTest {
     protected static final String CONFIDENTIAL_MARKER = "CONFIDENTIAL";
-    protected static final String REP_1_EMAIL = "rep1@example.com";
+    protected static final String RESPONDENT_REP_1_EMAIL = "rep1@example.com";
     protected static final String RESPONDENT_SOLICITOR_1_EMAIL = "respondent1@solicitor.com";
     protected static final String UNREGISTERED_RESPONDENT_SOLICITOR_2_EMAIL = "respondent2@solicitor.com";
     protected static final String CHILD_SOLICITOR_1_EMAIL = "child1@solicitor.com";
@@ -56,10 +56,10 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
         super(eventName);
     }
 
-    protected CallbackRequest buildCallbackRequestForAddingApplicationDocument(final boolean confidential) {
+    protected CallbackRequest buildCallbackRequestForAddingApplicationDocument() {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(TEST_CASE_ID)
-            .data(buildData(buildApplicationDocument(confidential)))
+            .data(buildData(buildApplicationDocument()))
             .build();
 
         CaseDetails caseDetailsBefore = CaseDetails.builder()
@@ -75,9 +75,15 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
 
     protected CallbackRequest buildCallbackRequestForAddingAnyOtherDocuments(final String bundleName,
                                                                              final boolean confidential) {
+        return buildCallbackRequestForAddingAnyOtherDocuments(bundleName, confidential, false);
+    }
+
+    protected CallbackRequest buildCallbackRequestForAddingAnyOtherDocuments(final String bundleName,
+                                                                             final boolean confidential,
+                                                                             final boolean isUploadedByHMCTS) {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(TEST_CASE_ID)
-            .data(buildData(bundleName, buildEvidenceBundle(confidential)))
+            .data(buildData(bundleName, buildEvidenceBundle(confidential, isUploadedByHMCTS)))
             .build();
 
         CaseDetails caseDetailsBefore = CaseDetails.builder()
@@ -108,10 +114,15 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
             .build();
     }
 
-    protected CallbackRequest buildCallbackRequestForAddingEvidenceBundleFromHearings(boolean confidential) {
+    protected CallbackRequest buildCallbackRequestForAddingHearingFurtherEvidenceBundle(boolean confidential) {
+        return buildCallbackRequestForAddingHearingFurtherEvidenceBundle(confidential, false);
+    }
+
+    protected CallbackRequest buildCallbackRequestForAddingHearingFurtherEvidenceBundle(boolean confidential,
+                                                                                        boolean isUploadedByHMCTS) {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(TEST_CASE_ID)
-            .data(buildData(buildHearingFurtherEvidenceBundle(confidential)))
+            .data(buildData(buildHearingFurtherEvidenceBundle(confidential, isUploadedByHMCTS)))
             .build();
 
         CaseDetails caseDetailsBefore = CaseDetails.builder()
@@ -126,9 +137,14 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
     }
 
     protected CallbackRequest buildCallbackRequestForAddingRespondentStatement(boolean confidential) {
+        return buildCallbackRequestForAddingRespondentStatement(confidential, false);
+    }
+
+    protected CallbackRequest buildCallbackRequestForAddingRespondentStatement(boolean confidential,
+                                                                               boolean isUploadedByHMCTS) {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(TEST_CASE_ID)
-            .data(buildData(buildRespondentStatement(confidential)))
+            .data(buildData(buildRespondentStatement(confidential, isUploadedByHMCTS)))
             .build();
 
         CaseDetails caseDetailsBefore = CaseDetails.builder()
@@ -142,18 +158,13 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
             .build();
     }
 
-    protected static ApplicationDocument buildApplicationDocument(boolean confidential) {
+    protected static ApplicationDocument buildApplicationDocument() {
         ApplicationDocument.ApplicationDocumentBuilder document
             = ApplicationDocument.builder()
             .documentType(ApplicationDocumentType.BIRTH_CERTIFICATE)
             .uploadedBy("user who uploaded")
             .dateTimeUploaded(LocalDateTime.now())
             .document(TestDataHelper.testDocumentReference());
-
-        if (confidential) {
-            document.confidential(List.of(CONFIDENTIAL_MARKER));
-        }
-
         return document.build();
     }
 
@@ -170,26 +181,27 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
             .build();
     }
 
-    protected static RespondentStatement buildRespondentStatement(boolean confidential) {
+    protected static RespondentStatement buildRespondentStatement(boolean confidential, boolean isUploadedByHMCTS) {
         RespondentStatement.RespondentStatementBuilder builder
             = RespondentStatement.builder().respondentName("Timothy Jones")
-            .supportingEvidenceBundle(wrapElements(buildEvidenceBundle(confidential)));
+            .supportingEvidenceBundle(wrapElements(buildEvidenceBundle(confidential, isUploadedByHMCTS)));
         return builder.build();
     }
 
-    protected static HearingFurtherEvidenceBundle buildHearingFurtherEvidenceBundle(boolean confidential) {
+    protected static HearingFurtherEvidenceBundle buildHearingFurtherEvidenceBundle(boolean confidential,
+                                                                                    boolean isUploadedByHMCTS) {
         HearingFurtherEvidenceBundle.HearingFurtherEvidenceBundleBuilder builder
             = HearingFurtherEvidenceBundle.builder().hearingName("Hearing1")
-            .supportingEvidenceBundle(wrapElements(buildEvidenceBundle(confidential)));
+            .supportingEvidenceBundle(wrapElements(buildEvidenceBundle(confidential, isUploadedByHMCTS)));
         return builder.build();
     }
 
     protected static SupportingEvidenceBundle buildEvidenceBundle(
-        boolean confidential) {
+        boolean confidential, boolean isUploadedByHMCTS) {
         SupportingEvidenceBundle.SupportingEvidenceBundleBuilder builder
             = SupportingEvidenceBundle.builder()
             .name("dummy document")
-            .uploadedBy("user who uploaded")
+            .uploadedBy(isUploadedByHMCTS ? "HMCTS" : "user who uploaded")
             .dateTimeUploaded(LocalDateTime.now())
             .document(TestDataHelper.testDocumentReference())
             .type(FurtherEvidenceType.GUARDIAN_REPORTS);
@@ -297,57 +309,70 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
     }
 
     protected void verifySendingNotificationToAllParties(NotificationClient notificationClient, String templateId,
-                                                         long caseId) throws NotificationClientException {
-        verify(notificationClient).sendEmail(
+                                                         long caseId) throws NotificationClientException{
+        verifySendingNotification(notificationClient, templateId,
+            TEST_CASE_ID, List.of(CHILD_SOLICITOR_1_EMAIL,
+                LOCAL_AUTHORITY_1_INBOX,
+                LOCAL_AUTHORITY_2_INBOX,
+                RESPONDENT_SOLICITOR_1_EMAIL,
+                RESPONDENT_REP_1_EMAIL
+            ));
+    }
+
+    protected void verifySendingNotification(NotificationClient notificationClient, String templateId, long caseId,
+                                             List<String> targets) throws NotificationClientException {
+        verify(notificationClient, times(targets.contains(RESPONDENT_REP_1_EMAIL) ? 1 : 0)).sendEmail(
             eq(templateId),
-            eq(REP_1_EMAIL),
+            eq(RESPONDENT_REP_1_EMAIL),
             anyMap(),
             eq(notificationReference(caseId)));
 
-        verify(notificationClient).sendEmail(
+        verify(notificationClient, times(targets.contains(LOCAL_AUTHORITY_1_INBOX) ? 1 : 0)).sendEmail(
             eq(templateId),
             eq(LOCAL_AUTHORITY_1_INBOX),
             anyMap(),
             eq(notificationReference(caseId)));
 
-        verify(notificationClient).sendEmail(
+        verify(notificationClient, times(targets.contains(LOCAL_AUTHORITY_2_INBOX) ? 1 : 0)).sendEmail(
             eq(templateId),
             eq(LOCAL_AUTHORITY_2_INBOX),
             anyMap(),
             eq(notificationReference(caseId)));
 
         // registered respondent solicitor
-        verify(notificationClient).sendEmail(
+        verify(notificationClient, times(targets.contains(RESPONDENT_SOLICITOR_1_EMAIL) ? 1 : 0)).sendEmail(
             eq(templateId),
             eq(RESPONDENT_SOLICITOR_1_EMAIL),
             anyMap(),
             eq(notificationReference(caseId)));
 
         // unregistered respondent solicitor
-        verify(notificationClient, never()).sendEmail(
-            eq(templateId),
-            eq(UNREGISTERED_RESPONDENT_SOLICITOR_2_EMAIL),
-            anyMap(),
-            eq(notificationReference(caseId)));
+        verify(notificationClient, times(targets.contains(UNREGISTERED_RESPONDENT_SOLICITOR_2_EMAIL) ? 1 : 0)).
+            sendEmail(
+                eq(templateId),
+                eq(UNREGISTERED_RESPONDENT_SOLICITOR_2_EMAIL),
+                anyMap(),
+                eq(notificationReference(caseId)));
 
         // registered child solicitor
-        verify(notificationClient).sendEmail(
+        verify(notificationClient, times(targets.contains(CHILD_SOLICITOR_1_EMAIL) ? 1 : 0)).sendEmail(
             eq(templateId),
             eq(CHILD_SOLICITOR_1_EMAIL),
             anyMap(),
             eq(notificationReference(caseId)));
 
         // unregistered child solicitor
-        verify(notificationClient, never()).sendEmail(
-            eq(templateId),
-            eq(UNREGISTERED_CHILD_SOLICITOR_2_EMAIL),
-            anyMap(),
-            eq(notificationReference(caseId)));
+        verify(notificationClient, times(targets.contains(UNREGISTERED_CHILD_SOLICITOR_2_EMAIL) ? 1 : 0)).
+            sendEmail(
+                eq(templateId),
+                eq(UNREGISTERED_CHILD_SOLICITOR_2_EMAIL),
+                anyMap(),
+                eq(notificationReference(caseId)));
     }
 
     private List<Element<Representative>> buildRepresentatives() {
         return wrapElements(Representative.builder()
-            .email(REP_1_EMAIL)
+            .email(RESPONDENT_REP_1_EMAIL)
             .fullName("Representative Snow")
             .role(REPRESENTING_RESPONDENT_1)
             .servingPreferences(DIGITAL_SERVICE)

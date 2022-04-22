@@ -175,7 +175,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         verifyNotificationFurtherDocumentsTemplate(
             userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
             (caseData) ->  caseData.getApplicationDocuments().addAll(
-                wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER, false,
+                wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER,
                     PDF_DOCUMENT_1))),
             List.of(BIRTH_CERTIFICATE.getLabel()));
     }
@@ -186,7 +186,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         verifyNotificationFurtherDocumentsTemplate(
             userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
             (caseData) ->  caseData.getApplicationDocuments().addAll(
-                wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER, true,
+                wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER,
                     PDF_DOCUMENT_1))), null);
     }
 

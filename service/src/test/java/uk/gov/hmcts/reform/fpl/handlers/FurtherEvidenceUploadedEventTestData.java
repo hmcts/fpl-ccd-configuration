@@ -150,8 +150,8 @@ public class FurtherEvidenceUploadedEventTestData {
         return commonCaseBuilder()
                 .applicationDocuments(
                     wrapElements(
-                            createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER, false, PDF_DOCUMENT_1),
-                            createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER, false, PDF_DOCUMENT_1)
+                            createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER, PDF_DOCUMENT_1),
+                            createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER, PDF_DOCUMENT_1)
                     )
                 )
             .build();
@@ -193,18 +193,13 @@ public class FurtherEvidenceUploadedEventTestData {
     }
 
     public static ApplicationDocument createDummyApplicationDocument(final String name, final String uploadedBy,
-                                                                     boolean confidential, DocumentReference docRef) {
+                                                                     DocumentReference docRef) {
         ApplicationDocument.ApplicationDocumentBuilder document = ApplicationDocument.builder()
             .documentName(name)
             .documentType(BIRTH_CERTIFICATE)
             .uploadedBy(uploadedBy)
             .document(docRef)
             .dateTimeUploaded(LocalDateTime.now());
-
-
-        if (confidential) {
-            document.confidential(List.of(CONFIDENTIAL_MARKER));
-        }
         return document.build();
     }
 
