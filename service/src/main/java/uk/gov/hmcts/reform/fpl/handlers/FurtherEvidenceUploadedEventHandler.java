@@ -87,12 +87,10 @@ public class FurtherEvidenceUploadedEventHandler {
         var newUploadedFurtherDocuments =
             getNotificationUserType2NewFurtherDocumentMap(caseData, caseDataBefore);
 
-
-        if (!newUploadedFurtherDocuments.isEmpty()) {
-            newUploadedFurtherDocuments.entrySet().forEach(entry -> {
-                final Set<String> recipients = new LinkedHashSet<>();
+        newUploadedFurtherDocuments.entrySet().forEach(entry -> {
+            final Set<String> recipients = new LinkedHashSet<>();
+            if (entry.getValue().isEmpty() == false) {
                 DocumentUploadNotificationUserType key = entry.getKey();
-
                 if (key == CAFCASS) {
                     recipients.addAll(furtherEvidenceNotificationService.getCafcassEmails(caseData));
                 } else if (key == CHILD_SOLICITOR) {
@@ -108,8 +106,8 @@ public class FurtherEvidenceUploadedEventHandler {
                     furtherEvidenceNotificationService.sendNotification(caseData, recipients, uploader.getFullName(),
                         newDocumentNames);
                 }
-            });
-        }
+            }
+        });
     }
 
     @EventListener
