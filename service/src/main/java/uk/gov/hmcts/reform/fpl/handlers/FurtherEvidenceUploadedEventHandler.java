@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.DocumentInfo;
@@ -268,7 +269,7 @@ public class FurtherEvidenceUploadedEventHandler {
         List<Element<ApplicationDocument>> applicationDocuments,
         List<Element<ApplicationDocument>> beforeApplicationDocuments) {
         List<Element<ApplicationDocument>> newApplicationDocuments = new ArrayList<>();
-        applicationDocuments.forEach(newDoc -> {
+        defaultIfNull(applicationDocuments, new ArrayList<Element<ApplicationDocument>>()).forEach(newDoc -> {
             if (!beforeApplicationDocuments.contains(newDoc)) {
                 newApplicationDocuments.add(newDoc);
             }
@@ -280,7 +281,7 @@ public class FurtherEvidenceUploadedEventHandler {
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
         List<Element<SupportingEvidenceBundle>> beforeSupportingEvidenceBundle) {
         List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle = new ArrayList<>();
-        supportingEvidenceBundle.forEach(newDoc -> {
+        defaultIfNull(supportingEvidenceBundle, new ArrayList<Element<SupportingEvidenceBundle>>()).forEach(newDoc -> {
             if (!beforeSupportingEvidenceBundle.contains(newDoc)) {
                 newSupportingEvidenceBundle.add(newDoc);
             }
@@ -394,11 +395,7 @@ public class FurtherEvidenceUploadedEventHandler {
         // - everyone except respondent/child solicitors have permission to see
         // So we shouldn’t send the notification to respondent/child solicitors
         List<Element<ApplicationDocument>> newApplicationDocuments =
-            getNewApplicationDocuments(
-                defaultIfNull(
-                    caseData.getApplicationDocuments(), List.of()),
-                defaultIfNull(
-                    beforeCaseData.getApplicationDocuments(), List.of()));
+            getNewApplicationDocuments(caseData.getApplicationDocuments(), beforeCaseData.getApplicationDocuments());
         unwrapElements(newApplicationDocuments).forEach(applicationDocument -> {
             if (!applicationDocument.isConfidentialDocument()) {
                 ret.get(CHILD_SOLICITOR).add(applicationDocument);
@@ -408,10 +405,10 @@ public class FurtherEvidenceUploadedEventHandler {
         });
 
         // Respondent Statement
-        List<Element<SupportingEvidenceBundle>> respondentStatements = defaultIfNull(
+        List<Element<SupportingEvidenceBundle>> respondentStatements =
             getNewSupportingEvidenceBundle(
                 getEvidenceBundleFromRespondentStatements(caseData),
-                getEvidenceBundleFromRespondentStatements(beforeCaseData)), List.of());
+                getEvidenceBundleFromRespondentStatements(beforeCaseData));
         unwrapElements(respondentStatements).forEach(respondentStatement -> {
             if (!respondentStatement.isConfidentialDocument()) {
                 ret.get(CHILD_SOLICITOR).add(respondentStatement);
@@ -425,10 +422,10 @@ public class FurtherEvidenceUploadedEventHandler {
 
         // Any other documents
         // Uploaded by LA
-        List<Element<SupportingEvidenceBundle>> anyOtherDocsByLA = defaultIfNull(
+        List<Element<SupportingEvidenceBundle>> anyOtherDocsByLA =
             getNewSupportingEvidenceBundle(
                 caseData.getFurtherEvidenceDocumentsLA(),
-                beforeCaseData.getFurtherEvidenceDocumentsLA()), List.of());
+                beforeCaseData.getFurtherEvidenceDocumentsLA());
         unwrapElements(anyOtherDocsByLA).forEach(doc -> {
             if (!doc.isConfidentialDocument()) {
                 ret.get(CHILD_SOLICITOR).add(doc);
@@ -438,10 +435,10 @@ public class FurtherEvidenceUploadedEventHandler {
             ret.get(ALL_LAS).add(doc);
         });
         // Uploaded by HMCTS Admin
-        List<Element<SupportingEvidenceBundle>> anyOtherDocsByHmctsAdmin = defaultIfNull(
+        List<Element<SupportingEvidenceBundle>> anyOtherDocsByHmctsAdmin =
             getNewSupportingEvidenceBundle(
                 caseData.getFurtherEvidenceDocuments(),
-                beforeCaseData.getFurtherEvidenceDocuments()), List.of());
+                beforeCaseData.getFurtherEvidenceDocuments());
         unwrapElements(anyOtherDocsByHmctsAdmin).forEach(doc -> {
             if (!doc.isConfidentialDocument()) {
                 ret.get(CHILD_SOLICITOR).add(doc);
@@ -451,10 +448,10 @@ public class FurtherEvidenceUploadedEventHandler {
             }
         });
         // Uploaded by Solicitor
-        List<Element<SupportingEvidenceBundle>> anyOtherDocsBySolicitor = defaultIfNull(
+        List<Element<SupportingEvidenceBundle>> anyOtherDocsBySolicitor =
             getNewSupportingEvidenceBundle(
                 caseData.getFurtherEvidenceDocumentsSolicitor(),
-                beforeCaseData.getFurtherEvidenceDocumentsSolicitor()), List.of());
+                beforeCaseData.getFurtherEvidenceDocumentsSolicitor());
         unwrapElements(anyOtherDocsBySolicitor).forEach(doc -> {
             // no confidential document by solicitors
             ret.get(CHILD_SOLICITOR).add(doc);
@@ -464,10 +461,9 @@ public class FurtherEvidenceUploadedEventHandler {
         });
 
         // Any Other Document From Hearings
-        List<Element<SupportingEvidenceBundle>> anyOtherDocumentFromHearings = defaultIfNull(
-            getNewSupportingEvidenceBundle(
-                getEvidenceBundleFromHearings(caseData),
-                getEvidenceBundleFromHearings(beforeCaseData)), List.of());
+        List<Element<SupportingEvidenceBundle>> anyOtherDocumentFromHearings =
+            getNewSupportingEvidenceBundle(getEvidenceBundleFromHearings(caseData),
+                getEvidenceBundleFromHearings(beforeCaseData));
         unwrapElements(anyOtherDocumentFromHearings).forEach(doc -> {
             if (!doc.isConfidentialDocument()) {
                 ret.get(CHILD_SOLICITOR).add(doc);
@@ -492,9 +488,8 @@ public class FurtherEvidenceUploadedEventHandler {
 
     private List<Element<SupportingEvidenceBundle>> getEvidenceBundleFromRespondentStatements(CaseData caseData) {
         List<Element<SupportingEvidenceBundle>> evidenceBundle = new ArrayList<>();
-        caseData.getRespondentStatements().forEach(statement ->
-            evidenceBundle.addAll(statement.getValue().getSupportingEvidenceBundle())
-        );
+        defaultIfNull(caseData.getRespondentStatements(), new ArrayList<Element<RespondentStatement>>())
+            .forEach(statement -> evidenceBundle.addAll(statement.getValue().getSupportingEvidenceBundle()));
         return evidenceBundle;
     }
 
