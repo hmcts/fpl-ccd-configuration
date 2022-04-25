@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.cafcass.LargeFilesNotificationData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewApplicationCafcassData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.OrderCafcassData;
+import uk.gov.hmcts.reform.fpl.model.cafcass.UrgentHearingOrderAndNopData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
@@ -35,6 +36,7 @@ import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContent
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NEW_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NEW_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.URGENT_HEARING_ORDER_AND_NOP;
 
 @ExtendWith(MockitoExtension.class)
 class CafcassNotificationServiceTest {
@@ -170,6 +172,47 @@ class CafcassNotificationServiceTest {
         );
     }
 
+    @Test
+    void shouldNotifyUrgentHearingOrder() {
+        when(configuration.getRecipientForUrgentHearingOrder()).thenReturn(RECIPIENT_EMAIL);
+        when(configuration.getSender()).thenReturn(SENDER_EMAIL);
+        when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL))
+            .thenReturn(DOCUMENT_CONTENT);
+
+        UrgentHearingOrderAndNopData urgentHearingOrderAndNopData = UrgentHearingOrderAndNopData.builder()
+            .leadRespondentsName("Tim Cook")
+            .callout("CALLOUT")
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .build();
+
+        underTest.sendEmail(caseData,
+            of(getDocumentReference()),
+            URGENT_HEARING_ORDER_AND_NOP,
+            urgentHearingOrderAndNopData
+        );
+
+        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
+        EmailData data = emailDataArgumentCaptor.getValue();
+        assertThat(data.isPriority()).isTrue();
+        assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
+        assertThat(data.getSubject()).isEqualTo(
+            "Urgent hearing order and notice of proceedings issued, Tim Cook");
+        assertThat(data.getAttachments()).containsExactly(
+            document("application/pdf", DOCUMENT_CONTENT, DOCUMENT_FILENAME)
+        );
+        assertThat(data.getMessage()).isEqualTo(
+            String.join("\n\n",
+                "An urgent hearing order and notice of proceedings have been issued for:\nCALLOUT",
+                "Next steps",
+                "You should now check the order to see your directions and compliance dates.",
+                "HM Courts & Tribunals Service",
+                "Do not reply to this email. If you need to contact us, call 0330 808 4424 or "
+                    + "email contactfpl@justice.gov.uk")
+        );
+    }
 
     @Test
     void shouldNotifyNewApplicationRequestWhenNoTimeFramePresent() {

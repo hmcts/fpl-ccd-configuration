@@ -66,6 +66,15 @@ class EmailServiceTest {
     }
 
     @Test
+    void shouldSendEmailSuccessfullyWhenEmailWitPriority() {
+        EmailData emailData = TestEmailData.withPriority();
+        willDoNothing().given(javaMailSender).send(any(MimeMessage.class));
+
+        emailService.sendEmail(EMAIL_FROM, emailData);
+        verify(javaMailSender).send(mimeMessage);
+    }
+
+    @Test
     void shouldThrowEmailFailedSendExceptionWhenMailExceptionOnSendEmail() {
         EmailData emailData = TestEmailData.getDefault();
         willThrow(mock(MailException.class)).given(javaMailSender).send(any(MimeMessage.class));
@@ -133,6 +142,15 @@ class EmailServiceTest {
                 .recipient(EMAIL_TO)
                 .subject(EMAIL_SUBJECT)
                 .message("")
+                .build();
+        }
+
+        static EmailData withPriority() {
+            return EmailData.builder()
+                .recipient(EMAIL_TO)
+                .subject(EMAIL_SUBJECT)
+                .message("")
+                .priority(true)
                 .build();
         }
     }

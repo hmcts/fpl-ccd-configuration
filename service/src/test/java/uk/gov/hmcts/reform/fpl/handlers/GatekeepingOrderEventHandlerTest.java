@@ -11,11 +11,14 @@ import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup;
 import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.cafcass.UrgentHearingOrderAndNopData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.sdo.SDONotifyData;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedCafcassContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedContentProvider;
@@ -25,6 +28,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -72,7 +78,8 @@ class GatekeepingOrderEventHandlerTest {
     private SDOIssuedCafcassContentProvider cafcassContentProvider;
     @Mock
     private TranslationRequestService translationRequestService;
-
+    @Mock
+    private CafcassNotificationService cafcassNotificationService;
     @InjectMocks
     private GatekeepingOrderEventHandler underTest;
 
@@ -98,6 +105,25 @@ class GatekeepingOrderEventHandlerTest {
             NOTIFY_DATA,
             CASE_ID
         );
+    }
+
+    @Test
+    void shouldNotifyCafcassOfIssuedUrgentSDO() {
+        final CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .build();
+
+        final GatekeepingOrderEvent event = gatekeepingOrderEvent(URGENT_AND_NOP, caseData);
+
+        given(cafcassLookup.getCafcass(LOCAL_AUTHORITY_CODE))
+            .willReturn(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
+        given(cafcassContentProvider.getNotifyData(caseData, ORDER)).willReturn(NOTIFY_DATA);
+
+        underTest.notifyCafcass(event);
+        verify(cafcassNotificationService).sendEmail(isA(CaseData.class), any(),
+            eq(CafcassRequestEmailContentProvider.URGENT_HEARING_ORDER_AND_NOP),
+            isA(UrgentHearingOrderAndNopData.class));
     }
 
     @Test
