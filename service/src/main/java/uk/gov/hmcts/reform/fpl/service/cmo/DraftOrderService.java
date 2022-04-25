@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -47,6 +48,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement.DEFAULT_CODE;
 import static uk.gov.hmcts.reform.fpl.model.order.HearingOrder.from;
+import static uk.gov.hmcts.reform.fpl.model.order.HearingOrder.fromHearingOrderElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -145,7 +147,8 @@ public class DraftOrderService {
     public UUID updateCase(UploadDraftOrdersData eventData, List<Element<HearingBooking>> hearings,
                            List<Element<HearingOrder>> cmoDrafts,
                            List<Element<HearingFurtherEvidenceBundle>> evidenceBundles,
-                           List<Element<HearingOrdersBundle>> bundles) {
+                           List<Element<HearingOrdersBundle>> bundles,
+                           List<Element<Other>> selectedOthers) {
 
         final UUID selectedHearingId = getSelectedHearingId(eventData);
         final List<HearingOrderKind> hearingOrderKinds = getHearingOrderKinds(eventData);
@@ -166,9 +169,9 @@ public class DraftOrderService {
                 time.now().toLocalDate(),
                 eventData.isCmoAgreed() ? AGREED_CMO : DRAFT_CMO,
                 supportingDocs,
-                eventData.getCmoToSendTranslationRequirements()
+                eventData.getCmoToSendTranslationRequirements(),
+                selectedOthers
             ));
-
             Optional<UUID> previousCmoId = updateHearingWithCmoId(hearing.getValue(), order);
 
             insertOrder(cmoDrafts, order, previousCmoId.orElse(null));
@@ -186,12 +189,14 @@ public class DraftOrderService {
                 .orElse(null);
 
             for (int i = 0; i < eventData.getCurrentHearingOrderDrafts().size(); i++) {
-                Element<HearingOrder> hearingOrder = eventData.getCurrentHearingOrderDrafts().get(i);
-                hearingOrder.getValue().setDateSent(time.now().toLocalDate());
-                hearingOrder.getValue().setStatus(SEND_TO_JUDGE);
-                hearingOrder.getValue().setTranslationRequirements(eventData.getOrderToSendTranslationRequirements(i));
+                Element<HearingOrder> hearingOrder = fromHearingOrderElement(
+                    eventData.getCurrentHearingOrderDrafts().get(i),
+                    eventData.getOrderToSendTranslationRequirements(i),
+                    SEND_TO_JUDGE,
+                    time.now().toLocalDate(),
+                    selectedOthers);
+                addOrdersToBundle(bundles, List.of(hearingOrder), hearing, C21);
             }
-            addOrdersToBundle(bundles, eventData.getCurrentHearingOrderDrafts(), hearing, C21);
         }
 
         bundles.removeIf(bundle -> isEmpty(bundle.getValue().getOrders()));

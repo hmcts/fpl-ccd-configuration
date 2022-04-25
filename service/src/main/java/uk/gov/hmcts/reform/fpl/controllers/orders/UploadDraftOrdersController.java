@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersUploaded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
@@ -90,12 +91,15 @@ public class UploadDraftOrdersController extends CallbackController {
             return respond(caseDetails, List.of(String.format("Maximum number of draft orders is %s", MAX_ORDERS)));
         }
 
+        List<Element<Other>> selectedOthers = this.othersService.getSelectedOthers(caseData);
         List<Element<HearingOrder>> unsealedCMOs = caseData.getDraftUploadedCMOs();
         List<Element<HearingBooking>> hearings = defaultIfNull(caseData.getHearingDetails(), new ArrayList<>());
         List<Element<HearingFurtherEvidenceBundle>> evidenceDocuments = caseData.getHearingFurtherEvidenceDocuments();
         List<Element<HearingOrdersBundle>> bundles = service.migrateCmoDraftToOrdersBundles(caseData);
 
-        UUID hearingId = service.updateCase(eventData, hearings, unsealedCMOs, evidenceDocuments, bundles);
+        // check in here whether we can access the uploaded draft orders
+        UUID hearingId = service.updateCase(eventData, hearings, unsealedCMOs, evidenceDocuments, bundles,
+            selectedOthers);
 
         // update case data
         caseDetails.getData().put("draftUploadedCMOs", unsealedCMOs);

@@ -33,6 +33,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 @Data
@@ -59,14 +60,25 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     private final List<Element<Other>> others;
     private String othersNotified;
 
-    public static HearingOrder from(DocumentReference order, HearingBooking hearing, LocalDate date) {
-        return from(order, hearing, date, AGREED_CMO, null, null);
+    public static Element<HearingOrder> fromHearingOrderElement(Element<HearingOrder> orderElement,
+                                                       LanguageTranslationRequirement translationRequirement,
+                                                       CMOStatus cmoStatus,
+                                                       LocalDate dateSent,
+                                                       List<Element<Other>> selectedOthers) {
+        return element(orderElement.getId(),
+            orderElement.getValue().toBuilder()
+                .dateSent(dateSent)
+                .status(cmoStatus)
+                .translationRequirements(translationRequirement)
+                .others(selectedOthers)
+                .build());
     }
 
     public static HearingOrder from(DocumentReference order, HearingBooking hearing, LocalDate date,
                                     HearingOrderType orderType,
                                     List<Element<SupportingEvidenceBundle>> supportingDocs,
-                                    LanguageTranslationRequirement translationRequirement) {
+                                    LanguageTranslationRequirement translationRequirement,
+                                    List<Element<Other>> others) {
         return HearingOrder.builder()
             .type(orderType)
             .title(orderType == AGREED_CMO ? "Agreed CMO discussed at hearing" : "Draft CMO from advocates' meeting")
@@ -77,6 +89,7 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
             .judgeTitleAndName(formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()))
             .supportingDocs(supportingDocs)
             .translationRequirements(translationRequirement)
+            .others(others)
             .build();
     }
 

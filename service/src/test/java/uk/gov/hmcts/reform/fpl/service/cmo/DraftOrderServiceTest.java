@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -556,8 +557,9 @@ class DraftOrderServiceTest {
             List<Element<HearingOrder>> unsealedOrders = newArrayList();
             List<Element<HearingFurtherEvidenceBundle>> bundles = newArrayList();
             List<Element<HearingOrdersBundle>> ordersBundles = newArrayList();
+            List<Element<Other>> others = newArrayList();
 
-            service.updateCase(eventData, hearings, unsealedOrders, bundles, ordersBundles);
+            service.updateCase(eventData, hearings, unsealedOrders, bundles, ordersBundles, others);
 
             assertThat(bundles).isEmpty();
 
@@ -603,8 +605,9 @@ class DraftOrderServiceTest {
             List<Element<HearingOrder>> unsealedOrders = newArrayList();
             List<Element<HearingFurtherEvidenceBundle>> bundles = newArrayList();
             List<Element<HearingOrdersBundle>> ordersBundles = newArrayList();
+            List<Element<Other>> others = newArrayList();
 
-            service.updateCase(eventData, hearings, unsealedOrders, bundles, ordersBundles);
+            service.updateCase(eventData, hearings, unsealedOrders, bundles, ordersBundles, others);
 
             assertThat(bundles).hasSize(1)
                 .isEqualTo(List.of(element(
@@ -651,8 +654,9 @@ class DraftOrderServiceTest {
             List<Element<HearingOrder>> unsealedOrders = newArrayList();
             List<Element<HearingFurtherEvidenceBundle>> bundles = newArrayList(existingHearingBundle);
             List<Element<HearingOrdersBundle>> ordersBundles = newArrayList();
+            List<Element<Other>> others = newArrayList();
 
-            service.updateCase(eventData, hearings, unsealedOrders, bundles, ordersBundles);
+            service.updateCase(eventData, hearings, unsealedOrders, bundles, ordersBundles, others);
 
             assertThat(bundles.get(0).getValue().getSupportingEvidenceBundle())
                 .containsExactly(doc1, updatedDoc2, doc3, newDoc);
@@ -683,8 +687,9 @@ class DraftOrderServiceTest {
             Element<HearingOrder> c21Order = hearingOrder(C21);
             HearingOrdersBundle ordersBundle = ordersBundle(selectedHearing.getId(), previousCmoOrder, c21Order);
             List<Element<HearingOrdersBundle>> ordersBundles = wrapElements(ordersBundle);
+            List<Element<Other>> others = newArrayList();
 
-            service.updateCase(eventData, hearings, unsealedOrders, List.of(), ordersBundles);
+            service.updateCase(eventData, hearings, unsealedOrders, List.of(), ordersBundles, others);
 
             HearingOrder expectedOrder = HearingOrder.builder()
                 .title("Agreed CMO discussed at hearing")
@@ -742,8 +747,9 @@ class DraftOrderServiceTest {
 
             List<Element<HearingOrder>> unsealedOrders = newArrayList();
             List<Element<HearingOrdersBundle>> ordersBundles = newArrayList();
+            List<Element<Other>> others = newArrayList();
 
-            service.updateCase(eventData, hearings, unsealedOrders, bundles, ordersBundles);
+            service.updateCase(eventData, hearings, unsealedOrders, bundles, ordersBundles, others);
 
             assertThat(bundles).hasSize(1)
                 .first()
@@ -776,8 +782,9 @@ class DraftOrderServiceTest {
             List<Element<HearingFurtherEvidenceBundle>> evidenceBundles = newArrayList();
             List<Element<HearingOrder>> unsealedOrders = newArrayList();
             List<Element<HearingOrdersBundle>> ordersBundles = newArrayList();
+            List<Element<Other>> others = newArrayList();
 
-            service.updateCase(eventData, hearings, unsealedOrders, evidenceBundles, ordersBundles);
+            service.updateCase(eventData, hearings, unsealedOrders, evidenceBundles, ordersBundles, others);
 
             assertThat(ordersBundles).hasSize(1);
             assertThat(ordersBundles.get(0)).extracting(Element::getValue).isEqualTo(ordersBundle);
@@ -811,7 +818,7 @@ class DraftOrderServiceTest {
 
             List<Element<HearingOrdersBundle>> ordersBundles = wrapElements(originalOrdersBundle);
 
-            service.updateCase(eventData, hearings, emptyList(), emptyList(), ordersBundles);
+            service.updateCase(eventData, hearings, emptyList(), emptyList(), ordersBundles, emptyList());
 
             HearingOrdersBundle expectedOrdersBundle = originalOrdersBundle.toBuilder()
                 .orders(newArrayList(cmoOrder, hearingOrder1, hearingOrder3))
@@ -844,7 +851,7 @@ class DraftOrderServiceTest {
             List<Element<HearingOrdersBundle>> ordersBundles = wrapElements(selectedHearingOrderBundle,
                 otherOrdersBundle);
 
-            service.updateCase(eventData, hearings, emptyList(), emptyList(), ordersBundles);
+            service.updateCase(eventData, hearings, emptyList(), emptyList(), ordersBundles, emptyList());
 
             assertThat(ordersBundles).extracting(Element::getValue).containsExactly(otherOrdersBundle);
         }
@@ -868,8 +875,9 @@ class DraftOrderServiceTest {
                 selectedHearing.getId(), previousDraftCmoOrder, previousC21Order);
             List<Element<HearingOrdersBundle>> ordersBundles = wrapElements(ordersBundle);
             List<Element<HearingOrder>> unsealedOrders = newArrayList();
+            List<Element<Other>> others = newArrayList();
 
-            service.updateCase(eventData, hearings, unsealedOrders, List.of(), ordersBundles);
+            service.updateCase(eventData, hearings, unsealedOrders, List.of(), ordersBundles, others);
 
             HearingOrder expectedOrder = HearingOrder.builder()
                 .title("Agreed CMO discussed at hearing")
@@ -899,7 +907,8 @@ class DraftOrderServiceTest {
                 .build();
 
             Exception exception = assertThrows(Exception.class,
-                () -> service.updateCase(eventData, hearings, newArrayList(), newArrayList(), newArrayList()));
+                () -> service.updateCase(eventData, hearings, newArrayList(), newArrayList(), newArrayList(),
+                    newArrayList()));
 
             assertThat(exception).isInstanceOf(HearingNotFoundException.class);
         }
