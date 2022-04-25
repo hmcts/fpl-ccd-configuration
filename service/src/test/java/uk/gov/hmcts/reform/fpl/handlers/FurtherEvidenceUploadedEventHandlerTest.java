@@ -149,13 +149,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
         CaseData caseData = buildSubmittedCaseData();
         caseDataModifier.accept(caseData);
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
-                caseData,
-                caseDataBefore,
-                uploadedType,
-                uploadedBy);
-
         final Set<String> respondentSolicitors = Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_3_EMAIL);
         when(furtherEvidenceNotificationService.getRespondentSolicitorEmails(caseData))
             .thenReturn(respondentSolicitors);
@@ -166,6 +159,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
         when(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData))
             .thenReturn(Set.of(LA_USER_EMAIL, LA2_USER_EMAIL));
 
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            new FurtherEvidenceUploadedEvent(caseData, caseDataBefore, uploadedType, uploadedBy);
         furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(furtherEvidenceUploadedEvent);
 
         if (!notificationTypes.isEmpty()) {
