@@ -43,6 +43,7 @@ public class FurtherEvidenceUploadedEventTestData {
     public static final String NON_CONFIDENTIAL_1 = "non-confidential-1";
     public static final String NON_CONFIDENTIAL_2 = "non-confidential-2";
     public static final String CONFIDENTIAL_1 = "confidential-doc-1";
+    public static final String CONFIDENTIAL_2 = "confidential-doc-2";
     public static final DocumentReference PDF_DOCUMENT_1 = getPDFDocument();
     public static final DocumentReference PDF_DOCUMENT_2 = getPDFDocument();
     public static final DocumentReference NON_PDF_DOCUMENT_1 = getNonPDFDocument();
@@ -159,8 +160,8 @@ public class FurtherEvidenceUploadedEventTestData {
 
     public static List<Element<SupportingEvidenceBundle>> buildConfidentialDocumentList(final String uploadedBy) {
         return wrapElements(
-            createDummyEvidenceBundle("confidential-1", uploadedBy, true, PDF_DOCUMENT_1),
-            createDummyEvidenceBundle("confidential-2", uploadedBy, true, PDF_DOCUMENT_2));
+            createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, true, PDF_DOCUMENT_1),
+            createDummyEvidenceBundle(CONFIDENTIAL_2, uploadedBy, true, PDF_DOCUMENT_2));
     }
 
     public static List<Element<SupportingEvidenceBundle>> buildNonConfidentialPdfDocumentList(final String uploadedBy) {
