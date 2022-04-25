@@ -235,7 +235,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         // Further documents for main application -> Any other document does not relate to a hearing
         verifyNotificationFurtherDocumentsTemplate(
             userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getFurtherEvidenceDocumentsLA().addAll(buildNonConfidentialPdfDocumentList(LA_USER)),
+            (caseData) -> caseData.getFurtherEvidenceDocumentsLA().addAll(buildNonConfidentialPdfDocumentList(LA_USER)),
             Set.of(DocumentUploadNotificationUserType.ALL_LAS, DocumentUploadNotificationUserType.CHILD_SOLICITOR,
                 DocumentUploadNotificationUserType.RESPONDENT_SOLICITOR),
             NON_CONFIDENTIAL);
