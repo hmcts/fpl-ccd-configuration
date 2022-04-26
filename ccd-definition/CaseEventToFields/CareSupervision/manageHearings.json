@@ -381,7 +381,7 @@
     "PageID": "EnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 5,
-    "FieldShowCondition": "firstHearingFlag!=\"No\" OR hasPreviousHearingVenue=\"No\""
+    "FieldShowCondition": "firstHearingFlag!=\"No\" OR hasPreviousHearingVenue=\"No\" OR hearingOption=\"EDIT_FUTURE_HEARING\""
   },
   {
     "LiveFrom": "01/01/2017",
