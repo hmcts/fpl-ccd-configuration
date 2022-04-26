@@ -2,11 +2,14 @@ package uk.gov.hmcts.reform.fpl.controllers.gatekeepingorder;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.DirtiesContext;
+import uk.gov.hmcts.reform.fpl.config.cafcass.CafcassEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.AddGatekeepingOrderController;
 import uk.gov.hmcts.reform.fpl.docmosis.DocmosisHelper;
@@ -19,8 +22,10 @@ import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.email.EmailData;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.DocumentMetadataDownloadService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
@@ -33,6 +38,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
@@ -75,19 +81,23 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
     private static final Long CASE_ID = 1L;
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
-    private static final DocumentReference SDO_DOCUMENT = testDocumentReference();
+    private static final DocumentReference SDO_DOCUMENT = testDocumentReference(10L);
     private static final DocumentReference C6_DOCUMENT = testDocumentReference("notice_of_proceedings_c6.pdf");
     private static final DocumentReference C6A_DOCUMENT = testDocumentReference("notice_of_proceedings_c6a.pdf");
-    private static final DocumentReference URGENT_HEARING_ORDER_DOCUMENT = testDocumentReference();
+    private static final DocumentReference URGENT_HEARING_ORDER_DOCUMENT = testDocumentReference(10L);
     private static final byte[] DOCUMENT_PDF_BINARIES = readBytes("documents/document1.pdf");
     private static final DocmosisDocument DOCMOSIS_PDF_DOCUMENT = testDocmosisDocument(DOCUMENT_PDF_BINARIES)
         .toBuilder().documentTitle("pdf.pdf").build();
     private static final LocalDate DATE_ADDED = LocalDate.of(2018, 2, 4);
+    private static final String CAFCASS_SENDER = "cafcass_sender@example.com";
 
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
     private static final byte[] APPLICATION_BINARY = DOCUMENT_CONTENT;
     private static final CaseData GATEKEEPING_CASE_DATA = CaseData.builder().state(GATEKEEPING).build();
     private static final CaseData CASE_MANAGEMENT_CASE_DATA = CaseData.builder().state(CASE_MANAGEMENT).build();
+
+    @Captor
+    private ArgumentCaptor<EmailData> emailDataArgumentCaptor;
 
     @MockBean
     TranslationRequestFormCreationService translationRequestFormCreationService;
@@ -109,6 +119,13 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
 
     @MockBean
     private DocumentDownloadService documentDownloadService;
+
+    @MockBean
+    private DocumentMetadataDownloadService dcumentMetadataDownloadService;
+
+    @MockBean
+    private CafcassEmailConfiguration cafcassEmailConfiguration;
+
 
     AddGatekeepingOrderControllerSubmittedTest() {
         super("add-gatekeeping-order");
@@ -142,6 +159,8 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldTriggerEventWhenUrgentHearingSubmitted() {
+        when(dcumentMetadataDownloadService.getDocumentMetadata(any())).thenReturn(URGENT_HEARING_ORDER_DOCUMENT);
+        when(cafcassEmailConfiguration.getSender()).thenReturn(CAFCASS_SENDER);
         postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrder(), GATEKEEPING_CASE_DATA));
 
         verifyEmails(URGENT_AND_NOP_ISSUED_CAFCASS, URGENT_AND_NOP_ISSUED_CTSC, URGENT_AND_NOP_ISSUED_LA);
@@ -150,6 +169,8 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldTriggerEventWhenUrgentHearingSubmittedAndRequestingTranslation() {
+        when(dcumentMetadataDownloadService.getDocumentMetadata(any())).thenReturn(URGENT_HEARING_ORDER_DOCUMENT);
+        when(cafcassEmailConfiguration.getSender()).thenReturn(CAFCASS_SENDER);
         postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrderToTranslate(), GATEKEEPING_CASE_DATA));
 
         verifyEmails(URGENT_AND_NOP_ISSUED_CAFCASS, URGENT_AND_NOP_ISSUED_CTSC, URGENT_AND_NOP_ISSUED_LA);
@@ -159,6 +180,8 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldTriggerEventWhenUrgentWithNoPHearingSubmittedAndRequestingTranslation() {
+        when(dcumentMetadataDownloadService.getDocumentMetadata(any())).thenReturn(URGENT_HEARING_ORDER_DOCUMENT);
+        when(cafcassEmailConfiguration.getSender()).thenReturn(CAFCASS_SENDER);
         postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrderToTranslateWithNop(),
             GATEKEEPING_CASE_DATA));
 
@@ -223,7 +246,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
             CASE_TYPE,
             CASE_ID,
             SEND_DOCUMENT_EVENT,
-            Map.of("documentToBeSent", SDO_DOCUMENT)
+            Map.of("documentToBeSent", removeSizeForComparison(SDO_DOCUMENT))
         );
     }
 
@@ -236,13 +259,19 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
             CASE_TYPE,
             CASE_ID,
             SEND_DOCUMENT_EVENT,
-            Map.of("documentToBeSent", URGENT_HEARING_ORDER_DOCUMENT)
+            Map.of("documentToBeSent", removeSizeForComparison(URGENT_HEARING_ORDER_DOCUMENT))
         );
+    }
+
+    private DocumentReference removeSizeForComparison(DocumentReference doc) {
+        doc.setSize(null);
+        return doc;
     }
 
     private void verifyEmails(String cafcassTemplate, String ctcsTemplate, String laTemplate) {
         if (URGENT_AND_NOP_ISSUED_CAFCASS.equals(cafcassTemplate)) {
-            // TODO
+            checkUntil(() -> verify(emailService).sendEmail(eq(CAFCASS_SENDER), emailDataArgumentCaptor.capture()));
+            assertThat(emailDataArgumentCaptor.getValue().isPriority()).isTrue();
         } else {
             checkUntil(() -> verify(notificationClient).sendEmail(
                 eq(cafcassTemplate),

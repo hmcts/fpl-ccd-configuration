@@ -100,11 +100,24 @@ public class TestDataHelper {
         return testDocumentReference(randomAlphanumeric(10));
     }
 
+    public static DocumentReference testDocumentReference(long size) {
+        return testDocumentReference(randomAlphanumeric(10), size);
+    }
+
     public static DocumentReference testDocumentReference(String filename) {
         return DocumentReference.builder()
             .filename(filename)
             .url(randomAlphanumeric(10))
             .binaryUrl(randomAlphanumeric(10))
+            .build();
+    }
+
+    public static DocumentReference testDocumentReference(String filename, long size) {
+        return DocumentReference.builder()
+            .filename(filename)
+            .url(randomAlphanumeric(10))
+            .binaryUrl(randomAlphanumeric(10))
+            .size(size)
             .build();
     }
 
