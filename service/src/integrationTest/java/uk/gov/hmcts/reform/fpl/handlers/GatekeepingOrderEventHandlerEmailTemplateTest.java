@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedCafcassContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedContentProvider;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
@@ -37,6 +38,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
     SDOIssuedContentProvider.class, CtscEmailLookupConfiguration.class, EmailNotificationHelper.class
 })
 @MockBean(TranslationRequestService.class)
+@MockBean(CafcassNotificationService.class)
 class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     private static final String FAMILY_MAN_CASE_NUMBER = "FAM_NUM";
@@ -78,29 +80,6 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .callout("Stevens, FAM_NUM, hearing 12 May 2021")
                 .line()
                 .h1("Next steps ")
-                .line("You should now check the order to see your directions and compliance dates.")
-                .line()
-                .line("You can review it by using this link " + GOV_NOTIFY_DOC_URL + ".")
-                .line()
-                .line("HM Courts & Tribunals Service")
-                .line()
-                .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                    + "contactfpl@justice.gov.uk")
-            );
-    }
-
-    @Test
-    void cafcassUrgentHearingOrderAndNoPEmailTemplate() {
-        underTest.notifyCafcass(EVENT_BUILDER.notificationGroup(URGENT_AND_NOP).build());
-
-        assertThat(response())
-            .hasSubject("Urgent hearing order and notice of proceedings issued, " + CHILD_LAST_NAME)
-            .hasBody(emailContent()
-                .line("An urgent hearing order and notice of proceedings have been issued for:")
-                .line()
-                .callout("Stevens, FAM_NUM, hearing 12 May 2021")
-                .line()
-                .h1("Next steps")
                 .line("You should now check the order to see your directions and compliance dates.")
                 .line()
                 .line("You can review it by using this link " + GOV_NOTIFY_DOC_URL + ".")
