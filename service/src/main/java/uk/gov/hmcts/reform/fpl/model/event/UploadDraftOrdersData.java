@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.Temp;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -112,6 +113,14 @@ public class UploadDraftOrdersData {
     YesNo showCMOsSentToJudge;
     @Temp
     YesNo showReplacementCMO;
+    @Temp
+    Selector othersSelector;
+    @Temp
+    YesNo uploadCMOShowOthers;
+    @Temp
+    YesNo hasOthers;
+    @Temp
+    String others_label;
 
     public List<Element<SupportingEvidenceBundle>> getCmoSupportingDocs() {
         return defaultIfNull(cmoSupportingDocs, new ArrayList<>());
