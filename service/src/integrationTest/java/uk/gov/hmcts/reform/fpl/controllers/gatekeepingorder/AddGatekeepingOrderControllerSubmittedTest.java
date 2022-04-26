@@ -50,7 +50,6 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_ISSUED_CAFCASS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_ISSUED_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_ISSUED_LA;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_AND_NOP_ISSUED_CAFCASS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_AND_NOP_ISSUED_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_AND_NOP_ISSUED_LA;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.WELSH_TO_ENGLISH;
@@ -144,7 +143,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
     void shouldTriggerEventWhenUrgentHearingSubmitted() {
         postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrder(), GATEKEEPING_CASE_DATA));
 
-        verifyEmails(URGENT_AND_NOP_ISSUED_CAFCASS, URGENT_AND_NOP_ISSUED_CTSC, URGENT_AND_NOP_ISSUED_LA);
+        verifyEmails(null, URGENT_AND_NOP_ISSUED_CTSC, URGENT_AND_NOP_ISSUED_LA);
         verifyNoMoreNotificationsSent();
     }
 
@@ -152,7 +151,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
     void shouldTriggerEventWhenUrgentHearingSubmittedAndRequestingTranslation() {
         postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrderToTranslate(), GATEKEEPING_CASE_DATA));
 
-        verifyEmails(URGENT_AND_NOP_ISSUED_CAFCASS, URGENT_AND_NOP_ISSUED_CTSC, URGENT_AND_NOP_ISSUED_LA);
+        verifyEmails(null, URGENT_AND_NOP_ISSUED_CTSC, URGENT_AND_NOP_ISSUED_LA);
         verifyEmailSentToTranslation();
         verifyNoMoreNotificationsSent();
     }
@@ -162,7 +161,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrderToTranslateWithNop(),
             GATEKEEPING_CASE_DATA));
 
-        verifyEmails(URGENT_AND_NOP_ISSUED_CAFCASS, URGENT_AND_NOP_ISSUED_CTSC, URGENT_AND_NOP_ISSUED_LA);
+        verifyEmails(null, URGENT_AND_NOP_ISSUED_CTSC, URGENT_AND_NOP_ISSUED_LA);
         verifyEmailSentToTranslation(3);
         verifyNoMoreNotificationsSent();
     }
@@ -241,12 +240,14 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
     }
 
     private void verifyEmails(String cafcassTemplate, String ctcsTemplate, String laTemplate) {
-        checkUntil(() -> verify(notificationClient).sendEmail(
-            eq(cafcassTemplate),
-            eq(CAFCASS_EMAIL),
-            anyMap(),
-            eq(NOTIFICATION_REFERENCE)
-        ));
+        if (cafcassTemplate != null) {
+            checkUntil(() -> verify(notificationClient).sendEmail(
+                eq(cafcassTemplate),
+                eq(CAFCASS_EMAIL),
+                anyMap(),
+                eq(NOTIFICATION_REFERENCE)
+            ));
+        }
 
         checkUntil(() -> verify(notificationClient).sendEmail(
             eq(ctcsTemplate),
