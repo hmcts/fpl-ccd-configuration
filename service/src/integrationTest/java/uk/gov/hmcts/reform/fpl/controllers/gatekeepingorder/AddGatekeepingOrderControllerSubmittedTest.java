@@ -81,10 +81,10 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
     private static final Long CASE_ID = 1L;
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
-    private static final DocumentReference SDO_DOCUMENT = testDocumentReference(10L);
+    private static final DocumentReference SDO_DOCUMENT = testDocumentReference();
     private static final DocumentReference C6_DOCUMENT = testDocumentReference("notice_of_proceedings_c6.pdf");
     private static final DocumentReference C6A_DOCUMENT = testDocumentReference("notice_of_proceedings_c6a.pdf");
-    private static final DocumentReference URGENT_HEARING_ORDER_DOCUMENT = testDocumentReference(10L);
+    private static final DocumentReference URGENT_HEARING_ORDER_DOCUMENT = testDocumentReference();
     private static final byte[] DOCUMENT_PDF_BINARIES = readBytes("documents/document1.pdf");
     private static final DocmosisDocument DOCMOSIS_PDF_DOCUMENT = testDocmosisDocument(DOCUMENT_PDF_BINARIES)
         .toBuilder().documentTitle("pdf.pdf").build();
@@ -137,6 +137,8 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
             .thenReturn(DOCMOSIS_PDF_DOCUMENT);
         when(documentDownloadService.downloadDocument(any())).thenReturn(APPLICATION_BINARY);
         when(docmosisHelper.extractPdfContent(APPLICATION_BINARY)).thenReturn("Some content");
+        when(dcumentMetadataDownloadService.getDocumentMetadata(any())).thenReturn(URGENT_HEARING_ORDER_DOCUMENT);
+        when(cafcassEmailConfiguration.getSender()).thenReturn(CAFCASS_SENDER);
     }
 
     @Test
@@ -159,8 +161,6 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldTriggerEventWhenUrgentHearingSubmitted() {
-        when(dcumentMetadataDownloadService.getDocumentMetadata(any())).thenReturn(URGENT_HEARING_ORDER_DOCUMENT);
-        when(cafcassEmailConfiguration.getSender()).thenReturn(CAFCASS_SENDER);
         postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrder(), GATEKEEPING_CASE_DATA));
 
         verifyEmails(URGENT_AND_NOP_ISSUED_CAFCASS, URGENT_AND_NOP_ISSUED_CTSC, URGENT_AND_NOP_ISSUED_LA);
@@ -169,8 +169,6 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldTriggerEventWhenUrgentHearingSubmittedAndRequestingTranslation() {
-        when(dcumentMetadataDownloadService.getDocumentMetadata(any())).thenReturn(URGENT_HEARING_ORDER_DOCUMENT);
-        when(cafcassEmailConfiguration.getSender()).thenReturn(CAFCASS_SENDER);
         postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrderToTranslate(), GATEKEEPING_CASE_DATA));
 
         verifyEmails(URGENT_AND_NOP_ISSUED_CAFCASS, URGENT_AND_NOP_ISSUED_CTSC, URGENT_AND_NOP_ISSUED_LA);
@@ -180,8 +178,6 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldTriggerEventWhenUrgentWithNoPHearingSubmittedAndRequestingTranslation() {
-        when(dcumentMetadataDownloadService.getDocumentMetadata(any())).thenReturn(URGENT_HEARING_ORDER_DOCUMENT);
-        when(cafcassEmailConfiguration.getSender()).thenReturn(CAFCASS_SENDER);
         postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrderToTranslateWithNop(),
             GATEKEEPING_CASE_DATA));
 
@@ -246,7 +242,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
             CASE_TYPE,
             CASE_ID,
             SEND_DOCUMENT_EVENT,
-            Map.of("documentToBeSent", removeSizeForComparison(SDO_DOCUMENT))
+            Map.of("documentToBeSent", SDO_DOCUMENT)
         );
     }
 
@@ -259,13 +255,8 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
             CASE_TYPE,
             CASE_ID,
             SEND_DOCUMENT_EVENT,
-            Map.of("documentToBeSent", removeSizeForComparison(URGENT_HEARING_ORDER_DOCUMENT))
+            Map.of("documentToBeSent", URGENT_HEARING_ORDER_DOCUMENT)
         );
-    }
-
-    private DocumentReference removeSizeForComparison(DocumentReference doc) {
-        doc.setSize(null);
-        return doc;
     }
 
     private void verifyEmails(String cafcassTemplate, String ctcsTemplate, String laTemplate) {
