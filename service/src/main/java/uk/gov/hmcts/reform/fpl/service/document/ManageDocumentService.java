@@ -83,11 +83,13 @@ public class ManageDocumentService {
         final YesNo hasHearings = YesNo.from(isNotEmpty(caseData.getHearingDetails()));
         final YesNo hasC2s = YesNo.from(caseData.hasApplicationBundles());
         final YesNo hasRespondents = YesNo.from(isNotEmpty(caseData.getAllRespondents()));
+        final YesNo hasConfidentialAddress = YesNo.from(caseData.hasConfidentialParty());
 
         ManageDocument manageDocument = defaultIfNull(caseData.getManageDocument(), ManageDocument.builder().build())
             .toBuilder()
             .hasHearings(hasHearings.getValue())
             .hasC2s(hasC2s.getValue())
+            .hasConfidentialAddress(hasConfidentialAddress.getValue())
             .build();
 
         eventData.put(MANAGE_DOCUMENT_KEY, manageDocument);
