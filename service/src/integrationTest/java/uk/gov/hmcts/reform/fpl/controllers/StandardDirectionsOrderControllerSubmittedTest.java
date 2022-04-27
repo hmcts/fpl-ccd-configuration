@@ -2,10 +2,13 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import uk.gov.hmcts.reform.fpl.config.cafcass.CafcassEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -13,16 +16,20 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.email.EmailData;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.DocumentMetadataDownloadService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
@@ -64,6 +71,10 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
     private static final CaseData GATEKEEPING_CASE_DATA = CaseData.builder().state(GATEKEEPING).build();
     private static final CaseData CASE_MANAGEMENT_CASE_DATA = CaseData.builder().state(CASE_MANAGEMENT).build();
     private static final LocalDate DATE_ADDED = LocalDate.of(2018, 2, 4);
+    private static final String CAFCASS_SENDER = "cafcass_sender@example.com";
+
+    @Captor
+    private ArgumentCaptor<EmailData> emailDataArgumentCaptor;
 
     @SpyBean
     private EventService eventService;
@@ -77,6 +88,15 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
     @MockBean
     private DocumentDownloadService documentDownloadService;
 
+    @MockBean
+    private DocumentMetadataDownloadService dcumentMetadataDownloadService;
+
+    @MockBean
+    private CafcassEmailConfiguration cafcassEmailConfiguration;
+
+    @MockBean
+    private EmailService emailService;
+
     StandardDirectionsOrderControllerSubmittedTest() {
         super("draft-standard-directions");
     }
@@ -84,6 +104,8 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
     @BeforeEach
     void init() {
         when(documentDownloadService.downloadDocument(any())).thenReturn(APPLICATION_BINARY);
+        when(dcumentMetadataDownloadService.getDocumentMetadata(any())).thenReturn(URGENT_HEARING_ORDER_DOCUMENT);
+        when(cafcassEmailConfiguration.getSender()).thenReturn(CAFCASS_SENDER);
     }
 
     @Test
@@ -155,7 +177,8 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
 
     private void verifyEmails(String cafcassTemplate, String ctcsTemplate, String laTemplate) {
         if (URGENT_AND_NOP_ISSUED_CAFCASS.equals(cafcassTemplate)) {
-            // TODO
+            checkUntil(() -> verify(emailService).sendEmail(eq(CAFCASS_SENDER), emailDataArgumentCaptor.capture()));
+            assertThat(emailDataArgumentCaptor.getValue().isPriority()).isTrue();
         } else {
             checkUntil(() -> verify(notificationClient).sendEmail(
                 eq(cafcassTemplate),
