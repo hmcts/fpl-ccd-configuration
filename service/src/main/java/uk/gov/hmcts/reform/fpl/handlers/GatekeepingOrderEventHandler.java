@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Set;
 
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.URGENT_AND_NOP;
-import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.URGENT_HEARING_ORDER_AND_NOP;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassEmailContentProvider.URGENT_HEARING_ORDER_AND_NOP;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -52,6 +52,7 @@ public class GatekeepingOrderEventHandler {
         String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 
         if (URGENT_AND_NOP == event.getNotificationGroup()) {
+            // switch to SendGrid for adding a priority flag to message header
             cafcassNotificationService.sendEmail(
                 caseData,
                 Set.of(event.getOrder()),

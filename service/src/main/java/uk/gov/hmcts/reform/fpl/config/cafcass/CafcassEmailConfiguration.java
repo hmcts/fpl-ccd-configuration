@@ -34,9 +34,6 @@ public class CafcassEmailConfiguration {
     @Getter(AccessLevel.NONE)
     private String large;
 
-    @Getter(AccessLevel.NONE)
-    private String urgenthearingorder;
-
     public String getRecipientForOrder() {
         return order;
     }
@@ -59,9 +56,5 @@ public class CafcassEmailConfiguration {
 
     public String getRecipientForLargeAttachements() {
         return large;
-    }
-
-    public String getRecipientForUrgentHearingOrder() {
-        return urgenthearingorder;
     }
 }

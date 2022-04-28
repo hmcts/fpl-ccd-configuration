@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.cafcass.CafcassEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData;
@@ -32,6 +33,8 @@ public class CafcassNotificationService {
     private final EmailService emailService;
     private final DocumentDownloadService documentDownloadService;
     private final CafcassEmailConfiguration configuration;
+
+    private final CafcassLookupConfiguration lookupConfiguration;
     private final CaseUrlService caseUrlService;
     private final DocumentMetadataDownloadService documentMetadataDownloadService;
     private final long maxAttachementSize;
@@ -41,6 +44,7 @@ public class CafcassNotificationService {
     public CafcassNotificationService(EmailService emailService,
                                       DocumentDownloadService documentDownloadService,
                                       CafcassEmailConfiguration configuration,
+                                      CafcassLookupConfiguration lookupConfiguration,
                                       CaseUrlService caseUrlService,
                                       DocumentMetadataDownloadService documentMetadataDownloadService,
                                       @Value("${cafcass.notification.maxMbAttachementSize:25}")
@@ -48,11 +52,11 @@ public class CafcassNotificationService {
         this.emailService = emailService;
         this.documentDownloadService = documentDownloadService;
         this.configuration = configuration;
+        this.lookupConfiguration = lookupConfiguration;
         this.caseUrlService = caseUrlService;
         this.documentMetadataDownloadService = documentMetadataDownloadService;
         this.maxAttachementSize = maxAttachementSize;
     }
-
 
     public void sendEmail(CaseData caseData,
                           Set<DocumentReference> documentReferences,
@@ -99,6 +103,37 @@ public class CafcassNotificationService {
             log.info("For case id {} notification sent to Cafcass for {}",
                     caseData.getId(),
                     LARGE_ATTACHEMENTS.name());
+        }
+    }
+    public void sendEmail(CaseData caseData,
+                          Set<DocumentReference> documentReferences,
+                          CafcassEmailContentProvider provider,
+                          CafcassData cafcassData) {
+        log.info("For case id: {} notifying Cafcass for: {}",
+            caseData.getId(),
+            provider.name());
+
+        long totalDocSize = documentReferences.stream()
+            .map(DocumentReference::getUrl)
+            .map(documentMetadataDownloadService::getDocumentMetadata)
+            .mapToLong(DocumentReference::getSize)
+            .sum();
+        long attachmentSize = totalDocSize / MEGABYTE;
+
+        if (attachmentSize <= maxAttachementSize) {
+            emailService.sendEmail(configuration.getSender(),
+                EmailData.builder()
+                    .recipient(provider.getRecipient().apply(lookupConfiguration, caseData))
+                    .subject(provider.getType().apply(caseData, cafcassData))
+                    .attachments(getEmailAttachments(documentReferences))
+                    .message(provider.getContent().apply(caseData, cafcassData))
+                    .build()
+            );
+            log.info("For case id {} notification sent to Cafcass for {}",
+                caseData.getId(),
+                provider.name());
+        } else {
+            throw new IllegalStateException("unexpected large document is sent (" + attachmentSize + ")");
         }
     }
 

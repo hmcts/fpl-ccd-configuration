@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import uk.gov.hmcts.reform.fpl.config.cafcass.CafcassEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData;
-import uk.gov.hmcts.reform.fpl.model.cafcass.UrgentHearingOrderAndNopData;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -57,13 +56,7 @@ public enum CafcassRequestEmailContentProvider {
             caseData.getFamilyManCaseNumber(),
             "new large document added"),
         CafcassRequestEmailContentProvider::getLargeApplicationMessage,
-        CafcassEmailConfiguration::getRecipientForLargeAttachements),
-
-    URGENT_HEARING_ORDER_AND_NOP((caseData, cafcassData) -> String.format(
-        "Urgent hearing order and notice of proceedings issued, %s",
-        ((UrgentHearingOrderAndNopData) cafcassData).getLeadRespondentsName()),
-    CafcassRequestEmailContentProvider::getUrgentHearingOrderAndNopMessage,
-    CafcassEmailConfiguration::getRecipientForUrgentHearingOrder);
+        CafcassEmailConfiguration::getRecipientForLargeAttachements);
 
     private final BiFunction<CaseData, CafcassData, String> type;
     private final BiFunction<CaseData, CafcassData, String> content;
@@ -111,21 +104,6 @@ public enum CafcassRequestEmailContentProvider {
                 "the Portal using this link.",
                 System.lineSeparator(),
                 cafcassData.getCaseUrl());
-    }
-
-    private static String getUrgentHearingOrderAndNopMessage(CaseData caseData, CafcassData cafcassData) {
-        UrgentHearingOrderAndNopData urgentHearingOrderAndNopData =  (UrgentHearingOrderAndNopData) cafcassData;
-
-        String callout = urgentHearingOrderAndNopData.getCallout();
-
-        return String.join("\n\n",
-            String.format("An urgent hearing order and notice of proceedings have been issued for:\n%s",
-                callout),
-            "Next steps",
-            "You should now check the order to see your directions and compliance dates.",
-            "HM Courts & Tribunals Service",
-            "Do not reply to this email. If you need to contact us, call 0330 808 4424 or "
-                + "email contactfpl@justice.gov.uk");
     }
 
     private static String getSubject() {
