@@ -114,12 +114,12 @@ public class MigrateCaseController extends CallbackController {
     }
 
     /**
-     * Removes a C110A Generated PDF document from the case
+     * Removes a C110A Generated PDF document from the case.
      * Make sure to update:
      *  - expectedCaseId
      *  - expectedDocId
      *  - migrationId
-     * @param caseDetails
+     * @param caseDetails - the caseDetails to update
      */
     private void run629(CaseDetails caseDetails) {
         var migrationId = "DFPL-629";
