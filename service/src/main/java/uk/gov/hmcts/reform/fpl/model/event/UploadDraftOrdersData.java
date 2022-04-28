@@ -118,8 +118,6 @@ public class UploadDraftOrdersData {
     YesNo uploadCMOShowOthers;
     @Temp
     YesNo hasOthers;
-    @Temp
-    String others_label;
 
     public List<Element<SupportingEvidenceBundle>> getCmoSupportingDocs() {
         return defaultIfNull(cmoSupportingDocs, new ArrayList<>());
@@ -133,7 +131,7 @@ public class UploadDraftOrdersData {
     public static String[] temporaryFields() {
         // Avoid creating Temp fields for these as also defined in CaseData
         String[] additionalTempFields = new String[]{
-            "othersSelector"
+            "othersSelector", "others_label"
         };
 
         return Stream.concat(
