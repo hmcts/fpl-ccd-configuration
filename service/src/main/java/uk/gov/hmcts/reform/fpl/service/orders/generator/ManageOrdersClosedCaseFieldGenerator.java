@@ -29,12 +29,12 @@ public class ManageOrdersClosedCaseFieldGenerator {
 
         Map<String, Object> data = new HashMap<>();
 
-        if (IsFinalOrder.YES.equals(order.getIsFinalOrder())) {
+        boolean isFinalOrder = IsFinalOrder.YES.equals(order.getIsFinalOrder())
+                || BooleanUtils.toBoolean(manageOrdersEventData.getManageOrdersIsFinalOrder());
+
+        if (isFinalOrder) {
             data.put("children1", childrenSmartFinalOrderUpdater.updateFinalOrderIssued(caseData));
         }
-
-        boolean isFinalOrder =  IsFinalOrder.YES.equals(order.getIsFinalOrder())
-                || BooleanUtils.toBoolean(manageOrdersEventData.getManageOrdersIsFinalOrder());
 
         boolean shouldCloseCase = BooleanUtils.toBoolean(manageOrdersEventData.getManageOrdersCloseCase());
         if (shouldCloseCase && isFinalOrder) {
