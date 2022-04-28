@@ -40,7 +40,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-451", this::run451,
         "DFPL-482", this::run482,
         "DFPL-572", this::run572,
-        "DFPL-576", this::run576
+        "DFPL-629", this::run629
     );
 
     @PostMapping("/about-to-submit")
@@ -113,17 +113,26 @@ public class MigrateCaseController extends CallbackController {
         updateDocumentsSentToParties(caseDetails, caseData, docIds);
     }
 
-    private void run576(CaseDetails caseDetails) {
+    /**
+     * Removes a C110A Generated PDF document from the case.
+     * Make sure to update:
+     *  - expectedCaseId
+     *  - expectedDocId
+     *  - migrationId
+     * @param caseDetails - the caseDetails to update
+     */
+    private void run629(CaseDetails caseDetails) {
+        var migrationId = "DFPL-629";
+        var expectedCaseId = 1638285652903217L;
+        var expectedDocId = UUID.fromString("9da18cc4-418f-4b99-86e7-4fb5dc7a5648");
+
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();
-        var expectedCaseId = 1647961407412501L;
-
-        var expectedDocId = UUID.fromString("2003a762-a9d0-483a-8a40-f4d043e7434c");
 
         if (caseId != expectedCaseId) {
             throw new AssertionError(format(
-                "Migration {id = DFPL-576, case reference = %s}, expected case id %d",
-                caseId, expectedCaseId
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId
             ));
         }
 
@@ -131,8 +140,8 @@ public class MigrateCaseController extends CallbackController {
         var docId = UUID.fromString(documentUrl.substring(documentUrl.length() - 36));
         if (!docId.equals(expectedDocId)) {
             throw new AssertionError(format(
-                "Migration {id = DFPL-576, case reference = %s}, expected c110a document id %s",
-                caseId, expectedDocId
+                "Migration {id = %s, case reference = %s}, expected c110a document id %s",
+                migrationId, caseId, expectedDocId
             ));
         }
         caseDetails.getData().put("submittedForm", null);
