@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_FUTURE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_PAST_HEARING;
@@ -43,6 +44,19 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
             .previousVenue("Aberdeen Tribunal Hearing Centre, 48 Huntly Street, AB1, Aberdeen, AB10 1SH")
             .build());
         assertThat(updatedCaseData.getHasPreviousHearingVenue()).isEqualTo("Yes");
+    }
+
+    @Test
+    void shouldStillAllowHearingCreationWhenPreviousVenueIsNull() {
+        // Past case was created with a null venue
+        Element<HearingBooking> pastHearing1 = element(testHearing(now().minusDays(3), null, null));
+
+        CaseData initialCaseData = CaseData.builder()
+            .hearingOption(NEW_HEARING)
+            .hearingDetails(List.of(pastHearing1))
+            .build();
+
+        assertDoesNotThrow(() -> extractCaseData(postEditHearingMidEvent(initialCaseData)));
     }
 
     @Test
