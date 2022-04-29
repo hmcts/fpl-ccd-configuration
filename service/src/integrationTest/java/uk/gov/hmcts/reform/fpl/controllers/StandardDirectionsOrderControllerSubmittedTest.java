@@ -8,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import uk.gov.hmcts.reform.fpl.config.cafcass.CafcassEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -23,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.DocumentMetadataDownloadService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
+import uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants;
 import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDate;
@@ -53,7 +53,6 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
-import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.CAFCASS_EMAIL;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
@@ -61,7 +60,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 
 @WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTest {
+class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTest implements IntegrationTestConstants {
     private static final Long CASE_ID = 1L;
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
     private static final DocumentReference SDO_DOCUMENT = testDocumentReference();
@@ -71,7 +70,7 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
     private static final CaseData GATEKEEPING_CASE_DATA = CaseData.builder().state(GATEKEEPING).build();
     private static final CaseData CASE_MANAGEMENT_CASE_DATA = CaseData.builder().state(CASE_MANAGEMENT).build();
     private static final LocalDate DATE_ADDED = LocalDate.of(2018, 2, 4);
-    private static final String CAFCASS_SENDER = "cafcass_sender@example.com";
+
 
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgumentCaptor;
@@ -92,9 +91,6 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
     private DocumentMetadataDownloadService dcumentMetadataDownloadService;
 
     @MockBean
-    private CafcassEmailConfiguration cafcassEmailConfiguration;
-
-    @MockBean
     private EmailService emailService;
 
     StandardDirectionsOrderControllerSubmittedTest() {
@@ -105,7 +101,6 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
     void init() {
         when(documentDownloadService.downloadDocument(any())).thenReturn(APPLICATION_BINARY);
         when(dcumentMetadataDownloadService.getDocumentMetadata(any())).thenReturn(URGENT_HEARING_ORDER_DOCUMENT);
-        when(cafcassEmailConfiguration.getSender()).thenReturn(CAFCASS_SENDER);
     }
 
     @Test
@@ -177,7 +172,9 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
 
     private void verifyEmails(String cafcassTemplate, String ctcsTemplate, String laTemplate) {
         if (URGENT_AND_NOP_ISSUED_CAFCASS.equals(cafcassTemplate)) {
-            checkUntil(() -> verify(emailService).sendEmail(eq(CAFCASS_SENDER), emailDataArgumentCaptor.capture()));
+            checkUntil(() -> verify(emailService).sendEmail(
+                eq(CAFCASS_NOTIFICATION_SENDER),
+                emailDataArgumentCaptor.capture()));
             assertThat(emailDataArgumentCaptor.getValue().isPriority()).isTrue();
         } else {
             checkUntil(() -> verify(notificationClient).sendEmail(

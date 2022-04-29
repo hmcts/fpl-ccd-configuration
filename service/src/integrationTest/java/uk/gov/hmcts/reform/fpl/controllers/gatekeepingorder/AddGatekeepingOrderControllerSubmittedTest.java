@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 import uk.gov.hmcts.reform.fpl.service.translation.TranslationRequestFormCreationService;
+import uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants;
 import uk.gov.service.notify.NotificationClient;
 
 import java.time.Duration;
@@ -63,7 +64,6 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
-import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.CAFCASS_EMAIL;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -77,7 +77,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 @WebMvcTest(AddGatekeepingOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
+class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest implements IntegrationTestConstants {
     private static final Long CASE_ID = 1L;
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
     private static final DocumentReference SDO_DOCUMENT = testDocumentReference();
@@ -88,7 +88,6 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
     private static final DocmosisDocument DOCMOSIS_PDF_DOCUMENT = testDocmosisDocument(DOCUMENT_PDF_BINARIES)
         .toBuilder().documentTitle("pdf.pdf").build();
     private static final LocalDate DATE_ADDED = LocalDate.of(2018, 2, 4);
-    private static final String CAFCASS_SENDER = "cafcass_sender@example.com";
 
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
     private static final byte[] APPLICATION_BINARY = DOCUMENT_CONTENT;
@@ -258,7 +257,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
     private void verifyEmails(String cafcassTemplate, String ctcsTemplate, String laTemplate) {
         if (URGENT_AND_NOP_ISSUED_CAFCASS.equals(cafcassTemplate)) {
             checkUntil(() -> verify(emailService).sendEmail(
-                eq("sender-cafcass@example.com"),
+                eq(CAFCASS_NOTIFICATION_SENDER),
                 emailDataArgumentCaptor.capture()));
             assertThat(emailDataArgumentCaptor.getValue().isPriority()).isTrue();
         } else {
@@ -286,11 +285,11 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
     }
 
     private void verifyEmailSentToTranslation() {
-        checkUntil(() -> verify(emailService).sendEmail(eq("sender@example.com"), any()));
+        checkUntil(() -> verify(emailService).sendEmail(eq(TRANSLATE_NOTIFICATION_SENDER), any()));
     }
 
     private void verifyEmailSentToTranslation(int timesCalled) {
-        checkUntil(() -> verify(emailService, times(timesCalled)).sendEmail(eq("sender@example.com"), any()));
+        checkUntil(() -> verify(emailService, times(timesCalled)).sendEmail(eq(TRANSLATE_NOTIFICATION_SENDER), any()));
     }
 
     private void verifyNoMoreNotificationsSent() {
