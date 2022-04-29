@@ -9,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.DirtiesContext;
-import uk.gov.hmcts.reform.fpl.config.cafcass.CafcassEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.AddGatekeepingOrderController;
 import uk.gov.hmcts.reform.fpl.docmosis.DocmosisHelper;
@@ -123,8 +122,6 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
     @MockBean
     private DocumentMetadataDownloadService dcumentMetadataDownloadService;
 
-    @MockBean
-    private CafcassEmailConfiguration cafcassEmailConfiguration;
 
 
     AddGatekeepingOrderControllerSubmittedTest() {
@@ -138,7 +135,6 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
         when(documentDownloadService.downloadDocument(any())).thenReturn(APPLICATION_BINARY);
         when(docmosisHelper.extractPdfContent(APPLICATION_BINARY)).thenReturn("Some content");
         when(dcumentMetadataDownloadService.getDocumentMetadata(any())).thenReturn(URGENT_HEARING_ORDER_DOCUMENT);
-        when(cafcassEmailConfiguration.getSender()).thenReturn(CAFCASS_SENDER);
     }
 
     @Test
@@ -261,7 +257,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
 
     private void verifyEmails(String cafcassTemplate, String ctcsTemplate, String laTemplate) {
         if (URGENT_AND_NOP_ISSUED_CAFCASS.equals(cafcassTemplate)) {
-            checkUntil(() -> verify(emailService).sendEmail(eq(CAFCASS_SENDER), emailDataArgumentCaptor.capture()));
+            checkUntil(() -> verify(emailService).sendEmail(eq("sender-cafcass@example.com"), emailDataArgumentCaptor.capture()));
             assertThat(emailDataArgumentCaptor.getValue().isPriority()).isTrue();
         } else {
             checkUntil(() -> verify(notificationClient).sendEmail(

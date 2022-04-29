@@ -129,6 +129,7 @@ public class CafcassNotificationService {
                     .subject(provider.getType().apply(caseData, cafcassData))
                     .attachments(getEmailAttachments(documentReferences))
                     .message(provider.getContent().apply(caseData, cafcassData))
+                    .priority(cafcassData.isUrgent())
                     .build()
             );
             log.info("For case id {} notification sent to Cafcass for {}",
