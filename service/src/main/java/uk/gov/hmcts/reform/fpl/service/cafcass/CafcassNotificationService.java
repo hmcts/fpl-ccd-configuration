@@ -118,7 +118,7 @@ public class CafcassNotificationService {
         long totalDocSize = documentReferences.stream()
             .map(DocumentReference::getUrl)
             .map(documentMetadataDownloadService::getDocumentMetadata)
-            .mapToLong(DocumentReference::getSize)
+            .mapToLong((doc) -> defaultIfNull(doc.getSize(), 0L))
             .sum();
         long attachmentSize = totalDocSize / MEGABYTE;
 
