@@ -31,6 +31,8 @@ public class EmailService {
             mimeMessageHelper.setText(emailData.getMessage());
             if (emailData.isPriority()) {
                 mimeMessageHelper.setPriority(1);
+                message.setHeader("X-MSMail-Priority", "High");
+                message.setHeader("Importance", "High");
             }
 
             if (emailData.hasAttachments()) {

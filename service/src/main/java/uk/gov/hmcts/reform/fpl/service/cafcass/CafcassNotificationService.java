@@ -136,7 +136,24 @@ public class CafcassNotificationService {
                 caseData.getId(),
                 provider.name());
         } else {
-            throw new IllegalStateException("unexpected large document is sent (" + attachmentSize + ")");
+            log.info("For case id {}, sum of file size {}",
+                caseData.getId(),
+                totalDocSize);
+            LargeFilesNotificationData largeFileNotificationData = getLargFileNotificationData(
+                caseData, documentReferences, caseUrlService);
+            largeFileNotificationData.setOriginalCafcassData(cafcassData);
+
+            emailService.sendEmail(configuration.getSender(),
+                EmailData.builder()
+                    .recipient(provider.getRecipient().apply(lookupConfiguration, caseData))
+                    .subject(provider.getType().apply(caseData, cafcassData))
+                    .message(provider.getLargeFileContent().apply(caseData, largeFileNotificationData))
+                    .priority(cafcassData.isUrgent())
+                    .build()
+            );
+            log.info("For case id {} large file uploaded notification sent to Cafcass for {}",
+                caseData.getId(),
+                provider.name());
         }
     }
 
