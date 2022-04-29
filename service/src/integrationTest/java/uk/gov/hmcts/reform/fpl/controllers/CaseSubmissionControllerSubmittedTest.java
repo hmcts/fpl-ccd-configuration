@@ -203,7 +203,10 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
             eq("internal-update-case-summary"), anyMap());
         verify(cafcassNotificationService, never()).sendEmail(
-                isA(CaseData.class), any(), any(), any()
+            isA(CaseData.class),
+            any(),
+            isA(CafcassRequestEmailContentProvider.class),
+            any()
         );
     }
 
@@ -376,7 +379,10 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
         checkThat(() -> verifyNoMoreInteractions(notificationClient));
         verify(cafcassNotificationService, never()).sendEmail(
-                isA(CaseData.class), any(), any(), any()
+            isA(CaseData.class),
+            any(),
+            isA(CafcassRequestEmailContentProvider.class),
+            any()
         );
     }
 

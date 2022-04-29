@@ -1,13 +1,13 @@
 package uk.gov.hmcts.reform.fpl.service.cafcass;
 
-import java.util.function.BiFunction;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.UrgentHearingOrderAndNopData;
+
+import java.util.function.BiFunction;
 
 @Getter
 @RequiredArgsConstructor

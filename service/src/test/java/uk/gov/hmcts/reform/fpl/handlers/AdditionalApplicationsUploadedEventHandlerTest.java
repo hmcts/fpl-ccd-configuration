@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.AdditionalApplicationsUploadedEmailContentProvider;
@@ -57,6 +58,7 @@ import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -492,8 +494,10 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         underTest.sendDocumentsToCafcass(
                 new AdditionalApplicationsUploadedEvent(caseData, caseData, ORDER_APPLICANT_LA));
         verify(cafcassNotificationService, never()).sendEmail(
-                any(), any(), any(), any()
-        );
+            any(),
+            any(),
+            isA(CafcassRequestEmailContentProvider.class),
+            any());
     }
 
     private static Stream<Arguments> applicationDataParams() {

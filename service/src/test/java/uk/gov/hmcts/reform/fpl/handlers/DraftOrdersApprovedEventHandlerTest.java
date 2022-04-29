@@ -52,6 +52,7 @@ import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -255,10 +256,10 @@ class DraftOrdersApprovedEventHandlerTest {
         underTest.sendNotificationToCafcassViaSendGrid(new DraftOrdersApproved(caseData, orders));
 
         verify(cafcassNotificationService, never()).sendEmail(
-                any(),
-                any(),
-                any(),
-                any());
+            any(),
+            any(),
+            isA(CafcassRequestEmailContentProvider.class),
+            any());
     }
 
     @Test

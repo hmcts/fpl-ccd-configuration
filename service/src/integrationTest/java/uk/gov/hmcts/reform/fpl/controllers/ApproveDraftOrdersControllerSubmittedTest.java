@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.SendLetterService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 import uk.gov.hmcts.reform.fpl.service.translation.TranslationRequestFormCreationService;
@@ -279,10 +280,10 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
                 eq(notificationReference(CASE_ID))
             );
             verify(cafcassNotificationService, never()).sendEmail(
-                    any(),
-                    any(),
-                    any(),
-                    any()
+                any(),
+                any(),
+                isA(CafcassRequestEmailContentProvider.class),
+                any()
             );
         });
         verifyNoMoreNotificationsSent();
@@ -373,10 +374,10 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
                 FAMILY_MAN_CASE_NUMBER, Language.ENGLISH
             );
             verify(cafcassNotificationService, never()).sendEmail(
-                    any(),
-                    any(),
-                    any(),
-                    any()
+                any(),
+                any(),
+                isA(CafcassRequestEmailContentProvider.class),
+                any()
             );
             verifyNoMoreInteractions(notificationClient);
             verifyNoMoreInteractions(sendLetters);

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.cafcass.CafcassEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -105,6 +106,7 @@ public class CafcassNotificationService {
                     LARGE_ATTACHEMENTS.name());
         }
     }
+
     public void sendEmail(CaseData caseData,
                           Set<DocumentReference> documentReferences,
                           CafcassEmailContentProvider provider,

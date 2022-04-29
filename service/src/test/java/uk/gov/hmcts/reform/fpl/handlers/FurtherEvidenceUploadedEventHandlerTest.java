@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
@@ -36,6 +37,7 @@ import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -675,10 +677,10 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 .collect(toSet());
 
         verify(cafcassNotificationService, never()).sendEmail(
-                any(),
-                any(),
-                any(),
-                any());
+            any(),
+            any(),
+            isA(CafcassRequestEmailContentProvider.class),
+            any());
     }
 
     @Test
@@ -705,7 +707,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         verify(cafcassNotificationService, never()).sendEmail(
                 any(),
                 any(),
-                any(),
+                isA(CafcassRequestEmailContentProvider.class),
                 any());
     }
 
@@ -728,10 +730,10 @@ class FurtherEvidenceUploadedEventHandlerTest {
         furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
 
         verify(cafcassNotificationService, never()).sendEmail(
-                any(),
-                any(),
-                any(),
-                any());
+            any(),
+            any(),
+            isA(CafcassRequestEmailContentProvider.class),
+            any());
     }
 
     @Test
@@ -809,10 +811,10 @@ class FurtherEvidenceUploadedEventHandlerTest {
         furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
 
         verify(cafcassNotificationService, never()).sendEmail(
-                any(),
-                any(),
-                any(),
-                any());
+            any(),
+            any(),
+            isA(CafcassRequestEmailContentProvider.class),
+            any());
     }
 
 

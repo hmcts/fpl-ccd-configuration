@@ -7,6 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.cafcass.CafcassEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
@@ -31,12 +32,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData.SAME_DAY;
 import static uk.gov.hmcts.reform.fpl.model.email.EmailAttachment.document;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassEmailContentProvider.URGENT_HEARING_ORDER_AND_NOP;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ADDITIONAL_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NEW_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NEW_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
-import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.URGENT_HEARING_ORDER_AND_NOP;
 
 @ExtendWith(MockitoExtension.class)
 class CafcassNotificationServiceTest {
@@ -59,6 +60,8 @@ class CafcassNotificationServiceTest {
     @Mock
     private CafcassEmailConfiguration configuration;
     @Mock
+    private CafcassLookupConfiguration lookupConfiguration;
+    @Mock
     private CaseUrlService caseUrlService;
 
     private CafcassNotificationService underTest;
@@ -75,6 +78,7 @@ class CafcassNotificationServiceTest {
                 emailService,
                 documentDownloadService,
                 configuration,
+                lookupConfiguration,
                 caseUrlService,
                 documentMetadataDownloadService,
                 25L
@@ -174,7 +178,8 @@ class CafcassNotificationServiceTest {
 
     @Test
     void shouldNotifyUrgentHearingOrder() {
-        when(configuration.getRecipientForUrgentHearingOrder()).thenReturn(RECIPIENT_EMAIL);
+        when(lookupConfiguration.getCafcass("SA"))
+            .thenReturn(new CafcassLookupConfiguration.Cafcass("SA", RECIPIENT_EMAIL));
         when(configuration.getSender()).thenReturn(SENDER_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL))
             .thenReturn(DOCUMENT_CONTENT);

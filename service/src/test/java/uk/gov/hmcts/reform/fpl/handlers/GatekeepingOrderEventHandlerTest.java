@@ -17,8 +17,8 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.sdo.SDONotifyData;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
-import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedCafcassContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedContentProvider;
@@ -122,7 +122,7 @@ class GatekeepingOrderEventHandlerTest {
 
         underTest.notifyCafcass(event);
         verify(cafcassNotificationService).sendEmail(isA(CaseData.class), any(),
-            eq(CafcassRequestEmailContentProvider.URGENT_HEARING_ORDER_AND_NOP),
+            eq(CafcassEmailContentProvider.URGENT_HEARING_ORDER_AND_NOP),
             isA(UrgentHearingOrderAndNopData.class));
     }
 
