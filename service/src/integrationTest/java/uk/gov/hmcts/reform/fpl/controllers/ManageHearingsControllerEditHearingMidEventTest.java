@@ -47,19 +47,6 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
     }
 
     @Test
-    void shouldStillAllowHearingCreationWhenPreviousVenueIsNull() {
-        // Past case was created with a null venue
-        Element<HearingBooking> pastHearing1 = element(testHearing(now().minusDays(3), null, null));
-
-        CaseData initialCaseData = CaseData.builder()
-            .hearingOption(NEW_HEARING)
-            .hearingDetails(List.of(pastHearing1))
-            .build();
-
-        assertDoesNotThrow(() -> extractCaseData(postEditHearingMidEvent(initialCaseData)));
-    }
-
-    @Test
     void shouldSetHasPreviousHearingVenueAsNoWhenPreviousHearingVenueIsNull() {
         Element<HearingBooking> pastHearing1 = element(testHearing(now().minusDays(3), true));
 
@@ -69,6 +56,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
             .build();
 
         CaseData updatedCaseData = extractCaseData(postEditHearingMidEvent(initialCaseData));
+        assertDoesNotThrow(() -> extractCaseData(postEditHearingMidEvent(initialCaseData)));
         assertThat(updatedCaseData.getHasPreviousHearingVenue()).isEqualTo("No");
     }
 
