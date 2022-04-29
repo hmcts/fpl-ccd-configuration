@@ -257,7 +257,9 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
 
     private void verifyEmails(String cafcassTemplate, String ctcsTemplate, String laTemplate) {
         if (URGENT_AND_NOP_ISSUED_CAFCASS.equals(cafcassTemplate)) {
-            checkUntil(() -> verify(emailService).sendEmail(eq("sender-cafcass@example.com"), emailDataArgumentCaptor.capture()));
+            checkUntil(() -> verify(emailService).sendEmail(
+                eq("sender-cafcass@example.com"),
+                emailDataArgumentCaptor.capture()));
             assertThat(emailDataArgumentCaptor.getValue().isPriority()).isTrue();
         } else {
             checkUntil(() -> verify(notificationClient).sendEmail(
