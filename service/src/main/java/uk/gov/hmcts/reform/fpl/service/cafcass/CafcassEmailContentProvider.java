@@ -14,7 +14,7 @@ import java.util.function.BiFunction;
 public enum CafcassEmailContentProvider {
 
     URGENT_HEARING_ORDER_AND_NOP((caseData, cafcassData) -> String.format(
-        "<FROM SEND GRID> Urgent hearing order and notice of proceedings issued, %s",
+        "Urgent hearing order and notice of proceedings issued, %s",
         ((UrgentHearingOrderAndNopData) cafcassData).getLeadRespondentsName()),
         CafcassEmailContentProvider::getUrgentHearingOrderAndNopMessage,
         (configuration, caseData) -> {

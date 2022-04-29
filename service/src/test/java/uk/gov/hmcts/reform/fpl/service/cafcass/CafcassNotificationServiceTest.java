@@ -191,6 +191,7 @@ class CafcassNotificationServiceTest {
 
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
+            .caseLocalAuthority("SA")
             .build();
 
         underTest.sendEmail(caseData,
