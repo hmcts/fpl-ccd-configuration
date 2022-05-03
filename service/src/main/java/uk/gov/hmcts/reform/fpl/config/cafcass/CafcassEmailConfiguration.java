@@ -37,9 +37,8 @@ public class CafcassEmailConfiguration {
     @Getter(AccessLevel.NONE)
     private String large;
 
-    public String getRecipientForChangeOfAddress() {
-        return changeofaddress;
-    }
+    @Getter(AccessLevel.NONE)
+    private String noticeofhearing;
 
     public String getRecipientForOrder() {
         return order;
@@ -63,5 +62,13 @@ public class CafcassEmailConfiguration {
 
     public String getRecipientForLargeAttachements() {
         return large;
+    }
+
+    public String getRecipientForNoticeOfHearing() {
+        return noticeofhearing;
+    }
+  
+    public String getRecipientForChangeOfAddress() {
+        return changeofaddress;
     }
 }
