@@ -8,6 +8,8 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -25,6 +27,7 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.formatRepresentat
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstApplicantName;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentFullName;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
+import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.hasAddressChange;
 
 class PeopleInCaseHelperTest {
 
@@ -189,5 +192,53 @@ class PeopleInCaseHelperTest {
         List<String> formattedRepresentatives = formatRepresentativesForPostNotification(Collections.emptyList());
 
         assertThat(formattedRepresentatives).isEmpty();
+    }
+
+    @Test
+    void shouldReturnTrueWhenRespondentAddressChange() {
+        List<Element<Respondent>> respondentsBefore = wrapElements(Respondent.builder()
+            .party(RespondentParty.builder().address(Address.builder().addressLine1("33 Testing Court")
+                    .addressLine2("Testing").postcode("XX1 BBB").build()).build()).build());
+        List<Element<Respondent>> respondentsAfter = wrapElements(Respondent.builder()
+            .party(RespondentParty.builder().address(Address.builder().addressLine1("90 Testing Court")
+                .addressLine2("Testing").postcode("KK1 BBB").build()).build()).build());
+        assertThat(hasAddressChange(Collections.unmodifiableList(respondentsAfter),
+            Collections.unmodifiableList(respondentsBefore))).isTrue();
+    }
+
+    @Test
+    void shouldReturnTrueWhenRespondentAddressNoChange() {
+        List<Element<Respondent>> respondentsBefore = wrapElements(Respondent.builder()
+            .party(RespondentParty.builder().address(Address.builder().addressLine1("33 Testing Court")
+                .addressLine2("Testing").postcode("XX1 BBB").build()).build()).build());
+        List<Element<Respondent>> respondentsAfter = wrapElements(Respondent.builder()
+            .party(RespondentParty.builder().address(Address.builder().addressLine1("33 Testing Court")
+                .addressLine2("Testing").postcode("XX1 BBB").build()).build()).build());
+        assertThat(hasAddressChange(Collections.unmodifiableList(respondentsAfter),
+            Collections.unmodifiableList(respondentsBefore))).isFalse();
+    }
+
+    @Test
+    void shouldReturnTrueWhenChildAddressChange() {
+        List<Element<Child>> childrenBefore = wrapElements(Child.builder()
+            .party(ChildParty.builder().address(Address.builder().addressLine1("33 Testing Court")
+                .addressLine2("Testing").postcode("XX1 BBB").build()).build()).build());
+        List<Element<Child>> childrenAfter = wrapElements(Child.builder()
+            .party(ChildParty.builder().address(Address.builder().addressLine1("90 Testing Court")
+                .addressLine2("Testing").postcode("KK1 BBB").build()).build()).build());
+        assertThat(hasAddressChange(Collections.unmodifiableList(childrenAfter),
+            Collections.unmodifiableList(childrenBefore))).isTrue();
+    }
+
+    @Test
+    void shouldReturnTrueWhenChildAddressNoChange() {
+        List<Element<Child>> childrenBefore = wrapElements(Child.builder()
+            .party(ChildParty.builder().address(Address.builder().addressLine1("33 Testing Court")
+                .addressLine2("Testing").postcode("XX1 BBB").build()).build()).build());
+        List<Element<Child>> childrenAfter = wrapElements(Child.builder()
+            .party(ChildParty.builder().address(Address.builder().addressLine1("33 Testing Court")
+                .addressLine2("Testing").postcode("XX1 BBB").build()).build()).build());
+        assertThat(hasAddressChange(Collections.unmodifiableList(childrenAfter),
+            Collections.unmodifiableList(childrenBefore))).isFalse();
     }
 }
