@@ -195,13 +195,13 @@ public class FurtherEvidenceUploadedEventTestData {
 
     public static ApplicationDocument createDummyApplicationDocument(final String name, final String uploadedBy,
                                                                      DocumentReference docRef) {
-        ApplicationDocument.ApplicationDocumentBuilder document = ApplicationDocument.builder()
-            .documentName(name)
-            .documentType(BIRTH_CERTIFICATE)
-            .uploadedBy(uploadedBy)
-            .document(docRef)
-            .dateTimeUploaded(LocalDateTime.now());
-        return document.build();
+        return ApplicationDocument.builder()
+                .documentName(name)
+                .documentType(BIRTH_CERTIFICATE)
+                .uploadedBy(uploadedBy)
+                .document(docRef)
+                .dateTimeUploaded(LocalDateTime.now())
+                .build();
     }
 
     public static CaseData buildCaseDataWithCourtBundleList(int count, String hearing, String uploadedBy) {
