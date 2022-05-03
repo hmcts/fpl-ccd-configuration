@@ -71,8 +71,10 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, validateDecisionEventPath);
 
         assertThat(callbackResponse.getErrors()).containsOnly("Add the new draft order 1");
-        assertThat(callbackResponse.getData()).doesNotContainKeys("hasOthers", "others_label", "reviewCMOShowOthers")
-            .containsEntry("othersSelector", null);
+        assertThat(callbackResponse.getData()).doesNotContainKeys("others_label", "reviewCMOShowOthers")
+            .containsEntry("othersSelector", null)
+            .containsEntry("uploadCMOShowOthers", null)
+            .containsEntry("hasOthers", null);
     }
 
     @Test

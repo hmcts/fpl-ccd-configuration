@@ -30,12 +30,15 @@ import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+
+import static uk.gov.hmcts.reform.fpl.model.order.HearingOrder.fromHearingOrderElement;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -122,23 +125,26 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
         UUID cmoId = UUID.randomUUID();
 
         Element<HearingOrder> cmoElement = element(cmoId, cmo);
+
+        Other other1 = Other.builder().name("Tim Jones").address(Address.builder().postcode("SE1").build()).build();
+        Other other2 = Other.builder().name("Stephen Jones").address(Address.builder().postcode("SW2").build()).build();
+
+        List<Element<Other>> others = Arrays.asList(element(other1), element(other2));
+        Element<HearingOrder> cmoElementWithOthers = fromHearingOrderElement(cmoElement,
+            cmoElement.getValue().getTranslationRequirements(),
+            cmoElement.getValue().getStatus(),
+            cmoElement.getValue().getDateSent(),
+            others );
         Element<HearingOrdersBundle> hearingOrdersBundle = buildHearingOrdersBundle(
-            UUID.randomUUID(), newArrayList(cmoElement));
+            UUID.randomUUID(), newArrayList(cmoElementWithOthers));
 
         given(documentSealingService.sealDocument(order, SealType.ENGLISH)).willReturn(sealedDocument);
 
-        Selector othersSelector = Selector.newSelector(2);
-        othersSelector.setSelected(List.of(0, 1));
         CaseData caseData = CaseData.builder()
             .state(State.CASE_MANAGEMENT)
             .ordersToBeSent(List.of(element(HearingOrder.builder().build())))
-            .others(Others.builder().firstOther(
-                    Other.builder().name("Tim Jones").address(Address.builder().postcode("SE1").build()).build())
-                .additionalOthers(wrapElements(Other.builder().name("Stephen Jones")
-                    .address(Address.builder().postcode("SW2").build()).build())).build())
-            .othersSelector(othersSelector)
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
-            .draftUploadedCMOs(List.of(element(cmoId, cmo)))
+            .draftUploadedCMOs(List.of(cmoElementWithOthers))
             .hearingDetails(List.of(element(hearing(cmoId))))
             .reviewCMODecision(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build())
             .ordersToBeSent(List.of(element(HearingOrder.builder().build()))) // should be reset
@@ -151,27 +157,24 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
 
         assertThat(responseData.getSealedCMOs().size()).isEqualTo(1);
         Element<HearingOrder> sealedCMO = responseData.getSealedCMOs().get(0);
-        assertThat(sealedCMO.getId()).isEqualTo(cmoElement.getId());
+        assertThat(sealedCMO.getId()).isEqualTo(cmoElementWithOthers.getId());
         assertThat(sealedCMO.getValue())
             .extracting("order", "lastUploadedOrder", "dateIssued", "status")
             .contains(sealedDocument, order, LocalDate.now(), APPROVED);
 
         assertThat(responseData.getOrdersToBeSent().size()).isEqualTo(1);
         Element<HearingOrder> orderToBeSent = responseData.getOrdersToBeSent().get(0);
-        assertThat(orderToBeSent.getId()).isEqualTo(cmoElement.getId());
+        assertThat(orderToBeSent.getId()).isEqualTo(cmoElementWithOthers.getId());
         assertThat(orderToBeSent.getValue())
             .extracting("order", "lastUploadedOrder", "dateIssued", "status")
             .contains(sealedDocument, order, LocalDate.now(), APPROVED);
 
         assertThat(sealedCMO.getValue().getOthersNotified()).contains("Tim Jones, Stephen Jones");
-        assertThat(unwrapElements(sealedCMO.getValue().getOthers()))
-            .contains(caseData.getOthers().getFirstOther(),
-                caseData.getOthers().getAdditionalOthers().get(0).getValue());
+        assertThat(unwrapElements(sealedCMO.getValue().getOthers())).contains(other1, other2);
 
         assertThat(orderToBeSent.getValue().getOthersNotified()).contains("Tim Jones, Stephen Jones");
         assertThat(unwrapElements(orderToBeSent.getValue().getOthers()))
-            .contains(caseData.getOthers().getFirstOther(),
-                caseData.getOthers().getAdditionalOthers().get(0).getValue());
+            .contains(other1, other2);
         assertTemporaryFieldsAreRemovedFromCaseData(response.getData());
     }
 
