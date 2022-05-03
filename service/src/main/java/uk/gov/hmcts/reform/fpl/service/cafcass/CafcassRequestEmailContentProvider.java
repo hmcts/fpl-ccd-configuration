@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import uk.gov.hmcts.reform.fpl.config.cafcass.CafcassEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData;
+import uk.gov.hmcts.reform.fpl.model.cafcass.ChangeOfAddressData;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -21,6 +22,17 @@ public enum CafcassRequestEmailContentProvider {
             String.format("A new order for this case was uploaded to the Public Law Portal entitled %s",
                 cafcassData.getDocumentName()),
         CafcassEmailConfiguration::getRecipientForOrder),
+
+    CHANGE_OF_ADDRESS((caseData, cafcassData) -> String.format(getSubject(),
+        caseData.getFamilyManCaseNumber(),
+        "change of address" + (((ChangeOfAddressData) cafcassData).isRespondents()
+            ? " - respondent solicitor" : (((ChangeOfAddressData) cafcassData).isChildren()
+            ? " - child solicitor" : ""))),
+        (caseData, cafcassData) ->
+            String.format("A change of address has been added to this case "
+                    + "which was uploaded to the Public Law Portal entitled [%s].",
+                caseData.getCaseName()),
+        CafcassEmailConfiguration::getRecipientForChangeOfAddress),
 
     COURT_BUNDLE((caseData, cafcassData) -> String.format(getSubject(),
                 caseData.getFamilyManCaseNumber(),
