@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.LargeFilesNotificationData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewApplicationCafcassData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
+import uk.gov.hmcts.reform.fpl.model.cafcass.NoticeOfHearingCafcassData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.OrderCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
@@ -21,6 +22,10 @@ import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DocumentMetadataDownloadService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 
+import java.time.LocalDate;
+import java.time.Month;
+
+import static java.time.format.FormatStyle.LONG;
 import static java.util.Set.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -28,13 +33,16 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData.SAME_DAY;
 import static uk.gov.hmcts.reform.fpl.model.email.EmailAttachment.document;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ADDITIONAL_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NEW_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NEW_DOCUMENT;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NOTICE_OF_HEARING;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @ExtendWith(MockitoExtension.class)
 class CafcassNotificationServiceTest {
@@ -369,6 +377,65 @@ class CafcassNotificationServiceTest {
                                 + "• Additional statement")
         );
     }
+
+    @Test
+    void shouldNotifyNoficeOfHearing() {
+        when(configuration.getRecipientForNoticeOfHearing()).thenReturn(RECIPIENT_EMAIL);
+        when(configuration.getSender()).thenReturn(SENDER_EMAIL);
+        when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
+                DOCUMENT_CONTENT);
+        LocalDate hearingDate = LocalDate.of(2050, Month.APRIL,20);
+        String hearingVenue = "London";
+        String hearingHearingTime = "1 hour before the hearing";
+        String hearingTime = "18 June, 3:40pm - 19 June, 2:30pm";
+
+        CaseData caseData = CaseData.builder()
+                .familyManCaseNumber(FAMILY_MAN)
+                .build();
+
+        underTest.sendEmail(caseData,
+            of(getDocumentReference()),
+            NOTICE_OF_HEARING,
+            NoticeOfHearingCafcassData.builder()
+                    .hearingType(CASE_MANAGEMENT.getLabel().toLowerCase())
+                    .firstRespondentName("James Wright")
+                    .eldestChildLastName("Oliver Wright")
+                    .hearingDate(formatLocalDateToString(hearingDate, LONG))
+                    .hearingVenue(hearingVenue)
+                    .preHearingTime(hearingHearingTime)
+                    .hearingTime(hearingTime)
+                    .build()
+        );
+
+        verify(documentDownloadService).downloadDocument(DOCUMENT_BINARY_URL);
+
+        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
+        EmailData data = emailDataArgumentCaptor.getValue();
+        assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
+        assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- "
+                + "New case management hearing Oliver Wright - notice of hearing");
+
+        assertThat(data.getAttachments()).containsExactly(
+                document("application/pdf",  DOCUMENT_CONTENT, DOCUMENT_FILENAME)
+        );
+
+        assertThat(data.getMessage()).isEqualToNormalizingWhitespace(
+                String.join(" ",
+                        "There’s a new  case management hearing for:\n"
+                                + "James Wright FM1234"
+                                + "\n\n"
+                                + "Hearing details"
+                                + "\n"
+                                + "Date: 20 April 2050"
+                                + "\n"
+                                + "Venue: London"
+                                + "\n"
+                                + "Pre-hearing time: 1 hour before the hearing"
+                                + "\n"
+                                + "Hearing time: 18 June, 3:40pm - 19 June, 2:30pm")
+        );
+    }
+
 
     @Test
     void shouldNotifyLargeDocumentsWhenIsLargerThanConfiguredLimit() {
