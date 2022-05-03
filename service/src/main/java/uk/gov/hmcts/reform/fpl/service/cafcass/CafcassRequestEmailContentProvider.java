@@ -56,7 +56,14 @@ public enum CafcassRequestEmailContentProvider {
             caseData.getFamilyManCaseNumber(),
             "new large document added"),
         CafcassRequestEmailContentProvider::getLargeApplicationMessage,
-        CafcassEmailConfiguration::getRecipientForLargeAttachements);
+        CafcassEmailConfiguration::getRecipientForLargeAttachements),
+
+    NOTICE_OF_HEARING((caseData, cafcassData) ->  String.format(getSubject(),
+            caseData.getFamilyManCaseNumber(),
+            getHearingDetails(caseData, cafcassData)),
+        CafcassRequestEmailContentProvider::getNoticeOfHearingMessage,
+        CafcassEmailConfiguration::getRecipientForNoticeOfHearing);
+
 
     private final BiFunction<CaseData, CafcassData, String> type;
     private final BiFunction<CaseData, CafcassData, String> content;
@@ -104,6 +111,33 @@ public enum CafcassRequestEmailContentProvider {
                 "the Portal using this link.",
                 System.lineSeparator(),
                 cafcassData.getCaseUrl());
+    }
+
+    private static String getHearingDetails(CaseData caseData, CafcassData cafcassData) {
+        return String.join(" ",
+                "New",
+                cafcassData.getHearingType(),
+                "hearing",
+                cafcassData.getEldestChildLastName(),
+                "- notice of hearing");
+    }
+
+    private static String getNoticeOfHearingMessage(CaseData caseData, CafcassData cafcassData) {
+        return String.join(" ",
+                "There’s a new", cafcassData.getHearingType(), "hearing for:",
+                System.lineSeparator(),
+                cafcassData.getFirstRespondentName(),  caseData.getFamilyManCaseNumber(),
+                System.lineSeparator(), System.lineSeparator(),
+                "Hearing details",
+                System.lineSeparator(),
+                "Date:", cafcassData.getHearingDate(),
+                System.lineSeparator(),
+                "Venue:", cafcassData.getHearingVenue(),
+                System.lineSeparator(),
+                "Pre-hearing time:", cafcassData.getPreHearingTime(),
+                System.lineSeparator(),
+                "Hearing time:", cafcassData.getHearingTime()
+        );
     }
 
     private static String getSubject() {
