@@ -30,6 +30,7 @@ import java.time.Month;
 import static java.time.format.FormatStyle.LONG;
 import static java.util.Set.of;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -137,6 +138,14 @@ class CafcassNotificationServiceTest {
                 .build();
     }
 
+    private DocumentReference getDocumentReference(long size) {
+        return DocumentReference.builder().binaryUrl(DOCUMENT_BINARY_URL)
+            .url(DOCUMENT_URL)
+            .filename(DOCUMENT_FILENAME)
+            .size(size)
+            .build();
+    }
+
     @Test
     void shouldNotifyUrgentNewApplicationRequest() {
         when(configuration.getRecipientForNewApplication()).thenReturn(RECIPIENT_EMAIL);
@@ -222,6 +231,52 @@ class CafcassNotificationServiceTest {
                 "An urgent hearing order and notice of proceedings have been issued for:\nCALLOUT",
                 "Next steps",
                 "You should now check the order to see your directions and compliance dates.",
+                "HM Courts & Tribunals Service",
+                "Do not reply to this email. If you need to contact us, call 0330 808 4424 or "
+                    + "email contactfpl@justice.gov.uk")
+        );
+    }
+
+    @Test
+    void shouldNotifyUrgentHearingOrderWithLargeFile() {
+        when(documentMetadataDownloadService.getDocumentMetadata(anyString()))
+            .thenReturn(DocumentReference.builder().size(30000000L).build());
+        when(lookupConfiguration.getCafcass("SA"))
+            .thenReturn(new CafcassLookupConfiguration.Cafcass("SA", RECIPIENT_EMAIL));
+        when(configuration.getSender()).thenReturn(SENDER_EMAIL);
+        when(caseUrlService.getCaseUrl(anyLong())).thenReturn("http://fakeurl/");
+
+        UrgentHearingOrderAndNopData urgentHearingOrderAndNopData = UrgentHearingOrderAndNopData.builder()
+            .leadRespondentsName("Tim Cook")
+            .callout("CALLOUT")
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .caseLocalAuthority("SA")
+            .build();
+
+        underTest.sendEmail(caseData,
+            of(getDocumentReference(30L)),
+            URGENT_HEARING_ORDER_AND_NOP,
+            urgentHearingOrderAndNopData
+        );
+
+        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
+        EmailData data = emailDataArgumentCaptor.getValue();
+        assertThat(data.isPriority()).isTrue();
+        assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
+        assertThat(data.getSubject()).isEqualTo(
+            "Urgent hearing order and notice of proceedings issued, Tim Cook");
+        assertThat(data.getAttachments()).isNull();
+        assertThat(data.getMessage()).isEqualTo(
+            String.join("\n\n",
+                String.format("An urgent hearing order and notice of proceedings have been issued for:%sCALLOUT",
+                    System.lineSeparator()),
+                "Next steps",
+                "You should now check the order to see your directions and compliance dates.",
+                "As the file exceeds the size limit that could not be sent by email you will need to download it from the Portal using this link.",
+                String.format("http://fakeurl/%s", System.lineSeparator()),
                 "HM Courts & Tribunals Service",
                 "Do not reply to this email. If you need to contact us, call 0330 808 4424 or "
                     + "email contactfpl@justice.gov.uk")
