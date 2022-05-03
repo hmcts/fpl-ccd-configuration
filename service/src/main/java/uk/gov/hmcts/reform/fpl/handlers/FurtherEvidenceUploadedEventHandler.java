@@ -377,18 +377,10 @@ public class FurtherEvidenceUploadedEventHandler {
 
         // initialisation
         Map<DocumentUploadNotificationUserType, List<FurtherDocument>> ret = new HashMap<>();
-        if (ret.get(ALL_LAS) == null) {
-            ret.put(ALL_LAS, new ArrayList<>());
-        }
-        if (ret.get(CAFCASS) == null) {
-            ret.put(CAFCASS, new ArrayList<>());
-        }
-        if (ret.get(CHILD_SOLICITOR) == null) {
-            ret.put(CHILD_SOLICITOR, new ArrayList<>());
-        }
-        if (ret.get(RESPONDENT_SOLICITOR) == null) {
-            ret.put(RESPONDENT_SOLICITOR, new ArrayList<>());
-        }
+        ret.put(ALL_LAS, new ArrayList<>());
+        ret.put(CAFCASS, new ArrayList<>());
+        ret.put(CHILD_SOLICITOR, new ArrayList<>());
+        ret.put(RESPONDENT_SOLICITOR, new ArrayList<>());
 
         // Further application documents - for example the SWET or care plan
         // - everyone except respondent/child solicitors have permission to see
