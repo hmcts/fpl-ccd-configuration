@@ -132,7 +132,7 @@ public class CafcassNotificationService {
                     .priority(cafcassData.isUrgent())
                     .build()
             );
-            log.info("For case id {} notification sent to Cafcass for {}",
+            log.info("For Case id {} notification sent to Cafcass (CafcassEmailContentProvider) for {}",
                 caseData.getId(),
                 provider.name());
         } else {

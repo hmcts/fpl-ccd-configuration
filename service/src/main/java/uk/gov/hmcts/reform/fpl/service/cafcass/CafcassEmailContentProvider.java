@@ -35,8 +35,8 @@ public enum CafcassEmailContentProvider {
         String callout = urgentHearingOrderAndNopData.getCallout();
 
         return String.join("\n\n",
-            String.format("An urgent hearing order and notice of proceedings have been issued for:\n%s",
-                callout),
+            String.format("An urgent hearing order and notice of proceedings have been issued for:%s%s",
+                System.lineSeparator(), callout),
             "Next steps",
             "You should now check the order to see your directions and compliance dates.",
             "HM Courts & Tribunals Service",
@@ -52,13 +52,13 @@ public enum CafcassEmailContentProvider {
         String callout = urgentHearingOrderAndNopData.getCallout();
 
         return String.join("\n\n",
-            String.format("An urgent hearing order and notice of proceedings have been issued for:\n%s",
-                callout),
+            String.format("An urgent hearing order and notice of proceedings have been issued for:%s%s",
+                System.lineSeparator(), callout),
             "Next steps",
             "You should now check the order to see your directions and compliance dates.",
             "As the file exceeds the size limit that could not be sent by email you will need to download it from "
                 + "the Portal using this link.",
-            largeFilesNotificationData.getCaseUrl() + "\n",
+            largeFilesNotificationData.getCaseUrl() + System.lineSeparator(),
             "HM Courts & Tribunals Service",
             "Do not reply to this email. If you need to contact us, call 0330 808 4424 or "
                 + "email contactfpl@justice.gov.uk");

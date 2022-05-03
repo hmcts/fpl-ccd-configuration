@@ -11,6 +11,7 @@ public class UrgentHearingOrderAndNopData implements CafcassData {
     private String leadRespondentsName;
     private String callout;
 
+    @Override
     public boolean isUrgent() {
         return true;
     }
