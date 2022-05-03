@@ -49,7 +49,8 @@ public class OthersChecker implements EventChecker {
                 other.getChildInformation(),
                 other.getDetailsHidden(),
                 other.getLitigationIssues(),
-                other.getTelephone());
+                other.getTelephone(),
+                other.getAddressNotKnowReason());
     }
 
 }

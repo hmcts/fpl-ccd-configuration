@@ -960,6 +960,7 @@ public class CaseData {
     private final String hearingVenue;
     private final Address hearingVenueCustom;
     private final String firstHearingFlag; //also used for logic surrounding legacy hearings
+    private final String hasPreviousHearingVenue;
     private final PreviousHearingVenue previousHearingVenue;
     private String previousVenueId;
     private final String noticeOfHearingNotes;
