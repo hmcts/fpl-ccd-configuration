@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.AddressNotKnowReason;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
@@ -199,6 +200,11 @@ public class RoboticsDataService {
             .lastName(respondentParty.getLastName())
             .gender(convertStringToGender(respondentParty.getGender()))
             .address(convertAddress(respondentParty.getAddress()).orElse(null))
+            .addressNotKnowReason(
+                AddressNotKnowReason.fromType(
+                    respondentParty.getAddressNotKnowReason()
+                ).map(AddressNotKnowReason::getType)
+                    .orElse(null))
             .relationshipToChild(respondentParty.getRelationshipToChild())
             .dob(formatDate(respondentParty.getDateOfBirth(), "d-MMM-y"))
             .confidential(respondent.containsConfidentialDetails())
