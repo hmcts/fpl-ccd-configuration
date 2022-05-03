@@ -48,4 +48,24 @@ public interface CafcassData {
     default String getCaseUrl()  {
         throw new UnsupportedOperationException();
     }
+
+    default String  getHearingType()   {
+        throw new UnsupportedOperationException();
+    }
+
+    default String  getHearingDate() {
+        throw new UnsupportedOperationException();
+    }
+
+    default String  getHearingVenue() {
+        throw new UnsupportedOperationException();
+    }
+
+    default String  getPreHearingTime() {
+        throw new UnsupportedOperationException();
+    }
+
+    default String  getHearingTime() {
+        throw new UnsupportedOperationException();
+    }
 }
