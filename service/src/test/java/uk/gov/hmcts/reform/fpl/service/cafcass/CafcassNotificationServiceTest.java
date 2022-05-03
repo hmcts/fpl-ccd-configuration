@@ -7,6 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 import uk.gov.hmcts.reform.fpl.config.cafcass.CafcassEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.ChangeOfAddressData;
@@ -34,6 +35,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData.SAME_DAY;
 import static uk.gov.hmcts.reform.fpl.model.email.EmailAttachment.document;
@@ -47,6 +49,7 @@ import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContent
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = LENIENT)
 class CafcassNotificationServiceTest {
     private static final String SENDER_EMAIL = "senderEmail";
     private static final String RECIPIENT_EMAIL = "recipientEmail";
@@ -88,12 +91,12 @@ class CafcassNotificationServiceTest {
                 25L
         );
         when(configuration.getSender()).thenReturn(SENDER_EMAIL);
+        when(documentMetadataDownloadService.getDocumentMetadata(anyString()))
+            .thenReturn(DocumentReference.builder().size(10L).build());
     }
 
     @Test
     void shouldNotifyOrderRequest() {
-        when(documentMetadataDownloadService.getDocumentMetadata(anyString()))
-            .thenReturn(DocumentReference.builder().size(10L).build());
         when(configuration.getRecipientForOrder()).thenReturn(RECIPIENT_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
             DOCUMENT_CONTENT);
@@ -135,8 +138,6 @@ class CafcassNotificationServiceTest {
 
     @Test
     void shouldNotifyUrgentNewApplicationRequest() {
-        when(documentMetadataDownloadService.getDocumentMetadata(anyString()))
-            .thenReturn(DocumentReference.builder().size(10L).build());
         when(configuration.getRecipientForNewApplication()).thenReturn(RECIPIENT_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL))
             .thenReturn(DOCUMENT_CONTENT);
@@ -183,8 +184,6 @@ class CafcassNotificationServiceTest {
 
     @Test
     void shouldNotifyNewApplicationRequestWhenNoTimeFramePresent() {
-        when(documentMetadataDownloadService.getDocumentMetadata(anyString()))
-            .thenReturn(DocumentReference.builder().size(10L).build());
         when(configuration.getRecipientForNewApplication()).thenReturn(RECIPIENT_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL))
                 .thenReturn(DOCUMENT_CONTENT);
@@ -230,8 +229,6 @@ class CafcassNotificationServiceTest {
 
     @Test
     void shouldNotifyNonUrgentNewApplicationRequest() {
-        when(documentMetadataDownloadService.getDocumentMetadata(anyString()))
-            .thenReturn(DocumentReference.builder().size(10L).build());
         when(configuration.getRecipientForNewApplication()).thenReturn(RECIPIENT_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL))
             .thenReturn(DOCUMENT_CONTENT);
@@ -277,8 +274,6 @@ class CafcassNotificationServiceTest {
 
     @Test
     void shouldNotifyCourtBundle() {
-        when(documentMetadataDownloadService.getDocumentMetadata(anyString()))
-            .thenReturn(DocumentReference.builder().size(10L).build());
         when(configuration.getRecipientForCourtBundle()).thenReturn(RECIPIENT_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
                 DOCUMENT_CONTENT);
@@ -313,8 +308,6 @@ class CafcassNotificationServiceTest {
 
     @Test
     void shouldNotifyNewDocument() {
-        when(documentMetadataDownloadService.getDocumentMetadata(anyString()))
-            .thenReturn(DocumentReference.builder().size(10L).build());
         when(configuration.getRecipientForNewDocument()).thenReturn(RECIPIENT_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
                 DOCUMENT_CONTENT);
@@ -350,8 +343,6 @@ class CafcassNotificationServiceTest {
 
     @Test
     void shouldNotifyAdditionalDocument() {
-        when(documentMetadataDownloadService.getDocumentMetadata(anyString()))
-            .thenReturn(DocumentReference.builder().size(10L).build());
         when(configuration.getRecipientForAdditionlDocument()).thenReturn(RECIPIENT_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
                 DOCUMENT_CONTENT);
@@ -449,8 +440,6 @@ class CafcassNotificationServiceTest {
         long caseId = 200L;
         String caseLink = "http://localhost:8080/cases/case-details/200";
 
-        when(documentMetadataDownloadService.getDocumentMetadata(anyString()))
-            .thenReturn(DocumentReference.builder().size(10L).build());
         when(configuration.getRecipientForLargeAttachements()).thenReturn(RECIPIENT_EMAIL);
         when(caseUrlService.getCaseUrl(caseId)).thenReturn(caseLink);
         when(documentMetadataDownloadService.getDocumentMetadata(anyString()))
