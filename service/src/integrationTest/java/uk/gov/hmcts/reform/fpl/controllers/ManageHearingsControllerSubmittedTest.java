@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
@@ -412,7 +413,11 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
             eq("internal-update-case-summary"), anyMap());
 
-        verify(cafcassNotificationService,never()).sendEmail(any(), any(), any(), any());
+        verify(cafcassNotificationService,never()).sendEmail(
+            any(),
+            any(),
+            isA(CafcassRequestEmailContentProvider.class),
+            any());
 
         verifyNoMoreInteractions(coreCaseDataService);
     }
