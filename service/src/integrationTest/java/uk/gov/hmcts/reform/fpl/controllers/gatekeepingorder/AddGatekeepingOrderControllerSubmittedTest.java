@@ -121,8 +121,6 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest im
     @MockBean
     private DocumentMetadataDownloadService dcumentMetadataDownloadService;
 
-
-
     AddGatekeepingOrderControllerSubmittedTest() {
         super("add-gatekeeping-order");
     }
