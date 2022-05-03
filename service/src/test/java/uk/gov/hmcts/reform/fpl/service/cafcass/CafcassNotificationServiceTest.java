@@ -7,8 +7,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 import uk.gov.hmcts.reform.fpl.config.cafcass.CafcassEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.cafcass.ChangeOfAddressData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.LargeFilesNotificationData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewApplicationCafcassData;
@@ -33,10 +35,12 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData.SAME_DAY;
 import static uk.gov.hmcts.reform.fpl.model.email.EmailAttachment.document;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ADDITIONAL_DOCUMENT;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.CHANGE_OF_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NEW_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NEW_DOCUMENT;
@@ -45,6 +49,7 @@ import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContent
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = LENIENT)
 class CafcassNotificationServiceTest {
     private static final String SENDER_EMAIL = "senderEmail";
     private static final String RECIPIENT_EMAIL = "recipientEmail";
@@ -85,14 +90,14 @@ class CafcassNotificationServiceTest {
                 documentMetadataDownloadService,
                 25L
         );
+        when(configuration.getSender()).thenReturn(SENDER_EMAIL);
         when(documentMetadataDownloadService.getDocumentMetadata(anyString()))
-                .thenReturn(DocumentReference.builder().size(10L).build());
+            .thenReturn(DocumentReference.builder().size(10L).build());
     }
 
     @Test
     void shouldNotifyOrderRequest() {
         when(configuration.getRecipientForOrder()).thenReturn(RECIPIENT_EMAIL);
-        when(configuration.getSender()).thenReturn(SENDER_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
             DOCUMENT_CONTENT);
 
@@ -134,7 +139,6 @@ class CafcassNotificationServiceTest {
     @Test
     void shouldNotifyUrgentNewApplicationRequest() {
         when(configuration.getRecipientForNewApplication()).thenReturn(RECIPIENT_EMAIL);
-        when(configuration.getSender()).thenReturn(SENDER_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL))
             .thenReturn(DOCUMENT_CONTENT);
 
@@ -178,11 +182,9 @@ class CafcassNotificationServiceTest {
         );
     }
 
-
     @Test
     void shouldNotifyNewApplicationRequestWhenNoTimeFramePresent() {
         when(configuration.getRecipientForNewApplication()).thenReturn(RECIPIENT_EMAIL);
-        when(configuration.getSender()).thenReturn(SENDER_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL))
                 .thenReturn(DOCUMENT_CONTENT);
 
@@ -228,7 +230,6 @@ class CafcassNotificationServiceTest {
     @Test
     void shouldNotifyNonUrgentNewApplicationRequest() {
         when(configuration.getRecipientForNewApplication()).thenReturn(RECIPIENT_EMAIL);
-        when(configuration.getSender()).thenReturn(SENDER_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL))
             .thenReturn(DOCUMENT_CONTENT);
 
@@ -274,7 +275,6 @@ class CafcassNotificationServiceTest {
     @Test
     void shouldNotifyCourtBundle() {
         when(configuration.getRecipientForCourtBundle()).thenReturn(RECIPIENT_EMAIL);
-        when(configuration.getSender()).thenReturn(SENDER_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
                 DOCUMENT_CONTENT);
 
@@ -309,7 +309,6 @@ class CafcassNotificationServiceTest {
     @Test
     void shouldNotifyNewDocument() {
         when(configuration.getRecipientForNewDocument()).thenReturn(RECIPIENT_EMAIL);
-        when(configuration.getSender()).thenReturn(SENDER_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
                 DOCUMENT_CONTENT);
 
@@ -345,7 +344,6 @@ class CafcassNotificationServiceTest {
     @Test
     void shouldNotifyAdditionalDocument() {
         when(configuration.getRecipientForAdditionlDocument()).thenReturn(RECIPIENT_EMAIL);
-        when(configuration.getSender()).thenReturn(SENDER_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
                 DOCUMENT_CONTENT);
 
@@ -443,7 +441,6 @@ class CafcassNotificationServiceTest {
         String caseLink = "http://localhost:8080/cases/case-details/200";
 
         when(configuration.getRecipientForLargeAttachements()).thenReturn(RECIPIENT_EMAIL);
-        when(configuration.getSender()).thenReturn(SENDER_EMAIL);
         when(caseUrlService.getCaseUrl(caseId)).thenReturn(caseLink);
         when(documentMetadataDownloadService.getDocumentMetadata(anyString()))
                 .thenReturn(DocumentReference.builder().size(Long.MAX_VALUE).build());
@@ -478,5 +475,51 @@ class CafcassNotificationServiceTest {
                     System.lineSeparator(),
                     "http://localhost:8080/cases/case-details/200")
         );
+    }
+
+    @Test
+    void shouldNotifyChangeOfAddressOfChildren() {
+        when(configuration.getRecipientForChangeOfAddress()).thenReturn(RECIPIENT_EMAIL);
+
+        CaseData caseData = CaseData.builder()
+            .familyManCaseNumber(FAMILY_MAN)
+            .caseName("GU1234")
+            .build();
+
+        underTest.sendEmail(caseData,
+            CHANGE_OF_ADDRESS,
+            ChangeOfAddressData.builder().children(true).build()
+        );
+
+        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
+        EmailData data = emailDataArgumentCaptor.getValue();
+        assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
+        assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- change of address - child solicitor");
+        assertThat(data.getMessage()).isEqualTo(
+            String.join(" ","A change of address has been added to this case",
+                "which was uploaded to the Public Law Portal entitled", "[GU1234]."));
+    }
+
+    @Test
+    void shouldNotifyChangeOfAddressOfRespondents() {
+        when(configuration.getRecipientForChangeOfAddress()).thenReturn(RECIPIENT_EMAIL);
+
+        CaseData caseData = CaseData.builder()
+            .familyManCaseNumber(FAMILY_MAN)
+            .caseName("GU1234")
+            .build();
+
+        underTest.sendEmail(caseData,
+            CHANGE_OF_ADDRESS,
+            ChangeOfAddressData.builder().respondents(true).build()
+        );
+
+        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
+        EmailData data = emailDataArgumentCaptor.getValue();
+        assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
+        assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- change of address - respondent solicitor");
+        assertThat(data.getMessage()).isEqualTo(
+            String.join(" ","A change of address has been added to this case",
+                "which was uploaded to the Public Law Portal entitled", "[GU1234]."));
     }
 }

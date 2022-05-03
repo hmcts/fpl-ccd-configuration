@@ -17,6 +17,9 @@ public class CafcassEmailConfiguration {
     private String sender;
 
     @Getter(AccessLevel.NONE)
+    private String changeofaddress;
+
+    @Getter(AccessLevel.NONE)
     private String order;
 
     @Getter(AccessLevel.NONE)
@@ -63,5 +66,9 @@ public class CafcassEmailConfiguration {
 
     public String getRecipientForNoticeOfHearing() {
         return noticeofhearing;
+    }
+  
+    public String getRecipientForChangeOfAddress() {
+        return changeofaddress;
     }
 }
