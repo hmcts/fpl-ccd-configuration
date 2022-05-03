@@ -70,7 +70,7 @@ public class CafcassNotificationService {
         long totalDocSize = documentReferences.stream()
                 .map(DocumentReference::getUrl)
                 .map(documentMetadataDownloadService::getDocumentMetadata)
-                .mapToLong((doc) -> defaultIfNull(doc.getSize(), 0L))
+                .mapToLong(doc -> defaultIfNull(doc.getSize(), 0L))
                 .sum();
 
         if (totalDocSize / MEGABYTE  <= maxAttachementSize) {
@@ -118,7 +118,7 @@ public class CafcassNotificationService {
         long totalDocSize = documentReferences.stream()
             .map(DocumentReference::getUrl)
             .map(documentMetadataDownloadService::getDocumentMetadata)
-            .mapToLong((doc) -> defaultIfNull(doc.getSize(), 0L))
+            .mapToLong(doc -> defaultIfNull(doc.getSize(), 0L))
             .sum();
         long attachmentSize = totalDocSize / MEGABYTE;
 

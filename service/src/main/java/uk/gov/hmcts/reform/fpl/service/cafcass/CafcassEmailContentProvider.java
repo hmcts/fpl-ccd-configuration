@@ -19,9 +19,7 @@ public enum CafcassEmailContentProvider {
         ((UrgentHearingOrderAndNopData) cafcassData).getLeadRespondentsName()),
         CafcassEmailContentProvider::getUrgentHearingOrderAndNopMessage,
         CafcassEmailContentProvider::getUrgentHearingOrderAndNopMessageForLargeFile,
-        (configuration, caseData) -> {
-            return configuration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
-        }
+        (configuration, caseData) -> configuration.getCafcass(caseData.getCaseLocalAuthority()).getEmail()
     );
 
     private final BiFunction<CaseData, CafcassData, String> type;
