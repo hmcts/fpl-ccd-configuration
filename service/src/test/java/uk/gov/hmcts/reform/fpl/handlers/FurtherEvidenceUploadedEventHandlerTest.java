@@ -850,8 +850,10 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 uploadedBy);
 
         if (isHavingNotification) {
-            when(furtherEvidenceNotificationService.getRepresentativeEmails(caseData))
-                .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL));
+            when(furtherEvidenceNotificationService.getChildSolicitorEmails(caseData))
+                .thenReturn(Set.of(REP_SOLICITOR_1_EMAIL));
+            when(furtherEvidenceNotificationService.getRespondentSolicitorEmails(caseData))
+                .thenReturn(Set.of(REP_SOLICITOR_2_EMAIL));
             when(furtherEvidenceNotificationService.getDesignatedLocalAuthorityRecipients(caseData))
                 .thenReturn(Set.of(LA_USER_EMAIL));
             when(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData))

@@ -138,7 +138,8 @@ public class FurtherEvidenceUploadedEventHandler {
         final Set<String> recipients = new HashSet<>();
 
         if (!newCourtBundles.isEmpty()) {
-            recipients.addAll(furtherEvidenceNotificationService.getRepresentativeEmails(caseData));
+            recipients.addAll(furtherEvidenceNotificationService.getRespondentSolicitorEmails(caseData));
+            recipients.addAll(furtherEvidenceNotificationService.getChildSolicitorEmails(caseData));
             recipients.addAll(furtherEvidenceNotificationService.getDesignatedLocalAuthorityRecipients(caseData));
             recipients.addAll(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData));
         }
