@@ -29,6 +29,7 @@ module.exports = {
     judicialMessages: 'Judicial messages',
     otherApplications: 'Other applications',
     furtherEvidence: 'Documents',
+    refusedOrders: 'Refused Orders',
   },
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',
