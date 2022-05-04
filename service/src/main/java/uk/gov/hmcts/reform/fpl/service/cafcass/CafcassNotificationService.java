@@ -20,6 +20,7 @@ import java.net.URLConnection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.model.email.EmailAttachment.document;
@@ -53,6 +54,11 @@ public class CafcassNotificationService {
         this.maxAttachementSize = maxAttachementSize;
     }
 
+    public void sendEmail(CaseData caseData,
+                          CafcassRequestEmailContentProvider provider,
+                          CafcassData cafcassData) {
+        sendEmail(caseData, null, provider, cafcassData);
+    }
 
     public void sendEmail(CaseData caseData,
                           Set<DocumentReference> documentReferences,
@@ -62,13 +68,15 @@ public class CafcassNotificationService {
             caseData.getId(),
             provider.name());
 
-        long totalDocSize = documentReferences.stream()
+        boolean noFileAttached = documentReferences == null;
+
+        long totalDocSize = noFileAttached ? 0 : documentReferences.stream()
                 .map(DocumentReference::getUrl)
                 .map(documentMetadataDownloadService::getDocumentMetadata)
                 .mapToLong(DocumentReference::getSize)
                 .sum();
 
-        if (totalDocSize / MEGABYTE  <= maxAttachementSize) {
+        if (totalDocSize == 0 || totalDocSize / MEGABYTE  <= maxAttachementSize) {
             emailService.sendEmail(configuration.getSender(),
                 EmailData.builder()
                     .recipient(provider.getRecipient().apply(configuration))
@@ -115,6 +123,9 @@ public class CafcassNotificationService {
     }
 
     private Set<EmailAttachment> getEmailAttachments(Set<DocumentReference> documentReferences) {
+        if (documentReferences == null) {
+            return emptySet();
+        }
         return documentReferences.stream()
             .map(documentReference -> {
                 byte[] documentContent = documentDownloadService.downloadDocument(documentReference.getBinaryUrl());
