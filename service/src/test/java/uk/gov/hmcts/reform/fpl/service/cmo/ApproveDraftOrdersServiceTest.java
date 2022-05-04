@@ -572,6 +572,24 @@ class ApproveDraftOrdersServiceTest {
     }
 
     @Test
+    void shouldStoreRefusalReasonsWhenJudgeRejectsDraftOrders() {
+        Element<HearingOrder> draftOrder1 = buildBlankOrder("test order1", hearing1);
+        Element<HearingOrder> draftOrder2 = buildBlankOrder("test order2", hearing1);
+        draftOrder1.getValue().setRequestedChanges("Test requested changes");
+        draftOrder2.getValue().setRequestedChanges("Test requested changes");
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("ordersToBeSent", List.of(draftOrder1, draftOrder2));
+
+        Map<String, Object> expectedData = Map.of(
+            "refusedHearingOrders", List.of(draftOrder1, draftOrder2)
+        );
+
+        underTest.updateRejectedHearingOrders(data);
+        assertThat(data).containsAllEntriesOf(expectedData);
+    }
+
+    @Test
     void shouldNotUpdateDataWhenBlankOrderIsNotReviewed() {
         Element<HearingOrder> draftOrder1 = buildBlankOrder("test order1", hearing1);
 
