@@ -388,10 +388,6 @@ public class FurtherEvidenceUploadedEventHandler {
         List<Element<ApplicationDocument>> newApplicationDocuments =
             getNewApplicationDocuments(caseData.getApplicationDocuments(), beforeCaseData.getApplicationDocuments());
         unwrapElements(newApplicationDocuments).forEach(applicationDocument -> {
-            if (!applicationDocument.isConfidentialDocument()) {
-                ret.get(CHILD_SOLICITOR).add(applicationDocument);
-                ret.get(RESPONDENT_SOLICITOR).add(applicationDocument);
-            }
             ret.get(ALL_LAS).add(applicationDocument);
         });
 
