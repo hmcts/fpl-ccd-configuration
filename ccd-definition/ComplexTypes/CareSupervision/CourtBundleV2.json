@@ -94,7 +94,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "SupportingEvidenceBundle",
+    "ID": "CourtBundleV2",
     "ListElementCode": "hasConfidentialAddress",
     "FieldType": "YesOrNo",
     "ElementLabel": "Document contains a confidential address ",

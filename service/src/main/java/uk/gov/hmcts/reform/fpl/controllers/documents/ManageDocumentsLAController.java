@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -226,8 +227,10 @@ public class ManageDocumentsLAController extends CallbackController {
                     manageDocumentService.buildFinalApplicationBundleSupportingDocuments(caseData, NOT_SOLICITOR));
                 break;
             case COURT_BUNDLE:
-                caseDetailsMap.putIfNotEmpty(COURT_BUNDLE_LIST_KEY, manageDocumentLAService
-                    .buildCourtBundleList(caseData));
+                List<Element<HearingCourtBundle>> courtBundle = manageDocumentLAService.buildCourtBundleList(caseData);
+                caseDetailsMap.putIfNotEmpty(COURT_BUNDLE_LIST_KEY, courtBundle);
+                caseDetailsMap.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
+                    manageDocumentService.getDocWithConfidentialAddrFromCourtBundles(caseData, courtBundle));
                 break;
         }
 

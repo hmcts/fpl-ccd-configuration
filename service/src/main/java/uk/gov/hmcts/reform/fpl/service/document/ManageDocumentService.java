@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.exceptions.RespondentNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.DocumentWithConfidentialAddress;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -449,28 +450,51 @@ public class ManageDocumentService {
 
     public List<Element<DocumentWithConfidentialAddress>> getDocWithConfidentialAddr(CaseData caseData,
                 List<Element<SupportingEvidenceBundle>> updatedDocuments) {
-        final List<Element<DocumentWithConfidentialAddress>> documentWithConfidentialAddress
-            = Optional.ofNullable(caseData.getDocumentWithConfidentialAddress()).orElse(new ArrayList<>());
+        return updateDocWithConfidentialAddr(caseData,
+            updatedDocuments.stream()
+                .filter(doc -> YesNo.YES.equals(doc.getValue().getHasConfidentialAddress()))
+                .map(doc -> element(doc.getId(),
+                    DocumentWithConfidentialAddress.builder()
+                        .name(doc.getValue().getName())
+                        .document(doc.getValue().getDocument()).build()))
+                .collect(Collectors.toList()));
+    }
 
-        List<String> updatedDocUrls = updatedDocuments.stream()
+    public List<Element<DocumentWithConfidentialAddress>> getDocWithConfidentialAddrFromCourtBundles(
+        CaseData caseData,
+        List<Element<HearingCourtBundle>> updatedDocuments) {
+
+        return updateDocWithConfidentialAddr(caseData,
+            updatedDocuments.stream().map(Element::getValue)
+                .map(hearingCourtBundle -> hearingCourtBundle.getCourtBundle().stream()
+                        .map(docElm -> element(docElm.getId(),
+                            DocumentWithConfidentialAddress.builder()
+                                .document(docElm.getValue().getDocument())
+                                .name("Court bundle of " + hearingCourtBundle.getHearing())
+                                .build())).collect(Collectors.toList()))
+                        .flatMap(List::stream)
+                .collect(Collectors.toList()));
+    }
+
+    private List<Element<DocumentWithConfidentialAddress>> updateDocWithConfidentialAddr(CaseData caseData,
+        List<Element<DocumentWithConfidentialAddress>> editedLst) {
+
+        List<Element<DocumentWithConfidentialAddress>> resultLst =
+            Optional.ofNullable(caseData.getDocumentWithConfidentialAddress()).orElse(new ArrayList<>());
+
+        List<String> updatedDocUrls = editedLst.stream()
             .map(doc -> doc.getValue().getDocument().getBinaryUrl()).collect(Collectors.toList());
 
         // remove the updated document from the documentWithConfidentialAddress list
-        documentWithConfidentialAddress.removeAll(documentWithConfidentialAddress.stream()
+        resultLst.removeAll(resultLst.stream()
             .filter(confidentialDoc ->
                 updatedDocUrls.contains(confidentialDoc.getValue().getDocument().getBinaryUrl()))
             .collect(Collectors.toList()));
 
         // add the updated version document into the documentWithConfidentialAddress list
-        documentWithConfidentialAddress.addAll(updatedDocuments.stream()
-            .filter(doc -> YesNo.YES.equals(doc.getValue().getHasConfidentialAddress()))
-            .map(doc -> element(doc.getId(),
-                DocumentWithConfidentialAddress.builder()
-                    .name(doc.getValue().getName())
-                    .document(doc.getValue().getDocument()).build()))
-            .collect(Collectors.toList()));
+        resultLst.addAll(editedLst);
 
-        return documentWithConfidentialAddress;
+        return resultLst;
     }
 
     // Separate collection based on idam role (only show users their own documents)
