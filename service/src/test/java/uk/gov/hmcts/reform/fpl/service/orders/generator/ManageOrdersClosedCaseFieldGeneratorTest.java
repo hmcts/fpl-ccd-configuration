@@ -121,7 +121,6 @@ public class ManageOrdersClosedCaseFieldGeneratorTest {
     @ParameterizedTest
     @MethodSource("generateOrderStates")
     void shouldCloseCaseWhenOrderIsDefaultFinal(String isFinalOrder) {
-        System.out.println(BooleanUtils.toBoolean(isFinalOrder));
         CaseData caseData = buildCaseData("Yes", isFinalOrder, C32A_CARE_ORDER);
 
         when(childrenSmartFinalOrderUpdater.updateFinalOrderIssued(caseData))
