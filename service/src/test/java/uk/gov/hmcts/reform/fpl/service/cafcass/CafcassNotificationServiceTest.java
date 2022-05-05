@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.config.cafcass.CafcassEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.ChangeOfAddressData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
-import uk.gov.hmcts.reform.fpl.model.cafcass.LargeFilesNotificationData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewApplicationCafcassData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NoticeOfHearingCafcassData;
@@ -24,10 +23,9 @@ import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DocumentMetadataDownloadService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 
-import java.util.List;
-
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.List;
 
 import static java.time.format.FormatStyle.LONG;
 import static java.util.Set.of;
@@ -80,9 +78,6 @@ class CafcassNotificationServiceTest {
 
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgumentCaptor;
-
-    @Captor
-    private ArgumentCaptor<LargeFilesNotificationData> largeFilesNotificationDataArgumentCaptor;
 
     @BeforeEach
     void setUp() {

@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 
+import static java.util.Collections.emptySet;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
@@ -57,6 +58,11 @@ public class CafcassNotificationService {
         this.maxAttachmentSize = maxAttachmentSize;
     }
 
+    public void sendEmail(CaseData caseData,
+                          CafcassRequestEmailContentProvider provider,
+                          CafcassData cafcassData) {
+        sendEmail(caseData, emptySet(), provider, cafcassData);
+    }
 
     public void sendEmail(CaseData caseData,
                           Set<DocumentReference> documentReferences,
