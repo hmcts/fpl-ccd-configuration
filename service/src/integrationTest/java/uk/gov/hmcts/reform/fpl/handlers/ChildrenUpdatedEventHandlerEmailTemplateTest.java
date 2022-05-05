@@ -6,13 +6,16 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.ChildrenUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
+import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.representative.RegisteredRepresentativeSolicitorContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.representative.UnregisteredRepresentativeSolicitorContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.diff.ChildRepresentativeDiffCalculator;
@@ -30,9 +33,15 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ContextConfiguration(classes = {
     ChildrenUpdatedEventHandler.class, ChildRepresentativeDiffCalculator.class, EmailNotificationHelper.class,
-    RegisteredRepresentativeSolicitorContentProvider.class, UnregisteredRepresentativeSolicitorContentProvider.class
+    RegisteredRepresentativeSolicitorContentProvider.class, UnregisteredRepresentativeSolicitorContentProvider.class,
+    ChildrenService.class,
+    CafcassNotificationService.class,
+    CafcassLookupConfiguration.class
 })
-@MockBeans({@MockBean(FeatureToggleService.class)})
+@MockBeans({
+    @MockBean(FeatureToggleService.class),
+    @MockBean(CafcassNotificationService.class)
+})
 class ChildrenUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     private static final String CASE_NAME = "FPL case test";

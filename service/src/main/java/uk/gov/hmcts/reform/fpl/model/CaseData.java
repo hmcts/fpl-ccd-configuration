@@ -752,6 +752,13 @@ public class CaseData {
     }
 
     @JsonIgnore
+    public Optional<HearingBooking> getFirstHearingOfTypes(List<HearingType> types) {
+        return unwrapElements(hearingDetails).stream()
+            .filter(hearingBooking -> types.stream().anyMatch(type -> hearingBooking.isOfType(type)))
+            .min(comparing(HearingBooking::getStartDate));
+    }
+
+    @JsonIgnore
     public Optional<HearingBooking> getNextHearingAfter(LocalDateTime time) {
         return unwrapElements(hearingDetails).stream()
             .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(time))
@@ -806,6 +813,7 @@ public class CaseData {
 
     private final List<Element<HearingOrder>> draftUploadedCMOs;
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
+    private List<Element<HearingOrder>> refusedHearingOrders;
     private final UUID lastHearingOrderDraftsHearingId;
 
     @JsonIgnore

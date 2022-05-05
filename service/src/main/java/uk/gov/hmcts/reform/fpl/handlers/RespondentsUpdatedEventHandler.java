@@ -5,19 +5,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.RespondentsUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.cafcass.ChangeOfAddressData;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.representative.RegisteredRepresentativeSolicitorContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.representative.UnregisteredRepresentativeSolicitorContentProvider;
 
 import java.util.List;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.CHANGE_OF_ADDRESS;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -27,6 +32,24 @@ public class RespondentsUpdatedEventHandler {
     private final UnregisteredRepresentativeSolicitorContentProvider unregisteredContentProvider;
     private final NotificationService notificationService;
     private final RespondentService respondentService;
+    private final CafcassNotificationService cafcassNotificationService;
+    private final CafcassLookupConfiguration cafcassLookupConfiguration;
+
+    @Async
+    @EventListener
+    public void notifyChangeOfAddress(final RespondentsUpdated event) {
+        CaseData caseData = event.getCaseData();
+        CaseData caseDataBefore = event.getCaseDataBefore();
+
+        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
+            cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
+
+        if (recipientIsEngland.isPresent() && respondentService.hasAddressChange(caseData.getAllRespondents(),
+            caseDataBefore.getAllRespondents())) {
+            cafcassNotificationService.sendEmail(caseData, CHANGE_OF_ADDRESS,
+                ChangeOfAddressData.builder().respondents(true).build());
+        }
+    }
 
     @Async
     @EventListener
