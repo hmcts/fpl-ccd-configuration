@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import uk.gov.hmcts.reform.fpl.config.cafcass.CafcassEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData;
+import uk.gov.hmcts.reform.fpl.model.cafcass.ChangeOfAddressData;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -22,6 +23,19 @@ public enum CafcassRequestEmailContentProvider {
             String.format("A new order for this case was uploaded to the Public Law Portal entitled %s",
                 cafcassData.getDocumentName()),
         CafcassEmailConfiguration::getRecipientForOrder),
+
+    CHANGE_OF_ADDRESS("Change of address",
+        (caseData, cafcassData) -> String.format(getSubject(),
+        caseData.getFamilyManCaseNumber(),
+        "change of address" + (((ChangeOfAddressData) cafcassData).isRespondents()
+                ? " - respondent solicitor" : (((ChangeOfAddressData) cafcassData).isChildren()
+                ? " - child solicitor" : ""))),
+        (caseData, cafcassData) ->
+                String.format("A change of address has been added to this case "
+                                + "which was uploaded to the Public Law Portal entitled [%s].",
+                        caseData.getCaseName()),
+        CafcassEmailConfiguration::getRecipientForChangeOfAddress),
+
 
     COURT_BUNDLE("Court bundle",
         (caseData, cafcassData) -> String.format(getSubject(),
@@ -64,7 +78,16 @@ public enum CafcassRequestEmailContentProvider {
                     "new large document added",
                     cafcassData.getNotificationType())),
         CafcassRequestEmailContentProvider::getLargeApplicationMessage,
-        CafcassEmailConfiguration::getRecipientForLargeAttachements);
+        CafcassEmailConfiguration::getRecipientForLargeAttachements),
+
+    NOTICE_OF_HEARING("Notice of hearing",
+        (caseData, cafcassData) ->  String.format(getSubject(),
+        caseData.getFamilyManCaseNumber(),
+        getHearingDetails(caseData, cafcassData)),
+        CafcassRequestEmailContentProvider::getNoticeOfHearingMessage,
+        CafcassEmailConfiguration::getRecipientForNoticeOfHearing);
+
+
 
     private final String label;
     private final BiFunction<CaseData, CafcassData, String> type;
@@ -113,6 +136,33 @@ public enum CafcassRequestEmailContentProvider {
                 "the Portal using this link.",
                 System.lineSeparator(),
                 cafcassData.getCaseUrl());
+    }
+
+    private static String getHearingDetails(CaseData caseData, CafcassData cafcassData) {
+        return String.join(" ",
+                "New",
+                cafcassData.getHearingType(),
+                "hearing",
+                cafcassData.getEldestChildLastName(),
+                "- notice of hearing");
+    }
+
+    private static String getNoticeOfHearingMessage(CaseData caseData, CafcassData cafcassData) {
+        return String.join(" ",
+                "There’s a new", cafcassData.getHearingType(), "hearing for:",
+                System.lineSeparator(),
+                cafcassData.getFirstRespondentName(),  caseData.getFamilyManCaseNumber(),
+                System.lineSeparator(), System.lineSeparator(),
+                "Hearing details",
+                System.lineSeparator(),
+                "Date:", cafcassData.getHearingDate(),
+                System.lineSeparator(),
+                "Venue:", cafcassData.getHearingVenue(),
+                System.lineSeparator(),
+                "Pre-hearing time:", cafcassData.getPreHearingTime(),
+                System.lineSeparator(),
+                "Hearing time:", cafcassData.getHearingTime()
+        );
     }
 
     private static String getSubject() {
