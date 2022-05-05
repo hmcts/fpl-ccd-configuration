@@ -174,7 +174,7 @@ class RespondentValidatorTest {
             .party(RespondentParty.builder()
                 .dateOfBirth(NOW.toLocalDate().minusDays(1))
                 .addressKnow(YesNo.YES.getValue())
-                .address(Addre ss.builder().build())
+                .address(Address.builder().build())
                 .build())
             .build();
 

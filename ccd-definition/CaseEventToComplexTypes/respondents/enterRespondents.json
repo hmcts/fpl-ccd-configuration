@@ -70,7 +70,8 @@
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.address",
-    "FieldDisplayOrder": 7
+    "FieldDisplayOrder": 7,
+    "DisplayContext": "OPTIONAL"
   },
   {
     "ID": "EnterRespondents",
