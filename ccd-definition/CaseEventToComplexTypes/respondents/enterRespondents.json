@@ -71,7 +71,7 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.address",
     "FieldDisplayOrder": 7,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "ID": "EnterRespondents",
