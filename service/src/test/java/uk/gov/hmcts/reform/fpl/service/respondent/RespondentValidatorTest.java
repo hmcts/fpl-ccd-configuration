@@ -174,7 +174,7 @@ class RespondentValidatorTest {
             .party(RespondentParty.builder()
                 .dateOfBirth(NOW.toLocalDate().minusDays(1))
                 .addressKnow(YesNo.YES.getValue())
-                .address(Address.builder().build())
+                .address(Addre ss.builder().build())
                 .build())
             .build();
 
@@ -189,9 +189,7 @@ class RespondentValidatorTest {
 
         assertThat(actual).isEqualTo(List.of(
             "Building and Street is required",
-            "Address Line 2 is required",
             "Town or City is required",
-            "County is required",
             "Postcode/Zipcode is required",
             "Country is required",
             "emailValidatorError"));

@@ -68,8 +68,7 @@
     "CaseEventID": "amendRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.address",
-    "FieldDisplayOrder": 7,
-    "DisplayContext": "OPTIONAL"
+    "FieldDisplayOrder": 7
   },
   {
     "ID": "AmendRespondents",
