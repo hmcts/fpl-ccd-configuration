@@ -9,7 +9,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.RespondentNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
@@ -1528,7 +1527,7 @@ class ManageDocumentServiceTest {
 
 
     @Test
-    void shouldGetDocWithConfidentialAddrFromRespondentStatementElements(){
+    void shouldGetDocWithConfidentialAddrFromRespondentStatementElements() {
         CaseData caseData = CaseData.builder().build();
         UUID uuid = randomUUID();
         DocumentReference confidentialDoc = DocumentReference.builder()
@@ -1581,7 +1580,7 @@ class ManageDocumentServiceTest {
     }
 
     @Test
-    void shouldGetDocWithConfidentialAddrFromHearingCourtBundles(){
+    void shouldGetDocWithConfidentialAddrFromHearingCourtBundles() {
         CaseData caseData = CaseData.builder().build();
         UUID uuid = randomUUID();
 
@@ -1620,7 +1619,7 @@ class ManageDocumentServiceTest {
     }
 
     private ConfidentialBundle buildConfidentialBundle(List<Element<SupportingEvidenceBundle>> bundles) {
-        return new ConfidentialBundle(){
+        return new ConfidentialBundle() {
 
             @Override
             public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle() {
