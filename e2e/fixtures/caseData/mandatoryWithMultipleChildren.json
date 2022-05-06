@@ -109,7 +109,7 @@
         "value": {
           "party": {
             "email": {
-              "email": "applicant@email.com"
+              "email": "swansea@test.com"
             },
             "address": {
               "County": "United Kingdom",
@@ -130,7 +130,7 @@
               "telephoneNumber": "00000000000",
               "contactDirection": "Jonathon Walker"
             },
-            "organisationName": "John Smith",
+            "organisationName": "Swansea City Council",
             "customerReference": "Example reference"
           },
           "leadApplicantIndicator": "Yes"
@@ -229,6 +229,15 @@
     "allocationProposal": {
       "proposal": "District judge"
     },
+    "caseLocalAuthority": "SA",
+    "localAuthorityPolicy": {
+      "Organisation": {
+        "OrganisationID": "ORGSA",
+        "OrganisationName": "Swansea City Council"
+      },
+      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+    },
+    "caseLocalAuthorityName": "Swansea City Council",
     "displayAmountToPay": "Yes",
     "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
     "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",

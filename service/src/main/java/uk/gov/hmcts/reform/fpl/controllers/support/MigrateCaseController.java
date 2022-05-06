@@ -39,8 +39,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-500", this::run500,
         "DFPL-451", this::run451,
         "DFPL-482", this::run482,
-        "DFPL-562", this::run562,
-        "DFPL-572", this::run572
+        "DFPL-572", this::run572,
+        "DFPL-630", this::run630
     );
 
     @PostMapping("/about-to-submit")
@@ -113,17 +113,26 @@ public class MigrateCaseController extends CallbackController {
         updateDocumentsSentToParties(caseDetails, caseData, docIds);
     }
 
-    private void run562(CaseDetails caseDetails) {
+    /**
+     * Removes a C110A Generated PDF document from the case.
+     * Make sure to update:
+     *  - expectedCaseId
+     *  - expectedDocId
+     *  - migrationId
+     * @param caseDetails - the caseDetails to update
+     */
+    private void run630(CaseDetails caseDetails) {
+        var migrationId = "DFPL-630";
+        var expectedCaseId = 1649078536655906L;
+        var expectedDocId = UUID.fromString("133c1088-91e1-4c33-90de-c5679208e89d");
+
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();
-        var expectedCaseId = 1644420520106477L;
-
-        var expectedDocId = UUID.fromString("c9ac3123-ab10-484c-b74b-40d551f7fc9c");
 
         if (caseId != expectedCaseId) {
             throw new AssertionError(format(
-                "Migration {id = DFPL-562, case reference = %s}, expected case id %d",
-                caseId, expectedCaseId
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId
             ));
         }
 
@@ -131,8 +140,8 @@ public class MigrateCaseController extends CallbackController {
         var docId = UUID.fromString(documentUrl.substring(documentUrl.length() - 36));
         if (!docId.equals(expectedDocId)) {
             throw new AssertionError(format(
-                "Migration {id = DFPL-562, case reference = %s}, expected c110a document id %s",
-                caseId, expectedDocId
+                "Migration {id = %s, case reference = %s}, expected c110a document id %s",
+                migrationId, caseId, expectedDocId
             ));
         }
         caseDetails.getData().put("submittedForm", null);

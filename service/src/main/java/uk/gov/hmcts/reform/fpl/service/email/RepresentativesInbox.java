@@ -119,7 +119,8 @@ public class RepresentativesInbox {
     public Set<Recipient> getSelectedRecipientsWithNoRepresentation(List<Element<Respondent>> selectedRespondents) {
         return selectedRespondents.stream()
             .map(Element::getValue)
-            .filter(respondent -> isEmpty(respondent.getRepresentedBy()) && respondent.hasAddress())
+            .filter(respondent -> isEmpty(respondent.getRepresentedBy()) && respondent.hasAddress()
+                                  && !respondent.isDeceasedOrNFA())
             .map(Respondent::toParty)
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }

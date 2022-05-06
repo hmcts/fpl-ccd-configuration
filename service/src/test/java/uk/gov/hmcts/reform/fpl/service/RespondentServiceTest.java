@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -545,6 +546,30 @@ class RespondentServiceTest {
         List<Element<Respondent>> selected = service.getSelectedRespondents(allRespondents, selector, "No");
 
         assertThat(selected).isEqualTo(expected);
+    }
+
+    @Test
+    void shouldReturnTrueWhenAddressChange() {
+        List<Element<Respondent>> respondentsBefore = wrapElements(Respondent.builder()
+            .party(RespondentParty.builder().address(Address.builder().addressLine1("33 Testing Court")
+                .addressLine2("Testing").postcode("XX1 BBB").build()).build()).build());
+        List<Element<Respondent>> respondentsAfter = wrapElements(Respondent.builder()
+            .party(RespondentParty.builder().address(Address.builder().addressLine1("90 Testing Court")
+                .addressLine2("Testing").postcode("KK1 BBB").build()).build()).build());
+        assertThat(service.hasAddressChange(Collections.unmodifiableList(respondentsAfter),
+            Collections.unmodifiableList(respondentsBefore))).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenAddressNoChange() {
+        List<Element<Respondent>> respondentsBefore = wrapElements(Respondent.builder()
+            .party(RespondentParty.builder().address(Address.builder().addressLine1("33 Testing Court")
+                .addressLine2("Testing").postcode("XX1 BBB").build()).build()).build());
+        List<Element<Respondent>> respondentsAfter = wrapElements(Respondent.builder()
+            .party(RespondentParty.builder().address(Address.builder().addressLine1("33 Testing Court")
+                .addressLine2("Testing").postcode("XX1 BBB").build()).build()).build());
+        assertThat(service.hasAddressChange(Collections.unmodifiableList(respondentsAfter),
+            Collections.unmodifiableList(respondentsBefore))).isFalse();
     }
 
 }
