@@ -661,5 +661,15 @@
     "Label": "When was the order made?",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersSupervisionOrderType",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "C36SupervisionOrderType",
+    "Label": "Please select the required order",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

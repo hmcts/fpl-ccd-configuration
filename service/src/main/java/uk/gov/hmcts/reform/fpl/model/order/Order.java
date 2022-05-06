@@ -45,6 +45,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TITLE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TRANSLATION_REQUIREMENTS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.UPLOAD_AMENDED_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.UPLOAD_ORDER_FILE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.VARY_OR_EXTEND_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_OTHERS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSourceType.AMENDED;
@@ -199,6 +200,14 @@ public enum Order {
             REVIEW_DRAFT_ORDER,
             WHICH_OTHERS
         )
+    ),
+    C36_VARIATION_OR_EXTENSION_OF_SUPERVISION_ORDERS(
+        DIGITAL,
+        "Variation or extension of supervision orders (C36)",
+        "Sections 39(2), 39(3) and 39(4) and Paragraph 6(3) Schedule 3 Children Act 1989",
+        "Variation or extension of supervision orders (C36)",
+        IsFinalOrder.MAYBE,
+        List.of(APPROVER, APPROVAL_DATE, WHICH_CHILDREN, VARY_OR_EXTEND_SUPERVISION_ORDER, WHICH_OTHERS, REVIEW_DRAFT_ORDER)
     ),
 
     /* MANUAL UPLOADS */
