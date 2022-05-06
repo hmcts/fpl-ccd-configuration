@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_FUTURE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_PAST_HEARING;
@@ -55,6 +56,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
             .build();
 
         CaseData updatedCaseData = extractCaseData(postEditHearingMidEvent(initialCaseData));
+        assertDoesNotThrow(() -> extractCaseData(postEditHearingMidEvent(initialCaseData)));
         assertThat(updatedCaseData.getHasPreviousHearingVenue()).isEqualTo("No");
     }
 
