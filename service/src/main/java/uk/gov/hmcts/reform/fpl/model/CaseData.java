@@ -109,7 +109,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -635,10 +634,9 @@ public class CaseData {
         return Optional.ofNullable(confidentialOthers).orElse(new ArrayList<>());
     }
 
-    public boolean hasConfidentialParty(){
-        return isNotEmpty(getConfidentialChildren()) ||
-               isNotEmpty(getConfidentialRespondents()) ||
-               isNotEmpty(getConfidentialOthers());
+    public boolean hasConfidentialParty() {
+        return isNotEmpty(getConfidentialChildren()) || isNotEmpty(getConfidentialRespondents())
+               || isNotEmpty(getConfidentialOthers());
     }
 
     private final String caseNote;

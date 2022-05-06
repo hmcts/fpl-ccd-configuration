@@ -46,8 +46,8 @@ public class SupportingEvidenceBundle implements TranslatableItem {
 
     @JsonIgnore
     public boolean isConfidentialDocument() {
-        return (confidential != null && confidential.contains("CONFIDENTIAL")) ||
-               YesNo.YES.equals(hasConfidentialAddress);
+        return (confidential != null && confidential.contains("CONFIDENTIAL"))
+               || YesNo.YES.equals(hasConfidentialAddress);
     }
 
     @JsonIgnore

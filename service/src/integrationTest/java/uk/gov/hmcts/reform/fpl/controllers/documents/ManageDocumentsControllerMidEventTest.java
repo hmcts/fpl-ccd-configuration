@@ -92,6 +92,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
             .type(CORRESPONDENCE)
             .hasHearings("No")
             .hasC2s("No")
+            .hasConfidentialAddress("No")
             .build());
     }
 
@@ -115,6 +116,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
             .type(CORRESPONDENCE)
             .hasHearings("No")
             .hasC2s("No")
+            .hasConfidentialAddress("No")
             .build());
     }
 
@@ -147,6 +149,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
             .type(ADDITIONAL_APPLICATIONS_DOCUMENTS)
             .hasHearings("No")
             .hasC2s("Yes")
+            .hasConfidentialAddress("No")
             .build());
     }
 

@@ -76,7 +76,7 @@ public class ManageDocumentService {
     public static final String MANAGE_DOCUMENT_KEY = "manageDocument";
     public static final String ADDITIONAL_APPLICATIONS_BUNDLE_KEY = "additionalApplicationsBundle";
     public static final String RESPONDENTS_LIST_KEY = "respondentStatementList";
-    public static final String DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY ="documentWithConfidentialAddress";
+    public static final String DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY = "documentWithConfidentialAddress";
     private static final Predicate<Element<SupportingEvidenceBundle>> HMCTS_FILTER =
         bundle -> bundle.getValue().isUploadedByHMCTS();
     private static final Predicate<Element<SupportingEvidenceBundle>> SOLICITOR_FILTER =
@@ -439,7 +439,7 @@ public class ManageDocumentService {
     }
 
     public <T extends ConfidentialBundle> List<Element<DocumentWithConfidentialAddress>>
-    getDocWithConfidentialAddrFromConfidentialBundles(
+        getDocWithConfidentialAddrFromConfidentialBundles(
             CaseData caseData,
             List<T> updatedDocuments) {
         return getDocWithConfidentialAddr(caseData, updatedDocuments.stream()
