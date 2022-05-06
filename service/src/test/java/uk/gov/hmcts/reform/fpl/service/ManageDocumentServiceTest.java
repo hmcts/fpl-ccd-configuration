@@ -9,9 +9,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.RespondentNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.DocumentWithConfidentialAddress;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -26,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
@@ -1519,6 +1524,119 @@ class ManageDocumentServiceTest {
         CaseData caseData = CaseData.builder().respondentStatementList(dynamicList).build();
 
         assertThat(underTest.getSelectedRespondentId(caseData)).isEqualTo(selectedRespondentId);
+    }
+
+
+    @Test
+    void shouldGetDocWithConfidentialAddrFromRespondentStatementElements(){
+        CaseData caseData = CaseData.builder().build();
+        UUID uuid = randomUUID();
+        DocumentReference confidentialDoc = DocumentReference.builder()
+            .filename("test file name 1")
+            .binaryUrl("test url 1").build();
+
+        DocumentReference normalDoc = DocumentReference.builder()
+            .filename("test file name 2")
+            .binaryUrl("test url 2").build();
+
+
+        List<Element<SupportingEvidenceBundle>> bundles =  List.of(
+            element(uuid, SupportingEvidenceBundle.builder()
+                .name("test bundle name 1")
+                .document(confidentialDoc)
+                .hasConfidentialAddress(YES)
+                .build()),
+            element(uuid, SupportingEvidenceBundle.builder()
+                .name("test bundle name 2")
+                .document(normalDoc)
+                .hasConfidentialAddress(NO)
+                .build())
+        );
+
+        // test getDocWithConfidentialAddrFromConfidentialBundleElements
+        {
+            List<Element<ConfidentialBundle>> confidentialBundle = wrapElements(buildConfidentialBundle(bundles));
+            List<Element<DocumentWithConfidentialAddress>> resultLIst =
+                underTest.getDocWithConfidentialAddrFromConfidentialBundleElements(caseData, confidentialBundle);
+            List<Element<DocumentWithConfidentialAddress>> expected = List.of(
+                element(uuid, DocumentWithConfidentialAddress.builder()
+                    .name("test bundle name 1")
+                    .document(confidentialDoc).build())
+            );
+            assertThat(resultLIst).isEqualTo(expected);
+        }
+
+        // test getDocWithConfidentialAddrFromConfidentialBundles
+        {
+            List<ConfidentialBundle> confidentialBundle = List.of(buildConfidentialBundle(bundles));
+            List<Element<DocumentWithConfidentialAddress>> resultLIst =
+                underTest.getDocWithConfidentialAddrFromConfidentialBundles(caseData, confidentialBundle);
+            List<Element<DocumentWithConfidentialAddress>> expected = List.of(
+                element(uuid, DocumentWithConfidentialAddress.builder()
+                    .name("test bundle name 1")
+                    .document(confidentialDoc).build())
+            );
+            assertThat(resultLIst).isEqualTo(expected);
+        }
+    }
+
+    @Test
+    void shouldGetDocWithConfidentialAddrFromHearingCourtBundles(){
+        CaseData caseData = CaseData.builder().build();
+        UUID uuid = randomUUID();
+
+        DocumentReference confidentialDoc = DocumentReference.builder()
+            .filename("test file name 1")
+            .binaryUrl("test url 1").build();
+
+        DocumentReference normalDoc = DocumentReference.builder()
+            .filename("test file name 2")
+            .binaryUrl("test url 2").build();
+
+        List<Element<CourtBundle>> courtBundles = List.of(
+            element(uuid, CourtBundle.builder()
+                .document(confidentialDoc)
+                .hasConfidentialAddress(YES).build()),
+            element(uuid, CourtBundle.builder()
+                .document(normalDoc)
+                .hasConfidentialAddress(NO).build()));
+
+        List<Element<HearingCourtBundle>> hearingCourtBundles = List.of(
+            element(uuid, HearingCourtBundle.builder()
+                .hearing("Test hearing")
+                .courtBundle(courtBundles)
+                .build()));
+
+        List<Element<DocumentWithConfidentialAddress>> resultLIst =
+            underTest.getDocWithConfidentialAddrFromCourtBundles(caseData, hearingCourtBundles);
+
+        List<Element<DocumentWithConfidentialAddress>> expected = List.of(
+            element(uuid, DocumentWithConfidentialAddress.builder()
+                .name("Court bundle of Test hearing")
+                .document(confidentialDoc).build())
+        );
+
+        assertThat(resultLIst).isEqualTo(expected);
+    }
+
+    private ConfidentialBundle buildConfidentialBundle(List<Element<SupportingEvidenceBundle>> bundles) {
+        return new ConfidentialBundle(){
+
+            @Override
+            public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle() {
+                return bundles;
+            }
+
+            @Override
+            public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceLA() {
+                return bundles;
+            }
+
+            @Override
+            public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceNC() {
+                return bundles;
+            }
+        };
     }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {

@@ -467,12 +467,13 @@ public class ManageDocumentService {
         return updateDocWithConfidentialAddr(caseData,
             updatedDocuments.stream().map(Element::getValue)
                 .map(hearingCourtBundle -> hearingCourtBundle.getCourtBundle().stream()
-                        .map(docElm -> element(docElm.getId(),
-                            DocumentWithConfidentialAddress.builder()
-                                .document(docElm.getValue().getDocument())
-                                .name("Court bundle of " + hearingCourtBundle.getHearing())
-                                .build())).collect(Collectors.toList()))
-                        .flatMap(List::stream)
+                    .filter(courtBundle -> YES.equals(courtBundle.getValue().getHasConfidentialAddress()))
+                    .map(docElm -> element(docElm.getId(),
+                        DocumentWithConfidentialAddress.builder()
+                            .document(docElm.getValue().getDocument())
+                            .name("Court bundle of " + hearingCourtBundle.getHearing())
+                            .build())).collect(Collectors.toList()))
+                .flatMap(List::stream)
                 .collect(Collectors.toList()));
     }
 
