@@ -61,6 +61,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.ADDITIONAL_APPLICATIONS_BUNDLE_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_DOCUMENTS_COLLECTION_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.RESPONDENTS_LIST_KEY;
@@ -136,6 +137,7 @@ class ManageDocumentServiceTest {
         ManageDocument expectedManageDocument = ManageDocument.builder()
             .hasHearings(YES.getValue())
             .hasC2s(YES.getValue())
+            .hasConfidentialAddress(NO.getValue())
             .build();
 
         Map<String, Object> updates = underTest.baseEventData(caseData);
@@ -165,6 +167,7 @@ class ManageDocumentServiceTest {
         ManageDocument expectedManageDocument = ManageDocument.builder()
             .hasHearings(NO.getValue())
             .hasC2s(NO.getValue())
+            .hasConfidentialAddress(NO.getValue())
             .build();
 
         Map<String, Object> updates = underTest.baseEventData(caseData);
@@ -877,7 +880,8 @@ class ManageDocumentServiceTest {
 
         Map<String, Object> expectedData = Map.of(
             C2_DOCUMENTS_COLLECTION_KEY,
-            List.of(element(anotherC2DocumentId, c2Bundle), element(selectedC2DocumentId, expectedC2Bundle)));
+            List.of(element(anotherC2DocumentId, c2Bundle), element(selectedC2DocumentId, expectedC2Bundle)),
+            DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY, emptyList());
 
         assertThat(actualData).isEqualTo(expectedData);
     }
@@ -914,7 +918,8 @@ class ManageDocumentServiceTest {
 
         Map<String, Object> expectedData = Map.of(ADDITIONAL_APPLICATIONS_BUNDLE_KEY,
             List.of(element(applicationsBundle.getId(),
-                applicationsBundle.getValue().toBuilder().c2DocumentBundle(expectedC2Bundle).build())));
+                applicationsBundle.getValue().toBuilder().c2DocumentBundle(expectedC2Bundle).build())),
+            DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY, emptyList());
 
         assertThat(actualData).isEqualTo(expectedData);
     }
@@ -948,7 +953,8 @@ class ManageDocumentServiceTest {
         Map<String, Object> expectedData = Map.of(ADDITIONAL_APPLICATIONS_BUNDLE_KEY,
             List.of(element(applicationsBundle.getId(),
                 applicationsBundle.getValue().toBuilder()
-                    .otherApplicationsBundle(expectedOtherApplication).build())));
+                    .otherApplicationsBundle(expectedOtherApplication).build())),
+                DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY, emptyList());
 
         assertThat(actualData).isEqualTo(expectedData);
     }
@@ -1136,7 +1142,8 @@ class ManageDocumentServiceTest {
             .supportingEvidenceBundle(List.of(supportingEvidencePast, supportingEvidenceFuture)).build();
 
         Map<String, Object> expectedBundles = Map.of(
-            C2_DOCUMENTS_COLLECTION_KEY, List.of(element(selectedC2DocumentId, updatedBundle)));
+            C2_DOCUMENTS_COLLECTION_KEY, List.of(element(selectedC2DocumentId, updatedBundle)),
+            DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY, emptyList());
 
         assertThat(updatedBundles).isEqualTo(expectedBundles);
     }
@@ -1182,7 +1189,8 @@ class ManageDocumentServiceTest {
         Map<String, Object> expectedData = Map.of(ADDITIONAL_APPLICATIONS_BUNDLE_KEY,
             List.of(element(applicationsBundle.getId(),
                 applicationsBundle.getValue().toBuilder()
-                    .otherApplicationsBundle(expectedOtherApplication).build())));
+                    .otherApplicationsBundle(expectedOtherApplication).build())),
+            DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY, emptyList());
 
         assertThat(actualData).isEqualTo(expectedData);
     }
