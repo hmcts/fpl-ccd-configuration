@@ -12,7 +12,11 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.model.*;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
+import uk.gov.hmcts.reform.fpl.model.SentDocument;
+import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.Collection;
@@ -25,7 +29,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -88,7 +93,7 @@ public class MigrateCaseController extends CallbackController {
                         HearingCourtBundle hearingCourtBundle = HearingCourtBundle.builder()
                             .hearing(hearing)
                             .courtBundle(List.of(courtBundle))
-                            .courtBundleNC(List.of(courtBundle)) //existing bundles marked as not confidential by default
+                            .courtBundleNC(List.of(courtBundle))//existing bundles marked non-confidential by default
                             .build();
                         return element(entry.getKey(), hearingCourtBundle);
                     }
