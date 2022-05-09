@@ -6,8 +6,10 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -189,6 +191,11 @@ public class ChildrenService {
         return selectedChildren.stream()
             .map(children::get)
             .collect(Collectors.toList());
+    }
+
+    public boolean hasAddressChange(List<Element<Child>> after, List<Element<Child>> before) {
+        return PeopleInCaseHelper.hasAddressChange(Collections.unmodifiableList(after),
+            Collections.unmodifiableList(before));
     }
 
 }
