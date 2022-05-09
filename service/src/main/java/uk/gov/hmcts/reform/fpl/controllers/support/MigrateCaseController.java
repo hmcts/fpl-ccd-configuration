@@ -12,11 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.CourtBundle;
-import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
-import uk.gov.hmcts.reform.fpl.model.SentDocument;
-import uk.gov.hmcts.reform.fpl.model.SentDocuments;
+import uk.gov.hmcts.reform.fpl.model.*;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.Collection;
@@ -25,13 +21,13 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Api
 @RestController
@@ -73,27 +69,28 @@ public class MigrateCaseController extends CallbackController {
     private void run82(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();
-        List<Element<CourtBundle>> oldCourBundles = caseData.getCourtBundleList();
+        List<Element<CourtBundle>> oldCourtBundles = caseData.getCourtBundleList();
 
         Map<String, Object> caseDetailsData = caseDetails.getData();
-        if (isNotEmpty(oldCourBundles)) {
+        if (isNotEmpty(oldCourtBundles)) {
             log.info("Migration {id = DFPL-82, case reference = {}} courtbundles start", caseId);
-            Map<String, List<Element<CourtBundle>>> courtBundles = oldCourBundles.stream()
-                .map(Element::getValue)
+
+            Map<UUID, Element<CourtBundle>> courtBundles = oldCourtBundles.stream()
                 .collect(
-                    groupingBy(CourtBundle::getHearing,
-                        mapping(data -> Element.<CourtBundle>builder().value(data).build(),
-                            toList()))
+                    toMap(Element::getId, Function.identity())
                 );
 
             List<Element<HearingCourtBundle>> hearingBundles = courtBundles.entrySet().stream()
                 .map(entry -> {
+                        Element<CourtBundle> courtBundle = entry.getValue();
+                        String hearing = courtBundle.getValue().getHearing();
+
                         HearingCourtBundle hearingCourtBundle = HearingCourtBundle.builder()
-                            .hearing(entry.getKey())
-                            .courtBundle(entry.getValue())
-                            .courtBundleNC(entry.getValue()) //existing bundles marked as not confidential by default
+                            .hearing(hearing)
+                            .courtBundle(List.of(courtBundle))
+                            .courtBundleNC(List.of(courtBundle)) //existing bundles marked as not confidential by default
                             .build();
-                        return Element.<HearingCourtBundle>builder().value(hearingCourtBundle).build();
+                        return element(entry.getKey(), hearingCourtBundle);
                     }
                 ).collect(toList());
 
@@ -114,9 +111,12 @@ public class MigrateCaseController extends CallbackController {
         Map<String, Object> caseDetailsData = caseDetails.getData();
         if (isNotEmpty(newCourtBundles)) {
             log.info("Migration {id = DFPL-82-Rollback, case reference = {}} courtbundles start", caseId);
+
             List<Element<CourtBundle>> courtBundles = newCourtBundles.stream()
-                .map(Element::getValue)
-                .map(HearingCourtBundle::getCourtBundle)
+                .map(element -> element.getValue().getCourtBundle().stream()
+                        .map(bundle -> element(element.getId(), bundle.getValue()))
+                        .collect(toList())
+                )
                 .flatMap(Collection::stream)
                 .collect(toList());
 
