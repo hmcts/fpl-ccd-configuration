@@ -43,7 +43,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-82", this::run82,
         "DFPL-82-rollback", this::run82Rollback,
         "DFPL-572", this::run572,
-        "DFPL-629", this::run629
+        "DFPL-635", this::run635
     );
 
     @PostMapping("/about-to-submit")
@@ -189,10 +189,10 @@ public class MigrateCaseController extends CallbackController {
      *  - migrationId
      * @param caseDetails - the caseDetails to update
      */
-    private void run629(CaseDetails caseDetails) {
-        var migrationId = "DFPL-629";
-        var expectedCaseId = 1638285652903217L;
-        var expectedDocId = UUID.fromString("9da18cc4-418f-4b99-86e7-4fb5dc7a5648");
+    private void run635(CaseDetails caseDetails) {
+        var migrationId = "DFPL-635";
+        var expectedCaseId = 1642758673379744L;
+        var expectedDocId = UUID.fromString("9f0d570a-2cb8-48eb-90cb-3d4f26a2350a");
 
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();
