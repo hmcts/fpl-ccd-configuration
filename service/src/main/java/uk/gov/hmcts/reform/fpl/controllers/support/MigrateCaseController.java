@@ -32,6 +32,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Api
 @RestController
@@ -47,7 +48,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-82", this::run82,
         "DFPL-82-rollback", this::run82Rollback,
         "DFPL-572", this::run572,
-        "DFPL-629", this::run629
+        "DFPL-635", this::run635
     );
 
     @PostMapping("/about-to-submit")
@@ -73,27 +74,30 @@ public class MigrateCaseController extends CallbackController {
     private void run82(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();
-        List<Element<CourtBundle>> oldCourBundles = caseData.getCourtBundleList();
+        List<Element<CourtBundle>> oldCourtBundles = caseData.getCourtBundleList();
 
         Map<String, Object> caseDetailsData = caseDetails.getData();
-        if (isNotEmpty(oldCourBundles)) {
+        if (isNotEmpty(oldCourtBundles)) {
             log.info("Migration {id = DFPL-82, case reference = {}} courtbundles start", caseId);
-            Map<String, List<Element<CourtBundle>>> courtBundles = oldCourBundles.stream()
-                .map(Element::getValue)
+
+            Map<UUID, List<Element<CourtBundle>>> courtBundles = oldCourtBundles.stream()
                 .collect(
-                    groupingBy(CourtBundle::getHearing,
-                        mapping(data -> Element.<CourtBundle>builder().value(data).build(),
+                    groupingBy(Element::getId,
+                        mapping(data -> element(data.getId(), data.getValue()),
                             toList()))
                 );
 
             List<Element<HearingCourtBundle>> hearingBundles = courtBundles.entrySet().stream()
                 .map(entry -> {
+                        String hearing = entry.getValue().stream().findFirst()
+                            .orElse(element(CourtBundle.builder().build())).getValue().getHearing();
+
                         HearingCourtBundle hearingCourtBundle = HearingCourtBundle.builder()
-                            .hearing(entry.getKey())
+                            .hearing(hearing)
                             .courtBundle(entry.getValue())
                             .courtBundleNC(entry.getValue()) //existing bundles marked as not confidential by default
                             .build();
-                        return Element.<HearingCourtBundle>builder().value(hearingCourtBundle).build();
+                        return element(entry.getKey(), hearingCourtBundle);
                     }
                 ).collect(toList());
 
@@ -114,9 +118,12 @@ public class MigrateCaseController extends CallbackController {
         Map<String, Object> caseDetailsData = caseDetails.getData();
         if (isNotEmpty(newCourtBundles)) {
             log.info("Migration {id = DFPL-82-Rollback, case reference = {}} courtbundles start", caseId);
+
             List<Element<CourtBundle>> courtBundles = newCourtBundles.stream()
-                .map(Element::getValue)
-                .map(HearingCourtBundle::getCourtBundle)
+                .map(element -> element.getValue().getCourtBundle().stream()
+                        .map(bundle -> element(element.getId(), bundle.getValue()))
+                        .collect(toList())
+                )
                 .flatMap(Collection::stream)
                 .collect(toList());
 
@@ -189,10 +196,10 @@ public class MigrateCaseController extends CallbackController {
      *  - migrationId
      * @param caseDetails - the caseDetails to update
      */
-    private void run629(CaseDetails caseDetails) {
-        var migrationId = "DFPL-629";
-        var expectedCaseId = 1638285652903217L;
-        var expectedDocId = UUID.fromString("9da18cc4-418f-4b99-86e7-4fb5dc7a5648");
+    private void run635(CaseDetails caseDetails) {
+        var migrationId = "DFPL-635";
+        var expectedCaseId = 1642758673379744L;
+        var expectedDocId = UUID.fromString("9f0d570a-2cb8-48eb-90cb-3d4f26a2350a");
 
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();

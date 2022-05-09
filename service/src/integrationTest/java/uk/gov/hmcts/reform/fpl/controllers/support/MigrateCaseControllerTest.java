@@ -37,7 +37,6 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @WebMvcTest(MigrateCaseController.class)
@@ -88,19 +87,22 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         @Test
         void shouldPerformMigration() {
-            CourtBundle courtBundle1 = createCourtBundle("hearing 1",
-                "doc1", "url", "binaryUrl");
-            CourtBundle courtBundle2 = createCourtBundle("hearing 1",
-                "doc3", "url3", "binaryUrl3");
-            CourtBundle courtBundle3 = createCourtBundle("hearing 2",
-                "doc2", "url2", "binaryUrl2");
+            UUID hearingUUID = UUID.randomUUID();
+            UUID hearing2UUID = UUID.randomUUID();
 
-            List<CourtBundle> courtBundles = List.of(courtBundle1, courtBundle2, courtBundle3);
+            Element<CourtBundle> courtBundle1 = element(hearingUUID, createCourtBundle("hearing 1",
+                "doc1", "url", "binaryUrl"));
+            Element<CourtBundle> courtBundle2 = element(hearingUUID, createCourtBundle("hearing 1",
+                "doc3", "url3", "binaryUrl3"));
+            Element<CourtBundle> courtBundle3 = element(hearing2UUID, createCourtBundle("hearing 2",
+                "doc2", "url2", "binaryUrl2"));
+
+            List<Element<CourtBundle>> courtBundles = List.of(courtBundle1, courtBundle2, courtBundle3);
 
             CaseData caseData = CaseData.builder()
                 .id(1L)
                 .state(State.SUBMITTED)
-                .courtBundleList(wrapElements(courtBundles)).build();
+                .courtBundleList(courtBundles).build();
 
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
                 buildCaseDetails(caseData, migrationId)
@@ -112,16 +114,16 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThat(responseData.getCourtBundleList()).isNull();
             assertThat(responseData.getCourtBundleListV2())
                 .extracting(Element::getValue)
-                .contains(
+                .containsExactlyInAnyOrder(
                     HearingCourtBundle.builder()
                         .hearing("hearing 1")
-                        .courtBundle(wrapElements(List.of(courtBundle1, courtBundle2)))
-                        .courtBundleNC(wrapElements(List.of(courtBundle1, courtBundle2)))
+                        .courtBundle(List.of(courtBundle1, courtBundle2))
+                        .courtBundleNC(List.of(courtBundle1, courtBundle2))
                         .build(),
                     HearingCourtBundle.builder()
                         .hearing("hearing 2")
-                        .courtBundle(wrapElements(List.of(courtBundle3)))
-                        .courtBundleNC(wrapElements(List.of(courtBundle3)))
+                        .courtBundle(List.of(courtBundle3))
+                        .courtBundleNC(List.of(courtBundle3))
                         .build()
                 );
 
@@ -133,7 +135,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             CaseData rollbackResponseData = extractCaseData(rollBackResponse);
             assertThat(rollbackResponseData.getCourtBundleListV2()).isEmpty();
-            assertThat(unwrapElements(rollbackResponseData.getCourtBundleList()))
+            assertThat(rollbackResponseData.getCourtBundleList())
                 .containsExactlyInAnyOrder(courtBundle1, courtBundle2, courtBundle3);
         }
 
@@ -443,12 +445,12 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Dfpl629 {
-        private final String migrationId = "DFPL-629";
-        private final long validCaseId = 1638285652903217L;
+    class Dfpl635 {
+        private final String migrationId = "DFPL-635";
+        private final long validCaseId = 1642758673379744L;
         private final long invalidCaseId = 1643728359576136L;
 
-        private final UUID validDocId = UUID.fromString("9da18cc4-418f-4b99-86e7-4fb5dc7a5648");
+        private final UUID validDocId = UUID.fromString("9f0d570a-2cb8-48eb-90cb-3d4f26a2350a");
         private final UUID invalidDocId = UUID.randomUUID();
 
         @Test
@@ -487,8 +489,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-629, case reference = 1643728359576136},"
-                    + " expected case id 1638285652903217");
+                .hasMessage("Migration {id = DFPL-635, case reference = 1643728359576136},"
+                    + " expected case id 1642758673379744");
         }
 
         @Test
@@ -506,8 +508,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-629, case reference = 1638285652903217},"
-                    + " expected c110a document id 9da18cc4-418f-4b99-86e7-4fb5dc7a5648");
+                .hasMessage("Migration {id = DFPL-635, case reference = 1642758673379744},"
+                    + " expected c110a document id 9f0d570a-2cb8-48eb-90cb-3d4f26a2350a");
         }
 
 
