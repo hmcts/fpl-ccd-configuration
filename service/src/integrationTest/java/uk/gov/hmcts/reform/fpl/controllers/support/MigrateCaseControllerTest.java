@@ -37,7 +37,6 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @WebMvcTest(MigrateCaseController.class)
@@ -88,19 +87,22 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         @Test
         void shouldPerformMigration() {
-            CourtBundle courtBundle1 = createCourtBundle("hearing 1",
-                "doc1", "url", "binaryUrl");
-            CourtBundle courtBundle2 = createCourtBundle("hearing 1",
-                "doc3", "url3", "binaryUrl3");
-            CourtBundle courtBundle3 = createCourtBundle("hearing 2",
-                "doc2", "url2", "binaryUrl2");
+            UUID hearingUUID = UUID.randomUUID();
+            UUID hearing2UUID = UUID.randomUUID();
 
-            List<CourtBundle> courtBundles = List.of(courtBundle1, courtBundle2, courtBundle3);
+            Element<CourtBundle> courtBundle1 = element(hearingUUID, createCourtBundle("hearing 1",
+                "doc1", "url", "binaryUrl"));
+            Element<CourtBundle> courtBundle2 = element(hearingUUID, createCourtBundle("hearing 1",
+                "doc3", "url3", "binaryUrl3"));
+            Element<CourtBundle> courtBundle3 = element(hearing2UUID, createCourtBundle("hearing 2",
+                "doc2", "url2", "binaryUrl2"));
+
+            List<Element<CourtBundle>> courtBundles = List.of(courtBundle1, courtBundle2, courtBundle3);
 
             CaseData caseData = CaseData.builder()
                 .id(1L)
                 .state(State.SUBMITTED)
-                .courtBundleList(wrapElements(courtBundles)).build();
+                .courtBundleList(courtBundles).build();
 
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
                 buildCaseDetails(caseData, migrationId)
@@ -112,16 +114,16 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThat(responseData.getCourtBundleList()).isNull();
             assertThat(responseData.getCourtBundleListV2())
                 .extracting(Element::getValue)
-                .contains(
+                .containsExactlyInAnyOrder(
                     HearingCourtBundle.builder()
                         .hearing("hearing 1")
-                        .courtBundle(wrapElements(List.of(courtBundle1, courtBundle2)))
-                        .courtBundleNC(wrapElements(List.of(courtBundle1, courtBundle2)))
+                        .courtBundle(List.of(courtBundle1, courtBundle2))
+                        .courtBundleNC(List.of(courtBundle1, courtBundle2))
                         .build(),
                     HearingCourtBundle.builder()
                         .hearing("hearing 2")
-                        .courtBundle(wrapElements(List.of(courtBundle3)))
-                        .courtBundleNC(wrapElements(List.of(courtBundle3)))
+                        .courtBundle(List.of(courtBundle3))
+                        .courtBundleNC(List.of(courtBundle3))
                         .build()
                 );
 
@@ -133,7 +135,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             CaseData rollbackResponseData = extractCaseData(rollBackResponse);
             assertThat(rollbackResponseData.getCourtBundleListV2()).isEmpty();
-            assertThat(unwrapElements(rollbackResponseData.getCourtBundleList()))
+            assertThat(rollbackResponseData.getCourtBundleList())
                 .containsExactlyInAnyOrder(courtBundle1, courtBundle2, courtBundle3);
         }
 

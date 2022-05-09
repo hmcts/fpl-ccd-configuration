@@ -25,12 +25,12 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -80,20 +80,22 @@ public class MigrateCaseController extends CallbackController {
         if (isNotEmpty(oldCourtBundles)) {
             log.info("Migration {id = DFPL-82, case reference = {}} courtbundles start", caseId);
 
-            Map<UUID, Element<CourtBundle>> courtBundles = oldCourtBundles.stream()
+            Map<UUID, List<Element<CourtBundle>>> courtBundles = oldCourtBundles.stream()
                 .collect(
-                    toMap(Element::getId, Function.identity())
+                    groupingBy(Element::getId,
+                        mapping(data -> element(data.getId(), data.getValue()),
+                            toList()))
                 );
 
             List<Element<HearingCourtBundle>> hearingBundles = courtBundles.entrySet().stream()
                 .map(entry -> {
-                        Element<CourtBundle> courtBundle = entry.getValue();
-                        String hearing = courtBundle.getValue().getHearing();
+                        String hearing = entry.getValue().stream().findFirst()
+                            .orElse(element(CourtBundle.builder().build())).getValue().getHearing();
 
                         HearingCourtBundle hearingCourtBundle = HearingCourtBundle.builder()
                             .hearing(hearing)
-                            .courtBundle(List.of(courtBundle))
-                            .courtBundleNC(List.of(courtBundle))//existing bundles marked non-confidential by default
+                            .courtBundle(entry.getValue())
+                            .courtBundleNC(entry.getValue()) //existing bundles marked as not confidential by default
                             .build();
                         return element(entry.getKey(), hearingCourtBundle);
                     }
