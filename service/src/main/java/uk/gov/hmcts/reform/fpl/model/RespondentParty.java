@@ -92,6 +92,9 @@ public final class RespondentParty extends Party {
     }
 
     public String getAddressKnow() {
+        if (addressKnow != null) {
+            return addressKnow;
+        }
         return StringUtils.isNotBlank(this.address.getAddressLine1()) ? YesNo.YES.getValue() : null;
     }
 }
