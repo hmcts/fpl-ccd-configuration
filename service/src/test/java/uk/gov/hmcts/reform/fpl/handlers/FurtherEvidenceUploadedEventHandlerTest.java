@@ -52,6 +52,8 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.NON_CONFIDENTIAL_2;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.PDF_DOCUMENT_1;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithApplicationDocuments;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithConfidentialCorrespondencesByHmtcs;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithConfidentialCorrespondencesByLA;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithConfidentialDocuments;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithConfidentialDocumentsSolicitor;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithConfidentialLADocuments;
@@ -786,15 +788,54 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     @Test
+    void shouldNotNotifyCafcassWhendCaseDataWithCorrespondencesIsUploadedByHmtcsIsConfidential() {
+        CaseData caseData = buildCaseDataWithConfidentialCorrespondencesByHmtcs();
+        verifyNoNotificationForConfidentialCorresspondence(caseData,  caseData.getCorrespondenceDocuments());
+    }
+
+    @Test
     void shouldEmailCafcassWhendCaseDataWithCorrespondencesIsUploadedByLA() {
         CaseData caseData = buildCaseDataWithCorrespondencesByLA();
         verifyCorresspondences(caseData,  caseData.getCorrespondenceDocumentsLA());
     }
 
     @Test
+    void  shouldNotNotifyCafcassWhendCaseDataWithCorrespondencesIsUploadedByLAIsConfidential() {
+        CaseData caseData = buildCaseDataWithConfidentialCorrespondencesByLA();
+        verifyNoNotificationForConfidentialCorresspondence(caseData,  caseData.getCorrespondenceDocumentsLA());
+    }
+
+    @Test
     void shouldEmailCafcassWhendCaseDataWithCorrespondencesIsUploadedBySolicitor() {
         CaseData caseData = buildCaseDataWithCorrespondencesBySolicitor();
         verifyCorresspondences(caseData,  caseData.getCorrespondenceDocumentsSolicitor());
+    }
+
+    private void verifyNoNotificationForConfidentialCorresspondence(CaseData caseData,
+                                                      List<Element<SupportingEvidenceBundle>> correspondence) {
+        assertThat(correspondence).isNotEmpty();
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.of(
+                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                        )
+            );
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+                new FurtherEvidenceUploadedEvent(
+                        caseData,
+                        buildCaseDataWithConfidentialLADocuments(),
+                        DESIGNATED_LOCAL_AUTHORITY,
+                        userDetailsLA());
+
+        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+
+        verify(cafcassNotificationService, never()).sendEmail(
+                eq(caseData),
+                any(),
+                eq(NEW_DOCUMENT),
+                newDocumentDataCaptor.capture());
+
     }
 
     private void verifyCorresspondences(CaseData caseData, List<Element<SupportingEvidenceBundle>> correspondence) {

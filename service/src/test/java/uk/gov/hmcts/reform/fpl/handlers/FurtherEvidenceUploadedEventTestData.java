@@ -108,6 +108,18 @@ public class FurtherEvidenceUploadedEventTestData {
                 .build();
     }
 
+    public static CaseData buildCaseDataWithConfidentialCorrespondencesByHmtcs() {
+        return commonCaseBuilder()
+                .correspondenceDocuments((buildConfidentialDocumentList(HMCTS_USER)))
+                .build();
+    }
+
+    public static CaseData buildCaseDataWithConfidentialCorrespondencesByLA() {
+        return commonCaseBuilder()
+                .correspondenceDocumentsLA((buildConfidentialDocumentList(LA_USER)))
+                .build();
+    }
+
     public static CaseData buildCaseDataWithCorrespondencesByLA() {
         return commonCaseBuilder()
                 .correspondenceDocumentsLA((buildNonConfidentialPdfDocumentList(LA_USER)))

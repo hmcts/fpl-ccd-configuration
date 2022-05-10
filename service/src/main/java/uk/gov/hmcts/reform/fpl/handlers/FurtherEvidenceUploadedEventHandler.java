@@ -39,6 +39,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -389,36 +390,44 @@ public class FurtherEvidenceUploadedEventHandler {
                 .flatMap(statement -> unwrapElements(statement.getValue().getSupportingEvidenceBundle()).stream())
                 .collect(toList());
 
-        return getDocumentInfo(oldBundle, newBundle, "Respondent statement", FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION);
+        return getDocumentInfo(oldBundle, newBundle, "Respondent statement", FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION,
+            supportingEvidenceBundle -> true);
     }
 
     private DocumentInfo  getNewCorrespondenceDocumentsByHmtcs(CaseData caseData, CaseData caseDataBefore) {
+
         List<SupportingEvidenceBundle> oldBundle = unwrapElements(caseDataBefore.getCorrespondenceDocuments());
         List<SupportingEvidenceBundle> newBundle = unwrapElements(caseData.getCorrespondenceDocuments());
 
-        return getDocumentInfo(oldBundle, newBundle, CORRESPONDENCE, CORRESPONDENCE);
+        return getDocumentInfo(oldBundle, newBundle, CORRESPONDENCE, CORRESPONDENCE,
+            not(SupportingEvidenceBundle::isConfidentialDocument));
     }
 
     private DocumentInfo getNewCorrespondenceDocumentsByLA(CaseData caseData, CaseData caseDataBefore) {
         List<SupportingEvidenceBundle> oldBundle = unwrapElements(caseDataBefore.getCorrespondenceDocumentsLA());
         List<SupportingEvidenceBundle> newBundle = unwrapElements(caseData.getCorrespondenceDocumentsLA());
 
-        return getDocumentInfo(oldBundle, newBundle, CORRESPONDENCE, CORRESPONDENCE);
+        return getDocumentInfo(oldBundle, newBundle, CORRESPONDENCE, CORRESPONDENCE,
+            not(SupportingEvidenceBundle::isConfidentialDocument));
     }
 
     private DocumentInfo getNewCorrespondenceDocumentsBySolicitor(CaseData caseData, CaseData caseDataBefore) {
         List<SupportingEvidenceBundle> oldBundle = unwrapElements(caseDataBefore.getCorrespondenceDocumentsSolicitor());
         List<SupportingEvidenceBundle> newBundle = unwrapElements(caseData.getCorrespondenceDocumentsSolicitor());
 
-        return getDocumentInfo(oldBundle, newBundle, CORRESPONDENCE, CORRESPONDENCE);
+        return getDocumentInfo(oldBundle, newBundle, CORRESPONDENCE, CORRESPONDENCE, supportingEvidenceBundle -> true);
     }
 
     private DocumentInfo getDocumentInfo(List<SupportingEvidenceBundle> oldBundle,
                                          List<SupportingEvidenceBundle> newBundle,
                                          String documentType,
-                                         String type) {
+                                         String type,
+                                         Predicate<SupportingEvidenceBundle> predicate) {
+
+        Predicate<SupportingEvidenceBundle> filterBundles = predicate.and(bundle -> !oldBundle.contains(bundle));
+
         return newBundle.stream()
-                .filter(bundle -> !oldBundle.contains(bundle))
+                .filter(filterBundles)
                 .map(bundle -> {
                     DocumentReference document = bundle.getDocument();
                     document.setType(
