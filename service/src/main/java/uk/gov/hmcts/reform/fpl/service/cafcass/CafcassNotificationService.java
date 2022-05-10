@@ -18,11 +18,15 @@ import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 
 import java.net.URLConnection;
 import java.util.Map;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 
 import static java.util.Collections.emptySet;
+import static java.util.Set.of;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
