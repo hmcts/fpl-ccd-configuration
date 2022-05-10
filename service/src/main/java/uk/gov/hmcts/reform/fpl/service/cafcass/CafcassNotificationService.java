@@ -17,12 +17,14 @@ import uk.gov.hmcts.reform.fpl.service.DocumentMetadataDownloadService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 
 import java.net.URLConnection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
+import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.model.email.EmailAttachment.document;
@@ -56,6 +58,11 @@ public class CafcassNotificationService {
         this.maxAttachementSize = maxAttachementSize;
     }
 
+    public void sendEmail(CaseData caseData,
+                          CafcassRequestEmailContentProvider provider,
+                          CafcassData cafcassData) {
+        sendEmail(caseData, Collections.emptySet(), provider, cafcassData);
+    }
 
     public void sendEmail(CaseData caseData,
                           Set<DocumentReference> documentReferences,
