@@ -134,6 +134,15 @@ public class FurtherEvidenceUploadedEventTestData {
                 .build();
     }
 
+    public static CaseData buildCaseDataWithHearingFurtherEvidenceBundle() {
+        HearingFurtherEvidenceBundle bundle = HearingFurtherEvidenceBundle.builder()
+                .hearingName("Case management hearing, 1 April 2022")
+                .supportingEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER))
+                .build();
+        return commonCaseBuilder()
+                .hearingFurtherEvidenceDocuments(wrapElements(bundle))
+                .build();
+    }
 
     public static CaseData buildCaseDataWithNonConfidentialNonPDFRespondentStatementsSolicitor() {
         return commonCaseBuilder()
