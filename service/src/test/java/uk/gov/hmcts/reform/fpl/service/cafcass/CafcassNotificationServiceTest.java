@@ -136,21 +136,6 @@ class CafcassNotificationServiceTest {
         );
     }
 
-    private DocumentReference getDocumentReference() {
-        return DocumentReference.builder().binaryUrl(DOCUMENT_BINARY_URL)
-                .url(DOCUMENT_URL)
-                .filename(DOCUMENT_FILENAME)
-                .build();
-    }
-
-    private DocumentReference getDocumentReference(long size) {
-        return DocumentReference.builder().binaryUrl(DOCUMENT_BINARY_URL)
-            .url(DOCUMENT_URL)
-            .filename(DOCUMENT_FILENAME)
-            .size(size)
-            .build();
-    }
-
     @Test
     void shouldNotifyUrgentNewApplicationRequest() {
         when(configuration.getRecipientForNewApplication()).thenReturn(RECIPIENT_EMAIL);
@@ -632,7 +617,8 @@ class CafcassNotificationServiceTest {
                     + "email contactfpl@justice.gov.uk")
         );
     }
-  
+
+    @Test
     void shouldNotifyWithAttachmentAndLinkWhenThereIsSmallAndLargeDocs() {
         long caseId = 200L;
         String caseLink = "http://localhost:8080/cases/case-details/200";
@@ -709,5 +695,13 @@ class CafcassNotificationServiceTest {
                 .filename(DOCUMENT_FILENAME)
                 .type("Expert reports")
                 .build();
+    }
+
+    private DocumentReference getDocumentReference(long size) {
+        return DocumentReference.builder().binaryUrl(DOCUMENT_BINARY_URL)
+            .url(DOCUMENT_URL)
+            .filename(DOCUMENT_FILENAME)
+            .size(size)
+            .build();
     }
 }
