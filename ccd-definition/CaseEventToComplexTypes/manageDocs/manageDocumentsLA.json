@@ -123,7 +123,7 @@
     "FieldDisplayOrder": 9,
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>There is a confidential address on this case. Please check and confirm your document doesn't contain a confidential address before proceeding</strong></div>",
-    "FieldShowCondition": "manageDocumentLA.hasConfidentialAddress=\"Yes\""
+    "FieldShowCondition": "manageDocumentLA.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -133,7 +133,7 @@
     "ListElementCode": "hasConfidentialAddress",
     "FieldDisplayOrder": 10,
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "manageDocumentLA.hasConfidentialAddress=\"Yes\""
+    "FieldShowCondition": "manageDocumentLA.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
   },
   {
     "LiveFrom": "01/01/2017",

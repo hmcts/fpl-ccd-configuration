@@ -157,7 +157,7 @@
     "ID": "SupportingEvidenceBundle",
     "ListElementCode": "hasConfidentialAddress",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Document contains a confidential address ",
+    "ElementLabel": "Document contains a confidential address?",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }
