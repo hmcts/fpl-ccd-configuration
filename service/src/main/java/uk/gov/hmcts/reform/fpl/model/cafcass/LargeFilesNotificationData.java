@@ -12,4 +12,5 @@ public class LargeFilesNotificationData implements CafcassData {
     private String documentName;
     private String caseUrl;
     private CafcassData originalCafcassData;
+    private String notificationType;
 }

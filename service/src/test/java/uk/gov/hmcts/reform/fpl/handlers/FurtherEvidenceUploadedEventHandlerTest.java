@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -60,6 +62,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithCorrespondencesByLA;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithCorrespondencesBySolicitor;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithCourtBundleList;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithHearingFurtherEvidenceBundle;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialDocuments;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialLADocuments;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialPDFDocumentsSolicitor;
@@ -608,6 +611,48 @@ class FurtherEvidenceUploadedEventHandlerTest {
         NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
         assertThat(newDocumentData.getDocumentTypes())
                 .isEqualTo("• Respondent statement");
+        assertThat(newDocumentData.getEmailSubjectInfo())
+                .isEqualTo("Further documents for main application");
+    }
+
+    @Test
+    void shouldEmailCafcassWhenHearingFurtherEvidenceBundleIsUploaded() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.of(
+                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                        )
+            );
+
+        CaseData caseData = buildCaseDataWithHearingFurtherEvidenceBundle();
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+                new FurtherEvidenceUploadedEvent(
+                        caseData,
+                        buildCaseDataWithConfidentialLADocuments(),
+                        DESIGNATED_LOCAL_AUTHORITY,
+                        userDetailsLA());
+
+        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+
+        Set<DocumentReference> documentReferences = unwrapElements(
+                caseData.getHearingFurtherEvidenceDocuments()).stream()
+                    .map(HearingFurtherEvidenceBundle::getSupportingEvidenceBundle)
+                    .flatMap(List::stream)
+                    .map(Element::getValue)
+                    .map(SupportingEvidenceBundle::getDocument)
+                    .collect(Collectors.toSet());
+
+        verify(cafcassNotificationService).sendEmail(
+            eq(caseData),
+            eq(documentReferences),
+            eq(NEW_DOCUMENT),
+            newDocumentDataCaptor.capture());
+
+        NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
+        assertThat(newDocumentData.getDocumentTypes())
+                .isEqualTo("• Child's guardian reports\n"
+                        + "• Child's guardian reports");
         assertThat(newDocumentData.getEmailSubjectInfo())
                 .isEqualTo("Further documents for main application");
     }

@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.config.cafcass.CafcassEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.ChangeOfAddressData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
-import uk.gov.hmcts.reform.fpl.model.cafcass.LargeFilesNotificationData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewApplicationCafcassData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NoticeOfHearingCafcassData;
@@ -29,14 +28,17 @@ import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.List;
 
 import static java.time.format.FormatStyle.LONG;
 import static java.util.Set.of;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
@@ -83,9 +85,6 @@ class CafcassNotificationServiceTest {
 
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgumentCaptor;
-
-    @Captor
-    private ArgumentCaptor<LargeFilesNotificationData> largeFilesNotificationDataArgumentCaptor;
 
     @BeforeEach
     void setUp() {
@@ -459,7 +458,11 @@ class CafcassNotificationServiceTest {
         when(configuration.getRecipientForLargeAttachements()).thenReturn(RECIPIENT_EMAIL);
         when(caseUrlService.getCaseUrl(caseId)).thenReturn(caseLink);
         when(documentMetadataDownloadService.getDocumentMetadata(anyString()))
-                .thenReturn(DocumentReference.builder().size(Long.MAX_VALUE).build());
+                .thenReturn(DocumentReference.builder()
+                        .filename(DOCUMENT_FILENAME)
+                        .size(Long.MAX_VALUE)
+                        .url(DOCUMENT_URL)
+                        .build());
 
 
         CaseData caseData = CaseData.builder()
@@ -482,14 +485,14 @@ class CafcassNotificationServiceTest {
 
         EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
-        assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- new large document added");
+        assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- new large document added - Expert reports");
         assertThat(data.getMessage()).isEqualTo(
                 String.join("", "Large document(s) for this case was uploaded to the ",
-                    "Public Law Portal entitled fileToSend.pdf. As this could ",
-                    "not be sent by email you will need to download it ",
-                    "from the Portal using this link.",
-                    System.lineSeparator(),
-                    "http://localhost:8080/cases/case-details/200")
+                        "Public Law Portal entitled fileToSend.pdf. As this could ",
+                        "not be sent by email you will need to download it ",
+                        "from the Portal using this link.",
+                        System.lineSeparator(),
+                        "http://localhost:8080/cases/case-details/200")
         );
     }
 
@@ -628,5 +631,83 @@ class CafcassNotificationServiceTest {
                 "Do not reply to this email. If you need to contact us, call 0330 808 4424 or "
                     + "email contactfpl@justice.gov.uk")
         );
+    }
+  
+    void shouldNotifyWithAttachmentAndLinkWhenThereIsSmallAndLargeDocs() {
+        long caseId = 200L;
+        String caseLink = "http://localhost:8080/cases/case-details/200";
+        String smallDocumentUrl = "smallDocumentUrl";
+
+        when(configuration.getRecipientForAdditionlDocument()).thenReturn("additionalEmail");
+        when(configuration.getRecipientForLargeAttachements()).thenReturn(RECIPIENT_EMAIL);
+        when(configuration.getSender()).thenReturn(SENDER_EMAIL);
+        when(caseUrlService.getCaseUrl(caseId)).thenReturn(caseLink);
+        when(documentMetadataDownloadService.getDocumentMetadata(DOCUMENT_URL))
+                .thenReturn(DocumentReference.builder()
+                        .filename(DOCUMENT_FILENAME)
+                        .size(Long.MAX_VALUE - 100000)
+                        .url(DOCUMENT_URL)
+                        .build());
+
+        when(documentMetadataDownloadService.getDocumentMetadata(smallDocumentUrl))
+                .thenReturn(DocumentReference.builder()
+                        .filename("small.pdf")
+                        .size(10L)
+                        .url(smallDocumentUrl)
+                        .binaryUrl(smallDocumentUrl)
+                        .build());
+
+        when(documentDownloadService.downloadDocument(smallDocumentUrl)).thenReturn(
+                DOCUMENT_CONTENT);
+
+        CaseData caseData = CaseData.builder()
+                .familyManCaseNumber(FAMILY_MAN)
+                .id(caseId)
+                .build();
+
+        DocumentReference smallDoc = getDocumentReference().toBuilder()
+                .url(smallDocumentUrl)
+                .build();
+
+        underTest.sendEmail(caseData,
+                of(getDocumentReference(), smallDoc),
+                ADDITIONAL_DOCUMENT,
+                NewDocumentData.builder()
+                        .documentTypes("• Additional statement\n • Large statement")
+                        .emailSubjectInfo("additional documents")
+                        .build()
+        );
+
+        verify(documentDownloadService).downloadDocument(smallDocumentUrl);
+        verify(documentDownloadService, never()).downloadDocument(DOCUMENT_BINARY_URL);
+
+        verify(emailService, times(2)).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
+
+        List<EmailData> emailDataList = emailDataArgumentCaptor.getAllValues();
+
+        String largeDocMessage = String.join("", "Large document(s) for this case was uploaded to the ",
+                "Public Law Portal entitled fileToSend.pdf. As this could ",
+                "not be sent by email you will need to download it ",
+                "from the Portal using this link.",
+                System.lineSeparator(),
+                "http://localhost:8080/cases/case-details/200");
+
+        assertThat(emailDataList)
+                .extracting("recipient", "subject", "message")
+                .containsExactlyInAnyOrder(
+                        tuple("additionalEmail",
+                                "Court Ref. FM1234.- additional documents",
+                                "Document attached is : small.pdf"),
+                        tuple(RECIPIENT_EMAIL,
+                                "Court Ref. FM1234.- new large document added - Expert reports",
+                                largeDocMessage));
+    }
+
+    private DocumentReference getDocumentReference() {
+        return DocumentReference.builder().binaryUrl(DOCUMENT_BINARY_URL)
+                .url(DOCUMENT_URL)
+                .filename(DOCUMENT_FILENAME)
+                .type("Expert reports")
+                .build();
     }
 }

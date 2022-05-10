@@ -72,4 +72,8 @@ public interface CafcassData {
     default String  getHearingTime() {
         throw new UnsupportedOperationException();
     }
+
+    default String getNotificationType()  {
+        throw new UnsupportedOperationException();
+    }
 }
