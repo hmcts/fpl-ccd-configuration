@@ -50,6 +50,7 @@ public class ApproveDraftOrdersService {
 
     private static final String ORDERS_TO_BE_SENT = "ordersToBeSent";
     private static final String NUM_DRAFT_CMOS = "numDraftCMOs";
+    private static final String REFUSED_ORDERS = "refusedHearingOrders";
 
     /**
      * That methods shouldn't be invoked without any cmo selected as the outcome is unexpected.
@@ -271,6 +272,23 @@ public class ApproveDraftOrdersService {
         updateHearingDraftOrdersBundle(caseData, selectedOrdersBundle);
         data.put("orderCollection", orderCollection);
         data.put("hearingOrdersBundlesDrafts", caseData.getHearingOrdersBundlesDrafts());
+    }
+
+    @SuppressWarnings("unchecked")
+    public void updateRejectedHearingOrders(Map<String, Object> data) {
+        List<Element<HearingOrder>> ordersToBeSent = defaultIfNull((
+            List<Element<HearingOrder>>) data.get(ORDERS_TO_BE_SENT), newArrayList());
+
+        List<Element<HearingOrder>> rejectedOrders = defaultIfNull((
+            List<Element<HearingOrder>>) data.get(REFUSED_ORDERS), newArrayList());
+
+        rejectedOrders.addAll(ordersToBeSent.stream()
+            .filter(bundle -> bundle.getValue().getRequestedChanges() != null)
+            .collect(toList()));
+
+        if (!rejectedOrders.isEmpty()) {
+            data.put(REFUSED_ORDERS, rejectedOrders);
+        }
     }
 
     private void updateHearingDraftOrdersBundle(CaseData caseData, Element<HearingOrdersBundle> selectedOrdersBundle) {
