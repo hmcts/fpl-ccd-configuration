@@ -4,7 +4,7 @@ import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -120,6 +120,15 @@ public class FurtherEvidenceUploadedEventTestData {
                 .build();
     }
 
+    public static CaseData buildCaseDataWithHearingFurtherEvidenceBundle() {
+        HearingFurtherEvidenceBundle bundle = HearingFurtherEvidenceBundle.builder()
+                .hearingName("Case management hearing, 1 April 2022")
+                .supportingEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER))
+                .build();
+        return commonCaseBuilder()
+                .hearingFurtherEvidenceDocuments(wrapElements(bundle))
+                .build();
+    }
 
     public static CaseData buildCaseDataWithNonConfidentialNonPDFRespondentStatementsSolicitor() {
         return commonCaseBuilder()
@@ -192,35 +201,26 @@ public class FurtherEvidenceUploadedEventTestData {
 
     public static CaseData buildCaseDataWithCourtBundleList(int count, String hearing, String uploadedBy) {
         return commonCaseBuilder()
-            .courtBundleListV2(
+            .courtBundleList(
                 createCourtBundleList(count, hearing, uploadedBy)
             ).build();
     }
 
-    public static List<Element<HearingCourtBundle>> createCourtBundleList(int count, String hearing,
-                                                                          String uploadedBy) {
+    public static List<Element<CourtBundle>> createCourtBundleList(int count, String hearing, String uploadedBy) {
         return IntStream.rangeClosed(1, count)
             .boxed()
-            .map(value -> {
-                Element<CourtBundle> courtBundleElement = ElementUtils.element(createDummyCourtBundle(uploadedBy));
-                return ElementUtils.element(HearingCourtBundle.builder()
-                        .hearing(hearing)
-                        .courtBundle(List.of(courtBundleElement))
-                        .build()
-                );
-
-            })
+            .map(value -> ElementUtils.element(createDummyCourtBundle(hearing, uploadedBy)))
             .collect(Collectors.toList());
     }
 
-    public static CourtBundle createDummyCourtBundle(String uploadedBy) {
+    public static CourtBundle createDummyCourtBundle(String hearing, String uploadedBy) {
         return CourtBundle.builder()
             .document(getPDFDocument())
+            .hearing(hearing)
             .dateTimeUploaded(LocalDateTime.now())
             .uploadedBy(uploadedBy)
             .build();
     }
-
 
     private static List<Element<RespondentStatement>> buildRespondentStatementsList(
         List<Element<SupportingEvidenceBundle>> bundle
