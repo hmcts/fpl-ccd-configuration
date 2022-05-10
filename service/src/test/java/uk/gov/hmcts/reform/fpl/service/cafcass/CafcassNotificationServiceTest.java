@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.config.cafcass.CafcassEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.ChangeOfAddressData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
-import uk.gov.hmcts.reform.fpl.model.cafcass.LargeFilesNotificationData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewApplicationCafcassData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NoticeOfHearingCafcassData;
@@ -80,9 +79,6 @@ class CafcassNotificationServiceTest {
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgumentCaptor;
 
-    @Captor
-    private ArgumentCaptor<LargeFilesNotificationData> largeFilesNotificationDataArgumentCaptor;
-
     @BeforeEach
     void setUp() {
         underTest = new CafcassNotificationService(
@@ -130,13 +126,6 @@ class CafcassNotificationServiceTest {
                 "A new order for this case was uploaded to the Public Law Portal entitled",
                 TITLE)
         );
-    }
-
-    private DocumentReference getDocumentReference() {
-        return DocumentReference.builder().binaryUrl(DOCUMENT_BINARY_URL)
-                .url(DOCUMENT_URL)
-                .filename(DOCUMENT_FILENAME)
-                .build();
     }
 
     @Test
@@ -449,6 +438,7 @@ class CafcassNotificationServiceTest {
                 .thenReturn(DocumentReference.builder()
                         .filename(DOCUMENT_FILENAME)
                         .size(Long.MAX_VALUE)
+                        .url(DOCUMENT_URL)
                         .build());
 
 
@@ -472,7 +462,7 @@ class CafcassNotificationServiceTest {
 
         EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
-        assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- new large document added - ADDITIONAL_DOCUMENT");
+        assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- new large document added - Expert reports");
         assertThat(data.getMessage()).isEqualTo(
                 String.join("", "Large document(s) for this case was uploaded to the ",
                         "Public Law Portal entitled fileToSend.pdf. As this could ",
@@ -543,13 +533,14 @@ class CafcassNotificationServiceTest {
                 .thenReturn(DocumentReference.builder()
                         .filename(DOCUMENT_FILENAME)
                         .size(Long.MAX_VALUE - 100000)
-                        .binaryUrl(DOCUMENT_BINARY_URL)
+                        .url(DOCUMENT_URL)
                         .build());
 
         when(documentMetadataDownloadService.getDocumentMetadata(smallDocumentUrl))
                 .thenReturn(DocumentReference.builder()
                         .filename("small.pdf")
                         .size(10L)
+                        .url(smallDocumentUrl)
                         .binaryUrl(smallDocumentUrl)
                         .build());
 
@@ -580,8 +571,6 @@ class CafcassNotificationServiceTest {
         verify(emailService, times(2)).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
 
         List<EmailData> emailDataList = emailDataArgumentCaptor.getAllValues();
-        System.out.println(emailDataList);
-
 
         String largeDocMessage = String.join("", "Large document(s) for this case was uploaded to the ",
                 "Public Law Portal entitled fileToSend.pdf. As this could ",
@@ -597,7 +586,16 @@ class CafcassNotificationServiceTest {
                                 "Court Ref. FM1234.- additional documents",
                                 "Document attached is : small.pdf"),
                         tuple(RECIPIENT_EMAIL,
-                                "Court Ref. FM1234.- new large document added - ADDITIONAL_DOCUMENT",
+                                "Court Ref. FM1234.- new large document added - Expert reports",
                                 largeDocMessage));
     }
+
+    private DocumentReference getDocumentReference() {
+        return DocumentReference.builder().binaryUrl(DOCUMENT_BINARY_URL)
+                .url(DOCUMENT_URL)
+                .filename(DOCUMENT_FILENAME)
+                .type("Expert reports")
+                .build();
+    }
+
 }
