@@ -51,7 +51,7 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.addressKnow",
     "FieldDisplayOrder": 6,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",
