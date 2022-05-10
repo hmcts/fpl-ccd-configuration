@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
@@ -106,22 +105,6 @@ public class FurtherEvidenceUploadedEventHandler {
 
         recipients.removeIf(email -> Objects.equals(email, uploader.getEmail()));
 
-        List<SupportingEvidenceBundle> documentWithConfidentialAddress =
-            getDocumentsWithConfidentialAddress(newNonConfidentialDocuments);
-
-        // do not send notification to respondents if documents contain a confidential address
-        if (!documentWithConfidentialAddress.isEmpty()) {
-            Set<String> respondentEmails = caseData.getAllRespondents().stream()
-                .map(resp -> resp.getValue().getParty().getEmail().getEmail())
-                .collect(toSet());
-
-            // send notification to respondents only for those document without confidential address
-            furtherEvidenceNotificationService.sendNotification(caseData, respondentEmails, uploader.getFullName(),
-                getDocumentNames(getDocumentsWithoutConfidentialAddress(newNonConfidentialDocuments)));
-
-            recipients.removeAll(respondentEmails);
-        }
-
         if (isNotEmpty(recipients)) {
 
             List<String> newDocumentNames = getDocumentNames(newNonConfidentialDocuments);
@@ -144,31 +127,9 @@ public class FurtherEvidenceUploadedEventHandler {
                 userType,
                 (oldBundle, newDoc) -> !newDoc.isConfidentialDocument() && !unwrapElements(oldBundle).contains(newDoc));
 
-
-            Set<Recipient> recipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
-
-            List<SupportingEvidenceBundle> documentWithConfidentialAddress =
-                getDocumentsWithConfidentialAddress(newNonConfidentialDocuments);
-
-            // do not send the document to respondents if the documents contain a confidential address
-            if (!documentWithConfidentialAddress.isEmpty()) {
-                Set<Recipient> respondentRecipients = caseData.getAllRespondents().stream()
-                    .map(resp -> resp.getValue().getParty())
-                    .collect(toSet());
-
-                List<SupportingEvidenceBundle> documentWithoutConfidentialAddress =
-                    getDocumentsWithoutConfidentialAddress(newNonConfidentialDocuments);
-
-                // send to respondents only for those document without confidential address
-                sendDocumentService.sendDocuments(caseData,
-                    getDocumentReferences(documentWithoutConfidentialAddress),
-                    new ArrayList<>(respondentRecipients));
-
-                recipients.removeAll(respondentRecipients);
-            }
-
+            Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
             List<DocumentReference> documents = getDocumentReferences(newNonConfidentialDocuments);
-            sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(recipients));
+            sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(allRecipients));
         }
     }
 
@@ -497,20 +458,6 @@ public class FurtherEvidenceUploadedEventHandler {
     private List<Element<SupportingEvidenceBundle>> concatEvidenceBundles(List<Element<SupportingEvidenceBundle>> b1,
                                                                           List<Element<SupportingEvidenceBundle>> b2) {
         return Stream.concat(b1.stream(), b2.stream()).collect(toList());
-    }
-
-    private List<SupportingEvidenceBundle> getDocumentsWithConfidentialAddress(
-            List<SupportingEvidenceBundle> documents) {
-        return documents.stream()
-                   .filter(doc -> YesNo.YES.equals(doc.getHasConfidentialAddress()))
-                   .collect(toList());
-    }
-
-    private List<SupportingEvidenceBundle> getDocumentsWithoutConfidentialAddress(
-        List<SupportingEvidenceBundle> documents) {
-        return documents.stream()
-            .filter(doc -> !YesNo.YES.equals(doc.getHasConfidentialAddress()))
-            .collect(toList());
     }
 
     @Async
