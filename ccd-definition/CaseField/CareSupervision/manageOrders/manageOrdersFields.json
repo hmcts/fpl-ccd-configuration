@@ -671,5 +671,32 @@
     "Label": "Please select the required order",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersSupervisionOrderVariationHeading",
+    "FieldType": "Label",
+    "Label": "The court substitutes/varies this supervision order for the care order.",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersSupervisionOrderExtensionHeading",
+    "FieldType": "Label",
+    "Label": "The court extends this supervision order for the care order.",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersSupervisionOrderCourtDirection",
+    "FieldType": "Text",
+    "Label": "The court directs that",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

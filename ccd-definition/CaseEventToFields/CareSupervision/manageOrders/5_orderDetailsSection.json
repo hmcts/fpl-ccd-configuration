@@ -693,13 +693,52 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageOrders",
-    "CaseFieldID": "manageOrdersSupervisionOrderType",
+    "CaseFieldID": "manageOrdersSupervisionOrderVariationHeading",
     "PageFieldDisplayOrder": 31,
+    "DisplayContext": "READONLY",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "manageOrdersSupervisionOrderType=\"VARIATION_OF_SUPERVISION_ORDER\"",
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersSupervisionOrderExtensionHeading",
+    "PageFieldDisplayOrder": 32,
+    "DisplayContext": "READONLY",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "manageOrdersSupervisionOrderType=\"EXTENSION_OF_SUPERVISION_ORDER\"",
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersSupervisionOrderType",
+    "PageFieldDisplayOrder": 33,
     "DisplayContext": "MANDATORY",
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
     "FieldShowCondition": "orderTempQuestions.manageOrdersVaryOrExtendSupervisionOrder=\"YES\"",
     "ShowSummaryChangeOption": "Y"
-  }
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersSupervisionOrderCourtDirection",
+    "PageFieldDisplayOrder": 34,
+    "DisplayContext": "MANDATORY",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "manageOrdersSupervisionOrderType=\"VARIATION_OF_SUPERVISION_ORDER\" OR manageOrdersSupervisionOrderType=\"EXTENSION_OF_SUPERVISION_ORDER\"",
+    "ShowSummaryChangeOption": "Y"
+  }   
 ]

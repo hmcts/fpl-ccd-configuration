@@ -91,7 +91,8 @@ public enum OrderQuestionBlock {
     UPLOAD_AMENDED_ORDER("uploadAmendedOrder", OrderSection.AMEND_DOWNLOAD,
         List.of("manageOrdersAmendedOrder")),
     VARY_OR_EXTEND_SUPERVISION_ORDER("manageOrdersVaryOrExtendSupervisionOrder", OrderSection.ORDER_DETAILS,
-        List.of("manageOrdersSupervisionOrderType")),
+        List.of("manageOrdersSupervisionOrderType", "manageOrdersSupervisionOrderVariationHeading",
+        "manageOrdersSupervisionOrderExtensionHeading", "manageOrdersSupervisionOrderCourtDirection")),
     ORDER_PLACED_CHILD_IN_CUSTODY("orderPlacedChildInCustody", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersPlacedUnderOrder", "manageOrdersOrderCreatedDate", "manageOrdersActionsPermitted",
             "manageOrdersIsExParte"));
