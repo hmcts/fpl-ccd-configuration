@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.ccd.model;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class RespondentPartyTest {
 
