@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
@@ -77,16 +78,16 @@ public class ManageDocumentService {
     public static final String MANAGE_DOCUMENT_KEY = "manageDocument";
     public static final String ADDITIONAL_APPLICATIONS_BUNDLE_KEY = "additionalApplicationsBundle";
     public static final String RESPONDENTS_LIST_KEY = "respondentStatementList";
-
     public static final String CHILDREN_LIST_KEY = "manageDocumentsChildrenList";
     public static final String RESPONDENT_LIST_KEY = "manageDocumentsRespondentList";
     public static final String HEARING_DOCUMENT_HEARING_LIST_KEY = "hearingDocumentsHearingList";
     public static final String HEARING_DOCUMENT_TYPE = "manageDocumentsHearingDocumentType";
+    public static final String COURT_BUNDLE_HEARING_LABEL_KEY = "manageDocumentsCourtBundleHearingLabel";
     public static final String COURT_BUNDLE_KEY = "manageDocumentsCourtBundle";
     public static final String CASE_SUMMARY_KEY = "manageDocumentsCaseSummary";
     public static final String POSITION_STATEMENT_CHILD_KEY = "manageDocumentsPositionStatementChild";
     public static final String POSITION_STATEMENT_RESPONDENT_KEY = "manageDocumentsPositionStatementRespondent";
-    public static final String COURT_BUNDLE_LIST_KEY = "courtBundleList";
+    public static final String COURT_BUNDLE_LIST_KEY = "courtBundleListV2";
     public static final String CASE_SUMMARY_LIST_KEY = "caseSummaryList";
     public static final String POSITION_STATEMENT_CHILD_LIST_KEY = "positionStatementChildList";
     public static final String POSITION_STATEMENT_RESPONDENT_LIST_KEY = "positionStatementRespondentList";
@@ -309,6 +310,7 @@ public class ManageDocumentService {
         switch (caseData.getManageDocumentsHearingDocumentType()) {
             case COURT_BUNDLE :
                 map.put(COURT_BUNDLE_KEY, getCourtBundleForHearing(caseData, selectedHearingId));
+                map.put(COURT_BUNDLE_HEARING_LABEL_KEY, getHearingBooking(caseData, selectedHearingId).toLabel());
                 break;
             case CASE_SUMMARY :
                 map.put(CASE_SUMMARY_KEY, getCaseSummaryForHearing(caseData, selectedHearingId));
@@ -329,8 +331,7 @@ public class ManageDocumentService {
 
         switch (caseData.getManageDocumentsHearingDocumentType()) {
             case COURT_BUNDLE :
-                map.put(COURT_BUNDLE_LIST_KEY, buildHearingDocumentList(caseData, selectedHearingId,
-                    caseData.getCourtBundleList(), caseData.getManageDocumentsCourtBundle()));
+                map.put(COURT_BUNDLE_LIST_KEY, buildCourtBundleList(caseData, selectedHearingId));
                 break;
             case CASE_SUMMARY :
                 map.put(CASE_SUMMARY_LIST_KEY, buildHearingDocumentList(caseData, selectedHearingId,
@@ -362,13 +363,30 @@ public class ManageDocumentService {
             return List.of(element(selectedHearingId, hearingDocument));
         }
 
-        Optional<Element<T>> editedBundle = findElement(selectedHearingId, hearingDocumentList);
-        editedBundle.ifPresentOrElse(
-            hearingDocumentElement -> hearingDocumentList.set(hearingDocumentList.indexOf(hearingDocumentElement),
-                element(selectedHearingId, hearingDocument)),
-            () -> hearingDocumentList.add(element(selectedHearingId, hearingDocument)));
+        // TODO: following code is removed by DFPL-82, review the following is still needed or not
+//        Optional<Element<T>> editedBundle = findElement(selectedHearingId, hearingDocumentList);
+//        editedBundle.ifPresentOrElse(
+//            hearingDocumentElement -> hearingDocumentList.set(hearingDocumentList.indexOf(hearingDocumentElement),
+//                element(selectedHearingId, hearingDocument)),
+//            () -> hearingDocumentList.add(element(selectedHearingId, hearingDocument)));
 
         return hearingDocumentList;
+    }
+
+    private List<Element<HearingCourtBundle>> buildCourtBundleList(CaseData caseData, UUID selectedHearingId) {
+        HearingBooking hearingBooking = getHearingBooking(caseData, selectedHearingId);
+        List<Element<CourtBundle>> courtBundleNC = caseData.getManageDocumentsCourtBundle().stream()
+            .filter(doc -> !doc.getValue().isConfidentialDocument())
+            .collect(Collectors.toList());
+
+        return buildHearingDocumentList(caseData, selectedHearingId,
+            caseData.getCourtBundleListV2(),
+            HearingCourtBundle.builder()
+                .hearing(hearingBooking.toLabel())
+                .courtBundle(caseData.getManageDocumentsCourtBundle())
+                .courtBundleNC(courtBundleNC)
+                .build()
+            );
     }
 
     private DynamicList initialiseHearingDocumentsHearingList(CaseData caseData) {
@@ -398,14 +416,16 @@ public class ManageDocumentService {
         return hearingBooking.get().getValue();
     }
 
-    private CourtBundle getCourtBundleForHearing(CaseData caseData, UUID selectedHearingId) {
-        CourtBundle courtBundle = getHearingDocumentForSelectedHearing(caseData.getCourtBundleList(),
+    private List<Element<CourtBundle>> getCourtBundleForHearing(CaseData caseData, UUID selectedHearingId) {
+        HearingCourtBundle hearingCourtBundle = getHearingDocumentForSelectedHearing(caseData.getCourtBundleListV2(),
             selectedHearingId);
-        if (courtBundle == null) {
-            courtBundle = CourtBundle.builder()
-                .hearing(getHearingBooking(caseData, selectedHearingId).toLabel()).build();
+        if (hearingCourtBundle == null) {
+//            courtBundle = CourtBundle.builder()
+//                .hearing(getHearingBooking(caseData, selectedHearingId).toLabel()).build();
+            return List.of(element(CourtBundle.builder().build()));
+        } else {
+            return hearingCourtBundle.getCourtBundle();
         }
-        return courtBundle;
     }
 
     private CaseSummary getCaseSummaryForHearing(CaseData caseData, UUID selectedHearingId) {

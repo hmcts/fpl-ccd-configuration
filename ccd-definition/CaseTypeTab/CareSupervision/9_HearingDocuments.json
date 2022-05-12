@@ -27,7 +27,7 @@
     "TabID": "HearingDocumentsTab",
     "TabLabel": "Hearing documents",
     "TabDisplayOrder": 9,
-    "CaseFieldID": "courtBundleList",
+    "CaseFieldID": "courtBundleListV2",
     "TabFieldDisplayOrder": 3
   },
   {

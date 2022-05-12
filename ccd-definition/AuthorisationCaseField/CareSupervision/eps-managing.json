@@ -1262,6 +1262,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "courtBundleListV2",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "uploadCMOLink",
     "UserRole": "[EPSMANAGING]",
     "CRUD": "R"
@@ -1360,9 +1367,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "manageDocumentsCourtBundle",
+    "CaseFieldID": "manageDocumentsCourtBundleHearingLabel",
     "UserRole": "[EPSMANAGING]",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageDocumentsCourtBundle",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",

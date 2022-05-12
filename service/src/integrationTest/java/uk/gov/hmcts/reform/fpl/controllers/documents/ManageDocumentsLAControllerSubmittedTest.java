@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
@@ -166,15 +167,16 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
 
     private Map<String, Object> buildCourtBundleData() {
         return new HashMap<>(Map.of(
-        "courtBundleList", wrapElements(
-                CourtBundle.builder()
+            "courtBundleListV2",
+            wrapElements(HearingCourtBundle.builder()
+                .hearing("hearing")
+                .courtBundle(wrapElements(CourtBundle.builder()
                     .document(getPDFDocument())
                     .hearing("hearing")
                     .dateTimeUploaded(LocalDateTime.now())
                     .uploadedBy("LA")
-                    .build()
-                )
-            ));
+                    .build()))
+                .build())));
     }
 
     private DocumentReference getPDFDocument() {

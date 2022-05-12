@@ -687,12 +687,13 @@ public class CaseData {
     private final Object respondentStatementList;
 
     private final HearingDocumentType manageDocumentsHearingDocumentType;
-    private final CourtBundle manageDocumentsCourtBundle;
+    private final List<Element<CourtBundle>> manageDocumentsCourtBundle;
     private final CaseSummary manageDocumentsCaseSummary;
     private final PositionStatementChild manageDocumentsPositionStatementChild;
     private final PositionStatementRespondent manageDocumentsPositionStatementRespondent;
     private final DynamicList manageDocumentsChildrenList;
     private final DynamicList manageDocumentsRespondentList;
+    private final List<Element<HearingCourtBundle>> courtBundleListV2;
     private final List<Element<CourtBundle>> courtBundleList;
     private final List<Element<CaseSummary>> caseSummaryList;
     private final List<Element<PositionStatementChild>> positionStatementChildList;
@@ -714,8 +715,12 @@ public class CaseData {
         return defaultIfNull(supportingEvidenceDocumentsTemp, new ArrayList<>());
     }
 
-    public List<Element<CourtBundle>> getCourtBundleList() {
-        return defaultIfNull(courtBundleList, new ArrayList<>());
+    public List<Element<CourtBundle>> getManageDocumentsCourtBundle() {
+        return defaultIfNull(manageDocumentsCourtBundle, new ArrayList<>());
+    }
+
+    public List<Element<HearingCourtBundle>> getCourtBundleListV2() {
+        return defaultIfNull(courtBundleListV2, new ArrayList<>());
     }
 
     public List<Element<CaseSummary>> getCaseSummaryList() {

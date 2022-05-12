@@ -10,12 +10,14 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
+import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.exceptions.RespondentNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
@@ -1565,7 +1567,7 @@ class ManageDocumentServiceTest {
         UUID selectedHearingId = randomUUID();
 
         CaseData caseData = CaseData.builder()
-            .manageDocumentsCourtBundle(CourtBundle.builder().hearing("Test hearing").build())
+            .manageDocumentsCourtBundle(wrapElements(CourtBundle.builder().hearing("Test hearing").build()))
             .hearingDocumentsHearingList(selectedHearingId.toString())
             .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
             .build();
@@ -1575,24 +1577,194 @@ class ManageDocumentServiceTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    void shouldReturnEditedHearingDocumentListWithCourtBundleWhenExistingCourtBundlePresentForSelectedHearing() {
+    void shouldReturnNewCourtBundleListWithCourtBundleWhenNoExistingCourtBundlePresentForSelectedHearing() {
         UUID selectedHearingId = randomUUID();
-        List<Element<CourtBundle>> courtBundleList = new ArrayList<>();
-        courtBundleList.add(element(selectedHearingId, CourtBundle.builder().hearing("Test hearing").build()));
 
-        CourtBundle editedBundle = CourtBundle.builder().hearing("Edited hearing").build();
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(selectedHearingId, createHearingBooking(futureDate, futureDate.plusDays(3)))
+        );
+        List<Element<CourtBundle>> courtBundle = List.of(element(CourtBundle.builder().build()));
+
         CaseData caseData = CaseData.builder()
-            .courtBundleList(courtBundleList)
-            .manageDocumentsCourtBundle(editedBundle)
+            .manageDocumentsCourtBundle(courtBundle)
             .hearingDocumentsHearingList(selectedHearingId.toString())
-            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
+            .hearingDetails(hearingBookings)
             .build();
 
-        assertThat(unwrapElements((List<Element<CourtBundle>>) underTest
-            .buildHearingDocumentList(caseData)
-            .get(COURT_BUNDLE_LIST_KEY)))
-            .containsExactly(editedBundle);
+        List<HearingCourtBundle> results = unwrapElements(
+            (List<Element<HearingCourtBundle>>) underTest
+                .buildHearingDocumentList(caseData).get(COURT_BUNDLE_LIST_KEY));
+        assertThat(results).isNotEmpty();
+        assertThat(results.get(0).getCourtBundle())
+            .isNotEmpty()
+            .isEqualTo(courtBundle);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldReturnEditedCourtBundleListWithCourtBundleWhenExistingCourtBundlePresentForSelectedHearing() {
+        UUID selectedHearingId = randomUUID();
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(selectedHearingId, createHearingBooking(futureDate, futureDate.plusDays(3)))
+        );
+        List<Element<CourtBundle>> currentCourtBundle = List.of(element(createCourtBundleWithFile("Current filename")));
+        List<Element<CourtBundle>> editedCourtBundle = List.of(element(createCourtBundleWithFile("New filename")));
+
+        List<Element<HearingCourtBundle>> courtBundleList = List.of(element(
+            selectedHearingId,
+            HearingCourtBundle.builder()
+                .hearing(hearingBookings.get(0).getValue().toLabel())
+                .courtBundle(currentCourtBundle)
+                .build()));
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsCourtBundle(editedCourtBundle)
+            .courtBundleListV2(courtBundleList)
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .hearingDetails(hearingBookings)
+            .build();
+
+        List<HearingCourtBundle> results = unwrapElements(
+            (List<Element<HearingCourtBundle>>) underTest
+                .buildHearingDocumentList(caseData).get(COURT_BUNDLE_LIST_KEY));
+        assertThat(results).isNotEmpty();
+        assertThat(results.get(0).getCourtBundle())
+            .isNotEmpty()
+            .isEqualTo(editedCourtBundle);
+    }
+
+    @Test
+    void shouldReturnAdditionalCourtBundleForSelectedHearing() {
+        UUID selectedHearingId = randomUUID();
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(selectedHearingId, createHearingBooking(futureDate, futureDate.plusDays(3)))
+        );
+        List<Element<CourtBundle>> currentCourtBundle = List.of(element(createCourtBundleWithFile("Current filename")));
+        List<Element<CourtBundle>> newCourtBundle = new ArrayList<>(currentCourtBundle);
+        newCourtBundle.add(element(createCourtBundleWithFile("New filename 1")));
+        newCourtBundle.add(element(createCourtBundleWithFile("New filename 2")));
+
+        List<Element<HearingCourtBundle>> courtBundleList = List.of(element(
+            selectedHearingId,
+            HearingCourtBundle.builder()
+                .hearing(hearingBookings.get(0).getValue().toLabel())
+                .courtBundle(currentCourtBundle)
+                .build()));
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsCourtBundle(newCourtBundle)
+            .courtBundleListV2(courtBundleList)
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .hearingDetails(hearingBookings)
+            .build();
+
+        List<HearingCourtBundle> results = unwrapElements(
+            (List<Element<HearingCourtBundle>>) underTest
+                .buildHearingDocumentList(caseData).get(COURT_BUNDLE_LIST_KEY));
+        assertThat(results).isNotEmpty();
+        assertThat(results.get(0).getCourtBundle())
+            .hasSize(3)
+            .isEqualTo(newCourtBundle);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenBuildingCourtBundleListNotWithBookedHearing() {
+        UUID selectedHearingId = randomUUID();
+        UUID hearingBookingId = randomUUID();
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(hearingBookingId, createHearingBooking(futureDate, futureDate.plusDays(3)))
+        );
+
+        CaseData caseData = CaseData.builder()
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .hearingDetails(hearingBookings)
+            .build();
+
+        assertThatThrownBy(() -> underTest.buildHearingDocumentList(caseData))
+            .isInstanceOf(NoHearingBookingException.class);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenInitialisingCourtBundleListNotWithBookedHearing() {
+        UUID selectedHearingId = randomUUID();
+        UUID hearingBookingId = randomUUID();
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(hearingBookingId, createHearingBooking(futureDate, futureDate.plusDays(3)))
+        );
+
+        CaseData caseData = CaseData.builder()
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .hearingDetails(hearingBookings)
+            .build();
+
+        assertThatThrownBy(() -> underTest.initialiseHearingDocumentFields(caseData))
+            .isInstanceOf(NoHearingBookingException.class);
+    }
+
+    @Test
+    void shouldNotInitialiseCourtBundleFieldsIfBundleHearingDifferentToSelected() {
+        UUID selectedHearingId = randomUUID();
+        UUID courtBundleHearingId = randomUUID();
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(selectedHearingId, createHearingBooking(futureDate, futureDate.plusDays(3)))
+        );
+        List<Element<CourtBundle>> courtBundle = List.of(element(createCourtBundleWithFile("Current filename")));
+        List<Element<HearingCourtBundle>> courtBundleList = List.of(element(
+            courtBundleHearingId,
+            HearingCourtBundle.builder()
+                .hearing(hearingBookings.get(0).getValue().toLabel())
+                .courtBundle(courtBundle)
+                .build()));
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsCourtBundle(courtBundle)
+            .courtBundleListV2(courtBundleList)
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .hearingDetails(hearingBookings)
+            .build();
+
+        Map<String, Object> map = underTest.initialiseHearingDocumentFields(caseData);
+        List<CourtBundle> result = getCourtBundleFromMap(map);
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getDocument()).isNull();
+    }
+
+    @Test
+    void shouldThrowExceptionWhenInitialisingCourtBundleFieldsNotWithBookedHearing() {
+        UUID selectedHearingId = randomUUID();
+        UUID courtBundleHearingId = randomUUID();
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(courtBundleHearingId, createHearingBooking(futureDate, futureDate.plusDays(3)))
+        );
+        List<Element<CourtBundle>> courtBundle = List.of(element(createCourtBundleWithFile("Current filename")));
+        List<Element<HearingCourtBundle>> courtBundleList = List.of(element(
+            courtBundleHearingId,
+            HearingCourtBundle.builder()
+                .hearing(hearingBookings.get(0).getValue().toLabel())
+                .courtBundle(courtBundle)
+                .build()));
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsCourtBundle(courtBundle)
+            .courtBundleListV2(courtBundleList)
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .hearingDetails(hearingBookings)
+            .build();
+
+        assertThatThrownBy(() -> underTest.initialiseHearingDocumentFields(caseData))
+            .isInstanceOf(NoHearingBookingException.class);
+    }
+
+    private List<CourtBundle> getCourtBundleFromMap(Map<String, Object> map) {
+        if (map.containsKey(COURT_BUNDLE_KEY)) {
+            List value = (List) map.get(COURT_BUNDLE_KEY);
+            return unwrapElements((List<Element<CourtBundle>>) value);
+        }
+        return null;
     }
 
     @Test
@@ -1761,6 +1933,15 @@ class ManageDocumentServiceTest {
             .value(DynamicListElement.builder()
                 .code(selectedId)
                 .build())
+            .build();
+    }
+
+    private CourtBundle createCourtBundleWithFile(String filename) {
+        return CourtBundle.builder()
+            .document(
+                DocumentReference.builder()
+                    .filename(filename)
+                    .build())
             .build();
     }
 }

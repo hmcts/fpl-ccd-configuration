@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -167,7 +168,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
     void shouldPopulateCourtBundleCollection() {
         UUID hearingId = UUID.randomUUID();
         HearingBooking hearingBooking = buildFinalHearingBooking();
-        CourtBundle courtBundle = buildCourtBundle();
+        List<Element<CourtBundle>> courtBundle = buildCourtBundle();
 
         CaseData caseData = CaseData.builder()
             .hearingDetails(List.of(element(hearingId, hearingBooking)))
@@ -183,8 +184,16 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
 
-        assertThat(responseData.getCourtBundleList()).first()
-            .isEqualTo(element(hearingId, courtBundle));
+        Element<HearingCourtBundle> expected = element(
+            hearingId,
+            HearingCourtBundle.builder()
+                .hearing(hearingBooking.toLabel())
+                .courtBundle(courtBundle)
+                .courtBundleNC(courtBundle)
+                .build()
+        );
+        assertThat(responseData.getCourtBundleListV2()).first()
+            .isEqualTo(expected);
         assertExpectedFieldsAreRemoved(responseData);
     }
 
@@ -430,7 +439,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
     private void assertExpectedFieldsAreRemoved(CaseData caseData) {
         assertThat(caseData.getSupportingEvidenceDocumentsTemp()).isEmpty();
         assertThat(caseData.getManageDocumentLA()).isNull();
-        assertThat(caseData.getManageDocumentsCourtBundle()).isNull();
+        assertThat(caseData.getManageDocumentsCourtBundle()).isEmpty();
         assertThat(caseData.getC2SupportingDocuments()).isNull();
         assertThat(caseData.getManageDocumentsHearingList()).isNull();
         assertThat(caseData.getManageDocumentsSupportingC2List()).isNull();
@@ -478,12 +487,16 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString()).build();
     }
 
-    private CourtBundle buildCourtBundle() {
-        return CourtBundle.builder()
-            .hearing("string")
-            .document(testDocumentReference())
-            .uploadedBy("Kurt")
-            .build();
+    private List<Element<CourtBundle>> buildCourtBundle() {
+        return List.of(element(
+                CourtBundle.builder()
+                    .document(testDocumentReference())
+                    .build()),
+            element(
+                CourtBundle.builder()
+                    .document(testDocumentReference())
+                    .build())
+        );
     }
 
     private UserDetails buildUserDetailsWithLARole() {
