@@ -4,6 +4,7 @@ import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -119,6 +120,15 @@ public class FurtherEvidenceUploadedEventTestData {
                 .build();
     }
 
+    public static CaseData buildCaseDataWithHearingFurtherEvidenceBundle() {
+        HearingFurtherEvidenceBundle bundle = HearingFurtherEvidenceBundle.builder()
+                .hearingName("Case management hearing, 1 April 2022")
+                .supportingEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER))
+                .build();
+        return commonCaseBuilder()
+                .hearingFurtherEvidenceDocuments(wrapElements(bundle))
+                .build();
+    }
 
     public static CaseData buildCaseDataWithNonConfidentialNonPDFRespondentStatementsSolicitor() {
         return commonCaseBuilder()

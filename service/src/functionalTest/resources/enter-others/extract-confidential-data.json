@@ -92,7 +92,9 @@
             "detailsHidden": "Yes",
             "detailsHiddenReason": null,
             "representedBy": [],
-            "DOB": "2000-07-12"
+            "DOB": "2000-07-12",
+            "addressKnow": null,
+            "addressNotKnowReason": null
           },
           "additionalOthers": []
         },
@@ -120,7 +122,9 @@
               "detailsHidden": null,
               "detailsHiddenReason": null,
               "representedBy": [],
-              "DOB": null
+              "DOB": null,
+              "addressKnow": null,
+              "addressNotKnowReason": null
             }
           }
         ]
