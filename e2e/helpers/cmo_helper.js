@@ -63,7 +63,6 @@ const uploadCMO = async (I, caseViewPage, uploadCMOEventPage, hearing, supportin
     uploadCMOEventPage.requestTranslationForC21(c21s.translation);
   }
   await I.completeEvent('Submit');
-  I.seeEventSubmissionConfirmation(config.applicationActions.uploadCMO);
 };
 
 const uploadC21 = async (I, caseViewPage, uploadCMOEventPage, c21s, hearing) => {

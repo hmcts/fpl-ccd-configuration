@@ -74,24 +74,6 @@ class DraftOrdersUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest
             );
     }
 
-    @Test
-    void notifyAdmin() {
-        CaseData caseData = getCaseData();
-
-        underTest.sendNotificationToAdmin(new DraftOrdersUploaded(caseData));
-
-        assertThat(response())
-            .hasSubject("CMO sent for approval, " + CHILD_LAST_NAME)
-            .hasBody(emailContent()
-                .line("Her Honour Judge Smith has been notified to approve the CMO for:")
-                .line()
-                .callout(RESPONDENT_LAST_NAME + ", case management hearing, 1 February 2020")
-                .line()
-                .line("To view the order, sign in to:")
-                .end("http://fake-url/cases/case-details/100#Draft%20orders")
-            );
-    }
-
     private CaseData getCaseData() {
         Element<HearingBooking> hearingBooking = element(HearingBooking.builder()
             .type(HearingType.CASE_MANAGEMENT)

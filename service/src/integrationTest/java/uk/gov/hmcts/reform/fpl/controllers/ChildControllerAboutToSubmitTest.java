@@ -28,7 +28,9 @@ import uk.gov.hmcts.reform.fpl.model.noc.ChangedRepresentative;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.RespondentAfterSubmissionRepresentationService;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,6 +49,10 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
     private static final String MAIN_SOLICITOR_FIRST_NAME = "dun dun duuuuuuuun *orchestral*";
     private static final String MAIN_SOLICITOR_LAST_NAME = "dun dun duuuuuuuun *orchestral* x3";
     private static final String MAIN_SOLICITOR_EMAIL = "emaial* x3";
+    private static final String HMCTS_USER = "HMCTS";
+    private static final String ORGANISATION_NAME = "Test organisation";
+    private static final String CHILD_FIRST_NAME = "Sherlock";
+    private static final String CHILD_LAST_NAME = "Holmes";
     private static final RespondentSolicitor MAIN_REPRESENTATIVE = RespondentSolicitor.builder()
         .firstName(MAIN_SOLICITOR_FIRST_NAME)
         .lastName(MAIN_SOLICITOR_LAST_NAME)
@@ -66,7 +72,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
             .organisationID(ANOTHER_ORGANISATION_ID)
             .build())
         .build();
-    private static final String ORGANISATION_NAME = "Test organisation";
+
     private static final List<Element<LocalAuthority>> LOCAL_AUTHORITIES = List.of(
         element(LocalAuthority.builder().name(ORGANISATION_NAME).build())
     );
@@ -91,7 +97,11 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
     void shouldRetainEmptyPolicyDataWhenChildrenDoNotHaveMainRepresentative() {
         Child child = Child.builder()
             .solicitor(null)
-            .party(ChildParty.builder().build())
+            .party(ChildParty.builder()
+                    .firstName(CHILD_FIRST_NAME)
+                    .lastName(CHILD_LAST_NAME)
+                    .dateOfBirth(LocalDate.now())
+                    .build())
             .build();
 
         CaseData caseDataBefore = CaseData.builder()
@@ -105,6 +115,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         CaseData caseData = caseDataBefore.toBuilder()
             .state(NON_RESTRICTED_STATE)
+            .children1(ElementUtils.wrapElements(List.of(child)))
             .childrenEventData(ChildrenEventData.builder()
                 .childrenHaveRepresentation("No")
                 .build())
@@ -118,7 +129,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         assertThat(responseData.getNoticeOfChangeChildAnswersData()).isEqualTo(
             NoticeOfChangeChildAnswersData.builder()
-                .noticeOfChangeChildAnswers0(nocAnswers(null, null, null))
+                .noticeOfChangeChildAnswers0(nocAnswers(ORGANISATION_NAME, CHILD_FIRST_NAME, CHILD_LAST_NAME))
                 .build()
         );
     }
@@ -194,7 +205,28 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
                 .build()
         );
 
-        assertThat(responseData.getChangeOfRepresentatives()).isNull();
+        assertThat(ElementUtils.unwrapElements(responseData.getChangeOfRepresentatives())).containsAll(
+            List.of(
+                ChangeOfRepresentation.builder()
+                    .child(String.join(" ", CHILD_NAME_1, CHILD_SURNAME_1))
+                    .date(LocalDate.now())
+                    .by(HMCTS_USER)
+                    .via("FPL")
+                    .added(
+                        ChangedRepresentative.builder()
+                            .firstName(MAIN_SOLICITOR_FIRST_NAME)
+                            .lastName(MAIN_SOLICITOR_LAST_NAME)
+                            .email(MAIN_SOLICITOR_EMAIL)
+                            .organisation(
+                                Organisation.builder()
+                                    .organisationID(ORGANISATION_ID)
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .build()
+            )
+        );
 
     }
 
@@ -254,7 +286,46 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
                 .build()
         );
 
-        assertThat(responseData.getChangeOfRepresentatives()).isNull();
+        assertThat(ElementUtils.unwrapElements(responseData.getChangeOfRepresentatives())).containsAll(
+            List.of(
+                ChangeOfRepresentation.builder()
+                    .child(String.join(" ", CHILD_NAME_1, CHILD_SURNAME_1))
+                    .date(LocalDate.now())
+                    .by(HMCTS_USER)
+                    .via("FPL")
+                    .added(
+                        ChangedRepresentative.builder()
+                            .firstName(MAIN_SOLICITOR_FIRST_NAME)
+                            .lastName(MAIN_SOLICITOR_LAST_NAME)
+                            .email(MAIN_SOLICITOR_EMAIL)
+                            .organisation(
+                                Organisation.builder()
+                                    .organisationID(ORGANISATION_ID)
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .build(),
+                ChangeOfRepresentation.builder()
+                    .child(String.join(" ", CHILD_NAME_2, CHILD_SURNAME_2))
+                    .date(LocalDate.now())
+                    .by(HMCTS_USER)
+                    .via("FPL")
+                    .added(
+                        ChangedRepresentative.builder()
+                            .firstName(MAIN_SOLICITOR_FIRST_NAME)
+                            .lastName(MAIN_SOLICITOR_LAST_NAME)
+                            .email(MAIN_SOLICITOR_EMAIL)
+                            .organisation(
+                                Organisation.builder()
+                                    .organisationID(ORGANISATION_ID)
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .build()
+                )
+        );
     }
 
     @Test
