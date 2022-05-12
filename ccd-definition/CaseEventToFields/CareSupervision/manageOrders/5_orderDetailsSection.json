@@ -740,5 +740,31 @@
     "PageColumnNumber": 1,
     "FieldShowCondition": "manageOrdersSupervisionOrderType=\"VARIATION_OF_SUPERVISION_ORDER\" OR manageOrdersSupervisionOrderType=\"EXTENSION_OF_SUPERVISION_ORDER\"",
     "ShowSummaryChangeOption": "Y"
-  }   
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersSupervisionOrderApprovalDate",
+    "PageFieldDisplayOrder": 35,
+    "DisplayContext": "MANDATORY",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "manageOrdersSupervisionOrderType=\"VARIATION_OF_SUPERVISION_ORDER\" OR manageOrdersSupervisionOrderType=\"EXTENSION_OF_SUPERVISION_ORDER\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersSupervisionOrderEndDate",
+    "PageFieldDisplayOrder": 36,
+    "DisplayContext": "MANDATORY",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "manageOrdersSupervisionOrderType=\"VARIATION_OF_SUPERVISION_ORDER\" OR manageOrdersSupervisionOrderType=\"EXTENSION_OF_SUPERVISION_ORDER\"",
+    "ShowSummaryChangeOption": "Y"
+  }
 ]
