@@ -8,6 +8,13 @@
   </suppress>
   <suppress>
     <notes><![CDATA[
+   file name: launchdarkly-java-server-sdk-5.6.2.jar (shaded: com.google.code.gson:gson:2.7)
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.google\.code\.gson/gson@.*$</packageUrl>
+    <cve>CVE-2022-25647</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
    file name: spring-core-5.3.12.jar
    ]]></notes>
     <sha1>662e6536968246af9baa84fbac2d3eb56a04fda9</sha1>
