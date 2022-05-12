@@ -28,6 +28,7 @@ public class Party implements Recipient {
     protected final LocalDate dateOfBirth;
     protected final Address address;
 
+
     @Valid
     protected final EmailAddress email;
     protected final Telephone telephoneNumber;

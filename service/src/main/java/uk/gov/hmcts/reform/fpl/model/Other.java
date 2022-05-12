@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.ObjectUtils;
+import uk.gov.hmcts.reform.fpl.enums.AddressNotKnowReason;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
@@ -43,6 +44,8 @@ public class Other implements Representable, ConfidentialParty<Other> {
     private final String detailsHidden;
     private final String detailsHiddenReason;
     private final List<Element<UUID>> representedBy = new ArrayList<>();
+    private final String addressNotKnowReason;
+    private final String addressKnow;
 
     public void addRepresentative(UUID representativeId) {
         if (!unwrapElements(representedBy).contains(representativeId)) {
@@ -120,7 +123,15 @@ public class Other implements Representable, ConfidentialParty<Other> {
     @JsonIgnore
     public boolean isEmpty() {
         return Stream.of(dateOfBirth, name, gender, telephone, birthPlace, childInformation, genderIdentification,
-            litigationIssues, litigationIssuesDetails, detailsHidden, detailsHiddenReason, representedBy
-        ).allMatch(ObjectUtils::isEmpty) && (isNull(address) || address.equals(Address.builder().build()));
+            litigationIssues, litigationIssuesDetails, detailsHidden, detailsHiddenReason, representedBy,
+            addressNotKnowReason
+        ).allMatch(ObjectUtils::isEmpty)
+            && (isNull(address) || address.equals(Address.builder().build()));
+    }
+
+    @JsonIgnore
+    public boolean isDeceasedOrNFA() {
+        return AddressNotKnowReason.DECEASED.getType().equals(addressNotKnowReason)
+            || AddressNotKnowReason.NO_FIXED_ABODE.getType().equals(addressNotKnowReason);
     }
 }

@@ -86,7 +86,11 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersBirthCertificateDate",
             "manageOrdersBirthCertificateRegistrationDistrict",
             "manageOrdersBirthCertificateRegistrationSubDistrict",
-            "manageOrdersBirthCertificateRegistrationCounty"
+            "manageOrdersBirthCertificateRegistrationCounty",
+            "manageOrdersPlacedUnderOrder",
+            "manageOrdersIsExParte",
+            "manageOrdersActionsPermitted",
+            "manageOrdersOrderCreatedDate"
         );
     }
 }
