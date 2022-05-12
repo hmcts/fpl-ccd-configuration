@@ -1,19 +1,24 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.ChildrenUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.cafcass.ChangeOfAddressData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.representative.RegisteredRepresentativeSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.representative.UnregisteredRepresentativeSolicitorTemplate;
+import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.representative.RegisteredRepresentativeSolicitorContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.representative.UnregisteredRepresentativeSolicitorContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.diff.ChildRepresentativeDiffCalculator;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -21,6 +26,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.CHANGE_OF_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.assertions.AnnotationAssertion.assertClass;
 
@@ -58,10 +64,28 @@ class ChildrenUpdatedEventHandlerTest {
     );
     private final ChildRepresentativeDiffCalculator calculator = mock(ChildRepresentativeDiffCalculator.class);
     private final NotificationService notificationService = mock(NotificationService.class);
+    private final ChildrenService childrenService = mock(ChildrenService.class);
+    private final CafcassNotificationService cafcassNotificationService = mock(CafcassNotificationService.class);
+    private final CafcassLookupConfiguration cafcassLookupConfiguration = mock(CafcassLookupConfiguration.class);
 
     private final ChildrenUpdatedEventHandler underTest = new ChildrenUpdatedEventHandler(
-        registeredContentProvider, unregisteredContentProvider, calculator, notificationService
+        registeredContentProvider, unregisteredContentProvider, calculator, notificationService,
+        childrenService, cafcassNotificationService, cafcassLookupConfiguration
     );
+
+    @Test
+    void notifyChangeOfAddress() {
+        when(caseData.getCaseLocalAuthority()).thenReturn("SW");
+        when(caseData.getAllChildren()).thenReturn(children);
+        when(caseDataBefore.getAllChildren()).thenReturn(children);
+        when(childrenService.hasAddressChange(children, children)).thenReturn(true);
+        when(cafcassLookupConfiguration.getCafcassEngland("SW")).thenReturn(
+            Optional.of(new CafcassLookupConfiguration.Cafcass("SW", "")));
+        underTest.notifyChangeOfAddress(new ChildrenUpdated(caseData, caseDataBefore));
+
+        verify(cafcassNotificationService).sendEmail(caseData,
+            CHANGE_OF_ADDRESS, ChangeOfAddressData.builder().children(true).build());
+    }
 
     @Test
     void notifyRegisteredSolicitors() {
@@ -142,7 +166,7 @@ class ChildrenUpdatedEventHandlerTest {
     @Test
     void shouldExecuteAsynchronously() {
         assertClass(ChildrenUpdatedEventHandler.class).hasAsyncMethods(
-            "notifyRegisteredSolicitors", "notifyUnRegisteredSolicitors"
+            "notifyChangeOfAddress", "notifyRegisteredSolicitors", "notifyUnRegisteredSolicitors"
         );
     }
 }

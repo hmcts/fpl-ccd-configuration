@@ -7,9 +7,7 @@ import lombok.Data;
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class LargeFilesNotificationData implements CafcassData {
-    private String familyManCaseNumber;
-    private String documentName;
-    private String caseUrl;
-    private String notificationType;
+public class ChangeOfAddressData implements CafcassData {
+    private boolean respondents;
+    private boolean children;
 }

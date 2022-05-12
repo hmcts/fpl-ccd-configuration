@@ -12,14 +12,17 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.group.C110A;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
@@ -34,6 +37,7 @@ import java.util.UUID;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
@@ -356,12 +360,12 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Dfpl576 {
-        private final String migrationId = "DFPL-576";
-        private final long validCaseId = 1647961407412501L;
+    class Dfpl635 {
+        private final String migrationId = "DFPL-635";
+        private final long validCaseId = 1642758673379744L;
         private final long invalidCaseId = 1643728359576136L;
 
-        private final UUID validDocId = UUID.fromString("2003a762-a9d0-483a-8a40-f4d043e7434c");
+        private final UUID validDocId = UUID.fromString("9f0d570a-2cb8-48eb-90cb-3d4f26a2350a");
         private final UUID invalidDocId = UUID.randomUUID();
 
         @Test
@@ -400,8 +404,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-576, case reference = 1643728359576136},"
-                    + " expected case id 1647961407412501");
+                .hasMessage("Migration {id = DFPL-635, case reference = 1643728359576136},"
+                    + " expected case id 1642758673379744");
         }
 
         @Test
@@ -419,8 +423,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-576, case reference = 1647961407412501},"
-                    + " expected c110a document id 2003a762-a9d0-483a-8a40-f4d043e7434c");
+                .hasMessage("Migration {id = DFPL-635, case reference = 1642758673379744},"
+                    + " expected c110a document id 9f0d570a-2cb8-48eb-90cb-3d4f26a2350a");
         }
 
 
@@ -494,10 +498,134 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .hasMessage("Migration {id = DFPL-572, case reference = 1646391317671957},"
                     + " expected urgent hearing order document id 0d30f8e4-cf44-47f6-ab1b-7fc11fdc34a8");
         }
-
-
     }
 
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl622 {
+        private final String migrationId = "DFPL-622";
+        private final long validCaseId = 1639491786898849L;
+        private final long invalidCaseId = 1643728359576136L;
+
+        private final UUID validElementId = UUID.fromString("a35d4775-f3ae-4eaa-9682-df88b00634ac");
+        private final UUID invalidElementId = UUID.fromString("814581ff-3bec-4c13-b355-d0b9e11337d5");
+
+        @Test
+        void shouldPerformMigration() {
+
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .hearingDetails(List.of(element(HearingBooking.builder()
+                    .type(CASE_MANAGEMENT)
+                    .startDate(now().minusDays(3))
+                    .endDate(now().minusDays(2))
+                    .build())))
+                .draftUploadedCMOs(List.of(element(validElementId,
+                    HearingOrder.builder()
+                        .type(HearingOrderType.DRAFT_CMO)
+                        .order(DocumentReference.builder()
+                                .filename("ToBeRemoved.doc")
+                                .build())
+                        .build())))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getDraftUploadedCMOs()).isEmpty();
+        }
+
+        @Test
+        void shouldPerformMigrationWhenDocIdMatches() {
+
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .hearingDetails(List.of(element(HearingBooking.builder()
+                    .type(CASE_MANAGEMENT)
+                    .startDate(now().minusDays(3))
+                    .endDate(now().minusDays(2))
+                    .build())))
+                .draftUploadedCMOs(List.of(
+                    element(validElementId,
+                        HearingOrder.builder()
+                            .type(HearingOrderType.DRAFT_CMO)
+                            .order(DocumentReference.builder()
+                                .filename("ToBeRemoved.doc")
+                                .build())
+                        .build()),
+                    element(invalidElementId,
+                        HearingOrder.builder()
+                            .type(HearingOrderType.DRAFT_CMO)
+                            .order(DocumentReference.builder()
+                                .filename("DoNotRemove.doc")
+                                .build())
+                        .build())))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getDraftUploadedCMOs().size()).isEqualTo(1);
+        }
+
+        @Test
+        void shouldThrowAssersionErrorWhenElementIdIsInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .hearingDetails(List.of(element(HearingBooking.builder()
+                    .type(CASE_MANAGEMENT)
+                    .startDate(now().minusDays(3))
+                    .endDate(now().minusDays(2))
+                    .build())))
+                .draftUploadedCMOs(List.of(element(invalidElementId,
+                    HearingOrder.builder()
+                        .type(HearingOrderType.DRAFT_CMO)
+                        .order(DocumentReference.builder()
+                            .filename("DoNotRemove.doc")
+                            .build())
+                        .build())))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getDraftUploadedCMOs().size()).isEqualTo(1);
+        }
+
+        @Test
+        void shouldThrowAssersionErrorWhenCaseIdIsInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(invalidCaseId)
+                .hearingDetails(List.of(element(HearingBooking.builder()
+                    .type(CASE_MANAGEMENT)
+                    .startDate(now().minusDays(3))
+                    .endDate(now().minusDays(2))
+                    .build())))
+                .draftUploadedCMOs(List.of(element(validElementId,
+                    HearingOrder.builder()
+                        .type(HearingOrderType.DRAFT_CMO)
+                        .order(DocumentReference.builder()
+                            .filename("Remove.doc")
+                            .build())
+                        .build())))
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-622, case reference = 1643728359576136},"
+                    + " expected case id 1639491786898849");
+        }
+    }
 
     private CaseDetails buildCaseDetails(CaseData caseData, String migrationId) {
         CaseDetails caseDetails = asCaseDetails(caseData);

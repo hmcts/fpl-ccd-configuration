@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -132,6 +133,11 @@ public class RespondentService {
             .filter(respondent -> YES.getValue().equals(respondent.getLegalRepresentation())
                 && respondent.hasUnregisteredOrganisation())
             .collect(Collectors.toList());
+    }
+
+    public boolean hasAddressChange(List<Element<Respondent>> after, List<Element<Respondent>> before) {
+        return PeopleInCaseHelper.hasAddressChange(Collections.unmodifiableList(after),
+            Collections.unmodifiableList(before));
     }
 
     public List<ChangeOrganisationRequest> getRepresentationChanges(List<Element<WithSolicitor>> after,
