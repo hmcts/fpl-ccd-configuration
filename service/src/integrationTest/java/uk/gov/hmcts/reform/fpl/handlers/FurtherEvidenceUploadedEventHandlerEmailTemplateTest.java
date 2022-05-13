@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
+import uk.gov.hmcts.reform.fpl.service.email.content.CourtBundleUploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
@@ -52,7 +53,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ContextConfiguration(classes = {
     FurtherEvidenceUploadedEventHandler.class, FurtherEvidenceNotificationService.class,
-    FurtherEvidenceUploadedEmailContentProvider.class, CaseUrlService.class, EmailNotificationHelper.class
+    FurtherEvidenceUploadedEmailContentProvider.class, CaseUrlService.class, EmailNotificationHelper.class,
+    CourtBundleUploadedEmailContentProvider.class
 })
 @MockBeans(value = {
     @MockBean(FurtherEvidenceUploadDifferenceCalculator.class),
@@ -178,12 +180,22 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
         return wrapElements(RespondentStatement.builder()
             .respondentName("NAME")
             .respondentId(UUID.randomUUID())
-            .supportingEvidenceBundle(buildSupportingEvidenceBundle("REP")).build());
+            .supportingEvidenceBundle(buildSupportingEvidenceBundleForRespondentStmt("REP")).build());
     }
 
     private static List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle(String uploadedBy) {
         return wrapElements(SupportingEvidenceBundle.builder()
             .name("Non-Confidential Evidence Document 1")
+            .uploadedBy(uploadedBy)
+            .dateTimeUploaded(LocalDateTime.now())
+            .document(DocumentReference.builder().build())
+            .build());
+    }
+
+    private static List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundleForRespondentStmt(
+        String uploadedBy) {
+        return wrapElements(SupportingEvidenceBundle.builder()
+            .name("Non-Confidential Respondent Statement")
             .uploadedBy(uploadedBy)
             .dateTimeUploaded(LocalDateTime.now())
             .document(DocumentReference.builder().build())
@@ -215,7 +227,8 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
             .h1("Documents uploaded")
             .line()
             .line()
-            .list("Non-Confidential Evidence Document 1")
+            .list("Non-Confidential Respondent Statement") // respondentStatements
+            .list("Non-Confidential Evidence Document 1") // furtherEvidenceDocumentsLA
             .line()
             .line("To view them, sign in to:")
             .line()
