@@ -10,7 +10,6 @@ import lombok.experimental.SuperBuilder;
 @Value
 @SuperBuilder(toBuilder = true)
 public class C36VariationOrExtensionOfSupervisionOrdersDocmosisParameters extends DocmosisParameters {
-    String orderHeader;
-    String orderMessage;
+    String orderByConsent;
     String orderDetails;
 }

@@ -99,6 +99,9 @@ public class ManageOrdersEventData {
     String manageOrdersOfficerName;
     LocalDate manageOrdersOrderCreatedDate;
     C36OrderType manageOrdersSupervisionOrderType;
+    String manageOrdersSupervisionOrderCourtDirection;
+    LocalDate manageOrdersSupervisionOrderApprovalDate;
+    LocalDate manageOrdersSupervisionOrderEndDate;
 
     @JsonIgnore
     public LocalDateTime getManageOrdersApprovalDateOrDateTime() {

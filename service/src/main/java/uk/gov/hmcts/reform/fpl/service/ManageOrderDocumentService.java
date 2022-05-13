@@ -23,6 +23,7 @@ public class ManageOrderDocumentService {
         context.put("childOrChildren", getChildGrammar(childrenSmartSelector.getSelectedChildren(caseData).size()));
         context.put("childIsOrAre", getChildIsOrAreGrammar(childrenSmartSelector.getSelectedChildren(caseData).size()));
         context.put("localAuthorityName", laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()));
+        context.put("courtName", caseData.getCourt().getName());
         return context;
     }
 
