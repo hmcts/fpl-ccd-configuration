@@ -14,8 +14,8 @@ import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
-import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
@@ -325,7 +325,7 @@ public class FurtherEvidenceUploadedEventHandler {
         return newHearingDoc;
     }
 
-    private List<Element<CourtBundle>> flattenCourtBundleList(List<Element<HearingCourtBundle>> courtBundles){
+    private List<Element<CourtBundle>> flattenCourtBundleList(List<Element<HearingCourtBundle>> courtBundles) {
         return courtBundles.stream()
             .map(Element::getValue).map(HearingCourtBundle::getCourtBundle)
             .flatMap(List::stream)

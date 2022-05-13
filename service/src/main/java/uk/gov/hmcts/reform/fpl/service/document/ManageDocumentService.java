@@ -363,13 +363,6 @@ public class ManageDocumentService {
             return List.of(element(selectedHearingId, hearingDocument));
         }
 
-        // TODO: following code is removed by DFPL-82, review the following is still needed or not
-//        Optional<Element<T>> editedBundle = findElement(selectedHearingId, hearingDocumentList);
-//        editedBundle.ifPresentOrElse(
-//            hearingDocumentElement -> hearingDocumentList.set(hearingDocumentList.indexOf(hearingDocumentElement),
-//                element(selectedHearingId, hearingDocument)),
-//            () -> hearingDocumentList.add(element(selectedHearingId, hearingDocument)));
-
         return hearingDocumentList;
     }
 
@@ -420,8 +413,6 @@ public class ManageDocumentService {
         HearingCourtBundle hearingCourtBundle = getHearingDocumentForSelectedHearing(caseData.getCourtBundleListV2(),
             selectedHearingId);
         if (hearingCourtBundle == null) {
-//            courtBundle = CourtBundle.builder()
-//                .hearing(getHearingBooking(caseData, selectedHearingId).toLabel()).build();
             return List.of(element(CourtBundle.builder().build()));
         } else {
             return hearingCourtBundle.getCourtBundle();

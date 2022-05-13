@@ -55,6 +55,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRespondent;
 
@@ -413,10 +414,10 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
             .hearingDocumentsHearingList(hearingList)
                 .build();
 
-        assertThat(extractCaseData(postMidEvent(caseData,
+        assertThat(unwrapElements(extractCaseData(postMidEvent(caseData,
             "initialise-manage-document-collections", USER_ROLES))
-            .getManageDocumentsCourtBundle())
-            .isEqualTo(CourtBundle.builder().hearing(selectedHearingBooking.toLabel()).build());
+            .getManageDocumentsCourtBundle()))
+            .isEqualTo(List.of(CourtBundle.builder().build()));
 
         assertThat(extractCaseData(postMidEvent(
                 caseData.toBuilder().manageDocumentsHearingDocumentType(HearingDocumentType.CASE_SUMMARY).build(),
