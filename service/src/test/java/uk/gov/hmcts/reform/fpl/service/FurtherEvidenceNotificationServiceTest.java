@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -15,9 +14,11 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.notify.courtbundle.CourtBundleUploadedData;
 import uk.gov.hmcts.reform.fpl.model.notify.furtherevidence.FurtherEvidenceDocumentUploadedData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
+import uk.gov.hmcts.reform.fpl.service.email.content.CourtBundleUploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
 
 import java.util.List;
@@ -30,6 +31,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.COURT_BUNDLE_UPLOADED_NOTIFICATION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.CAFCASS_SOLICITOR;
@@ -120,6 +122,9 @@ class FurtherEvidenceNotificationServiceTest {
     private FurtherEvidenceUploadedEmailContentProvider furtherEvidenceUploadedEmailContentProvider;
 
     @Mock
+    private CourtBundleUploadedEmailContentProvider courtBundleUploadedEmailContentProvider;
+
+    @Mock
     private FeatureToggleService featureToggleService;
 
     @Mock
@@ -195,8 +200,7 @@ class FurtherEvidenceNotificationServiceTest {
         ))
             .thenReturn(newHashSet("rep@example.com", "rep2@example.com", "rep3@example.com",
                 "cafcass2@example.com"));
-        Set<String> actualRecipients = furtherEvidenceNotificationService.getRepresentativeEmails(caseData,
-            DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY);
+        Set<String> actualRecipients = furtherEvidenceNotificationService.getRepresentativeEmails(caseData);
 
         assertThat(actualRecipients).containsExactlyInAnyOrder(
             REPRESENTATIVE_WITH_SERVICE_ACCESS_1.getEmail(),
@@ -213,8 +217,7 @@ class FurtherEvidenceNotificationServiceTest {
             .thenReturn(newHashSet("sol1@email.com"));
         when(representativesInbox.getChildrenSolicitorEmails(caseData, DIGITAL_SERVICE))
             .thenReturn(newHashSet("sol2@email.com"));
-        Set<String> actualRecipients = furtherEvidenceNotificationService.getRepresentativeEmails(caseData,
-            DocumentUploaderType.SOLICITOR);
+        Set<String> actualRecipients = furtherEvidenceNotificationService.getRepresentativeEmails(caseData);
 
         assertThat(actualRecipients).containsExactlyInAnyOrder(
             CHILD_1.getSolicitor().getEmail(),
@@ -225,8 +228,7 @@ class FurtherEvidenceNotificationServiceTest {
     void shouldReturnEmptyRecipientsWhenCaseHasNotRepresentatives() {
         CaseData emptyCaseData = caseData();
 
-        Set<String> actualRecipients = furtherEvidenceNotificationService.getRepresentativeEmails(emptyCaseData,
-            DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY);
+        Set<String> actualRecipients = furtherEvidenceNotificationService.getRepresentativeEmails(emptyCaseData);
 
         assertThat(actualRecipients).isEmpty();
     }
@@ -238,8 +240,7 @@ class FurtherEvidenceNotificationServiceTest {
             REPRESENTATIVE_SERVED_BY_EMAIL,
             CAFCASS_SOLICITOR_SERVED_BY_EMAIL);
 
-        Set<String> actualRecipients = furtherEvidenceNotificationService.getRepresentativeEmails(emptyCaseData,
-            DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY);
+        Set<String> actualRecipients = furtherEvidenceNotificationService.getRepresentativeEmails(emptyCaseData);
 
         assertThat(actualRecipients).isEmpty();
     }
@@ -293,6 +294,24 @@ class FurtherEvidenceNotificationServiceTest {
         furtherEvidenceNotificationService.sendNotification(caseData, recipients, "Sender", DOCUMENTS);
 
         verifyNoInteractions(notificationService);
+    }
+
+    @Test
+    void shouldSendNotificationForCourtBundleUploaded() {
+        CaseData caseData = caseData();
+
+        Set<String> recipients = Set.of("test@example.com");
+
+        CourtBundleUploadedData courtBundleUploadedData =
+            CourtBundleUploadedData.builder().hearingDetails("1st Hearing").build();
+
+        when(courtBundleUploadedEmailContentProvider.buildParameters(caseData, "1st Hearing")).thenReturn(
+            courtBundleUploadedData);
+
+        furtherEvidenceNotificationService.sendNotificationForCourtBundleUploaded(caseData, recipients, "1st Hearing");
+
+        verify(notificationService).sendEmail(COURT_BUNDLE_UPLOADED_NOTIFICATION, recipients,
+            courtBundleUploadedData, CASE_ID.toString());
     }
 
     private CaseData caseData() {
