@@ -50,6 +50,7 @@ public final class NotifyTemplates {
     public static final String APPLICATION_RETURNED_TO_THE_LA = "2d8b5486-7527-42ea-9b56-e79bfc0f6c27";
     public static final String AMENDED_APPLICATION_RETURNED_ADMIN_TEMPLATE = "7d72d10b-155f-4a27-94ad-8e8be71d1265";
     public static final String AMENDED_APPLICATION_RETURNED_CAFCASS_TEMPLATE = "d2e44b62-436c-4bb6-b3b9-afa4f2bca7b5";
+    public static final String COURT_BUNDLE_UPLOADED_NOTIFICATION = "1c263c7a-9a1c-4609-b1f4-c93f57cefc0e";
     public static final String NOTICE_OF_NEW_HEARING = "aa997c49-efe7-4443-a4ea-6198f62ce449";
     public static final String NOTICE_OF_NEW_HEARING_NO_OTHER_ADDRESS = "a51849ac-8fd9-4387-be37-0d80a9209b79";
     public static final String SDO_AND_NOP_ISSUED_CTSC = "5ddf3927-f102-4c81-900a-57d8facac1d0";
