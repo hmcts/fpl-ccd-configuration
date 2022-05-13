@@ -233,7 +233,7 @@
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "PageShowCondition": "manageDocumentLA.type=\"COURT_BUNDLE\""
+    "PageShowCondition": "manageDocumentLA.type=\"HEARING_DOCUMENTS\" AND manageDocumentsHearingDocumentType=\"COURT_BUNDLE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -245,8 +245,7 @@
     "PageID": "CourtBundle",
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "Y",
-    "PageShowCondition": "manageDocumentLA.type=\"HEARING_DOCUMENTS\" AND manageDocumentsHearingDocumentType=\"COURT_BUNDLE\""
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",

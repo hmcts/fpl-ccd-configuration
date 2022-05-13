@@ -178,6 +178,27 @@
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsCourtBundle",
+    "ListElementCode": "confidential",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL",
+    "EventElementLabel": "Tick to restrict to the LA, Cafcass and HMCTS staff",
+    "FieldShowCondition": "name!=\"SHOW_IN_EVENT_ONLY\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsCourtBundle",
+    "ListElementCode": "confidentialTabLabel",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "name=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
     "CaseFieldID": "manageDocumentsCaseSummary",
     "ListElementCode": "hearing",
     "FieldDisplayOrder": 1,

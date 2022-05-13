@@ -868,7 +868,8 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "courtBundleListV2",
     "UserRole": "[BARRISTER]",
-    "CRUD": "CRU",
+    "CRUD": "CRU"
+  },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",

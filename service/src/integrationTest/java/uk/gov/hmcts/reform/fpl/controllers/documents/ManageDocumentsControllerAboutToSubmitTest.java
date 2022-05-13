@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
@@ -337,22 +338,22 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
         DynamicList hearingList = ElementUtils.asDynamicList(hearingBookings,
             selectedHearingId, HearingBooking::toLabel);
 
-        CourtBundle manageDocumentCourtBundle = CourtBundle.builder().build();
+        CaseSummary manageDocumentCaseSummary = CaseSummary.builder().build();
 
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
             .hearingDetails(hearingBookings)
             .hearingDocumentsHearingList(hearingList)
-            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.CASE_SUMMARY)
             .manageDocument(buildManagementDocument(HEARING_DOCUMENTS))
-            .manageDocumentsCourtBundle(manageDocumentCourtBundle)
+            .manageDocumentsCaseSummary(manageDocumentCaseSummary)
             .build();
 
 
         CaseData responseData = extractCaseData(
             postAboutToSubmitEvent(caseData, USER_ROLES));
-        assertThat(responseData.getCourtBundleList())
-            .contains(element(selectedHearingId, manageDocumentCourtBundle));
+        assertThat(responseData.getCaseSummaryList())
+            .contains(element(selectedHearingId, manageDocumentCaseSummary));
     }
 
     private HearingBooking buildFinalHearingBooking() {
