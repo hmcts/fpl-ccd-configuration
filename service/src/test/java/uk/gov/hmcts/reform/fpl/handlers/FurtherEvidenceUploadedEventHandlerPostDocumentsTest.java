@@ -58,7 +58,7 @@ import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContent
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @ExtendWith(MockitoExtension.class)
-class  FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
+class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
 
     private static final List<Recipient> RECIPIENTS_LIST = createRecipientsList();
 
