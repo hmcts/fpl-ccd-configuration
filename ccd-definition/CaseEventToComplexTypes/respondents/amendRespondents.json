@@ -83,7 +83,7 @@
     "CaseEventID": "amendRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.address.AddressLine2",
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "OPTIONAL"
   },
   {
     "ID": "AmendRespondents",
@@ -104,7 +104,7 @@
     "CaseEventID": "amendRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.address.County",
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "OPTIONAL"
   },
   {
     "ID": "AmendRespondents",
