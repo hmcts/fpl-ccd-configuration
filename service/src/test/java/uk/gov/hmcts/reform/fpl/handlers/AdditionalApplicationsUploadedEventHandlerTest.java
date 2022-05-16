@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.ApplicantType;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
@@ -63,6 +64,7 @@ import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -79,6 +81,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ADDITIONAL_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -207,28 +210,79 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyLocalAuthorityWhenApplicantIsLocalAuthority() {
+    void shouldNotifyAllLAsNoMatterWhoIsTheApplicant() {
         given(caseData.getAdditionalApplicationsBundle()).willReturn(wrapElements(
             AdditionalApplicationsBundle.builder()
                 .c2DocumentBundle(C2DocumentBundle.builder()
                     .document(TEST_DOCUMENT)
-                    .applicantName(LOCAL_AUTHORITY_NAME)
+                    .build())
+                .build()
+        ));
+        given(localAuthorityRecipients.getRecipients(
+            RecipientsRequest.builder().caseData(caseData).build()))
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS, SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS));
+
+        Set<OrderApplicant> allApplicants = new HashSet<OrderApplicant>();
+        for (ApplicantType at : ApplicantType.values()) {
+            allApplicants.add(OrderApplicant.builder()
+                .type(at)
+                .name(at.name())
+                .build());
+        }
+
+        for (OrderApplicant applicant : allApplicants) {
+            underTest.notifyApplicant(
+                new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, applicant)
+            );
+        }
+
+        verify(notificationService, times(allApplicants.size())).sendEmail(
+            INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS,
+                SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            notifyData, CASE_ID.toString()
+        );
+    }
+
+    @Test
+    void shouldNotifyAllLAsAndRespondentWhenApplicantIsRespondent() {
+        final String respondent1FirstName = "John";
+        final String respondent1LastName = "Smith";
+        final String respondent1FullName = respondent1FirstName + " " + respondent1LastName;
+        final String respondent1EmailAddress = "respondent1@test.com";
+        List<Element<Respondent>> respondents = wrapElements(
+            Respondent.builder()
+                .party(RespondentParty.builder().firstName(respondent1FirstName).lastName(respondent1LastName)
+                    .build())
+                .solicitor(RespondentSolicitor.builder().email(respondent1EmailAddress).build())
+                .build(),
+            Respondent.builder()
+                .party(RespondentParty.builder().firstName("Ross").lastName("Bob").build())
+                .solicitor(RespondentSolicitor.builder().build())
+                .build()
+        );
+
+        given(localAuthorityRecipients.getRecipients(
+            RecipientsRequest.builder().caseData(caseData).build()))
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS, SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS));
+        given(caseData.getAllRespondents()).willReturn(respondents);
+        given(caseData.getAdditionalApplicationsBundle()).willReturn(wrapElements(
+            AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .document(TEST_DOCUMENT)
+                    .applicantName(respondent1FullName)
                     .others(emptyList())
                     .build())
                 .build()
         ));
-        given(caseData.getCaseLocalAuthorityName()).willReturn(LOCAL_AUTHORITY_NAME);
-        given(localAuthorityRecipients.getRecipients(any())).willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
-        underTest.notifyApplicant(
-                new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA));
+        OrderApplicant applicant = OrderApplicant.builder().name(respondent1FullName).type(RESPONDENT).build();
+        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, applicant));
 
-        final RecipientsRequest expectedRecipientsRequest = RecipientsRequest.builder()
-            .caseData(caseData)
-            .secondaryLocalAuthorityExcluded(true)
-            .build();
-
-        verify(localAuthorityRecipients).getRecipients(expectedRecipientsRequest);
+        verify(notificationService).sendEmail(
+            INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS,
+                SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS, respondent1EmailAddress),
+            notifyData, CASE_ID.toString()
+        );
     }
 
     @Test
