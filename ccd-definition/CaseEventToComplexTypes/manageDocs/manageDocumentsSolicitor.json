@@ -102,26 +102,5 @@
     "FieldDisplayOrder": 7,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "manageDocument.type=\"DO_NOT_SHOW\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageDocuments",
-    "CaseEventID": "manageDocumentsSolicitor",
-    "CaseFieldID": "supportingEvidenceDocumentsTemp",
-    "ListElementCode": "hasConfidentialAddressLabel",
-    "FieldDisplayOrder": 8,
-    "DisplayContext": "READONLY",
-    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>There is a confidential address on this case. Please check and confirm your document doesn't contain a confidential address before proceeding</strong></div>",
-    "FieldShowCondition": "manageDocument.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageDocuments",
-    "CaseEventID": "manageDocumentsSolicitor",
-    "CaseFieldID": "supportingEvidenceDocumentsTemp",
-    "ListElementCode": "hasConfidentialAddress",
-    "FieldDisplayOrder": 9,
-    "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "manageDocument.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
   }
 ]

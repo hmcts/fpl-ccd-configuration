@@ -166,7 +166,6 @@ public class ManageDocumentsController extends CallbackController {
 
         ManageDocumentType manageDocumentType = caseData.getManageDocument().getType();
         List<Element<SupportingEvidenceBundle>> currentBundle;
-        Set<DocumentWithConfidentialAddress> documentWithConfidentialAddress;
         switch (manageDocumentType) {
             case FURTHER_EVIDENCE_DOCUMENTS:
                 if (caseData.getManageDocumentSubtypeList() == RESPONDENT_STATEMENT) {
