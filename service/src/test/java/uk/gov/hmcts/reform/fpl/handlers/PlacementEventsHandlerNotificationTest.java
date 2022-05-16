@@ -8,6 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.AddressNotKnowReason;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationChanged;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationSubmitted;
 import uk.gov.hmcts.reform.fpl.events.PlacementNoticeAdded;
@@ -253,6 +255,43 @@ class PlacementEventsHandlerNotificationTest {
             verify(sendDocumentService)
                 .sendDocuments(caseData, List.of(placementNotifyParent.getPlacementNotice()),
                     List.of(respondent.getValue().getParty()));
+        }
+
+        @Test
+        void shouldNotSendLetterWhenParentMarkedNfaOrDeceased() {
+            Element<Respondent> respondent = element(Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Jodie")
+                    .lastName("Smith")
+                    .addressKnow(YesNo.NO.getValue())
+                    .addressNotKnowReason(AddressNotKnowReason.DECEASED.getType())
+                    .build())
+                .build());
+            Element<Respondent> respondent2 = element(Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Marry")
+                    .lastName("Smith")
+                    .addressKnow(YesNo.NO.getValue())
+                    .addressNotKnowReason(AddressNotKnowReason.NO_FIXED_ABODE.getType())
+                    .build())
+                .build());
+
+            final CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .respondents1(List.of(respondent, respondent2))
+                .caseLocalAuthorityName(LOCAL_AUTHORITY_NAME)
+                .placementEventData(placementEventData)
+                .build();
+
+            Placement placementNotifyParent = placement.toBuilder()
+                .placementRespondentsToNotify(List.of(respondent))
+                .build();
+
+            final PlacementNoticeAdded event = new PlacementNoticeAdded(caseData, placementNotifyParent);
+
+            underTest.notifyRespondentsOfNewNotice(event);
+
+            verifyNoInteractions(sendDocumentService);
         }
     }
 }

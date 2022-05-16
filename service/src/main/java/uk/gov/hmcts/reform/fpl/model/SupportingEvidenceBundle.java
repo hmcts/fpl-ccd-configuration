@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.interfaces.FurtherDocument;
 import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.PastOrPresentDate;
 
@@ -28,7 +29,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @Builder(toBuilder = true)
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SupportingEvidenceBundle implements TranslatableItem {
+public class SupportingEvidenceBundle implements TranslatableItem, FurtherDocument {
     private final String name;
     private final String notes;
     @PastOrPresentDate(message = "Date received cannot be in the future")

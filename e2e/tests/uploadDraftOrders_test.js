@@ -43,6 +43,8 @@ let caseId;
 let today;
 let date;
 
+let caseManagementDocumentsUploaded = false;
+
 Feature('Upload Draft Orders Journey');
 
 async function setupScenario(I) {
@@ -53,14 +55,22 @@ async function setupScenario(I) {
   }
 }
 
+async function localAuthorityUploadsDocuments(I, caseViewPage, uploadCaseManagementOrderEventPage) {
+  if (!caseManagementDocumentsUploaded) {
+    await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+
+    await draftOrdersHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing1,null, draftOrder1);
+    await draftOrdersHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing2, supportingDoc);
+    await draftOrdersHelper.localAuthorityUploadsDraftCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing3, supportingDoc);
+    await draftOrdersHelper.localAuthorityUploadsC21(I, caseViewPage, uploadCaseManagementOrderEventPage, draftOrder2, hearing1);
+
+    caseManagementDocumentsUploaded = true;
+  }
+}
+
 Scenario('Local authority uploads draft orders', async ({I, caseViewPage, uploadCaseManagementOrderEventPage}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
-
-  await draftOrdersHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing1,null, draftOrder1);
-  await draftOrdersHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing2, supportingDoc);
-  await draftOrdersHelper.localAuthorityUploadsDraftCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing3, supportingDoc);
-  await draftOrdersHelper.localAuthorityUploadsC21(I, caseViewPage, uploadCaseManagementOrderEventPage, draftOrder2, hearing1);
+  await localAuthorityUploadsDocuments(I, caseViewPage, uploadCaseManagementOrderEventPage);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
 
@@ -126,30 +136,30 @@ Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage,
   I.dontSeeInTab(hearing2);
 });
 
-Scenario('Judge sends draft orders to the local authority', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
+Scenario('Judge sends draft orders to the local authority', async ({I, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
+  await localAuthorityUploadsDocuments(I, caseViewPage, uploadCaseManagementOrderEventPage);
 
+  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
-  await I.startEventViaHyperlink(linkLabel);
+  await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
   await reviewAgreedCaseManagementOrderEventPage.selectCMOToReview(hearing1);
   await I.goToNextPage();
   I.see('mockFile.docx');
-
   reviewAgreedCaseManagementOrderEventPage.selectReturnCmoForChanges();
   reviewAgreedCaseManagementOrderEventPage.enterChangesRequested(changeRequestReason);
   reviewAgreedCaseManagementOrderEventPage.selectReturnC21ForChanges(1);
   reviewAgreedCaseManagementOrderEventPage.enterChangesRequestedC21(1,'note2');
-
   await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.applicationActions.approveOrders);
-  await api.pollLastEvent(caseId, config.internalActions.updateCase);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
-
   assertDraftOrders(I, 1, hearing1, [
-    {title: draftOrder2.title, status: withJudgeStatus},
+    {title: supportingDoc.title, status: withJudgeStatus},
   ]);
+
+  caseViewPage.selectTab(caseViewPage.tabs.refusedOrders);
+  I.seeInTab(['Refused Order 1', 'Changes requested by judge'], changeRequestReason);
+  I.seeInTab(['Refused Order 2', 'Changes requested by judge'], 'note2');
 });
 
 Scenario('Local authority makes changes requested by the judge', async ({I, caseViewPage, uploadCaseManagementOrderEventPage}) => {

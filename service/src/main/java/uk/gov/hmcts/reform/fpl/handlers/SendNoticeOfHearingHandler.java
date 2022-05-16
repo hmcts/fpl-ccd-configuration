@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -14,12 +15,14 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
+import uk.gov.hmcts.reform.fpl.model.cafcass.NoticeOfHearingCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingNoOtherAddressEmailContentProvider;
@@ -31,13 +34,16 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Set.of;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING_NO_OTHER_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NOTICE_OF_HEARING;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SendNoticeOfHearingHandler {
@@ -54,6 +60,7 @@ public class SendNoticeOfHearingHandler {
     private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
     private final SendDocumentService sendDocumentService;
     private final TranslationRequestService translationRequestService;
+    private final CafcassNotificationService cafcassNotificationService;
 
     @Async
     @EventListener
@@ -74,14 +81,38 @@ public class SendNoticeOfHearingHandler {
     @EventListener
     public void notifyCafcass(final SendNoticeOfHearing event) {
         final CaseData caseData = event.getCaseData();
+        Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
+                .map(CafcassLookupConfiguration.Cafcass::getEmail);
 
-        final String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
+        if (recipientIsWelsh.isPresent()) {
+            final String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 
-        NotifyData notifyData = noticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
-            caseData, event.getSelectedHearing(), EMAIL
-        );
+            NotifyData notifyData = noticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
+                caseData, event.getSelectedHearing(), EMAIL
+            );
+            notificationService.sendEmail(NOTICE_OF_NEW_HEARING, recipient, notifyData, caseData.getId());
+        }
+    }
 
-        notificationService.sendEmail(NOTICE_OF_NEW_HEARING, recipient, notifyData, caseData.getId());
+    @Async
+    @EventListener
+    public void notifyCafcassSendGrid(final SendNoticeOfHearing event) {
+        final CaseData caseData = event.getCaseData();
+        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
+                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
+
+        if (recipientIsEngland.isPresent()) {
+            NoticeOfHearingCafcassData noticeOfHearingCafcassData =
+                    noticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotificationCafcassData(
+                        caseData,
+                        event.getSelectedHearing()
+                    );
+
+            cafcassNotificationService.sendEmail(caseData,
+                    of(event.getSelectedHearing().getNoticeOfHearing()),
+                    NOTICE_OF_HEARING,
+                    noticeOfHearingCafcassData);
+        }
     }
 
     @Async
