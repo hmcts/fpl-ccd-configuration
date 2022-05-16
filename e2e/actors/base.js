@@ -17,13 +17,38 @@ const signedInSelector = 'exui-header';
 const signedOutSelector = '#global-header';
 const maxRetries = 10;
 let currentUser = {};
+let userCookies = {};
 
 const { I } = inject();
 
 'use strict';
 
 module.exports = {
+
+  async signOut() {
+    console.log('Signing out');
+    I.clearCookie();
+  },
+
   async signIn(user) {
+    if (user.email in userCookies) {
+      console.log(`Skipping login as we have cookies for ${user.email}`);
+      await I.clearCookie();
+      await I.goToPage(baseUrl);
+      for (let cookie of userCookies[user.email]) {
+        await I.setCookie({name: cookie['name'], value: cookie['value']});
+      }
+      await I.goToPage(baseUrl);
+    } else {
+      await I.clearCookie();
+      await I.goToPage(baseUrl);
+      await this.signInManual(user);
+      userCookies[user.email] = await I.grabCookie();
+      console.log(`Saved ${user.email}'s cookies`);
+    }
+  },
+
+  async signInManual(user) {
     console.log('base signIn');
     if (!(this.isPuppeteer() &&  (currentUser === user))) {
       console.log(`Logging in as ${user.email}`);
