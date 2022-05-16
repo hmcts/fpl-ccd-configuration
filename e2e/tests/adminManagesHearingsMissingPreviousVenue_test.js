@@ -30,7 +30,7 @@ Scenario('HMCTS admin is not able to see last court when previous hearings venue
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectAddNewHearing();
   await I.goToNextPage();
-  I.dontSee('Last Court');
+  I.dontSee('Last court');
 });
 
 Scenario('HMCTS admin is able to see last court when previous hearings venue exist', async ({I, caseViewPage, manageHearingsEventPage}) => {
@@ -38,7 +38,7 @@ Scenario('HMCTS admin is able to see last court when previous hearings venue exi
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectAddNewHearing();
   await I.goToNextPage();
-  I.see('Last Court');
+  I.see('Last court');
 });
 
 Scenario('HMCTS admin creates subsequent hearings with previous hearing not having hearing venue', async ({I, caseViewPage, manageHearingsEventPage}) => {
@@ -49,7 +49,7 @@ Scenario('HMCTS admin creates subsequent hearings with previous hearing not havi
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectAddNewHearing();
   await I.goToNextPage();
-  I.dontSee('Last Court');
+  I.dontSee('Last court');
 
   await manageHearingsEventPage.enterHearingDetails(Object.assign({}, hearingDetails[0], {startDate: hearingStartDate}));
   manageHearingsEventPage.enterVenue(hearingDetails[0]);
