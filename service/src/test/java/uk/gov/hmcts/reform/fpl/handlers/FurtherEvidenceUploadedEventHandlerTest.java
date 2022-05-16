@@ -744,8 +744,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
         assertThat(newDocumentData.getDocumentTypes())
-                .isEqualTo("• Birth certificate\n"
-                        + "• Birth certificate");
+                .isEqualTo("• Birth certificate");
         assertThat(newDocumentData.getEmailSubjectInfo())
                 .isEqualTo("Further documents for main application");
     }
