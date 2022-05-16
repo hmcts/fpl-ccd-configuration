@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentMetaData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
-import java.time.LocalDateTime;
-
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
