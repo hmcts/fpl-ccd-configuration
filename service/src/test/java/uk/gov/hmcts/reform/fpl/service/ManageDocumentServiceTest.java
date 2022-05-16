@@ -1615,7 +1615,8 @@ class ManageDocumentServiceTest {
                 .build()));
 
         List<Element<DocumentWithConfidentialAddress>> resultLIst =
-            underTest.getDocWithConfidentialAddrFromCourtBundles(caseData, hearingCourtBundles);
+            underTest.getDocWithConfidentialAddrFromCourtBundles(caseData, caseData.getCourtBundleListV2()
+                , hearingCourtBundles);
 
         List<Element<DocumentWithConfidentialAddress>> expected = List.of(
             element(uuid, DocumentWithConfidentialAddress.builder()

@@ -171,6 +171,8 @@ public class ManageDocumentsLAController extends CallbackController {
                     caseDetailsMap.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
                         manageDocumentService.getDocumentWithConfidentialAddress(caseData,
                             ConfidentialBundleHelper.getSupportingEvidenceBundle(
+                                ElementUtils.unwrapElements(caseData.getRespondentStatements())),
+                            ConfidentialBundleHelper.getSupportingEvidenceBundle(
                                 ElementUtils.unwrapElements(respondentStatements))));
                 } else if (APPLICATION_DOCUMENTS.equals(caseData.getManageDocumentSubtypeListLA())) {
                     //Application documents
@@ -193,6 +195,8 @@ public class ManageDocumentsLAController extends CallbackController {
                     caseDetailsMap.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
                         manageDocumentService.getDocumentWithConfidentialAddress(caseData,
                             ConfidentialBundleHelper.getSupportingEvidenceBundle(
+                                ElementUtils.unwrapElements(caseData.getHearingFurtherEvidenceDocuments())),
+                            ConfidentialBundleHelper.getSupportingEvidenceBundle(
                                 ElementUtils.unwrapElements(updatedBundle))));
                     //Non-hearing-related evidence
                 } else {
@@ -206,7 +210,9 @@ public class ManageDocumentsLAController extends CallbackController {
                     );
                     caseDetailsMap.putIfNotEmpty(FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY, currentBundle);
                     caseDetailsMap.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
-                        manageDocumentService.getDocumentWithConfidentialAddress(caseData, currentBundle));
+                        manageDocumentService.getDocumentWithConfidentialAddress(caseData,
+                            caseData.getFurtherEvidenceDocumentsLA(),
+                            currentBundle));
                 }
                 break;
             case CORRESPONDENCE:
@@ -224,7 +230,9 @@ public class ManageDocumentsLAController extends CallbackController {
                 );
                 caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY, sortedDocuments);
                 caseDetailsMap.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
-                    manageDocumentService.getDocumentWithConfidentialAddress(caseData, sortedDocuments));
+                    manageDocumentService.getDocumentWithConfidentialAddress(caseData,
+                        caseData.getCorrespondenceDocumentsLA(),
+                        sortedDocuments));
                 break;
             case ADDITIONAL_APPLICATIONS_DOCUMENTS:
                 caseDetailsMap.putIfNotEmpty(
@@ -234,7 +242,8 @@ public class ManageDocumentsLAController extends CallbackController {
                 List<Element<HearingCourtBundle>> courtBundle = manageDocumentLAService.buildCourtBundleList(caseData);
                 caseDetailsMap.putIfNotEmpty(COURT_BUNDLE_LIST_KEY, courtBundle);
                 caseDetailsMap.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
-                    manageDocumentService.getDocWithConfidentialAddrFromCourtBundles(caseData, courtBundle));
+                    manageDocumentService.getDocWithConfidentialAddrFromCourtBundles(caseData,
+                        caseData.getCourtBundleListV2(), courtBundle));
                 break;
         }
 

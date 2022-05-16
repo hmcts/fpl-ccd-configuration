@@ -175,6 +175,8 @@ public class ManageDocumentsController extends CallbackController {
                     caseDetailsMap.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
                         documentService.getDocumentWithConfidentialAddress(caseData,
                             ConfidentialBundleHelper.getSupportingEvidenceBundle(
+                                ElementUtils.unwrapElements(caseDataBefore.getRespondentStatements())),
+                            ConfidentialBundleHelper.getSupportingEvidenceBundle(
                                 ElementUtils.unwrapElements(respondentStatements))));
                 } else if (YES.getValue().equals(caseData.getManageDocumentsRelatedToHearing())) {
                     currentBundle = documentService
@@ -186,6 +188,8 @@ public class ManageDocumentsController extends CallbackController {
                     caseDetailsMap.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
                         documentService.getDocumentWithConfidentialAddress(caseData,
                             ConfidentialBundleHelper.getSupportingEvidenceBundle(
+                                ElementUtils.unwrapElements(caseDataBefore.getHearingFurtherEvidenceDocuments())),
+                            ConfidentialBundleHelper.getSupportingEvidenceBundle(
                                 ElementUtils.unwrapElements(updatedBundle))));
                 } else {
                     currentBundle = documentService.setDateTimeUploadedOnSupportingEvidence(
@@ -193,15 +197,19 @@ public class ManageDocumentsController extends CallbackController {
                         isSolicitor ? caseDataBefore.getFurtherEvidenceDocumentsSolicitor() :
                             caseDataBefore.getFurtherEvidenceDocuments(), isSolicitor);
 
+                    List<Element<SupportingEvidenceBundle>> existingFurtherEvidenceDocuments;
                     if (!isSolicitor) {
                         confidentialDocuments.updateConfidentialDocsInCaseDetails(caseDetailsMap, currentBundle,
                             FURTHER_EVIDENCE_DOCUMENTS_KEY);
                         caseDetailsMap.putIfNotEmpty(FURTHER_EVIDENCE_DOCUMENTS_KEY, currentBundle);
+                        existingFurtherEvidenceDocuments = caseData.getFurtherEvidenceDocuments();
                     } else {
                         caseDetailsMap.putIfNotEmpty(FURTHER_EVIDENCE_DOCUMENTS_SOLICITOR_KEY, currentBundle);
+                        existingFurtherEvidenceDocuments = caseData.getFurtherEvidenceDocumentsSolicitor();
                     }
                     caseDetailsMap.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
-                        documentService.getDocumentWithConfidentialAddress(caseData, currentBundle));
+                        documentService.getDocumentWithConfidentialAddress(caseData,
+                            existingFurtherEvidenceDocuments, currentBundle));
                 }
                 break;
             case CORRESPONDENCE:
@@ -213,15 +221,19 @@ public class ManageDocumentsController extends CallbackController {
                 List<Element<SupportingEvidenceBundle>> sortedBundle
                     = documentService.sortCorrespondenceDocumentsByUploadedDate(currentBundle);
 
+                List<Element<SupportingEvidenceBundle>> existingCorrespondingDoc;
                 if (!isSolicitor) {
                     confidentialDocuments.updateConfidentialDocsInCaseDetails(caseDetailsMap, sortedBundle,
                         CORRESPONDING_DOCUMENTS_COLLECTION_KEY);
                     caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, sortedBundle);
+                    existingCorrespondingDoc = caseData.getCorrespondenceDocuments();
                 } else {
                     caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_SOLICITOR_KEY, sortedBundle);
+                    existingCorrespondingDoc = caseData.getCorrespondenceDocumentsSolicitor();
                 }
                 caseDetailsMap.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
-                    documentService.getDocumentWithConfidentialAddress(caseData, sortedBundle));
+                    documentService.getDocumentWithConfidentialAddress(caseData,
+                        existingCorrespondingDoc, sortedBundle));
                 break;
             case ADDITIONAL_APPLICATIONS_DOCUMENTS:
                 caseDetailsMap.putIfNotEmpty(

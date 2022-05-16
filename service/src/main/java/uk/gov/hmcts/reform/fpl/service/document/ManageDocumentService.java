@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.exceptions.RespondentNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.DocumentWithConfidentialAddress;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
@@ -282,6 +283,8 @@ public class ManageDocumentService {
             data.put(C2_DOCUMENTS_COLLECTION_KEY, c2DocumentBundles);
             data.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
                 getDocumentWithConfidentialAddress(caseData,
+                    ConfidentialBundleHelper.getSupportingEvidenceBundle(
+                        unwrapElements(caseData.getC2DocumentBundle())),
                     ConfidentialBundleHelper.getSupportingEvidenceBundle(unwrapElements(c2DocumentBundles))));
         } else {
             List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundles =
@@ -289,18 +292,25 @@ public class ManageDocumentService {
             data.put(ADDITIONAL_APPLICATIONS_BUNDLE_KEY, additionalApplicationsBundles);
             data.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
                 getDocumentWithConfidentialAddress(caseData,
-                    ConfidentialBundleHelper.getSupportingEvidenceBundle(
-                        additionalApplicationsBundles.stream()
-                            .map(Element::getValue)
-                            .flatMap(additionalBundle ->
-                                Stream.of(additionalBundle.getC2DocumentBundle(),
-                                        additionalBundle.getOtherApplicationsBundle())
-                                    .filter(Objects::nonNull))
-                            .collect(Collectors.toList()))));
+                    getSupportingEvidenceBundlesFromAdditionalApplicationsBundles(
+                        caseData.getAdditionalApplicationsBundle()),
+                    getSupportingEvidenceBundlesFromAdditionalApplicationsBundles(additionalApplicationsBundles)
+                    ));
         }
         return data;
     }
 
+    private List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundlesFromAdditionalApplicationsBundles(
+        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle) {
+            return ConfidentialBundleHelper.getSupportingEvidenceBundle(
+                additionalApplicationsBundle.stream()
+                    .map(Element::getValue)
+                    .flatMap(additionalBundle ->
+                        Stream.of(additionalBundle.getC2DocumentBundle(),
+                                additionalBundle.getOtherApplicationsBundle())
+                            .filter(Objects::nonNull))
+                    .collect(Collectors.toList()));
+    }
     private List<Element<AdditionalApplicationsBundle>> updateAdditionalDocumentsBundle(
         CaseData caseData, UUID selectedBundleId, boolean setSolicitorUploaded) {
 
@@ -434,47 +444,60 @@ public class ManageDocumentService {
     }
 
     public List<Element<DocumentWithConfidentialAddress>> getDocumentWithConfidentialAddress(
-            CaseData caseData, List<Element<SupportingEvidenceBundle>> updatedDocuments) {
+            CaseData caseData, List<Element<SupportingEvidenceBundle>> existingDocuments,
+            List<Element<SupportingEvidenceBundle>> updatedDocuments) {
         return updateDocWithConfidentialAddr(caseData,
+            existingDocuments.stream()
+                .map(this::buildDocumentWithConfidentialAddress)
+                .collect(Collectors.toList()),
             updatedDocuments.stream()
                 .filter(doc -> YesNo.YES.equals(doc.getValue().getHasConfidentialAddress()))
-                .map(doc -> element(doc.getId(),
-                    DocumentWithConfidentialAddress.builder()
-                        .name(doc.getValue().getName())
-                        .document(doc.getValue().getDocument()).build()))
+                .map(this::buildDocumentWithConfidentialAddress)
                 .collect(Collectors.toList()));
     }
 
     public List<Element<DocumentWithConfidentialAddress>> getDocWithConfidentialAddrFromCourtBundles(
-        CaseData caseData,
-        List<Element<HearingCourtBundle>> updatedDocuments) {
-
+            CaseData caseData, List<Element<HearingCourtBundle>> existingDocuments,
+            List<Element<HearingCourtBundle>> updatedDocuments) {
         return updateDocWithConfidentialAddr(caseData,
-            updatedDocuments.stream().map(Element::getValue)
-                .map(hearingCourtBundle -> hearingCourtBundle.getCourtBundle().stream()
-                    .filter(courtBundle -> YES.equals(courtBundle.getValue().getHasConfidentialAddress()))
-                    .map(docElm -> element(docElm.getId(),
-                        DocumentWithConfidentialAddress.builder()
-                            .document(docElm.getValue().getDocument())
-                            .name("Court bundle of " + hearingCourtBundle.getHearing())
-                            .build())).collect(Collectors.toList()))
-                .flatMap(List::stream)
-                .collect(Collectors.toList()));
+            unwrapElements(existingDocuments).stream().map(this::buildDocumentWithConfidentialAddress)
+                .flatMap(List::stream).collect(Collectors.toList()),
+            unwrapElements(updatedDocuments).stream().map(this::buildDocumentWithConfidentialAddress)
+                .flatMap(List::stream).collect(Collectors.toList()));
+    }
+
+    private Element<DocumentWithConfidentialAddress> buildDocumentWithConfidentialAddress(
+        Element<SupportingEvidenceBundle> supportingEvidenceBundle) {
+        return element(supportingEvidenceBundle.getId(),
+            DocumentWithConfidentialAddress.builder()
+                .name(supportingEvidenceBundle.getValue().getName())
+                .document(supportingEvidenceBundle.getValue().getDocument()).build());
+    }
+
+    private List<Element<DocumentWithConfidentialAddress>> buildDocumentWithConfidentialAddress(
+            HearingCourtBundle hearingCourtBundle) {
+        return hearingCourtBundle.getCourtBundle().stream()
+            .map(courtBundle -> element(courtBundle.getId(),
+                DocumentWithConfidentialAddress.builder()
+                    .document(courtBundle.getValue().getDocument())
+                    .name("Court bundle of " + hearingCourtBundle.getHearing())
+                    .build()))
+            .collect(Collectors.toList());
     }
 
     private List<Element<DocumentWithConfidentialAddress>> updateDocWithConfidentialAddr(CaseData caseData,
-        List<Element<DocumentWithConfidentialAddress>> editedLst) {
+            List<Element<DocumentWithConfidentialAddress>> existingLst,
+            List<Element<DocumentWithConfidentialAddress>> editedLst) {
 
         List<Element<DocumentWithConfidentialAddress>> resultLst =
             Optional.ofNullable(caseData.getDocumentWithConfidentialAddress()).orElse(new ArrayList<>());
 
-        List<String> updatedDocUrls = editedLst.stream()
-            .map(doc -> doc.getValue().getDocument().getBinaryUrl()).collect(Collectors.toList());
+        List<UUID> existingDocUuid = existingLst.stream().map(Element::getId).collect(Collectors.toList());
 
-        // remove the updated document from the documentWithConfidentialAddress list
+        // remove the existing document from the documentWithConfidentialAddress list
         resultLst.removeAll(resultLst.stream()
             .filter(confidentialDoc ->
-                updatedDocUrls.contains(confidentialDoc.getValue().getDocument().getBinaryUrl()))
+                existingDocUuid.contains(confidentialDoc.getId()))
             .collect(Collectors.toList()));
 
         // add the updated version document into the documentWithConfidentialAddress list
