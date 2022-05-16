@@ -189,9 +189,7 @@ class RespondentValidatorTest {
 
         assertThat(actual).isEqualTo(List.of(
             "Building and Street is required",
-            "Address Line 2 is required",
             "Town or City is required",
-            "County is required",
             "Postcode/Zipcode is required",
             "Country is required",
             "emailValidatorError"));
