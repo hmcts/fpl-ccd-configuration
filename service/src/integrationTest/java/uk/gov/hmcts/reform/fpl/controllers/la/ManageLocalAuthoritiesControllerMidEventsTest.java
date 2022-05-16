@@ -34,6 +34,7 @@ import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolic
 import static uk.gov.hmcts.reform.fpl.Constants.COURT_1;
 import static uk.gov.hmcts.reform.fpl.Constants.COURT_3A;
 import static uk.gov.hmcts.reform.fpl.Constants.COURT_3B;
+import static uk.gov.hmcts.reform.fpl.Constants.COURT_SEPARATOR;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_ID;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
@@ -50,6 +51,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.ADD;
 import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.REMOVE;
 import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.TRANSFER;
+import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.TRANSFER_COURT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @WebMvcTest(ApplicantLocalAuthorityController.class)
@@ -432,5 +434,48 @@ class ManageLocalAuthoritiesControllerMidEventsTest extends AbstractCallbackTest
 
             assertThat(updatedCaseData.getLocalAuthoritiesEventData()).isEqualTo(expectedEventData);
         }
+    }
+
+    @Nested
+    class TransferCourtWithoutTransferLA {
+
+        private final String callback = "transfer-court/court-selection";
+
+        @Test
+        void shouldReturnValidateErrorsWhenSelectedCourtRegion() {
+            final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
+                .localAuthorityAction(TRANSFER_COURT)
+                .currentCourtName(COURT_1.getName())
+                .courtsToTransferWithoutTransferLA(dynamicLists.from(0,
+                    of(COURT_SEPARATOR.getName(), COURT_SEPARATOR.getCode()),
+                    of(COURT_1.getName(), COURT_1.getCode())))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthoritiesEventData(eventData)
+                .build();
+
+            final AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, callback);
+            assertThat(response.getErrors()).containsExactly(
+                "Invalid court selected.");
+        }
+        @Test
+        void shouldNotReturnValidateErrorsWhenSelectedAnyCourts() {
+            final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
+                .localAuthorityAction(TRANSFER_COURT)
+                .currentCourtName(COURT_1.getName())
+                .courtsToTransferWithoutTransferLA(dynamicLists.from(1,
+                    of(COURT_SEPARATOR.getName(), COURT_SEPARATOR.getCode()),
+                    of(COURT_3A.getName(), COURT_3A.getCode())))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthoritiesEventData(eventData)
+                .build();
+
+            final AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, callback);
+            assertThat(response.getErrors()).isEmpty();
+        }
+
     }
 }
