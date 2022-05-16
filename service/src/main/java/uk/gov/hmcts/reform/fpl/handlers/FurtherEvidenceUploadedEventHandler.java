@@ -53,6 +53,7 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.flatMapping;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -388,8 +389,12 @@ public class FurtherEvidenceUploadedEventHandler {
     }
 
     private Map<String, Set<DocumentReference>> getNewCourtBundles(CaseData caseData, CaseData caseDataBefore) {
-        List<CourtBundle> courtBundles = unwrapElements(caseData.getCourtBundleList());
-        List<CourtBundle> oldCourtBundleList = unwrapElements(caseDataBefore.getCourtBundleList());
+        List<CourtBundle> courtBundles = unwrapElements(
+            unwrapElements(caseData.getCourtBundleListV2()).stream()
+                .map(HearingCourtBundle::getCourtBundle).flatMap(List::stream).collect(toList()));
+        List<CourtBundle> oldCourtBundleList = unwrapElements(
+            unwrapElements(caseDataBefore.getCourtBundleListV2()).stream()
+                .map(HearingCourtBundle::getCourtBundle).flatMap(List::stream).collect(toList()));
 
         Map<String, Set<DocumentReference>> newCourtBundles = courtBundles.stream()
             .filter(newDoc -> !oldCourtBundleList.contains(newDoc))
