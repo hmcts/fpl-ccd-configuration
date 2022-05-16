@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.ConfidentialBundleHelper;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
 import java.time.LocalDateTime;
@@ -52,6 +53,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -279,20 +281,22 @@ public class ManageDocumentService {
                 updatedC2DocumentBundle(caseData, selected, setSolicitorUploaded);
             data.put(C2_DOCUMENTS_COLLECTION_KEY, c2DocumentBundles);
             data.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
-                getDocWithConfidentialAddrFromConfidentialBundleElements(caseData, c2DocumentBundles));
+                getDocumentWithConfidentialAddress(caseData,
+                    ConfidentialBundleHelper.getSupportingEvidenceBundle(unwrapElements(c2DocumentBundles))));
         } else {
             List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundles =
                 updateAdditionalDocumentsBundle(caseData, selected, setSolicitorUploaded);
             data.put(ADDITIONAL_APPLICATIONS_BUNDLE_KEY, additionalApplicationsBundles);
             data.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
-                getDocWithConfidentialAddrFromConfidentialBundles(caseData,
-                    additionalApplicationsBundles.stream()
-                        .map(Element::getValue)
-                        .flatMap(additionalBundle ->
-                            Stream.of(additionalBundle.getC2DocumentBundle(),
-                                    additionalBundle.getOtherApplicationsBundle())
-                                .filter(Objects::nonNull))
-                        .collect(Collectors.toList())));
+                getDocumentWithConfidentialAddress(caseData,
+                    ConfidentialBundleHelper.getSupportingEvidenceBundle(
+                        additionalApplicationsBundles.stream()
+                            .map(Element::getValue)
+                            .flatMap(additionalBundle ->
+                                Stream.of(additionalBundle.getC2DocumentBundle(),
+                                        additionalBundle.getOtherApplicationsBundle())
+                                    .filter(Objects::nonNull))
+                            .collect(Collectors.toList()))));
         }
         return data;
     }
@@ -429,27 +433,8 @@ public class ManageDocumentService {
         return getDynamicListSelectedValue(caseData.getRespondentStatementList(), mapper);
     }
 
-    public <T extends ConfidentialBundle> List<Element<DocumentWithConfidentialAddress>>
-        getDocWithConfidentialAddrFromConfidentialBundleElements(
-                CaseData caseData,
-                List<Element<T>> updatedDocuments) {
-        return getDocWithConfidentialAddrFromConfidentialBundles(caseData, updatedDocuments.stream()
-            .map(Element::getValue)
-            .collect(Collectors.toList()));
-    }
-
-    public <T extends ConfidentialBundle> List<Element<DocumentWithConfidentialAddress>>
-        getDocWithConfidentialAddrFromConfidentialBundles(
-            CaseData caseData,
-            List<T> updatedDocuments) {
-        return getDocWithConfidentialAddr(caseData, updatedDocuments.stream()
-            .map(ConfidentialBundle::getSupportingEvidenceBundle)
-            .flatMap(List::stream)
-            .collect(Collectors.toList()));
-    }
-
-    public List<Element<DocumentWithConfidentialAddress>> getDocWithConfidentialAddr(CaseData caseData,
-                List<Element<SupportingEvidenceBundle>> updatedDocuments) {
+    public List<Element<DocumentWithConfidentialAddress>> getDocumentWithConfidentialAddress(
+            CaseData caseData, List<Element<SupportingEvidenceBundle>> updatedDocuments) {
         return updateDocWithConfidentialAddr(caseData,
             updatedDocuments.stream()
                 .filter(doc -> YesNo.YES.equals(doc.getValue().getHasConfidentialAddress()))
