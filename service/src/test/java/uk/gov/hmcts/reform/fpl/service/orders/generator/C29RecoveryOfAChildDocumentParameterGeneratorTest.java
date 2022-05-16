@@ -43,7 +43,9 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
     private static final String FURTHER_DIRECTIONS = "further directions";
     private static final String OFFICER_NAME = "Officer Barbrady";
     private static final LocalDate ORDER_CREATED_DATE = LocalDate.of(2020, 8, 20);
+    private static final LocalDate ORDER_APPROVAL_DATE = LocalDate.of(2021, 1, 1);
     private static final String FORMAT_LOCAL_DATE_TO_STRING = "20th August 2020";
+    private static final String FORMAT_APPROVAL_DATE_TO_STRING = "1st January 2021";
     private static final Address REMOVAL_ADDRESS = Address.builder()
         .addressLine1("12 street").postcode("SW1").country("UK").build();
     private static final String ORDER_HEADER = "Warning\n";
@@ -112,6 +114,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
             .caseLocalAuthorityName(LA_NAME)
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersOrderCreatedDate(ORDER_CREATED_DATE)
+                .manageOrdersApprovalDate(ORDER_APPROVAL_DATE)
                 .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                 .manageOrdersActionsPermittedAddress(REMOVAL_ADDRESS)
                 .manageOrdersOfficerName(OFFICER_NAME)
@@ -144,6 +147,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
             .caseLocalAuthorityName(LA_NAME)
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersOrderCreatedDate(ORDER_CREATED_DATE)
+                .manageOrdersApprovalDate(ORDER_APPROVAL_DATE)
                 .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                 .manageOrdersActionsPermitted(List.of(C29ActionsPermitted.INFORM))
                 .manageOrdersIsExParte("No")
@@ -173,6 +177,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
             .caseLocalAuthority(LA_CODE)
             .caseLocalAuthorityName(LA_NAME)
             .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersApprovalDate(ORDER_APPROVAL_DATE)
                 .manageOrdersOrderCreatedDate(ORDER_CREATED_DATE)
                 .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                 .manageOrdersOfficerName(OFFICER_NAME)
@@ -204,6 +209,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
             .caseLocalAuthority(LA_CODE)
             .caseLocalAuthorityName(LA_NAME)
             .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersApprovalDate(ORDER_APPROVAL_DATE)
                 .manageOrdersOrderCreatedDate(ORDER_CREATED_DATE)
                 .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                 .manageOrdersOfficerName(OFFICER_NAME)
@@ -236,6 +242,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
             .caseLocalAuthority(LA_CODE)
             .caseLocalAuthorityName(LA_NAME)
             .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersApprovalDate(ORDER_APPROVAL_DATE)
                 .manageOrdersOrderCreatedDate(ORDER_CREATED_DATE)
                 .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                 .manageOrdersActionsPermittedAddress(REMOVAL_ADDRESS)
@@ -275,7 +282,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
         return C29RecoveryOfAChildDocmosisParameters.builder()
             .furtherDirections(FURTHER_DIRECTIONS)
             .localAuthorityName(LA_NAME)
-            .dateOfIssue(FORMAT_LOCAL_DATE_TO_STRING)
+            .dateOfIssue(FORMAT_APPROVAL_DATE_TO_STRING)
             .orderTitle(C29_RECOVERY_OF_A_CHILD.getTitle());
     }
 }
