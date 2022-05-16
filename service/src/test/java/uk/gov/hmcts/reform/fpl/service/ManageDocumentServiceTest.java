@@ -1566,15 +1566,26 @@ class ManageDocumentServiceTest {
     void shouldReturnNewHearingDocumentListWithCourtBundleWhenNoExistingCourtBundlesPresentForSelectedHearing() {
         UUID selectedHearingId = randomUUID();
 
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(selectedHearingId, createHearingBooking(futureDate, futureDate.plusDays(3)))
+        );
+        List<Element<CourtBundle>> courtBundle = List.of(element(CourtBundle.builder().build()));
+
         CaseData caseData = CaseData.builder()
-            .manageDocumentsCourtBundle(wrapElements(CourtBundle.builder().hearing("Test hearing").build()))
+            .manageDocumentsCourtBundle(courtBundle)
             .hearingDocumentsHearingList(selectedHearingId.toString())
+            .hearingDetails(hearingBookings)
             .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
             .build();
 
-        assertThat(underTest.buildHearingDocumentList(caseData).get(COURT_BUNDLE_LIST_KEY))
-            .isEqualTo(List.of(element(selectedHearingId, caseData.getManageDocumentsCourtBundle())));
+        List<HearingCourtBundle> results = unwrapElements((List<Element<HearingCourtBundle>>)
+            underTest.buildHearingDocumentList(caseData).get(COURT_BUNDLE_LIST_KEY));
+        assertThat(results).isNotEmpty();
+        assertThat(results.get(0).getCourtBundle())
+            .isNotEmpty()
+            .isEqualTo(courtBundle);
     }
+
 
     @Test
     void shouldReturnNewCourtBundleListWithCourtBundleWhenNoExistingCourtBundlePresentForSelectedHearing() {
@@ -1589,6 +1600,7 @@ class ManageDocumentServiceTest {
             .manageDocumentsCourtBundle(courtBundle)
             .hearingDocumentsHearingList(selectedHearingId.toString())
             .hearingDetails(hearingBookings)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
             .build();
 
         List<HearingCourtBundle> results = unwrapElements(
@@ -1622,6 +1634,7 @@ class ManageDocumentServiceTest {
             .courtBundleListV2(courtBundleList)
             .hearingDocumentsHearingList(selectedHearingId.toString())
             .hearingDetails(hearingBookings)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
             .build();
 
         List<HearingCourtBundle> results = unwrapElements(
@@ -1656,6 +1669,7 @@ class ManageDocumentServiceTest {
             .courtBundleListV2(courtBundleList)
             .hearingDocumentsHearingList(selectedHearingId.toString())
             .hearingDetails(hearingBookings)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
             .build();
 
         List<HearingCourtBundle> results = unwrapElements(
@@ -1679,6 +1693,7 @@ class ManageDocumentServiceTest {
         CaseData caseData = CaseData.builder()
             .hearingDocumentsHearingList(selectedHearingId.toString())
             .hearingDetails(hearingBookings)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
             .build();
 
         assertThatThrownBy(() -> underTest.buildHearingDocumentList(caseData))
@@ -1724,6 +1739,7 @@ class ManageDocumentServiceTest {
             .courtBundleListV2(courtBundleList)
             .hearingDocumentsHearingList(selectedHearingId.toString())
             .hearingDetails(hearingBookings)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
             .build();
 
         Map<String, Object> map = underTest.initialiseHearingDocumentFields(caseData);
@@ -1781,10 +1797,9 @@ class ManageDocumentServiceTest {
             .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
             .build();
 
-        assertThat((CourtBundle) underTest
-            .initialiseHearingDocumentFields(caseData)
-            .get(COURT_BUNDLE_KEY))
-            .isEqualTo(CourtBundle.builder().hearing(selectedHearingBooking.toLabel()).build());
+        assertThat(getCourtBundleFromMap(underTest
+            .initialiseHearingDocumentFields(caseData)))
+            .isEqualTo(List.of(CourtBundle.builder().build()));
 
         assertThat((CaseSummary) underTest
             .initialiseHearingDocumentFields(caseData.toBuilder()
@@ -1808,11 +1823,16 @@ class ManageDocumentServiceTest {
     @Test
     void shouldReturnNewCaseSummaryListWhenNoExistingCaseSummaryPresentForSelectedHearing() {
         UUID selectedHearingId = randomUUID();
+        LocalDateTime today = LocalDateTime.now();
+
+        HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
+        List<Element<HearingBooking>> hearingBookings = List.of(element(selectedHearingId, selectedHearingBooking));
 
         CaseData caseData = CaseData.builder()
             .manageDocumentsCaseSummary(CaseSummary.builder().hearing("Test hearing").build())
             .hearingDocumentsHearingList(selectedHearingId.toString())
             .manageDocumentsHearingDocumentType(HearingDocumentType.CASE_SUMMARY)
+            .hearingDetails(hearingBookings)
             .build();
 
         assertThat(underTest.buildHearingDocumentList(caseData).get(CASE_SUMMARY_LIST_KEY))
@@ -1822,6 +1842,7 @@ class ManageDocumentServiceTest {
     @Test
     void shouldReturnNewPositionStatementChildListWhenNoExistingListPresentForSelectedHearing() {
         UUID selectedHearingId = randomUUID();
+        LocalDateTime today = LocalDateTime.now();
 
         UUID selectedChildId = randomUUID();
         DynamicList childrenDynamicList = TestDataHelper.buildDynamicList(0,
@@ -1836,11 +1857,15 @@ class ManageDocumentServiceTest {
                 .childName("Tom Smith")
                 .build();
 
+        HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
+        List<Element<HearingBooking>> hearingBookings = List.of(element(selectedHearingId, selectedHearingBooking));
+
         CaseData caseData = CaseData.builder()
             .manageDocumentsPositionStatementChild(positionStatementChild)
             .hearingDocumentsHearingList(selectedHearingId.toString())
             .manageDocumentsChildrenList(childrenDynamicList)
             .manageDocumentsHearingDocumentType(HearingDocumentType.POSITION_STATEMENT_CHILD)
+            .hearingDetails(hearingBookings)
             .build();
 
         assertThat(underTest.buildHearingDocumentList(caseData).get(POSITION_STATEMENT_CHILD_LIST_KEY))
@@ -1850,6 +1875,7 @@ class ManageDocumentServiceTest {
     @Test
     void shouldReturnNewPositionStatementRespondentListWhenNoExistingListPresentForSelectedHearing() {
         UUID selectedHearingId = randomUUID();
+        LocalDateTime today = LocalDateTime.now();
 
         UUID selectedRespondentId = randomUUID();
         DynamicList respondentDynamicList = TestDataHelper.buildDynamicList(0,
@@ -1864,11 +1890,15 @@ class ManageDocumentServiceTest {
                 .respondentName("Tom Smith")
                 .build();
 
+        HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
+        List<Element<HearingBooking>> hearingBookings = List.of(element(selectedHearingId, selectedHearingBooking));
+
         CaseData caseData = CaseData.builder()
             .manageDocumentsPositionStatementRespondent(positionStatementRespondent)
             .hearingDocumentsHearingList(selectedHearingId.toString())
             .manageDocumentsRespondentList(respondentDynamicList)
             .manageDocumentsHearingDocumentType(HearingDocumentType.POSITION_STATEMENT_RESPONDENT)
+            .hearingDetails(hearingBookings)
             .build();
 
         assertThat(underTest.buildHearingDocumentList(caseData).get(POSITION_STATEMENT_RESPONDENT_LIST_KEY))

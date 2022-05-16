@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import lombok.Builder;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import java.time.LocalDateTime;
 
+@Data
 @EqualsAndHashCode(callSuper = true)
 public class CaseSummary extends HearingDocument {
 
@@ -14,6 +16,9 @@ public class CaseSummary extends HearingDocument {
                        LocalDateTime dateTimeUploaded,
                        String uploadedBy,
                        String hearing) {
-        super(document, dateTimeUploaded, uploadedBy, hearing);
+        super.dateTimeUploaded = dateTimeUploaded;
+        super.uploadedBy = uploadedBy;
+        super.hearing = hearing;
+        super.document = document;
     }
 }

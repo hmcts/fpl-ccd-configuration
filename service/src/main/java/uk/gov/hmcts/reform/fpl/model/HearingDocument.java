@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentMetaData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
@@ -10,6 +12,8 @@ import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
+@NoArgsConstructor(force = true)
 public class HearingDocument extends DocumentMetaData {
     protected String hearing;
     protected DocumentReference document;
@@ -20,13 +24,4 @@ public class HearingDocument extends DocumentMetaData {
         return document;
     }
 
-    public HearingDocument(DocumentReference document,
-                       LocalDateTime dateTimeUploaded,
-                       String uploadedBy,
-                       String hearing) {
-        super.dateTimeUploaded = dateTimeUploaded;
-        super.uploadedBy = uploadedBy;
-        this.hearing = hearing;
-        this.document = document;
-    }
 }

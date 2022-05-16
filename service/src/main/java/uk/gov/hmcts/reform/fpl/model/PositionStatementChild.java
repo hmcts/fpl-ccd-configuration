@@ -21,7 +21,10 @@ public class PositionStatementChild extends HearingDocument {
                                   String hearing,
                                   String childName,
                                   UUID childId) {
-        super(document, dateTimeUploaded, uploadedBy, hearing);
+        super.dateTimeUploaded = dateTimeUploaded;
+        super.uploadedBy = uploadedBy;
+        super.hearing = hearing;
+        super.document = document;
         this.childName = childName;
         this.childId = childId;
     }

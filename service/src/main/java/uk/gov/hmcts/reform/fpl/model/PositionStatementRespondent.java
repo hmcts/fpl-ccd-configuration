@@ -21,7 +21,10 @@ public class PositionStatementRespondent extends HearingDocument {
                                        String hearing,
                                        String respondentName,
                                        UUID respondentId) {
-        super(document, dateTimeUploaded, uploadedBy, hearing);
+        super.dateTimeUploaded = dateTimeUploaded;
+        super.uploadedBy = uploadedBy;
+        super.hearing = hearing;
+        super.document = document;
         this.respondentName = respondentName;
         this.respondentId = respondentId;
     }
