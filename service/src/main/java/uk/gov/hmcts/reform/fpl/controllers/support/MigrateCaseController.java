@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 
 import java.util.List;
 import java.util.Map;
@@ -40,7 +41,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-451", this::run451,
         "DFPL-482", this::run482,
         "DFPL-572", this::run572,
-        "DFPL-630", this::run630
+        "DFPL-622", this::run622,
+        "DFPL-635", this::run635
     );
 
     @PostMapping("/about-to-submit")
@@ -121,10 +123,10 @@ public class MigrateCaseController extends CallbackController {
      *  - migrationId
      * @param caseDetails - the caseDetails to update
      */
-    private void run630(CaseDetails caseDetails) {
-        var migrationId = "DFPL-630";
-        var expectedCaseId = 1649078536655906L;
-        var expectedDocId = UUID.fromString("133c1088-91e1-4c33-90de-c5679208e89d");
+    private void run635(CaseDetails caseDetails) {
+        var migrationId = "DFPL-635";
+        var expectedCaseId = 1642758673379744L;
+        var expectedDocId = UUID.fromString("9f0d570a-2cb8-48eb-90cb-3d4f26a2350a");
 
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();
@@ -145,6 +147,40 @@ public class MigrateCaseController extends CallbackController {
             ));
         }
         caseDetails.getData().put("submittedForm", null);
+    }
+
+    private void run622(CaseDetails caseDetails) {
+        var migrationId = "DFPL-622";
+        var expectedCaseId = 1639491786898849L;
+        var expectedElementId = UUID.fromString("a35d4775-f3ae-4eaa-9682-df88b00634ac");
+
+        CaseData caseData = getCaseData(caseDetails);
+        var caseId = caseData.getId();
+
+        if (caseId != expectedCaseId) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId
+            ));
+        }
+
+        updateDraftCMOs(caseDetails, caseData, List.of(expectedElementId));
+    }
+
+    private void updateDraftCMOs(CaseDetails caseDetails, CaseData caseData, List<UUID> elementIds) {
+        List<Element<HearingOrder>> draftCMOs = caseData.getDraftUploadedCMOs();
+
+        List<Element<HearingOrder>> filteredList = getDraftCMOToRemove(draftCMOs, elementIds);
+        draftCMOs.removeAll(filteredList);
+
+        caseDetails.getData().put("draftUploadedCMOs", draftCMOs);
+    }
+
+    private List<Element<HearingOrder>> getDraftCMOToRemove(List<Element<HearingOrder>> hearingOrders,
+                                                       List<UUID> elementIds) {
+        return hearingOrders.stream()
+            .filter(element -> elementIds.contains(element.getId()))
+            .collect(Collectors.toList());
     }
 
     private void run572(CaseDetails caseDetails) {
