@@ -8,10 +8,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.config.HighCourtAdminEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.CaseTransferred;
+import uk.gov.hmcts.reform.fpl.events.CaseTransferredToAnotherCourt;
 import uk.gov.hmcts.reform.fpl.events.SecondaryLocalAuthorityAdded;
 import uk.gov.hmcts.reform.fpl.events.SecondaryLocalAuthorityRemoved;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.service.ApplicantLocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
@@ -20,6 +23,8 @@ import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityChangedConten
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,14 +35,19 @@ import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolic
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASHARED;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.ChildGender.BOY;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_NAME;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_REGION;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 
 @ContextConfiguration(classes = {
     LocalAuthorityChangedHandler.class, LocalAuthorityChangedContentProvider.class, EmailNotificationHelper.class,
-    CaseUrlService.class
+    CaseUrlService.class, HighCourtAdminEmailLookupConfiguration.class
 })
 @MockBeans({@MockBean(FeatureToggleService.class)})
 class LocalAuthorityChangedHandlerEmailTemplateTest extends EmailTemplateTest {
@@ -239,5 +249,143 @@ class LocalAuthorityChangedHandlerEmailTemplateTest extends EmailTemplateTest {
                         + "contactfpl@justice.gov.uk")
                 );
         }
+    }
+
+    @Nested
+    class TransferToAnotherCourt {
+
+        final CaseData caseDataBefore = CaseData.builder()
+            .id(1234L).sendToCtsc(YES.getValue())
+            .caseName("Case name")
+            .build();
+
+        final CaseData caseDataTransferredToOrdinaryCourt = caseDataBefore.toBuilder()
+            .court(
+                Court.builder()
+                    .code("386")
+                    .name("York")
+                    .region("North East")
+                    .dateTransferred(LocalDateTime.of(1997, Month.JULY, 1, 23, 59))
+                    .build()
+            )
+            .pastCourtList(
+                List.of(element(
+                    Court.builder()
+                        .code("118").name("Barnsley").region("North East")
+                        .build()
+                ))
+            ).build();
+
+        final CaseData caseDataTransferredToRcjHighCourt = caseDataBefore.toBuilder()
+            .court(
+                Court.builder()
+                    .code(RCJ_HIGH_COURT_CODE)
+                    .name(RCJ_HIGH_COURT_NAME)
+                    .region(RCJ_HIGH_COURT_REGION)
+                    .dateTransferred(LocalDateTime.of(1997, Month.JULY, 1, 23, 59))
+                    .build()
+            )
+            .pastCourtList(
+                List.of(element(
+                    Court.builder()
+                        .code("118").name("Barnsley").region("North East")
+                        .build()
+                ))
+            ).build();
+
+        private void verifyResponse() {
+            assertThat(response())
+                .hasSubject("Case Transferred from Previous Family Court to Family Court")
+                .hasBody(emailContent()
+                    .line("Case Transferred from Previous Family Court to Family Court")
+                    .line()
+                    .line("^Case name 1234")
+                    .line()
+                    .line("HM Courts & Tribunals Service")
+                    .line()
+                    .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
+                        + "contactfpl@justice.gov.uk")
+                );
+        }
+
+        @Test
+        void notifyRespondentSolicitorsAboutCaseTransferToOrdinaryCourt() {
+            underTest.notifyRespondentSolicitors(
+                new CaseTransferredToAnotherCourt(caseDataTransferredToOrdinaryCourt, caseDataBefore));
+            verifyResponse();
+        }
+
+        @Test
+        void notifyAdminAboutCaseTransferToOrdinaryCourt() {
+            underTest.notifyAdmin(
+                new CaseTransferredToAnotherCourt(caseDataTransferredToOrdinaryCourt, caseDataBefore));
+            verifyResponse();
+        }
+
+        @Test
+        void notifyChildSolicitorsAboutCaseTransferToOrdinaryCourt() {
+            underTest.notifyChildSolicitors(
+                new CaseTransferredToAnotherCourt(caseDataTransferredToOrdinaryCourt, caseDataBefore));
+            verifyResponse();
+        }
+
+        @Test
+        void notifyDesignatedLocalAuthorityAboutCaseTransferToOrdinaryCourt() {
+            underTest.notifyDesignatedLocalAuthority(
+                new CaseTransferredToAnotherCourt(caseDataTransferredToOrdinaryCourt, caseDataBefore));
+            verifyResponse();
+        }
+
+        @Test
+        void notifySecondaryLocalAuthorityAboutCaseTransferToOrdinaryCourt() {
+            underTest.notifySecondaryLocalAuthority(
+                new CaseTransferredToAnotherCourt(caseDataTransferredToOrdinaryCourt, caseDataBefore));
+            verifyResponse();
+        }
+
+        // Transferred to High Court
+
+        @Test
+        void notifyRespondentSolicitorsAboutCaseTransferToRcjHighCourt() {
+            underTest.notifyRespondentSolicitors(
+                new CaseTransferredToAnotherCourt(caseDataTransferredToRcjHighCourt, caseDataBefore));
+            verifyResponse();
+        }
+
+        @Test
+        void notifyAdminAboutCaseTransferToRcjHighCourt() {
+            underTest.notifyAdmin(
+                new CaseTransferredToAnotherCourt(caseDataTransferredToRcjHighCourt, caseDataBefore));
+            verifyResponse();
+        }
+
+        @Test
+        void notifyChildSolicitorsAboutCaseTransferToRcjHighCourt() {
+            underTest.notifyChildSolicitors(
+                new CaseTransferredToAnotherCourt(caseDataTransferredToRcjHighCourt, caseDataBefore));
+            verifyResponse();
+        }
+
+        @Test
+        void notifyDesignatedLocalAuthorityAboutCaseTransferToRcjHighCourt() {
+            underTest.notifyDesignatedLocalAuthority(
+                new CaseTransferredToAnotherCourt(caseDataTransferredToRcjHighCourt, caseDataBefore));
+            verifyResponse();
+        }
+
+        @Test
+        void notifySecondaryLocalAuthorityAboutCaseTransferToRcjHighCourt() {
+            underTest.notifySecondaryLocalAuthority(
+                new CaseTransferredToAnotherCourt(caseDataTransferredToRcjHighCourt, caseDataBefore));
+            verifyResponse();
+        }
+
+        @Test
+        void notifyHighCourtAdminAboutCaseTransferToRcjHighCourt() {
+            underTest.notifyHighCourtAdmin(
+                new CaseTransferredToAnotherCourt(caseDataTransferredToRcjHighCourt, caseDataBefore));
+            verifyResponse();
+        }
+
     }
 }

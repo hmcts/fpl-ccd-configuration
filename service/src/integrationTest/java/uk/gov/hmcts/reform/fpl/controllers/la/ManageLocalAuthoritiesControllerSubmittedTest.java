@@ -5,11 +5,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.ApplicantLocalAuthorityController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthoritiesEventData;
 import uk.gov.hmcts.reform.fpl.model.notify.CaseTransferredNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.SharedLocalAuthorityChangedNotifyData;
@@ -17,10 +23,13 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
@@ -34,8 +43,10 @@ import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_2_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_2_ID;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_2_INBOX;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_2_NAME;
+import static uk.gov.hmcts.reform.fpl.Constants.PRIVATE_SOLICITOR_USER_EMAIL;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CASE_TRANSFERRED_NEW_DESIGNATED_LA_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CASE_TRANSFERRED_PREV_DESIGNATED_LA_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CASE_TRANSFERRED_TO_ANOTHER_COURT_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LOCAL_AUTHORITY_ADDED_DESIGNATED_LA_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LOCAL_AUTHORITY_ADDED_SHARED_LA_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LOCAL_AUTHORITY_REMOVED_SHARED_LA_TEMPLATE;
@@ -43,9 +54,15 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASHARED;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.ChildGender.BOY;
 import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.TRANSFER;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_NAME;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_REGION;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildParty;
 
 @WebMvcTest(ApplicantLocalAuthorityController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -225,6 +242,117 @@ class ManageLocalAuthoritiesControllerSubmittedTest extends AbstractCallbackTest
             eq("internal-update-case-summary"), anyMap());
 
         verifyNoMoreInteractions(notificationClient, coreCaseDataService);
+    }
+
+    void notifyAllPartiesWhenCaseTransferredToAnotherCourtTemplate(boolean isTransferredToRcjHighCourt) {
+        final CaseData caseDataBefore = CaseData.builder()
+            .id(CASE_ID).sendToCtsc(YES.getValue())
+            .caseName("Case name")
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .localAuthorities(wrapElements(designatedLocalAuthority, secondaryLocalAuthority))
+            .children1(List.of(element(
+                Child.builder()
+                    .party(testChildParty("Gregory", "White", BOY, LocalDate.now().minusYears(2)))
+                    .solicitor(RespondentSolicitor.builder()
+                        .email("child_solicitor@solicitor.com")
+                        .organisation(Organisation.builder().organisationID("TEST").build())
+                        .build())
+                    .build()
+            )))
+            .respondents1(List.of(element(
+                Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .firstName("John")
+                        .lastName("Tang")
+                        .build())
+                    .solicitor(RespondentSolicitor.builder()
+                        .email(PRIVATE_SOLICITOR_USER_EMAIL)
+                        .organisation(Organisation.builder().organisationID("TEST").build())
+                        .build())
+                    .build()
+            )))
+            .build();
+
+        final CaseData caseData = caseDataBefore.toBuilder()
+            .court(
+                Court.builder()
+                    .code(isTransferredToRcjHighCourt ? RCJ_HIGH_COURT_CODE : "386")
+                    .name(isTransferredToRcjHighCourt ? RCJ_HIGH_COURT_NAME : "York")
+                    .region(isTransferredToRcjHighCourt ? RCJ_HIGH_COURT_REGION : "North East")
+                    .dateTransferred(LocalDateTime.of(1997, Month.JULY, 1, 23, 59))
+                    .build()
+            )
+            .pastCourtList(
+                List.of(element(
+                    Court.builder()
+                        .code("118").name("Barnsley").region("North East")
+                        .build()
+                ))
+            )
+            .build();
+
+        final SharedLocalAuthorityChangedNotifyData expectedNotifyData = SharedLocalAuthorityChangedNotifyData
+            .builder()
+            .courtName(isTransferredToRcjHighCourt ? RCJ_HIGH_COURT_NAME : "York")
+            .previousCourtName("Barnsley")
+            .ccdNumber(caseData.getId().toString())
+            .caseName(caseData.getCaseName())
+            .build();
+
+        postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
+
+        checkUntil(() -> {
+            verify(notificationClient).sendEmail(
+                CASE_TRANSFERRED_TO_ANOTHER_COURT_TEMPLATE,
+                LOCAL_AUTHORITY_1_INBOX,
+                toMap(expectedNotifyData),
+                notificationReference(CASE_ID));
+
+            verify(notificationClient).sendEmail(
+                CASE_TRANSFERRED_TO_ANOTHER_COURT_TEMPLATE,
+                LOCAL_AUTHORITY_2_INBOX,
+                toMap(expectedNotifyData),
+                notificationReference(CASE_ID));
+
+            verify(notificationClient).sendEmail(
+                CASE_TRANSFERRED_TO_ANOTHER_COURT_TEMPLATE,
+                PRIVATE_SOLICITOR_USER_EMAIL,
+                toMap(expectedNotifyData),
+                notificationReference(CASE_ID));
+
+            verify(notificationClient).sendEmail(
+                CASE_TRANSFERRED_TO_ANOTHER_COURT_TEMPLATE,
+                "child_solicitor@solicitor.com",
+                toMap(expectedNotifyData),
+                notificationReference(CASE_ID));
+            // notify ctsc admin
+            verify(notificationClient).sendEmail(
+                CASE_TRANSFERRED_TO_ANOTHER_COURT_TEMPLATE,
+                "FamilyPublicLaw+ctsc@gmail.com",
+                toMap(expectedNotifyData),
+                notificationReference(CASE_ID));
+            // notify high court admin
+            verify(notificationClient, times(isTransferredToRcjHighCourt ? 1 : 0)).sendEmail(
+                CASE_TRANSFERRED_TO_ANOTHER_COURT_TEMPLATE,
+                "FamilyPublicLaw+rcjfamilyhighcourt@gmail.com",
+                toMap(expectedNotifyData),
+                notificationReference(CASE_ID));
+
+        });
+
+        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
+            eq("internal-update-case-summary"), anyMap());
+        verifyNoMoreInteractions(notificationClient);
+    }
+
+    @Test
+    void shouldNotifyAllPartiesWhenCaseTransferredToOrdinaryCourt() {
+        notifyAllPartiesWhenCaseTransferredToAnotherCourtTemplate(false);
+    }
+
+    @Test
+    void shouldNotifyAllPartiesWhenCaseTransferredToRcjHighCourt() {
+        notifyAllPartiesWhenCaseTransferredToAnotherCourtTemplate(true);
     }
 
 }

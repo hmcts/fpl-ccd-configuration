@@ -93,6 +93,16 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseSummaryPreviousCourtName",
+    "Label": "Previous Court",
+    "FieldType": "Text",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N",
+    "Comment": "Name of case previous court. This name will be used in applications and orders"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseSummaryHasUnresolvedMessages",
     "Label": "There are some unresolved messages",
     "FieldType": "YesOrNo",

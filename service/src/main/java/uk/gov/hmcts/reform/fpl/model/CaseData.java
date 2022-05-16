@@ -166,6 +166,16 @@ public class CaseData {
     private OutsourcingType outsourcingType;
     private Object outsourcingLAs;
     private Court court;
+    private List<Element<Court>> pastCourtList;
+
+    public List<Element<Court>> getPastCourtList() {
+        return defaultIfNull(pastCourtList, new ArrayList<>());
+    }
+
+    public void setPastCourtList(List<Element<Court>> pastCourtList) {
+        this.pastCourtList = pastCourtList;
+    }
+
     private YesNo multiCourts;
 
     private final Risks risks;

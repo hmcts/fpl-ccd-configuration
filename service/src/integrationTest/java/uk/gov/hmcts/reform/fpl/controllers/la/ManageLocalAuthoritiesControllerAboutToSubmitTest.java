@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -32,6 +33,9 @@ import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.ContactInformation;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -60,6 +64,11 @@ import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.ADD;
 import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.REMOVE;
 import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.TRANSFER;
+import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.TRANSFER_COURT;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_NAME;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.caseRoleDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
@@ -380,6 +389,106 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
                         .mainContact("Yes")
                         .build()))
                     .build());
+        }
+    }
+
+    @Nested
+    class TransferToAnotherCourt {
+
+        @Test
+        void shouldTransferToOrdinaryCourt() {
+            final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
+                .localAuthorityAction(TRANSFER_COURT)
+                .courtsToTransferWithoutTransferLA(dynamicLists.from(1,
+                    Pair.of("Worcester", "380"),
+                    Pair.of("Wrexham", "384")))
+                .build();
+
+            final CaseData initialCaseData = CaseData.builder()
+                .court(Court.builder().name("Family Court sitting at Swansea").code("344").build())
+                .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+                .caseLocalAuthorityName(LOCAL_AUTHORITY_1_NAME)
+                .localAuthoritiesEventData(eventData)
+                .build();
+
+            final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
+
+            Court currentCourt = updatedCaseData.getCourt();
+            assertThat(currentCourt.getCode()).isEqualTo("384");
+            assertThat(currentCourt.getName()).isEqualTo("Wrexham");
+            assertThat(currentCourt.getDateTransferred()).isNotNull();
+            assertThat(updatedCaseData.getPastCourtList()).hasSize(1);
+            assertThat(updatedCaseData.getPastCourtList().iterator().next().getValue().getCode()).isEqualTo("344");
+        }
+
+        @Test
+        void shouldTransferToOrdinaryCourtAgain() {
+            final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
+                .localAuthorityAction(TRANSFER_COURT)
+                .courtsToTransferWithoutTransferLA(dynamicLists.from(1,
+                    Pair.of("Worcester", "380"),
+                    Pair.of("Wrexham", "384")))
+                .build();
+
+            final CaseData initialCaseData = CaseData.builder()
+                .court(
+                    Court.builder()
+                        .name("Family Court sitting at Swansea")
+                        .code("344")
+                        .dateTransferred(LocalDateTime.of(1997, Month.JULY, 1, 23, 59))
+                        .build()
+                )
+                .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+                .caseLocalAuthorityName(LOCAL_AUTHORITY_1_NAME)
+                .localAuthoritiesEventData(eventData)
+                .pastCourtList(List.of(element(
+                    Court.builder()
+                        .code("378")
+                        .name("Wolverhampton")
+                        .dateTransferred(LocalDateTime.of(1997, Month.JUNE, 30, 23, 59))
+                        .build()
+                )))
+                .build();
+
+            final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
+
+            Court currentCourt = updatedCaseData.getCourt();
+            assertThat(currentCourt.getCode()).isEqualTo("384");
+            assertThat(currentCourt.getName()).isEqualTo("Wrexham");
+            assertThat(currentCourt.getDateTransferred()).isNotNull();
+            assertThat(updatedCaseData.getPastCourtList()).hasSize(2);
+
+            Court lastCourt = unwrapElements(updatedCaseData.getPastCourtList())
+                .stream()
+                .sorted(Comparator.comparing(Court::getDateTransferred).reversed())
+                .findFirst().orElse(null);
+            assertThat(lastCourt).isNotNull();
+            assertThat(lastCourt.getCode()).isEqualTo("344");
+        }
+
+        @Test
+        void shouldTransferToRcjHighCourt() {
+            final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
+                .localAuthorityAction(TRANSFER_COURT)
+                .courtsToTransferWithoutTransferLA(dynamicLists.from(1,
+                    Pair.of("Worcester", "380"),
+                    Pair.of(RCJ_HIGH_COURT_NAME, RCJ_HIGH_COURT_CODE)))
+                .build();
+
+            final CaseData initialCaseData = CaseData.builder()
+                .court(Court.builder().name("Family Court sitting at Swansea").code("344").build())
+                .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+                .caseLocalAuthorityName(LOCAL_AUTHORITY_1_NAME)
+                .localAuthoritiesEventData(eventData)
+                .build();
+
+            final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
+
+            assertThat(updatedCaseData.getCourt().getCode()).isEqualTo(RCJ_HIGH_COURT_CODE);
+            assertThat(updatedCaseData.getCourt().getName()).isEqualTo(RCJ_HIGH_COURT_NAME);
+            assertThat(updatedCaseData.getCourt().getDateTransferred()).isNotNull();
+            assertThat(updatedCaseData.getPastCourtList()).hasSize(1);
+            assertThat(updatedCaseData.getPastCourtList().iterator().next().getValue().getCode()).isEqualTo("344");
         }
     }
 }
