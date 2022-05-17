@@ -764,13 +764,6 @@ class DraftOrderServiceTest {
             Element<HearingOrder> hearingOrder1 = hearingOrder(C21);
             Element<HearingOrder> hearingOrder2 = hearingOrder(C21);
 
-            HearingOrdersBundle ordersBundle = HearingOrdersBundle.builder()
-                .hearingId(hearings.get(0).getId())
-                .hearingName("Case management hearing, 2 March 2020")
-                .judgeTitleAndName("His Honour Judge Dredd")
-                .orders(newArrayList(hearingOrder1, hearingOrder2))
-                .build();
-
             UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
                 .hearingOrderDraftKind(List.of(HearingOrderKind.C21))
                 .hearingsForHearingOrderDrafts(dynamicList(hearings.get(0).getId(), hearings))
@@ -785,6 +778,21 @@ class DraftOrderServiceTest {
             List<Element<Other>> others = newArrayList();
 
             service.updateCase(eventData, hearings, unsealedOrders, evidenceBundles, ordersBundles, others);
+
+            hearingOrder1.getValue().setDateSent(time.now().toLocalDate());
+            hearingOrder1.getValue().setStatus(SEND_TO_JUDGE);
+            hearingOrder1.getValue().setTranslationRequirements(TRANSLATION_REQUIREMENTS);
+
+            hearingOrder2.getValue().setDateSent(time.now().toLocalDate());
+            hearingOrder2.getValue().setStatus(SEND_TO_JUDGE);
+            hearingOrder2.getValue().setTranslationRequirements(TRANSLATION_REQUIREMENTS);
+
+            HearingOrdersBundle ordersBundle = HearingOrdersBundle.builder()
+                .hearingId(hearings.get(0).getId())
+                .hearingName("Case management hearing, 2 March 2020")
+                .judgeTitleAndName("His Honour Judge Dredd")
+                .orders(newArrayList(hearingOrder1, hearingOrder2))
+                .build();
 
             assertThat(ordersBundles).hasSize(1);
             assertThat(ordersBundles.get(0)).extracting(Element::getValue).isEqualTo(ordersBundle);
@@ -819,6 +827,14 @@ class DraftOrderServiceTest {
             List<Element<HearingOrdersBundle>> ordersBundles = wrapElements(originalOrdersBundle);
 
             service.updateCase(eventData, hearings, emptyList(), emptyList(), ordersBundles, emptyList());
+
+            hearingOrder1.getValue().setDateSent(time.now().toLocalDate());
+            hearingOrder1.getValue().setStatus(SEND_TO_JUDGE);
+            hearingOrder1.getValue().setTranslationRequirements(TRANSLATION_REQUIREMENTS);
+
+            hearingOrder3.getValue().setDateSent(time.now().toLocalDate());
+            hearingOrder3.getValue().setStatus(SEND_TO_JUDGE);
+            hearingOrder3.getValue().setTranslationRequirements(TRANSLATION_REQUIREMENTS);
 
             HearingOrdersBundle expectedOrdersBundle = originalOrdersBundle.toBuilder()
                 .orders(newArrayList(cmoOrder, hearingOrder1, hearingOrder3))

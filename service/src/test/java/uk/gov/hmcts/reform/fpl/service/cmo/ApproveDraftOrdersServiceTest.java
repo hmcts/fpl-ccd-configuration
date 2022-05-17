@@ -383,12 +383,18 @@ class ApproveDraftOrdersServiceTest {
     void shouldReturnCMOToSealAndSetCaseStateWhenJudgeApprovesCMOAndServingOthersIsEnabled(
         String name,
         List<Element<HearingBooking>> hearingBookings, State expectedState) {
+        String othersNotified = "Other1, Other2";
+        List<Element<Other>> others = wrapElements(
+            Other.builder().name("Other1").address(Address.builder().postcode("SE1").build()).build(),
+            Other.builder().name("Other2").address(Address.builder().postcode("SE2").build()).build());
+
         Element<HearingOrder> agreedCMO = element(cmoID, HearingOrder.builder()
             .hearing(hearing1)
             .title(hearing1)
             .type(AGREED_CMO)
             .order(order)
             .status(SEND_TO_JUDGE)
+            .others(others)
             .judgeTitleAndName("Her Honour Judge Judy").build());
 
         Element<HearingOrdersBundle> ordersBundleElement = buildDraftOrdersBundle(hearing1, newArrayList(agreedCMO));
@@ -402,11 +408,6 @@ class ApproveDraftOrdersServiceTest {
             .hearingDetails(hearingBookings)
             .build();
 
-        String othersNotified = "Other1, Other2";
-        List<Element<Other>> others = wrapElements(
-            Other.builder().name("Other1").address(Address.builder().postcode("SE1").build()).build(),
-            Other.builder().name("Other2").address(Address.builder().postcode("SE2").build()).build());
-
         HearingOrder expectedCmo = expectedSealedCMO(others, othersNotified);
         Map<String, Object> expectedData = Map.of(
             "sealedCMOs", List.of(element(agreedCMO.getId(), expectedCmo)),
@@ -416,7 +417,7 @@ class ApproveDraftOrdersServiceTest {
             "hearingOrdersBundlesDrafts", emptyList()
         );
 
-        given(othersService.getSelectedOthers(any(), any(), any())).willReturn(others);
+        //given(othersService.getSelectedOthers(any(), any(), any())).willReturn(others);
         given(draftOrderService.migrateCmoDraftToOrdersBundles(any(CaseData.class))).willReturn(emptyList());
         given(hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, agreedCMO, others, othersNotified,
             SealType.ENGLISH))

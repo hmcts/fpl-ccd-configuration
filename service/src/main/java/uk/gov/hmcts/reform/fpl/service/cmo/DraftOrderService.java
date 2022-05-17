@@ -188,6 +188,8 @@ public class DraftOrderService {
                 .flatMap(id -> findElement(id, hearings))
                 .orElse(null);
 
+            List<Element<HearingOrder>> hearingOrders = new ArrayList<>();
+
             for (int i = 0; i < eventData.getCurrentHearingOrderDrafts().size(); i++) {
                 Element<HearingOrder> hearingOrder = fromHearingOrderElement(
                     eventData.getCurrentHearingOrderDrafts().get(i),
@@ -195,8 +197,9 @@ public class DraftOrderService {
                     SEND_TO_JUDGE,
                     time.now().toLocalDate(),
                     selectedOthers);
-                addOrdersToBundle(bundles, List.of(hearingOrder), hearing, C21);
+                hearingOrders.add(hearingOrder);
             }
+            addOrdersToBundle(bundles, hearingOrders, hearing, C21);
         }
 
         bundles.removeIf(bundle -> isEmpty(bundle.getValue().getOrders()));
