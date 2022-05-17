@@ -417,7 +417,6 @@ class ApproveDraftOrdersServiceTest {
             "hearingOrdersBundlesDrafts", emptyList()
         );
 
-        //given(othersService.getSelectedOthers(any(), any(), any())).willReturn(others);
         given(draftOrderService.migrateCmoDraftToOrdersBundles(any(CaseData.class))).willReturn(emptyList());
         given(hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, agreedCMO, others, othersNotified,
             SealType.ENGLISH))
