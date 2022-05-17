@@ -242,7 +242,7 @@ public class ManageDocumentsLAController extends CallbackController {
                 List<Element<HearingCourtBundle>> courtBundle = manageDocumentLAService.buildCourtBundleList(caseData);
                 caseDetailsMap.putIfNotEmpty(COURT_BUNDLE_LIST_KEY, courtBundle);
                 caseDetailsMap.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
-                    manageDocumentService.getDocWithConfidentialAddrFromCourtBundles(caseData,
+                    manageDocumentService.getDocumentWithConfidentialAddressFromCourtBundles(caseData,
                         caseData.getCourtBundleListV2(), courtBundle));
                 break;
         }

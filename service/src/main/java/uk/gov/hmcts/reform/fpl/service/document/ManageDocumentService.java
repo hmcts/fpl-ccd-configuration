@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.exceptions.RespondentNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.DocumentWithConfidentialAddress;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
@@ -23,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
-import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ConfidentialBundleHelper;
@@ -456,13 +454,15 @@ public class ManageDocumentService {
                 .collect(Collectors.toList()));
     }
 
-    public List<Element<DocumentWithConfidentialAddress>> getDocWithConfidentialAddrFromCourtBundles(
+    public List<Element<DocumentWithConfidentialAddress>> getDocumentWithConfidentialAddressFromCourtBundles(
             CaseData caseData, List<Element<HearingCourtBundle>> existingDocuments,
             List<Element<HearingCourtBundle>> updatedDocuments) {
         return updateDocWithConfidentialAddr(caseData,
-            unwrapElements(existingDocuments).stream().map(this::buildDocumentWithConfidentialAddress)
+            unwrapElements(existingDocuments).stream()
+                .map(hearingCourtBundle -> buildDocumentWithConfidentialAddress(hearingCourtBundle, false))
                 .flatMap(List::stream).collect(Collectors.toList()),
-            unwrapElements(updatedDocuments).stream().map(this::buildDocumentWithConfidentialAddress)
+            unwrapElements(updatedDocuments).stream()
+                .map(hearingCourtBundle -> buildDocumentWithConfidentialAddress(hearingCourtBundle, true))
                 .flatMap(List::stream).collect(Collectors.toList()));
     }
 
@@ -475,8 +475,10 @@ public class ManageDocumentService {
     }
 
     private List<Element<DocumentWithConfidentialAddress>> buildDocumentWithConfidentialAddress(
-            HearingCourtBundle hearingCourtBundle) {
+            HearingCourtBundle hearingCourtBundle, boolean filterConfidentialAddress) {
         return hearingCourtBundle.getCourtBundle().stream()
+            .filter(courtBundle ->
+                !filterConfidentialAddress || YesNo.YES.equals(courtBundle.getValue().getHasConfidentialAddress()))
             .map(courtBundle -> element(courtBundle.getId(),
                 DocumentWithConfidentialAddress.builder()
                     .document(courtBundle.getValue().getDocument())

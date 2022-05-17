@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.ConfidentialBundleHelper;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -1560,24 +1561,11 @@ class ManageDocumentServiceTest {
                 .build())
         );
 
-        // test getDocWithConfidentialAddrFromConfidentialBundleElements
-        {
-            List<Element<ConfidentialBundle>> confidentialBundle = wrapElements(buildConfidentialBundle(bundles));
-            List<Element<DocumentWithConfidentialAddress>> resultLIst =
-                underTest.getDocWithConfidentialAddrFromConfidentialBundleElements(caseData, confidentialBundle);
-            List<Element<DocumentWithConfidentialAddress>> expected = List.of(
-                element(uuid, DocumentWithConfidentialAddress.builder()
-                    .name("test bundle name 1")
-                    .document(confidentialDoc).build())
-            );
-            assertThat(resultLIst).isEqualTo(expected);
-        }
-
-        // test getDocWithConfidentialAddrFromConfidentialBundles
         {
             List<ConfidentialBundle> confidentialBundle = List.of(buildConfidentialBundle(bundles));
             List<Element<DocumentWithConfidentialAddress>> resultLIst =
-                underTest.getDocWithConfidentialAddrFromConfidentialBundles(caseData, confidentialBundle);
+                underTest.getDocumentWithConfidentialAddress(caseData, new ArrayList<>(),
+                    ConfidentialBundleHelper.getSupportingEvidenceBundle(confidentialBundle));
             List<Element<DocumentWithConfidentialAddress>> expected = List.of(
                 element(uuid, DocumentWithConfidentialAddress.builder()
                     .name("test bundle name 1")
@@ -1590,7 +1578,8 @@ class ManageDocumentServiceTest {
     @Test
     void shouldGetDocWithConfidentialAddrFromHearingCourtBundles() {
         CaseData caseData = CaseData.builder().build();
-        UUID uuid = randomUUID();
+        UUID uuid1 = randomUUID();
+        UUID uuid2 = randomUUID();
 
         DocumentReference confidentialDoc = DocumentReference.builder()
             .filename("test file name 1")
@@ -1601,25 +1590,25 @@ class ManageDocumentServiceTest {
             .binaryUrl("test url 2").build();
 
         List<Element<CourtBundle>> courtBundles = List.of(
-            element(uuid, CourtBundle.builder()
+            element(uuid1, CourtBundle.builder()
                 .document(confidentialDoc)
                 .hasConfidentialAddress(YES).build()),
-            element(uuid, CourtBundle.builder()
+            element(uuid2, CourtBundle.builder()
                 .document(normalDoc)
                 .hasConfidentialAddress(NO).build()));
 
         List<Element<HearingCourtBundle>> hearingCourtBundles = List.of(
-            element(uuid, HearingCourtBundle.builder()
+            element(randomUUID(), HearingCourtBundle.builder()
                 .hearing("Test hearing")
                 .courtBundle(courtBundles)
                 .build()));
 
         List<Element<DocumentWithConfidentialAddress>> resultLIst =
-            underTest.getDocWithConfidentialAddrFromCourtBundles(caseData, caseData.getCourtBundleListV2()
-                , hearingCourtBundles);
+            underTest.getDocumentWithConfidentialAddressFromCourtBundles(caseData, caseData.getCourtBundleListV2(),
+                hearingCourtBundles);
 
         List<Element<DocumentWithConfidentialAddress>> expected = List.of(
-            element(uuid, DocumentWithConfidentialAddress.builder()
+            element(uuid1, DocumentWithConfidentialAddress.builder()
                 .name("Court bundle of Test hearing")
                 .document(confidentialDoc).build())
         );
