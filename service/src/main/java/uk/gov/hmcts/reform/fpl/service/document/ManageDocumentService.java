@@ -300,15 +300,16 @@ public class ManageDocumentService {
 
     private List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundlesFromAdditionalApplicationsBundles(
         List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle) {
-            return ConfidentialBundleHelper.getSupportingEvidenceBundle(
-                additionalApplicationsBundle.stream()
-                    .map(Element::getValue)
-                    .flatMap(additionalBundle ->
-                        Stream.of(additionalBundle.getC2DocumentBundle(),
-                                additionalBundle.getOtherApplicationsBundle())
-                            .filter(Objects::nonNull))
-                    .collect(Collectors.toList()));
+        return ConfidentialBundleHelper.getSupportingEvidenceBundle(
+            additionalApplicationsBundle.stream()
+                .map(Element::getValue)
+                .flatMap(additionalBundle ->
+                    Stream.of(additionalBundle.getC2DocumentBundle(),
+                            additionalBundle.getOtherApplicationsBundle())
+                        .filter(Objects::nonNull))
+                .collect(Collectors.toList()));
     }
+
     private List<Element<AdditionalApplicationsBundle>> updateAdditionalDocumentsBundle(
         CaseData caseData, UUID selectedBundleId, boolean setSolicitorUploaded) {
 

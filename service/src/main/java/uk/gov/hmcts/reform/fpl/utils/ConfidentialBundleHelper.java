@@ -9,6 +9,10 @@ import java.util.stream.Collectors;
 
 public class ConfidentialBundleHelper {
 
+    private ConfidentialBundleHelper() {
+        // NO-OP
+    }
+
     public static List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle(
             List<? extends ConfidentialBundle> confidentialBundle) {
         return confidentialBundle.stream()
