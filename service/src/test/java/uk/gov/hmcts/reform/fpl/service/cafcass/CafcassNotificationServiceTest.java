@@ -351,7 +351,7 @@ class CafcassNotificationServiceTest {
                         .build());
 
         Set<DocumentReference> documentReferences = Set.copyOf(documentReference);
-        assertThat(documentReferences.size()).isEqualTo(2);
+        assertThat(documentReferences).hasSize(2);
 
         underTest.sendEmail(caseData,
                 documentReferences,
