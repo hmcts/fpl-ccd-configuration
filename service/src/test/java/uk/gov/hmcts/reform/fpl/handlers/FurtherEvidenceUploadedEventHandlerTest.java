@@ -919,7 +919,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     //TODO changes in master confict with DFPL-82
-//    @Test
+    /*
+    @Test
     void shouldSendNotificationWhenCourtBundleIsUploadedByLA() {
         String hearing1 = "1stHearing";
         String hearing2 = "2ndHearing";
@@ -939,7 +940,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
             userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
             (caseData) -> caseData.getCourtBundleListV2().addAll(totalHearing),
             List.of(hearing1, hearing2, hearing3));
-    }
+    }*/
 
     private static List<String> buildNonConfidentialDocumentsNamesList() {
         return List.of(NON_CONFIDENTIAL_1, NON_CONFIDENTIAL_2);
