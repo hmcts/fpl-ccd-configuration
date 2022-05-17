@@ -624,8 +624,9 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
         assertThat(newDocumentData.getDocumentTypes())
-                .isEqualTo("• non-confidential-1\n"
-                        + "• non-confidential-2");
+                .contains("• non-confidential-1");
+        assertThat(newDocumentData.getDocumentTypes())
+                .contains("• non-confidential-2");
         assertThat(newDocumentData.getEmailSubjectInfo())
                 .isEqualTo("Further documents for main application");
     }
