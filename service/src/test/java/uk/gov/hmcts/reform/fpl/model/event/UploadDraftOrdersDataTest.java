@@ -63,7 +63,11 @@ class UploadDraftOrdersDataTest {
                 "orderToSendTranslationRequirements8",
                 "orderToSend9",
                 "orderToSendTranslationRequirements9",
-                "orderToSendOptionCount"
+                "orderToSendOptionCount",
+                "uploadCMOShowOthers",
+                "hasOthers",
+                "othersSelector",
+                "others_label"
             );
     }
 
