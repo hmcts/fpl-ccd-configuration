@@ -446,10 +446,10 @@ public class ManageDocumentService {
             CaseData caseData, List<Element<SupportingEvidenceBundle>> existingDocuments,
             List<Element<SupportingEvidenceBundle>> updatedDocuments) {
         return updateDocWithConfidentialAddr(caseData,
-            existingDocuments.stream()
+            Optional.ofNullable(existingDocuments).orElse(new ArrayList<>()).stream()
                 .map(this::buildDocumentWithConfidentialAddress)
                 .collect(Collectors.toList()),
-            updatedDocuments.stream()
+            Optional.ofNullable(updatedDocuments).orElse(new ArrayList<>()).stream()
                 .filter(doc -> YesNo.YES.equals(doc.getValue().getHasConfidentialAddress()))
                 .map(this::buildDocumentWithConfidentialAddress)
                 .collect(Collectors.toList()));
@@ -459,10 +459,12 @@ public class ManageDocumentService {
             CaseData caseData, List<Element<HearingCourtBundle>> existingDocuments,
             List<Element<HearingCourtBundle>> updatedDocuments) {
         return updateDocWithConfidentialAddr(caseData,
-            unwrapElements(existingDocuments).stream()
+            Optional.ofNullable(existingDocuments).orElse(new ArrayList<>()).stream()
+                .map(Element::getValue)
                 .map(hearingCourtBundle -> buildDocumentWithConfidentialAddress(hearingCourtBundle, false))
                 .flatMap(List::stream).collect(Collectors.toList()),
-            unwrapElements(updatedDocuments).stream()
+             Optional.ofNullable(updatedDocuments).orElse(new ArrayList<>()).stream()
+                 .map(Element::getValue)
                 .map(hearingCourtBundle -> buildDocumentWithConfidentialAddress(hearingCourtBundle, true))
                 .flatMap(List::stream).collect(Collectors.toList()));
     }
