@@ -664,6 +664,15 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersC35aOrderExists",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Does a supervision order (C35a) already exist for this case?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageOrdersSupervisionOrderType",
     "FieldType": "FixedRadioList",
