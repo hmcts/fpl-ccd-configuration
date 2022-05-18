@@ -45,7 +45,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.function.Predicate.not;
@@ -156,6 +155,28 @@ public class FurtherEvidenceUploadedEventHandler {
                 .forEach((hearingDetails, value) ->
                     furtherEvidenceNotificationService.sendNotificationForCourtBundleUploaded(caseData, recipients,
                         hearingDetails));
+        }
+    }
+
+    @EventListener
+    public void sendOtherHearingDocumentsUploadedNotification(final FurtherEvidenceUploadedEvent event) {
+        final CaseData caseData = event.getCaseData();
+        final CaseData caseDataBefore = event.getCaseDataBefore();
+        final UserDetails uploader = event.getInitiatedBy();
+
+        List<HearingDocument> newHearingDocument = getHearingDocument(caseData, caseDataBefore);
+        if (!newHearingDocument.isEmpty()) {
+            final Set<String> recipients = new LinkedHashSet<>();
+            recipients.addAll(furtherEvidenceNotificationService.getRespondentSolicitorEmails(caseData));
+            recipients.addAll(furtherEvidenceNotificationService.getChildSolicitorEmails(caseData));
+            recipients.addAll(furtherEvidenceNotificationService.getDesignatedLocalAuthorityRecipients(caseData));
+            recipients.addAll(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData));
+
+            if (isNotEmpty(recipients)) {
+                List<String> newDocumentNames = getHearingDocumentNames(newHearingDocument);
+                furtherEvidenceNotificationService.sendNotification(caseData, recipients, uploader.getFullName(),
+                    newDocumentNames);
+            }
         }
     }
 
@@ -405,8 +426,6 @@ public class FurtherEvidenceUploadedEventHandler {
     private List<HearingDocument> getHearingDocument(CaseData caseData, CaseData caseDataBefore) {
         List<HearingDocument> newHearingDoc = new ArrayList<>();
 
-        newHearingDoc.addAll(getNewHearingDocuments(flattenCourtBundleList(caseData.getCourtBundleListV2()),
-            flattenCourtBundleList(caseDataBefore.getCourtBundleListV2())));
         newHearingDoc.addAll(getNewHearingDocuments(caseData.getCaseSummaryList(),
             caseDataBefore.getCaseSummaryList()));
         newHearingDoc.addAll(getNewHearingDocuments(caseData.getPositionStatementChildList(),
@@ -415,13 +434,6 @@ public class FurtherEvidenceUploadedEventHandler {
             caseDataBefore.getPositionStatementRespondentList()));
 
         return newHearingDoc;
-    }
-
-    private List<Element<CourtBundle>> flattenCourtBundleList(List<Element<HearingCourtBundle>> courtBundles) {
-        return courtBundles.stream()
-            .map(Element::getValue).map(HearingCourtBundle::getCourtBundle)
-            .flatMap(List::stream)
-            .collect(Collectors.toList());
     }
 
     private Map<String, Set<DocumentReference>> getNewCourtBundles(CaseData caseData, CaseData caseDataBefore) {

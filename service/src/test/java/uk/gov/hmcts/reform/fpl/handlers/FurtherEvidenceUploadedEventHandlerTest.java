@@ -17,8 +17,11 @@ import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
@@ -28,11 +31,13 @@ import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
+import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -981,6 +986,53 @@ class FurtherEvidenceUploadedEventHandlerTest {
             (caseData) -> caseData.getCourtBundleList().addAll(totalHearing),
             List.of(hearing1, hearing2, hearing3));
     }*/
+
+    @Test
+    void shouldSendNotificationWhenHearingDocumentsIsUploaded() {
+        final List<Element<CaseSummary>> caseSummaryList = wrapElements(
+            CaseSummary.builder().document(TestDataHelper.testDocumentReference("CaseSummary 1.pdf")).build(),
+            CaseSummary.builder().document(TestDataHelper.testDocumentReference("CaseSummary 2.pdf")).build());
+        final List<Element<PositionStatementChild>> positionStatementChildList = wrapElements(
+            PositionStatementChild.builder()
+                .document(TestDataHelper.testDocumentReference("PositionStatementChild.pdf")).build());;
+        final List<Element<PositionStatementRespondent>> positionStatementRespondentList = wrapElements(
+            PositionStatementRespondent.builder()
+                .document(TestDataHelper.testDocumentReference("PositionStatementRespondent.pdf")).build());;
+
+        CaseData caseDataBefore = buildSubmittedCaseData();
+        CaseData caseData = buildSubmittedCaseData().toBuilder()
+            .caseSummaryList(caseSummaryList)
+            .positionStatementChildList(positionStatementChildList)
+            .positionStatementRespondentList(positionStatementRespondentList).build();
+
+        final Set<String> respondentSolicitors = Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_3_EMAIL);
+        when(furtherEvidenceNotificationService.getRespondentSolicitorEmails(caseData))
+            .thenReturn(respondentSolicitors);
+        final Set<String> childSolicitors = Set.of(REP_SOLICITOR_2_EMAIL, REP_SOLICITOR_4_EMAIL);
+        when(furtherEvidenceNotificationService.getChildSolicitorEmails(caseData))
+            .thenReturn(childSolicitors);
+        final Set<String> allLAs = Set.of(LA_USER_EMAIL, LA2_USER_EMAIL);
+        when(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData))
+            .thenReturn(allLAs);
+
+        UserDetails userDetails = userDetailsLA();
+        FurtherEvidenceUploadedEvent event = new FurtherEvidenceUploadedEvent(caseData, caseDataBefore, SOLICITOR,
+            userDetails);
+
+        furtherEvidenceUploadedEventHandler.sendOtherHearingDocumentsUploadedNotification(event);
+
+        final Set<String> expectedRecipients = new HashSet<>();
+        expectedRecipients.addAll(respondentSolicitors);
+        expectedRecipients.addAll(childSolicitors);
+        expectedRecipients.addAll(allLAs);
+
+        List<String> expectedNewDocumentName =
+            List.of("CaseSummary 1.pdf", "CaseSummary 2.pdf", "PositionStatementChild.pdf",
+                "PositionStatementRespondent.pdf");
+
+        verify(furtherEvidenceNotificationService)
+            .sendNotification(caseData, expectedRecipients, userDetails.getFullName(), expectedNewDocumentName);
+    }
 
     private static List<String> buildNonConfidentialDocumentsNamesList() {
         return List.of(NON_CONFIDENTIAL_1, NON_CONFIDENTIAL_2);

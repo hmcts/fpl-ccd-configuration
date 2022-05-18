@@ -63,6 +63,9 @@ public class FurtherEvidenceUploadedEventTestData {
             .furtherEvidenceDocumentsSolicitor(new ArrayList<>())
             .hearingFurtherEvidenceDocuments(new ArrayList<>())
             .respondentStatements(new ArrayList<>())
+            .caseSummaryList(new ArrayList<>())
+            .positionStatementChildList(new ArrayList<>())
+            .positionStatementRespondentList(new ArrayList<>())
             .build();
     }
 
