@@ -40,7 +40,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-500", this::run500,
         "DFPL-451", this::run451,
         "DFPL-482", this::run482,
-        "DFPL-572", this::run572,
+        "DFPL-373", this::run373,
         "DFPL-622", this::run622,
         "DFPL-635", this::run635
     );
@@ -183,15 +183,15 @@ public class MigrateCaseController extends CallbackController {
             .collect(Collectors.toList());
     }
 
-    private void run572(CaseDetails caseDetails) {
+    private void run373(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();
-        var expectedCaseId = 1646391317671957L;
-        var expectedDocId = UUID.fromString("0d30f8e4-cf44-47f6-ab1b-7fc11fdc34a8");
+        var expectedCaseId = 1634821154680053L;
+        var expectedDocId = UUID.fromString("27454b43-eb9d-4510-a1c5-6f3df24f1f9f");
 
         if (caseId != expectedCaseId) {
             throw new AssertionError(format(
-                "Migration {id = DFPL-572, case reference = %s}, expected case id %d",
+                "Migration {id = DFPL-373, case reference = %s}, expected case id %d",
                 caseId, expectedCaseId
             ));
         }
@@ -200,7 +200,7 @@ public class MigrateCaseController extends CallbackController {
         var docId = UUID.fromString(documentUrl.substring(documentUrl.length() - 36));
         if (!docId.equals(expectedDocId)) {
             throw new AssertionError(format(
-                "Migration {id = DFPL-572, case reference = %s}, expected urgent hearing order document id %s",
+                "Migration {id = DFPL-373, case reference = %s}, expected urgent hearing order document id %s",
                 caseId, expectedDocId
             ));
         }
