@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
@@ -37,6 +38,7 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -145,6 +147,9 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
     private UploadDocumentService uploadDocumentService;
 
     @MockBean
+    private DocumentConversionService documentConversionService;
+
+    @MockBean
     private DocumentDownloadService documentDownloadService;
 
     @MockBean
@@ -157,6 +162,8 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
     @BeforeEach
     void mocks() {
         givenFplService();
+        when(documentConversionService.convertToPdf(any()))
+            .thenAnswer(returnsFirstArg());
         when(documentDownloadService.downloadDocument(anyString()))
             .thenReturn(ORDER_BINARY);
         when(uploadDocumentService.uploadPDF(ORDER_BINARY, TRANSLATED_ORDER.getFilename()))

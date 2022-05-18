@@ -121,7 +121,8 @@ public class RepresentativesInbox {
             .map(Element::getValue)
             .filter(respondent -> isEmpty(respondent.getRepresentedBy())
                 && isEmpty(respondent.getSolicitor())
-                && respondent.hasAddress())
+                && respondent.hasAddress()
+                && !respondent.isDeceasedOrNFA())
             .map(Respondent::toParty)
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }

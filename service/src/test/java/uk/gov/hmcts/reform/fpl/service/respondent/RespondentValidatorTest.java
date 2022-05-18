@@ -6,6 +6,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -139,6 +141,57 @@ class RespondentValidatorTest {
         List<String> actual = underTest.validate(caseData, CASE_DATA_BEFORE);
 
         assertThat(actual).isEqualTo(List.of(
+            "emailValidatorError"));
+    }
+
+    @Test
+    void shouldReturnErrorWhenMissingAddress() {
+        Respondent respondent = Respondent.builder()
+            .party(RespondentParty.builder()
+                .dateOfBirth(NOW.toLocalDate().minusDays(1))
+                .addressKnow(YesNo.YES.getValue())
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .respondents1(List.of(
+                element(respondent), element(respondent)))
+            .build();
+
+        mockServices(caseData);
+
+        List<String> actual = underTest.validate(caseData, CASE_DATA_BEFORE);
+
+        assertThat(actual).isEqualTo(List.of(
+            "Enter respondent's address",
+            "Enter respondent's address",
+            "emailValidatorError"));
+    }
+
+    @Test
+    void shouldReturnErrorWhenMissingAddressFields() {
+        Respondent respondent = Respondent.builder()
+            .party(RespondentParty.builder()
+                .dateOfBirth(NOW.toLocalDate().minusDays(1))
+                .addressKnow(YesNo.YES.getValue())
+                .address(Address.builder().build())
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .respondents1(List.of(
+                element(respondent)))
+            .build();
+
+        mockServices(caseData);
+
+        List<String> actual = underTest.validate(caseData, CASE_DATA_BEFORE);
+
+        assertThat(actual).isEqualTo(List.of(
+            "Building and Street is required",
+            "Town or City is required",
+            "Postcode/Zipcode is required",
+            "Country is required",
             "emailValidatorError"));
     }
 

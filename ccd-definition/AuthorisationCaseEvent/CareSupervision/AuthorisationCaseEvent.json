@@ -694,15 +694,10 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
-        ],
-        "CRUD": "CR"
-      },
-      {
-        "UserRoles": [
+          "[LAMANAGING]",
           "[LASHARED]"
         ],
-        "CRUD": "R"
+        "CRUD": "CR"
       }
     ]
   },
@@ -974,7 +969,8 @@
           "[EPSMANAGING]",
           "[LAMANAGING]",
           "[LABARRISTER]",
-          "[BARRISTER]"
+          "[BARRISTER]",
+          "[LASHARED]"
         ],
         "CRUD": "CR"
       },
@@ -1082,6 +1078,21 @@
           "[SOLICITORH]",
           "[SOLICITORI]",
           "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
           "[LASOLICITOR]",
           "[LASHARED]",
           "[EPSMANAGING]",
@@ -1379,14 +1390,14 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "[LASOLICITOR]"
         ],
         "CRUD": "CR"
       },
       {
         "UserRoles": [
           "caseworker-publiclaw-magistrate",
-          "caseworker-publiclaw-solicitor",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary"
         ],

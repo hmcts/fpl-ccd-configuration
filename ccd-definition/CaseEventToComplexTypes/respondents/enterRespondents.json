@@ -51,16 +51,34 @@
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "party.address",
+    "ListElementCode": "party.addressKnow",
     "FieldDisplayOrder": 6,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.addressNotKnowReason",
+    "FieldDisplayOrder": 7,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.address",
+    "FieldDisplayOrder": 7,
+    "DisplayContext": "MANDATORY"
   },
   {
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.address.AddressLine1",
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "ID": "EnterRespondents",
@@ -81,7 +99,7 @@
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.address.PostTown",
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "ID": "EnterRespondents",
@@ -95,14 +113,14 @@
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.address.PostCode",
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.address.Country",
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -110,7 +128,7 @@
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.telephoneNumber",
-    "FieldDisplayOrder": 7,
+    "FieldDisplayOrder": 8,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -136,7 +154,7 @@
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.relationshipLabel",
-    "FieldDisplayOrder": 8,
+    "FieldDisplayOrder": 9,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "party!=\"SHOW_LABEL\""
   },
@@ -147,15 +165,6 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.relationshipToChild",
     "EventElementLabel": "*What is the respondent's relationship to the child or children in this case?",
-    "FieldDisplayOrder": 9,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "EnterRespondents",
-    "CaseEventID": "enterRespondents",
-    "CaseFieldID": "respondents1",
-    "ListElementCode": "party.contactDetailsHidden",
     "FieldDisplayOrder": 10,
     "DisplayContext": "OPTIONAL"
   },
@@ -164,7 +173,7 @@
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "party.contactDetailsHiddenReason",
+    "ListElementCode": "party.contactDetailsHidden",
     "FieldDisplayOrder": 11,
     "DisplayContext": "OPTIONAL"
   },
@@ -173,8 +182,17 @@
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "party.proceedingsLabel",
+    "ListElementCode": "party.contactDetailsHiddenReason",
     "FieldDisplayOrder": 12,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.proceedingsLabel",
+    "FieldDisplayOrder": 13,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "party!=\"SHOW_LABEL\""
   },
@@ -184,7 +202,7 @@
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.litigationIssues",
-    "FieldDisplayOrder": 13,
+    "FieldDisplayOrder": 14,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -193,7 +211,7 @@
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.litigationIssuesDetails",
-    "FieldDisplayOrder": 14,
+    "FieldDisplayOrder": 15,
     "DisplayContext": "OPTIONAL"
   },
   {

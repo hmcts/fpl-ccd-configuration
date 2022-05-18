@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
@@ -29,6 +31,9 @@ public final class RespondentParty extends Party {
     private final String contactDetailsHiddenReason;
     private final String litigationIssues;
     private final String litigationIssuesDetails;
+    private final String addressNotKnowReason;
+    private final String addressKnow;
+
 
     @Override
     @NotBlank(message = "Enter the respondent's full name")
@@ -66,7 +71,8 @@ public final class RespondentParty extends Party {
                            String contactDetailsHidden,
                            String contactDetailsHiddenReason,
                            String litigationIssues,
-                           String litigationIssuesDetails) {
+                           String litigationIssuesDetails,
+                           String addressNotKnowReason,  String addressKnow) {
         super(partyId, partyType, firstName, lastName, organisationName,
             dateOfBirth, address, email, telephoneNumber);
         this.gender = gender;
@@ -77,9 +83,19 @@ public final class RespondentParty extends Party {
         this.contactDetailsHiddenReason = contactDetailsHiddenReason;
         this.litigationIssues = litigationIssues;
         this.litigationIssuesDetails = litigationIssuesDetails;
+        this.addressNotKnowReason = addressNotKnowReason;
+        this.addressKnow = addressKnow;
     }
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class RespondentPartyBuilder {
+    }
+
+    public String getAddressKnow() {
+        if (addressKnow != null) {
+            return addressKnow;
+        }
+        return this.address != null && StringUtils.isNotBlank(this.address.getAddressLine1())
+            ? YesNo.YES.getValue() : null;
     }
 }

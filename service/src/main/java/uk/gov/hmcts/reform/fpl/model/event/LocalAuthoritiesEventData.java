@@ -28,10 +28,17 @@ public class LocalAuthoritiesEventData {
     private final LocalAuthorityAction localAuthorityAction;
 
     @Temp
+    private final LocalAuthorityAction localAuthorityActionLA;
+
+    @Temp
     private final String localAuthorityEmail;
 
     @Temp
     private final String localAuthorityToRemove;
+
+    @Temp
+    @JsonDeserialize(using = YesNoDeserializer.class)
+    private final YesNo isLaSolicitor;
 
     @Temp
     @JsonDeserialize(using = YesNoDeserializer.class)
