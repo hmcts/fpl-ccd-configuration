@@ -52,7 +52,6 @@ class C36VariationOrExtensionOfSupervisionOrdersParameterGeneratorTest {
         Map<String, String> context = new HashMap<>();
         context.put("childOrChildren", "child");
         context.put("childIsOrAre", "is");
-        context.put("childWasOrWere", "was");
         context.put("localAuthorityName", LOCAL_AUTHORITY_1_NAME);
         context.put("courtName", LOCAL_AUTHORITY_1_COURT_NAME);
 
