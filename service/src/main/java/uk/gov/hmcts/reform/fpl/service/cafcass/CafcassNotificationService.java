@@ -83,7 +83,8 @@ public class CafcassNotificationService {
         final Map<String, DocumentReference> documentMetaData = documentReferences.stream()
                 .map(DocumentReference::getUrl)
                 .collect(toMap(identity(),
-                        documentMetadataDownloadService::getDocumentMetadata));
+                    documentMetadataDownloadService::getDocumentMetadata,
+                    (existing, replacement) -> existing));
 
         long totalDocSize = documentMetaData.values().stream()
                 .mapToLong(doc -> defaultIfNull(doc.getSize(), 0L))
