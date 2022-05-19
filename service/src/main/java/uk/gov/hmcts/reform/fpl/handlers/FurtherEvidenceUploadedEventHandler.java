@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
@@ -16,12 +17,14 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.DocumentInfo;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.interfaces.FurtherDocument;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
@@ -30,16 +33,15 @@ import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.function.Predicate.not;
@@ -51,8 +53,11 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.ALL_LAS;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.CHILD_SOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.RESPONDENT_SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.HMCTS;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.COURT_BUNDLE;
@@ -81,35 +86,30 @@ public class FurtherEvidenceUploadedEventHandler {
         final CaseData caseDataBefore = event.getCaseDataBefore();
         final UserDetails uploader = event.getInitiatedBy();
 
-        DocumentUploaderType userType = event.getUserType();
-        var newNonConfidentialDocuments = getDocuments(caseData,
-            caseDataBefore,
-            userType,
-            (oldBundle, newDoc) -> !newDoc.isConfidentialDocument() && !unwrapElements(oldBundle).contains(newDoc));
+        var newUploadedFurtherDocuments =
+            getNotificationUserType2NewFurtherDocumentMap(caseData, caseDataBefore);
 
-        final Set<String> recipients = new HashSet<>();
+        newUploadedFurtherDocuments.entrySet().forEach(entry -> {
+            final Set<String> recipients = new LinkedHashSet<>();
+            if (entry.getValue().isEmpty() == false) {
+                DocumentUploadNotificationUserType key = entry.getKey();
+                if (key == CAFCASS) {
+                    recipients.addAll(furtherEvidenceNotificationService.getCafcassEmails(caseData));
+                } else if (key == CHILD_SOLICITOR) {
+                    recipients.addAll(furtherEvidenceNotificationService.getChildSolicitorEmails(caseData));
+                } else if (key == RESPONDENT_SOLICITOR) {
+                    recipients.addAll(furtherEvidenceNotificationService.getRespondentSolicitorEmails(caseData));
+                } else if (key == ALL_LAS) {
+                    recipients.addAll(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData));
+                }
 
-        if (!newNonConfidentialDocuments.isEmpty()) {
-            recipients.addAll(furtherEvidenceNotificationService.getRepresentativeEmails(caseData, userType));
-
-            if (userType == SECONDARY_LOCAL_AUTHORITY) {
-                recipients.addAll(furtherEvidenceNotificationService.getDesignatedLocalAuthorityRecipients(caseData));
+                if (isNotEmpty(recipients)) {
+                    List<String> newDocumentNames = getDocumentNames(entry.getValue());
+                    furtherEvidenceNotificationService.sendNotification(caseData, recipients, uploader.getFullName(),
+                        newDocumentNames);
+                }
             }
-
-            if (userType == SOLICITOR || userType == HMCTS) {
-                recipients.addAll(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData));
-            }
-        }
-
-        recipients.removeIf(email -> Objects.equals(email, uploader.getEmail()));
-
-        if (isNotEmpty(recipients)) {
-
-            List<String> newDocumentNames = getDocumentNames(newNonConfidentialDocuments);
-
-            furtherEvidenceNotificationService.sendNotification(caseData, recipients, uploader.getFullName(),
-                newDocumentNames);
-        }
+        });
     }
 
     @EventListener
@@ -132,6 +132,29 @@ public class FurtherEvidenceUploadedEventHandler {
     }
 
     @EventListener
+    public void sendCourtBundlesUploadedNotification(final FurtherEvidenceUploadedEvent event) {
+        final CaseData caseData = event.getCaseData();
+        final CaseData caseDataBefore = event.getCaseDataBefore();
+
+        Map<String, Set<DocumentReference>> newCourtBundles = getNewCourtBundles(caseData, caseDataBefore);
+        final Set<String> recipients = new HashSet<>();
+
+        if (!newCourtBundles.isEmpty()) {
+            recipients.addAll(furtherEvidenceNotificationService.getRespondentSolicitorEmails(caseData));
+            recipients.addAll(furtherEvidenceNotificationService.getChildSolicitorEmails(caseData));
+            recipients.addAll(furtherEvidenceNotificationService.getDesignatedLocalAuthorityRecipients(caseData));
+            recipients.addAll(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData));
+        }
+
+        if (isNotEmpty(recipients)) {
+            newCourtBundles
+                .forEach((hearingDetails, value) ->
+                    furtherEvidenceNotificationService.sendNotificationForCourtBundleUploaded(caseData, recipients,
+                        hearingDetails));
+        }
+    }
+
+    @EventListener
     public void sendCourtBundlesToCafcass(final FurtherEvidenceUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
 
@@ -140,18 +163,7 @@ public class FurtherEvidenceUploadedEventHandler {
 
         if (recipientIsEngland.isPresent()) {
             final CaseData caseDataBefore = event.getCaseDataBefore();
-            List<CourtBundle> courtBundles = unwrapElements(caseData.getCourtBundleList());
-            List<CourtBundle> oldCourtBundleList = unwrapElements(caseDataBefore.getCourtBundleList());
-
-            Map<String, Set<DocumentReference>> newCourtBundles = courtBundles.stream()
-                    .filter(newDoc -> !oldCourtBundleList.contains(newDoc))
-                    .collect(groupingBy(CourtBundle::getHearing,
-                            mapping(courtBundle -> {
-                                DocumentReference document = courtBundle.getDocument();
-                                document.setType(COURT_BUNDLE.getLabel());
-                                return document;
-                            }, toSet())));
-
+            Map<String, Set<DocumentReference>> newCourtBundles = getNewCourtBundles(caseData, caseDataBefore);
             newCourtBundles
                     .forEach((key, value) ->
                             cafcassNotificationService.sendEmail(
@@ -197,7 +209,7 @@ public class FurtherEvidenceUploadedEventHandler {
             documentInfoConsumer.accept(getNewCorrespondenceDocumentsBySolicitor(caseData,
                     caseDataBefore));
 
-            documentInfoConsumer.accept(getNewApplicationDocument(caseData,
+            documentInfoConsumer.accept(getNewApplicationDocuments(caseData,
                     caseDataBefore));
 
             documentInfoConsumer.accept(getHearingFurtherEvidenceDocuments(caseData,
@@ -237,11 +249,11 @@ public class FurtherEvidenceUploadedEventHandler {
         List<HearingFurtherEvidenceBundle> oldHearingFurtherEvidenceDocuments = unwrapElements(
                 caseDataBefore.getHearingFurtherEvidenceDocuments());
 
-        List<Element<SupportingEvidenceBundle>> oldSupportingEvidenceBundle =
+        Set<Element<SupportingEvidenceBundle>> oldSupportingEvidenceBundle =
                 oldHearingFurtherEvidenceDocuments.stream()
                 .map(HearingFurtherEvidenceBundle::getSupportingEvidenceBundle)
                 .flatMap(List::stream)
-                .collect(toList());
+                .collect(toSet());
 
         return newHearingFurtherEvidenceDocuments.stream()
                 .map(HearingFurtherEvidenceBundle::getSupportingEvidenceBundle)
@@ -250,46 +262,72 @@ public class FurtherEvidenceUploadedEventHandler {
                 .map(Element::getValue)
                 .map(supportingEvidenceBundle -> {
                     DocumentReference document = supportingEvidenceBundle.getDocument();
-                    document.setType(supportingEvidenceBundle.getType().getLabel());
+                    document.setType(Optional.ofNullable(supportingEvidenceBundle.getType())
+                            .map(FurtherEvidenceType::getLabel)
+                            .orElse(supportingEvidenceBundle.getName()));
                     return document;
                 })
-                .collect(collectingAndThen(toList(),
+                .collect(collectingAndThen(toSet(),
                     data -> DocumentInfo.builder()
                                 .documentReferences(data)
-                                .documentTypes(data.stream().map(DocumentReference::getType)
-                                        .collect(Collectors.toList()))
+                                .documentTypes(data.stream()
+                                        .map(DocumentReference::getType)
+                                        .collect(toList()))
                                 .documentType(FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
                             .build())
                 );
     }
 
-    private DocumentInfo getNewApplicationDocument(CaseData caseData, CaseData caseDataBefore) {
+    private DocumentInfo getNewApplicationDocuments(CaseData caseData, CaseData caseDataBefore) {
         List<ApplicationDocument> newApplicationDocuments = unwrapElements(caseData.getApplicationDocuments());
         List<ApplicationDocument> oldApplicationDocuments = unwrapElements(caseDataBefore.getApplicationDocuments());
 
-        List<ApplicationDocument> newlyAddedApplicationDocs = newApplicationDocuments.stream()
+        Set<ApplicationDocument> newlyAddedApplicationDocs = newApplicationDocuments.stream()
                 .filter(newDoc -> !oldApplicationDocuments.contains(newDoc))
-                .collect(toList());
-
-        List<DocumentReference> documentReferences = newlyAddedApplicationDocs.stream()
-                .map(applicationDocument -> {
-                    DocumentReference document = applicationDocument.getDocument();
-                    document.setType(applicationDocument.getDocumentType().getLabel());
-                    return document;
-                })
-                .collect(toList());
+                .collect(toSet());
 
         return newlyAddedApplicationDocs.stream()
-                .map(ApplicationDocument::getDocumentType)
-                .map(ApplicationDocumentType::getLabel)
-                .collect(collectingAndThen(toList(),
+                .map(applicationDocument -> {
+                    DocumentReference document = applicationDocument.getDocument();
+                    document.setType(Optional.ofNullable(applicationDocument.getDocumentType())
+                            .map(ApplicationDocumentType::getLabel)
+                            .orElse(applicationDocument.getDocumentName()));
+                    return document;
+                })
+                .collect(collectingAndThen(toSet(),
                     data ->
                         DocumentInfo.builder()
-                                .documentReferences(documentReferences)
-                                .documentTypes(data)
-                                .documentType(FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
-                                .build())
+                            .documentReferences(data)
+                            .documentTypes(data.stream()
+                                    .map(DocumentReference::getType)
+                                    .collect(toList()))
+                            .documentType(FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
+                            .build())
                 );
+    }
+
+    private List<Element<ApplicationDocument>> getNewApplicationDocuments(
+        List<Element<ApplicationDocument>> applicationDocuments,
+        List<Element<ApplicationDocument>> beforeApplicationDocuments) {
+        List<Element<ApplicationDocument>> newApplicationDocuments = new ArrayList<>();
+        defaultIfNull(applicationDocuments, new ArrayList<Element<ApplicationDocument>>()).forEach(newDoc -> {
+            if (!defaultIfNull(beforeApplicationDocuments, List.of()).contains(newDoc)) {
+                newApplicationDocuments.add(newDoc);
+            }
+        });
+        return newApplicationDocuments;
+    }
+
+    private List<Element<SupportingEvidenceBundle>> getNewSupportingEvidenceBundle(
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
+        List<Element<SupportingEvidenceBundle>> beforeSupportingEvidenceBundle) {
+        List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle = new ArrayList<>();
+        defaultIfNull(supportingEvidenceBundle, new ArrayList<Element<SupportingEvidenceBundle>>()).forEach(newDoc -> {
+            if (!defaultIfNull(beforeSupportingEvidenceBundle, List.of()).contains(newDoc)) {
+                newSupportingEvidenceBundle.add(newDoc);
+            }
+        });
+        return newSupportingEvidenceBundle;
     }
 
     private DocumentInfo getGeneralEvidence(CaseData caseData, CaseData caseDataBefore, DocumentUploaderType userType) {
@@ -298,28 +336,40 @@ public class FurtherEvidenceUploadedEventHandler {
             userType,
             (oldBundle, newDoc) -> !unwrapElements(oldBundle).contains(newDoc));
 
-        var documentReferences = supportingEvidenceBundles.stream()
-                .map(bundle -> {
-                    DocumentReference document = bundle.getDocument();
-                    document.setType(bundle.getType().getLabel());
-                    return document;
-                })
-                .collect(toList());
 
         return supportingEvidenceBundles.stream()
-                .map(SupportingEvidenceBundle::getType)
-                .filter(Objects::nonNull)
-                .map(FurtherEvidenceType::getLabel)
-                .collect(collectingAndThen(toList(),
+                .map(bundle -> {
+                    DocumentReference document = bundle.getDocument();
+                    document.setType(Optional.ofNullable(bundle.getType())
+                            .map(FurtherEvidenceType::getLabel)
+                            .orElse(bundle.getName()));
+                    return document;
+                })
+                .collect(collectingAndThen(toSet(),
                     data ->
                         DocumentInfo.builder()
-                            .documentReferences(documentReferences)
-                            .documentTypes(data)
+                            .documentReferences(data)
+                            .documentTypes(data.stream()
+                                .map(DocumentReference::getType)
+                                .collect(toList()))
                             .documentType(FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
-                    .build())
-                );
+                            .build()));
     }
 
+    private Map<String, Set<DocumentReference>> getNewCourtBundles(CaseData caseData, CaseData caseDataBefore) {
+        List<CourtBundle> courtBundles = unwrapElements(caseData.getCourtBundleList());
+        List<CourtBundle> oldCourtBundleList = unwrapElements(caseDataBefore.getCourtBundleList());
+
+        Map<String, Set<DocumentReference>> newCourtBundles = courtBundles.stream()
+            .filter(newDoc -> !oldCourtBundleList.contains(newDoc))
+            .collect(groupingBy(CourtBundle::getHearing,
+                mapping(courtBundle -> {
+                    DocumentReference document = courtBundle.getDocument();
+                    document.setType(COURT_BUNDLE.getLabel());
+                    return document;
+                }, toSet())));
+        return newCourtBundles;
+    }
 
     private List<SupportingEvidenceBundle> getDocuments(
         CaseData caseData, CaseData caseDataBefore,
@@ -339,9 +389,8 @@ public class FurtherEvidenceUploadedEventHandler {
         return newDocs;
     }
 
-
-    private List<String> getDocumentNames(List<SupportingEvidenceBundle> documentBundle) {
-        return documentBundle.stream().map(SupportingEvidenceBundle::getName).collect(toList());
+    private List<String> getDocumentNames(List<FurtherDocument> documentBundle) {
+        return documentBundle.stream().map(FurtherDocument::getName).collect(toList());
     }
 
     private List<DocumentReference> getDocumentReferences(List<SupportingEvidenceBundle> documentBundle) {
@@ -373,11 +422,111 @@ public class FurtherEvidenceUploadedEventHandler {
         }
     }
 
+    private Map<DocumentUploadNotificationUserType, List<FurtherDocument>>
+        getNotificationUserType2NewFurtherDocumentMap(CaseData caseData, CaseData beforeCaseData) {
+
+        // initialisation
+        Map<DocumentUploadNotificationUserType, List<FurtherDocument>> ret = new HashMap<>();
+        ret.put(ALL_LAS, new ArrayList<>());
+        ret.put(CAFCASS, new ArrayList<>());
+        ret.put(CHILD_SOLICITOR, new ArrayList<>());
+        ret.put(RESPONDENT_SOLICITOR, new ArrayList<>());
+
+        // Further application documents - for example the SWET or care plan
+        // - everyone except respondent/child solicitors have permission to see
+        // So we shouldn’t send the notification to respondent/child solicitors
+        List<Element<ApplicationDocument>> newApplicationDocuments =
+            getNewApplicationDocuments(caseData.getApplicationDocuments(), beforeCaseData.getApplicationDocuments());
+        unwrapElements(newApplicationDocuments).forEach(applicationDocument -> {
+            ret.get(ALL_LAS).add(applicationDocument);
+        });
+
+        // Respondent Statement
+        List<Element<SupportingEvidenceBundle>> respondentStatements =
+            getNewSupportingEvidenceBundle(
+                getEvidenceBundleFromRespondentStatements(caseData),
+                getEvidenceBundleFromRespondentStatements(beforeCaseData));
+        unwrapElements(respondentStatements).forEach(respondentStatement -> {
+            if (!respondentStatement.isConfidentialDocument()) {
+                ret.get(CHILD_SOLICITOR).add(respondentStatement);
+                ret.get(RESPONDENT_SOLICITOR).add(respondentStatement);
+            }
+            if (!(respondentStatement.isUploadedByHMCTS() && respondentStatement.isConfidentialDocument())) {
+                ret.get(CAFCASS).add(respondentStatement);
+                ret.get(ALL_LAS).add(respondentStatement);
+            }
+        });
+
+        // Any other documents
+        // Uploaded by LA
+        List<Element<SupportingEvidenceBundle>> anyOtherDocsByLA =
+            getNewSupportingEvidenceBundle(
+                caseData.getFurtherEvidenceDocumentsLA(),
+                beforeCaseData.getFurtherEvidenceDocumentsLA());
+        unwrapElements(anyOtherDocsByLA).forEach(doc -> {
+            if (!doc.isConfidentialDocument()) {
+                ret.get(CHILD_SOLICITOR).add(doc);
+                ret.get(RESPONDENT_SOLICITOR).add(doc);
+            }
+            ret.get(CAFCASS).add(doc);
+            ret.get(ALL_LAS).add(doc);
+        });
+        // Uploaded by HMCTS Admin
+        List<Element<SupportingEvidenceBundle>> anyOtherDocsByHmctsAdmin =
+            getNewSupportingEvidenceBundle(
+                caseData.getFurtherEvidenceDocuments(),
+                beforeCaseData.getFurtherEvidenceDocuments());
+        unwrapElements(anyOtherDocsByHmctsAdmin).forEach(doc -> {
+            if (!doc.isConfidentialDocument()) {
+                ret.get(CHILD_SOLICITOR).add(doc);
+                ret.get(RESPONDENT_SOLICITOR).add(doc);
+                ret.get(CAFCASS).add(doc);
+                ret.get(ALL_LAS).add(doc);
+            }
+        });
+        // Uploaded by Solicitor
+        List<Element<SupportingEvidenceBundle>> anyOtherDocsBySolicitor =
+            getNewSupportingEvidenceBundle(
+                caseData.getFurtherEvidenceDocumentsSolicitor(),
+                beforeCaseData.getFurtherEvidenceDocumentsSolicitor());
+        unwrapElements(anyOtherDocsBySolicitor).forEach(doc -> {
+            // no confidential document by solicitors
+            ret.get(CHILD_SOLICITOR).add(doc);
+            ret.get(RESPONDENT_SOLICITOR).add(doc);
+            ret.get(CAFCASS).add(doc);
+            ret.get(ALL_LAS).add(doc);
+        });
+
+        // Any Other Document From Hearings
+        List<Element<SupportingEvidenceBundle>> anyOtherDocumentFromHearings =
+            getNewSupportingEvidenceBundle(getEvidenceBundleFromHearings(caseData),
+                getEvidenceBundleFromHearings(beforeCaseData));
+        unwrapElements(anyOtherDocumentFromHearings).forEach(doc -> {
+            if (!doc.isConfidentialDocument()) {
+                ret.get(CHILD_SOLICITOR).add(doc);
+                ret.get(RESPONDENT_SOLICITOR).add(doc);
+            }
+            if (!(doc.isUploadedByHMCTS() && doc.isConfidentialDocument())) {
+                ret.get(CAFCASS).add(doc);
+                ret.get(ALL_LAS).add(doc);
+            }
+        });
+
+        return ret;
+    }
+
+    private List<Element<SupportingEvidenceBundle>> getEvidenceBundleFromHearings(CaseData caseData) {
+        List<Element<SupportingEvidenceBundle>> evidenceBundle = new ArrayList<>();
+        caseData.getHearingFurtherEvidenceDocuments().forEach(hearingFurtherDocuments ->
+            evidenceBundle.addAll(hearingFurtherDocuments.getValue().getSupportingEvidenceBundle())
+        );
+        return evidenceBundle;
+    }
+
     private List<Element<SupportingEvidenceBundle>> getEvidenceBundleFromRespondentStatements(CaseData caseData) {
         List<Element<SupportingEvidenceBundle>> evidenceBundle = new ArrayList<>();
-        caseData.getRespondentStatements().forEach(statement ->
-            evidenceBundle.addAll(statement.getValue().getSupportingEvidenceBundle())
-        );
+        defaultIfNull(caseData.getRespondentStatements(), new ArrayList<Element<RespondentStatement>>())
+            .forEach(statement -> evidenceBundle.addAll(statement.getValue().getSupportingEvidenceBundle()));
         return evidenceBundle;
     }
 
@@ -428,7 +577,7 @@ public class FurtherEvidenceUploadedEventHandler {
                     );
                     return document;
                 })
-                .collect(collectingAndThen(toList(),
+                .collect(collectingAndThen(toSet(),
                     data -> DocumentInfo.builder()
                         .documentReferences(data)
                         .documentTypes(List.of(documentType))
