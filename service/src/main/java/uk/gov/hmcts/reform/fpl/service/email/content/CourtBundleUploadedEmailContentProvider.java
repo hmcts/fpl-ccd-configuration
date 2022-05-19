@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.courtbundle.CourtBundleUploadedData;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.COURT_BUNDLE;
+import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -17,6 +18,8 @@ public class CourtBundleUploadedEmailContentProvider extends AbstractEmailConten
         return CourtBundleUploadedData.builder()
             .caseUrl(getCaseUrl(caseData.getId(), COURT_BUNDLE))
             .hearingDetails(hearingDetails)
+            .familyManCaseNumber(caseData.getFamilyManCaseNumber())
+            .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()))
             .build();
     }
 }
