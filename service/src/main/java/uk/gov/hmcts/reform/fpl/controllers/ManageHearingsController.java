@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.events.TemporaryHearingJudgeAllocationEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
@@ -54,6 +56,7 @@ import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.FUTURE_HEARI
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PAST_AND_TODAY_HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PAST_HEARING_DATE_LIST;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PREVIOUS_HEARING_VENUE_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.TO_RE_LIST_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.VACATE_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.utils.BooleanHelper.booleanToYesNo;
@@ -76,6 +79,7 @@ public class ManageHearingsController extends CallbackController {
     private static final String HAS_SESSION_KEY = "hasSession";
     private static final String HEARING_ORDERS_BUNDLES_DRAFTS = "hearingOrdersBundlesDrafts";
     private static final String DRAFT_UPLOADED_CMOS = "draftUploadedCMOs";
+    private static final String HAS_PREVIOUS_VENUE_HEARING = "hasPreviousHearingVenue";
 
     private final ValidateGroupService validateGroupService;
     private final StandardDirectionsService standardDirectionsService;
@@ -123,6 +127,10 @@ public class ManageHearingsController extends CallbackController {
 
         if (NEW_HEARING == caseData.getHearingOption()) {
             caseDetails.getData().putAll(hearingsService.initiateNewHearing(caseData));
+            caseDetails.getData().put(HAS_PREVIOUS_VENUE_HEARING,
+                StringUtils.isEmpty(
+                    ((PreviousHearingVenue) caseDetails.getData().get(PREVIOUS_HEARING_VENUE_KEY)).getPreviousVenue()
+                ) ? NO.getValue() : YES.getValue());
             caseDetails.getData()
                 .putAll(othersGenerator.generate(caseData, HearingBooking.builder().build()));
         } else if (EDIT_PAST_HEARING == caseData.getHearingOption()) {
@@ -254,11 +262,17 @@ public class ManageHearingsController extends CallbackController {
         return respond(caseDetails);
     }
 
+
+
     @PostMapping("/validate-hearing-dates/mid-event")
     public CallbackResponse validateHearingDatesMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
         List<String> errors;
+        errors = pastHearingDatesValidatorService.validateHearingIntegers(caseDetails);
+        if (!errors.isEmpty()) {
+            return respond(caseDetails, errors);
+        }
+        CaseData caseData = getCaseData(caseDetails);
 
         if (isAddingNewHearing(caseData)) {
             errors = pastHearingDatesValidatorService.validateHearingDates(caseData.getHearingStartDate(),
