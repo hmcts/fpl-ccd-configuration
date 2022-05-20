@@ -63,6 +63,53 @@ class HearingBookingTest {
     }
 
     @Nested
+    class StartsAfterToday {
+
+        @Test
+        void shouldReturnFalseForHearingStartedToday() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .startDate(LocalDateTime.now())
+                .build();
+
+            assertThat(hearingBooking.startsAfterToday()).isFalse();
+        }
+
+        @Test
+        void shouldReturnFalseForHearingStartedInPast() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .startDate(LocalDateTime.now().minusDays(1))
+                .build();
+
+            assertThat(hearingBooking.startsAfterToday()).isFalse();
+        }
+
+        @Test
+        void shouldReturnTrueForHearingStartingLaterToday() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .startDate(LocalDate.now().plusDays(1).atStartOfDay().minusSeconds(1))
+                .build();
+
+            assertThat(hearingBooking.startsAfterToday()).isTrue();
+        }
+
+        @Test
+        void shouldReturnTrueForHearingStartingAfterToday() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(1))
+                .build();
+
+            assertThat(hearingBooking.startsAfterToday()).isTrue();
+        }
+
+        @Test
+        void shouldReturnFalseForHearingWithoutStartDate() {
+            HearingBooking hearingBooking = HearingBooking.builder().build();
+
+            assertThat(hearingBooking.startsAfterToday()).isFalse();
+        }
+    }
+
+    @Nested
     class StartsTodayOrBefore {
 
         @Test
