@@ -2193,10 +2193,10 @@
     "hearingVenueId": 286,
     "venue": "Luton County Court and Family Court",
     "address": {
-      "AddressLine1": "Luton County Court and Family Court, Cresta House",
-      "AddressLine2": "2nd Floor",
+      "AddressLine1": "Luton Family Court & Crown Court, Luton Justice Centre",
+      "AddressLine2": "4th & 5th Floors Arndale House, The Mall",
       "PostTown": "Luton",
-      "PostCode": "LU1 2PU"
+      "PostCode": "LU1 2EN"
     }
   },
   {
@@ -2343,18 +2343,18 @@
     "hearingVenueId": 301,
     "venue": "Medway County Court and Family Court",
     "address": {
-      "AddressLine1": "Medway County Court and Family Court, 47-67 High Street",
-      "AddressLine2": "Anchorage House",
+      "AddressLine1": "Medway County Court and Family Court",
+      "AddressLine2": "The Brook",
       "PostTown": "Chatham",
-      "PostCode": "ME4 4DW"
+      "PostCode": "ME4 4JZ"
     }
   },
   {
     "hearingVenueId": 302,
     "venue": "Medway M&F Court",
     "address": {
-      "AddressLine1": "Medway Magistrates' Court and Family Court, The Brook",
-      "AddressLine2": "The Court House",
+      "AddressLine1": "Medway Magistrates' Court and Family Court, The Court House",
+      "AddressLine2": "The Brook",
       "PostTown": "Chatham",
       "PostCode": "ME4 4JZ"
     }
