@@ -58,19 +58,28 @@ public class C29RecoveryOfAChildDocumentParameterGenerator implements DocmosisPa
         String localAuthorityName = laNameLookup.getLocalAuthorityName(localAuthorityCode);
 
         List<Element<Child>> selectedChildren = childrenService.getSelectedChildren(caseData);
-        String dayOrdinalSuffix = getDayOfMonthSuffix(eventData.getManageOrdersOrderCreatedDate().getDayOfMonth());
 
-        final String orderMadeDate = formatLocalDateToString(
-            eventData.getManageOrdersOrderCreatedDate(), String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
+        // Date we are issuing the C29 Order
+        String dayOrdinalSuffix = getDayOfMonthSuffix(eventData.getManageOrdersApprovalDate().getDayOfMonth());
+
+        final String orderApprovedDate = formatLocalDateToString(
+            eventData.getManageOrdersApprovalDate(), String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
+        );
+
+        // Date the original Care/EPO Order was made
+        String originalOrdinalSuffix = getDayOfMonthSuffix(eventData.getManageOrdersOrderCreatedDate().getDayOfMonth());
+
+        final String originalOrderDate =  formatLocalDateToString(
+            eventData.getManageOrdersOrderCreatedDate(), String.format(DATE_WITH_ORDINAL_SUFFIX, originalOrdinalSuffix)
         );
 
         List<C29ActionsPermitted> actions = eventData.getManageOrdersActionsPermitted();
 
         return C29RecoveryOfAChildDocmosisParameters.builder()
             .orderTitle(Order.C29_RECOVERY_OF_A_CHILD.getTitle())
-            .dateOfIssue(orderMadeDate)
+            .dateOfIssue(orderApprovedDate)
             .furtherDirections(eventData.getManageOrdersFurtherDirections())
-            .orderDetails(getOrderDetails(eventData, selectedChildren.size(), orderMadeDate, localAuthorityName))
+            .orderDetails(getOrderDetails(eventData, selectedChildren.size(), originalOrderDate, localAuthorityName))
             .localAuthorityName(localAuthorityName)
             .orderHeader(getOrderHeader(actions))
             .orderMessage(getOrderMessage(actions))

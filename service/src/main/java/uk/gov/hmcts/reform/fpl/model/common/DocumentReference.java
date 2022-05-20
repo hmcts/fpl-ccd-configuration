@@ -17,6 +17,8 @@ public class DocumentReference {
     private final String binaryUrl;
     @JsonIgnore
     private Long size;
+    @JsonIgnore
+    private String type;
 
     public static DocumentReference buildFromDocument(Document document) {
         return DocumentReference.builder()
