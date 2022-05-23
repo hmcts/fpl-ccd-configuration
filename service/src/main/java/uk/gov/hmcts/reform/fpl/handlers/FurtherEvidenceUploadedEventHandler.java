@@ -173,7 +173,8 @@ public class FurtherEvidenceUploadedEventHandler {
             recipients.addAll(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData));
 
             if (isNotEmpty(recipients)) {
-                List<String> newDocumentNames = getHearingDocumentNames(newHearingDocuments);
+                List<String> newDocumentNames = newHearingDocuments.stream()
+                    .map(doc -> doc.getDocument().getFilename()).collect(toList());
                 furtherEvidenceNotificationService.sendNotification(caseData, recipients, uploader.getFullName(),
                     newDocumentNames);
             }
@@ -407,10 +408,6 @@ public class FurtherEvidenceUploadedEventHandler {
                                 .collect(toList()))
                             .documentType(FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
                             .build()));
-    }
-
-    private List<String> getHearingDocumentNames(List<HearingDocument> documents) {
-        return documents.stream().map(doc -> doc.getDocument().getFilename()).collect(toList());
     }
 
     private <T extends HearingDocument> List<HearingDocument> getNewHearingDocuments(List<Element<T>> documents,
