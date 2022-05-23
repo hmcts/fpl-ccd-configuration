@@ -167,19 +167,16 @@ public class CafcassNotificationService {
             DocumentReference documentReference = docReference.get();
             String date = null;
 
-            switch (provider) {
-                case ORDER:
-                    date = Optional.ofNullable(cafcassData.getOrderApprovalDate())
-                            .map(localDateTime -> localDateTime.format(DATE_FORMATTER))
-                            .orElse("NotSet");
-                    documentReference.setType(ORDER.getLabel());
-                    break;
-                case NOTICE_OF_HEARING:
-                    date = Optional.ofNullable(cafcassData.getHearingDate())
-                            .map(localDateTime -> localDateTime.format(DATE_TIME_FORMATTER))
-                            .orElse("NotSet");
-                    documentReference.setType(NOTICE_OF_HEARING.getLabel());
-                    break;
+            if (provider == ORDER) {
+                date = Optional.ofNullable(cafcassData.getOrderApprovalDate())
+                        .map(localDateTime -> localDateTime.format(DATE_FORMATTER))
+                        .orElse("NotSet");
+                documentReference.setType(ORDER.getLabel());
+            } else if (provider == NOTICE_OF_HEARING) {
+                date = Optional.ofNullable(cafcassData.getHearingDate())
+                        .map(localDateTime -> localDateTime.format(DATE_TIME_FORMATTER))
+                        .orElse("NotSet");
+                documentReference.setType(NOTICE_OF_HEARING.getLabel());
             }
 
             String lookupKey = Optional.ofNullable(

@@ -400,14 +400,6 @@ public class FurtherEvidenceUploadedEventHandler {
                 );
     }
 
-    private DocumentReference updateDocumentReference(SupportingEvidenceBundle bundle, String defaultValue) {
-        DocumentReference document = bundle.getDocument();
-        document.setType(Optional.ofNullable(bundle.getType())
-            .map(FurtherEvidenceType::getLabel)
-            .orElse(defaultValue));
-        return document;
-    }
-
     private Map<String, Set<DocumentReference>> getNewCourtBundles(CaseData caseData, CaseData caseDataBefore) {
         List<CourtBundle> courtBundles = unwrapElements(caseData.getCourtBundleList());
         List<CourtBundle> oldCourtBundleList = unwrapElements(caseDataBefore.getCourtBundleList());

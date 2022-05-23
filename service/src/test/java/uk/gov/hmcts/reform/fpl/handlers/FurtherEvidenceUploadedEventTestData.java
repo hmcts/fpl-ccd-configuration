@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
@@ -7,8 +8,10 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -20,9 +23,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static java.time.LocalDateTime.now;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.BIRTH_CERTIFICATE;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -153,6 +159,25 @@ public class FurtherEvidenceUploadedEventTestData {
                 .build();
         return commonCaseBuilder()
                 .hearingFurtherEvidenceDocuments(wrapElements(bundle))
+                .build();
+    }
+
+    public static CaseData buildCaseDataWithAdditionalApplicationBundle() {
+        OtherApplicationsBundle otherBundle = OtherApplicationsBundle.builder()
+                .id(UUID.randomUUID())
+                .applicationType(OtherApplicationType.C1_WITH_SUPPLEMENT)
+                .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(now().plusDays(1), DATE_TIME))
+                .supportingEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER))
+                .build();
+
+
+        AdditionalApplicationsBundle additionalApplicationsBundle = AdditionalApplicationsBundle.builder()
+                .otherApplicationsBundle(otherBundle)
+                .build();
+
+
+        return commonCaseBuilder()
+                .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle))
                 .build();
     }
 
