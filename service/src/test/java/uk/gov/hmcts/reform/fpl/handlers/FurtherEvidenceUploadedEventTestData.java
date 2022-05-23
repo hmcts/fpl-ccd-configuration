@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -44,11 +45,24 @@ public class FurtherEvidenceUploadedEventTestData {
     public static final String NON_CONFIDENTIAL_1 = "non-confidential-1";
     public static final String NON_CONFIDENTIAL_2 = "non-confidential-2";
     public static final String CONFIDENTIAL_1 = "confidential-doc-1";
+    public static final String CONFIDENTIAL_2 = "confidential-doc-2";
     public static final DocumentReference PDF_DOCUMENT_1 = getPDFDocument();
     public static final DocumentReference PDF_DOCUMENT_2 = getPDFDocument();
     public static final DocumentReference NON_PDF_DOCUMENT_1 = getNonPDFDocument();
 
     private FurtherEvidenceUploadedEventTestData() {
+    }
+
+    public static CaseData buildSubmittedCaseData() {
+        return commonCaseBuilder()
+            .applicationDocuments(new ArrayList<>())
+            .courtBundleList(new ArrayList<>())
+            .furtherEvidenceDocuments(new ArrayList<>())
+            .furtherEvidenceDocumentsLA(new ArrayList<>())
+            .furtherEvidenceDocumentsSolicitor(new ArrayList<>())
+            .hearingFurtherEvidenceDocuments(new ArrayList<>())
+            .respondentStatements(new ArrayList<>())
+            .build();
     }
 
     public static CaseData buildCaseDataWithNonConfidentialLADocuments() {
@@ -169,8 +183,8 @@ public class FurtherEvidenceUploadedEventTestData {
 
     public static List<Element<SupportingEvidenceBundle>> buildConfidentialDocumentList(final String uploadedBy) {
         return wrapElements(
-            createDummyEvidenceBundle("confidential-1", uploadedBy, true, PDF_DOCUMENT_1),
-            createDummyEvidenceBundle("confidential-2", uploadedBy, true, PDF_DOCUMENT_2));
+            createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, true, PDF_DOCUMENT_1),
+            createDummyEvidenceBundle(CONFIDENTIAL_2, uploadedBy, true, PDF_DOCUMENT_2));
     }
 
     public static List<Element<SupportingEvidenceBundle>> buildNonConfidentialPdfDocumentList(final String uploadedBy) {
@@ -178,6 +192,7 @@ public class FurtherEvidenceUploadedEventTestData {
             createDummyEvidenceBundle(NON_CONFIDENTIAL_1, uploadedBy, false, PDF_DOCUMENT_1),
             createDummyEvidenceBundle(NON_CONFIDENTIAL_2, uploadedBy, false, PDF_DOCUMENT_2));
     }
+
 
     public static List<Element<SupportingEvidenceBundle>> buildNonConfidentialNonPDFDocumentList(
         final String uploadedBy) {
@@ -236,7 +251,16 @@ public class FurtherEvidenceUploadedEventTestData {
             .build();
     }
 
-    private static List<Element<RespondentStatement>> buildRespondentStatementsList(
+    public static List<Element<HearingFurtherEvidenceBundle>> buildHearingFurtherEvidenceBundle(
+        List<Element<SupportingEvidenceBundle>> bundle
+    ) {
+        return wrapElements(HearingFurtherEvidenceBundle.builder()
+            .hearingName(UUID.randomUUID().toString())
+            .supportingEvidenceBundle(bundle)
+            .build());
+    }
+
+    public static List<Element<RespondentStatement>> buildRespondentStatementsList(
         List<Element<SupportingEvidenceBundle>> bundle
     ) {
         return wrapElements(RespondentStatement.builder()

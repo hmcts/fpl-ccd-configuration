@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Map.entry;
 import static java.util.Map.ofEntries;
@@ -362,6 +363,50 @@ class CafcassNotificationServiceTest {
         EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
         assertThat(data.getSubject()).isEqualTo("William|FM1234|12345|REPORTING TO COURT");
+        assertThat(data.getAttachments()).containsExactly(
+                document("application/pdf",  DOCUMENT_CONTENT, DOCUMENT_FILENAME)
+        );
+        assertThat(data.getMessage()).isEqualTo(
+                String.join(" ",
+                        "Types of documents attached:\n\n"
+                                + "• Application statement")
+        );
+    }
+
+    @Test
+    void shouldNotifyDuplicateNewDocumentsAreUploaded() {
+        when(configuration.getRecipientForNewDocument()).thenReturn(RECIPIENT_EMAIL);
+        when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
+                DOCUMENT_CONTENT);
+
+        CaseData caseData = CaseData.builder()
+                .familyManCaseNumber(FAMILY_MAN)
+                .build();
+
+        List<DocumentReference> documentReference = List.of(getDocumentReference(),
+                getDocumentReference(),
+                getDocumentReference().toBuilder()
+                        .type("duplicate entry")
+                        .build());
+
+        Set<DocumentReference> documentReferences = Set.copyOf(documentReference);
+        assertThat(documentReferences).hasSize(2);
+
+        underTest.sendEmail(caseData,
+                documentReferences,
+                NEW_DOCUMENT,
+                NewDocumentData.builder()
+                        .documentTypes("• Application statement")
+                        .emailSubjectInfo("Further documents for main application")
+                        .build()
+        );
+
+        verify(documentDownloadService, times(2)).downloadDocument(DOCUMENT_BINARY_URL);
+
+        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
+        EmailData data = emailDataArgumentCaptor.getValue();
+        assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
+        assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- Further documents for main application");
         assertThat(data.getAttachments()).containsExactly(
                 document("application/pdf",  DOCUMENT_CONTENT, DOCUMENT_FILENAME)
         );

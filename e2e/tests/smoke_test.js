@@ -5,7 +5,7 @@ const output = require('codeceptjs').output;
 Feature('Smoke tests @smoke-tests');
 
 Scenario('Sign in as local authority and create a case', async ({I, caseListPage}) => {
-  output.print('Smoke test triggered now');
+  output.print('Smoke test triggered AGAIN');
   await I.goToPage(config.baseUrl);
   const caseName = `Smoke test case (${moment().format('YYYY-MM-DD HH:MM')})`;
   const caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne, caseName);
