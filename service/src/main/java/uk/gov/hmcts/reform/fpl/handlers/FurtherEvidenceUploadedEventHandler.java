@@ -40,6 +40,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiPredicate;
@@ -410,7 +411,7 @@ public class FurtherEvidenceUploadedEventHandler {
         List<CourtBundle> courtBundles = unwrapElements(caseData.getCourtBundleList());
         List<CourtBundle> oldCourtBundleList = unwrapElements(caseDataBefore.getCourtBundleList());
 
-        Map<String, Set<DocumentReference>> newCourtBundles = courtBundles.stream()
+        return courtBundles.stream()
                 .filter(newDoc -> !oldCourtBundleList.contains(newDoc))
                 .collect(groupingBy(CourtBundle::getHearing,
                         mapping(courtBundle -> {
@@ -418,7 +419,6 @@ public class FurtherEvidenceUploadedEventHandler {
                             document.setType(COURT_BUNDLE.getLabel());
                             return document;
                         }, toSet())));
-        return newCourtBundles;
     }
 
     private List<SupportingEvidenceBundle> getDocuments(
