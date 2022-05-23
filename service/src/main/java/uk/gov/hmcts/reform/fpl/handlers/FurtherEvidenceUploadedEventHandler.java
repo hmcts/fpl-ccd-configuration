@@ -25,8 +25,8 @@ import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.interfaces.FurtherDocument;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.interfaces.FurtherDocument;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
@@ -407,6 +407,7 @@ public class FurtherEvidenceUploadedEventHandler {
             .orElse(defaultValue));
         return document;
     }
+
     private Map<String, Set<DocumentReference>> getNewCourtBundles(CaseData caseData, CaseData caseDataBefore) {
         List<CourtBundle> courtBundles = unwrapElements(caseData.getCourtBundleList());
         List<CourtBundle> oldCourtBundleList = unwrapElements(caseDataBefore.getCourtBundleList());

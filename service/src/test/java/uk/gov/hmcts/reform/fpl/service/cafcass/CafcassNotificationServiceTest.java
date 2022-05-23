@@ -118,7 +118,12 @@ class CafcassNotificationServiceTest {
 
         when(configuration.getSender()).thenReturn(SENDER_EMAIL);
         when(documentMetadataDownloadService.getDocumentMetadata(anyString()))
-            .thenReturn(DocumentReference.builder().size(10L).build());
+            .thenReturn(DocumentReference.builder()
+                    .url("originalDocumentUrl")
+                    .filename("fileToSend.pdf")
+                    .binaryUrl("originalDocumentBinaryUrl")
+                    .size(10L)
+                    .build());
         when(configuration.getDocumentType()).thenReturn(
             ofEntries(
                 entry("order", "ORDER"),
@@ -379,14 +384,12 @@ class CafcassNotificationServiceTest {
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
                 DOCUMENT_CONTENT);
 
-        CaseData caseData = CaseData.builder()
-                .familyManCaseNumber(FAMILY_MAN)
-                .build();
-
-        List<DocumentReference> documentReference = List.of(getDocumentReference(),
-                getDocumentReference(),
+        List<DocumentReference> documentReference = List.of(
                 getDocumentReference().toBuilder()
-                        .type("duplicate entry")
+                        .type("Respondent Statement")
+                        .build(),
+                getDocumentReference().toBuilder()
+                        .type("SWET")
                         .build());
 
         Set<DocumentReference> documentReferences = Set.copyOf(documentReference);
@@ -401,12 +404,12 @@ class CafcassNotificationServiceTest {
                         .build()
         );
 
-        verify(documentDownloadService, times(2)).downloadDocument(DOCUMENT_BINARY_URL);
+        verify(documentDownloadService).downloadDocument(DOCUMENT_BINARY_URL);
 
         verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
         EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
-        assertThat(data.getSubject()).isEqualTo("Court Ref. FM1234.- Further documents for main application");
+        assertThat(data.getSubject()).isEqualTo("William|FM1234|12345|COURT PAPER");
         assertThat(data.getAttachments()).containsExactly(
                 document("application/pdf",  DOCUMENT_CONTENT, DOCUMENT_FILENAME)
         );
