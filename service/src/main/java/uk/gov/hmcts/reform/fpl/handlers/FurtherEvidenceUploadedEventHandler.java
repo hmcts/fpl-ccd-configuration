@@ -164,8 +164,8 @@ public class FurtherEvidenceUploadedEventHandler {
         final CaseData caseDataBefore = event.getCaseDataBefore();
         final UserDetails uploader = event.getInitiatedBy();
 
-        List<HearingDocument> newHearingDocument = getHearingDocument(caseData, caseDataBefore);
-        if (!newHearingDocument.isEmpty()) {
+        List<HearingDocument> newHearingDocuments = getHearingDocuments(caseData, caseDataBefore);
+        if (!newHearingDocuments.isEmpty()) {
             final Set<String> recipients = new LinkedHashSet<>();
             recipients.addAll(furtherEvidenceNotificationService.getRespondentSolicitorEmails(caseData));
             recipients.addAll(furtherEvidenceNotificationService.getChildSolicitorEmails(caseData));
@@ -173,7 +173,7 @@ public class FurtherEvidenceUploadedEventHandler {
             recipients.addAll(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData));
 
             if (isNotEmpty(recipients)) {
-                List<String> newDocumentNames = getHearingDocumentNames(newHearingDocument);
+                List<String> newDocumentNames = getHearingDocumentNames(newHearingDocuments);
                 furtherEvidenceNotificationService.sendNotification(caseData, recipients, uploader.getFullName(),
                     newDocumentNames);
             }
@@ -423,17 +423,17 @@ public class FurtherEvidenceUploadedEventHandler {
         return newHearingDoc;
     }
 
-    private List<HearingDocument> getHearingDocument(CaseData caseData, CaseData caseDataBefore) {
-        List<HearingDocument> newHearingDoc = new ArrayList<>();
+    private List<HearingDocument> getHearingDocuments(CaseData caseData, CaseData caseDataBefore) {
+        List<HearingDocument> newHearingDocuments = new ArrayList<>();
 
-        newHearingDoc.addAll(getNewHearingDocuments(caseData.getCaseSummaryList(),
+        newHearingDocuments.addAll(getNewHearingDocuments(caseData.getCaseSummaryList(),
             caseDataBefore.getCaseSummaryList()));
-        newHearingDoc.addAll(getNewHearingDocuments(caseData.getPositionStatementChildList(),
+        newHearingDocuments.addAll(getNewHearingDocuments(caseData.getPositionStatementChildList(),
             caseDataBefore.getPositionStatementChildList()));
-        newHearingDoc.addAll(getNewHearingDocuments(caseData.getPositionStatementRespondentList(),
+        newHearingDocuments.addAll(getNewHearingDocuments(caseData.getPositionStatementRespondentList(),
             caseDataBefore.getPositionStatementRespondentList()));
 
-        return newHearingDoc;
+        return newHearingDocuments;
     }
 
     private Map<String, Set<DocumentReference>> getNewCourtBundles(CaseData caseData, CaseData caseDataBefore) {
