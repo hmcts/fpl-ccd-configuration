@@ -20,8 +20,10 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.DocumentInfo;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
@@ -39,7 +41,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.function.Predicate.not;
@@ -66,6 +67,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 public class FurtherEvidenceUploadedEventHandler {
     public static final String FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION = "Further documents for main application";
     public static final String CORRESPONDENCE = "Correspondence";
+    public static final String ADDITIONAL_APPLICATIONS = "additional applications";
     private final FurtherEvidenceNotificationService furtherEvidenceNotificationService;
     private final FurtherEvidenceUploadDifferenceCalculator furtherEvidenceDifferenceCalculator;
     private final TranslationRequestService translationRequestService;
@@ -197,10 +199,13 @@ public class FurtherEvidenceUploadedEventHandler {
             documentInfoConsumer.accept(getNewCorrespondenceDocumentsBySolicitor(caseData,
                     caseDataBefore));
 
-            documentInfoConsumer.accept(getNewApplicationDocument(caseData,
+            documentInfoConsumer.accept(getNewApplicationDocuments(caseData,
                     caseDataBefore));
 
             documentInfoConsumer.accept(getHearingFurtherEvidenceDocuments(caseData,
+                    caseDataBefore));
+
+            documentInfoConsumer.accept(getOtherApplicationBundle(caseData,
                     caseDataBefore));
 
             if (!documentReferences.isEmpty()) {
@@ -231,17 +236,52 @@ public class FurtherEvidenceUploadedEventHandler {
         }
     }
 
+    private DocumentInfo getOtherApplicationBundle(CaseData caseData, CaseData caseDataBefore) {
+        Set<DocumentReference> oldDocumentReferences = unwrapElements(
+                    caseDataBefore.getAdditionalApplicationsBundle()
+                ).stream()
+                .map(AdditionalApplicationsBundle::getOtherApplicationsBundle)
+                .filter(Objects::nonNull)
+                .map(OtherApplicationsBundle::getAllDocumentReferences)
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .map(Element::getValue)
+                .collect(toSet());
+
+        return unwrapElements(caseData.getAdditionalApplicationsBundle()).stream()
+                .map(AdditionalApplicationsBundle::getOtherApplicationsBundle)
+                .filter(Objects::nonNull)
+                .map(OtherApplicationsBundle::getAllDocumentReferences)
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .map(Element::getValue)
+                .filter(not(oldDocumentReferences::contains))
+                .map(documentRef -> {
+                    documentRef.setType(ADDITIONAL_APPLICATIONS);
+                    return documentRef;
+                })
+                .collect(collectingAndThen(toSet(),
+                    data -> DocumentInfo.builder()
+                        .documentReferences(data)
+                        .documentTypes(data.stream()
+                                .map(DocumentReference::getType)
+                                .collect(toList()))
+                        .documentType(ADDITIONAL_APPLICATIONS)
+                        .build())
+                );
+    }
+
     private DocumentInfo getHearingFurtherEvidenceDocuments(CaseData caseData, CaseData caseDataBefore) {
         List<HearingFurtherEvidenceBundle> newHearingFurtherEvidenceDocuments = unwrapElements(
                 caseData.getHearingFurtherEvidenceDocuments());
         List<HearingFurtherEvidenceBundle> oldHearingFurtherEvidenceDocuments = unwrapElements(
                 caseDataBefore.getHearingFurtherEvidenceDocuments());
 
-        List<Element<SupportingEvidenceBundle>> oldSupportingEvidenceBundle =
+        Set<Element<SupportingEvidenceBundle>> oldSupportingEvidenceBundle =
                 oldHearingFurtherEvidenceDocuments.stream()
                 .map(HearingFurtherEvidenceBundle::getSupportingEvidenceBundle)
                 .flatMap(List::stream)
-                .collect(toList());
+                .collect(toSet());
 
         return newHearingFurtherEvidenceDocuments.stream()
                 .map(HearingFurtherEvidenceBundle::getSupportingEvidenceBundle)
@@ -250,46 +290,72 @@ public class FurtherEvidenceUploadedEventHandler {
                 .map(Element::getValue)
                 .map(supportingEvidenceBundle -> {
                     DocumentReference document = supportingEvidenceBundle.getDocument();
-                    document.setType(supportingEvidenceBundle.getType().getLabel());
+                    document.setType(Optional.ofNullable(supportingEvidenceBundle.getType())
+                            .map(FurtherEvidenceType::getLabel)
+                            .orElse(supportingEvidenceBundle.getName()));
                     return document;
                 })
-                .collect(collectingAndThen(toList(),
+                .collect(collectingAndThen(toSet(),
                     data -> DocumentInfo.builder()
                                 .documentReferences(data)
-                                .documentTypes(data.stream().map(DocumentReference::getType)
-                                        .collect(Collectors.toList()))
+                                .documentTypes(data.stream()
+                                        .map(DocumentReference::getType)
+                                        .collect(toList()))
                                 .documentType(FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
                             .build())
                 );
     }
 
-    private DocumentInfo getNewApplicationDocument(CaseData caseData, CaseData caseDataBefore) {
+    private DocumentInfo getNewApplicationDocuments(CaseData caseData, CaseData caseDataBefore) {
         List<ApplicationDocument> newApplicationDocuments = unwrapElements(caseData.getApplicationDocuments());
         List<ApplicationDocument> oldApplicationDocuments = unwrapElements(caseDataBefore.getApplicationDocuments());
 
-        List<ApplicationDocument> newlyAddedApplicationDocs = newApplicationDocuments.stream()
+        Set<ApplicationDocument> newlyAddedApplicationDocs = newApplicationDocuments.stream()
                 .filter(newDoc -> !oldApplicationDocuments.contains(newDoc))
-                .collect(toList());
-
-        List<DocumentReference> documentReferences = newlyAddedApplicationDocs.stream()
-                .map(applicationDocument -> {
-                    DocumentReference document = applicationDocument.getDocument();
-                    document.setType(applicationDocument.getDocumentType().getLabel());
-                    return document;
-                })
-                .collect(toList());
+                .collect(toSet());
 
         return newlyAddedApplicationDocs.stream()
-                .map(ApplicationDocument::getDocumentType)
-                .map(ApplicationDocumentType::getLabel)
-                .collect(collectingAndThen(toList(),
+                .map(applicationDocument -> {
+                    DocumentReference document = applicationDocument.getDocument();
+                    document.setType(Optional.ofNullable(applicationDocument.getDocumentType())
+                            .map(ApplicationDocumentType::getLabel)
+                            .orElse(applicationDocument.getDocumentName()));
+                    return document;
+                })
+                .collect(collectingAndThen(toSet(),
                     data ->
                         DocumentInfo.builder()
-                                .documentReferences(documentReferences)
-                                .documentTypes(data)
-                                .documentType(FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
-                                .build())
+                            .documentReferences(data)
+                            .documentTypes(data.stream()
+                                    .map(DocumentReference::getType)
+                                    .collect(toList()))
+                            .documentType(FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
+                            .build())
                 );
+    }
+
+    private List<Element<ApplicationDocument>> getNewApplicationDocuments(
+        List<Element<ApplicationDocument>> applicationDocuments,
+        List<Element<ApplicationDocument>> beforeApplicationDocuments) {
+        List<Element<ApplicationDocument>> newApplicationDocuments = new ArrayList<>();
+        defaultIfNull(applicationDocuments, new ArrayList<Element<ApplicationDocument>>()).forEach(newDoc -> {
+            if (!defaultIfNull(beforeApplicationDocuments, List.of()).contains(newDoc)) {
+                newApplicationDocuments.add(newDoc);
+            }
+        });
+        return newApplicationDocuments;
+    }
+
+    private List<Element<SupportingEvidenceBundle>> getNewSupportingEvidenceBundle(
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
+        List<Element<SupportingEvidenceBundle>> beforeSupportingEvidenceBundle) {
+        List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle = new ArrayList<>();
+        defaultIfNull(supportingEvidenceBundle, new ArrayList<Element<SupportingEvidenceBundle>>()).forEach(newDoc -> {
+            if (!defaultIfNull(beforeSupportingEvidenceBundle, List.of()).contains(newDoc)) {
+                newSupportingEvidenceBundle.add(newDoc);
+            }
+        });
+        return newSupportingEvidenceBundle;
     }
 
     private DocumentInfo getGeneralEvidence(CaseData caseData, CaseData caseDataBefore, DocumentUploaderType userType) {
@@ -298,28 +364,35 @@ public class FurtherEvidenceUploadedEventHandler {
             userType,
             (oldBundle, newDoc) -> !unwrapElements(oldBundle).contains(newDoc));
 
-        var documentReferences = supportingEvidenceBundles.stream()
-                .map(bundle -> {
-                    DocumentReference document = bundle.getDocument();
-                    document.setType(bundle.getType().getLabel());
-                    return document;
-                })
-                .collect(toList());
 
         return supportingEvidenceBundles.stream()
-                .map(SupportingEvidenceBundle::getType)
-                .filter(Objects::nonNull)
-                .map(FurtherEvidenceType::getLabel)
-                .collect(collectingAndThen(toList(),
+                .map(bundle -> {
+                    DocumentReference document = bundle.getDocument();
+                    document.setType(Optional.ofNullable(bundle.getType())
+                            .map(FurtherEvidenceType::getLabel)
+                            .orElse(bundle.getName()));
+                    return document;
+                })
+                .collect(collectingAndThen(toSet(),
                     data ->
                         DocumentInfo.builder()
-                            .documentReferences(documentReferences)
-                            .documentTypes(data)
-                            .documentType(FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
-                    .build())
+                                .documentReferences(data)
+                                .documentTypes(data.stream()
+                                        .map(DocumentReference::getType)
+                                        .collect(toList()))
+                                .documentType(FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
+                                .build()
+                        )
                 );
     }
 
+    private DocumentReference updateDocumentReference(SupportingEvidenceBundle bundle, String defaultValue) {
+        DocumentReference document = bundle.getDocument();
+        document.setType(Optional.ofNullable(bundle.getType())
+            .map(FurtherEvidenceType::getLabel)
+            .orElse(defaultValue));
+        return document;
+    }
 
     private List<SupportingEvidenceBundle> getDocuments(
         CaseData caseData, CaseData caseDataBefore,
@@ -428,12 +501,12 @@ public class FurtherEvidenceUploadedEventHandler {
                     );
                     return document;
                 })
-                .collect(collectingAndThen(toList(),
+                .collect(collectingAndThen(toSet(),
                     data -> DocumentInfo.builder()
-                        .documentReferences(data)
-                        .documentTypes(List.of(documentType))
-                        .documentType(type)
-                    .build())
+                            .documentReferences(data)
+                            .documentTypes(List.of(documentType))
+                            .documentType(type)
+                            .build())
                 );
     }
 

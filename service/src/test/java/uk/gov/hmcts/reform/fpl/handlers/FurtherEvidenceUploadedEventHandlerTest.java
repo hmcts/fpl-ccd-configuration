@@ -575,6 +575,45 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     @Test
+    void shouldEmailCafcassWhenDocsIsUploadedBySolicitor() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.of(
+                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                        )
+            );
+
+        CaseData caseData = buildCaseDataWithNonConfidentialPDFDocumentsSolicitor(REP_USER);
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+                new FurtherEvidenceUploadedEvent(
+                        caseData,
+                        buildCaseDataWithConfidentialLADocuments(),
+                        SOLICITOR,
+                        userDetailsRespondentSolicitor());
+
+        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+
+        Set<DocumentReference> documentReferences = unwrapElements(caseData.getFurtherEvidenceDocumentsSolicitor())
+                .stream()
+                .map(SupportingEvidenceBundle::getDocument)
+                .collect(toSet());
+
+        verify(cafcassNotificationService).sendEmail(
+                eq(caseData),
+                eq(documentReferences),
+                eq(NEW_DOCUMENT),
+                newDocumentDataCaptor.capture());
+
+        NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
+        assertThat(newDocumentData.getDocumentTypes())
+                .isEqualTo("• non-confidential-1\n"
+                        + "• non-confidential-2");
+        assertThat(newDocumentData.getEmailSubjectInfo())
+                .isEqualTo("Further documents for main application");
+    }
+
+    @Test
     void shouldEmailCafcassWhenRespondentStatementIsUploaded() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
@@ -688,8 +727,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
         assertThat(newDocumentData.getDocumentTypes())
-                .isEqualTo("• Birth certificate\n"
-                        + "• Birth certificate");
+                .isEqualTo("• Birth certificate");
         assertThat(newDocumentData.getEmailSubjectInfo())
                 .isEqualTo("Further documents for main application");
     }

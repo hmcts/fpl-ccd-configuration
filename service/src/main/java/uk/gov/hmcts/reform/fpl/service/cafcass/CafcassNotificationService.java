@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.fpl.service.cafcass;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.text.CaseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.cafcass.CafcassEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.LargeFilesNotificationData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -17,18 +20,24 @@ import uk.gov.hmcts.reform.fpl.service.DocumentMetadataDownloadService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 
 import java.net.URLConnection;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 
 import static java.util.Collections.emptySet;
+import static java.util.Comparator.comparing;
+import static java.util.Set.of;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.model.email.EmailAttachment.document;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.LARGE_ATTACHEMENTS;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NOTICE_OF_HEARING;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 @Slf4j
@@ -41,6 +50,10 @@ public class CafcassNotificationService {
     private final DocumentMetadataDownloadService documentMetadataDownloadService;
     private final long maxAttachmentSize;
     private static final long  MEGABYTE = 1024L * 1024L;
+    private static final String SUBJECT_DELIMITER = "|";
+    private static final String VALUE_TO_REPLACE = String.join("",SUBJECT_DELIMITER,"null");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @Autowired
     public CafcassNotificationService(EmailService emailService,
@@ -75,7 +88,8 @@ public class CafcassNotificationService {
         final Map<String, DocumentReference> documentMetaData = documentReferences.stream()
                 .map(DocumentReference::getUrl)
                 .collect(toMap(identity(),
-                        documentMetadataDownloadService::getDocumentMetadata));
+                    documentMetadataDownloadService::getDocumentMetadata,
+                    (existing, replacement) -> existing));
 
         long totalDocSize = documentMetaData.values().stream()
                 .mapToLong(DocumentReference::getSize)
@@ -94,17 +108,106 @@ public class CafcassNotificationService {
                                   final CafcassRequestEmailContentProvider provider,
                                   final CafcassData cafcassData,
                                   final BiFunction<CaseData, CafcassData, String> content) {
+        if (documentReferences.isEmpty()) {
+            sendAsAttachment(
+                    caseData,
+                    Optional.empty(),
+                    provider,
+                    cafcassData,
+                    content
+            );
+        }
+        documentReferences
+                .forEach(documentReference -> sendAsAttachment(
+                        caseData,
+                        Optional.of(documentReference),
+                        provider,
+                        cafcassData,
+                        content
+                ));
+    }
+
+    private void sendAsAttachment(final CaseData caseData,
+                              final Optional<DocumentReference> documentReference,
+                              final CafcassRequestEmailContentProvider provider,
+                              final CafcassData cafcassData,
+                              final BiFunction<CaseData, CafcassData, String> content) {
+        String subject = getSubject(caseData, provider, cafcassData, documentReference);
+        log.info("Subject: {} for doc reference type: {} ", subject,
+                documentReference
+                    .map(DocumentReference::getType)
+                    .orElse(String.join(":", "not set for",provider.getLabel()))
+        );
+
+        Set<EmailAttachment> emailAttachments = getEmailAttachment(documentReference)
+                .map(Set::of).orElse(emptySet());
+
+        log.info("data in the document {}",emailAttachments);
+
         emailService.sendEmail(configuration.getSender(),
                 EmailData.builder()
                         .recipient(provider.getRecipient().apply(configuration))
-                        .subject(provider.getType().apply(caseData, cafcassData))
-                        .attachments(getEmailAttachments(documentReferences))
+                        .subject(subject)
+                        .attachments(emailAttachments)
                         .message(content.apply(caseData, cafcassData))
                         .build()
         );
         log.info("For case id {} notification sent to Cafcass for {}",
                 caseData.getId(),
                 provider.name());
+    }
+
+    private String getSubject(final CaseData caseData,
+                              final CafcassRequestEmailContentProvider provider,
+                              final CafcassData cafcassData,
+                              Optional<DocumentReference> docReference) {
+        if (provider.isGenericSubject() && docReference.isPresent()) {
+            DocumentReference documentReference = docReference.get();
+            String date = null;
+
+            switch (provider) {
+                case ORDER:
+                    date = Optional.ofNullable(cafcassData.getOrderApprovalDate())
+                            .map(localDateTime -> localDateTime.format(DATE_FORMATTER))
+                            .orElse("NotSet");
+                    documentReference.setType(ORDER.getLabel());
+                    break;
+                case NOTICE_OF_HEARING:
+                    date = Optional.ofNullable(cafcassData.getHearingDate())
+                            .map(localDateTime -> localDateTime.format(DATE_TIME_FORMATTER))
+                            .orElse("NotSet");
+                    documentReference.setType(NOTICE_OF_HEARING.getLabel());
+                    break;
+            }
+
+            String lookupKey = Optional.ofNullable(
+                            CaseUtils.toCamelCase(documentReference.getType(), false, ' ')
+                    )
+                    .map(key -> key.contains("'")
+                            ? key.replace("'", "") : key)
+                    .orElse("other");
+
+
+            String cafcassDocumentMappingType = configuration.getDocumentType().get(lookupKey);
+
+            String oldestChildsLastName = unwrapElements(caseData.getAllChildren()).stream()
+                    .map(Child::getParty)
+                    .filter(child -> Optional.ofNullable(child.getDateOfBirth()).isPresent())
+                    .min(comparing(ChildParty::getDateOfBirth))
+                    .map(ChildParty::getLastName)
+                    .orElse("");
+
+            String subject = String.join(SUBJECT_DELIMITER,
+                    oldestChildsLastName,
+                    caseData.getFamilyManCaseNumber(),
+                    String.valueOf(caseData.getId()),
+                    cafcassDocumentMappingType,
+                    date);
+
+            return subject.replace(VALUE_TO_REPLACE, "");
+        } else {
+            return provider.getType().apply(caseData, cafcassData);
+        }
     }
 
     private void evaluateAndSend(final CaseData caseData,
@@ -132,7 +235,7 @@ public class CafcassNotificationService {
                         String message = String.join(" : ",
                                 "Document attached is",
                                 documentReference.getFilename());
-                        sendAsAttachment(caseData, Set.of(documentReference), provider, cafcassData,
+                        sendAsAttachment(caseData, of(documentReference), provider, cafcassData,
                             (caseDataObj, cafcassDataObj) -> message);
                     } else {
                         sendAsLink(caseData, documentReference,
@@ -174,17 +277,15 @@ public class CafcassNotificationService {
                 .build();
     }
 
-    private Set<EmailAttachment> getEmailAttachments(Set<DocumentReference> documentReferences) {
-        return documentReferences.stream()
-            .map(documentReference -> {
-                byte[] documentContent = documentDownloadService.downloadDocument(documentReference.getBinaryUrl());
+    private Optional<EmailAttachment> getEmailAttachment(Optional<DocumentReference> docReference) {
+        return docReference.map(documentReference -> {
+            byte[] documentContent = documentDownloadService.downloadDocument(documentReference.getBinaryUrl());
 
-                return document(
+            return document(
                     defaultIfNull(URLConnection.guessContentTypeFromName(documentReference.getFilename()),
-                        "application/octet-stream"),
+                            "application/octet-stream"),
                     documentContent,
                     documentReference.getFilename());
-            })
-            .collect(toSet());
+        });
     }
 }
