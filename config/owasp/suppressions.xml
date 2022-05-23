@@ -32,14 +32,14 @@
    file name: tomcat-embed-core-9.0.54.jar
    ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
-    <cve>CVE-2022-23181</cve>
+    <cpe>cpe:/a:apache:tomcat</cpe>
   </suppress>
   <suppress>
     <notes><![CDATA[
    file name: tomcat-embed-websocket-9.0.54.jar
    ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
-    <cve>CVE-2022-23181</cve>
+    <cpe>cpe:/a:apache:tomcat</cpe>
   </suppress>
   <suppress>
     <notes><![CDATA[
