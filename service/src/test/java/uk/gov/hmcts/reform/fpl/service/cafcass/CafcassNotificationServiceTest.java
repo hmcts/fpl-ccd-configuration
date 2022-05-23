@@ -37,6 +37,7 @@ import static java.util.Map.ofEntries;
 import static java.util.Set.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -449,6 +450,27 @@ class CafcassNotificationServiceTest {
                         "Types of documents attached:\n\n"
                                 + "• Additional statement")
         );
+    }
+
+    @Test
+    void shouldNotifyAdditionalDocumentWithBlankSujbectWhenNoDocumentsPresent() {
+        when(configuration.getRecipientForAdditionlDocument()).thenReturn(RECIPIENT_EMAIL);
+        when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
+                DOCUMENT_CONTENT);
+
+        underTest.sendEmail(caseData,
+                of(),
+                ADDITIONAL_DOCUMENT,
+                NewDocumentData.builder()
+                        .build()
+        );
+
+        verify(documentDownloadService, never()).downloadDocument(any());
+
+        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
+        EmailData data = emailDataArgumentCaptor.getValue();
+        assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
+        assertThat(data.getSubject()).isEmpty();
     }
 
     @Test
