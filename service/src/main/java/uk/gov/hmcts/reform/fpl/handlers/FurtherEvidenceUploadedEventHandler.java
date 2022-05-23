@@ -163,7 +163,7 @@ public class FurtherEvidenceUploadedEventHandler {
     }
 
     @EventListener
-    public void sendOtherHearingDocumentsUploadedNotification(final FurtherEvidenceUploadedEvent event) {
+    public void sendHearingDocumentsUploadedNotification(final FurtherEvidenceUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
         final CaseData caseDataBefore = event.getCaseDataBefore();
         final UserDetails uploader = event.getInitiatedBy();
@@ -217,14 +217,18 @@ public class FurtherEvidenceUploadedEventHandler {
 
     private void sendHearingDocumentsToCafcass(CaseData caseData, List<HearingDocument> newHearingDocuments,
                                                CafcassRequestEmailContentProvider provider) {
-        newHearingDocuments.forEach(newHearingDocument ->
+        Map<String, Set<DocumentReference>> newHearingDocs = newHearingDocuments.stream()
+            .collect(groupingBy(HearingDocument::getHearing,
+                mapping(HearingDocument::getDocument, toSet())));
+
+        newHearingDocs.forEach((hearing, doc) ->
             cafcassNotificationService.sendEmail(
-                caseData,
-                Set.of(newHearingDocument.getDocument()),
-                provider,
-                CourtBundleData.builder()
-                    .hearingDetails(newHearingDocument.getHearing())
-                    .build()));
+                    caseData,
+                    doc,
+                    provider,
+                    CourtBundleData.builder()
+                        .hearingDetails(hearing)
+                        .build()));
     }
 
     @EventListener
@@ -458,12 +462,12 @@ public class FurtherEvidenceUploadedEventHandler {
 
     private <T extends HearingDocument> List<HearingDocument> getNewHearingDocuments(List<Element<T>> documents,
                                                                                      List<Element<T>> documentsBefore) {
-        List<HearingDocument> newHearingDoc = new ArrayList<>();
-        documents.stream()
-            .filter(doc -> !documentsBefore.contains(doc))
-            .forEach(doc -> newHearingDoc.add(doc.getValue()));
+        List<T> unwrapedDocs = unwrapElements(documents);
+        List<T> unwrapedDocsBefore = unwrapElements(documentsBefore);
 
-        return newHearingDoc;
+        return unwrapedDocs.stream()
+            .filter(doc -> !unwrapedDocsBefore.contains(doc))
+            .collect(toList());
     }
 
     private Map<String, Set<DocumentReference>> getNewCourtBundles(CaseData caseData, CaseData caseDataBefore) {
