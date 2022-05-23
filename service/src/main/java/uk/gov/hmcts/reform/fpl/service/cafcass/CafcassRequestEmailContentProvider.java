@@ -46,6 +46,35 @@ public enum CafcassRequestEmailContentProvider {
                 cafcassData.getHearingDetails()),
         CafcassEmailConfiguration::getRecipientForCourtBundle),
 
+    CASE_SUMMARY("Case summary",
+        (caseData, cafcassData) -> String.format(getSubject(),
+            caseData.getFamilyManCaseNumber(),
+            "new case summary"),
+        (caseData, cafcassData) ->
+            String.format("A new case summary for this case was uploaded to the Public Law Portal entitled %s",
+                cafcassData.getHearingDetails()),
+        CafcassEmailConfiguration::getRecipientForCourtBundle),
+
+    POSITION_STATEMENT_CHILD("Position statement child",
+        (caseData, cafcassData) -> String.format(getSubject(),
+            caseData.getFamilyManCaseNumber(),
+            "new position statement child"),
+        (caseData, cafcassData) ->
+            String.format("A new position statement child for this case was uploaded to the "
+                          + "Public Law Portal entitled %s",
+                cafcassData.getHearingDetails()),
+        CafcassEmailConfiguration::getRecipientForCourtBundle),
+
+    POSITION_STATEMENT_RESPONDENT("Position statement respondent",
+        (caseData, cafcassData) -> String.format(getSubject(),
+            caseData.getFamilyManCaseNumber(),
+            "new Position statement respondent"),
+        (caseData, cafcassData) ->
+            String.format("A new Position statement respondent for this case was uploaded to the "
+                          + "Public Law Portal entitled %s",
+                cafcassData.getHearingDetails()),
+        CafcassEmailConfiguration::getRecipientForCourtBundle),
+
     NEW_APPLICATION("New application",
         CafcassRequestEmailContentProvider::getNewApplicationSubject,
         CafcassRequestEmailContentProvider::getNewApplicationMessage,
