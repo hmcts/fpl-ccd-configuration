@@ -695,7 +695,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageOrdersSupervisionOrderVariationHeading",
     "FieldType": "Label",
-    "Label": "The court substitutes/varies this supervision order for the care order.",
+    "Label": "The court varies this supervision order for the care order.",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   },
