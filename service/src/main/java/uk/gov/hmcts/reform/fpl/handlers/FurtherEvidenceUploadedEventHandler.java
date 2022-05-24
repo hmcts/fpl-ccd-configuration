@@ -353,11 +353,11 @@ public class FurtherEvidenceUploadedEventHandler {
         List<HearingFurtherEvidenceBundle> oldHearingFurtherEvidenceDocuments = unwrapElements(
                 caseDataBefore.getHearingFurtherEvidenceDocuments());
 
-        List<Element<SupportingEvidenceBundle>> oldSupportingEvidenceBundle =
+        Set<Element<SupportingEvidenceBundle>> oldSupportingEvidenceBundle =
                 oldHearingFurtherEvidenceDocuments.stream()
                 .map(HearingFurtherEvidenceBundle::getSupportingEvidenceBundle)
                 .flatMap(List::stream)
-                .collect(toList());
+                .collect(toSet());
 
         return newHearingFurtherEvidenceDocuments.stream()
                 .map(HearingFurtherEvidenceBundle::getSupportingEvidenceBundle)
@@ -371,7 +371,7 @@ public class FurtherEvidenceUploadedEventHandler {
                             .orElse(supportingEvidenceBundle.getName()));
                     return document;
                 })
-                .collect(collectingAndThen(toList(),
+                .collect(collectingAndThen(toSet(),
                     data -> DocumentInfo.builder()
                                 .documentReferences(data)
                                 .documentTypes(data.stream()
@@ -386,9 +386,9 @@ public class FurtherEvidenceUploadedEventHandler {
         List<ApplicationDocument> newApplicationDocuments = unwrapElements(caseData.getApplicationDocuments());
         List<ApplicationDocument> oldApplicationDocuments = unwrapElements(caseDataBefore.getApplicationDocuments());
 
-        List<ApplicationDocument> newlyAddedApplicationDocs = newApplicationDocuments.stream()
+        Set<ApplicationDocument> newlyAddedApplicationDocs = newApplicationDocuments.stream()
                 .filter(newDoc -> !oldApplicationDocuments.contains(newDoc))
-                .collect(toList());
+                .collect(toSet());
 
         return newlyAddedApplicationDocs.stream()
                 .map(applicationDocument -> {
@@ -398,7 +398,7 @@ public class FurtherEvidenceUploadedEventHandler {
                             .orElse(applicationDocument.getDocumentName()));
                     return document;
                 })
-                .collect(collectingAndThen(toList(),
+                .collect(collectingAndThen(toSet(),
                     data ->
                         DocumentInfo.builder()
                             .documentReferences(data)
@@ -449,7 +449,7 @@ public class FurtherEvidenceUploadedEventHandler {
                             .orElse(bundle.getName()));
                     return document;
                 })
-                .collect(collectingAndThen(toList(),
+                .collect(collectingAndThen(toSet(),
                     data ->
                         DocumentInfo.builder()
                             .documentReferences(data)
@@ -691,7 +691,7 @@ public class FurtherEvidenceUploadedEventHandler {
                     );
                     return document;
                 })
-                .collect(collectingAndThen(toList(),
+                .collect(collectingAndThen(toSet(),
                     data -> DocumentInfo.builder()
                         .documentReferences(data)
                         .documentTypes(List.of(documentType))

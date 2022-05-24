@@ -9,4 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 public class CourtBundleUploadedData implements NotifyData {
     private String caseUrl;
     private String hearingDetails;
+    private String respondentLastName;
+    private String familyManCaseNumber;
 }
