@@ -31,13 +31,12 @@ public class CaseInitiationController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         final CaseDetailsMap caseData = caseDetailsMap(callbackrequest.getCaseDetails());
 
-        caseInitiationService.getUserOrganisationId().ifPresent(organisationId -> {
+        caseInitiationService.getUserOrganisationId().ifPresent(organisationId ->
             caseInitiationService.getOutsourcingType(organisationId).ifPresent(outsourcingType -> {
                 caseData.putIfNotEmpty("outsourcingType", outsourcingType);
                 caseData.putIfNotEmpty("outsourcingLAs", caseInitiationService
                     .getOutsourcingLocalAuthorities(organisationId, outsourcingType));
-            });
-        });
+            }));
 
         return respond(caseData);
     }
