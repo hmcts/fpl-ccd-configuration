@@ -1694,6 +1694,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representativeType",
+    "Label": "Select who you are representing",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "RepresentativeType",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "additionalApplicationType",
     "Label": "What are you applying for?",
     "FieldType": "MultiSelectList",

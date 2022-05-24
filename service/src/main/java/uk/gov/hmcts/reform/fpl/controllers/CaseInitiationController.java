@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 
+@Slf4j
 @Api
 @RestController
 @RequestMapping("/callback/case-initiation")
@@ -29,12 +31,16 @@ public class CaseInitiationController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         final CaseDetailsMap caseData = caseDetailsMap(callbackrequest.getCaseDetails());
 
-        caseInitiationService.getUserOrganisationId().ifPresent(organisationId ->
+        log.info(caseInitiationService.getUserOrganisationId().toString());
+        caseInitiationService.getUserOrganisationId().ifPresent(organisationId -> {
+            log.info(caseInitiationService.getOutsourcingType(organisationId).toString());
             caseInitiationService.getOutsourcingType(organisationId).ifPresent(outsourcingType -> {
+                log.info(caseInitiationService.getOutsourcingLocalAuthorities(organisationId, outsourcingType).toString());
                 caseData.putIfNotEmpty("outsourcingType", outsourcingType);
                 caseData.putIfNotEmpty("outsourcingLAs", caseInitiationService
                     .getOutsourcingLocalAuthorities(organisationId, outsourcingType));
-            }));
+            });
+        });
 
         return respond(caseData);
     }
@@ -51,6 +57,8 @@ public class CaseInitiationController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackrequest) {
         final CaseData caseData = getCaseData(callbackrequest);
         final CaseDetailsMap caseDetails = caseDetailsMap(callbackrequest.getCaseDetails());
+
+        log.info(caseData.getRepresentativeType().toString());
 
         final CaseData updatedCaseData = caseInitiationService.updateOrganisationsDetails(caseData);
 

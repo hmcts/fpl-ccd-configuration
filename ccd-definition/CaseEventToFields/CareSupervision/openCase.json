@@ -15,13 +15,24 @@
     "LiveFrom": "12/02/2021",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "openCase",
+    "CaseFieldID": "representativeType",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY",
+    "PageID": "selectOutsourcingLA",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "12/02/2021",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "openCase",
     "CaseFieldID": "outsourcingLAs",
-    "PageFieldDisplayOrder": 1,
+    "PageFieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
     "PageID": "selectOutsourcingLA",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "PageShowCondition": "outsourcingType != \"\""
+    "FieldShowCondition": "representativeType=\"LOCAL_AUTHORITY\""
   },
   {
     "LiveFrom": "01/01/2017",

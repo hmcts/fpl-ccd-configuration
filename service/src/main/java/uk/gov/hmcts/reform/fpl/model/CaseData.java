@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
 import uk.gov.hmcts.reform.fpl.enums.RemovableType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
@@ -164,6 +165,7 @@ public class CaseData {
     private OrganisationPolicy outsourcingPolicy;
     private OrganisationPolicy sharedLocalAuthorityPolicy;
     private OutsourcingType outsourcingType;
+    private RepresentativeType representativeType;
     private Object outsourcingLAs;
     private Court court;
     private YesNo multiCourts;

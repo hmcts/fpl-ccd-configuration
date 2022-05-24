@@ -25,8 +25,7 @@ import static java.util.Comparator.comparing;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CREATOR;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.*;
 import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.EPS;
 import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.MLA;
 
@@ -108,13 +107,6 @@ public class CaseInitiationService {
             userLA.orElse(NOT_PRESENT),
             outsourcingLA.orElse(NOT_PRESENT));
 
-        if (userInMO && !userInLA && !caseOutsourced) {
-            return List.of(
-                "Email not recognised.",
-                "Your email is not associated with a local authority or authorised legal firm.",
-                "Email MyHMCTSsupport@justice.gov.uk for further guidance.");
-        }
-
         if (!userInMO) {
             if (!userInLA && !caseOutsourced) {
                 return List.of(
@@ -159,6 +151,9 @@ public class CaseInitiationService {
         boolean isCaseOutsourced = outsourcingLocalAuthority.isPresent()
             && !userLocalAuthority.equals(outsourcingLocalAuthority);
 
+        boolean isRespondentSolicitor = caseData.getRepresentativeType().toString() == "RESPONDENT_SOLICITOR";
+        boolean isChildSolicitor = caseData.getRepresentativeType().toString() == "CHILD_SOLICITOR";
+
         if (isCaseOutsourced) {
             String outsourcingOrgId = localAuthorities.getLocalAuthorityId(outsourcingLocalAuthority.get());
             String outsourcingOrgName = localAuthorities.getLocalAuthorityName(outsourcingLocalAuthority.get());
@@ -187,7 +182,20 @@ public class CaseInitiationService {
             return addCourtDetails(updatedCaseData);
         }
 
-        throw new IllegalStateException("Cannot determine local authority for a case");
+        if (isRespondentSolicitor || isChildSolicitor) {
+            CaseData updatedCaseData = caseData.toBuilder()
+                .outsourcingPolicy(organisationPolicy(
+                    currentUserOrganisationId,
+                    currentUserOrganisationName,
+                    isRespondentSolicitor ? SOLICITORA : CHILDSOLICITORA))
+                .caseLocalAuthority("N/A")
+                .caseLocalAuthorityName("N/A")
+                .build();
+
+            return addCourtDetails(updatedCaseData);
+        }
+
+        return caseData;
     }
 
     private CaseData addCourtDetails(CaseData caseData) {
