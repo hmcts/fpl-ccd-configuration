@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -188,8 +189,6 @@ public class CaseInitiationService {
                     currentUserOrganisationId,
                     currentUserOrganisationName,
                     isRespondentSolicitor ? SOLICITORA : CHILDSOLICITORA))
-                .caseLocalAuthority("N/A")
-                .caseLocalAuthorityName("N/A")
                 .build();
 
             return addCourtDetails(updatedCaseData);
@@ -199,6 +198,16 @@ public class CaseInitiationService {
     }
 
     private CaseData addCourtDetails(CaseData caseData) {
+        if (Objects.equals(caseData.getCaseLocalAuthorityName(), null)) {
+            return caseData.toBuilder().court(
+                Court.builder()
+                    .code("11")
+                    .name("Family Court")
+                    .email("court1@family-court.com")
+                    .build()
+            ).build();
+        }
+
         final List<Court> courts = courtLookup.getCourts(caseData.getCaseLocalAuthority());
 
         if (isNotEmpty(courts)) {

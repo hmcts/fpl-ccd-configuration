@@ -31,11 +31,8 @@ public class CaseInitiationController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         final CaseDetailsMap caseData = caseDetailsMap(callbackrequest.getCaseDetails());
 
-        log.info(caseInitiationService.getUserOrganisationId().toString());
         caseInitiationService.getUserOrganisationId().ifPresent(organisationId -> {
-            log.info(caseInitiationService.getOutsourcingType(organisationId).toString());
             caseInitiationService.getOutsourcingType(organisationId).ifPresent(outsourcingType -> {
-                log.info(caseInitiationService.getOutsourcingLocalAuthorities(organisationId, outsourcingType).toString());
                 caseData.putIfNotEmpty("outsourcingType", outsourcingType);
                 caseData.putIfNotEmpty("outsourcingLAs", caseInitiationService
                     .getOutsourcingLocalAuthorities(organisationId, outsourcingType));
@@ -57,8 +54,6 @@ public class CaseInitiationController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackrequest) {
         final CaseData caseData = getCaseData(callbackrequest);
         final CaseDetailsMap caseDetails = caseDetailsMap(callbackrequest.getCaseDetails());
-
-        log.info(caseData.getRepresentativeType().toString());
 
         final CaseData updatedCaseData = caseInitiationService.updateOrganisationsDetails(caseData);
 
