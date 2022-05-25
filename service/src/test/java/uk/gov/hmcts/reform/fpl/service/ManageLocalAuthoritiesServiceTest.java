@@ -65,9 +65,9 @@ import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.REMOVE;
 import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.TRANSFER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.HIGH_COURT_CODE;
-import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.HIGH_COURT_NAME;
-import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.HIGH_COURT_REGION;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_NAME;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_REGION;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.caseRoleDynamicList;
@@ -931,9 +931,9 @@ class ManageLocalAuthoritiesServiceTest {
 
         @BeforeEach
         void init() {
-            when(courtLookUpService.buildRcjHighCourt()).thenReturn(Court.builder().code(HIGH_COURT_CODE)
-                .name(HIGH_COURT_NAME)
-                .region(HIGH_COURT_REGION)
+            when(courtLookUpService.buildRcjHighCourt()).thenReturn(Court.builder().code(RCJ_HIGH_COURT_CODE)
+                .name(RCJ_HIGH_COURT_NAME)
+                .region(RCJ_HIGH_COURT_REGION)
                 .build());
         }
         
@@ -942,7 +942,7 @@ class ManageLocalAuthoritiesServiceTest {
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
                 .courtsToTransferWithoutTransferLA(dynamicList(Map.of(
                         newCourt.getCode(), newCourt.getName(),
-                        HIGH_COURT_CODE, HIGH_COURT_NAME),
+                        RCJ_HIGH_COURT_CODE, RCJ_HIGH_COURT_NAME),
                     newCourt.getCode()))
                 .build();
             final CaseData caseData = CaseData.builder()
@@ -1720,7 +1720,7 @@ class ManageLocalAuthoritiesServiceTest {
 
             final DynamicList expectedCourtList = DynamicList.builder().build();
 
-            when(courtLookUpService.getCourtFullListWithHighCourt()).thenReturn(List.of(court2, court5, court1));
+            when(courtLookUpService.getCourtFullListWithRcjHighCourt()).thenReturn(List.of(court2, court5, court1));
             when(courtService.getCourt(caseData)).thenReturn(court1);
             when(dynamicListService.asDynamicList(expectedCourtsGroupedByRegion)).thenReturn(expectedCourtList);
 

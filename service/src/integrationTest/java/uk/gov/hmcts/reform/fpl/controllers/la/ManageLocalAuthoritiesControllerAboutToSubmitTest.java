@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthoritiesEventData;
-import uk.gov.hmcts.reform.fpl.service.CourtLookUpService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.ContactInformation;
@@ -66,8 +65,8 @@ import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.ADD;
 import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.REMOVE;
 import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.TRANSFER;
 import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.TRANSFER_COURT;
-import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.HIGH_COURT_CODE;
-import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.HIGH_COURT_NAME;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -401,7 +400,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
                 .localAuthorityAction(TRANSFER_COURT)
                 .courtsToTransferWithoutTransferLA(dynamicLists.from(1,
-                    Pair.of( "Worcester", "380"),
+                    Pair.of("Worcester", "380"),
                     Pair.of("Wrexham", "384")))
                 .build();
 
@@ -427,7 +426,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
                 .localAuthorityAction(TRANSFER_COURT)
                 .courtsToTransferWithoutTransferLA(dynamicLists.from(1,
-                    Pair.of( "Worcester", "380"),
+                    Pair.of("Worcester", "380"),
                     Pair.of("Wrexham", "384")))
                 .build();
 
@@ -468,12 +467,12 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
         }
 
         @Test
-        void shouldTransferToHighCourt() {
+        void shouldTransferToRcjHighCourt() {
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
                 .localAuthorityAction(TRANSFER_COURT)
                 .courtsToTransferWithoutTransferLA(dynamicLists.from(1,
-                    Pair.of( "Worcester", "380"),
-                    Pair.of(HIGH_COURT_NAME, HIGH_COURT_CODE)))
+                    Pair.of("Worcester", "380"),
+                    Pair.of(RCJ_HIGH_COURT_NAME, RCJ_HIGH_COURT_CODE)))
                 .build();
 
             final CaseData initialCaseData = CaseData.builder()
@@ -485,8 +484,8 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
 
             final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
 
-            assertThat(updatedCaseData.getCourt().getCode()).isEqualTo(HIGH_COURT_CODE);
-            assertThat(updatedCaseData.getCourt().getName()).isEqualTo(HIGH_COURT_NAME);
+            assertThat(updatedCaseData.getCourt().getCode()).isEqualTo(RCJ_HIGH_COURT_CODE);
+            assertThat(updatedCaseData.getCourt().getName()).isEqualTo(RCJ_HIGH_COURT_NAME);
             assertThat(updatedCaseData.getCourt().getDateTransferred()).isNotNull();
             assertThat(updatedCaseData.getPastCourtList()).hasSize(1);
             assertThat(updatedCaseData.getPastCourtList().iterator().next().getValue().getCode()).isEqualTo("344");

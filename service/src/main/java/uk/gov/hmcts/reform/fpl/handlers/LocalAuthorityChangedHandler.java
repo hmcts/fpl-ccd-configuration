@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LOCAL_AUTHORITY_ADDED_DESI
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LOCAL_AUTHORITY_ADDED_SHARED_LA_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LOCAL_AUTHORITY_REMOVED_SHARED_LA_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
-import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.HIGH_COURT_CODE;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -226,7 +226,7 @@ public class LocalAuthorityChangedHandler {
     public void notifyHighCourtAdmin(final CaseTransferredToAnotherCourt event) {
         final CaseData caseData = event.getCaseData();
         final String recipient = highCourtAdminEmailLookupConfiguration.getEmail();
-        if (HIGH_COURT_CODE.equals(caseData.getCourt().getCode())) {
+        if (RCJ_HIGH_COURT_CODE.equals(caseData.getCourt().getCode())) {
             final NotifyData notifyData = contentProvider.getNotifyDataFoTransferredToAnotherCourt(caseData);
             notificationService.sendEmail(CASE_TRANSFERRED_TO_ANOTHER_COURT_TEMPLATE, recipient, notifyData,
                 caseData.getId());

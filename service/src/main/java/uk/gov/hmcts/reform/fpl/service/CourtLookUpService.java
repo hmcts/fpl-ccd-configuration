@@ -18,11 +18,11 @@ import java.util.Optional;
 @Service
 public class CourtLookUpService {
 
-    public static final String HIGH_COURT_CODE = "100";
+    public static final String RCJ_HIGH_COURT_CODE = "100";
 
-    public static final String HIGH_COURT_REGION = "London";
+    public static final String RCJ_HIGH_COURT_REGION = "London";
 
-    public static final String HIGH_COURT_NAME = "High Court Family Division - (100)";
+    public static final String RCJ_HIGH_COURT_NAME = "High Court Family Division - (100)";
 
     private final ObjectMapper objectMapper;
 
@@ -44,20 +44,20 @@ public class CourtLookUpService {
     }
 
     public Court buildRcjHighCourt() {
-        return Court.builder().code(HIGH_COURT_CODE)
-            .name(HIGH_COURT_NAME)
-            .region(HIGH_COURT_REGION)
+        return Court.builder().code(RCJ_HIGH_COURT_CODE)
+            .name(RCJ_HIGH_COURT_NAME)
+            .region(RCJ_HIGH_COURT_REGION)
             .build();
     }
 
-    public List<Court> getCourtFullListWithHighCourt() {
+    public List<Court> getCourtFullListWithRcjHighCourt() {
         List<Court> ret = new ArrayList<>(List.of(buildRcjHighCourt()));
         ret.addAll(courts);
         return ret;
     }
 
     public Optional<Court> getCourtByCode(String courtCode) {
-        return getCourtFullListWithHighCourt().stream()
+        return getCourtFullListWithRcjHighCourt().stream()
             .filter(court -> Objects.equals(court.getCode(), courtCode))
             .findFirst();
     }

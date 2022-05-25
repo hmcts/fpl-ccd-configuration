@@ -9,9 +9,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.Court;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.HIGH_COURT_CODE;
-import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.HIGH_COURT_NAME;
-import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.HIGH_COURT_REGION;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_NAME;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_REGION;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, CourtLookUpService.class})
@@ -22,7 +22,7 @@ class CourtLookUpServiceTest {
 
     @Test
     void shouldReturnFullCourtListWithHighCourt() {
-        assertThat(courtLookUpService.getCourtFullListWithHighCourt().size()).isEqualTo(3);
+        assertThat(courtLookUpService.getCourtFullListWithRcjHighCourt().size()).isEqualTo(3);
     }
 
     @Test
@@ -35,9 +35,9 @@ class CourtLookUpServiceTest {
     @Test
     void shouldReturnHighCourt() {
         assertThat(courtLookUpService.getCourtByCode("100").get()).isEqualTo(
-            Court.builder().code(HIGH_COURT_CODE)
-                .name(HIGH_COURT_NAME)
-                .region(HIGH_COURT_REGION)
+            Court.builder().code(RCJ_HIGH_COURT_CODE)
+                .name(RCJ_HIGH_COURT_NAME)
+                .region(RCJ_HIGH_COURT_REGION)
                 .build()
         );
     }

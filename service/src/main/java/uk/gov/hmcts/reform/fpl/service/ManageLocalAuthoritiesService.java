@@ -99,7 +99,7 @@ public class ManageLocalAuthoritiesService {
 
     public DynamicList getCourtsToTransferWithHighCourt(CaseData caseData, boolean groupedByRegion) {
         final Court currentCaseCourt = courtService.getCourt(caseData);
-        final List<Court> fullList = courtLookUpService.getCourtFullListWithHighCourt();
+        final List<Court> fullList = courtLookUpService.getCourtFullListWithRcjHighCourt();
 
         if (groupedByRegion) {
             final List<Pair<String, String>> courts = new ArrayList<>();

@@ -55,9 +55,9 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.ChildGender.BOY;
 import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.TRANSFER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.HIGH_COURT_CODE;
-import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.HIGH_COURT_NAME;
-import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.HIGH_COURT_REGION;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_NAME;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_REGION;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -244,7 +244,7 @@ class ManageLocalAuthoritiesControllerSubmittedTest extends AbstractCallbackTest
         verifyNoMoreInteractions(notificationClient, coreCaseDataService);
     }
 
-    void notifyAllPartiesWhenCaseTransferredToAnotherCourtTemplate(boolean isTransferredToHighCourt) {
+    void notifyAllPartiesWhenCaseTransferredToAnotherCourtTemplate(boolean isTransferredToRcjHighCourt) {
         final CaseData caseDataBefore = CaseData.builder()
             .id(CASE_ID).sendToCtsc(YES.getValue())
             .caseName("Case name")
@@ -276,9 +276,9 @@ class ManageLocalAuthoritiesControllerSubmittedTest extends AbstractCallbackTest
         final CaseData caseData = caseDataBefore.toBuilder()
             .court(
                 Court.builder()
-                    .code(isTransferredToHighCourt ? HIGH_COURT_CODE : "386")
-                    .name(isTransferredToHighCourt ? HIGH_COURT_NAME : "York")
-                    .region(isTransferredToHighCourt ? HIGH_COURT_REGION : "North East")
+                    .code(isTransferredToRcjHighCourt ? RCJ_HIGH_COURT_CODE : "386")
+                    .name(isTransferredToRcjHighCourt ? RCJ_HIGH_COURT_NAME : "York")
+                    .region(isTransferredToRcjHighCourt ? RCJ_HIGH_COURT_REGION : "North East")
                     .dateTransferred(LocalDateTime.of(1997, Month.JULY, 1, 23, 59))
                     .build()
             )
@@ -293,7 +293,7 @@ class ManageLocalAuthoritiesControllerSubmittedTest extends AbstractCallbackTest
 
         final SharedLocalAuthorityChangedNotifyData expectedNotifyData = SharedLocalAuthorityChangedNotifyData
             .builder()
-            .courtName(isTransferredToHighCourt ? HIGH_COURT_NAME : "York")
+            .courtName(isTransferredToRcjHighCourt ? RCJ_HIGH_COURT_NAME : "York")
             .previousCourtName("Barnsley")
             .ccdNumber(caseData.getId().toString())
             .caseName(caseData.getCaseName())
@@ -332,7 +332,7 @@ class ManageLocalAuthoritiesControllerSubmittedTest extends AbstractCallbackTest
                 toMap(expectedNotifyData),
                 notificationReference(CASE_ID));
             // notify high court admin
-            verify(notificationClient, times(isTransferredToHighCourt ? 1 : 0)).sendEmail(
+            verify(notificationClient, times(isTransferredToRcjHighCourt ? 1 : 0)).sendEmail(
                 CASE_TRANSFERRED_TO_ANOTHER_COURT_TEMPLATE,
                 "FamilyPublicLaw+rcjfamilyhighcourt@gmail.com",
                 toMap(expectedNotifyData),
@@ -351,7 +351,7 @@ class ManageLocalAuthoritiesControllerSubmittedTest extends AbstractCallbackTest
     }
 
     @Test
-    void shouldNotifyAllPartiesWhenCaseTransferredToHighCourt() {
+    void shouldNotifyAllPartiesWhenCaseTransferredToRcjHighCourt() {
         notifyAllPartiesWhenCaseTransferredToAnotherCourtTemplate(true);
     }
 

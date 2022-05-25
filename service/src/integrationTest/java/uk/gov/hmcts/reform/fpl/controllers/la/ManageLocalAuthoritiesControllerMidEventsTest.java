@@ -437,7 +437,7 @@ class ManageLocalAuthoritiesControllerMidEventsTest extends AbstractCallbackTest
     }
 
     @Nested
-    class TransferCourtWithoutTransferLA {
+    class TransferToAnotherCourt {
 
         private final String callback = "transfer-court/court-selection";
 
@@ -459,6 +459,7 @@ class ManageLocalAuthoritiesControllerMidEventsTest extends AbstractCallbackTest
             assertThat(response.getErrors()).containsExactly(
                 "Invalid court selected.");
         }
+
         @Test
         void shouldNotReturnValidateErrorsWhenSelectedAnyCourts() {
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()

@@ -36,9 +36,9 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASHARED;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.ChildGender.BOY;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.HIGH_COURT_CODE;
-import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.HIGH_COURT_NAME;
-import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.HIGH_COURT_REGION;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_NAME;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_REGION;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -276,12 +276,12 @@ class LocalAuthorityChangedHandlerEmailTemplateTest extends EmailTemplateTest {
                 ))
             ).build();
 
-        final CaseData caseDataTransferredToHighCourt = caseDataBefore.toBuilder()
+        final CaseData caseDataTransferredToRcjHighCourt = caseDataBefore.toBuilder()
             .court(
                 Court.builder()
-                    .code(HIGH_COURT_CODE)
-                    .name(HIGH_COURT_NAME )
-                    .region( HIGH_COURT_REGION)
+                    .code(RCJ_HIGH_COURT_CODE)
+                    .name(RCJ_HIGH_COURT_NAME)
+                    .region(RCJ_HIGH_COURT_REGION)
                     .dateTransferred(LocalDateTime.of(1997, Month.JULY, 1, 23, 59))
                     .build()
             )
@@ -292,6 +292,7 @@ class LocalAuthorityChangedHandlerEmailTemplateTest extends EmailTemplateTest {
                         .build()
                 ))
             ).build();
+
         private void verifyResponse() {
             assertThat(response())
                 .hasSubject("Case Transferred from Previous Family Court to Family Court")
@@ -345,44 +346,44 @@ class LocalAuthorityChangedHandlerEmailTemplateTest extends EmailTemplateTest {
         // Transferred to High Court
 
         @Test
-        void notifyRespondentSolicitorsAboutCaseTransferToHighCourt() {
+        void notifyRespondentSolicitorsAboutCaseTransferToRcjHighCourt() {
             underTest.notifyRespondentSolicitors(
-                new CaseTransferredToAnotherCourt(caseDataTransferredToHighCourt, caseDataBefore));
+                new CaseTransferredToAnotherCourt(caseDataTransferredToRcjHighCourt, caseDataBefore));
             verifyResponse();
         }
 
         @Test
-        void notifyAdminAboutCaseTransferToHighCourt() {
+        void notifyAdminAboutCaseTransferToRcjHighCourt() {
             underTest.notifyAdmin(
-                new CaseTransferredToAnotherCourt(caseDataTransferredToHighCourt, caseDataBefore));
+                new CaseTransferredToAnotherCourt(caseDataTransferredToRcjHighCourt, caseDataBefore));
             verifyResponse();
         }
 
         @Test
-        void notifyChildSolicitorsAboutCaseTransferToHighCourt() {
+        void notifyChildSolicitorsAboutCaseTransferToRcjHighCourt() {
             underTest.notifyChildSolicitors(
-                new CaseTransferredToAnotherCourt(caseDataTransferredToHighCourt, caseDataBefore));
+                new CaseTransferredToAnotherCourt(caseDataTransferredToRcjHighCourt, caseDataBefore));
             verifyResponse();
         }
 
         @Test
-        void notifyDesignatedLocalAuthorityAboutCaseTransferToHighCourt() {
+        void notifyDesignatedLocalAuthorityAboutCaseTransferToRcjHighCourt() {
             underTest.notifyDesignatedLocalAuthority(
-                new CaseTransferredToAnotherCourt(caseDataTransferredToHighCourt, caseDataBefore));
+                new CaseTransferredToAnotherCourt(caseDataTransferredToRcjHighCourt, caseDataBefore));
             verifyResponse();
         }
 
         @Test
-        void notifySecondaryLocalAuthorityAboutCaseTransferToHighCourt() {
+        void notifySecondaryLocalAuthorityAboutCaseTransferToRcjHighCourt() {
             underTest.notifySecondaryLocalAuthority(
-                new CaseTransferredToAnotherCourt(caseDataTransferredToHighCourt, caseDataBefore));
+                new CaseTransferredToAnotherCourt(caseDataTransferredToRcjHighCourt, caseDataBefore));
             verifyResponse();
         }
 
         @Test
-        void notifyHighCourtAdminAboutCaseTransferToHighCourt() {
+        void notifyHighCourtAdminAboutCaseTransferToRcjHighCourt() {
             underTest.notifyHighCourtAdmin(
-                new CaseTransferredToAnotherCourt(caseDataTransferredToHighCourt, caseDataBefore));
+                new CaseTransferredToAnotherCourt(caseDataTransferredToRcjHighCourt, caseDataBefore));
             verifyResponse();
         }
 

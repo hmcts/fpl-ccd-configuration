@@ -43,7 +43,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LOCAL_AUTHORITY_ADDED_DESI
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LOCAL_AUTHORITY_ADDED_SHARED_LA_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LOCAL_AUTHORITY_REMOVED_SHARED_LA_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
-import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.HIGH_COURT_CODE;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = LENIENT)
@@ -275,8 +275,8 @@ class LocalAuthorityChangedHandlerTest {
     @Nested
     class TransferToAnotherCourt {
 
-        final CaseData caseDataTransferredToHighCourt = caseDataBefore.builder()
-            .court(Court.builder().code(HIGH_COURT_CODE).build())
+        final CaseData caseDataTransferredToRcjHighCourt = caseDataBefore.builder()
+            .court(Court.builder().code(RCJ_HIGH_COURT_CODE).build())
             .id(RandomUtils.nextLong())
             .build();
 
@@ -290,8 +290,8 @@ class LocalAuthorityChangedHandlerTest {
             .caseDataBefore(caseDataBefore)
             .build();
 
-        final CaseTransferredToAnotherCourt transferredToHighCourtEvent = CaseTransferredToAnotherCourt.builder()
-            .caseData(caseDataTransferredToHighCourt)
+        final CaseTransferredToAnotherCourt transferredToRcjHighCourtEvent = CaseTransferredToAnotherCourt.builder()
+            .caseData(caseDataTransferredToRcjHighCourt)
             .caseDataBefore(caseDataBefore)
             .build();
 
@@ -368,17 +368,17 @@ class LocalAuthorityChangedHandlerTest {
 
         @Test
         void shouldNotifyHighCourtAdmin() {
-            when(notifyDataProvider.getNotifyDataFoTransferredToAnotherCourt(caseDataTransferredToHighCourt))
+            when(notifyDataProvider.getNotifyDataFoTransferredToAnotherCourt(caseDataTransferredToRcjHighCourt))
                 .thenReturn(notifyData);
             when(highCourtAdminEmailLookupConfiguration.getEmail()).thenReturn("high_court_admin@test.com");
 
-            underTest.notifyHighCourtAdmin(transferredToHighCourtEvent);
+            underTest.notifyHighCourtAdmin(transferredToRcjHighCourtEvent);
 
             verify(notificationService).sendEmail(
                 CASE_TRANSFERRED_TO_ANOTHER_COURT_TEMPLATE,
                 "high_court_admin@test.com",
                 notifyData,
-                caseDataTransferredToHighCourt.getId());
+                caseDataTransferredToRcjHighCourt.getId());
             verifyNoMoreInteractions(notificationService);
         }
 
@@ -394,7 +394,7 @@ class LocalAuthorityChangedHandlerTest {
                 CASE_TRANSFERRED_TO_ANOTHER_COURT_TEMPLATE,
                 "high_court_admin@test.com",
                 notifyData,
-                caseDataTransferredToHighCourt.getId());
+                caseDataTransferredToRcjHighCourt.getId());
             verifyNoMoreInteractions(notificationService);
         }
 
