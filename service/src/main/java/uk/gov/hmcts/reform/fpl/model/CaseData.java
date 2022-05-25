@@ -687,15 +687,20 @@ public class CaseData {
     private final Object courtBundleHearingList;
     private final Object respondentStatementList;
 
-    private final CourtBundle manageDocumentsCourtBundle;
+    private final List<Element<CourtBundle>> manageDocumentsCourtBundle;
+    private final List<Element<HearingCourtBundle>> courtBundleListV2;
     private final List<Element<CourtBundle>> courtBundleList;
 
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceDocumentsTemp() {
         return defaultIfNull(supportingEvidenceDocumentsTemp, new ArrayList<>());
     }
 
-    public List<Element<CourtBundle>> getCourtBundleList() {
-        return defaultIfNull(courtBundleList, new ArrayList<>());
+    public List<Element<CourtBundle>> getManageDocumentsCourtBundle() {
+        return defaultIfNull(manageDocumentsCourtBundle, new ArrayList<>());
+    }
+
+    public List<Element<HearingCourtBundle>> getCourtBundleListV2() {
+        return defaultIfNull(courtBundleListV2, new ArrayList<>());
     }
 
     public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocuments() {
