@@ -69,15 +69,12 @@ public class FurtherEvidenceNotificationService {
     }
 
     public Set<String> getCafcassEmails(CaseData caseData) {
-        HashSet<String> emails = representativesInbox.getRepresentativeEmailsFilteredByRole(caseData,
+        return representativesInbox.getRepresentativeEmailsFilteredByRole(caseData,
             DIGITAL_SERVICE, List.of(CAFCASS));
-        return emails;
     }
 
     public Set<String> getChildSolicitorEmails(CaseData caseData) {
-        HashSet<String> emails = new LinkedHashSet<>();
-        emails.addAll(representativesInbox.getChildrenSolicitorEmails(caseData, DIGITAL_SERVICE));
-        return emails;
+        return new LinkedHashSet<>(representativesInbox.getChildrenSolicitorEmails(caseData, DIGITAL_SERVICE));
     }
 
     public Set<String> getRespondentSolicitorEmails(CaseData caseData) {
