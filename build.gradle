@@ -26,4 +26,8 @@ dependencyCheck {
   }
   analyzedTypes = ['jar']
   scanConfigurations = ['runtimeClasspath']
+
+  ossIndex {
+    enabled = false
+  }
 }
