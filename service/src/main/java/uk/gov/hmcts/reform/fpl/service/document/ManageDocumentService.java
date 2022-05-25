@@ -79,7 +79,7 @@ public class ManageDocumentService {
     public static final String ADDITIONAL_APPLICATIONS_BUNDLE_KEY = "additionalApplicationsBundle";
     public static final String RESPONDENTS_LIST_KEY = "respondentStatementList";
     public static final String CHILDREN_LIST_KEY = "manageDocumentsChildrenList";
-    public static final String RESPONDENT_LIST_KEY = "manageDocumentsRespondentList";
+    public static final String HEARING_DOCUMENT_RESPONDENT_LIST_KEY = "hearingDocumentsRespondentList";
     public static final String HEARING_DOCUMENT_HEARING_LIST_KEY = "hearingDocumentsHearingList";
     public static final String HEARING_DOCUMENT_TYPE = "manageDocumentsHearingDocumentType";
     public static final String COURT_BUNDLE_HEARING_LABEL_KEY = "manageDocumentsCourtBundleHearingLabel";
@@ -123,7 +123,7 @@ public class ManageDocumentService {
 
         if (hasRespondents == YES) {
             eventData.put(RESPONDENTS_LIST_KEY, caseData.buildRespondentDynamicList());
-            eventData.put(RESPONDENT_LIST_KEY, caseData.buildRespondentDynamicList());
+            eventData.put(HEARING_DOCUMENT_RESPONDENT_LIST_KEY, caseData.buildRespondentDynamicList());
         }
 
         if (isNotEmpty(caseData.getAllChildren())) {
@@ -349,8 +349,8 @@ public class ManageDocumentService {
                 map.put(POSITION_STATEMENT_RESPONDENT_LIST_KEY, buildHearingDocumentList(caseData, selectedHearingId,
                     caseData.getPositionStatementRespondentList(),
                     caseData.getManageDocumentsPositionStatementRespondent().toBuilder()
-                        .respondentId(caseData.getManageDocumentsRespondentList().getValueCodeAsUUID())
-                        .respondentName(caseData.getManageDocumentsRespondentList().getValueLabel())
+                        .respondentId(caseData.getHearingDocumentsRespondentList().getValueCodeAsUUID())
+                        .respondentName(caseData.getHearingDocumentsRespondentList().getValueLabel())
                         .build()));
         }
 

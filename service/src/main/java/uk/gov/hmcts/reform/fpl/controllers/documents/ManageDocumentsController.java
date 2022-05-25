@@ -56,7 +56,7 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MAN
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_CHILD_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_RESPONDENT_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.RESPONDENT_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_DOCUMENT_RESPONDENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LABEL;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.TEMP_EVIDENCE_DOCUMENTS_KEY;
@@ -235,7 +235,7 @@ public class ManageDocumentsController extends CallbackController {
             SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY, "manageDocumentSubtypeList",
             "manageDocumentsRelatedToHearing", "furtherEvidenceDocumentsTEMP", HEARING_DOCUMENT_HEARING_LIST_KEY,
             HEARING_DOCUMENT_TYPE, COURT_BUNDLE_KEY, CASE_SUMMARY_KEY, POSITION_STATEMENT_CHILD_KEY,
-            POSITION_STATEMENT_RESPONDENT_KEY, CHILDREN_LIST_KEY, RESPONDENT_LIST_KEY);
+            POSITION_STATEMENT_RESPONDENT_KEY, CHILDREN_LIST_KEY, HEARING_DOCUMENT_RESPONDENT_LIST_KEY);
 
         CaseDetails details = CaseDetails.builder().data(caseDetailsMap).build();
         caseDetailsMap.putAll(documentListService.getDocumentView(getCaseData(details)));

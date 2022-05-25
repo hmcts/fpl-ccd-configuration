@@ -78,7 +78,7 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POS
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_RESPONDENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_RESPONDENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.RESPONDENTS_LIST_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.RESPONDENT_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_DOCUMENT_RESPONDENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
@@ -182,7 +182,7 @@ class ManageDocumentServiceTest {
             .isEqualTo(expectedRespondentsDynamicList);
 
         assertThat(updates)
-            .extracting(RESPONDENT_LIST_KEY)
+            .extracting(HEARING_DOCUMENT_RESPONDENT_LIST_KEY)
             .isEqualTo(expectedRespondentsDynamicList);
 
         assertThat(updates)
@@ -1896,7 +1896,7 @@ class ManageDocumentServiceTest {
         CaseData caseData = CaseData.builder()
             .manageDocumentsPositionStatementRespondent(positionStatementRespondent)
             .hearingDocumentsHearingList(selectedHearingId.toString())
-            .manageDocumentsRespondentList(respondentDynamicList)
+            .hearingDocumentsRespondentList(respondentDynamicList)
             .manageDocumentsHearingDocumentType(HearingDocumentType.POSITION_STATEMENT_RESPONDENT)
             .hearingDetails(hearingBookings)
             .build();

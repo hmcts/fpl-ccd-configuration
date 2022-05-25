@@ -15,7 +15,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CHILDREN_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_DOCUMENT_HEARING_LIST_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.RESPONDENT_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_DOCUMENT_RESPONDENT_LIST_KEY;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -52,7 +52,7 @@ public class ManageDocumentLAService {
 
         if (isNotEmpty(caseData.getAllRespondents())) {
             listAndLabel.put(RESPONDENTS_LIST_KEY, caseData.buildRespondentDynamicList());
-            listAndLabel.put(RESPONDENT_LIST_KEY, caseData.buildRespondentDynamicList());
+            listAndLabel.put(HEARING_DOCUMENT_RESPONDENT_LIST_KEY, caseData.buildRespondentDynamicList());
         }
 
         if (isNotEmpty(caseData.getAllChildren())) {

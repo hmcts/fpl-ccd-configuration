@@ -692,7 +692,7 @@ public class CaseData {
     private final PositionStatementChild manageDocumentsPositionStatementChild;
     private final PositionStatementRespondent manageDocumentsPositionStatementRespondent;
     private final DynamicList manageDocumentsChildrenList;
-    private final DynamicList manageDocumentsRespondentList;
+    private final DynamicList hearingDocumentsRespondentList;
     private final List<Element<HearingCourtBundle>> courtBundleListV2;
     private final List<Element<CourtBundle>> courtBundleList;
     private final List<Element<CaseSummary>> caseSummaryList;
