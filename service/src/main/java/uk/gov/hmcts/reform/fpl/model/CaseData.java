@@ -685,15 +685,20 @@ public class CaseData {
     private final Object courtBundleHearingList;
     private final Object respondentStatementList;
 
-    private final CourtBundle manageDocumentsCourtBundle;
+    private final List<Element<CourtBundle>> manageDocumentsCourtBundle;
+    private final List<Element<HearingCourtBundle>> courtBundleListV2;
     private final List<Element<CourtBundle>> courtBundleList;
 
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceDocumentsTemp() {
         return defaultIfNull(supportingEvidenceDocumentsTemp, new ArrayList<>());
     }
 
-    public List<Element<CourtBundle>> getCourtBundleList() {
-        return defaultIfNull(courtBundleList, new ArrayList<>());
+    public List<Element<CourtBundle>> getManageDocumentsCourtBundle() {
+        return defaultIfNull(manageDocumentsCourtBundle, new ArrayList<>());
+    }
+
+    public List<Element<HearingCourtBundle>> getCourtBundleListV2() {
+        return defaultIfNull(courtBundleListV2, new ArrayList<>());
     }
 
     public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocuments() {
@@ -752,6 +757,13 @@ public class CaseData {
     }
 
     @JsonIgnore
+    public Optional<HearingBooking> getFirstHearingOfTypes(List<HearingType> types) {
+        return unwrapElements(hearingDetails).stream()
+            .filter(hearingBooking -> types.stream().anyMatch(type -> hearingBooking.isOfType(type)))
+            .min(comparing(HearingBooking::getStartDate));
+    }
+
+    @JsonIgnore
     public Optional<HearingBooking> getNextHearingAfter(LocalDateTime time) {
         return unwrapElements(hearingDetails).stream()
             .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(time))
@@ -806,6 +818,7 @@ public class CaseData {
 
     private final List<Element<HearingOrder>> draftUploadedCMOs;
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
+    private List<Element<HearingOrder>> refusedHearingOrders;
     private final UUID lastHearingOrderDraftsHearingId;
 
     @JsonIgnore
