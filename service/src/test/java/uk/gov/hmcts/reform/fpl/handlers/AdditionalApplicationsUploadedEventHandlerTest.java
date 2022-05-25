@@ -220,7 +220,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             RecipientsRequest.builder().caseData(caseData).build()))
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS, SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
-        Set<OrderApplicant> allApplicants = new HashSet<OrderApplicant>();
+        Set<OrderApplicant> allApplicants = new HashSet<>();
         for (ApplicantType at : ApplicantType.values()) {
             allApplicants.add(OrderApplicant.builder()
                 .type(at)
