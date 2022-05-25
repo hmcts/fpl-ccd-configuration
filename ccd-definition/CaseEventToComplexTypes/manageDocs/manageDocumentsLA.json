@@ -183,7 +183,8 @@
     "CaseFieldID": "manageDocumentsCaseSummary",
     "ListElementCode": "hearing",
     "FieldDisplayOrder": 1,
-    "DisplayContext": "READONLY"
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Upload document"
   },
   {
     "LiveFrom": "01/01/2017",

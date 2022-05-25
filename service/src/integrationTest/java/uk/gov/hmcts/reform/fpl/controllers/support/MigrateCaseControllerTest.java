@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
@@ -88,8 +89,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .build();
         }
 
-        //TODO: DFPL-82 changes conflict with master changes
-        /*
         @Test
         void shouldPerformMigration() {
             UUID hearingUUID = UUID.randomUUID();
@@ -143,7 +142,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThat(rollbackResponseData.getCourtBundleList())
                 .containsExactlyInAnyOrder(courtBundle1, courtBundle2, courtBundle3);
         }
-         */
 
         @Test
         void shouldSkipMigration() {

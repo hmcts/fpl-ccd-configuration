@@ -18,9 +18,7 @@ import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
-import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
-import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -46,7 +44,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -969,29 +966,27 @@ class FurtherEvidenceUploadedEventHandlerTest {
         }
     }
 
-    //TODO: DFPL-82 changes conflict with master changes
-    /*
     @Test
     void shouldSendNotificationWhenCourtBundleIsUploadedByLA() {
         String hearing1 = "1stHearing";
         String hearing2 = "2ndHearing";
         String hearing3 = "3rdHearing";
-        List<Element<CourtBundle>> firstHearingBundle = createCourtBundleList(2, hearing1, "LA");
-        List<Element<CourtBundle>> secondHearingBundle = createCourtBundleList(2, hearing2, "LA");
-        List<Element<CourtBundle>> thirdearingBundle = createCourtBundleList(2, hearing3, "LA");
+        List<Element<HearingCourtBundle>> firstHearingBundle = createCourtBundleList(2, hearing1, "LA");
+        List<Element<HearingCourtBundle>> secondHearingBundle = createCourtBundleList(2, hearing2, "LA");
+        List<Element<HearingCourtBundle>> thirdHearingBundle = createCourtBundleList(2, hearing3, "LA");
 
-        List<Element<CourtBundle>> totalHearing = new ArrayList<>();
+        List<Element<HearingCourtBundle>> totalHearing = new ArrayList<>();
         totalHearing.addAll(firstHearingBundle);
         totalHearing.addAll(secondHearingBundle);
-        totalHearing.addAll(thirdearingBundle);
+        totalHearing.addAll(thirdHearingBundle);
 
         Collections.shuffle(totalHearing);
 
         verifyNotificationForCourtBundleTemplate(
             userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) -> caseData.getCourtBundleList().addAll(totalHearing),
+            (caseData) -> caseData.getCourtBundleListV2().addAll(totalHearing),
             List.of(hearing1, hearing2, hearing3));
-    }*/
+    }
 
     @Test
     void shouldSendNotificationWhenHearingDocumentsIsUploaded() {

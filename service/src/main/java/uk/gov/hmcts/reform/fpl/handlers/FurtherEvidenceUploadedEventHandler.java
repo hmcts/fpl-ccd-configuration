@@ -99,7 +99,7 @@ public class FurtherEvidenceUploadedEventHandler {
 
         newUploadedFurtherDocuments.entrySet().forEach(entry -> {
             final Set<String> recipients = new LinkedHashSet<>();
-            if (entry.getValue().isEmpty() == false) {
+            if (!entry.getValue().isEmpty()) {
                 DocumentUploadNotificationUserType key = entry.getKey();
                 if (key == CAFCASS) {
                     recipients.addAll(furtherEvidenceNotificationService.getCafcassEmails(caseData));
@@ -241,29 +241,7 @@ public class FurtherEvidenceUploadedEventHandler {
         if (recipientIsEngland.isPresent()) {
             final CaseData caseDataBefore = event.getCaseDataBefore();
 
-            Map<String, List<CourtBundle>> oldMapOfCourtBundles =
-                    unwrapElements(caseDataBefore.getCourtBundleListV2()).stream()
-                    .collect(
-                            groupingBy(HearingCourtBundle::getHearing,
-                                    flatMapping(courtBundle -> unwrapElements(courtBundle.getCourtBundle()).stream(),
-                                            toList())));
-
-            Map<String, Set<DocumentReference>> newCourtBundles =
-                    unwrapElements(caseData.getCourtBundleListV2()).stream()
-                    .collect(
-                            groupingBy(HearingCourtBundle::getHearing,
-                                    flatMapping(courtBundle -> {
-                                        List<CourtBundle> bundles = unwrapElements(courtBundle.getCourtBundle());
-                                        List<CourtBundle> oldBundles =
-                                                Optional.ofNullable(oldMapOfCourtBundles.get(courtBundle.getHearing()))
-                                                .orElse(Collections.emptyList());
-
-                                        List<CourtBundle> filteredBundle = new ArrayList<>(bundles);
-                                        filteredBundle.removeAll(oldBundles);
-                                        return filteredBundle.stream().map(CourtBundle::getDocument)
-                                                .collect(toSet())
-                                                .stream();
-                                    }, toSet())));
+            Map<String, Set<DocumentReference>> newCourtBundles = getNewCourtBundles(caseData, caseDataBefore);
 
             newCourtBundles
                     .forEach((key, value) -> {
@@ -471,18 +449,28 @@ public class FurtherEvidenceUploadedEventHandler {
     }
 
     private Map<String, Set<DocumentReference>> getNewCourtBundles(CaseData caseData, CaseData caseDataBefore) {
-        List<CourtBundle> courtBundles = unwrapElements(caseData.getCourtBundleList());
-        List<CourtBundle> oldCourtBundleList = unwrapElements(caseDataBefore.getCourtBundleList());
+        Map<String, List<CourtBundle>> oldMapOfCourtBundles =
+            unwrapElements(caseDataBefore.getCourtBundleListV2()).stream()
+                .collect(
+                    groupingBy(HearingCourtBundle::getHearing,
+                        flatMapping(courtBundle -> unwrapElements(courtBundle.getCourtBundle()).stream(),
+                            toList())));
 
-        Map<String, Set<DocumentReference>> newCourtBundles = courtBundles.stream()
-            .filter(newDoc -> !oldCourtBundleList.contains(newDoc))
-            .collect(groupingBy(CourtBundle::getHearing,
-                mapping(courtBundle -> {
-                    DocumentReference document = courtBundle.getDocument();
-                    document.setType(COURT_BUNDLE.getLabel());
-                    return document;
-                }, toSet())));
-        return newCourtBundles;
+        return unwrapElements(caseData.getCourtBundleListV2()).stream()
+                .collect(
+                    groupingBy(HearingCourtBundle::getHearing,
+                        flatMapping(courtBundle -> {
+                            List<CourtBundle> bundles = unwrapElements(courtBundle.getCourtBundle());
+                            List<CourtBundle> oldBundles =
+                                Optional.ofNullable(oldMapOfCourtBundles.get(courtBundle.getHearing()))
+                                    .orElse(Collections.emptyList());
+
+                            List<CourtBundle> filteredBundle = new ArrayList<>(bundles);
+                            filteredBundle.removeAll(oldBundles);
+                            return filteredBundle.stream().map(CourtBundle::getDocument)
+                                .collect(toSet())
+                                .stream();
+                        }, toSet())));
     }
 
     private List<SupportingEvidenceBundle> getDocuments(
