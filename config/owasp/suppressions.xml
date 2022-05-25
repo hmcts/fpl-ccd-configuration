@@ -32,14 +32,14 @@
    file name: tomcat-embed-core-9.0.54.jar
    ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
-    <cve>CVE-2022-23181</cve>
+    <cpe>cpe:/a:apache:tomcat</cpe>
   </suppress>
   <suppress>
     <notes><![CDATA[
    file name: tomcat-embed-websocket-9.0.54.jar
    ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
-    <cve>CVE-2022-23181</cve>
+    <cpe>cpe:/a:apache:tomcat</cpe>
   </suppress>
   <suppress>
     <notes><![CDATA[
@@ -114,5 +114,82 @@
    ]]></notes>
     <packageUrl regex="true">^pkg:maven/com\.google\.code\.gson/gson@.*$</packageUrl>
     <cve>CVE-2022-25647</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: spring-core-5.3.12.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-core@.*$</packageUrl>
+    <cve>CVE-2022-22970</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: spring-core-5.3.12.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-core@.*$</packageUrl>
+    <cve>CVE-2022-22971</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: bcprov-jdk15on-1.64.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.bouncycastle/bcprov\-jdk15on@.*$</packageUrl>
+    <vulnerabilityName>CVE-2020-0187</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: postgresql-42.2.24.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.postgresql/postgresql@.*$</packageUrl>
+    <vulnerabilityName>CVE-2022-26520</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: spring-cloud-openfeign-core-3.0.2.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.cloud/spring\-cloud\-openfeign\-core@.*$</packageUrl>
+    <vulnerabilityName>CVE-2021-22044</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: spring-context-5.3.12.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-context@.*$</packageUrl>
+    <vulnerabilityName>CVE-2022-22968</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: spring-security-crypto-5.5.3.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.*$</packageUrl>
+    <vulnerabilityName>CVE-2020-5408</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: spring-security-crypto-5.5.3.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.*$</packageUrl>
+    <vulnerabilityName>CVE-2022-22976</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: spring-security-web-5.5.3.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-web@.*$</packageUrl>
+    <vulnerabilityName>CVE-2022-22978</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: spring-web-5.3.12.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-web@.*$</packageUrl>
+    <vulnerabilityName>CVE-2016-1000027</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: spring-webmvc-5.3.12.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-webmvc@.*$</packageUrl>
+    <vulnerabilityName>CVE-2021-22060</vulnerabilityName>
   </suppress>
 </suppressions>
