@@ -24,6 +24,8 @@ import java.util.stream.IntStream;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.BIRTH_CERTIFICATE;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 public class FurtherEvidenceUploadedEventTestData {
@@ -55,7 +57,7 @@ public class FurtherEvidenceUploadedEventTestData {
     public static CaseData buildSubmittedCaseData() {
         return commonCaseBuilder()
             .applicationDocuments(new ArrayList<>())
-            .courtBundleList(new ArrayList<>())
+            .courtBundleListV2(new ArrayList<>())
             .furtherEvidenceDocuments(new ArrayList<>())
             .furtherEvidenceDocumentsLA(new ArrayList<>())
             .furtherEvidenceDocumentsSolicitor(new ArrayList<>())
@@ -93,27 +95,36 @@ public class FurtherEvidenceUploadedEventTestData {
     public static CaseData buildCaseDataWithNonConfidentialPDFDocumentsSolicitor(final String uploadedBy) {
         return commonCaseBuilder()
             .furtherEvidenceDocumentsSolicitor(
-                buildNonConfidentialPdfDocumentList(uploadedBy))
+                removeEvidenceBundleType(buildNonConfidentialPdfDocumentList(uploadedBy)))
             .build();
+    }
+
+    private static List<Element<SupportingEvidenceBundle>> removeEvidenceBundleType(
+            List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle
+    ) {
+        return unwrapElements(supportingEvidenceBundle).stream()
+                .map(evidenceBundle -> element(evidenceBundle.toBuilder().type(null).build()))
+                .collect(Collectors.toList());
     }
 
     public static CaseData buildCaseDataWithNonConfidentialNonPdfDocumentsSolicitor(final String uploadedBy) {
         return commonCaseBuilder()
             .furtherEvidenceDocumentsSolicitor(
-                buildNonConfidentialNonPDFDocumentList(uploadedBy))
+                removeEvidenceBundleType(buildNonConfidentialNonPDFDocumentList(uploadedBy)))
             .build();
     }
 
     public static CaseData buildCaseDataWithConfidentialDocumentsSolicitor(final String uploadedBy) {
         return commonCaseBuilder()
             .furtherEvidenceDocumentsSolicitor(
-                buildConfidentialDocumentList(uploadedBy))
+                removeEvidenceBundleType(buildConfidentialDocumentList(uploadedBy)))
             .build();
     }
 
     public static CaseData buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor() {
         return commonCaseBuilder()
-            .respondentStatements(buildRespondentStatementsList(buildNonConfidentialPdfDocumentList(REP_USER)))
+            .respondentStatements(buildRespondentStatementsList(
+                removeEvidenceBundleType(buildNonConfidentialPdfDocumentList(REP_USER))))
             .build();
     }
 
@@ -131,7 +142,8 @@ public class FurtherEvidenceUploadedEventTestData {
 
     public static CaseData buildCaseDataWithCorrespondencesBySolicitor() {
         return commonCaseBuilder()
-                .correspondenceDocumentsSolicitor((buildNonConfidentialPdfDocumentList(REP_SOLICITOR_USER_EMAIL)))
+                .correspondenceDocumentsSolicitor(
+                    removeEvidenceBundleType((buildNonConfidentialPdfDocumentList(REP_SOLICITOR_USER_EMAIL))))
                 .build();
     }
 
@@ -147,13 +159,15 @@ public class FurtherEvidenceUploadedEventTestData {
 
     public static CaseData buildCaseDataWithNonConfidentialNonPDFRespondentStatementsSolicitor() {
         return commonCaseBuilder()
-            .respondentStatements(buildRespondentStatementsList(buildNonConfidentialNonPDFDocumentList(REP_USER)))
+            .respondentStatements(buildRespondentStatementsList(
+                removeEvidenceBundleType(buildNonConfidentialNonPDFDocumentList(REP_USER))))
             .build();
     }
 
     public static CaseData buildCaseDataWithConfidentialRespondentStatementsSolicitor() {
         return commonCaseBuilder()
-            .respondentStatements(buildRespondentStatementsList(buildConfidentialDocumentList(REP_USER)))
+            .respondentStatements(buildRespondentStatementsList(
+                removeEvidenceBundleType(buildConfidentialDocumentList(REP_USER))))
             .build();
     }
 
@@ -179,6 +193,7 @@ public class FurtherEvidenceUploadedEventTestData {
             createDummyEvidenceBundle(NON_CONFIDENTIAL_1, uploadedBy, false, PDF_DOCUMENT_1),
             createDummyEvidenceBundle(NON_CONFIDENTIAL_2, uploadedBy, false, PDF_DOCUMENT_2));
     }
+
 
     public static List<Element<SupportingEvidenceBundle>> buildNonConfidentialNonPDFDocumentList(
         final String uploadedBy) {
@@ -228,9 +243,9 @@ public class FurtherEvidenceUploadedEventTestData {
             .map(value -> {
                 Element<CourtBundle> courtBundleElement = ElementUtils.element(createDummyCourtBundle(uploadedBy));
                 return ElementUtils.element(HearingCourtBundle.builder()
-                    .hearing(hearing)
-                    .courtBundle(List.of(courtBundleElement))
-                    .build()
+                        .hearing(hearing)
+                        .courtBundle(List.of(courtBundleElement))
+                        .build()
                 );
 
             })

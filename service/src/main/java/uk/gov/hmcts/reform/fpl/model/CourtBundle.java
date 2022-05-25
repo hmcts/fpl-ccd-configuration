@@ -44,6 +44,7 @@ public class CourtBundle extends DocumentMetaData {
 
     @JsonIgnore
     public boolean isConfidentialDocument() {
-        return confidential != null && confidential.contains("CONFIDENTIAL");
+        return (confidential != null && confidential.contains("CONFIDENTIAL"))
+            || (YesNo.YES.equals(hasConfidentialAddress));
     }
 }

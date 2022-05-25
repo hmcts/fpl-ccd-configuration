@@ -40,12 +40,10 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.function.Predicate.not;
@@ -53,7 +51,6 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.flatMapping;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -96,7 +93,7 @@ public class FurtherEvidenceUploadedEventHandler {
 
         newUploadedFurtherDocuments.entrySet().forEach(entry -> {
             final Set<String> recipients = new LinkedHashSet<>();
-            if (entry.getValue().isEmpty() == false) {
+            if (!entry.getValue().isEmpty()) {
                 DocumentUploadNotificationUserType key = entry.getKey();
                 if (key == CAFCASS) {
                     recipients.addAll(furtherEvidenceNotificationService.getCafcassEmails(caseData));
@@ -169,29 +166,7 @@ public class FurtherEvidenceUploadedEventHandler {
         if (recipientIsEngland.isPresent()) {
             final CaseData caseDataBefore = event.getCaseDataBefore();
 
-            Map<String, List<CourtBundle>> oldMapOfCourtBundles =
-                    unwrapElements(caseDataBefore.getCourtBundleListV2()).stream()
-                    .collect(
-                            groupingBy(HearingCourtBundle::getHearing,
-                                    flatMapping(courtBundle -> unwrapElements(courtBundle.getCourtBundle()).stream(),
-                                            toList())));
-
-            Map<String, Set<DocumentReference>> newCourtBundles =
-                    unwrapElements(caseData.getCourtBundleListV2()).stream()
-                    .collect(
-                            groupingBy(HearingCourtBundle::getHearing,
-                                    flatMapping(courtBundle -> {
-                                        List<CourtBundle> bundles = unwrapElements(courtBundle.getCourtBundle());
-                                        List<CourtBundle> oldBundles =
-                                                Optional.ofNullable(oldMapOfCourtBundles.get(courtBundle.getHearing()))
-                                                .orElse(Collections.emptyList());
-
-                                        List<CourtBundle> filteredBundle = new ArrayList<>(bundles);
-                                        filteredBundle.removeAll(oldBundles);
-                                        return filteredBundle.stream().map(CourtBundle::getDocument)
-                                                .collect(toSet())
-                                                .stream();
-                                    }, toSet())));
+            Map<String, Set<DocumentReference>> newCourtBundles = getNewCourtBundles(caseData, caseDataBefore);
 
             newCourtBundles
                     .forEach((key, value) -> {
@@ -281,11 +256,11 @@ public class FurtherEvidenceUploadedEventHandler {
         List<HearingFurtherEvidenceBundle> oldHearingFurtherEvidenceDocuments = unwrapElements(
                 caseDataBefore.getHearingFurtherEvidenceDocuments());
 
-        List<Element<SupportingEvidenceBundle>> oldSupportingEvidenceBundle =
+        Set<Element<SupportingEvidenceBundle>> oldSupportingEvidenceBundle =
                 oldHearingFurtherEvidenceDocuments.stream()
                 .map(HearingFurtherEvidenceBundle::getSupportingEvidenceBundle)
                 .flatMap(List::stream)
-                .collect(toList());
+                .collect(toSet());
 
         return newHearingFurtherEvidenceDocuments.stream()
                 .map(HearingFurtherEvidenceBundle::getSupportingEvidenceBundle)
@@ -294,14 +269,17 @@ public class FurtherEvidenceUploadedEventHandler {
                 .map(Element::getValue)
                 .map(supportingEvidenceBundle -> {
                     DocumentReference document = supportingEvidenceBundle.getDocument();
-                    document.setType(supportingEvidenceBundle.getType().getLabel());
+                    document.setType(Optional.ofNullable(supportingEvidenceBundle.getType())
+                            .map(FurtherEvidenceType::getLabel)
+                            .orElse(supportingEvidenceBundle.getName()));
                     return document;
                 })
-                .collect(collectingAndThen(toList(),
+                .collect(collectingAndThen(toSet(),
                     data -> DocumentInfo.builder()
                                 .documentReferences(data)
-                                .documentTypes(data.stream().map(DocumentReference::getType)
-                                        .collect(Collectors.toList()))
+                                .documentTypes(data.stream()
+                                        .map(DocumentReference::getType)
+                                        .collect(toList()))
                                 .documentType(FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
                             .build())
                 );
@@ -311,28 +289,27 @@ public class FurtherEvidenceUploadedEventHandler {
         List<ApplicationDocument> newApplicationDocuments = unwrapElements(caseData.getApplicationDocuments());
         List<ApplicationDocument> oldApplicationDocuments = unwrapElements(caseDataBefore.getApplicationDocuments());
 
-        List<ApplicationDocument> newlyAddedApplicationDocs = newApplicationDocuments.stream()
+        Set<ApplicationDocument> newlyAddedApplicationDocs = newApplicationDocuments.stream()
                 .filter(newDoc -> !oldApplicationDocuments.contains(newDoc))
-                .collect(toList());
-
-        List<DocumentReference> documentReferences = newlyAddedApplicationDocs.stream()
-                .map(applicationDocument -> {
-                    DocumentReference document = applicationDocument.getDocument();
-                    document.setType(applicationDocument.getDocumentType().getLabel());
-                    return document;
-                })
-                .collect(toList());
+                .collect(toSet());
 
         return newlyAddedApplicationDocs.stream()
-                .map(ApplicationDocument::getDocumentType)
-                .map(ApplicationDocumentType::getLabel)
-                .collect(collectingAndThen(toList(),
+                .map(applicationDocument -> {
+                    DocumentReference document = applicationDocument.getDocument();
+                    document.setType(Optional.ofNullable(applicationDocument.getDocumentType())
+                            .map(ApplicationDocumentType::getLabel)
+                            .orElse(applicationDocument.getDocumentName()));
+                    return document;
+                })
+                .collect(collectingAndThen(toSet(),
                     data ->
                         DocumentInfo.builder()
-                                .documentReferences(documentReferences)
-                                .documentTypes(data)
-                                .documentType(FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
-                                .build())
+                            .documentReferences(data)
+                            .documentTypes(data.stream()
+                                    .map(DocumentReference::getType)
+                                    .collect(toList()))
+                            .documentType(FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
+                            .build())
                 );
     }
 
@@ -366,45 +343,49 @@ public class FurtherEvidenceUploadedEventHandler {
             userType,
             (oldBundle, newDoc) -> !unwrapElements(oldBundle).contains(newDoc));
 
-        var documentReferences = supportingEvidenceBundles.stream()
-                .map(bundle -> {
-                    DocumentReference document = bundle.getDocument();
-                    document.setType(bundle.getType().getLabel());
-                    return document;
-                })
-                .collect(toList());
 
         return supportingEvidenceBundles.stream()
-                .map(SupportingEvidenceBundle::getType)
-                .filter(Objects::nonNull)
-                .map(FurtherEvidenceType::getLabel)
-                .collect(collectingAndThen(toList(),
+                .map(bundle -> {
+                    DocumentReference document = bundle.getDocument();
+                    document.setType(Optional.ofNullable(bundle.getType())
+                            .map(FurtherEvidenceType::getLabel)
+                            .orElse(bundle.getName()));
+                    return document;
+                })
+                .collect(collectingAndThen(toSet(),
                     data ->
                         DocumentInfo.builder()
-                            .documentReferences(documentReferences)
-                            .documentTypes(data)
+                            .documentReferences(data)
+                            .documentTypes(data.stream()
+                                .map(DocumentReference::getType)
+                                .collect(toList()))
                             .documentType(FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
-                    .build())
-                );
+                            .build()));
     }
 
     private Map<String, Set<DocumentReference>> getNewCourtBundles(CaseData caseData, CaseData caseDataBefore) {
-        List<CourtBundle> courtBundles = unwrapElements(
-            unwrapElements(caseData.getCourtBundleListV2()).stream()
-                .map(HearingCourtBundle::getCourtBundle).flatMap(List::stream).collect(toList()));
-        List<CourtBundle> oldCourtBundleList = unwrapElements(
+        Map<String, List<CourtBundle>> oldMapOfCourtBundles =
             unwrapElements(caseDataBefore.getCourtBundleListV2()).stream()
-                .map(HearingCourtBundle::getCourtBundle).flatMap(List::stream).collect(toList()));
+                .collect(
+                    groupingBy(HearingCourtBundle::getHearing,
+                        flatMapping(courtBundle -> unwrapElements(courtBundle.getCourtBundle()).stream(),
+                            toList())));
 
-        Map<String, Set<DocumentReference>> newCourtBundles = courtBundles.stream()
-            .filter(newDoc -> !oldCourtBundleList.contains(newDoc))
-            .collect(groupingBy(CourtBundle::getHearing,
-                mapping(courtBundle -> {
-                    DocumentReference document = courtBundle.getDocument();
-                    document.setType(COURT_BUNDLE.getLabel());
-                    return document;
-                }, toSet())));
-        return newCourtBundles;
+        return unwrapElements(caseData.getCourtBundleListV2()).stream()
+                .collect(
+                    groupingBy(HearingCourtBundle::getHearing,
+                        flatMapping(courtBundle -> {
+                            List<CourtBundle> bundles = unwrapElements(courtBundle.getCourtBundle());
+                            List<CourtBundle> oldBundles =
+                                Optional.ofNullable(oldMapOfCourtBundles.get(courtBundle.getHearing()))
+                                    .orElse(Collections.emptyList());
+
+                            List<CourtBundle> filteredBundle = new ArrayList<>(bundles);
+                            filteredBundle.removeAll(oldBundles);
+                            return filteredBundle.stream().map(CourtBundle::getDocument)
+                                .collect(toSet())
+                                .stream();
+                        }, toSet())));
     }
 
     private List<SupportingEvidenceBundle> getDocuments(
@@ -613,7 +594,7 @@ public class FurtherEvidenceUploadedEventHandler {
                     );
                     return document;
                 })
-                .collect(collectingAndThen(toList(),
+                .collect(collectingAndThen(toSet(),
                     data -> DocumentInfo.builder()
                         .documentReferences(data)
                         .documentTypes(List.of(documentType))

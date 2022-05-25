@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -42,6 +43,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESP
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallbackTest {
@@ -168,8 +170,8 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
         return document.build();
     }
 
-    protected static CourtBundle buildCourtBundle() {
-        return CourtBundle.builder()
+    protected static HearingCourtBundle buildCourtBundle() {
+        CourtBundle courtBundle = CourtBundle.builder()
             .document(DocumentReference.builder()
                 .filename("filename")
                 .url(randomAlphanumeric(10))
@@ -178,6 +180,11 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
             .hearing("hearing")
             .dateTimeUploaded(LocalDateTime.now())
             .uploadedBy("LA")
+            .build();
+
+        return HearingCourtBundle.builder()
+            .courtBundle(List.of(element(courtBundle)))
+            .hearing("hearing")
             .build();
     }
 
@@ -289,7 +296,7 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
         );
     }
 
-    protected Map<String, Object> buildData(CourtBundle... courtBundle) {
+    protected Map<String, Object> buildData(HearingCourtBundle... courtBundle) {
         return Map.of(
             "localAuthorities", wrapElements(
                 LocalAuthority.builder()
@@ -304,7 +311,7 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
             "representatives", buildRepresentatives(),
             "children1", buildChildren1(),
             "respondents1", buildRespondents1(),
-            "courtBundleList", wrapElements(courtBundle)
+            "courtBundleListV2", wrapElements(courtBundle)
         );
     }
 

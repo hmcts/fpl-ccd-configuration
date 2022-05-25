@@ -68,6 +68,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithCourtBundleList;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithHearingFurtherEvidenceBundle;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialLADocuments;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialPDFDocumentsSolicitor;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildConfidentialDocumentList;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildHearingFurtherEvidenceBundle;
@@ -471,7 +472,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 );
         furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
         Set<DocumentReference> documentReferences = courtBundleList.stream()
-            .map(courtBundle -> courtBundle.getValue().getCourtBundle().get(0).getValue().getDocument())
+                .map(courtBundle -> courtBundle.getValue().getCourtBundle().get(0).getValue().getDocument())
                 .collect(toSet());
 
         verify(cafcassNotificationService).sendEmail(eq(caseData),
@@ -591,6 +592,46 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     @Test
+    void shouldEmailCafcassWhenDocsIsUploadedBySolicitor() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.of(
+                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                        )
+            );
+
+        CaseData caseData = buildCaseDataWithNonConfidentialPDFDocumentsSolicitor(REP_USER);
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+                new FurtherEvidenceUploadedEvent(
+                        caseData,
+                        buildCaseDataWithConfidentialLADocuments(),
+                        SOLICITOR,
+                        userDetailsRespondentSolicitor());
+
+        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+
+        Set<DocumentReference> documentReferences = unwrapElements(caseData.getFurtherEvidenceDocumentsSolicitor())
+                .stream()
+                .map(SupportingEvidenceBundle::getDocument)
+                .collect(toSet());
+
+        verify(cafcassNotificationService).sendEmail(
+                eq(caseData),
+                eq(documentReferences),
+                eq(NEW_DOCUMENT),
+                newDocumentDataCaptor.capture());
+
+        NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
+        assertThat(newDocumentData.getDocumentTypes())
+                .contains("• non-confidential-1");
+        assertThat(newDocumentData.getDocumentTypes())
+                .contains("• non-confidential-2");
+        assertThat(newDocumentData.getEmailSubjectInfo())
+                .isEqualTo("Further documents for main application");
+    }
+
+    @Test
     void shouldEmailCafcassWhenRespondentStatementIsUploaded() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
@@ -704,8 +745,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
         assertThat(newDocumentData.getDocumentTypes())
-                .isEqualTo("• Birth certificate\n"
-                        + "• Birth certificate");
+                .isEqualTo("• Birth certificate");
         assertThat(newDocumentData.getEmailSubjectInfo())
                 .isEqualTo("Further documents for main application");
     }
@@ -918,8 +958,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
         }
     }
 
-    //TODO changes in master confict with DFPL-82
-    /*
     @Test
     void shouldSendNotificationWhenCourtBundleIsUploadedByLA() {
         String hearing1 = "1stHearing";
@@ -927,12 +965,12 @@ class FurtherEvidenceUploadedEventHandlerTest {
         String hearing3 = "3rdHearing";
         List<Element<HearingCourtBundle>> firstHearingBundle = createCourtBundleList(2, hearing1, "LA");
         List<Element<HearingCourtBundle>> secondHearingBundle = createCourtBundleList(2, hearing2, "LA");
-        List<Element<HearingCourtBundle>> thirdearingBundle = createCourtBundleList(2, hearing3, "LA");
+        List<Element<HearingCourtBundle>> thirdHearingBundle = createCourtBundleList(2, hearing3, "LA");
 
         List<Element<HearingCourtBundle>> totalHearing = new ArrayList<>();
         totalHearing.addAll(firstHearingBundle);
         totalHearing.addAll(secondHearingBundle);
-        totalHearing.addAll(thirdearingBundle);
+        totalHearing.addAll(thirdHearingBundle);
 
         Collections.shuffle(totalHearing);
 
@@ -940,7 +978,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
             userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
             (caseData) -> caseData.getCourtBundleListV2().addAll(totalHearing),
             List.of(hearing1, hearing2, hearing3));
-    }*/
+    }
 
     private static List<String> buildNonConfidentialDocumentsNamesList() {
         return List.of(NON_CONFIDENTIAL_1, NON_CONFIDENTIAL_2);
