@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
-import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.List;
 import java.util.UUID;
@@ -72,8 +71,6 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, validateDecisionEventPath);
 
         assertThat(callbackResponse.getErrors()).containsOnly("Add the new draft order 1");
-        assertThat(callbackResponse.getData()).doesNotContainKeys("hasOthers", "others_label", "reviewCMOShowOthers")
-            .containsEntry("othersSelector", null);
     }
 
     @Test
