@@ -207,7 +207,14 @@ public enum Order {
         "Sections 39(2), 39(3) and 39(4) and Paragraph 6(3) Schedule 3 Children Act 1989",
         "Variation or extension of supervision orders (C36)",
         IsFinalOrder.MAYBE,
-        List.of(APPROVER, APPROVAL_DATE, VARY_OR_EXTEND_SUPERVISION_ORDER, ORDER_BY_CONSENT, WHICH_CHILDREN, REVIEW_DRAFT_ORDER)
+        List.of(
+            APPROVER,
+            APPROVAL_DATE,
+            VARY_OR_EXTEND_SUPERVISION_ORDER,
+            ORDER_BY_CONSENT,
+            WHICH_CHILDREN,
+            REVIEW_DRAFT_ORDER
+        )
     ),
 
     /* MANUAL UPLOADS */
