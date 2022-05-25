@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
@@ -114,5 +115,43 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
         assertThat((String) callbackResponse.getData().get("documentViewHMCTS")).isNotEmpty();
         assertThat((String) callbackResponse.getData().get("documentViewNC")).isNotEmpty();
         assertThat(callbackResponse.getData().get("showFurtherEvidenceTab")).isEqualTo("YES");
+    }
+
+    @Test
+    void shouldThrowErrorIfCurrentDocumentsIsNull() {
+        when(identityService.generateId()).thenReturn(UUID_1).thenReturn(UUID_2);
+        given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn(ANOTHER_USER);
+
+        CaseDetails caseDetailsBefore = CaseDetails.builder().data(
+            Map.of(
+                "applicationDocuments", List.of(
+                    Map.of(
+                        "id", UUID_1,
+                        "value", Map.of(
+                            "document", Map.of(
+                                "document_url", FILE_URL,
+                                "document_filename", FILE_NAME,
+                                "document_binary_url", FILE_BINARY_URL
+                            ),
+                            "uploadedBy", USER,
+                            "dateTimeUploaded", "2020-12-03T02:03:04.000010",
+                            "documentType", "SOCIAL_WORK_STATEMENT"
+                        )
+                    )
+                )
+            )).build();
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(emptyMap())
+            .build();
+
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .caseDetailsBefore(caseDetailsBefore)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
+        assertThat(callbackResponse.getErrors().contains("We encountered a problem storing the data, "
+            + "please re-enter all information and try again. Apologies for the inconvenience."));
     }
 }

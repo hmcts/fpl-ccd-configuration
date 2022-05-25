@@ -13,8 +13,6 @@ import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-
 @Data
 @Builder(toBuilder = true)
 @Jacksonized
