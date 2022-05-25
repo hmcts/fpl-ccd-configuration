@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.fpl.model.interfaces;
 
 public interface FurtherDocument {
 
-    public boolean isConfidentialDocument();
+    boolean isConfidentialDocument();
 
-    public String getName();
+    String getName();
 
 }
