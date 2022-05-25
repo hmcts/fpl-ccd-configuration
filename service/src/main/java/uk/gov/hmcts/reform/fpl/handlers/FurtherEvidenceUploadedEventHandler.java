@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
@@ -35,6 +36,7 @@ import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -49,9 +51,9 @@ import java.util.stream.Stream;
 
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.flatMapping;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -95,7 +97,7 @@ public class FurtherEvidenceUploadedEventHandler {
 
         newUploadedFurtherDocuments.entrySet().forEach(entry -> {
             final Set<String> recipients = new LinkedHashSet<>();
-            if (entry.getValue().isEmpty() == false) {
+            if (!entry.getValue().isEmpty()) {
                 DocumentUploadNotificationUserType key = entry.getKey();
                 if (key == CAFCASS) {
                     recipients.addAll(furtherEvidenceNotificationService.getCafcassEmails(caseData));
@@ -167,9 +169,12 @@ public class FurtherEvidenceUploadedEventHandler {
 
         if (recipientIsEngland.isPresent()) {
             final CaseData caseDataBefore = event.getCaseDataBefore();
+
             Map<String, Set<DocumentReference>> newCourtBundles = getNewCourtBundles(caseData, caseDataBefore);
+
             newCourtBundles
-                    .forEach((key, value) ->
+                    .forEach((key, value) -> {
+                        if (value != null && !value.isEmpty()) {
                             cafcassNotificationService.sendEmail(
                                     caseData,
                                     value,
@@ -177,7 +182,9 @@ public class FurtherEvidenceUploadedEventHandler {
                                     CourtBundleData.builder()
                                             .hearingDetails(key)
                                             .build()
-                            ));
+                            );
+                        }
+                    });
         }
     }
 
@@ -401,16 +408,27 @@ public class FurtherEvidenceUploadedEventHandler {
     }
 
     private Map<String, Set<DocumentReference>> getNewCourtBundles(CaseData caseData, CaseData caseDataBefore) {
-        List<CourtBundle> courtBundles = unwrapElements(caseData.getCourtBundleList());
-        List<CourtBundle> oldCourtBundleList = unwrapElements(caseDataBefore.getCourtBundleList());
+        Map<String, List<CourtBundle>> oldMapOfCourtBundles =
+            unwrapElements(caseDataBefore.getCourtBundleListV2()).stream()
+                .collect(
+                    groupingBy(HearingCourtBundle::getHearing,
+                        flatMapping(courtBundle -> unwrapElements(courtBundle.getCourtBundle()).stream(),
+                            toList())));
 
-        return courtBundles.stream()
-                .filter(newDoc -> !oldCourtBundleList.contains(newDoc))
-                .collect(groupingBy(CourtBundle::getHearing,
-                        mapping(courtBundle -> {
-                            DocumentReference document = courtBundle.getDocument();
-                            document.setType(COURT_BUNDLE.getLabel());
-                            return document;
+        return unwrapElements(caseData.getCourtBundleListV2()).stream()
+                .collect(
+                    groupingBy(HearingCourtBundle::getHearing,
+                        flatMapping(courtBundle -> {
+                            List<CourtBundle> bundles = unwrapElements(courtBundle.getCourtBundle());
+                            List<CourtBundle> oldBundles =
+                                Optional.ofNullable(oldMapOfCourtBundles.get(courtBundle.getHearing()))
+                                    .orElse(Collections.emptyList());
+
+                            List<CourtBundle> filteredBundle = new ArrayList<>(bundles);
+                            filteredBundle.removeAll(oldBundles);
+                            return filteredBundle.stream().map(CourtBundle::getDocument)
+                                .collect(toSet())
+                                .stream();
                         }, toSet())));
     }
 

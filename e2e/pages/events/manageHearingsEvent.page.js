@@ -141,7 +141,7 @@ module.exports = {
 
   enterJudgeDetails(hearingDetails) {
     // occasionally this page would take a while to load so waiting until the use allocated judge field is visible
-    I.waitForVisible(`#${judgeAndLegalAdvisor.fields.useAllocatedJudge.groupName}`, 10);
+    I.waitForVisible(`#${judgeAndLegalAdvisor.fields.useAllocatedJudge.groupName}`, 120);
     judgeAndLegalAdvisor.useAlternateJudge();
     judgeAndLegalAdvisor.selectJudgeTitle();
     judgeAndLegalAdvisor.enterJudgeLastName(hearingDetails.judgeAndLegalAdvisor.judgeLastName);

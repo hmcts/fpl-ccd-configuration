@@ -163,10 +163,8 @@ public class AdditionalApplicationsUploadedEventHandler {
         final CaseData caseData = event.getCaseData();
         final OrderApplicant applicant = event.getApplicant();
 
-        final Set<String> recipients = new HashSet<>();
-
         // DFPL-498 notify all LAs
-        recipients.addAll(localAuthorityRecipients.getRecipients(RecipientsRequest.builder()
+        final Set<String> recipients = new HashSet<>(localAuthorityRecipients.getRecipients(RecipientsRequest.builder()
             .caseData(caseData).build()));
 
         if (applicant.getType() != LOCAL_AUTHORITY && applicant.getType() != SECONDARY_LOCAL_AUTHORITY) {
