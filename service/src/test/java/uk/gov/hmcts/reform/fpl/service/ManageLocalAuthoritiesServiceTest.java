@@ -1112,7 +1112,7 @@ class ManageLocalAuthoritiesServiceTest {
         }
 
         @Test
-        void shouldReturnValidateErrorIfCourtsToTransferWithoutTransferLAFieldNotSet() {
+        void shouldReturnValidateErrorIfTransferCourtWithoutTransferLAIsNotSet() {
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
                 .build();
             final List<String> actualErrors = underTest.validateTransferCourtWithoutTransferLA(eventData);

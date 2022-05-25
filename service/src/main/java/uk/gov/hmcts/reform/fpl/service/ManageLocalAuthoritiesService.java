@@ -188,13 +188,9 @@ public class ManageLocalAuthoritiesService {
         final List<String> errors = new ArrayList<>();
         if (eventData.getCourtsToTransferWithoutTransferLA() == null) {
             errors.add(invalidMessage);
+        } else if (StringUtils.isEmpty(eventData.getCourtsToTransferWithoutTransferLA().getValueCode())) {
+            errors.add(invalidMessage);
         }
-        ofNullable(eventData.getCourtsToTransferWithoutTransferLA())
-            .ifPresentOrElse(courtsToTransferWithoutTransferLA -> Optional.of(courtsToTransferWithoutTransferLA)
-                    .map(DynamicList::getValueCode)
-                    .filter(StringUtils::isEmpty)
-                    .map((emptyCode) -> invalidMessage)
-                    .ifPresent(errors::add), () -> errors.add(invalidMessage));
         return errors;
     }
 
