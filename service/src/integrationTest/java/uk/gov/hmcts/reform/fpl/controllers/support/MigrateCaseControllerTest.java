@@ -15,7 +15,9 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
@@ -40,13 +42,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
 class MigrateCaseControllerTest extends AbstractCallbackTest {
-    public static final DocumentReference DOCUMENT_REFERENCE = testDocumentReference();
-
 
     MigrateCaseControllerTest() {
         super("migrate-case");
@@ -71,6 +70,96 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             .getRootCause()
             .isInstanceOf(NoSuchElementException.class)
             .hasMessage("No migration mapped to " + INVALID_MIGRATION_ID);
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl82 {
+        private final String migrationId = "DFPL-82";
+
+        private CourtBundle createCourtBundle(String hearing, String fileName, String fileUrl, String binaryUrl) {
+            return CourtBundle.builder()
+                .hearing(hearing)
+                .document(DocumentReference.builder()
+                    .filename(fileName)
+                    .url(fileUrl)
+                    .binaryUrl(binaryUrl)
+                    .build())
+                .confidential(List.of())
+                .build();
+        }
+
+        @Test
+        void shouldPerformMigration() {
+            UUID hearingUUID = UUID.randomUUID();
+            UUID hearing2UUID = UUID.randomUUID();
+
+            Element<CourtBundle> courtBundle1 = element(hearingUUID, createCourtBundle("hearing 1",
+                "doc1", "url", "binaryUrl"));
+            Element<CourtBundle> courtBundle2 = element(hearingUUID, createCourtBundle("hearing 1",
+                "doc3", "url3", "binaryUrl3"));
+            Element<CourtBundle> courtBundle3 = element(hearing2UUID, createCourtBundle("hearing 2",
+                "doc2", "url2", "binaryUrl2"));
+
+            List<Element<CourtBundle>> courtBundles = List.of(courtBundle1, courtBundle2, courtBundle3);
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .state(State.SUBMITTED)
+                .courtBundleList(courtBundles).build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getCourtBundleList()).isNull();
+            assertThat(responseData.getCourtBundleListV2())
+                .extracting(Element::getValue)
+                .containsExactlyInAnyOrder(
+                    HearingCourtBundle.builder()
+                        .hearing("hearing 1")
+                        .courtBundle(List.of(courtBundle1, courtBundle2))
+                        .courtBundleNC(List.of(courtBundle1, courtBundle2))
+                        .build(),
+                    HearingCourtBundle.builder()
+                        .hearing("hearing 2")
+                        .courtBundle(List.of(courtBundle3))
+                        .courtBundleNC(List.of(courtBundle3))
+                        .build()
+                );
+
+            // now roll back the migration
+            String rollBackMigrationId = "DFPL-82-rollback";
+            AboutToStartOrSubmitCallbackResponse rollBackResponse = postAboutToSubmitEvent(
+                buildCaseDetails(responseData, rollBackMigrationId)
+            );
+
+            CaseData rollbackResponseData = extractCaseData(rollBackResponse);
+            assertThat(rollbackResponseData.getCourtBundleListV2()).isEmpty();
+            assertThat(rollbackResponseData.getCourtBundleList())
+                .containsExactlyInAnyOrder(courtBundle1, courtBundle2, courtBundle3);
+        }
+
+        @Test
+        void shouldSkipMigration() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .state(State.SUBMITTED)
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getCourtBundleList()).isNull();
+            assertThat(responseData.getCourtBundleListV2()).isEmpty();
+        }
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -432,12 +521,12 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Dfpl572 {
-        private final String migrationId = "DFPL-572";
-        private final long validCaseId = 1646391317671957L;
+    class Dfpl373 {
+        private final String migrationId = "DFPL-373";
+        private final long validCaseId = 1634821154680053L;
         private final long invalidCaseId = 1643728359576136L;
 
-        private final UUID validDocId = UUID.fromString("0d30f8e4-cf44-47f6-ab1b-7fc11fdc34a8");
+        private final UUID validDocId = UUID.fromString("27454b43-eb9d-4510-a1c5-6f3df24f1f9f");
         private final UUID invalidDocId = UUID.randomUUID();
 
         @Test
@@ -476,8 +565,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-572, case reference = 1643728359576136},"
-                    + " expected case id 1646391317671957");
+                .hasMessage("Migration {id = DFPL-373, case reference = 1643728359576136},"
+                    + " expected case id 1634821154680053");
         }
 
         @Test
@@ -495,8 +584,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-572, case reference = 1646391317671957},"
-                    + " expected urgent hearing order document id 0d30f8e4-cf44-47f6-ab1b-7fc11fdc34a8");
+                .hasMessage("Migration {id = DFPL-373, case reference = 1634821154680053},"
+                    + " expected urgent hearing order document id 27454b43-eb9d-4510-a1c5-6f3df24f1f9f");
         }
     }
 
