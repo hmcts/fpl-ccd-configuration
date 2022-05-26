@@ -211,49 +211,11 @@ class CourtServiceTest {
     }
 
     @Nested
-    class GetSummaryCourtName {
-
-        @Test
-        void shouldReturnDesignatedCourtName() {
-            final CaseData caseData = CaseData.builder()
-                .caseLocalAuthority("LA1")
-                .court(court1)
-                .build();
-
-            final String actualName = underTest.getCourtName(caseData);
-            assertThat(actualName).isEqualTo(court1.getName());
-        }
-
-        @Test
-        void shouldReturnDefaultCourtName() {
-            final CaseData caseData = CaseData.builder()
-                .caseLocalAuthority("LA1")
-                .build();
-
-            when(courtLookup.getCourts("LA1")).thenReturn(List.of(court1, court2));
-            final String actualName = underTest.getCourtName(caseData);
-            assertThat(actualName).isEqualTo(court1.getName());
-        }
-
-        @Test
-        void shouldReturnNullWhenUserDidNotSelectCourt() {
-            final CaseData caseData = CaseData.builder()
-                .caseLocalAuthority("LA1")
-                .multiCourts(YesNo.YES)
-                .build();
-
-            final String actualName = underTest.getCourtName(caseData);
-            assertThat(actualName).isNull();
-        }
-    }
-
-    @Nested
-    class GetSummaryPreviousCourtName {
+    class GetPreviousCourtName {
 
         @Test
         void shouldReturnPreviousCourtName() {
             final CaseData caseData = CaseData.builder()
-                .caseLocalAuthority("LA1")
                 .court(court1)
                 .pastCourtList(List.of(element(transferredCourt1)))
                 .build();
@@ -265,11 +227,9 @@ class CourtServiceTest {
         @Test
         void shouldReturnPreviousCourtNameWithMoreThanOnePastCourts() {
             final CaseData caseData = CaseData.builder()
-                .caseLocalAuthority("LA1")
                 .court(court1)
                 .pastCourtList(List.of(element(transferredCourt1), element(transferredCourt2)))
                 .build();
-
             final String actualName = underTest.getPreviousCourtName(caseData);
             assertThat(actualName).isEqualTo(transferredCourt2.getName());
         }
@@ -277,22 +237,48 @@ class CourtServiceTest {
         @Test
         void shouldReturnPreviousCourtNameWithReversedPastCourtList() {
             final CaseData caseData = CaseData.builder()
-                .caseLocalAuthority("LA1")
                 .court(court1)
                 .pastCourtList(List.of(element(transferredCourt2), element(transferredCourt1)))
                 .build();
-
             final String actualName = underTest.getPreviousCourtName(caseData);
             assertThat(actualName).isEqualTo(transferredCourt2.getName());
         }
 
         @Test
+        void shouldReturnPreviousCourtNameWithNullTransferredDateInPastCourtList() {
+            final CaseData caseData = CaseData.builder()
+                .court(court2)
+                .pastCourtList(List.of(element(transferredCourt2), element(court1)))
+                .build();
+            final String actualName = underTest.getPreviousCourtName(caseData);
+            assertThat(actualName).isEqualTo(transferredCourt2.getName());
+        }
+
+        @Test
+        void shouldReturnPreviousCourtNameWithNullTransferredDateInReversedPastCourtList() {
+            final CaseData caseData = CaseData.builder()
+                .court(court2)
+                .pastCourtList(List.of(element(court1), element(transferredCourt2)))
+                .build();
+            final String actualName = underTest.getPreviousCourtName(caseData);
+            assertThat(actualName).isEqualTo(transferredCourt2.getName());
+        }
+
+        @Test
+        void shouldReturnPreviousCourtNameWithSingleNullTransferredDateInPastCourtList() {
+            final CaseData caseData = CaseData.builder()
+                .court(transferredCourt2)
+                .pastCourtList(List.of(element(court1)))
+                .build();
+            final String actualName = underTest.getPreviousCourtName(caseData);
+            assertThat(actualName).isEqualTo(court1.getName());
+        }
+
+        @Test
         void shouldReturnNullWithoutPastCourts() {
             final CaseData caseData = CaseData.builder()
-                .caseLocalAuthority("LA1")
                 .court(court1)
                 .build();
-
             final String actualName = underTest.getPreviousCourtName(caseData);
             assertThat(actualName).isNull();
         }
@@ -300,9 +286,7 @@ class CourtServiceTest {
         @Test
         void shouldReturnNullWithoutCourtAndPastCourts() {
             final CaseData caseData = CaseData.builder()
-                .caseLocalAuthority("LA1")
                 .build();
-            when(courtLookup.getCourts("LA1")).thenReturn(List.of(court1, court2));
             final String actualName = underTest.getPreviousCourtName(caseData);
             assertThat(actualName).isNull();
         }
@@ -310,12 +294,10 @@ class CourtServiceTest {
         @Test
         void shouldReturnWhenUserDidNotSelectCourtWithPastCourtList() {
             final CaseData caseData = CaseData.builder()
-                .caseLocalAuthority("LA1")
                 .multiCourts(YesNo.YES)
                 .court(court1)
                 .pastCourtList(List.of(element(transferredCourt1)))
                 .build();
-
             final String actualName = underTest.getPreviousCourtName(caseData);
             assertThat(actualName).isEqualTo(transferredCourt1.getName());
         }

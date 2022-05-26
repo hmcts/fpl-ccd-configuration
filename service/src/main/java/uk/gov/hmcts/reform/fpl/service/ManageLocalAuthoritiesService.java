@@ -363,9 +363,7 @@ public class ManageLocalAuthoritiesService {
     public List<Element<Court>> buildPastCourtsList(CaseData caseData) {
         Court originalCourt = caseData.getCourt();
         if (originalCourt == null) {
-            if (courtService.getCourt(caseData) != null) {
-                originalCourt = courtService.getCourt(caseData);
-            }
+            originalCourt = courtService.getCourt(caseData);
         }
         List<Element<Court>> pastCourtList = caseData.getPastCourtList();
         if (originalCourt != null) {

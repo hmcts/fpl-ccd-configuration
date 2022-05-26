@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -69,6 +70,7 @@ import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_
 import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_REGION;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.caseRoleDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
@@ -936,7 +938,19 @@ class ManageLocalAuthoritiesServiceTest {
                 .region(RCJ_HIGH_COURT_REGION)
                 .build());
         }
-        
+
+        @Test
+        void shouldBuildPastCourtsList() {
+            final CaseData caseData = CaseData.builder().build();
+            when(courtService.getCourt(any())).thenReturn(
+                Court.builder().code("344").name("Family Court sitting at Swansea").build()
+            );
+
+            List<Element<Court>> pastCourtList = underTest.buildPastCourtsList(caseData);
+            assertThat(pastCourtList.size()).isEqualTo(1);
+            assertThat(unwrapElements(pastCourtList).iterator().next().getCode()).isEqualTo("344");
+        }
+
         @Test
         void shouldTransferCourtWithoutTransferLA() {
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
