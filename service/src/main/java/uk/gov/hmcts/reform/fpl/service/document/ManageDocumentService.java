@@ -445,7 +445,7 @@ public class ManageDocumentService {
     public List<Element<DocumentWithConfidentialAddress>> getDocumentsWithConfidentialAddress(
             CaseData caseData, List<Element<SupportingEvidenceBundle>> existingDocuments,
             List<Element<SupportingEvidenceBundle>> updatedDocuments) {
-        return updateDocWithConfidentialAddr(caseData,
+        return updateDocumentWithConfidentialAddress(caseData,
             buildDocumentWithConfidentialAddress(existingDocuments, false),
             buildDocumentWithConfidentialAddress(updatedDocuments, true));
     }
@@ -453,7 +453,7 @@ public class ManageDocumentService {
     public List<Element<DocumentWithConfidentialAddress>> getDocumentsWithConfidentialAddressFromCourtBundles(
             CaseData caseData, List<Element<HearingCourtBundle>> existingDocuments,
             List<Element<HearingCourtBundle>> updatedDocuments) {
-        return updateDocWithConfidentialAddr(caseData,
+        return updateDocumentWithConfidentialAddress(caseData,
              buildDocumentWithConfidentialAddressFromCourtBundles(existingDocuments, false),
              buildDocumentWithConfidentialAddressFromCourtBundles(updatedDocuments, true));
     }
@@ -486,10 +486,9 @@ public class ManageDocumentService {
             .flatMap(List::stream).collect(Collectors.toList());
     }
 
-    private List<Element<DocumentWithConfidentialAddress>> updateDocWithConfidentialAddr(CaseData caseData,
+    private List<Element<DocumentWithConfidentialAddress>> updateDocumentWithConfidentialAddress(CaseData caseData,
             List<Element<DocumentWithConfidentialAddress>> existingList,
             List<Element<DocumentWithConfidentialAddress>> editedList) {
-
         List<Element<DocumentWithConfidentialAddress>> resultList =
             Optional.ofNullable(caseData.getDocumentsWithConfidentialAddress()).orElse(new ArrayList<>());
 
