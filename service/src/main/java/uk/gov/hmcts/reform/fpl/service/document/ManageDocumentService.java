@@ -476,7 +476,8 @@ public class ManageDocumentService {
             .map(hearingCourtBundle ->
                 hearingCourtBundle.getCourtBundle().stream()
                     .filter(courtBundle ->
-                        !filterConfidentialAddress || YesNo.YES.equals(courtBundle.getValue().getHasConfidentialAddress()))
+                        !filterConfidentialAddress
+                        || YesNo.YES.equals(courtBundle.getValue().getHasConfidentialAddress()))
                     .map(courtBundle -> element(courtBundle.getId(),
                         DocumentWithConfidentialAddress.builder()
                             .document(courtBundle.getValue().getDocument())
