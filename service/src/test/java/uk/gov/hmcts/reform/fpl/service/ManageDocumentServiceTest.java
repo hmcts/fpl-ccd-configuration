@@ -1534,7 +1534,6 @@ class ManageDocumentServiceTest {
         assertThat(underTest.getSelectedRespondentId(caseData)).isEqualTo(selectedRespondentId);
     }
 
-
     @Test
     void shouldGetDocWithConfidentialAddrFromRespondentStatementElements() {
         CaseData caseData = CaseData.builder().build();

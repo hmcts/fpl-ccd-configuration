@@ -446,48 +446,44 @@ public class ManageDocumentService {
             CaseData caseData, List<Element<SupportingEvidenceBundle>> existingDocuments,
             List<Element<SupportingEvidenceBundle>> updatedDocuments) {
         return updateDocWithConfidentialAddr(caseData,
-            Optional.ofNullable(existingDocuments).orElse(new ArrayList<>()).stream()
-                .map(this::buildDocumentWithConfidentialAddress)
-                .collect(Collectors.toList()),
-            Optional.ofNullable(updatedDocuments).orElse(new ArrayList<>()).stream()
-                .filter(doc -> YesNo.YES.equals(doc.getValue().getHasConfidentialAddress()))
-                .map(this::buildDocumentWithConfidentialAddress)
-                .collect(Collectors.toList()));
+            buildDocumentWithConfidentialAddress(existingDocuments, false),
+            buildDocumentWithConfidentialAddress(updatedDocuments, true));
     }
 
     public List<Element<DocumentWithConfidentialAddress>> getDocumentsWithConfidentialAddressFromCourtBundles(
             CaseData caseData, List<Element<HearingCourtBundle>> existingDocuments,
             List<Element<HearingCourtBundle>> updatedDocuments) {
         return updateDocWithConfidentialAddr(caseData,
-            Optional.ofNullable(existingDocuments).orElse(new ArrayList<>()).stream()
-                .map(Element::getValue)
-                .map(hearingCourtBundle -> buildDocumentWithConfidentialAddress(hearingCourtBundle, false))
-                .flatMap(List::stream).collect(Collectors.toList()),
-             Optional.ofNullable(updatedDocuments).orElse(new ArrayList<>()).stream()
-                 .map(Element::getValue)
-                .map(hearingCourtBundle -> buildDocumentWithConfidentialAddress(hearingCourtBundle, true))
-                .flatMap(List::stream).collect(Collectors.toList()));
-    }
-
-    private Element<DocumentWithConfidentialAddress> buildDocumentWithConfidentialAddress(
-        Element<SupportingEvidenceBundle> supportingEvidenceBundle) {
-        return element(supportingEvidenceBundle.getId(),
-            DocumentWithConfidentialAddress.builder()
-                .name(supportingEvidenceBundle.getValue().getName())
-                .document(supportingEvidenceBundle.getValue().getDocument()).build());
+             buildDocumentWithConfidentialAddressFromCourtBundles(existingDocuments, false),
+             buildDocumentWithConfidentialAddressFromCourtBundles(updatedDocuments, true));
     }
 
     private List<Element<DocumentWithConfidentialAddress>> buildDocumentWithConfidentialAddress(
-            HearingCourtBundle hearingCourtBundle, boolean filterConfidentialAddress) {
-        return hearingCourtBundle.getCourtBundle().stream()
-            .filter(courtBundle ->
-                !filterConfidentialAddress || YesNo.YES.equals(courtBundle.getValue().getHasConfidentialAddress()))
-            .map(courtBundle -> element(courtBundle.getId(),
+            List<Element<SupportingEvidenceBundle>> supportingEvidenceBundles, boolean filterConfidentialAddress) {
+        return Optional.ofNullable(supportingEvidenceBundles).orElse(new ArrayList<>()).stream()
+            .filter(doc -> !filterConfidentialAddress || YesNo.YES.equals(doc.getValue().getHasConfidentialAddress()))
+            .map(supportingEvidenceBundle -> element(supportingEvidenceBundle.getId(),
                 DocumentWithConfidentialAddress.builder()
-                    .document(courtBundle.getValue().getDocument())
-                    .name("Court bundle of " + hearingCourtBundle.getHearing())
-                    .build()))
+                    .name(supportingEvidenceBundle.getValue().getName())
+                    .document(supportingEvidenceBundle.getValue().getDocument()).build()))
             .collect(Collectors.toList());
+    }
+
+    private List<Element<DocumentWithConfidentialAddress>> buildDocumentWithConfidentialAddressFromCourtBundles(
+            List<Element<HearingCourtBundle>> hearingCourtBundles, boolean filterConfidentialAddress) {
+        return Optional.ofNullable(hearingCourtBundles).orElse(new ArrayList<>()).stream()
+            .map(Element::getValue)
+            .map(hearingCourtBundle ->
+                hearingCourtBundle.getCourtBundle().stream()
+                    .filter(courtBundle ->
+                        !filterConfidentialAddress || YesNo.YES.equals(courtBundle.getValue().getHasConfidentialAddress()))
+                    .map(courtBundle -> element(courtBundle.getId(),
+                        DocumentWithConfidentialAddress.builder()
+                            .document(courtBundle.getValue().getDocument())
+                            .name("Court bundle of " + hearingCourtBundle.getHearing())
+                            .build()))
+                    .collect(Collectors.toList()))
+            .flatMap(List::stream).collect(Collectors.toList());
     }
 
     private List<Element<DocumentWithConfidentialAddress>> updateDocWithConfidentialAddr(CaseData caseData,
