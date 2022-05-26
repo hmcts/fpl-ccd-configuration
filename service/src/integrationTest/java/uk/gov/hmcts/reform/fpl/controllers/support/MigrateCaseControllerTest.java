@@ -521,12 +521,12 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Dfpl572 {
-        private final String migrationId = "DFPL-572";
-        private final long validCaseId = 1646391317671957L;
+    class Dfpl373 {
+        private final String migrationId = "DFPL-373";
+        private final long validCaseId = 1634821154680053L;
         private final long invalidCaseId = 1643728359576136L;
 
-        private final UUID validDocId = UUID.fromString("0d30f8e4-cf44-47f6-ab1b-7fc11fdc34a8");
+        private final UUID validDocId = UUID.fromString("27454b43-eb9d-4510-a1c5-6f3df24f1f9f");
         private final UUID invalidDocId = UUID.randomUUID();
 
         @Test
@@ -565,8 +565,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-572, case reference = 1643728359576136},"
-                    + " expected case id 1646391317671957");
+                .hasMessage("Migration {id = DFPL-373, case reference = 1643728359576136},"
+                    + " expected case id 1634821154680053");
         }
 
         @Test
@@ -584,8 +584,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-572, case reference = 1646391317671957},"
-                    + " expected urgent hearing order document id 0d30f8e4-cf44-47f6-ab1b-7fc11fdc34a8");
+                .hasMessage("Migration {id = DFPL-373, case reference = 1634821154680053},"
+                    + " expected urgent hearing order document id 27454b43-eb9d-4510-a1c5-6f3df24f1f9f");
         }
     }
 
