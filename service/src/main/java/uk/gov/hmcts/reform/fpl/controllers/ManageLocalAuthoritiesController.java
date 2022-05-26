@@ -201,7 +201,6 @@ public class ManageLocalAuthoritiesController extends CallbackController {
             Court courtTransferred = service.transferCourtWithoutTransferLA(caseData);
             caseDetails.getData().put(PAST_COURT_LIST_KEY, caseData.getPastCourtList());
             caseDetails.getData().put(COURT_KEY, courtTransferred);
-            removeTemporaryFields(caseDetails);
         }
 
         return respond(removeTemporaryFields(caseDetails));
