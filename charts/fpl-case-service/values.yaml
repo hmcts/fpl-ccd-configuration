@@ -75,4 +75,5 @@ java:
         - ctsc-team-lead-inbox
         - AppInsightsInstrumentationKey
         - scheduler-db-password
+        - rcj-family-high-court-inbox
   applicationPort: 4000
