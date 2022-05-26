@@ -47,33 +47,30 @@ public enum CafcassRequestEmailContentProvider {
             true),
 
     CASE_SUMMARY("Case summary",
-        (caseData, cafcassData) -> String.format(getSubject(),
-            caseData.getFamilyManCaseNumber(),
-            "new case summary"),
+        (caseData, cafcassData) -> "",
         (caseData, cafcassData) ->
             String.format("A new case summary for this case was uploaded to the Public Law Portal entitled %s",
                 cafcassData.getHearingDetails()),
-        CafcassEmailConfiguration::getRecipientForCourtBundle),
+        CafcassEmailConfiguration::getRecipientForCourtBundle,
+        true),
 
     POSITION_STATEMENT_CHILD("Position statement child",
-        (caseData, cafcassData) -> String.format(getSubject(),
-            caseData.getFamilyManCaseNumber(),
-            "new position statement child"),
+        (caseData, cafcassData) -> "",
         (caseData, cafcassData) ->
             String.format("A new position statement child for this case was uploaded to the "
                           + "Public Law Portal entitled %s",
                 cafcassData.getHearingDetails()),
-        CafcassEmailConfiguration::getRecipientForCourtBundle),
+        CafcassEmailConfiguration::getRecipientForCourtBundle,
+        true),
 
     POSITION_STATEMENT_RESPONDENT("Position statement respondent",
-        (caseData, cafcassData) -> String.format(getSubject(),
-            caseData.getFamilyManCaseNumber(),
-            "new Position statement respondent"),
+        (caseData, cafcassData) -> "",
         (caseData, cafcassData) ->
             String.format("A new Position statement respondent for this case was uploaded to the "
                           + "Public Law Portal entitled %s",
                 cafcassData.getHearingDetails()),
-        CafcassEmailConfiguration::getRecipientForCourtBundle),
+        CafcassEmailConfiguration::getRecipientForCourtBundle,
+        true),
 
     NEW_APPLICATION("New application",
         (caseData, cafcassData) -> "",
