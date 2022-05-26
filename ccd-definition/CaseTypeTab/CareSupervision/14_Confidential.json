@@ -36,7 +36,7 @@
     "TabID": "Confidential",
     "TabLabel": "Confidential information",
     "TabDisplayOrder": 14,
-    "CaseFieldID": "documentWithConfidentialAddress",
+    "CaseFieldID": "documentsWithConfidentialAddress",
     "TabFieldDisplayOrder": 4
   }
 ]

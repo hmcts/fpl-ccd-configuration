@@ -169,7 +169,7 @@ public class ManageDocumentsLAController extends CallbackController {
                         manageDocumentService.getUpdatedRespondentStatements(caseData, NOT_SOLICITOR);
                     caseDetailsMap.putIfNotEmpty("respondentStatements", respondentStatements);
                     caseDetailsMap.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
-                        manageDocumentService.getDocumentWithConfidentialAddress(caseData,
+                        manageDocumentService.getDocumentsWithConfidentialAddress(caseData,
                             ConfidentialBundleHelper.getSupportingEvidenceBundle(
                                 ElementUtils.unwrapElements(caseData.getRespondentStatements())),
                             ConfidentialBundleHelper.getSupportingEvidenceBundle(
@@ -193,7 +193,7 @@ public class ManageDocumentsLAController extends CallbackController {
                         HEARING_FURTHER_EVIDENCE_DOCUMENTS_KEY, updatedBundle
                     );
                     caseDetailsMap.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
-                        manageDocumentService.getDocumentWithConfidentialAddress(caseData,
+                        manageDocumentService.getDocumentsWithConfidentialAddress(caseData,
                             ConfidentialBundleHelper.getSupportingEvidenceBundle(
                                 ElementUtils.unwrapElements(caseData.getHearingFurtherEvidenceDocuments())),
                             ConfidentialBundleHelper.getSupportingEvidenceBundle(
@@ -210,7 +210,7 @@ public class ManageDocumentsLAController extends CallbackController {
                     );
                     caseDetailsMap.putIfNotEmpty(FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY, currentBundle);
                     caseDetailsMap.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
-                        manageDocumentService.getDocumentWithConfidentialAddress(caseData,
+                        manageDocumentService.getDocumentsWithConfidentialAddress(caseData,
                             caseData.getFurtherEvidenceDocumentsLA(),
                             currentBundle));
                 }
@@ -230,7 +230,7 @@ public class ManageDocumentsLAController extends CallbackController {
                 );
                 caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY, sortedDocuments);
                 caseDetailsMap.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
-                    manageDocumentService.getDocumentWithConfidentialAddress(caseData,
+                    manageDocumentService.getDocumentsWithConfidentialAddress(caseData,
                         caseData.getCorrespondenceDocumentsLA(),
                         sortedDocuments));
                 break;
@@ -239,11 +239,11 @@ public class ManageDocumentsLAController extends CallbackController {
                     manageDocumentService.buildFinalApplicationBundleSupportingDocuments(caseData, NOT_SOLICITOR));
                 break;
             case COURT_BUNDLE:
-                List<Element<HearingCourtBundle>> courtBundle = manageDocumentLAService.buildCourtBundleList(caseData);
-                caseDetailsMap.putIfNotEmpty(COURT_BUNDLE_LIST_KEY, courtBundle);
+                List<Element<HearingCourtBundle>> courtBundles = manageDocumentLAService.buildCourtBundleList(caseData);
+                caseDetailsMap.putIfNotEmpty(COURT_BUNDLE_LIST_KEY, courtBundles);
                 caseDetailsMap.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
-                    manageDocumentService.getDocumentWithConfidentialAddressFromCourtBundles(caseData,
-                        caseData.getCourtBundleListV2(), courtBundle));
+                    manageDocumentService.getDocumentsWithConfidentialAddressFromCourtBundles(caseData,
+                        caseData.getCourtBundleListV2(), courtBundles));
                 break;
         }
 

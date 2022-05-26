@@ -77,7 +77,7 @@ public class ManageDocumentService {
     public static final String MANAGE_DOCUMENT_KEY = "manageDocument";
     public static final String ADDITIONAL_APPLICATIONS_BUNDLE_KEY = "additionalApplicationsBundle";
     public static final String RESPONDENTS_LIST_KEY = "respondentStatementList";
-    public static final String DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY = "documentWithConfidentialAddress";
+    public static final String DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY = "documentsWithConfidentialAddress";
     private static final Predicate<Element<SupportingEvidenceBundle>> HMCTS_FILTER =
         bundle -> bundle.getValue().isUploadedByHMCTS();
     private static final Predicate<Element<SupportingEvidenceBundle>> SOLICITOR_FILTER =
@@ -280,7 +280,7 @@ public class ManageDocumentService {
                 updatedC2DocumentBundle(caseData, selected, setSolicitorUploaded);
             data.put(C2_DOCUMENTS_COLLECTION_KEY, c2DocumentBundles);
             data.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
-                getDocumentWithConfidentialAddress(caseData,
+                getDocumentsWithConfidentialAddress(caseData,
                     ConfidentialBundleHelper.getSupportingEvidenceBundle(
                         unwrapElements(caseData.getC2DocumentBundle())),
                     ConfidentialBundleHelper.getSupportingEvidenceBundle(unwrapElements(c2DocumentBundles))));
@@ -289,7 +289,7 @@ public class ManageDocumentService {
                 updateAdditionalDocumentsBundle(caseData, selected, setSolicitorUploaded);
             data.put(ADDITIONAL_APPLICATIONS_BUNDLE_KEY, additionalApplicationsBundles);
             data.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
-                getDocumentWithConfidentialAddress(caseData,
+                getDocumentsWithConfidentialAddress(caseData,
                     getSupportingEvidenceBundlesFromAdditionalApplicationsBundles(
                         caseData.getAdditionalApplicationsBundle()),
                     getSupportingEvidenceBundlesFromAdditionalApplicationsBundles(additionalApplicationsBundles)
@@ -442,7 +442,7 @@ public class ManageDocumentService {
         return getDynamicListSelectedValue(caseData.getRespondentStatementList(), mapper);
     }
 
-    public List<Element<DocumentWithConfidentialAddress>> getDocumentWithConfidentialAddress(
+    public List<Element<DocumentWithConfidentialAddress>> getDocumentsWithConfidentialAddress(
             CaseData caseData, List<Element<SupportingEvidenceBundle>> existingDocuments,
             List<Element<SupportingEvidenceBundle>> updatedDocuments) {
         return updateDocWithConfidentialAddr(caseData,
@@ -455,7 +455,7 @@ public class ManageDocumentService {
                 .collect(Collectors.toList()));
     }
 
-    public List<Element<DocumentWithConfidentialAddress>> getDocumentWithConfidentialAddressFromCourtBundles(
+    public List<Element<DocumentWithConfidentialAddress>> getDocumentsWithConfidentialAddressFromCourtBundles(
             CaseData caseData, List<Element<HearingCourtBundle>> existingDocuments,
             List<Element<HearingCourtBundle>> updatedDocuments) {
         return updateDocWithConfidentialAddr(caseData,
@@ -495,17 +495,17 @@ public class ManageDocumentService {
             List<Element<DocumentWithConfidentialAddress>> editedLst) {
 
         List<Element<DocumentWithConfidentialAddress>> resultLst =
-            Optional.ofNullable(caseData.getDocumentWithConfidentialAddress()).orElse(new ArrayList<>());
+            Optional.ofNullable(caseData.getDocumentsWithConfidentialAddress()).orElse(new ArrayList<>());
 
         List<UUID> existingDocUuid = existingLst.stream().map(Element::getId).collect(Collectors.toList());
 
-        // remove the existing document from the documentWithConfidentialAddress list
+        // remove the existing document from the documentsWithConfidentialAddress list
         resultLst.removeAll(resultLst.stream()
             .filter(confidentialDoc ->
                 existingDocUuid.contains(confidentialDoc.getId()))
             .collect(Collectors.toList()));
 
-        // add the updated version document into the documentWithConfidentialAddress list
+        // add the updated version document into the documentsWithConfidentialAddress list
         resultLst.addAll(editedLst);
 
         return resultLst;

@@ -1564,7 +1564,7 @@ class ManageDocumentServiceTest {
         {
             List<ConfidentialBundle> confidentialBundle = List.of(buildConfidentialBundle(bundles));
             List<Element<DocumentWithConfidentialAddress>> resultLIst =
-                underTest.getDocumentWithConfidentialAddress(caseData, new ArrayList<>(),
+                underTest.getDocumentsWithConfidentialAddress(caseData, new ArrayList<>(),
                     ConfidentialBundleHelper.getSupportingEvidenceBundle(confidentialBundle));
             List<Element<DocumentWithConfidentialAddress>> expected = List.of(
                 element(uuid, DocumentWithConfidentialAddress.builder()
@@ -1604,7 +1604,7 @@ class ManageDocumentServiceTest {
                 .build()));
 
         List<Element<DocumentWithConfidentialAddress>> resultLIst =
-            underTest.getDocumentWithConfidentialAddressFromCourtBundles(caseData, caseData.getCourtBundleListV2(),
+            underTest.getDocumentsWithConfidentialAddressFromCourtBundles(caseData, caseData.getCourtBundleListV2(),
                 hearingCourtBundles);
 
         List<Element<DocumentWithConfidentialAddress>> expected = List.of(

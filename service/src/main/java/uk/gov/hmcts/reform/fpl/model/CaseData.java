@@ -1149,5 +1149,5 @@ public class CaseData {
             .orElse(false);
     }
 
-    private List<Element<DocumentWithConfidentialAddress>> documentWithConfidentialAddress;
+    private List<Element<DocumentWithConfidentialAddress>> documentsWithConfidentialAddress;
 }
