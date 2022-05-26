@@ -344,7 +344,7 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
             .hearingDetails(hearingBookings)
             .hearingDocumentsHearingList(hearingList)
             .manageDocumentsHearingDocumentType(HearingDocumentType.CASE_SUMMARY)
-            .manageDocument(buildManagementDocument(HEARING_DOCUMENTS))
+            .manageDocument(buildManagementDocument(HEARING_DOCUMENTS))§
             .manageDocumentsCaseSummary(manageDocumentCaseSummary)
             .build();
 
@@ -353,6 +353,21 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
             postAboutToSubmitEvent(caseData, USER_ROLES));
         assertThat(responseData.getCaseSummaryList())
             .contains(element(selectedHearingId, manageDocumentCaseSummary));
+    }
+
+    @Test
+    void shouldThrowIllegalStateExceptionIfManageDocumentIsNullWhenTryingToGetManageDocumentsType() {
+        CaseData caseData = CaseData.builder()
+            .manageDocument(null)
+            .build();
+
+        try {
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
+        } catch (RuntimeException e) {
+            String exceptionText = e.getMessage();
+            assertThat(exceptionText.contains("IllegalStateException")
+                && exceptionText.contains("Unexpected null manage document."));
+        }
     }
 
     private HearingBooking buildFinalHearingBooking() {

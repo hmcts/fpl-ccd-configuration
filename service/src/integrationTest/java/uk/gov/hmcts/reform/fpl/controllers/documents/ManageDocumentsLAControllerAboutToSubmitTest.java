@@ -436,6 +436,21 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         assertExpectedFieldsAreRemoved(responseData);
     }
 
+    @Test
+    void shouldThrowIllegalStateExceptionIfManageDocumentLAIsNullWhenTryingToGetManageDocumentsType() {
+        CaseData caseData = CaseData.builder()
+            .manageDocumentLA(null)
+            .build();
+
+        try {
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
+        } catch (RuntimeException e) {
+            String exceptionText = e.getMessage();
+            assertThat(exceptionText.contains("IllegalStateException") 
+                && exceptionText.contains("Unexpected null manage document LA."));
+        }
+    }
+
     private void assertExpectedFieldsAreRemoved(CaseData caseData) {
         assertThat(caseData.getSupportingEvidenceDocumentsTemp()).isEmpty();
         assertThat(caseData.getManageDocumentLA()).isNull();
