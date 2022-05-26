@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.ManageDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -29,6 +30,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -173,7 +175,10 @@ public class ManageDocumentsController extends CallbackController {
         boolean isSolicitor = DocumentUploaderType.SOLICITOR.equals(getUploaderType(caseData.getId()));
         ;
 
-        ManageDocumentType manageDocumentType = caseData.getManageDocument().getType();
+        ManageDocument manageDocument = Optional.ofNullable(caseData.getManageDocument())
+            .orElseThrow(() -> new IllegalStateException("Unexpected null manage document. " + caseData));
+
+        ManageDocumentType manageDocumentType = manageDocument.getType();
         List<Element<SupportingEvidenceBundle>> currentBundle;
         switch (manageDocumentType) {
             case FURTHER_EVIDENCE_DOCUMENTS:

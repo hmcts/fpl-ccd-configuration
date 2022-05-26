@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.OrderDocumentGeneratorRe
 import uk.gov.hmcts.reform.fpl.service.orders.generator.UploadedOrderDocumentGenerator;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -49,7 +50,11 @@ class OrderCreationServiceTest {
     private final CaseData caseData = CaseData.builder()
         .manageOrdersEventData(manageOrdersEventData)
         .build();
-
+    private final ManageOrdersEventData manageOrdersEventDataWithNoOrderType = ManageOrdersEventData.builder()
+        .build();
+    private final CaseData caseDataWithNoManageOrdersOrderType = CaseData.builder()
+        .manageOrdersEventData(manageOrdersEventDataWithNoOrderType)
+        .build();
 
     @Test
     void createDraftOrderDocument() {
@@ -87,4 +92,16 @@ class OrderCreationServiceTest {
         verifyNoInteractions(documentGenerator);
     }
 
+    @Test
+    void shouldThrowIllegalStateExceptionIfOrderTypeIsNullWhenTryingToCreateDraftOrderDocument() {
+        when(documentGenerator.generate(order, caseDataWithNoManageOrdersOrderType, OrderStatus.DRAFT, format))
+            .thenReturn(DOCMOSIS_DOCUMENT);
+        when(format.getMediaType()).thenReturn(MEDIA_TYPE);
+        when(uploadService.uploadDocument(BYTES, DRAFT_FILE_NAME, MEDIA_TYPE)).thenReturn(UPLOADED_DOCUMENT);
+
+        assertThatExceptionOfType(IllegalStateException.class)
+            .isThrownBy(() -> underTest.createOrderDocument(
+                caseDataWithNoManageOrdersOrderType, OrderStatus.DRAFT, format))
+            .withMessageContaining("Unexpected null order type.");
+    }
 }

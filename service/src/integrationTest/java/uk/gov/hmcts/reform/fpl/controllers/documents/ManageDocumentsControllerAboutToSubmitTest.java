@@ -355,6 +355,21 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
             .contains(element(selectedHearingId, manageDocumentCaseSummary));
     }
 
+    @Test
+    void shouldThrowIllegalStateExceptionIfManageDocumentIsNullWhenTryingToGetManageDocumentsType() {
+        CaseData caseData = CaseData.builder()
+            .manageDocument(null)
+            .build();
+
+        try {
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
+        } catch (RuntimeException e) {
+            String exceptionText = e.getMessage();
+            assertThat(exceptionText.contains("IllegalStateException")
+                && exceptionText.contains("Unexpected null manage document."));
+        }
+    }
+
     private HearingBooking buildFinalHearingBooking() {
         return HearingBooking.builder()
             .type(HearingType.FINAL)
