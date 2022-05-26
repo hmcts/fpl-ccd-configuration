@@ -73,8 +73,9 @@ class C36VariationOrExtensionOfSupervisionOrdersParameterGeneratorTest {
     void generateOrderWithVariationOrder() {
         CaseData caseData = buildCaseDataWithSpecifiedC36OrderType(VARIATION_OF_SUPERVISION_ORDER);
         DocmosisParameters docParam = underTest.generate(caseData);
+        ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
 
-        DocmosisParameters expectedParam = buildExpectedParamaters(VARIATION_OF_SUPERVISION_ORDER, caseData);
+        DocmosisParameters expectedParam = buildExpectedParameters(VARIATION_OF_SUPERVISION_ORDER, caseData, eventData);
 
         assertThat(docParam).isEqualTo(expectedParam);
     }
@@ -83,8 +84,9 @@ class C36VariationOrExtensionOfSupervisionOrdersParameterGeneratorTest {
     void generateOrderWithExtensionOrder() {
         CaseData caseData = buildCaseDataWithSpecifiedC36OrderType(EXTENSION_OF_SUPERVISION_ORDER);
         DocmosisParameters docParam = underTest.generate(caseData);
+        ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
 
-        DocmosisParameters expectedParam = buildExpectedParamaters(EXTENSION_OF_SUPERVISION_ORDER, caseData);
+        DocmosisParameters expectedParam = buildExpectedParameters(EXTENSION_OF_SUPERVISION_ORDER, caseData, eventData);
 
         assertThat(docParam).isEqualTo(expectedParam);
     }
@@ -104,8 +106,11 @@ class C36VariationOrExtensionOfSupervisionOrdersParameterGeneratorTest {
             .build();
     }
 
-    private DocmosisParameters buildExpectedParamaters(C36OrderType orderType, CaseData caseData) {
-        ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
+    private DocmosisParameters buildExpectedParameters(
+        C36OrderType orderType,
+        CaseData caseData,
+        ManageOrdersEventData eventData
+    ) {
         StringBuilder stringBuilder = new StringBuilder();
 
         switch (orderType) {
