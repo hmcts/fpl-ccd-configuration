@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
@@ -257,28 +258,50 @@ public class AdditionalApplicationsUploadedEventHandler {
     }
 
     private List<DocumentReference> getApplicationDocuments(AdditionalApplicationsBundle bundle) {
+        UnaryOperator<DocumentReference> addDocumentType =
+            documentReference -> {
+                documentReference.setType(ADDITIONAL_DOCUMENT.getLabel());
+                return  documentReference;
+            };
+
         List<DocumentReference> documents = new ArrayList<>();
 
         if (bundle.getC2DocumentBundle() != null) {
-            documents.add(bundle.getC2DocumentBundle().getDocument());
+            documents.add(Optional.of(bundle.getC2DocumentBundle().getDocument())
+                    .map(addDocumentType)
+                    .orElse(DocumentReference.builder().build()));
             documents.addAll(
                 unwrapElements(bundle.getC2DocumentBundle().getSupplementsBundle())
-                    .stream().map(Supplement::getDocument).collect(Collectors.toList()));
+                    .stream()
+                        .map(Supplement::getDocument)
+                        .map(addDocumentType)
+                        .collect(Collectors.toList()));
 
             documents.addAll(
                 unwrapElements(bundle.getC2DocumentBundle().getSupportingEvidenceBundle())
-                    .stream().map(SupportingEvidenceBundle::getDocument).collect(Collectors.toList()));
+                    .stream()
+                        .map(SupportingEvidenceBundle::getDocument)
+                        .map(addDocumentType)
+                        .collect(Collectors.toList()));
         }
 
         if (bundle.getOtherApplicationsBundle() != null) {
-            documents.add(bundle.getOtherApplicationsBundle().getDocument());
+            documents.add(Optional.of(bundle.getOtherApplicationsBundle().getDocument())
+                    .map(addDocumentType)
+                    .orElse(DocumentReference.builder().build()));
             documents.addAll(
                 unwrapElements(bundle.getOtherApplicationsBundle().getSupplementsBundle())
-                    .stream().map(Supplement::getDocument).collect(Collectors.toList()));
+                    .stream()
+                        .map(Supplement::getDocument)
+                        .map(addDocumentType)
+                        .collect(Collectors.toList()));
 
             documents.addAll(
                 unwrapElements(bundle.getOtherApplicationsBundle().getSupportingEvidenceBundle())
-                    .stream().map(SupportingEvidenceBundle::getDocument).collect(Collectors.toList()));
+                    .stream()
+                        .map(SupportingEvidenceBundle::getDocument)
+                        .map(addDocumentType)
+                        .collect(Collectors.toList()));
         }
 
         return documents;

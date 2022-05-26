@@ -134,6 +134,28 @@ cafcass:
     additionaldocument: FamilyPublicLaw+cafcass@gmail.com
     noticeofhearing: FamilyPublicLaw+cafcass@gmail.com
     changeofaddress: FamilyPublicLaw+cafcass@gmail.com
+    documentType:
+      order: ORDER
+      noticeOfHearing: ORDER
+      respondentStatement: COURT PAPER
+      applicationStatement: COURT PAPER
+      otherReports: COURT PAPER
+      threshold: COURT PAPER
+      swet: COURT PAPER
+      carePlan: COURT PAPER
+      socialWorkChronology: COURT PAPER
+      socialWorkStatement: COURT PAPER
+      genogram: COURT PAPER
+      checklistDocument: COURT PAPER
+      birthCertificate: COURT PAPER
+      additionalApplications: COURT PAPER
+      expertReports: EXPERT
+      childsGuardianReports: REPORTING TO COURT
+      courtBundle: BUNDLE
+      other: CORRESPONDENCE
+      correspondence: CORRESPONDENCE
+      additionalDocument: APPLICATION
+      newApplication: APPLICATION
 
 scheduler:
   enabled: false
@@ -146,3 +168,4 @@ send-grid:
   host: 127.0.0.1
   port: 1025
   api_key: fake-key
+

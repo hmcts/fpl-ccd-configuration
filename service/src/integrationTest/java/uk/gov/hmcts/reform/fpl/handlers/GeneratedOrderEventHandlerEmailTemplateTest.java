@@ -114,7 +114,7 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
     @Test
     void notifyParties() {
         underTest.notifyParties(new GeneratedOrderEvent(CASE_DATA, ORDER_DOCUMENT, TRANSLATION_REQUIREMENT,
-            ORDER_TITLE));
+            ORDER_TITLE, LocalDate.now()));
 
         SendEmailResponse adminResponse = response();
         SendEmailResponse laResponse = response();
