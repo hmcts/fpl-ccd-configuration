@@ -418,7 +418,13 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
             assertThat(currentCourt.getName()).isEqualTo("Wrexham");
             assertThat(currentCourt.getDateTransferred()).isNotNull();
             assertThat(updatedCaseData.getPastCourtList()).hasSize(1);
-            assertThat(updatedCaseData.getPastCourtList().iterator().next().getValue().getCode()).isEqualTo("344");
+
+            Court lastCourt = unwrapElements(updatedCaseData.getPastCourtList())
+                .stream()
+                .sorted(Comparator.comparing(Court::getDateTransferred).reversed())
+                .findFirst().orElse(null);
+            assertThat(lastCourt).isNotNull();
+            assertThat(lastCourt.getCode()).isEqualTo("344");
         }
 
         @Test
@@ -488,7 +494,13 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
             assertThat(updatedCaseData.getCourt().getName()).isEqualTo(RCJ_HIGH_COURT_NAME);
             assertThat(updatedCaseData.getCourt().getDateTransferred()).isNotNull();
             assertThat(updatedCaseData.getPastCourtList()).hasSize(1);
-            assertThat(updatedCaseData.getPastCourtList().iterator().next().getValue().getCode()).isEqualTo("344");
+
+            Court lastCourt = unwrapElements(updatedCaseData.getPastCourtList())
+                .stream()
+                .sorted(Comparator.comparing(Court::getDateTransferred).reversed())
+                .findFirst().orElse(null);
+            assertThat(lastCourt).isNotNull();
+            assertThat(lastCourt.getCode()).isEqualTo("344");
         }
     }
 }
