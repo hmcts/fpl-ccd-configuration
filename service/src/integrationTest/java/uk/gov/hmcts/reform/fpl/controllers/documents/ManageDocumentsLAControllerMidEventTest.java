@@ -195,9 +195,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
             .type(ADDITIONAL_APPLICATIONS_DOCUMENTS)
-            .hasHearings("No")
-            .hasC2s("Yes")
-            .hasConfidentialAddress("No")
+            .hasHearings(YesNo.NO.getValue())
+            .hasC2s(YesNo.YES.getValue())
+            .hasConfidentialAddress(YesNo.NO.getValue())
             .build());
     }
 
