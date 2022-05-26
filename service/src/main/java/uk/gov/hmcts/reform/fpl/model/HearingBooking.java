@@ -106,7 +106,9 @@ public class HearingBooking implements TranslatableItem {
     }
 
     public boolean startsAfterToday() {
-        return startDate.isAfter(ZonedDateTime.now(ZoneId.of("Europe/London")).toLocalDateTime());
+        return ofNullable(startDate)
+            .map(date -> date.isAfter(ZonedDateTime.now(ZoneId.of("Europe/London")).toLocalDateTime()))
+            .orElse(false);
     }
 
     public boolean startsTodayOrBefore() {

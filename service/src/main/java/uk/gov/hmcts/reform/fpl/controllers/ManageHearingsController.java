@@ -262,11 +262,17 @@ public class ManageHearingsController extends CallbackController {
         return respond(caseDetails);
     }
 
+
+
     @PostMapping("/validate-hearing-dates/mid-event")
     public CallbackResponse validateHearingDatesMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
         List<String> errors;
+        errors = pastHearingDatesValidatorService.validateHearingIntegers(caseDetails);
+        if (!errors.isEmpty()) {
+            return respond(caseDetails, errors);
+        }
+        CaseData caseData = getCaseData(caseDetails);
 
         if (isAddingNewHearing(caseData)) {
             errors = pastHearingDatesValidatorService.validateHearingDates(caseData.getHearingStartDate(),
