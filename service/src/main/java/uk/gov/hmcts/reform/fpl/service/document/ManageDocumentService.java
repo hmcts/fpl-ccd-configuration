@@ -491,24 +491,24 @@ public class ManageDocumentService {
     }
 
     private List<Element<DocumentWithConfidentialAddress>> updateDocWithConfidentialAddr(CaseData caseData,
-            List<Element<DocumentWithConfidentialAddress>> existingLst,
-            List<Element<DocumentWithConfidentialAddress>> editedLst) {
+            List<Element<DocumentWithConfidentialAddress>> existingList,
+            List<Element<DocumentWithConfidentialAddress>> editedList) {
 
-        List<Element<DocumentWithConfidentialAddress>> resultLst =
+        List<Element<DocumentWithConfidentialAddress>> resultList =
             Optional.ofNullable(caseData.getDocumentsWithConfidentialAddress()).orElse(new ArrayList<>());
 
-        List<UUID> existingDocUuid = existingLst.stream().map(Element::getId).collect(Collectors.toList());
+        List<UUID> existingDocUuid = existingList.stream().map(Element::getId).collect(Collectors.toList());
 
         // remove the existing document from the documentsWithConfidentialAddress list
-        resultLst.removeAll(resultLst.stream()
+        resultList.removeAll(resultList.stream()
             .filter(confidentialDoc ->
                 existingDocUuid.contains(confidentialDoc.getId()))
             .collect(Collectors.toList()));
 
         // add the updated version document into the documentsWithConfidentialAddress list
-        resultLst.addAll(editedLst);
+        resultList.addAll(editedList);
 
-        return resultLst;
+        return resultList;
     }
 
     // Separate collection based on idam role (only show users their own documents)
