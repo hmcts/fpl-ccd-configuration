@@ -44,6 +44,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.function.Predicate.not;
@@ -141,7 +142,9 @@ public class FurtherEvidenceUploadedEventHandler {
         Map<String, Set<DocumentReference>> newCourtBundles = getNewCourtBundles(caseData, caseDataBefore);
         final Set<String> recipients = new HashSet<>();
 
-        if (!newCourtBundles.isEmpty()) {
+        Predicate<Map.Entry<String, Set<DocumentReference>>> predicate = not(entry -> entry.getValue().isEmpty());
+
+        if (newCourtBundles.entrySet().stream().anyMatch(predicate)) {
             recipients.addAll(furtherEvidenceNotificationService.getRespondentSolicitorEmails(caseData));
             recipients.addAll(furtherEvidenceNotificationService.getChildSolicitorEmails(caseData));
             recipients.addAll(furtherEvidenceNotificationService.getDesignatedLocalAuthorityRecipients(caseData));
@@ -149,10 +152,11 @@ public class FurtherEvidenceUploadedEventHandler {
         }
 
         if (isNotEmpty(recipients)) {
-            newCourtBundles
-                .forEach((hearingDetails, value) ->
+            newCourtBundles.entrySet().stream()
+                .filter(predicate)
+                .forEach(entry ->
                     furtherEvidenceNotificationService.sendNotificationForCourtBundleUploaded(caseData, recipients,
-                        hearingDetails));
+                        entry.getKey()));
         }
     }
 
