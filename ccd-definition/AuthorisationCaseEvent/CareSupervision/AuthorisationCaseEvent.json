@@ -783,7 +783,8 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
+          "[LAMANAGING]",
+          "[SOLICITORA]"
         ],
         "CRUD": "CR"
       },
