@@ -37,6 +37,7 @@ import static uk.gov.hmcts.reform.fpl.enums.EnglandOffices.BRIGHTON;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.Jurisdiction.ENGLAND;
 import static uk.gov.hmcts.reform.fpl.enums.ReasonForSecureAccommodation.ABSCOND;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersChildAssessmentType.PSYCHIATRIC_ASSESSMENT;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -289,6 +290,15 @@ public class DocmosisOrderCaseDataGenerator {
                         .manageOrdersBirthCertificateRegistrationDistrict("RegDistrict")
                         .manageOrdersBirthCertificateRegistrationSubDistrict("RegSubDistrict")
                         .manageOrdersBirthCertificateRegistrationCounty("RegCounty")
+                        .build()
+                );
+            case CHILD_ASSESSMENT_ORDER:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersChildAssessmentType(PSYCHIATRIC_ASSESSMENT)
+                        .manageOrdersAssessmentStartDate(LocalDate.of(2022, 6, 4))
+                        .manageOrdersDurationOfAssessment(7)
+                        .manageOrdersChildToBeProducedToWhom("Carrie Lam")
                         .build()
                 );
             default:

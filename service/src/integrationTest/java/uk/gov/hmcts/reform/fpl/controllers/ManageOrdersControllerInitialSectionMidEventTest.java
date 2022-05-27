@@ -112,6 +112,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .orderPlacedChildInCustody(NO)
             .childPlacementApplications(NO)
             .childPlacementQuestions(NO)
+            .manageOrdersChildAssessment(NO)
             .build()
         );
     }
@@ -171,6 +172,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .childPlacementApplications(NO)
             .childPlacementQuestions(NO)
             .orderPlacedChildInCustody(NO)
+            .manageOrdersChildAssessment(NO)
             .build()
         );
     }

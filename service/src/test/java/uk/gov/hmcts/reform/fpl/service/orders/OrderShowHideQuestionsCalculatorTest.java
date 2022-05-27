@@ -24,6 +24,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C37_EDUCATION_SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C39_CHILD_ASSESSMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43A_SPECIAL_GUARDIANSHIP_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C45A_PARENTAL_RESPONSIBILITY_ORDER;
@@ -79,7 +80,8 @@ class OrderShowHideQuestionsCalculatorTest {
             Map.entry("parentResponsible", "NO"),
             Map.entry("childPlacementApplications", "NO"),
             Map.entry("childPlacementQuestions", "NO"),
-            Map.entry("orderPlacedChildInCustody", "NO")
+            Map.entry("orderPlacedChildInCustody", "NO"),
+            Map.entry("manageOrdersChildAssessment", "NO")
         ));
     }
 
@@ -147,6 +149,7 @@ class OrderShowHideQuestionsCalculatorTest {
         careOrderQuestions.put("childPlacementApplications", "NO");
         careOrderQuestions.put("childPlacementQuestions", "NO");
         careOrderQuestions.put("orderPlacedChildInCustody", "NO");
+        careOrderQuestions.put("manageOrdersChildAssessment", "NO");
 
         Map<String, String> dischargeOfCareQuestions = new HashMap<>(commonQuestions);
         dischargeOfCareQuestions.put("orderTitle", "NO");
@@ -180,6 +183,7 @@ class OrderShowHideQuestionsCalculatorTest {
         dischargeOfCareQuestions.put("childPlacementApplications", "NO");
         dischargeOfCareQuestions.put("childPlacementQuestions", "NO");
         dischargeOfCareQuestions.put("orderPlacedChildInCustody", "NO");
+        dischargeOfCareQuestions.put("manageOrdersChildAssessment", "NO");
 
         Map<String, String> epoQuestions = new HashMap<>(commonQuestions);
         epoQuestions.put("orderTitle", "NO");
@@ -213,6 +217,7 @@ class OrderShowHideQuestionsCalculatorTest {
         epoQuestions.put("childPlacementApplications", "NO");
         epoQuestions.put("childPlacementQuestions", "NO");
         epoQuestions.put("orderPlacedChildInCustody", "NO");
+        epoQuestions.put("manageOrdersChildAssessment", "NO");
 
         Map<String, String> blankOrderQuestions = new HashMap<>(commonQuestions);
         blankOrderQuestions.put("orderTitle", "YES");
@@ -246,6 +251,7 @@ class OrderShowHideQuestionsCalculatorTest {
         blankOrderQuestions.put("childPlacementApplications", "NO");
         blankOrderQuestions.put("childPlacementQuestions", "NO");
         blankOrderQuestions.put("orderPlacedChildInCustody", "NO");
+        blankOrderQuestions.put("manageOrdersChildAssessment", "NO");
 
         Map<String, String> supervisionOrderQuestions = new HashMap<>(commonQuestions);
         supervisionOrderQuestions.put("orderTitle", "NO");
@@ -279,6 +285,7 @@ class OrderShowHideQuestionsCalculatorTest {
         supervisionOrderQuestions.put("childPlacementApplications", "NO");
         supervisionOrderQuestions.put("childPlacementQuestions", "NO");
         supervisionOrderQuestions.put("orderPlacedChildInCustody", "NO");
+        supervisionOrderQuestions.put("manageOrdersChildAssessment", "NO");
 
         Map<String, String> specialGuardianshipOrderQuestions = new HashMap<>(commonQuestions);
         specialGuardianshipOrderQuestions.put("orderTitle", "NO");
@@ -312,6 +319,7 @@ class OrderShowHideQuestionsCalculatorTest {
         specialGuardianshipOrderQuestions.put("childPlacementApplications", "NO");
         specialGuardianshipOrderQuestions.put("childPlacementQuestions", "NO");
         specialGuardianshipOrderQuestions.put("orderPlacedChildInCustody", "NO");
+        specialGuardianshipOrderQuestions.put("manageOrdersChildAssessment", "NO");
 
         Map<String, String> appointmentOfChildrensGuardianQuestions = new HashMap<>(commonQuestions);
         appointmentOfChildrensGuardianQuestions.put("orderTitle", "NO");
@@ -345,6 +353,7 @@ class OrderShowHideQuestionsCalculatorTest {
         appointmentOfChildrensGuardianQuestions.put("childPlacementApplications", "NO");
         appointmentOfChildrensGuardianQuestions.put("childPlacementQuestions", "NO");
         appointmentOfChildrensGuardianQuestions.put("orderPlacedChildInCustody", "NO");
+        appointmentOfChildrensGuardianQuestions.put("manageOrdersChildAssessment", "NO");
 
         Map<String, String> childArrangementSpecificOrder = new HashMap<>(commonQuestions);
         childArrangementSpecificOrder.put("orderTitle", "NO");
@@ -378,6 +387,7 @@ class OrderShowHideQuestionsCalculatorTest {
         childArrangementSpecificOrder.put("childPlacementApplications", "NO");
         childArrangementSpecificOrder.put("childPlacementQuestions", "NO");
         childArrangementSpecificOrder.put("orderPlacedChildInCustody", "NO");
+        childArrangementSpecificOrder.put("manageOrdersChildAssessment", "NO");
 
         Map<String, String> secureAccommodationOrderQuestions = new HashMap<>(commonQuestions);
         secureAccommodationOrderQuestions.put("orderTitle", "NO");
@@ -411,6 +421,7 @@ class OrderShowHideQuestionsCalculatorTest {
         secureAccommodationOrderQuestions.put("childPlacementApplications", "NO");
         secureAccommodationOrderQuestions.put("childPlacementQuestions", "NO");
         secureAccommodationOrderQuestions.put("orderPlacedChildInCustody", "NO");
+        secureAccommodationOrderQuestions.put("manageOrdersChildAssessment", "NO");
 
         Map<String, String> parentalResponsibilityOrder = new HashMap<>(commonQuestions);
         parentalResponsibilityOrder.put("orderTitle", "NO");
@@ -444,6 +455,7 @@ class OrderShowHideQuestionsCalculatorTest {
         parentalResponsibilityOrder.put("childPlacementApplications", "NO");
         parentalResponsibilityOrder.put("childPlacementQuestions", "NO");
         parentalResponsibilityOrder.put("orderPlacedChildInCustody", "NO");
+        parentalResponsibilityOrder.put("manageOrdersChildAssessment", "NO");
 
         Map<String, String> recoveryOfChildQuestions = new HashMap<>(commonQuestions);
         recoveryOfChildQuestions.put("orderTitle", "NO");
@@ -477,6 +489,7 @@ class OrderShowHideQuestionsCalculatorTest {
         recoveryOfChildQuestions.put("childPlacementApplications", "NO");
         recoveryOfChildQuestions.put("childPlacementQuestions", "NO");
         recoveryOfChildQuestions.put("orderPlacedChildInCustody", "YES");
+        recoveryOfChildQuestions.put("manageOrdersChildAssessment", "NO");
 
         Map<String, String> placementOrder = new HashMap<>(commonQuestions);
         placementOrder.put("orderTitle", "NO");
@@ -512,6 +525,43 @@ class OrderShowHideQuestionsCalculatorTest {
         placementOrder.put("childPlacementApplications", "YES");
         placementOrder.put("childPlacementQuestions", "YES");
         placementOrder.put("orderPlacedChildInCustody", "NO");
+        placementOrder.put("manageOrdersChildAssessment", "NO");
+
+        Map<String, String> childAssessmentOrder = new HashMap<>(commonQuestions);
+        childAssessmentOrder.put("orderTitle", "NO");
+        childAssessmentOrder.put("hearingDetails", "NO");
+        childAssessmentOrder.put("linkApplication", "NO");
+        childAssessmentOrder.put("approvalDate", "YES");
+        childAssessmentOrder.put("orderDetails", "NO");
+        childAssessmentOrder.put("approvalDateTime", "NO");
+        childAssessmentOrder.put("epoIncludePhrase", "NO");
+        childAssessmentOrder.put("uploadOrderFile", "NO");
+        childAssessmentOrder.put("needSealing", "NO");
+        childAssessmentOrder.put("epoChildrenDescription", "NO");
+        childAssessmentOrder.put("epoExpiryDate", "NO");
+        childAssessmentOrder.put("epoTypeAndPreventRemoval", "NO");
+        childAssessmentOrder.put("cafcassJurisdictions", "NO");
+        childAssessmentOrder.put("selectSingleChild", "NO");
+        childAssessmentOrder.put("reasonForSecureAccommodation", "NO");
+        childAssessmentOrder.put("childLegalRepresentation", "NO");
+        childAssessmentOrder.put("orderJurisdiction", "NO");
+        childAssessmentOrder.put("manageOrdersExpiryDateWithMonth", "NO");
+        childAssessmentOrder.put("manageOrdersExclusionRequirementDetails", "NO");
+        childAssessmentOrder.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
+        childAssessmentOrder.put("childArrangementSpecificIssueProhibitedSteps", "NO");
+        childAssessmentOrder.put("whichOthers", "YES");
+        childAssessmentOrder.put("dischargeOfCareDetails", "NO");
+        childAssessmentOrder.put("closeCase", "YES");
+        childAssessmentOrder.put("whichChildren", "YES");
+        childAssessmentOrder.put("orderIsByConsent", "YES");
+        childAssessmentOrder.put("furtherDirections", "NO");
+        childAssessmentOrder.put("isFinalOrder", "NO");
+        childAssessmentOrder.put("appointedGuardian", "NO");
+        childAssessmentOrder.put("parentResponsible", "NO");
+        childAssessmentOrder.put("childPlacementApplications", "NO");
+        childAssessmentOrder.put("childPlacementQuestions", "NO");
+        childAssessmentOrder.put("orderPlacedChildInCustody", "NO");
+        childAssessmentOrder.put("manageOrdersChildAssessment", "YES");
 
         return Stream.of(
             Arguments.of(C21_BLANK_ORDER, blankOrderQuestions),
@@ -521,6 +571,7 @@ class OrderShowHideQuestionsCalculatorTest {
             Arguments.of(C32A_CARE_ORDER, careOrderQuestions),
             Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, dischargeOfCareQuestions),
             Arguments.of(C35A_SUPERVISION_ORDER, supervisionOrderQuestions),
+            Arguments.of(C39_CHILD_ASSESSMENT_ORDER, childAssessmentOrder),
             Arguments.of(C43A_SPECIAL_GUARDIANSHIP_ORDER, specialGuardianshipOrderQuestions),
             Arguments.of(C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER, childArrangementSpecificOrder),
             Arguments.of(C45A_PARENTAL_RESPONSIBILITY_ORDER, parentalResponsibilityOrder),
@@ -569,7 +620,8 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("uploadAmendedOrder", "NO"),
                 Map.entry("childPlacementApplications", "NO"),
                 Map.entry("childPlacementQuestions", "NO"),
-                Map.entry("orderPlacedChildInCustody", "NO")
+                Map.entry("orderPlacedChildInCustody", "NO"),
+                Map.entry("manageOrdersChildAssessment", "NO")
             )));
     }
 
@@ -615,7 +667,8 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("parentResponsible", "NO"),
                 Map.entry("childPlacementApplications", "NO"),
                 Map.entry("childPlacementQuestions", "NO"),
-                Map.entry("orderPlacedChildInCustody", "NO")
+                Map.entry("orderPlacedChildInCustody", "NO"),
+                Map.entry("manageOrdersChildAssessment", "NO")
                 )));
     }
 }

@@ -27,6 +27,7 @@ public class OrderDocumentGeneratorHolder {
     private final C33InterimCareOrderDocumentParameterGenerator c33InterimCareOrderDocumentParameterGenerator;
     private final C35aSupervisionOrderDocumentParameterGenerator c35aSupervisionOrderDocumentParameterGenerator;
     private final C35bISODocumentParameterGenerator c35bISODocumentParameterGenerator;
+    private final C39ChildAssessmentOrderParameterGenerator c39ChildAssessmentOrderParameterGenerator;
     private final C43ChildArrangementOrderDocumentParameterGenerator c43ChildArrangementOrderDocumentParameterGenerator;
     private final C43aSpecialGuardianshipOrderDocumentParameterGenerator
         c43ASpecialGuardianshipOrderDocumentParameterGenerator;
@@ -55,6 +56,7 @@ public class OrderDocumentGeneratorHolder {
                 c33InterimCareOrderDocumentParameterGenerator,
                 c35aSupervisionOrderDocumentParameterGenerator,
                 c35bISODocumentParameterGenerator,
+                c39ChildAssessmentOrderParameterGenerator,
                 c43ChildArrangementOrderDocumentParameterGenerator,
                 c43ASpecialGuardianshipOrderDocumentParameterGenerator,
                 c47AParameterGenerator,

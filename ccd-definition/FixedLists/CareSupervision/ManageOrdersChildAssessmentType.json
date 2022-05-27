@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersChildAssessmentType",
+    "ListElementCode": "MEDICAL_ASSESSMENT",
+    "ListElement": "Medical Assessment",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersChildAssessmentType",
+    "ListElementCode": "PSYCHIATRIC_ASSESSMENT",
+    "ListElement": "Psychiatric Assessment",
+    "DisplayOrder": 2
+  }
+]

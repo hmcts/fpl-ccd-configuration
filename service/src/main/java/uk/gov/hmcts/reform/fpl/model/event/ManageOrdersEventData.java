@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.enums.ReasonForSecureAccommodation;
 import uk.gov.hmcts.reform.fpl.enums.RelationshipWithChild;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.WalesOffices;
+import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersChildAssessmentType;
 import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -97,6 +98,10 @@ public class ManageOrdersEventData {
     Address manageOrdersActionsPermittedAddress;
     String manageOrdersOfficerName;
     LocalDate manageOrdersOrderCreatedDate;
+    LocalDate manageOrdersAssessmentStartDate;
+    ManageOrdersChildAssessmentType manageOrdersChildAssessmentType;
+    String manageOrdersChildToBeProducedToWhom;
+    Integer manageOrdersDurationOfAssessment;
 
 
     @JsonIgnore
