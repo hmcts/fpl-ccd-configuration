@@ -203,7 +203,8 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
+          "[LAMANAGING]",
+          "[SOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -329,7 +330,8 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
+          "[LAMANAGING]",
+          "[SOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -371,7 +373,8 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
+          "[LAMANAGING]",
+          "[SOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -392,7 +395,8 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
+          "[LAMANAGING]",
+          "[SOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -459,7 +463,8 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
+          "[LAMANAGING]",
+          "[SOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -566,7 +571,8 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
+          "[LAMANAGING]",
+          "[SOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -827,7 +833,8 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
+          "[LAMANAGING]",
+          "[SOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -848,7 +855,8 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
+          "[LAMANAGING]",
+          "[SOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -998,7 +1006,8 @@
           "[LASHARED]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
-          "[LABARRISTER]"
+          "[LABARRISTER]",
+          "[SOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -1362,7 +1371,8 @@
           "[LASOLICITOR]",
           "[LASHARED]",
           "[LAMANAGING]",
-          "[EPSMANAGING]"
+          "[EPSMANAGING]",
+          "[SOLICITORA]"
         ],
         "CRUD": "CR"
       }
@@ -1415,7 +1425,8 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
+          "[LAMANAGING]",
+          "[SOLICITORA]"
         ],
         "CRUD": "CR"
       },
