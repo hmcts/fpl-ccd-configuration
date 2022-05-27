@@ -344,7 +344,7 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
             .hearingDetails(hearingBookings)
             .hearingDocumentsHearingList(hearingList)
             .manageDocumentsHearingDocumentType(HearingDocumentType.CASE_SUMMARY)
-            .manageDocument(buildManagementDocument(HEARING_DOCUMENTS))§
+            .manageDocument(buildManagementDocument(HEARING_DOCUMENTS))
             .manageDocumentsCaseSummary(manageDocumentCaseSummary)
             .build();
 
