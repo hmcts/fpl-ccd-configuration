@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -124,7 +125,7 @@ class C36VariationOrExtensionOfSupervisionOrdersParameterGeneratorTest {
 
         stringBuilder
             .append("made by this Court, " + LOCAL_AUTHORITY_1_COURT_NAME + " on ")
-            .append(APPROVAL_DATE)
+            .append(dateBuilder(APPROVAL_DATE))
             .append(".\n\n");
 
         stringBuilder
@@ -138,7 +139,7 @@ class C36VariationOrExtensionOfSupervisionOrdersParameterGeneratorTest {
 
         stringBuilder
             .append("This order ends on ")
-            .append(END_DATE)
+            .append(dateBuilder(END_DATE))
             .append(".\n\n");
 
         String orderDetails = orderMessageGenerator.formatOrderMessage(caseData, stringBuilder.toString());
@@ -149,5 +150,9 @@ class C36VariationOrExtensionOfSupervisionOrdersParameterGeneratorTest {
             .orderByConsent(orderMessageGenerator.getOrderByConsentMessage(eventData))
             .orderDetails(orderDetails)
             .build();
+    }
+
+    private String dateBuilder(LocalDate date) {
+        return date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
     }
 }

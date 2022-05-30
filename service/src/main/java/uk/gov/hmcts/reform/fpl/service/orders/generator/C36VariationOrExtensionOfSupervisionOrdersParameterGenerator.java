@@ -11,6 +11,9 @@ import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C36VariationOrExtensionOf
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class C36VariationOrExtensionOfSupervisionOrdersParameterGenerator implements DocmosisParameterGenerator {
@@ -54,7 +57,7 @@ public class C36VariationOrExtensionOfSupervisionOrdersParameterGenerator implem
 
         stringBuilder
             .append("made by this Court, ${courtName} on ")
-            .append(eventData.getManageOrdersSupervisionOrderApprovalDate())
+            .append(dateBuilder(eventData.getManageOrdersSupervisionOrderApprovalDate()))
             .append(".\n\n");
 
         stringBuilder
@@ -68,9 +71,13 @@ public class C36VariationOrExtensionOfSupervisionOrdersParameterGenerator implem
 
         stringBuilder
             .append("This order ends on ")
-            .append(eventData.getManageOrdersSupervisionOrderEndDate())
+            .append(dateBuilder(eventData.getManageOrdersSupervisionOrderEndDate()))
             .append(".\n\n");
 
         return orderMessageGenerator.formatOrderMessage(caseData, stringBuilder.toString());
+    }
+
+    private String dateBuilder(LocalDate date) {
+        return date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
     }
 }
