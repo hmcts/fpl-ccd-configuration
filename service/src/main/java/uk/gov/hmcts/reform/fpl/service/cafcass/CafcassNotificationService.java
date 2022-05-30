@@ -32,6 +32,7 @@ import static java.util.Set.of;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.model.email.EmailAttachment.document;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.LARGE_ATTACHEMENTS;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NOTICE_OF_HEARING;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
@@ -177,6 +178,8 @@ public class CafcassNotificationService {
                         .map(localDateTime -> localDateTime.format(DATE_TIME_FORMATTER))
                         .orElse("NotSet");
                 documentReference.setType(NOTICE_OF_HEARING.getLabel());
+            } else if (provider == COURT_BUNDLE) {
+                documentReference.setType(COURT_BUNDLE.getLabel());
             }
 
             String lookupKey = Optional.ofNullable(

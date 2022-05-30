@@ -321,8 +321,7 @@ class CafcassNotificationServiceTest {
                 DOCUMENT_CONTENT);
 
         underTest.sendEmail(caseData,
-                of(getDocumentReference().toBuilder()
-                        .type(COURT_BUNDLE.getLabel()).build()),
+                of(getDocumentReference()),
                 COURT_BUNDLE,
                 CourtBundleData.builder()
                         .hearingDetails(TITLE)
