@@ -887,13 +887,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "cmoSupportingDocs",
-    "UserRole": "[BARRISTER]",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "additionalApplicationsLabel",
     "UserRole": "[BARRISTER]",
     "CRUD": "R"

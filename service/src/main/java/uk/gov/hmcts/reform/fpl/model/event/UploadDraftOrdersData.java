@@ -40,8 +40,6 @@ public class UploadDraftOrdersData {
     DocumentReference uploadedCaseManagementOrder;
     @Temp
     DocumentReference replacementCMO;
-    @Temp
-    List<Element<SupportingEvidenceBundle>> cmoSupportingDocs;
 
     @Temp
     Object pastHearingsForCMO;
@@ -112,10 +110,6 @@ public class UploadDraftOrdersData {
     YesNo showCMOsSentToJudge;
     @Temp
     YesNo showReplacementCMO;
-
-    public List<Element<SupportingEvidenceBundle>> getCmoSupportingDocs() {
-        return defaultIfNull(cmoSupportingDocs, new ArrayList<>());
-    }
 
     @JsonIgnore
     public boolean isCmoAgreed() {

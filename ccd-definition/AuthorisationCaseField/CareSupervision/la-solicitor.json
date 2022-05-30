@@ -1357,21 +1357,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "cmoSupportingDocs",
-    "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "CRUD",
-    "Comment": "Requires idam role otherwise cannot add to"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "cmosSentToJudge",
-    "UserRole": "[LASOLICITOR]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "previousCMO",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "CRU"
