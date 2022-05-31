@@ -17,6 +17,7 @@ class CaseSummaryHighCourtCaseFlagGeneratorTest {
         SyntheticCaseSummary caseSummary = underTest.generate(caseData);
         assertThat(caseSummary).isEqualTo(SyntheticCaseSummary.builder()
             .caseSummaryHighCourtCase("No")
+            .caseSummaryLAHighCourtCase("No")
             .build()
         );
     }
@@ -27,6 +28,7 @@ class CaseSummaryHighCourtCaseFlagGeneratorTest {
         SyntheticCaseSummary caseSummary = underTest.generate(caseData);
         assertThat(caseSummary).isEqualTo(SyntheticCaseSummary.builder()
             .caseSummaryHighCourtCase("Yes")
+            .caseSummaryLAHighCourtCase("Yes")
             .build()
         );
     }
@@ -37,6 +39,7 @@ class CaseSummaryHighCourtCaseFlagGeneratorTest {
         SyntheticCaseSummary caseSummary = underTest.generate(caseData);
         assertThat(caseSummary).isEqualTo(SyntheticCaseSummary.builder()
             .caseSummaryHighCourtCase("No")
+            .caseSummaryLAHighCourtCase("No")
             .build()
         );
     }

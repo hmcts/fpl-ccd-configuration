@@ -231,6 +231,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
                 .caseSummaryLanguageRequirement("No")
                 .caseSummaryLALanguageRequirement("No")
                 .caseSummaryHighCourtCase("No")
+                .caseSummaryLAHighCourtCase("No")
                 .build());
     }
 }

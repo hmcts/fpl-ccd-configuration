@@ -52,6 +52,7 @@ class RepresentativeSubmittedEventControllerTest extends AbstractCallbackTest {
         .caseSummaryLanguageRequirement("No")
         .caseSummaryLALanguageRequirement("No")
         .caseSummaryHighCourtCase("No")
+        .caseSummaryLAHighCourtCase("No")
         .build();
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
     private static final String CHILD_LAST_NAME = "something";

@@ -16,6 +16,7 @@ public class CaseSummaryHighCourtCaseFlagGenerator implements CaseSummaryFieldsG
             ).getValue();
         return SyntheticCaseSummary.builder()
             .caseSummaryHighCourtCase(displayFlag)
+            .caseSummaryLAHighCourtCase(displayFlag)
             .build();
     }
 }

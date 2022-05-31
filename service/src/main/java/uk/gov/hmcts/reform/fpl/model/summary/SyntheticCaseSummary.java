@@ -29,6 +29,7 @@ public class SyntheticCaseSummary {
     String caseSummaryCourtName;
     String caseSummaryPreviousCourtName;
     String caseSummaryHighCourtCase;
+    String caseSummaryLAHighCourtCase;
 
     String caseSummaryHasNextHearing;
     String caseSummaryNextHearingType;
