@@ -29,6 +29,7 @@ public class CaseSummaryService {
         CaseSummaryWelshFlagGenerator caseSummaryWelshFlagGenerator,
         CaseSummaryPeopleInCaseGenerator caseSummaryPeopleInCaseGenerator,
         CaseSummaryCourtGenerator caseSummaryCourtGenerator,
+        CaseSummaryHighCourtCaseFlagGenerator caseSummaryHighCourtCaseFlagGenerator,
         ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         this.generators = List.of(
@@ -42,7 +43,8 @@ public class CaseSummaryService {
             caseSummaryNextHearingGenerator,
             caseSummaryPreviousHearingGenerator,
             caseSummaryFinalHearingGenerator,
-            caseSummaryPeopleInCaseGenerator
+            caseSummaryPeopleInCaseGenerator,
+            caseSummaryHighCourtCaseFlagGenerator
         );
     }
 

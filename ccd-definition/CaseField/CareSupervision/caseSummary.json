@@ -20,6 +20,24 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseSummaryHighCourtCase",
+    "Label": "Is a High Court case",
+    "FieldType": "Text",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseSummaryHighCourtCaseFlag",
+    "Label": "<div class='govuk-tag govuk-tag--red'>HIGH COURT CASE</div>",
+    "FieldType": "Label",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseSummaryLanguageRequirement",
     "Label": "Does this case require a welsh flag",
     "FieldType": "Text",

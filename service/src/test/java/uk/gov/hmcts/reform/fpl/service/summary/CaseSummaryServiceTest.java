@@ -11,6 +11,8 @@ import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Map.entry;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -29,6 +31,7 @@ class CaseSummaryServiceTest {
     private static final SyntheticCaseSummary SYNTHETIC_CASE_SUMMARY7 = mock(SyntheticCaseSummary.class);
     private static final SyntheticCaseSummary SYNTHETIC_CASE_SUMMARY8 = mock(SyntheticCaseSummary.class);
     private static final SyntheticCaseSummary SYNTHETIC_CASE_SUMMARY9 = mock(SyntheticCaseSummary.class);
+    private static final SyntheticCaseSummary SYNTHETIC_CASE_SUMMARY10 = mock(SyntheticCaseSummary.class);
 
     private final CaseSummaryCaseFlagGenerator caseSummaryCaseFlagGenerator = mock(
         CaseSummaryCaseFlagGenerator.class);
@@ -50,6 +53,8 @@ class CaseSummaryServiceTest {
         CaseSummaryPeopleInCaseGenerator.class);
     private final CaseSummaryCourtGenerator caseSummaryCourtGenerator = mock(
         CaseSummaryCourtGenerator.class);
+    private final CaseSummaryHighCourtCaseFlagGenerator caseSummaryHighCourtCaseFlagGenerator = mock(
+        CaseSummaryHighCourtCaseFlagGenerator.class);
     private final ObjectMapper objectMapper = mock(ObjectMapper.class);
 
     private CaseSummaryService underTest = new CaseSummaryService(
@@ -64,6 +69,7 @@ class CaseSummaryServiceTest {
         caseSummaryWelshFlagGenerator,
         caseSummaryPeopleInCaseGenerator,
         caseSummaryCourtGenerator,
+        caseSummaryHighCourtCaseFlagGenerator,
         objectMapper
     );
 
@@ -80,6 +86,7 @@ class CaseSummaryServiceTest {
         when(caseSummaryCourtGenerator.generate(CASE_DATA)).thenReturn(SYNTHETIC_CASE_SUMMARY8);
         when(caseSummaryCaseFlagGenerator.generate(CASE_DATA)).thenReturn(SYNTHETIC_CASE_SUMMARY9);
         when(caseSummaryWelshFlagGenerator.generate(CASE_DATA)).thenReturn(SYNTHETIC_CASE_SUMMARY9);
+        when(caseSummaryHighCourtCaseFlagGenerator.generate(CASE_DATA)).thenReturn(SYNTHETIC_CASE_SUMMARY10);
 
         when(objectMapper.convertValue(eq(SYNTHETIC_CASE_SUMMARY0),
             Mockito.<TypeReference<Map<String, Object>>>any())).thenReturn(Map.of("field0", "value0"));
@@ -101,6 +108,8 @@ class CaseSummaryServiceTest {
             Mockito.<TypeReference<Map<String, Object>>>any())).thenReturn(Map.of("field8", "value8"));
         when(objectMapper.convertValue(eq(SYNTHETIC_CASE_SUMMARY9),
             Mockito.<TypeReference<Map<String, Object>>>any())).thenReturn(Map.of("field9", "value9"));
+        when(objectMapper.convertValue(eq(SYNTHETIC_CASE_SUMMARY10),
+            Mockito.<TypeReference<Map<String, Object>>>any())).thenReturn(Map.of("field10", "value10"));
     }
 
     @Test
@@ -108,17 +117,18 @@ class CaseSummaryServiceTest {
 
         Map<String, Object> actual = underTest.generateSummaryFields(CASE_DATA);
 
-        assertThat(actual).isEqualTo(Map.of(
-            "field0", "value0",
-            "field1", "value1",
-            "field2", "value2",
-            "field3", "value3",
-            "field4", "value4",
-            "field5", "value5",
-            "field6", "value6",
-            "field7", "value7",
-            "field8", "value8",
-            "field9", "value9"
+        assertThat(actual).isEqualTo(Map.ofEntries(
+            entry("field0", "value0"),
+            entry("field1", "value1"),
+            entry("field2", "value2"),
+            entry("field3", "value3"),
+            entry("field4", "value4"),
+            entry("field5", "value5"),
+            entry("field6", "value6"),
+            entry("field7", "value7"),
+            entry("field8", "value8"),
+            entry("field9", "value9"),
+            entry("field10", "value10")
         ));
     }
 
@@ -146,6 +156,7 @@ class CaseSummaryServiceTest {
         expected.put("field7", "value7");
         expected.put("field8", "value8");
         expected.put("field9", "value9");
+        expected.put("field10", "value10");
 
         Map<String, Object> actual = underTest.generateSummaryFields(CASE_DATA);
 
@@ -166,17 +177,18 @@ class CaseSummaryServiceTest {
 
         Map<String, Object> actual = underTest.generateSummaryFields(CASE_DATA);
 
-        assertThat(actual).isEqualTo(Map.of(
-            "field0", "value0",
-            "field1", "value1",
-            "field2", "value2",
-            "field3", "value3",
-            "field4", "value4",
-            "field5", "value5",
-            "field6", "value6",
-            "field7", "value7",
-            "field8", "value8",
-            "field9", "value9"
+        assertThat(actual).isEqualTo(Map.ofEntries(
+            entry("field0", "value0"),
+            entry("field1", "value1"),
+            entry("field2", "value2"),
+            entry("field3", "value3"),
+            entry("field4", "value4"),
+            entry("field5", "value5"),
+            entry("field6", "value6"),
+            entry("field7", "value7"),
+            entry("field8", "value8"),
+            entry("field9", "value9"),
+            entry("field10", "value10")
         ));
 
     }
@@ -194,17 +206,18 @@ class CaseSummaryServiceTest {
 
         Map<String, Object> actual = underTest.generateSummaryFields(CASE_DATA);
 
-        assertThat(actual).isEqualTo(Map.of(
-            "field0", "value0",
-            "field1", "FIELD_WILL_NOT_OVERRIDE",
-            "field2", "value2",
-            "field3", "value3",
-            "field4", "value4",
-            "field5", "value5",
-            "field6", "value6",
-            "field7", "value7",
-            "field8", "value8",
-            "field9", "value9"
+        assertThat(actual).isEqualTo(Map.ofEntries(
+                entry("field0", "value0"),
+                entry("field1", "FIELD_WILL_NOT_OVERRIDE"),
+                entry("field2", "value2"),
+                entry("field3", "value3"),
+                entry("field4", "value4"),
+                entry("field5", "value5"),
+                entry("field6", "value6"),
+                entry("field7", "value7"),
+                entry("field8", "value8"),
+                entry("field9", "value9"),
+                entry("field10", "value10")
         ));
 
     }
