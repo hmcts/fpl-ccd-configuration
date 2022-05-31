@@ -134,8 +134,6 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
                 .line("You can review the order by:")
                 .list("signing into " + caseDetailsUrl(CASE_ID, TabUrlAnchor.ORDERS))
                 .line()
-                .list("using this link http://fake-url/some-url/binary")
-                .line()
                 .line("HM Courts & Tribunals Service")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
@@ -160,8 +158,6 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
                 .line()
                 .line("You can review the order by:")
                 .line()
-                .line()
-                .list("using this link " + GOV_NOTIFY_DOC_URL)
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .line()
