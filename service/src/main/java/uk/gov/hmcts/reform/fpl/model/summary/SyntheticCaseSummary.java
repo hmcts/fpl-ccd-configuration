@@ -57,6 +57,8 @@ public class SyntheticCaseSummary {
     String caseSummaryFirstRespondentLegalRep;
     String caseSummaryCafcassGuardian;
 
+    String caseSummaryLATabHidden;
+
     public static SyntheticCaseSummary emptySummary() {
         return SyntheticCaseSummary.builder().build();
     }

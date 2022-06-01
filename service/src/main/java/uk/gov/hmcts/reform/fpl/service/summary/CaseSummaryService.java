@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+
 @Service
 public class CaseSummaryService {
 
@@ -49,7 +52,7 @@ public class CaseSummaryService {
     }
 
     public Map<String, Object> generateSummaryFields(CaseData caseData) {
-        return generators.stream()
+        Map<String, Object> ret = generators.stream()
             .map(generator -> generator.generate(caseData))
             .flatMap(summary -> objectMapper.convertValue(summary,
                 new TypeReference<Map<String, Object>>() {})
@@ -60,6 +63,14 @@ public class CaseSummaryService {
                     m.put(v.getKey(), v.getValue());
                 }
             }, HashMap::putAll);
-
+        // X AND (Y OR Z) doesn't work at this moment
+        // introduced caseSummaryLATabHidden for an alternative solution.
+        // "TabShowCondition": "[STATE] != \"Open\" AND [STATE] != \"RETURNED\"
+        // AND (caseSummaryLALanguageRequirement = \"Yes\" OR caseSummaryLAHighCourtCase = \"Yes\")",
+        if (ret.containsKey("caseSummaryLAHighCourtCase") && ret.containsKey("caseSummaryLALanguageRequirement")) {
+            ret.put("caseSummaryLATabHidden", YES.getValue().equals(ret.get("caseSummaryLAHighCourtCase"))
+                || YES.getValue().equals(ret.get("caseSummaryLALanguageRequirement")) ? NO.getValue() : YES.getValue());
+        }
+        return ret;
     }
 }

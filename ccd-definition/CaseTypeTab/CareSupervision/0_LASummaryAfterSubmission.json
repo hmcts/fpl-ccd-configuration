@@ -7,7 +7,7 @@
     "TabLabel": "Summary",
     "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryLATabHeading",
-    "TabShowCondition": "[STATE] != \"Open\" AND [STATE] != \"RETURNED\" AND (caseSummaryLALanguageRequirement = \"Yes\" OR caseSummaryLAHighCourtCase = \"Yes\")",
+    "TabShowCondition": "[STATE] != \"Open\" AND [STATE] != \"RETURNED\" AND caseSummaryLATabHidden = \"No\"",
     "TabFieldDisplayOrder": 1
   },
   {
@@ -17,7 +17,7 @@
     "TabID": "SummaryLA",
     "TabLabel": "Summary",
     "TabDisplayOrder": 0,
-    "CaseFieldID": "caseSummaryLALanguageRequirement",
+    "CaseFieldID": "caseSummaryLATabHidden",
     "FieldShowCondition": "caseSummaryLATabHeading = \"DO_NOT_SHOW\"",
     "TabFieldDisplayOrder": 2
   },
@@ -28,9 +28,20 @@
     "TabID": "SummaryLA",
     "TabLabel": "Summary",
     "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryLALanguageRequirement",
+    "FieldShowCondition": "caseSummaryLATabHeading = \"DO_NOT_SHOW\"",
+    "TabFieldDisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryLA",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryLAWelshFlag",
     "FieldShowCondition": "caseSummaryLALanguageRequirement = \"Yes\"",
-    "TabFieldDisplayOrder": 3
+    "TabFieldDisplayOrder": 4
   },
   {
     "LiveFrom": "01/01/2017",
@@ -41,7 +52,7 @@
     "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryLAHighCourtCase",
     "FieldShowCondition": "caseSummaryLATabHeading = \"DO_NOT_SHOW\"",
-    "TabFieldDisplayOrder": 4
+    "TabFieldDisplayOrder": 5
   },
   {
     "LiveFrom": "01/01/2017",
@@ -52,6 +63,6 @@
     "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryLAHighCourtCaseFlag",
     "FieldShowCondition": "caseSummaryLAHighCourtCase = \"Yes\"",
-    "TabFieldDisplayOrder": 5
+    "TabFieldDisplayOrder": 6
   }
 ]

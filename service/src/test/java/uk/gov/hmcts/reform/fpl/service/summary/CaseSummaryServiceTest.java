@@ -113,6 +113,154 @@ class CaseSummaryServiceTest {
     }
 
     @Test
+    void testAutoCalculatedCaseSummaryLAHiddenWhenWelshFlagAndHighCourtFlagAreOff() {
+        SyntheticCaseSummary welshFlagData = SyntheticCaseSummary.builder()
+            .caseSummaryLALanguageRequirement("Yes")
+            .caseSummaryLanguageRequirement("Yes")
+            .build();
+        SyntheticCaseSummary highCourtFlagData = SyntheticCaseSummary.builder()
+            .caseSummaryLAHighCourtCase("Yes")
+            .caseSummaryHighCourtCase("Yes")
+            .build();
+        when(caseSummaryWelshFlagGenerator.generate(CASE_DATA)).thenReturn(welshFlagData);
+        when(caseSummaryHighCourtCaseFlagGenerator.generate(CASE_DATA)).thenReturn(highCourtFlagData);
+        when(objectMapper.convertValue(eq(welshFlagData),
+            Mockito.<TypeReference<Map<String, Object>>>any()))
+            .thenReturn(Map.of("caseSummaryLALanguageRequirement", "No"));
+        when(objectMapper.convertValue(eq(highCourtFlagData),
+            Mockito.<TypeReference<Map<String, Object>>>any()))
+            .thenReturn(Map.of("caseSummaryLAHighCourtCase", "No"));
+
+        Map<String, Object> actual = underTest.generateSummaryFields(CASE_DATA);
+        assertThat(actual).isEqualTo(Map.ofEntries(
+            entry("field0", "value0"),
+            entry("field1", "value1"),
+            entry("field2", "value2"),
+            entry("field3", "value3"),
+            entry("field4", "value4"),
+            entry("field5", "value5"),
+            entry("field6", "value6"),
+            entry("field7", "value7"),
+            entry("field8", "value8"),
+            entry("field9", "value9"),
+            entry("caseSummaryLAHighCourtCase", "No"),
+            entry("caseSummaryLALanguageRequirement", "No"),
+            entry("caseSummaryLATabHidden", "Yes")
+        ));
+    }
+
+    @Test
+    void testAutoCalculatedCaseSummaryLAHiddenWhenWelshFlagAndHighCourtFlagAreOn() {
+        SyntheticCaseSummary welshFlagData = SyntheticCaseSummary.builder()
+            .caseSummaryLALanguageRequirement("Yes")
+            .caseSummaryLanguageRequirement("Yes")
+            .build();
+        SyntheticCaseSummary highCourtFlagData = SyntheticCaseSummary.builder()
+            .caseSummaryLAHighCourtCase("Yes")
+            .caseSummaryHighCourtCase("Yes")
+            .build();
+        when(caseSummaryWelshFlagGenerator.generate(CASE_DATA)).thenReturn(welshFlagData);
+        when(caseSummaryHighCourtCaseFlagGenerator.generate(CASE_DATA)).thenReturn(highCourtFlagData);
+        when(objectMapper.convertValue(eq(welshFlagData),
+            Mockito.<TypeReference<Map<String, Object>>>any()))
+            .thenReturn(Map.of("caseSummaryLALanguageRequirement", "Yes"));
+        when(objectMapper.convertValue(eq(highCourtFlagData),
+            Mockito.<TypeReference<Map<String, Object>>>any()))
+            .thenReturn(Map.of("caseSummaryLAHighCourtCase", "Yes"));
+
+        Map<String, Object> actual = underTest.generateSummaryFields(CASE_DATA);
+        assertThat(actual).isEqualTo(Map.ofEntries(
+            entry("field0", "value0"),
+            entry("field1", "value1"),
+            entry("field2", "value2"),
+            entry("field3", "value3"),
+            entry("field4", "value4"),
+            entry("field5", "value5"),
+            entry("field6", "value6"),
+            entry("field7", "value7"),
+            entry("field8", "value8"),
+            entry("field9", "value9"),
+            entry("caseSummaryLAHighCourtCase", "Yes"),
+            entry("caseSummaryLALanguageRequirement", "Yes"),
+            entry("caseSummaryLATabHidden", "No")
+        ));
+    }
+
+    @Test
+    void testAutoCalculatedCaseSummaryLAHiddenWhenWelshFlagIsOn() {
+        SyntheticCaseSummary welshFlagData = SyntheticCaseSummary.builder()
+            .caseSummaryLALanguageRequirement("Yes")
+            .caseSummaryLanguageRequirement("Yes")
+            .build();
+        SyntheticCaseSummary highCourtFlagData = SyntheticCaseSummary.builder()
+            .caseSummaryLAHighCourtCase("Yes")
+            .caseSummaryHighCourtCase("Yes")
+            .build();
+        when(caseSummaryWelshFlagGenerator.generate(CASE_DATA)).thenReturn(welshFlagData);
+        when(caseSummaryHighCourtCaseFlagGenerator.generate(CASE_DATA)).thenReturn(highCourtFlagData);
+        when(objectMapper.convertValue(eq(welshFlagData),
+            Mockito.<TypeReference<Map<String, Object>>>any()))
+            .thenReturn(Map.of("caseSummaryLALanguageRequirement", "Yes"));
+        when(objectMapper.convertValue(eq(highCourtFlagData),
+            Mockito.<TypeReference<Map<String, Object>>>any()))
+            .thenReturn(Map.of("caseSummaryLAHighCourtCase", "No"));
+
+        Map<String, Object> actual = underTest.generateSummaryFields(CASE_DATA);
+        assertThat(actual).isEqualTo(Map.ofEntries(
+            entry("field0", "value0"),
+            entry("field1", "value1"),
+            entry("field2", "value2"),
+            entry("field3", "value3"),
+            entry("field4", "value4"),
+            entry("field5", "value5"),
+            entry("field6", "value6"),
+            entry("field7", "value7"),
+            entry("field8", "value8"),
+            entry("field9", "value9"),
+            entry("caseSummaryLAHighCourtCase", "No"),
+            entry("caseSummaryLALanguageRequirement", "Yes"),
+            entry("caseSummaryLATabHidden", "No")
+        ));
+    }
+
+    @Test
+    void testAutoCalculatedCaseSummaryLAHiddenWhenHighCourtFlagIsOn() {
+        SyntheticCaseSummary welshFlagData = SyntheticCaseSummary.builder()
+            .caseSummaryLALanguageRequirement("Yes")
+            .caseSummaryLanguageRequirement("Yes")
+            .build();
+        SyntheticCaseSummary highCourtFlagData = SyntheticCaseSummary.builder()
+            .caseSummaryLAHighCourtCase("Yes")
+            .caseSummaryHighCourtCase("Yes")
+            .build();
+        when(caseSummaryWelshFlagGenerator.generate(CASE_DATA)).thenReturn(welshFlagData);
+        when(caseSummaryHighCourtCaseFlagGenerator.generate(CASE_DATA)).thenReturn(highCourtFlagData);
+        when(objectMapper.convertValue(eq(welshFlagData),
+            Mockito.<TypeReference<Map<String, Object>>>any()))
+            .thenReturn(Map.of("caseSummaryLALanguageRequirement", "No"));
+        when(objectMapper.convertValue(eq(highCourtFlagData),
+            Mockito.<TypeReference<Map<String, Object>>>any()))
+            .thenReturn(Map.of("caseSummaryLAHighCourtCase", "Yes"));
+
+        Map<String, Object> actual = underTest.generateSummaryFields(CASE_DATA);
+        assertThat(actual).isEqualTo(Map.ofEntries(
+            entry("field0", "value0"),
+            entry("field1", "value1"),
+            entry("field2", "value2"),
+            entry("field3", "value3"),
+            entry("field4", "value4"),
+            entry("field5", "value5"),
+            entry("field6", "value6"),
+            entry("field7", "value7"),
+            entry("field8", "value8"),
+            entry("field9", "value9"),
+            entry("caseSummaryLAHighCourtCase", "Yes"),
+            entry("caseSummaryLALanguageRequirement", "No"),
+            entry("caseSummaryLATabHidden", "No")
+        ));
+    }
+
+    @Test
     void testWhenAllGeneratedFieldsAreDisjointed() {
 
         Map<String, Object> actual = underTest.generateSummaryFields(CASE_DATA);
