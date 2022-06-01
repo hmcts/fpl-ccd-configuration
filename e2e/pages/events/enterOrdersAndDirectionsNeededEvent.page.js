@@ -36,6 +36,7 @@ module.exports = {
     excluded: '#orders_excluded',
     directions: '#orders_directions_Yes',
     directionsDetails: '#orders_directionDetails',
+    court: '#orders_court',
   },
 
   async checkCareOrder() {
@@ -61,6 +62,10 @@ module.exports = {
 
   enterDirections(details) {
     I.fillField(this.fields.directionsDetails, details);
+  },
+
+  enterCourt(court) {
+    I.selectOption(this.fields.court, court);
   },
 
   checkInterimCareOrder() {
