@@ -97,6 +97,7 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
             .caseSummaryLALanguageRequirement("No")
             .caseSummaryHighCourtCase("No")
             .caseSummaryLAHighCourtCase("No")
+            .caseSummaryLATabHidden("Yes")
             .build())
         .respondents1(respondents)
         .build();

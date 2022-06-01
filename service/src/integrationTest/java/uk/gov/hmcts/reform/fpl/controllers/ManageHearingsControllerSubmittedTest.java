@@ -714,6 +714,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .caseSummaryLALanguageRequirement("No")
             .caseSummaryHighCourtCase("No")
             .caseSummaryLAHighCourtCase("No")
+            .caseSummaryLATabHidden("Yes")
             .build());
     }
 
