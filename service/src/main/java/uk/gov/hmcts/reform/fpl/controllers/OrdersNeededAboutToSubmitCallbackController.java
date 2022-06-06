@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,8 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +23,10 @@ import java.util.Optional;
 @Api
 @RestController
 @RequestMapping("/callback/orders-needed")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OrdersNeededAboutToSubmitCallbackController extends CallbackController {
+
+    private final HmctsCourtLookupConfiguration courtLookup;
 
     @PostMapping("/about-to-submit")
     @SuppressWarnings("unchecked")
@@ -32,6 +39,11 @@ public class OrdersNeededAboutToSubmitCallbackController extends CallbackControl
 
         Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get("orders"))
             .map(orders -> (List<String>) orders.get("orderType"));
+
+        String courtID = Optional.ofNullable((Map<String, Object>) data.get("orders"))
+            .map(orders -> (String) orders.get("court"))
+            .map(Object::toString)
+            .orElse(null);
 
         if (orderType.isPresent()) {
             orderType.ifPresent(orderTypes -> {
@@ -55,6 +67,17 @@ public class OrdersNeededAboutToSubmitCallbackController extends CallbackControl
             data.put("otherOrderType", "NO");
         }
 
+        Court selectedCourt = getCourtSelection(courtID);
+
+        if (selectedCourt != null) {
+            data.remove("court");
+            data.put("court", selectedCourt);
+        }
+
         return respond(caseDetails);
+    }
+
+    private Court getCourtSelection(String courtID) {
+        return courtLookup.getCourtByCode(courtID).orElse(null);
     }
 }
