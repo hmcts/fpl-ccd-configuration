@@ -12,9 +12,9 @@ import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -41,7 +41,7 @@ public class NoticeOfHearingGenerationService {
             .judgeAndLegalAdvisor(dataService.getJudgeAndLegalAdvisor(judgeAndLegalAdvisor))
             .postingDate(formatLocalDateToString(time.now().toLocalDate(), DATE))
             .additionalNotes(hearingBooking.getAdditionalNotes())
-            .courtseal(COURT_SEAL.getValue(caseData.getImageLanguage()))
+            .courtseal(courtService.getCourtSeal(caseData, SEALED))
             .crest(CREST.getValue())
             .build();
     }

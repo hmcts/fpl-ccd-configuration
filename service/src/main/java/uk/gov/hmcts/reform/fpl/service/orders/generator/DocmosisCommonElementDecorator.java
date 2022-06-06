@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 
 import java.util.List;
@@ -22,7 +23,6 @@ import java.util.Objects;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
-import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -34,6 +34,7 @@ public class DocmosisCommonElementDecorator {
 
     private final ChildrenSmartSelector childrenSmartSelector;
     private final CaseDataExtractionService extractionService;
+    private final CourtService courtService;
 
     public DocmosisParameters decorate(DocmosisParameters currentParameters, CaseData caseData,
                                        OrderStatus status, Order orderType) {
@@ -66,7 +67,7 @@ public class DocmosisCommonElementDecorator {
             .children(children)
             .crest(DocmosisImages.CREST.getValue())
             .draftbackground(DRAFT == status ? DocmosisImages.DRAFT_WATERMARK.getValue() : null)
-            .courtseal(SEALED == status ? DocmosisImages.COURT_SEAL.getValue(caseData.getImageLanguage()) : null)
+            .courtseal(courtService.getCourtSeal(caseData, status))
             .build();
     }
 }

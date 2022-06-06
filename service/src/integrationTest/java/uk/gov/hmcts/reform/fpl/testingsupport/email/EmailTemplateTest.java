@@ -68,7 +68,7 @@ public class EmailTemplateTest {
     private CtscTeamLeadLookupConfiguration ctscTeamLeadLookupConfiguration;
 
     @MockBean
-    private CourtService courtService;
+    protected CourtService courtService;
 
     @MockBean
     private LocalAuthorityRecipientsService localAuthorityRecipients;

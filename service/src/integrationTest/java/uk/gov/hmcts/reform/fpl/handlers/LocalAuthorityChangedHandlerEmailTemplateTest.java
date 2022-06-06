@@ -382,6 +382,9 @@ class LocalAuthorityChangedHandlerEmailTemplateTest extends EmailTemplateTest {
 
         @Test
         void notifyHighCourtAdminAboutCaseTransferToRcjHighCourt() {
+            when(courtService.isHighCourtCase(caseDataTransferredToRcjHighCourt))
+                    .thenReturn(true);
+
             underTest.notifyHighCourtAdmin(
                 new CaseTransferredToAnotherCourt(caseDataTransferredToRcjHighCourt, caseDataBefore));
             verifyResponse();

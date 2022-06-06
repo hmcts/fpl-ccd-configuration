@@ -26,9 +26,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -92,6 +94,9 @@ class NoticeOfHearingGenerationServiceTest {
 
         CaseData caseData = getCaseData();
 
+        when(courtService.getCourtSeal(caseData, SEALED))
+                .thenReturn(COURT_SEAL.getValue(caseData.getImageLanguage()));
+
         DocmosisNoticeOfHearing templateData = underTest.getTemplateData(caseData, HEARING);
 
         DocmosisNoticeOfHearing expectedTemplateData = getExpectedNoticeOfHearingTemplate(
@@ -107,6 +112,9 @@ class NoticeOfHearingGenerationServiceTest {
         when(HEARING.getTypeDetails()).thenReturn("some different type of hearing");
 
         CaseData caseData = getCaseData();
+
+        when(courtService.getCourtSeal(caseData, SEALED))
+                .thenReturn(COURT_SEAL.getValue(caseData.getImageLanguage()));
 
         DocmosisNoticeOfHearing templateData = underTest.getTemplateData(caseData, HEARING);
 
@@ -138,7 +146,11 @@ class NoticeOfHearingGenerationServiceTest {
         when(JUDGE_AND_LA.isUsingAllocatedJudge()).thenReturn(true);
         when(dataExtractionService.getJudgeAndLegalAdvisor(selectedJudgeAndLA)).thenReturn(docmosisJudgeAndLA);
 
+
         CaseData caseData = getCaseData(allocatedJudge);
+
+        when(courtService.getCourtSeal(caseData, SEALED))
+                .thenReturn(COURT_SEAL.getValue(caseData.getImageLanguage()));
 
         DocmosisNoticeOfHearing templateData = underTest.getTemplateData(caseData, HEARING);
 

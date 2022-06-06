@@ -12,6 +12,7 @@ public enum DocmosisImages {
 
     DRAFT_WATERMARK("[userImage:draft-watermark.png]", null),
     COURT_SEAL("[userImage:familycourtseal.png]", "[userImage:familycourtseal-bilingual.png]"),
+    HIGH_COURT_SEAL("[userImage:highcourtseal.png]", "[userImage:highcourtseal.png]"),
     CREST("[userImage:crest.png]", null),
     HMCTS_LOGO_LARGE("[userImage:hmcts-logo-large.png]", null),
     HMCTS_LOGO_SMALL("[userImage:hmcts-logo-small.png]", null);

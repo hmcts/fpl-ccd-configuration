@@ -21,6 +21,10 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.HIGH_COURT_SEAL;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(MockitoExtension.class)
@@ -105,6 +109,8 @@ class CourtServiceTest {
 
             assertThat(actualCourt).isNull();
         }
+
+
 
     }
 
@@ -344,4 +350,76 @@ class CourtServiceTest {
         }
     }
 
+    @Nested
+    class HighCourt {
+
+        @Test
+        void shouldReturnAsHighCourtCaseWhenCaseIsWithHighCourt() {
+            CaseData caseData = CaseData.builder()
+                    .court(Court.builder()
+                            .code(CourtLookUpService.RCJ_HIGH_COURT_CODE)
+                            .build())
+                    .build();
+            boolean highCourtCase = underTest.isHighCourtCase(caseData);
+
+            assertThat(highCourtCase).isTrue();
+        }
+
+        @Test
+        void shouldReturnNotAHighCourtCaseWhenCaseIsNotWithHighCourt() {
+            CaseData caseData = CaseData.builder()
+                    .court(Court.builder()
+                            .code("10")
+                            .build())
+                    .build();
+            boolean highCourtCase = underTest.isHighCourtCase(caseData);
+
+            assertThat(highCourtCase).isFalse();
+        }
+
+        @Test
+        void shouldReturnNotAHighCourtCaseWhenNoCourtAssigned() {
+            CaseData caseData = CaseData.builder()
+                    .build();
+            boolean highCourtCase = underTest.isHighCourtCase(caseData);
+
+            assertThat(highCourtCase).isFalse();
+        }
+
+        @Test
+        void shouldReturnHighCourtSealWhenOrderIsSubmitted() {
+            CaseData caseData = CaseData.builder()
+                    .court(Court.builder()
+                            .code(CourtLookUpService.RCJ_HIGH_COURT_CODE)
+                            .build())
+                    .build();
+            String courtSeal = underTest.getCourtSeal(caseData, SEALED);
+
+            assertThat(courtSeal).isEqualTo(HIGH_COURT_SEAL.getValue(caseData.getImageLanguage()));
+        }
+
+        @Test
+        void shouldReturnCourtSealWhenOrderIsSubmitted() {
+            CaseData caseData = CaseData.builder()
+                    .court(Court.builder()
+                            .code("0")
+                            .build())
+                    .build();
+            String courtSeal = underTest.getCourtSeal(caseData, SEALED);
+
+            assertThat(courtSeal).isEqualTo(COURT_SEAL.getValue(caseData.getImageLanguage()));
+        }
+
+        @Test
+        void shouldNotReturnSealWhenDraftOrder() {
+            CaseData caseData = CaseData.builder()
+                    .court(Court.builder()
+                            .code("0")
+                            .build())
+                    .build();
+            String courtSeal = underTest.getCourtSeal(caseData, DRAFT);
+
+            assertThat(courtSeal).isNull();
+        }
+    }
 }

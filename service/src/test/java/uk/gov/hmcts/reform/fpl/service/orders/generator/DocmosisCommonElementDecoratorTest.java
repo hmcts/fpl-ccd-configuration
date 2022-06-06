@@ -4,14 +4,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
+import uk.gov.hmcts.reform.fpl.service.CourtLookUpService;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C32CareOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
@@ -23,6 +27,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.HIGH_COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
@@ -60,9 +66,10 @@ class DocmosisCommonElementDecoratorTest {
 
     private final ChildrenSmartSelector childrenSmartSelector = mock(ChildrenSmartSelector.class);
     private final CaseDataExtractionService extractionService = mock(CaseDataExtractionService.class);
+    private final CourtService courtService = mock(CourtService.class);
 
     private final DocmosisCommonElementDecorator underTest = new DocmosisCommonElementDecorator(
-        childrenSmartSelector, extractionService);
+        childrenSmartSelector, extractionService, courtService);
 
     @BeforeEach
     void setUp() {
@@ -87,10 +94,34 @@ class DocmosisCommonElementDecoratorTest {
 
     @Test
     void decorateSealed() {
+        when(courtService.getCourtSeal(CASE_DATA, SEALED))
+                .thenReturn(COURT_SEAL.getValue(CASE_DATA.getImageLanguage()));
+
         DocmosisParameters decorated = underTest.decorate(DOCMOSIS_PARAMETERS, CASE_DATA, SEALED, ORDER_TYPE);
         DocmosisParameters expectedParameters = expectedCommonParameters(EXPECTED_APPROVAL_DATE)
-            .courtseal(SEAL)
+            .courtseal(COURT_SEAL.getValue(Language.ENGLISH))
             .build();
+
+        assertThat(decorated).isEqualTo(expectedParameters);
+    }
+
+    @Test
+    void decorateHighCourtSealed() {
+        CaseData caseData = CASE_DATA.toBuilder()
+                .court(Court.builder()
+                        .code(CourtLookUpService.RCJ_HIGH_COURT_CODE)
+                        .build())
+                .build();
+
+        when(courtService.getCourtSeal(caseData, SEALED))
+                .thenReturn(HIGH_COURT_SEAL.getValue(caseData.getImageLanguage()));
+        when(extractionService.getCourtName(caseData)).thenReturn(COURT_NAME);
+        when(childrenSmartSelector.getSelectedChildren(caseData)).thenReturn(CHILDREN);
+
+        DocmosisParameters decorated = underTest.decorate(DOCMOSIS_PARAMETERS, caseData, SEALED, ORDER_TYPE);
+        DocmosisParameters expectedParameters = expectedCommonParameters(EXPECTED_APPROVAL_DATE)
+                .courtseal(HIGH_COURT_SEAL.getValue(Language.ENGLISH))
+                .build();
 
         assertThat(decorated).isEqualTo(expectedParameters);
     }
@@ -103,6 +134,9 @@ class DocmosisCommonElementDecoratorTest {
         C32CareOrderDocmosisParameters docmosisParametersWithIssueDate = C32CareOrderDocmosisParameters.builder()
             .dateOfIssue(DateFormatterHelper.formatLocalDateTimeBaseUsingFormat(dateOfIssue, DATE_TIME))
             .build();
+
+        when(courtService.getCourtSeal(CASE_DATA, SEALED))
+                .thenReturn(COURT_SEAL.getValue(CASE_DATA.getImageLanguage()));
 
         DocmosisParameters decorated = underTest.decorate(
             docmosisParametersWithIssueDate, CASE_DATA, SEALED, ORDER_TYPE);

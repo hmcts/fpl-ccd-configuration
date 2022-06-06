@@ -371,6 +371,8 @@ class LocalAuthorityChangedHandlerTest {
             when(notifyDataProvider.getNotifyDataFoTransferredToAnotherCourt(caseDataTransferredToRcjHighCourt))
                 .thenReturn(notifyData);
             when(highCourtAdminEmailLookupConfiguration.getEmail()).thenReturn("high_court_admin@test.com");
+            when(courtService.isHighCourtCase(transferredToRcjHighCourtEvent.getCaseData()))
+                    .thenReturn(true);
 
             underTest.notifyHighCourtAdmin(transferredToRcjHighCourtEvent);
 

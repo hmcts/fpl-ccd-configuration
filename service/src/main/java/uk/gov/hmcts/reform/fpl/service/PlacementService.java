@@ -99,6 +99,7 @@ public class PlacementService {
     private final UploadDocumentService uploadDocumentService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final RespondentService respondentService;
+    private final CourtService courtService;
 
     public PlacementEventData prepareChildren(CaseData caseData) {
 
@@ -307,7 +308,7 @@ public class PlacementService {
             .postingDate(formatLocalDateToString(time.now().toLocalDate(), DATE))
             .crest(DocmosisImages.CREST.getValue())
             .draftbackground(DRAFT == status ? DocmosisImages.DRAFT_WATERMARK.getValue() : null)
-            .courtseal(SEALED == status ? DocmosisImages.COURT_SEAL.getValue(caseData.getImageLanguage()) : null)
+            .courtseal(courtService.getCourtSeal(caseData, status))
             .build();
 
         DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(

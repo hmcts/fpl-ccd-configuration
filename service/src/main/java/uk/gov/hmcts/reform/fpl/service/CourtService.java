@@ -6,16 +6,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.util.Optional;
+
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.naturalOrder;
 import static java.util.Comparator.nullsFirst;
 import static java.util.Optional.ofNullable;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.HIGH_COURT_SEAL;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
 
 @Service
 @Slf4j
@@ -63,6 +70,25 @@ public class CourtService {
         return ofNullable(getCourt(caseData))
             .map(Court::getCode)
             .orElse(null);
+    }
+
+    public boolean isHighCourtCase(CaseData caseData) {
+        return Optional.ofNullable(caseData.getCourt())
+                .map(Court::getCode)
+                .filter(code -> code.equals(RCJ_HIGH_COURT_CODE))
+                .isPresent();
+    }
+
+    public String getCourtSeal(CaseData caseData, OrderStatus status) {
+        String seal = null;
+        if (SEALED == status) {
+            if (isHighCourtCase(caseData)) {
+                seal = HIGH_COURT_SEAL.getValue(caseData.getImageLanguage());
+            } else {
+                seal = COURT_SEAL.getValue(caseData.getImageLanguage());
+            }
+        }
+        return seal;
     }
 
     private Court inferCourt(CaseData caseData) {

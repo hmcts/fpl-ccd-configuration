@@ -44,8 +44,22 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudgeOrMagistrateTitle",
+    "ListElementCode": "MRS_JUSTICE",
+    "ListElement": "Mrs Justice",
+    "DisplayOrder": 7
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeOrMagistrateTitle",
+    "ListElementCode": "MR_JUSTICE",
+    "ListElement": "Mr Justice",
+    "DisplayOrder": 8
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeOrMagistrateTitle",
     "ListElementCode": "OTHER",
     "ListElement": "Other",
-    "DisplayOrder": 7
+    "DisplayOrder": 9
   }
 ]
