@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,6 +30,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 
 class ChildrenServiceTest {
@@ -197,6 +199,30 @@ class ChildrenServiceTest {
         String childrenNames = service.getFinalOrderIssuedChildrenNames(children);
 
         assertThat(childrenNames).isEmpty();
+    }
+
+    @Test
+    void shouldReturnTrueWhenAddressChange() {
+        List<Element<Child>> childrenBefore = wrapElements(Child.builder()
+            .party(ChildParty.builder().address(Address.builder().addressLine1("33 Testing Court")
+                .addressLine2("Testing").postcode("XX1 BBB").build()).build()).build());
+        List<Element<Child>> childrenAfter = wrapElements(Child.builder()
+            .party(ChildParty.builder().address(Address.builder().addressLine1("90 Testing Court")
+                .addressLine2("Testing").postcode("KK1 BBB").build()).build()).build());
+        assertThat(service.hasAddressChange(Collections.unmodifiableList(childrenAfter),
+            Collections.unmodifiableList(childrenBefore))).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenAddressNoChange() {
+        List<Element<Child>> childrenBefore = wrapElements(Child.builder()
+            .party(ChildParty.builder().address(Address.builder().addressLine1("33 Testing Court")
+                .addressLine2("Testing").postcode("XX1 BBB").build()).build()).build());
+        List<Element<Child>> childrenAfter = wrapElements(Child.builder()
+            .party(ChildParty.builder().address(Address.builder().addressLine1("33 Testing Court")
+                .addressLine2("Testing").postcode("XX1 BBB").build()).build()).build());
+        assertThat(service.hasAddressChange(Collections.unmodifiableList(childrenAfter),
+            Collections.unmodifiableList(childrenBefore))).isFalse();
     }
 
     @Nested
