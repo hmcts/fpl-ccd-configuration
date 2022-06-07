@@ -95,6 +95,9 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
             .caseSummaryCourtName(COURT_NAME)
             .caseSummaryLanguageRequirement("No")
             .caseSummaryLALanguageRequirement("No")
+            .caseSummaryHighCourtCase("No")
+            .caseSummaryLAHighCourtCase("No")
+            .caseSummaryLATabHidden("Yes")
             .build())
         .respondents1(respondents)
         .build();

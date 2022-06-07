@@ -28,6 +28,8 @@ public class SyntheticCaseSummary {
 
     String caseSummaryCourtName;
     String caseSummaryPreviousCourtName;
+    String caseSummaryHighCourtCase;
+    String caseSummaryLAHighCourtCase;
 
     String caseSummaryHasNextHearing;
     String caseSummaryNextHearingType;
@@ -54,6 +56,8 @@ public class SyntheticCaseSummary {
     String caseSummaryFirstRespondentLastName;
     String caseSummaryFirstRespondentLegalRep;
     String caseSummaryCafcassGuardian;
+
+    String caseSummaryLATabHidden;
 
     public static SyntheticCaseSummary emptySummary() {
         return SyntheticCaseSummary.builder().build();

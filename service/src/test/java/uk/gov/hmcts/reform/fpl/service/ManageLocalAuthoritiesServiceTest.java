@@ -947,7 +947,7 @@ class ManageLocalAuthoritiesServiceTest {
             );
 
             List<Element<Court>> pastCourtList = underTest.buildPastCourtsList(caseData);
-            assertThat(pastCourtList.size()).isEqualTo(1);
+            assertThat(pastCourtList).hasSize(1);
             assertThat(unwrapElements(pastCourtList).iterator().next().getCode()).isEqualTo("344");
         }
 
@@ -973,7 +973,7 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(courtTransferred.getName()).isEqualTo(newCourt.getName());
             assertThat(courtTransferred.getDateTransferred()).isEqualTo(
                 LocalDateTime.of(1997, Month.JULY, 1, 11, 00));
-            assertThat(caseData.getPastCourtList().size()).isEqualTo(1);
+            assertThat(caseData.getPastCourtList()).hasSize(1);
             assertThat(caseData.getPastCourtList().iterator().next().getValue()).isEqualTo(oldCourt);
         }
     }

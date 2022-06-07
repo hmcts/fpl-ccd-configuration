@@ -22,19 +22,19 @@ class CourtLookUpServiceTest {
 
     @Test
     void shouldReturnFullCourtListWithHighCourt() {
-        assertThat(courtLookUpService.getCourtFullListWithRcjHighCourt().size()).isEqualTo(3);
+        assertThat(courtLookUpService.getCourtFullListWithRcjHighCourt()).hasSize(3);
     }
 
     @Test
     void shouldReturnCourtByCode() {
-        assertThat(courtLookUpService.getCourtByCode("117").get()).isEqualTo(
+        assertThat(courtLookUpService.getCourtByCode("117")).contains(
             Court.builder().code("117").name("Barnet").region("London").build()
         );
     }
 
     @Test
     void shouldReturnHighCourt() {
-        assertThat(courtLookUpService.getCourtByCode("100").get()).isEqualTo(
+        assertThat(courtLookUpService.getCourtByCode("100")).contains(
             Court.builder().code(RCJ_HIGH_COURT_CODE)
                 .name(RCJ_HIGH_COURT_NAME)
                 .region(RCJ_HIGH_COURT_REGION)
