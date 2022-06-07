@@ -449,12 +449,12 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Dfpl635 {
-        private final String migrationId = "DFPL-635";
-        private final long validCaseId = 1642758673379744L;
+    class Dfpl679 {
+        private final String migrationId = "DFPL-679";
+        private final long validCaseId = 1648131786635895L;
         private final long invalidCaseId = 1643728359576136L;
 
-        private final UUID validDocId = UUID.fromString("9f0d570a-2cb8-48eb-90cb-3d4f26a2350a");
+        private final UUID validDocId = UUID.fromString("86675977-4125-40e6-959b-d62f2ba80900");
         private final UUID invalidDocId = UUID.randomUUID();
 
         @Test
@@ -493,8 +493,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-635, case reference = 1643728359576136},"
-                    + " expected case id 1642758673379744");
+                .hasMessage("Migration {id = DFPL-679, case reference = 1643728359576136},"
+                    + " expected case id 1648131786635895");
         }
 
         @Test
@@ -512,8 +512,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-635, case reference = 1642758673379744},"
-                    + " expected c110a document id 9f0d570a-2cb8-48eb-90cb-3d4f26a2350a");
+                .hasMessage("Migration {id = DFPL-679, case reference = 1648131786635895},"
+                    + " expected c110a document id 86675977-4125-40e6-959b-d62f2ba80900");
         }
 
 
