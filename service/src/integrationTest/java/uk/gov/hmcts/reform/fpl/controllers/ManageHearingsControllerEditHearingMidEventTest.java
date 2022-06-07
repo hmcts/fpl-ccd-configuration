@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -17,7 +18,9 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_FUTURE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_PAST_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.RE_LIST_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsControllerTest {
@@ -211,6 +214,18 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
         AboutToStartOrSubmitCallbackResponse response = postEditHearingMidEvent(initialCaseData);
 
         assertThat(response.getErrors()).contains(ERROR_MESSAGE);
+    }
+
+    @Test
+    void canCreateNewHearingWhenPreviousHearingVenueNull() {
+        CaseData initialCaseData = CaseData.builder()
+            .hearingOption(NEW_HEARING)
+            .previousHearingVenue(null)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postEditHearingMidEvent(initialCaseData);
+
+        assertThat(response.getData().get("hasPreviousHearingVenue")).isEqualTo(NO.getValue());
     }
 
     @Test
