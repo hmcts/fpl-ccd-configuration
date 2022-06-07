@@ -22,7 +22,7 @@ class CourtLookUpServiceTest {
 
     @Test
     void shouldReturnFullCourtListWithHighCourt() {
-        assertThat(courtLookUpService.getCourtFullListWithRcjHighCourt().size()).isEqualTo(3);
+        assertThat(courtLookUpService.getCourtFullListWithRcjHighCourt()).hasSize(3);
     }
 
     @Test

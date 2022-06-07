@@ -186,9 +186,8 @@ public class ManageLocalAuthoritiesService {
     public List<String> validateTransferCourtWithoutTransferLA(LocalAuthoritiesEventData eventData) {
         final String invalidMessage = "Invalid court selected.";
         final List<String> errors = new ArrayList<>();
-        if (eventData.getCourtsToTransferWithoutTransferLA() == null) {
-            errors.add(invalidMessage);
-        } else if (StringUtils.isEmpty(eventData.getCourtsToTransferWithoutTransferLA().getValueCode())) {
+        if (eventData.getCourtsToTransferWithoutTransferLA() == null
+            || StringUtils.isEmpty(eventData.getCourtsToTransferWithoutTransferLA().getValueCode())) {
             errors.add(invalidMessage);
         }
         return errors;
