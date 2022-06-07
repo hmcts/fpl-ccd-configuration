@@ -57,7 +57,7 @@ public enum CafcassRequestEmailContentProvider {
     POSITION_STATEMENT_CHILD("Position statement child",
         (caseData, cafcassData) -> "",
         (caseData, cafcassData) ->
-            String.format("A new position statement child for this case was uploaded to the "
+            String.format("A new position statement (child) for this case was uploaded to the "
                           + "Public Law Portal entitled %s",
                 cafcassData.getHearingDetails()),
         CafcassEmailConfiguration::getRecipientForCourtBundle,
@@ -66,7 +66,7 @@ public enum CafcassRequestEmailContentProvider {
     POSITION_STATEMENT_RESPONDENT("Position statement respondent",
         (caseData, cafcassData) -> "",
         (caseData, cafcassData) ->
-            String.format("A new Position statement respondent for this case was uploaded to the "
+            String.format("A new position statement (respondent) for this case was uploaded to the "
                           + "Public Law Portal entitled %s",
                 cafcassData.getHearingDetails()),
         CafcassEmailConfiguration::getRecipientForCourtBundle,
