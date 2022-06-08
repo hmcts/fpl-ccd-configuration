@@ -1112,7 +1112,7 @@ public class CaseData {
             .map(Element::getValue)
             .filter(la -> YesNo.YES.getValue().equals(la.getDesignated()))
             .findFirst()
-            .orElseThrow(() -> new LocalAuthorityNotFound("Designated local authority not found for case " + id));
+            .orElse(null);
     }
 
     @JsonIgnore
