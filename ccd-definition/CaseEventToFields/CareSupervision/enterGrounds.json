@@ -3,6 +3,18 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "enterGrounds",
+    "CaseFieldID": "orders",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageFieldDisplayOrder": 0,
+    "PageColumnNumber": 1,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "submissionRequiredFieldsInfo = \"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "enterGrounds",
     "CaseFieldID": "submissionRequiredFieldsInfo",
     "PageID": 1,
     "PageDisplayOrder": 1,
@@ -48,6 +60,21 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "Y"
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "orders.orderType CONTAINS \"CARE_ORDER\" OR orders.orderType CONTAINS \"INTERIM_CARE_ORDER\" OR orders.orderType CONTAINS \"SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"INTERIM_SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"EDUCATION_SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\" OR orders.orderType CONTAINS \"OTHER\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "enterGrounds",
+    "CaseFieldID": "groundsForSecureAccommodationOrder",
+    "CaseEventFieldLabel": "*How are there grounds for a secure accommodation order?",
+    "PageFieldDisplayOrder": 5,
+    "DisplayContext": "COMPLEX",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "orders.orderType CONTAINS \"SECURE_ACCOMMODATION_ORDER\""
   }
 ]

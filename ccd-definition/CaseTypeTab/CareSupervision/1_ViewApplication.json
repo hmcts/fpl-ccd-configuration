@@ -83,7 +83,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "groundsForTheApplicationHeadingLabel",
-    "FieldShowCondition": "grounds!=\"\" OR groundsForEPO!=\"\" OR risks!=\"\" OR factorsParenting!=\"\" OR proceeding!=\"\" OR internationalElement!=\"\"",
+    "FieldShowCondition": "grounds!=\"\" OR groundsForEPO!=\"\" OR groundsForSecureAccommodationOrder!=\"\" OR risks!=\"\" OR factorsParenting!=\"\" OR proceeding!=\"\" OR internationalElement!=\"\"",
     "TabFieldDisplayOrder": 8
   },
   {
@@ -94,7 +94,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "thresholdCriteriaSubHeadingLabel",
-    "FieldShowCondition": "grounds!=\"\" OR groundsForEPO!=\"\"",
+    "FieldShowCondition": "grounds!=\"\" OR groundsForEPO!=\"\" OR groundsForSecureAccommodationOrder!=\"\"",
     "TabFieldDisplayOrder": 9
   },
   {
@@ -124,9 +124,19 @@
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
+    "CaseFieldID": "groundsForSecureAccommodationOrder",
+    "TabFieldDisplayOrder": 12
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View application",
+    "TabDisplayOrder": 1,
     "CaseFieldID": "thresholdCriteriaLink",
     "FieldShowCondition": "grounds!=\"\"",
-    "TabFieldDisplayOrder": 12
+    "TabFieldDisplayOrder": 13
   },
   {
     "LiveFrom": "01/01/2017",
@@ -137,7 +147,7 @@
     "TabDisplayOrder": 1,
     "CaseFieldID": "riskAndHarmToTheChildrenSubHeadingLabel",
     "FieldShowCondition": "risks!=\"\"",
-    "TabFieldDisplayOrder": 13
+    "TabFieldDisplayOrder": 14
   },
   {
     "LiveFrom": "01/01/2017",
@@ -147,7 +157,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "risks",
-    "TabFieldDisplayOrder": 14
+    "TabFieldDisplayOrder": 15
   },
   {
     "LiveFrom": "01/01/2017",
@@ -158,7 +168,7 @@
     "TabDisplayOrder": 1,
     "CaseFieldID": "riskAndHarmToChildrenLink",
     "FieldShowCondition": "risks!=\"\"",
-    "TabFieldDisplayOrder": 15
+    "TabFieldDisplayOrder": 16
   },
   {
     "LiveFrom": "01/01/2017",
@@ -169,7 +179,7 @@
     "TabDisplayOrder": 1,
     "CaseFieldID": "factorsAffectingParentingSubHeadingLabel",
     "FieldShowCondition": "factorsParenting!=\"\"",
-    "TabFieldDisplayOrder": 16
+    "TabFieldDisplayOrder": 17
   },
   {
     "LiveFrom": "01/01/2017",
@@ -179,7 +189,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "factorsParenting",
-    "TabFieldDisplayOrder": 17
+    "TabFieldDisplayOrder": 18
   },
   {
     "LiveFrom": "01/01/2017",
@@ -190,7 +200,7 @@
     "TabDisplayOrder": 1,
     "CaseFieldID": "factorsAffectingParentingLink",
     "FieldShowCondition": "factorsParenting!=\"\"",
-    "TabFieldDisplayOrder": 18
+    "TabFieldDisplayOrder": 19
   },
   {
     "LiveFrom": "01/01/2017",
@@ -201,7 +211,7 @@
     "TabDisplayOrder": 1,
     "CaseFieldID": "additionalInformationGroundsSubHeadingLabel",
     "FieldShowCondition": "proceeding!=\"\" OR internationalElement!=\"\"",
-    "TabFieldDisplayOrder": 19
+    "TabFieldDisplayOrder": 20
   },
   {
     "LiveFrom": "01/01/2017",
@@ -212,7 +222,7 @@
     "TabDisplayOrder": 1,
     "CaseFieldID": "otherProceedingsSubHeadingLabel",
     "FieldShowCondition": "proceeding!=\"\"",
-    "TabFieldDisplayOrder": 20
+    "TabFieldDisplayOrder": 21
   },
   {
     "LiveFrom": "01/01/2017",
@@ -222,7 +232,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "proceeding",
-    "TabFieldDisplayOrder": 21
+    "TabFieldDisplayOrder": 22
   },
   {
     "LiveFrom": "01/01/2017",
@@ -233,7 +243,7 @@
     "TabDisplayOrder": 1,
     "CaseFieldID": "otherProceedingsLink",
     "FieldShowCondition": "proceeding!=\"\"",
-    "TabFieldDisplayOrder": 22
+    "TabFieldDisplayOrder": 23
   },
   {
     "LiveFrom": "01/01/2017",
@@ -244,7 +254,7 @@
     "TabDisplayOrder": 1,
     "CaseFieldID": "internationalElementSubHeadingLabel",
     "FieldShowCondition": "internationalElement!=\"\"",
-    "TabFieldDisplayOrder": 23
+    "TabFieldDisplayOrder": 24
   },
   {
     "LiveFrom": "01/01/2017",
@@ -254,7 +264,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "internationalElement",
-    "TabFieldDisplayOrder": 24
+    "TabFieldDisplayOrder": 25
   },
   {
     "LiveFrom": "01/01/2017",
@@ -265,7 +275,7 @@
     "TabDisplayOrder": 1,
     "CaseFieldID": "internationalElementLink",
     "FieldShowCondition": "internationalElement!=\"\"",
-    "TabFieldDisplayOrder": 25
+    "TabFieldDisplayOrder": 26
   },
   {
     "LiveFrom": "01/01/2017",
@@ -276,7 +286,7 @@
     "TabDisplayOrder": 1,
     "CaseFieldID": "documentsLink",
     "FieldShowCondition": "applicationDocuments!=\"\"",
-    "TabFieldDisplayOrder": 26
+    "TabFieldDisplayOrder": 27
   },
   {
     "LiveFrom": "01/01/2017",
@@ -287,7 +297,7 @@
     "TabDisplayOrder": 1,
     "CaseFieldID": "supportingDocumentsHeadingLabel",
     "FieldShowCondition": "applicationDocuments!=\"\"",
-    "TabFieldDisplayOrder": 27
+    "TabFieldDisplayOrder": 28
   },
   {
     "LiveFrom": "01/01/2017",
@@ -297,7 +307,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "applicationDocuments",
-    "TabFieldDisplayOrder": 28,
+    "TabFieldDisplayOrder": 29,
     "FieldShowCondition": "applicationDocuments !=\"\""
   },
   {
@@ -308,7 +318,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "applicationDocumentsToFollowReason",
-    "TabFieldDisplayOrder": 29,
+    "TabFieldDisplayOrder": 30,
     "FieldShowCondition": "applicationDocumentsToFollowReason !=\"\""
   },
   {

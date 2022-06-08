@@ -26,8 +26,7 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "grounds",
-    "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
+    "CaseFieldID": "groundsForSecureAccommodationOrder",
     "TabFieldDisplayOrder": 3
   },
   {
@@ -37,7 +36,8 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "risks",
+    "CaseFieldID": "grounds",
+    "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
     "TabFieldDisplayOrder": 4
   },
   {
@@ -47,7 +47,7 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "factorsParenting",
+    "CaseFieldID": "risks",
     "TabFieldDisplayOrder": 5
   },
   {
@@ -57,7 +57,7 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "internationalElement",
+    "CaseFieldID": "factorsParenting",
     "TabFieldDisplayOrder": 6
   },
   {
@@ -67,7 +67,7 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "proceeding",
+    "CaseFieldID": "internationalElement",
     "TabFieldDisplayOrder": 7
   },
   {
@@ -77,7 +77,7 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "allocationDecision",
+    "CaseFieldID": "proceeding",
     "TabFieldDisplayOrder": 8
   },
   {
@@ -87,7 +87,7 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "allocationProposal",
+    "CaseFieldID": "allocationDecision",
     "TabFieldDisplayOrder": 9
   },
   {
@@ -97,7 +97,17 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "hearingPreferences",
+    "CaseFieldID": "allocationProposal",
     "TabFieldDisplayOrder": 10
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "LegalBasisTab",
+    "TabLabel": "Legal basis",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "hearingPreferences",
+    "TabFieldDisplayOrder": 11
   }
 ]

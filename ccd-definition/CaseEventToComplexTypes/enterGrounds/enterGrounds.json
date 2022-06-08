@@ -1,0 +1,11 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "enterGrounds",
+    "CaseFieldID": "orders",
+    "ListElementCode": "orderType",
+    "EventElementLabel": " ",
+    "DisplayContext": "READONLY"
+  }
+]

@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsTy
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderSection;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEPOAddress;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEPOType;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEnteredEPOExcluded;
@@ -39,6 +40,7 @@ public class Orders {
     private final EPOType epoType;
     private final String excluded;
     private final Address address;
+    private final SecureAccommodationOrderSection secureAccommodationOrderSection;
 
     public boolean orderContainsEPO() {
         return this.getOrderType().contains(EMERGENCY_PROTECTION_ORDER);

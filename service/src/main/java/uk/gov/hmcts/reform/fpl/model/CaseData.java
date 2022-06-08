@@ -178,6 +178,9 @@ public class CaseData {
     @NotNull(message = "Add the grounds for the application", groups = EPOGroup.class)
     @Valid
     private final GroundsForEPO groundsForEPO;
+    @NotNull(message = "Add the grounds for the application", groups = EPOGroup.class)
+    @Valid
+    private final GroundsForSecureAccommodationOrder groundsForSecureAccommodationOrder;
     @NotEmpty(message = "Add applicant's details")
     @Valid
     @Deprecated

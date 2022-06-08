@@ -1,0 +1,28 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GroundsForSecureAccommodationOrder",
+    "ListElementCode": "grounds",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "SecureAccommodationOrderGroundList",
+    "ElementLabel": " ",
+    "HintText": "Select all that apply",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GroundsForSecureAccommodationOrder",
+    "ListElementCode": "reason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Reasons for the application",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GroundsForSecureAccommodationOrder",
+    "ListElementCode": "lengthOfOrderSought",
+    "FieldType": "Number",
+    "ElementLabel": "Length of order sought",
+    "SecurityClassification": "Public"
+  }
+]

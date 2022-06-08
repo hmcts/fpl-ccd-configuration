@@ -171,5 +171,22 @@
     "ListElementCode": "directionDetails",
     "EventElementLabel": "*Give details",
     "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "secureAccommodationOrderLabel",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "secureAccommodationOrderSection",
+    "EventElementLabel": "Under which section are you applying?",
+    "DisplayContext": "OPTIONAL"
   }
 ]

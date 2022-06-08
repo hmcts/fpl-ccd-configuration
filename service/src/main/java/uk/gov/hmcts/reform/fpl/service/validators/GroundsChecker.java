@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
 import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.SecureAccommodationGroup;
 
 import java.util.List;
 import javax.validation.groups.Default;
@@ -22,6 +23,9 @@ public class GroundsChecker extends PropertiesChecker {
     public List<String> validate(CaseData caseData) {
         if (hasEmergencyProtectionOrder(caseData)) {
             return super.validate(caseData, List.of("grounds", "groundsForEPO"), Default.class, EPOGroup.class);
+        } if(hasSecureAccommodationOrder(caseData)) {
+            return super.validate(caseData, List.of("grounds", "groundsForSecureAccommodationOrder"),
+                Default.class, SecureAccommodationGroup.class);
         } else {
             return super.validate(caseData, List.of("grounds"));
         }
@@ -35,6 +39,11 @@ public class GroundsChecker extends PropertiesChecker {
     private boolean hasEmergencyProtectionOrder(CaseData caseData) {
         return caseData.getOrders() != null && caseData.getOrders().getOrderType() != null
                 && caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER);
+    }
+
+    private boolean hasSecureAccommodationOrder(CaseData caseData) {
+        return caseData.getOrders() != null && caseData.getOrders().getOrderType() != null
+               && caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER);
     }
 
     private static boolean isGroundsStarted(Grounds grounds) {
