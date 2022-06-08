@@ -68,7 +68,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "enterGrounds",
     "CaseFieldID": "groundsForSecureAccommodationOrder",
-    "CaseEventFieldLabel": "*How are there grounds for a secure accommodation order?",
+    "CaseEventFieldLabel": "The grounds for the application",
     "PageFieldDisplayOrder": 5,
     "DisplayContext": "COMPLEX",
     "PageID": 1,

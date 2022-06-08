@@ -5,7 +5,7 @@
     "CaseEventID": "enterGrounds",
     "CaseFieldID": "groundsForSecureAccommodationOrder",
     "ListElementCode": "grounds",
-    "EventElementLabel": "The grounds are:",
+    "EventElementLabel": "The grounds are",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY"
   },
@@ -14,8 +14,8 @@
     "ID": "Grounds",
     "CaseEventID": "enterGrounds",
     "CaseFieldID": "groundsForSecureAccommodationOrder",
-    "ListElementCode": "reason",
-    "EventElementLabel": "Reasons for the application",
+    "ListElementCode": "reasonAndLength",
+    "EventElementLabel": "The reason(s) for the application and length of order applied for",
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
   },
@@ -24,9 +24,9 @@
     "ID": "Grounds",
     "CaseEventID": "enterGrounds",
     "CaseFieldID": "groundsForSecureAccommodationOrder",
-    "ListElementCode": "lengthOfOrderSought",
-    "EventElementLabel": "Length of order sought",
+    "ListElementCode": "supportingDocuments",
+    "EventElementLabel": "Supporting documents",
     "FieldDisplayOrder": 3,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "OPTIONAL"
   }
 ]

@@ -12,17 +12,18 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GroundsForSecureAccommodationOrder",
-    "ListElementCode": "reason",
+    "ListElementCode": "reasonAndLength",
     "FieldType": "TextArea",
-    "ElementLabel": "Reasons for the application",
+    "ElementLabel": "The reason(s) for the application and length of order applied for",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "GroundsForSecureAccommodationOrder",
-    "ListElementCode": "lengthOfOrderSought",
-    "FieldType": "Number",
-    "ElementLabel": "Length of order sought",
+    "ListElementCode": "supportingDocuments",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Document",
+    "ElementLabel": "Supporting documents",
     "SecurityClassification": "Public"
   }
 ]

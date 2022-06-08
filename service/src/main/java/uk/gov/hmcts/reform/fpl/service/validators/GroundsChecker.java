@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
+import uk.gov.hmcts.reform.fpl.model.GroundsForSecureAccommodationOrder;
 import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.SecureAccommodationGroup;
@@ -23,9 +24,9 @@ public class GroundsChecker extends PropertiesChecker {
     public List<String> validate(CaseData caseData) {
         if (hasEmergencyProtectionOrder(caseData)) {
             return super.validate(caseData, List.of("grounds", "groundsForEPO"), Default.class, EPOGroup.class);
-        } if(hasSecureAccommodationOrder(caseData)) {
-            return super.validate(caseData, List.of("grounds", "groundsForSecureAccommodationOrder"),
-                Default.class, SecureAccommodationGroup.class);
+        } else if(hasSecureAccommodationOrder(caseData)) {
+            return super.validate(caseData, List.of("groundsForSecureAccommodationOrder"),
+                SecureAccommodationGroup.class);
         } else {
             return super.validate(caseData, List.of("grounds"));
         }
@@ -33,7 +34,8 @@ public class GroundsChecker extends PropertiesChecker {
 
     @Override
     public boolean isStarted(CaseData caseData) {
-        return isGroundsStarted(caseData.getGrounds()) || isEPOGroundsStarted(caseData.getGroundsForEPO());
+        return isGroundsStarted(caseData.getGrounds()) || isEPOGroundsStarted(caseData.getGroundsForEPO())
+            || isSecureAccommodationOrderGroundsStarted(caseData.getGroundsForSecureAccommodationOrder());
     }
 
     private boolean hasEmergencyProtectionOrder(CaseData caseData) {
@@ -43,7 +45,7 @@ public class GroundsChecker extends PropertiesChecker {
 
     private boolean hasSecureAccommodationOrder(CaseData caseData) {
         return caseData.getOrders() != null && caseData.getOrders().getOrderType() != null
-               && caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER);
+               && caseData.getOrders().getOrderType().contains(OrderType.SECURE_ACCOMMODATION_ORDER);
     }
 
     private static boolean isGroundsStarted(Grounds grounds) {
@@ -52,6 +54,12 @@ public class GroundsChecker extends PropertiesChecker {
 
     private static boolean isEPOGroundsStarted(GroundsForEPO grounds) {
         return isNotEmpty(grounds) && isNotEmpty(grounds.getReason());
+    }
+
+    private static boolean isSecureAccommodationOrderGroundsStarted(GroundsForSecureAccommodationOrder saoGrounds) {
+        return isNotEmpty(saoGrounds)
+               && anyNonEmpty(saoGrounds.getGrounds(), saoGrounds.getReasonAndLength(),
+                    saoGrounds.getSupportingDocuments());
     }
 
     @Override

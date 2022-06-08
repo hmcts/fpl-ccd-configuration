@@ -3,21 +3,21 @@
     "LiveFrom": "01/01/2017",
     "ID": "SecureAccommodationOrderGroundList",
     "ListElementCode": "ABSCOND_FROM_ACCOMMODATION",
-    "ListElement": "The child/children has/have a history of absconding and is/are likely to abscond from any other accommodation and if the child/children abscond he/she/they is/are likely to suffer significant harm.",
+    "ListElement": "The child has a history of absconding and is likely to abscond from any other accommodation and if the child abscond he/she is likely to suffer significant harm.",
     "DisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "SecureAccommodationOrderGroundList",
     "ListElementCode": "SELF_INJURY",
-    "ListElement": "If the child/children is/are kept in any other accommodation, the child/they is/are likely to injure himself/herself/themselves or other people.",
+    "ListElement": "If the child is kept in any other accommodation, the child is likely to injure himself/herself or other people.",
     "DisplayOrder": 2
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "SecureAccommodationOrderGroundList",
     "ListElementCode": "APPROVAL_OF_SECRETARY_OF_STATE",
-    "ListElement": "The approval of the Secretary of State to the placement of the child/children in secure accommodation has been granted and is attached.",
+    "ListElement": "The approval of the Secretary of State to the placement of the child in secure accommodation has been granted and is attached.",
     "DisplayOrder": 3
   }
 ]
