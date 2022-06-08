@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.orders.validator.OrdersNeededValidator;
 
@@ -68,6 +69,8 @@ public class OrdersNeededAboutToSubmitCallbackController extends CallbackControl
                 }
                 if(!orderTypes.contains(OrderType.SECURE_ACCOMMODATION_ORDER.name())) {
                     removeSecureAccommodationOrderFields(data);
+                } else {
+                    data.put("secureAccommodationOrderType", YesNo.YES);
                 }
             });
 
@@ -89,6 +92,7 @@ public class OrdersNeededAboutToSubmitCallbackController extends CallbackControl
     @SuppressWarnings("unchecked")
     private void removeSecureAccommodationOrderFields(Map<String, Object> data) {
         data.remove("groundsForSecureAccommodationOrder");
+        data.remove("secureAccommodationOrderType");
         // remove the secureAccommodationOrderSection field
         ((Map<String, Object>) data.get("orders")).remove("secureAccommodationOrderSection");
     }
