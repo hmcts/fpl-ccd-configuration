@@ -113,13 +113,13 @@ public class CaseManagementOrderIssuedEventHandler {
         final Optional<Cafcass> recipientIsEngland =
                 cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
 
-        LocalDateTime hearingStartDate = findElement(caseData.getLastHearingOrderDraftsHearingId(),
-                caseData.getHearingDetails())
-                .map(Element::getValue)
-                .map(HearingBooking::getStartDate)
-                .orElse(null);
-
         if (recipientIsEngland.isPresent()) {
+            LocalDateTime hearingStartDate = findElement(caseData.getLastHearingOrderDraftsHearingId(),
+                    caseData.getHearingDetails())
+                    .map(Element::getValue)
+                    .map(HearingBooking::getStartDate)
+                    .orElse(null);
+
             cafcassNotificationService.sendEmail(caseData,
                     of(issuedCmo.getOrder()),
                     ORDER,

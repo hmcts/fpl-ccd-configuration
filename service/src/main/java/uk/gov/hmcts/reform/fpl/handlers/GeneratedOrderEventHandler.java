@@ -113,17 +113,17 @@ public class GeneratedOrderEventHandler {
     public void notifyCafcass(GeneratedOrderEvent orderEvent) {
         CaseData caseData = orderEvent.getCaseData();
 
-        LocalDateTime hearingStartDate = findElement(caseData.getSelectedHearingId(),
-                caseData.getHearingDetails())
-                .map(Element::getValue)
-                .map(HearingBooking::getStartDate)
-                .orElse(null);
-
 
         final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
                 cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
 
         if (recipientIsEngland.isPresent()) {
+            LocalDateTime hearingStartDate = findElement(caseData.getSelectedHearingId(),
+                    caseData.getHearingDetails())
+                    .map(Element::getValue)
+                    .map(HearingBooking::getStartDate)
+                    .orElse(null);
+
             cafcassNotificationService.sendEmail(caseData,
                     of(orderEvent.getOrderDocument()),
                     ORDER,
