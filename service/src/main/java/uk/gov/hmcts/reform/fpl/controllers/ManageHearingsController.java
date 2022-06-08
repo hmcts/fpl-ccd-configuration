@@ -131,8 +131,8 @@ public class ManageHearingsController extends CallbackController {
             PreviousHearingVenue previousHearingVenue = (PreviousHearingVenue) caseDetails.getData()
                 .get(PREVIOUS_HEARING_VENUE_KEY);
 
-            boolean hasPreviousHearingVenue = previousHearingVenue != null &&
-                !StringUtils.isEmpty(previousHearingVenue.getPreviousVenue());
+            boolean hasPreviousHearingVenue = previousHearingVenue != null
+                && !StringUtils.isEmpty(previousHearingVenue.getPreviousVenue());
 
             caseDetails.getData().put(HAS_PREVIOUS_VENUE_HEARING, hasPreviousHearingVenue
                 ? YES.getValue() : NO.getValue());
