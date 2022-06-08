@@ -184,6 +184,42 @@ class CafcassNotificationServiceTest {
     }
 
     @Test
+    void shouldNotifyOrderRequestWithHearingSelected() {
+        when(configuration.getRecipientForOrder()).thenReturn(RECIPIENT_EMAIL);
+        when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
+                DOCUMENT_CONTENT);
+
+        LocalDate orderDate = LocalDate.of(2022, 5, 18);
+        LocalDateTime hearingDateTime = LocalDateTime.of(orderDate.minusDays(2),
+                LocalTime.of(10, 30));
+
+        underTest.sendEmail(caseData,
+                of(getDocumentReference()),
+                ORDER,
+                OrderCafcassData.builder()
+                        .documentName(TITLE)
+                        .orderApprovalDate(orderDate)
+                        .hearingDate(hearingDateTime)
+                        .build()
+        );
+
+        verify(documentDownloadService).downloadDocument(DOCUMENT_BINARY_URL);
+
+        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
+        EmailData data = emailDataArgumentCaptor.getValue();
+        assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
+        assertThat(data.getSubject()).isEqualTo("William|FM1234|12345|ORDER|16/05/2022 10:30|18/05/2022");
+        assertThat(data.getAttachments()).containsExactly(
+                document("application/pdf",  DOCUMENT_CONTENT, DOCUMENT_FILENAME)
+        );
+        assertThat(data.getMessage()).isEqualTo(
+                String.join(" ",
+                        "A new order for this case was uploaded to the Public Law Portal entitled",
+                        TITLE)
+        );
+    }
+
+    @Test
     void shouldNotifyUrgentNewApplicationRequest() {
         when(configuration.getRecipientForNewApplication()).thenReturn(RECIPIENT_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL))

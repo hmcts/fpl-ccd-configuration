@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder(toBuilder = true)
@@ -12,4 +13,5 @@ import java.time.LocalDate;
 public class OrderCafcassData implements CafcassData {
     private String documentName;
     private LocalDate orderApprovalDate;
+    private LocalDateTime hearingDate;
 }

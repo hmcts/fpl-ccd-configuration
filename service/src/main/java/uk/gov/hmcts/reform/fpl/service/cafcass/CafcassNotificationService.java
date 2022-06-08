@@ -166,15 +166,23 @@ public class CafcassNotificationService {
                               Optional<DocumentReference> docReference) {
         if (provider.isGenericSubject() && docReference.isPresent()) {
             DocumentReference documentReference = docReference.get();
-            String date = null;
+            String additionalInfo = null;
 
             if (provider == ORDER) {
-                date = Optional.ofNullable(cafcassData.getOrderApprovalDate())
+                String hearingDate = Optional.ofNullable(cafcassData.getHearingDate())
+                        .map(localDateTime -> localDateTime.format(DATE_TIME_FORMATTER))
+                        .orElse(null);
+
+                additionalInfo = String.join(SUBJECT_DELIMITER,
+                        hearingDate,
+                        Optional.ofNullable(cafcassData.getOrderApprovalDate())
                         .map(localDateTime -> localDateTime.format(DATE_FORMATTER))
-                        .orElse("NotSet");
+                        .orElse("NotSet")
+                );
+
                 documentReference.setType(ORDER.getLabel());
             } else if (provider == NOTICE_OF_HEARING) {
-                date = Optional.ofNullable(cafcassData.getHearingDate())
+                additionalInfo = Optional.ofNullable(cafcassData.getHearingDate())
                         .map(localDateTime -> localDateTime.format(DATE_TIME_FORMATTER))
                         .orElse("NotSet");
                 documentReference.setType(NOTICE_OF_HEARING.getLabel());
@@ -204,7 +212,7 @@ public class CafcassNotificationService {
                     caseData.getFamilyManCaseNumber(),
                     String.valueOf(caseData.getId()),
                     cafcassDocumentMappingType,
-                    date);
+                    additionalInfo);
 
             return subject.replace(VALUE_TO_REPLACE, "");
         } else {

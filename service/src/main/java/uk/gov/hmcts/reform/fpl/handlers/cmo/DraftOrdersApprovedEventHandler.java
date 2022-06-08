@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -136,6 +137,12 @@ public class DraftOrdersApprovedEventHandler {
         final Optional<Cafcass> recipientIsEngland =
                 cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
 
+        LocalDateTime hearingStartDate = findElement(caseData.getLastHearingOrderDraftsHearingId(),
+                caseData.getHearingDetails())
+                .map(Element::getValue)
+                .map(HearingBooking::getStartDate)
+                .orElse(null);
+
         if (recipientIsEngland.isPresent()) {
             event.getApprovedOrders()
                 .forEach(hearingOrder ->
@@ -144,6 +151,7 @@ public class DraftOrdersApprovedEventHandler {
                             ORDER,
                             OrderCafcassData.builder()
                                     .documentName(hearingOrder.getTitle())
+                                    .hearingDate(hearingStartDate)
                                     .orderApprovalDate(hearingOrder.getDateIssued())
                                     .build()
                         )

@@ -41,6 +41,8 @@ import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -206,12 +208,38 @@ class DraftOrdersApprovedEventHandlerTest {
 
     @Test
     void shouldSendGridNotifyToCafcassEngland() {
+        UUID selectedHearingId = UUID.randomUUID();
+        LocalDateTime hearingDateTime = LocalDateTime.of(
+                LocalDate.of(2022, 5, 18),
+                LocalTime.of(10, 30)
+        );
+
+
+        Element<HearingBooking> hearingBookingElementOne = Element.<HearingBooking>builder()
+                .id(selectedHearingId)
+                .value(HearingBooking.builder()
+                        .startDate(hearingDateTime)
+                        .build())
+                .build();
+
+        Element<HearingBooking> hearingBookingElementTwo = Element.<HearingBooking>builder()
+                .id(UUID.randomUUID())
+                .value(HearingBooking.builder()
+                        .startDate(hearingDateTime.minusDays(10))
+                        .build())
+                .build();
+
         CaseData caseData = CaseData.builder()
                 .id(CASE_ID)
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .hearingDetails(List.of(HEARING))
-                .lastHearingOrderDraftsHearingId(HEARING_ID)
+                .lastHearingOrderDraftsHearingId(selectedHearingId)
+                .hearingDetails(List.of(
+                        hearingBookingElementOne,
+                        hearingBookingElementTwo
+                ))
                 .build();
+
+
         LocalDate now = LocalDate.now();
         List<HearingOrder> orders = List.of(
                 HearingOrder.builder()
@@ -255,10 +283,10 @@ class DraftOrdersApprovedEventHandlerTest {
         List<OrderCafcassData> allCafCassOrders = orderCafcassDataArgumentCaptor.getAllValues();
 
         assertThat(allCafCassOrders)
-            .extracting("documentName", "orderApprovalDate")
+            .extracting("documentName", "orderApprovalDate", "hearingDate")
             .contains(
-                tuple(orders.get(0).getTitle(), now),
-                tuple(orders.get(1).getTitle(), now)
+                tuple(orders.get(0).getTitle(), now, hearingDateTime),
+                tuple(orders.get(1).getTitle(), now, hearingDateTime)
             );
     }
 

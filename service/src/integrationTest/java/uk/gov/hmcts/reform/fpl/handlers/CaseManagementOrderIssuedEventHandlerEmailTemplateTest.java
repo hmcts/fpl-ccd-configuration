@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.cafcass.OrderCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.AppointedGuardianFormatter;
@@ -48,6 +49,8 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -95,6 +98,7 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
     @Autowired
     private CaseManagementOrderIssuedEventHandler underTest;
 
+    private static final LocalDate DATE_ISSUED = LocalDate.of(2022, Month.JULY, 8);
     public static final UUID HEARING_ID = UUID.randomUUID();
     public static final CaseData CASE_DATA = CaseData.builder()
         .id(CASE_ID)
@@ -111,8 +115,10 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
             .build())))
         .lastHearingOrderDraftsHearingId(HEARING_ID)
         .build();
+
     public static final HearingOrder CMO = HearingOrder.builder()
         .order(DocumentReference.builder().binaryUrl("/some-url/binary").filename("Test").build())
+        .dateIssued(DATE_ISSUED)
         .hearing("some hearing")
         .build();
 
@@ -197,7 +203,33 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
 
     @Test
     void notifyCafcassViaSendGrid() {
-        underTest.notifyCafcassViaSendGrid(new CaseManagementOrderIssuedEvent(CASE_DATA, CMO));
+        LocalDateTime hearingDateTime = LocalDateTime.of(
+                LocalDate.of(2022, 5, 18),
+                LocalTime.of(10, 30)
+        );
+
+        Element<HearingBooking> hearingBookingElementOne = Element.<HearingBooking>builder()
+                .id(UUID.randomUUID())
+                .value(HearingBooking.builder()
+                        .startDate(hearingDateTime.minusDays(10))
+                        .build())
+                .build();
+
+        Element<HearingBooking> hearingBookingElementTwo = Element.<HearingBooking>builder()
+                .id(HEARING_ID)
+                .value(HearingBooking.builder()
+                        .startDate(hearingDateTime)
+                        .build())
+                .build();
+
+        CaseData caseData = CASE_DATA.toBuilder()
+                .hearingDetails(List.of(
+                        hearingBookingElementOne,
+                        hearingBookingElementTwo
+                ))
+                .build();
+
+        underTest.notifyCafcassViaSendGrid(new CaseManagementOrderIssuedEvent(caseData, CMO));
 
         verify(cafcassNotificationService).sendEmail(
                 isA(CaseData.class),
@@ -212,5 +244,14 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
         assertThat(orderCafcassDataArgumentCaptor.getValue()
                         .getDocumentName())
                 .isEqualTo("Test");
+
+        assertThat(orderCafcassDataArgumentCaptor.getValue()
+                .getHearingDate())
+                .isEqualTo(hearingDateTime);
+
+        assertThat(orderCafcassDataArgumentCaptor.getValue())
+                .extracting("documentName", "orderApprovalDate", "hearingDate")
+                .contains("Test", DATE_ISSUED, hearingDateTime);
+
     }
 }
