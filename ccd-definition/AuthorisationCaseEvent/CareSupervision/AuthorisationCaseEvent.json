@@ -204,7 +204,8 @@
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
-          "[SOLICITORA]"
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -225,7 +226,9 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
+          "[LAMANAGING]",
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -331,7 +334,8 @@
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
-          "[SOLICITORA]"
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -374,7 +378,8 @@
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
-          "[SOLICITORA]"
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -396,7 +401,8 @@
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
-          "[SOLICITORA]"
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -418,7 +424,9 @@
           "caseworker-publiclaw-courtadmin",
           "[LASOLICITOR]",
           "[LAMANAGING]",
-          "[EPSMANAGING]"
+          "[EPSMANAGING]",
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -464,7 +472,8 @@
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
-          "[SOLICITORA]"
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -572,7 +581,8 @@
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
-          "[SOLICITORA]"
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -701,7 +711,9 @@
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
-          "[LASHARED]"
+          "[LASHARED]",
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       }
@@ -790,7 +802,8 @@
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
-          "[SOLICITORA]"
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -834,7 +847,8 @@
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
-          "[SOLICITORA]"
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -856,7 +870,8 @@
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
-          "[SOLICITORA]"
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -939,7 +954,9 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
+          "[LAMANAGING]",
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -1022,7 +1039,8 @@
           "[EPSMANAGING]",
           "[LAMANAGING]",
           "[LABARRISTER]",
-          "[SOLICITORA]"
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -1150,7 +1168,9 @@
           "caseworker-publiclaw-courtadmin",
           "[LASOLICITOR]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
+          "[LAMANAGING]",
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -1387,7 +1407,8 @@
           "[LASHARED]",
           "[LAMANAGING]",
           "[EPSMANAGING]",
-          "[SOLICITORA]"
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       }
@@ -1403,7 +1424,9 @@
           "[LASOLICITOR]",
           "[LASHARED]",
           "[LAMANAGING]",
-          "[EPSMANAGING]"
+          "[EPSMANAGING]",
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       }
@@ -1441,7 +1464,8 @@
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
-          "[SOLICITORA]"
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       },
