@@ -184,8 +184,10 @@ public class CaseInitiationService {
         }
 
         if (nonNull(caseData.getRepresentativeType())) {
-            boolean isRespondentSolicitor = Objects.equals(caseData.getRepresentativeType().toString(), "RESPONDENT_SOLICITOR");
-            boolean isChildSolicitor = Objects.equals(caseData.getRepresentativeType().toString(), "CHILD_SOLICITOR");
+            boolean isRespondentSolicitor = Objects.equals(caseData.getRepresentativeType().toString(),
+                "RESPONDENT_SOLICITOR");
+            boolean isChildSolicitor = Objects.equals(caseData.getRepresentativeType().toString(),
+                "CHILD_SOLICITOR");
 
             if (isRespondentSolicitor || isChildSolicitor) {
                 CaseData updatedCaseData = caseData.toBuilder()
