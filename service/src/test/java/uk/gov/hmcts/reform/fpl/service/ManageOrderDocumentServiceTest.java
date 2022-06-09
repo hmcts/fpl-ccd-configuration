@@ -41,6 +41,7 @@ public class ManageOrderDocumentServiceTest {
         Map<String, String> expectedGrammar = Map.of(
             "childOrChildren", "child",
             "childIsOrAre", "is",
+            "childWasOrWere", "was",
             "localAuthorityName", LOCAL_AUTHORITY_1_NAME
         );
 
@@ -55,6 +56,7 @@ public class ManageOrderDocumentServiceTest {
         Map<String, String> expectedGrammar = Map.of(
             "childOrChildren", "children",
             "childIsOrAre", "are",
+            "childWasOrWere", "were",
             "localAuthorityName", LOCAL_AUTHORITY_1_NAME
         );
 
