@@ -583,6 +583,7 @@ class OrderShowHideQuestionsCalculatorTest {
         supervisionEducationOrder.put("childPlacementApplications", "NO");
         supervisionEducationOrder.put("childPlacementQuestions", "NO");
         supervisionEducationOrder.put("orderPlacedChildInCustody", "NO");
+        supervisionEducationOrder.put("manageOrdersVaryOrExtendSupervisionOrder", "NO");
         supervisionEducationOrder.put("manageOrdersEducationSupervision", "YES");
 
         Map<String, String> varyOrExtendSupervisionOrder = new HashMap<>(commonQuestions);
@@ -619,6 +620,7 @@ class OrderShowHideQuestionsCalculatorTest {
         varyOrExtendSupervisionOrder.put("childPlacementApplications", "NO");
         varyOrExtendSupervisionOrder.put("childPlacementQuestions", "NO");
         varyOrExtendSupervisionOrder.put("orderPlacedChildInCustody", "NO");
+        varyOrExtendSupervisionOrder.put("manageOrdersEducationSupervision", "NO");
         varyOrExtendSupervisionOrder.put("manageOrdersVaryOrExtendSupervisionOrder", "YES");
 
         return Stream.of(
