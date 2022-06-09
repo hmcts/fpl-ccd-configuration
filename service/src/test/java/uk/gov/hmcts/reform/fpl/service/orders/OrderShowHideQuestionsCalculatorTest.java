@@ -489,6 +489,7 @@ class OrderShowHideQuestionsCalculatorTest {
         recoveryOfChildQuestions.put("childPlacementApplications", "NO");
         recoveryOfChildQuestions.put("childPlacementQuestions", "NO");
         recoveryOfChildQuestions.put("orderPlacedChildInCustody", "YES");
+        recoveryOfChildQuestions.put("manageOrdersEducationSupervision", "NO");
 
         Map<String, String> placementOrder = new HashMap<>(commonQuestions);
         placementOrder.put("orderTitle", "NO");
@@ -567,6 +568,7 @@ class OrderShowHideQuestionsCalculatorTest {
         supervisionEducationOrder.put("parentResponsible", "NO");
         supervisionEducationOrder.put("childPlacementApplications", "NO");
         supervisionEducationOrder.put("childPlacementQuestions", "NO");
+        supervisionEducationOrder.put("orderPlacedChildInCustody", "NO");
         supervisionEducationOrder.put("manageOrdersEducationSupervision", "YES");
 
         return Stream.of(
