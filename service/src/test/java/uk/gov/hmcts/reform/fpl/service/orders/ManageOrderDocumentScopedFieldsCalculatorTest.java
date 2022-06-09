@@ -92,6 +92,14 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersPlacedUnderOrder",
             "manageOrdersIsExParte",
             "manageOrdersActionsPermitted",
+            "manageOrdersSupervisionOrderType",
+            "manageOrdersC35aOrderExists",
+            "manageOrdersC35aOrderDoesntExistMessage",
+            "manageOrdersSupervisionOrderVariationHeading",
+            "manageOrdersSupervisionOrderExtensionHeading",
+            "manageOrdersSupervisionOrderCourtDirection",
+            "manageOrdersSupervisionOrderApprovalDate",
+            "manageOrdersSupervisionOrderEndDate",
             "manageOrdersOrderCreatedDate"
         );
     }

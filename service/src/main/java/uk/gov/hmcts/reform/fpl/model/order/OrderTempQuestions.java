@@ -45,4 +45,5 @@ public class OrderTempQuestions {
     String childPlacementApplications;
     String childPlacementQuestions;
     String manageOrdersEducationSupervision;
+    String manageOrdersVaryOrExtendSupervisionOrder;
 }
