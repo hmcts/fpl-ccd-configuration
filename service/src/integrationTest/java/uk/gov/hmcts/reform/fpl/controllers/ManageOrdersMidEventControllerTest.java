@@ -116,6 +116,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         Map.entry("parentResponsible", "NO"),
         Map.entry("childPlacementApplications", "NO"),
         Map.entry("childPlacementQuestions", "NO"),
+        Map.entry("manageOrdersEducationSupervision", "NO"),
         Map.entry("orderPlacedChildInCustody", "NO"),
         Map.entry("manageOrdersVaryOrExtendSupervisionOrder", "NO")
     ));
@@ -563,6 +564,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("parentResponsible", "NO"),
             Map.entry("childPlacementApplications", "NO"),
             Map.entry("childPlacementQuestions", "NO"),
+            Map.entry("manageOrdersEducationSupervision", "NO"),
             Map.entry("orderPlacedChildInCustody", "NO"),
             Map.entry("manageOrdersVaryOrExtendSupervisionOrder", "NO")
         );
@@ -616,6 +618,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("parentResponsible", "NO"),
             Map.entry("childPlacementApplications", "NO"),
             Map.entry("childPlacementQuestions", "NO"),
+            Map.entry("manageOrdersEducationSupervision", "NO"),
             Map.entry("orderPlacedChildInCustody", "NO"),
             Map.entry("manageOrdersVaryOrExtendSupervisionOrder", "NO")
         );

@@ -20,8 +20,10 @@ public class ManageOrderDocumentService {
 
     public Map<String, String> commonContextElements(CaseData caseData) {
         Map<String, String> context = new HashMap<>();
-        context.put("childOrChildren", getChildGrammar(childrenSmartSelector.getSelectedChildren(caseData).size()));
-        context.put("childIsOrAre", getChildIsOrAreGrammar(childrenSmartSelector.getSelectedChildren(caseData).size()));
+        final int numOfChildren = childrenSmartSelector.getSelectedChildren(caseData).size();
+        context.put("childOrChildren", getChildGrammar(numOfChildren));
+        context.put("childIsOrAre", getChildIsOrAreGrammar(numOfChildren));
+        context.put("childWasOrWere", getChildWasOrWereGrammar(numOfChildren));
         context.put("localAuthorityName", laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()));
         context.put("courtName", caseData.getCourt() != null ? caseData.getCourt().getName() : null);
         return context;
@@ -33,5 +35,9 @@ public class ManageOrderDocumentService {
 
     private String getChildIsOrAreGrammar(int numOfChildren) {
         return (numOfChildren == 1) ? "is" : "are";
+    }
+
+    private String getChildWasOrWereGrammar(int numOfChildren) {
+        return (numOfChildren == 1) ? "was" : "were";
     }
 }

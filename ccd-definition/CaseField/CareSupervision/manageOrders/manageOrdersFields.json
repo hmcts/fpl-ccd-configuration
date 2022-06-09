@@ -664,6 +664,25 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersLeaName",
+    "FieldType": "Text",
+    "Label": "Name of Local Education Authority (LEA)",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersEndDateWithEducationAge",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ManageOrderEndDateTypeWithEducationAge",
+    "Label": "When does it end?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "manageOrdersC35aOrderExists",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Label": "Does a supervision order (C35a) already exist for this case?",

@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.ReasonForSecureAccommodation;
 import uk.gov.hmcts.reform.fpl.enums.RelationshipWithChild;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.WalesOffices;
+import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrderEndDateOption;
 import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -92,6 +93,8 @@ public class ManageOrdersEventData {
     String manageOrdersBirthCertificateRegistrationDistrict;
     String manageOrdersBirthCertificateRegistrationSubDistrict;
     String manageOrdersBirthCertificateRegistrationCounty;
+    String manageOrdersLeaName;
+    ManageOrderEndDateOption manageOrdersEndDateWithEducationAge;
     PlacedUnderOrder manageOrdersPlacedUnderOrder;
     String manageOrdersIsExParte;
     List<C29ActionsPermitted> manageOrdersActionsPermitted;
