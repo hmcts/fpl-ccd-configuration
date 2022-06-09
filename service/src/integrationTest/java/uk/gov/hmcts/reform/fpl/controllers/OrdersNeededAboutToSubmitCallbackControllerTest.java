@@ -9,7 +9,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@WebMvcTest(OrdersNeededAboutToSubmitCallbackController.class)
+@WebMvcTest(OrdersNeededController.class)
 @OverrideAutoConfiguration(enabled = true)
 class OrdersNeededAboutToSubmitCallbackControllerTest extends AbstractCallbackTest {
 

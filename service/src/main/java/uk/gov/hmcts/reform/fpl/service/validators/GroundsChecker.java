@@ -38,6 +38,14 @@ public class GroundsChecker extends PropertiesChecker {
             || isSecureAccommodationOrderGroundsStarted(caseData.getGroundsForSecureAccommodationOrder());
     }
 
+    @Override
+    public boolean isCompleted(CaseData caseData) {
+        if(hasSecureAccommodationOrder(caseData)) {
+            return isSecureAccommodationOrderGroundsCompleted(caseData.getGroundsForSecureAccommodationOrder());
+        }
+        return true;
+    }
+
     private boolean hasEmergencyProtectionOrder(CaseData caseData) {
         return caseData.getOrders() != null && caseData.getOrders().getOrderType() != null
                 && caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER);
@@ -60,6 +68,11 @@ public class GroundsChecker extends PropertiesChecker {
         return isNotEmpty(saoGrounds)
                && anyNonEmpty(saoGrounds.getGrounds(), saoGrounds.getReasonAndLength(),
                     saoGrounds.getSupportingDocuments());
+    }
+
+    private static boolean isSecureAccommodationOrderGroundsCompleted(GroundsForSecureAccommodationOrder saoGrounds) {
+        return isNotEmpty(saoGrounds) && isNotEmpty(saoGrounds.getGrounds())
+               && isNotEmpty(saoGrounds.getReasonAndLength());
     }
 
     @Override

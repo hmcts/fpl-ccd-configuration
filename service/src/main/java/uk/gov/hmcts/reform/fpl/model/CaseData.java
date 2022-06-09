@@ -1146,4 +1146,6 @@ public class CaseData {
             .map(Orders::isDischargeOfCareOrder)
             .orElse(false);
     }
+
+    private final YesNo isSecureAccommodationOrderType;
 }

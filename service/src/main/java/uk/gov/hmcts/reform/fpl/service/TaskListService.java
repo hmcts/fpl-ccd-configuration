@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
@@ -92,10 +93,14 @@ public class TaskListService {
             events.add(SELECT_COURT);
         }
 
-        if (!caseData.isDischargeOfCareApplication()) {
-            events.add(GROUNDS);
+        if(!YesNo.YES.equals(caseData.getIsSecureAccommodationOrderType())
+           && !caseData.isDischargeOfCareApplication()) {
             events.add(RISK_AND_HARM);
             events.add(FACTORS_AFFECTING_PARENTING);
+        }
+
+        if (!caseData.isDischargeOfCareApplication()) {
+            events.add(GROUNDS);
         }
 
         return events;

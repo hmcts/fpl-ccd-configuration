@@ -26,7 +26,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 @RestController
 @RequestMapping("/callback/orders-needed")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class OrdersNeededAboutToSubmitCallbackController extends CallbackController {
+public class OrdersNeededController extends CallbackController {
 
     private final OrdersNeededValidator ordersNeededValidator;
 
@@ -70,7 +70,7 @@ public class OrdersNeededAboutToSubmitCallbackController extends CallbackControl
                 if(!orderTypes.contains(OrderType.SECURE_ACCOMMODATION_ORDER.name())) {
                     removeSecureAccommodationOrderFields(data);
                 } else {
-                    data.put("secureAccommodationOrderType", YesNo.YES);
+                    data.put("isSecureAccommodationOrderType", YesNo.YES);
                 }
             });
 
@@ -92,8 +92,10 @@ public class OrdersNeededAboutToSubmitCallbackController extends CallbackControl
     @SuppressWarnings("unchecked")
     private void removeSecureAccommodationOrderFields(Map<String, Object> data) {
         data.remove("groundsForSecureAccommodationOrder");
-        data.remove("secureAccommodationOrderType");
         // remove the secureAccommodationOrderSection field
         ((Map<String, Object>) data.get("orders")).remove("secureAccommodationOrderSection");
+
+        // set this control flag to NO
+        data.put("isSecureAccommodationOrderType", YesNo.NO);
     }
 }
