@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
@@ -50,7 +51,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-82", this::run82,
         "DFPL-82-rollback", this::run82Rollback,
         "DFPL-622", this::run622,
-        "DFPL-679", this::run679
+        "DFPL-679", this::run679,
+        "DFPL-666", this::run666
     );
 
     @PostMapping("/about-to-submit")
@@ -303,4 +305,50 @@ public class MigrateCaseController extends CallbackController {
                 .collect(Collectors.toList());
     }
 
+
+    private void run666(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-666";
+        CaseData caseData = getCaseData(caseDetails);
+        final Long caseId = caseData.getId();
+        final Long expectedCaseId = 1642779142991513L;
+        final UUID expectedHearingId = UUID.fromString("68cb7808-c12f-4936-8737-b55c424bdeb6");
+
+        if (!expectedCaseId.equals(caseId)) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId
+            ));
+        }
+
+        List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
+        if (hearingDetails != null) {
+            // get the hearing with the expected UUID
+            List<Element<HearingBooking>> hearingBookingsToBeRemoved =
+                hearingDetails.stream().filter(hearingBooking -> expectedHearingId.equals(hearingBooking.getId()))
+                .collect(toList());
+
+            if (hearingBookingsToBeRemoved.size() == 0) {
+                throw new AssertionError(format(
+                    "Migration {id = %s, case reference = %s}, hearing booking %s not found",
+                    migrationId, caseId, expectedHearingId
+                ));
+            }
+
+            if (hearingBookingsToBeRemoved.size() > 1) {
+                throw new AssertionError(format(
+                    "Migration {id = %s, case reference = %s}, more than one hearing booking %s found",
+                    migrationId, caseId, expectedHearingId
+                ));
+            }
+
+            // remove the hearing from the hearing list
+            hearingDetails.removeAll(hearingBookingsToBeRemoved);
+            caseDetails.getData().put("hearingDetails", hearingDetails);
+        } else {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, hearing details not found",
+                migrationId, caseId
+            ));
+        }
+    }
 }

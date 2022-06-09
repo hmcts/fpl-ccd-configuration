@@ -716,6 +716,103 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
     }
 
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl666 {
+        final String migrationId = "DFPL-666";
+        final Long caseId = 1642779142991513L;
+        final UUID hearingId = UUID.fromString("68cb7808-c12f-4936-8737-b55c424bdeb6");
+
+        final Element<HearingBooking> hearingToBeRemoved = element(hearingId, HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(now().minusDays(3))
+            .endDate(now().minusDays(2))
+            .build());
+        final Element<HearingBooking> hearingBooking1 = element(HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(now().minusDays(3))
+            .endDate(now().minusDays(2))
+            .build());
+        final Element<HearingBooking> hearingBooking2 = element(HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(now().minusDays(3))
+            .endDate(now().minusDays(2))
+            .build());
+
+        @Test
+        void shouldPerformMigrationWhenHearingIdMatches() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .hearingDetails(List.of(hearingToBeRemoved, hearingBooking1, hearingBooking2))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+
+            List<Element<HearingBooking>> expectedHearingDetails = List.of(hearingBooking1, hearingBooking2);
+
+            assertThat(responseData.getHearingDetails()).isEqualTo(expectedHearingDetails);
+        }
+
+        @Test
+        void shouldThrowAssersionErrorWhenHearingDetailsIsNull() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-666, case reference = 1642779142991513},"
+                            + " hearing details not found");
+        }
+
+        @Test
+        void shouldThrowAssersionErrorWhenCaseIdIsInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(1111111111111111L)
+                .hearingDetails(List.of(hearingToBeRemoved, hearingBooking1, hearingBooking2))
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-666, case reference = 1111111111111111},"
+                            + " expected case id 1642779142991513");
+        }
+
+        @Test
+        void shouldThrowAssersionErrorWhenHearingBookingIdIsInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .hearingDetails(List.of(hearingBooking1, hearingBooking2))
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-666, case reference = 1642779142991513},"
+                            + " hearing booking 68cb7808-c12f-4936-8737-b55c424bdeb6 not found");
+        }
+
+        @Test
+        void shouldThrowAssersionErrorWhenMoreThanOneHearingBookingWithSameIdFound() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .hearingDetails(List.of(hearingToBeRemoved, hearingToBeRemoved))
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-666, case reference = 1642779142991513},"
+                            + " more than one hearing booking 68cb7808-c12f-4936-8737-b55c424bdeb6 found");
+        }
+    }
+
     private CaseDetails buildCaseDetails(CaseData caseData, String migrationId) {
         CaseDetails caseDetails = asCaseDetails(caseData);
         caseDetails.getData().put("migrationId", migrationId);
