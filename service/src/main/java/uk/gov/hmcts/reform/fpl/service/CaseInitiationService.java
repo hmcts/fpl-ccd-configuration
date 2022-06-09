@@ -155,9 +155,6 @@ public class CaseInitiationService {
         boolean isCaseOutsourced = outsourcingLocalAuthority.isPresent()
             && !userLocalAuthority.equals(outsourcingLocalAuthority);
 
-        boolean isRespondentSolicitor = caseData.getRepresentativeType().toString() == "RESPONDENT_SOLICITOR";
-        boolean isChildSolicitor = caseData.getRepresentativeType().toString() == "CHILD_SOLICITOR";
-
         if (isCaseOutsourced) {
             String outsourcingOrgId = localAuthorities.getLocalAuthorityId(outsourcingLocalAuthority.get());
             String outsourcingOrgName = localAuthorities.getLocalAuthorityName(outsourcingLocalAuthority.get());
@@ -186,15 +183,20 @@ public class CaseInitiationService {
             return addCourtDetails(updatedCaseData);
         }
 
-        if (isRespondentSolicitor || isChildSolicitor) {
-            CaseData updatedCaseData = caseData.toBuilder()
-                .outsourcingPolicy(organisationPolicy(
-                    currentUserOrganisationId,
-                    currentUserOrganisationName,
-                    isRespondentSolicitor ? SOLICITORA : CHILDSOLICITORA))
-                .build();
+        if (nonNull(caseData.getRepresentativeType())) {
+            boolean isRespondentSolicitor = Objects.equals(caseData.getRepresentativeType().toString(), "RESPONDENT_SOLICITOR");
+            boolean isChildSolicitor = Objects.equals(caseData.getRepresentativeType().toString(), "CHILD_SOLICITOR");
 
-            return addCourtDetails(updatedCaseData);
+            if (isRespondentSolicitor || isChildSolicitor) {
+                CaseData updatedCaseData = caseData.toBuilder()
+                    .outsourcingPolicy(organisationPolicy(
+                        currentUserOrganisationId,
+                        currentUserOrganisationName,
+                        isRespondentSolicitor ? SOLICITORA : CHILDSOLICITORA))
+                    .build();
+
+                return addCourtDetails(updatedCaseData);
+            }
         }
 
         return caseData;
