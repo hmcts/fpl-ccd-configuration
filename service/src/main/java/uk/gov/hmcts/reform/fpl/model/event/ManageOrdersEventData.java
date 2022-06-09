@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.C29ActionsPermitted;
+import uk.gov.hmcts.reform.fpl.enums.C36OrderType;
 import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.EnglandOffices;
@@ -100,7 +101,10 @@ public class ManageOrdersEventData {
     Address manageOrdersActionsPermittedAddress;
     String manageOrdersOfficerName;
     LocalDate manageOrdersOrderCreatedDate;
-
+    C36OrderType manageOrdersSupervisionOrderType;
+    String manageOrdersSupervisionOrderCourtDirection;
+    LocalDate manageOrdersSupervisionOrderApprovalDate;
+    LocalDate manageOrdersSupervisionOrderEndDate;
 
     @JsonIgnore
     public LocalDateTime getManageOrdersApprovalDateOrDateTime() {

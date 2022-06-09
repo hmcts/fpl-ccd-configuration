@@ -25,6 +25,7 @@ public class ManageOrderDocumentService {
         context.put("childIsOrAre", getChildIsOrAreGrammar(numOfChildren));
         context.put("childWasOrWere", getChildWasOrWereGrammar(numOfChildren));
         context.put("localAuthorityName", laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()));
+        context.put("courtName", caseData.getCourt() != null ? caseData.getCourt().getName() : null);
         return context;
     }
 
