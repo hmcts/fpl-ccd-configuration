@@ -3736,5 +3736,12 @@
     "CaseFieldID": "refusedOrdersTabHeading",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CaseFieldID": "othersList",
+    "CRUD": "R"
   }
 ]

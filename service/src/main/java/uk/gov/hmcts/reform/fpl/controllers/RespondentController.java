@@ -11,24 +11,47 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.RespondentsUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.event.OtherToRespondentEventData;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
+import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentAfterSubmissionRepresentationService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.legalcounsel.RepresentableLegalCounselUpdater;
+import uk.gov.hmcts.reform.fpl.service.others.OthersListGenerator;
 import uk.gov.hmcts.reform.fpl.service.respondent.RespondentValidator;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
+import static java.util.Objects.isNull;
+import static java.util.UUID.randomUUID;
+import static java.util.stream.Collectors.toSet;
+import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.RESPONDENT;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.model.Respondent.expandCollection;
+import static uk.gov.hmcts.reform.fpl.model.common.Element.newElement;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Slf4j
 @Api
@@ -37,7 +60,14 @@ import static uk.gov.hmcts.reform.fpl.model.Respondent.expandCollection;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RespondentController extends CallbackController {
 
+    private static final String OTHERS_KEY = "others";
+    private static final String OTHERS_LIST_KEY = "othersList";
+    private static final String REPRESENTATIVES_KEY = "representatives";
     private static final String RESPONDENTS_KEY = "respondents1";
+    private static final String TRANSFORMED_RESPONDENT = "transformedRespondent";
+    private final OthersListGenerator othersListGenerator;
+    private final OthersService othersService;
+    private final RepresentativeService representativeService;
     private final ConfidentialDetailsService confidentialDetailsService;
     private final RespondentService respondentService;
     private final RespondentAfterSubmissionRepresentationService respondentAfterSubmissionRepresentationService;
@@ -68,12 +98,7 @@ public class RespondentController extends CallbackController {
         return respond(caseDetails, errors);
     }
 
-    @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
-        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
-
+    private void prepareNewRespondents(CaseDetails caseDetails, CaseData caseData, CaseData caseDataBefore) {
         confidentialDetailsService.addConfidentialDetailsToCase(caseDetails, caseData.getAllRespondents(), RESPONDENT);
 
         caseData = getCaseData(caseDetails);
@@ -98,6 +123,15 @@ public class RespondentController extends CallbackController {
                 caseData, caseDataBefore, Representing.RESPONDENT, true
             ));
         }
+    }
+
+    @PostMapping("/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
+
+        prepareNewRespondents(caseDetails, caseData, caseDataBefore);
 
         return respond(caseDetails);
     }
@@ -115,6 +149,159 @@ public class RespondentController extends CallbackController {
             publishEvent(new RespondentsUpdated(caseData, caseDataBefore));
             publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
         }
+    }
+
+    @PostMapping("/change-from-other/about-to-start")
+    public AboutToStartOrSubmitCallbackResponse handleChangeFromOtherAboutToStart(
+        @RequestBody CallbackRequest callbackrequest) {
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        List<Element<Other>> others = caseData.getAllOthers();
+        DynamicList otherList = othersListGenerator.buildOthersList(others);
+
+        List<String> errors = new ArrayList<>();
+        if (otherList.getListItems().isEmpty()) {
+            errors.add("There is no other person in this case.");
+        } else {
+            caseDetails.getData().put(OTHERS_LIST_KEY, otherList);
+        }
+        return respond(caseDetails, errors);
+    }
+
+    @PostMapping("/change-from-other/enter-respondent/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleChangeFromOtherEnterRespondentMidEvent(
+        @RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        OtherToRespondentEventData eventData = caseData.getOtherToRespondentEventData();
+        Other selectedPreparedOther = othersService.getSelectedPreparedOther(caseData, eventData.getOthersList())
+            .getValue();
+
+        RespondentParty respondentParty = RespondentParty.builder()
+            .address(selectedPreparedOther.getAddress())
+            .addressKnow(selectedPreparedOther.getAddressKnow())
+            .addressNotKnowReason(selectedPreparedOther.getAddressNotKnowReason())
+            .contactDetailsHidden(selectedPreparedOther.getDetailsHidden())
+            .contactDetailsHiddenReason(selectedPreparedOther.getDetailsHiddenReason())
+            .dateOfBirth(selectedPreparedOther.toParty().getDateOfBirth())
+            .email(selectedPreparedOther.toParty().getEmail())
+            .firstName(selectedPreparedOther.getName()) // other does not have first name, use other.getName() instead
+            .gender(selectedPreparedOther.getGender())
+            .genderIdentification(selectedPreparedOther.getGenderIdentification())
+            //.lastName() // other does not have last name
+            .litigationIssuesDetails(selectedPreparedOther.getLitigationIssuesDetails())
+            .litigationIssues(selectedPreparedOther.getLitigationIssues())
+            .organisationName(selectedPreparedOther.toParty().getOrganisationName())
+            .partyType(selectedPreparedOther.toParty().getPartyType())
+            .relationshipToChild(selectedPreparedOther.getChildInformation())
+            .telephoneNumber(selectedPreparedOther.toParty().getTelephoneNumber())
+            .build();
+
+        Respondent transformedRespondent = Respondent.builder()
+            .representedBy(selectedPreparedOther.getRepresentedBy())
+            .party(respondentParty).build();
+        caseDetails.getData().put(TRANSFORMED_RESPONDENT, transformedRespondent);
+
+        return respond(caseDetails);
+    }
+
+    @PostMapping("/change-from-other/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleChangeFromOtherMidEvent(
+        @RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+        OtherToRespondentEventData eventData = caseData.getOtherToRespondentEventData();
+
+        CaseData dummyCaseData = CaseData.builder()
+            .respondents1(List.of(newElement(eventData.getTransformedRespondent())))
+            .build();
+
+        List<String> errors = respondentValidator.validate(dummyCaseData, dummyCaseData, true);
+        return respond(caseDetails, errors);
+    }
+
+    @PostMapping("/change-from-other/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handleChangeFromOtherAboutToSubmit(
+        @RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+        final CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
+
+        OtherToRespondentEventData eventData = caseData.getOtherToRespondentEventData();
+
+        // build new allOthers collection
+        UUID firstOtherUUID = randomUUID();
+        Element<Other> selectedPreparedOther = othersService.getSelectedPreparedOther(caseData,
+            eventData.getOthersList(), firstOtherUUID);
+        List<Element<Other>> newAllOthers  = new ArrayList<>(caseData.getAllOthers());
+        if (selectedPreparedOther.getId().equals(firstOtherUUID)) {
+            if (!newAllOthers.removeIf(ele ->
+                !(caseData.getOthers().getAdditionalOthers().stream().map(Element::getId)).collect(toSet())
+                    .contains(ele.getId()))) {
+                throw new IllegalStateException("Unable to remove firstOther from newAllOthers list");
+            }
+        } else {
+            Optional<Element<Other>> otherToBeRemoved = findElement(selectedPreparedOther.getId(), newAllOthers);
+            if (otherToBeRemoved.isPresent()) {
+                if (!newAllOthers.removeIf(ele -> ele.getId().equals(otherToBeRemoved.get().getId()))) {
+                    throw new IllegalStateException("Unable to remove other from additionalOthers");
+                }
+            } else {
+                throw new IllegalStateException("Unable to remove other from additionalOthers");
+            }
+        }
+
+        // Setting "confidentialOthers" to caseDetails
+        confidentialDetailsService.addConfidentialDetailsToCase(caseDetails, newAllOthers, OTHER);
+        // Setting "others" to caseDetails from previous built new allOthers collection
+        List<Element<Other>> allOthersWithoutConfidentialDetails = confidentialDetailsService
+            .removeConfidentialDetails(newAllOthers);
+        Others newOthers = Others.from(allOthersWithoutConfidentialDetails);
+        if (isNull(newOthers)) {
+            caseDetails.getData().remove(OTHERS_KEY);
+        } else {
+            caseDetails.getData().put(OTHERS_KEY, newOthers);
+        }
+
+        // build new respondents1
+        Respondent transformedRespondent = eventData.getTransformedRespondent();
+        caseData.getAllRespondents().add(element(selectedPreparedOther.getId(), transformedRespondent));
+        caseDetails.getData().put(RESPONDENTS_KEY, caseData.getAllRespondents()); // sync caseDetails as well
+        prepareNewRespondents(caseDetails, caseData, caseDataBefore);
+        // Setting "representatives" to caseDetails
+        {
+            RepresentativeRole targetRole = representativeService
+                .resolveRepresentativeRole(Type.RESPONDENT, caseData.getRespondents1().size());
+            unwrapElements(selectedPreparedOther.getValue().getRepresentedBy()).forEach(representativeId -> {
+                findElement(representativeId, caseData.getRepresentatives())
+                    .ifPresent(ele -> ele.setValue(ele.getValue().toBuilder().role(targetRole).build()));
+            });
+        }
+        if (!isNull(newOthers) && !isNull(newOthers.getFirstOther())) {
+            int sequenceNo = 1;
+            {
+                RepresentativeRole targetRole = representativeService.resolveRepresentativeRole(Type.OTHER, sequenceNo);
+                unwrapElements(newOthers.getFirstOther().getRepresentedBy()).forEach(representativeId -> {
+                    findElement(representativeId, caseData.getRepresentatives())
+                        .ifPresent(ele -> ele.setValue(ele.getValue().toBuilder()
+                            .role(targetRole).build()));
+                });
+            }
+            for (Element<Other> otherElement : nullSafeList(newOthers.getAdditionalOthers())) {
+                sequenceNo++;
+                RepresentativeRole targetRole = representativeService.resolveRepresentativeRole(Type.OTHER, sequenceNo);
+                unwrapElements(otherElement.getValue().getRepresentedBy()).forEach(representativeId -> {
+                    findElement(representativeId, caseData.getRepresentatives())
+                        .ifPresent(ele -> ele.setValue(ele.getValue().toBuilder()
+                            .role(targetRole).build()));
+                });
+            }
+        }
+        caseDetails.getData().put(REPRESENTATIVES_KEY, caseData.getRepresentatives());
+
+        return respond(removeTemporaryFields(caseDetails, OtherToRespondentEventData.class));
     }
 
 }

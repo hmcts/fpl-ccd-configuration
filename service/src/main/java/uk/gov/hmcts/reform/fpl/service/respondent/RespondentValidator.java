@@ -35,11 +35,15 @@ public class RespondentValidator {
     private final Time time;
 
     public List<String> validate(CaseData caseData, CaseData caseDataBefore) {
+        return validate(caseData, caseDataBefore, false);
+    }
+
+    public List<String> validate(CaseData caseData, CaseData caseDataBefore, boolean hideRespondentIndex) {
         List<String> errors = new ArrayList<>();
 
         validateMaximumSize(caseData).ifPresent(errors::add);
 
-        errors.addAll(validateDob(caseData));
+        errors.addAll(validateDob(caseData, hideRespondentIndex));
         errors.addAll(validateAddress(caseData));
 
         List<Respondent> respondentsWithLegalRep =
@@ -48,13 +52,13 @@ public class RespondentValidator {
         errors.addAll(validateEmailService.validate(emails, "Representative"));
 
         if (caseData.getState() != OPEN) {
-            errors.addAll(respondentAfterSubmissionValidator.validate(caseData, caseDataBefore));
+            errors.addAll(respondentAfterSubmissionValidator.validate(caseData, caseDataBefore, hideRespondentIndex));
         }
 
         return errors;
     }
 
-    private List<String> validateDob(CaseData caseData) {
+    private List<String> validateDob(CaseData caseData, boolean convertedFromOther) {
         List<String> dobErrors = new ArrayList<>();
         List<Element<Respondent>> allRespondents = caseData.getAllRespondents();
 
@@ -62,7 +66,8 @@ public class RespondentValidator {
             LocalDate dob = allRespondents.get(i).getValue().getParty().getDateOfBirth();
             if (dob != null) {
                 if (dob.isAfter(time.now().toLocalDate())) {
-                    dobErrors.add(String.format("Date of birth for respondent %s cannot be in the future", i + 1));
+                    dobErrors.add(String.format("Date of birth for respondent %scannot be in the future",
+                        convertedFromOther ? "" : ((i + 1) + " ")));
                 }
             }
         }

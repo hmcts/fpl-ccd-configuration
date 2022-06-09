@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.ArrayList;
@@ -13,6 +14,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
+import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -111,15 +114,30 @@ public class OthersService {
         }
     }
 
+    public Element<Other> getSelectedPreparedOther(CaseData caseData, DynamicList singleSelector) {
+        return getSelectedPreparedOther(caseData, singleSelector, randomUUID());
+    }
+
+    public Element<Other> getSelectedPreparedOther(CaseData caseData, DynamicList singleSelector, UUID firstOtherUUID) {
+        Others preparedOthers = prepareOthers(caseData);
+        return ofNullable(singleSelector).map(DynamicList::getValueCodeAsUUID)
+            .flatMap(otherId -> preparedOthers.getAdditionalOthers().stream()
+                .filter(o -> otherId.equals(o.getId()))
+                .findFirst())
+            .orElseGet(() -> element(firstOtherUUID, preparedOthers.getFirstOther()));
+    }
+
     private boolean useAllOthers(String sendOrdersToAllOthers) {
         return "Yes".equals(sendOrdersToAllOthers);
     }
 
     private Other addConfidentialDetails(Other confidentialOther, Element<Other> other) {
-        return other.getValue().toBuilder()
+        Other ret = other.getValue().toBuilder()
             .telephone(confidentialOther.getTelephone())
             .address(confidentialOther.getAddress())
             .build();
+        other.getValue().getRepresentedBy().forEach(uuid -> ret.addRepresentative(uuid.getId(), uuid.getValue()));
+        return ret;
     }
 
     // This finds firstOther element id in confidential others that doesn't match.

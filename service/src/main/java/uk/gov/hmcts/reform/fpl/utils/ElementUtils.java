@@ -119,7 +119,7 @@ public class ElementUtils {
         return asDynamicList(elements, null, labelProducer);
     }
 
-    private static <T> Collection<T> nullSafeCollection(Collection<T> collection) {
+    public static <T> Collection<T> nullSafeCollection(Collection<T> collection) {
         return defaultIfNull(collection, emptyList());
     }
 

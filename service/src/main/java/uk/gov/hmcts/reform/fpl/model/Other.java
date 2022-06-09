@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -53,6 +54,12 @@ public class Other implements Representable, ConfidentialParty<Other> {
         }
     }
 
+    public void addRepresentative(UUID id, UUID representativeId) {
+        if (!unwrapElements(representedBy).contains(representativeId)) {
+            this.representedBy.add(element(id, representativeId));
+        }
+    }
+
     public boolean containsConfidentialDetails() {
         return "Yes".equals(detailsHidden);
     }
@@ -84,6 +91,7 @@ public class Other implements Representable, ConfidentialParty<Other> {
         return OtherParty.builder()
             .firstName(this.getName())
             .address(this.getAddress())
+            .dateOfBirth(LocalDate.parse(this.getDateOfBirth(), DateTimeFormatter.ofPattern("yyyy-MM-dd")))
             .telephoneNumber(Telephone.builder().telephoneNumber(this.telephone).build())
             .build();
     }
@@ -104,10 +112,13 @@ public class Other implements Representable, ConfidentialParty<Other> {
 
     @Override
     public Other removeConfidentialDetails() {
-        return this.toBuilder()
+        Other other =  this.toBuilder()
             .address(null)
             .telephone(null)
             .build();
+        // note: this.toBuilder() will remove the representedBy
+        other.representedBy.addAll(this.getRepresentedBy());
+        return other;
     }
 
     @JsonIgnore

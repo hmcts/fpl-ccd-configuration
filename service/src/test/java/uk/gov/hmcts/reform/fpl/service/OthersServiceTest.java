@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -145,11 +147,19 @@ class OthersServiceTest {
         assertThat(others).isEqualTo(Others.builder().additionalOthers(emptyList()).build());
     }
 
-    @Test
-    void shouldReturnOthersWhenOthersIsPrePopulated() {
+    @ParameterizedTest
+    @ValueSource(ints = {10, 15, 20, 25})
+    void shouldReturnOthersWhenOthersIsPrePopulated(int mode) {
+        Other firstOther = otherWithDetailsHiddenValue("No");
+        if (mode / 10 == 1) {
+            firstOther.addRepresentative(randomUUID());
+        }
         List<Element<Other>> additionalOthers = othersWithRemovedConfidentialFields();
+        if (mode % 10 == 5) {
+            additionalOthers.forEach(ao -> ao.getValue().addRepresentative(randomUUID()));
+        }
 
-        CaseData caseData = buildCaseDataWithOthers(otherWithDetailsHiddenValue("No"), additionalOthers, null);
+        CaseData caseData = buildCaseDataWithOthers(firstOther, additionalOthers, null);
 
         Others others = service.prepareOthers(caseData);
 

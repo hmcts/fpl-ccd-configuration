@@ -25,6 +25,26 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_1;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_2;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_3;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_4;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_5;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_6;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_7;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_8;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_9;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_PERSON_1;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_1;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_10;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_2;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_3;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_4;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_5;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_6;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_7;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_8;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_9;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
@@ -229,5 +249,58 @@ public class RepresentativeService {
         } else {
             return emptyList();
         }
+    }
+
+    public RepresentativeRole resolveRepresentativeRole(RepresentativeRole.Type type, int sequenceNo) {
+        switch (type) {
+            case OTHER:
+                switch (sequenceNo) {
+                    case 1:
+                        return REPRESENTING_PERSON_1;
+                    case 2:
+                        return REPRESENTING_OTHER_PERSON_1;
+                    case 3:
+                        return REPRESENTING_OTHER_PERSON_2;
+                    case 4:
+                        return REPRESENTING_OTHER_PERSON_3;
+                    case 5:
+                        return REPRESENTING_OTHER_PERSON_4;
+                    case 6:
+                        return REPRESENTING_OTHER_PERSON_5;
+                    case 7:
+                        return REPRESENTING_OTHER_PERSON_6;
+                    case 8:
+                        return REPRESENTING_OTHER_PERSON_7;
+                    case 9:
+                        return REPRESENTING_OTHER_PERSON_8;
+                    case 10:
+                        return REPRESENTING_OTHER_PERSON_9;
+                }
+            case RESPONDENT:
+                switch (sequenceNo) {
+                    case 1:
+                        return REPRESENTING_RESPONDENT_1;
+                    case 2:
+                        return REPRESENTING_RESPONDENT_2;
+                    case 3:
+                        return REPRESENTING_RESPONDENT_3;
+                    case 4:
+                        return REPRESENTING_RESPONDENT_4;
+                    case 5:
+                        return REPRESENTING_RESPONDENT_5;
+                    case 6:
+                        return REPRESENTING_RESPONDENT_6;
+                    case 7:
+                        return REPRESENTING_RESPONDENT_7;
+                    case 8:
+                        return REPRESENTING_RESPONDENT_8;
+                    case 9:
+                        return REPRESENTING_RESPONDENT_9;
+                    case 10:
+                        return REPRESENTING_RESPONDENT_10;
+                }
+        }
+        throw new IllegalStateException(
+            String.format("Unable to resolve RepresentativeRole: {0} [{1}]", type.name(), sequenceNo));
     }
 }
