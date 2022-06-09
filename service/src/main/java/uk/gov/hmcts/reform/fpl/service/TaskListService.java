@@ -93,8 +93,7 @@ public class TaskListService {
             events.add(SELECT_COURT);
         }
 
-        if(!YesNo.YES.equals(caseData.getIsSecureAccommodationOrderType())
-           && !caseData.isDischargeOfCareApplication()) {
+        if(!caseData.isSecureAccommodationOrderType() && !caseData.isDischargeOfCareApplication()) {
             events.add(RISK_AND_HARM);
             events.add(FACTORS_AFFECTING_PARENTING);
         }

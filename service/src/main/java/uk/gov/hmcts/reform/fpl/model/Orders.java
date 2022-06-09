@@ -19,6 +19,7 @@ import javax.validation.constraints.Size;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.SECURE_ACCOMMODATION_ORDER;
 
 @Data
 @Builder(toBuilder = true)
@@ -48,5 +49,9 @@ public class Orders {
 
     public boolean isDischargeOfCareOrder() {
         return isNotEmpty(orderType) && orderType.size() == 1 && orderType.contains(OTHER);
+    }
+
+    public boolean isSecureAccommodationOrder() {
+        return this.getOrderType().contains(SECURE_ACCOMMODATION_ORDER);
     }
 }

@@ -2454,7 +2454,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "isSecureAccommodationOrderType",
+    "CaseFieldID": "secureAccommodationOrderType",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "CRU"
   },

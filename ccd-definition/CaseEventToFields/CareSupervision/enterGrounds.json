@@ -48,7 +48,8 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "Y"
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "secureAccommodationOrderType!=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -61,6 +62,22 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "Y"
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "secureAccommodationOrderType=\"YES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "enterGrounds",
+    "CaseFieldID": "secureAccommodationOrderType",
+    "CaseEventFieldLabel": " ",
+    "PageFieldDisplayOrder": 5,
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N",
+    "FieldShowCondition": "groundsForSecureAccommodationOrder=\"DO_NOT_SHOW\"",
+    "DisplayContext": "READONLY",
+    "Comments": "A control flag. Yes if order type of this case is secure accommodation order"
   }
 ]

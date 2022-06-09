@@ -70,7 +70,7 @@ public class OrdersNeededController extends CallbackController {
                 if(!orderTypes.contains(OrderType.SECURE_ACCOMMODATION_ORDER.name())) {
                     removeSecureAccommodationOrderFields(data);
                 } else {
-                    data.put("isSecureAccommodationOrderType", YesNo.YES);
+                    data.put("secureAccommodationOrderType", YesNo.YES);
                 }
             });
 
@@ -96,6 +96,6 @@ public class OrdersNeededController extends CallbackController {
         ((Map<String, Object>) data.get("orders")).remove("secureAccommodationOrderSection");
 
         // set this control flag to NO
-        data.put("isSecureAccommodationOrderType", YesNo.NO);
+        data.put("secureAccommodationOrderType", YesNo.NO);
     }
 }
