@@ -104,6 +104,33 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Orders",
+    "ListElementCode": "childAssessmentOrderLabel",
+    "FieldType": "Label",
+    "ElementLabel": "## Child Assessment Order",
+    "FieldShowCondition": "orderType CONTAINS \"CHILD_ASSESSMENT_ORDER\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "childAssessmentOrderAssessmentDirections",
+    "FieldType": "TextArea",
+    "ElementLabel": "The direction(s) sought in respect of the assessment",
+    "FieldShowCondition": "orderType CONTAINS \"CHILD_ASSESSMENT_ORDER\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "childAssessmentOrderContactDirections",
+    "FieldType": "TextArea",
+    "ElementLabel": "The direction(s) sought in respect of contact",
+    "FieldShowCondition": "orderType CONTAINS \"CHILD_ASSESSMENT_ORDER\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
     "ListElementCode": "directionLabel",
     "FieldType": "Label",
     "ElementLabel": "## Directions",

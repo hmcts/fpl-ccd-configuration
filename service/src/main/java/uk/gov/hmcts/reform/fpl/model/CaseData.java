@@ -175,6 +175,9 @@ public class CaseData {
     @NotNull(message = "Add the grounds for the application")
     @Valid
     private final Grounds grounds;
+    @NotNull(message = "Add the grounds for the application")
+    @Valid
+    private final GroundsForChildAssessmentOrder groundsForChildAssessmentOrder;
     @NotNull(message = "Add the grounds for the application", groups = EPOGroup.class)
     @Valid
     private final GroundsForEPO groundsForEPO;
