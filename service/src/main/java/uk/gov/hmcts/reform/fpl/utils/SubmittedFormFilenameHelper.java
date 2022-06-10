@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import com.google.common.base.Strings;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import static java.lang.String.format;
@@ -15,10 +16,15 @@ public class SubmittedFormFilenameHelper {
     }
 
     public static String buildFileName(final CaseData caseData, final boolean isDraft) {
+        return buildFileName(caseData, isDraft, C110A);
+    }
+
+
+    public static String buildFileName(final CaseData caseData, final boolean isDraft, DocmosisTemplates template) {
         String caseName = Strings.nullToEmpty(caseData.getCaseName()).trim();
 
         if (isDraft) {
-            return format("draft_%s", format(C110A.getDocumentTitle(),
+            return format("draft_%s", format(template.getDocumentTitle(),
                 formatLocalDateToString(now(), "ddMMM").toLowerCase()));
         }
 

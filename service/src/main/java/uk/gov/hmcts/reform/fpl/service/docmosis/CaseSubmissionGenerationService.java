@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.FactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
+import uk.gov.hmcts.reform.fpl.model.GroundsForChildAssessmentOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.HearingPreferences;
@@ -134,6 +135,11 @@ public class CaseSubmissionGenerationService
                 caseData.getGroundsForEPO(),
                 applicationLanguage)
                                  : DEFAULT_STRING)
+            .groundsForChildAssessmentOrderReason(isNotEmpty(caseData.getOrders())
+                ? getGroundsForCAOReason(caseData.getOrders().getOrderType(),
+                caseData.getGroundsForChildAssessmentOrder(),
+                applicationLanguage)
+                : DEFAULT_STRING)
             .groundsThresholdReason(caseData.getGrounds() != null
                                     ? buildGroundsThresholdReason(caseData.getGrounds().getThresholdReason(),
                 applicationLanguage) : DEFAULT_STRING)
@@ -312,6 +318,19 @@ public class CaseSubmissionGenerationService
 
         return EMPTY;
     }
+
+    private String getGroundsForCAOReason(final List<OrderType> orderTypes,
+                                          final GroundsForChildAssessmentOrder groundsForCAO,
+                                          Language applicationLanguage) {
+        if (isNotEmpty(orderTypes) && orderTypes.contains(OrderType.CHILD_ASSESSMENT_ORDER)) {
+            if (isNotEmpty(groundsForCAO) && isNotEmpty(groundsForCAO.getThresholdDetails())) {
+                return groundsForCAO.getThresholdDetails();
+            }
+            return DEFAULT_STRING;
+        }
+        return EMPTY;
+    }
+
 
     private String getThresholdDetails(final Grounds grounds) {
         return (isNotEmpty(grounds) && StringUtils.isNotEmpty(grounds.getThresholdDetails()))

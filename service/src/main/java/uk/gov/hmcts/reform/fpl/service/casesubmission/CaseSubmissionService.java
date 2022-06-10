@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -26,6 +27,11 @@ public class CaseSubmissionService {
     private final CaseSubmissionGenerationService documentGenerationService;
 
     public Document generateSubmittedFormPDF(final CaseData caseData, final boolean isDraft) {
+        return generateSubmittedFormPDF(caseData, isDraft, C110A);
+    }
+
+    public Document generateSubmittedFormPDF(final CaseData caseData, final boolean isDraft,
+                                             DocmosisTemplates template) {
         DocmosisCaseSubmission submittedCase = documentGenerationService.getTemplateData(caseData);
 
         documentGenerationService.populateCaseNumber(submittedCase, caseData.getId());
@@ -34,11 +40,11 @@ public class CaseSubmissionService {
             .orElse(Language.ENGLISH);
 
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(submittedCase,
-            C110A,
+            template,
             RenderFormat.PDF,
             applicationLanguage);
 
-        return uploadDocumentService.uploadPDF(document.getBytes(), buildFileName(caseData, isDraft));
+        return uploadDocumentService.uploadPDF(document.getBytes(), buildFileName(caseData, isDraft, template));
     }
 
     public String getSigneeName(CaseData caseData) {

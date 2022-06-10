@@ -23,7 +23,8 @@ public class GroundsChecker extends PropertiesChecker {
     public List<String> validate(CaseData caseData) {
         if (hasEmergencyProtectionOrder(caseData)) {
             return super.validate(caseData, List.of("grounds", "groundsForEPO"), Default.class, EPOGroup.class);
-        } else if (caseData.getOrders().getOrderType().contains(OrderType.CHILD_ASSESSMENT_ORDER)) {
+        } else if (isNotEmpty(caseData.getOrders())
+            && caseData.getOrders().getOrderType().contains(OrderType.CHILD_ASSESSMENT_ORDER)) {
             return super.validate(caseData, List.of("groundsForChildAssessmentOrder"));
         } else {
             return super.validate(caseData, List.of("grounds"));

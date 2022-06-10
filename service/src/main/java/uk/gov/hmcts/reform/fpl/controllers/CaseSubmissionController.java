@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.AmendedReturnedCaseEvent;
@@ -74,7 +75,11 @@ public class CaseSubmissionController extends CallbackController {
 
         data.remove(DISPLAY_AMOUNT_TO_PAY);
 
-        Document document = caseSubmissionService.generateSubmittedFormPDF(caseData, true);
+        // check if we want to use a C1 or C110a template
+        boolean isStandalone = caseData.getOrders().isC1Order();
+
+        Document document = caseSubmissionService.generateSubmittedFormPDF(caseData, true,
+            isStandalone ? DocmosisTemplates.C1 : DocmosisTemplates.C110A);
         data.put("draftApplicationDocument", buildFromDocument(document));
 
         if (isInOpenState(caseDetails)) {
@@ -111,7 +116,9 @@ public class CaseSubmissionController extends CallbackController {
         List<String> errors = validate(caseData);
 
         if (errors.isEmpty()) {
-            Document document = caseSubmissionService.generateSubmittedFormPDF(caseData, false);
+            boolean isStandalone = caseData.getOrders().isC1Order();
+            Document document = caseSubmissionService.generateSubmittedFormPDF(caseData, false,
+                isStandalone ? DocmosisTemplates.C1 : DocmosisTemplates.C110A);
 
             ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
 
