@@ -38,10 +38,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CREATOR;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.EPSMANAGING;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LAMANAGING;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.*;
 import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.EPS;
 import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.MLA;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -57,6 +54,8 @@ class CaseInitiationServiceTest {
     private static final String EXTERNAL_ORG_NAME = "Private solicitor";
     private static final TestLocalAuthority LA1 = new TestLocalAuthority("SA", "Swansea City Council", "SA002");
     private static final TestLocalAuthority LA2 = new TestLocalAuthority("SN", "Swindon Borough Council", "SN002");
+    private static final TestLocalAuthority RS1 = new TestLocalAuthority("RS", "Respondent Solicitor Org", "RS001");
+    private static final TestLocalAuthority CS1 = new TestLocalAuthority("CS", "Child Solicitor Org", "CS001");
 
     @Mock
     private RequestData requestData;
@@ -411,6 +410,38 @@ class CaseInitiationServiceTest {
 
             verify(caseRoleService).revokeCaseRoleFromUser(CASE_ID, USER_ID, CREATOR);
             verify(caseRoleService).grantCaseRoleToLocalAuthority(CASE_ID, USER_ID, LA1.code, caseRole);
+            verifyNoMoreInteractions(caseRoleService);
+        }
+
+        @Test
+        void shouldGrantCaseAccessToChildSolicitorWhenCaseCreatedByChildSolicitorUser() {
+            final CaseRole caseRole = CHILDSOLICITORA;
+
+            CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .outsourcingPolicy(organisationPolicy(CS1.orgId, CS1.name, caseRole))
+                .build();
+
+            underTest.grantCaseAccess(caseData);
+
+            verify(caseRoleService).revokeCaseRoleFromUser(CASE_ID, USER_ID, CREATOR);
+            verify(caseRoleService).grantCaseRoleToUser(CASE_ID, USER_ID, caseRole);
+            verifyNoMoreInteractions(caseRoleService);
+        }
+
+        @Test
+        void shouldGrantCaseAccessToRespondentSolicitorWhenCaseCreatedByRespondentSolicitorUser() {
+            final CaseRole caseRole = SOLICITORA;
+
+            CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .outsourcingPolicy(organisationPolicy(RS1.orgId, RS1.name, caseRole))
+                .build();
+
+            underTest.grantCaseAccess(caseData);
+
+            verify(caseRoleService).revokeCaseRoleFromUser(CASE_ID, USER_ID, CREATOR);
+            verify(caseRoleService).grantCaseRoleToUser(CASE_ID, USER_ID, caseRole);
             verifyNoMoreInteractions(caseRoleService);
         }
 

@@ -40,4 +40,11 @@ class OrdersNeededAboutToSubmitCallbackControllerTest extends AbstractCallbackTe
         assertThat(response.getData().get("otherOrderType")).isEqualTo("YES");
         assertThat(response.getData().get("EPO_REASONING_SHOW")).isEqualTo(null);
     }
+
+    @Test
+    void shouldSetCourtWhenCourtIsSelected() {
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent("fixtures/caseOtherOrderType.json");
+
+        assertThat(response.getData().get("court")).isNotNull();
+    }
 }

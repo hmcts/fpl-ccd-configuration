@@ -123,6 +123,25 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
+    void shouldSetCtscPropertyToNoWhenCaseLocalAuthorityIsNotSet() {
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(CaseDetails.builder()
+            .id(2313L)
+            .data(Map.of(
+                "dateSubmitted", dateNow(),
+                "orders", Orders.builder().orderType(List.of(CARE_ORDER)).build(),
+                "amountToPay", "233300",
+                "displayAmountToPay", "Yes",
+                "applicants", wrapElements(buildApplicant()),
+                "respondents1", wrapElements(Respondent.builder().party(buildRespondentParty()).build())
+            ))
+            .build());
+
+        assertThat(callbackResponse.getData())
+            .containsEntry("sendToCtsc", "No");
+    }
+
+    @Test
     void shouldRetainPaymentInformationInCase() {
         given(featureToggleService.isCtscEnabled(anyString())).willReturn(true);
 
