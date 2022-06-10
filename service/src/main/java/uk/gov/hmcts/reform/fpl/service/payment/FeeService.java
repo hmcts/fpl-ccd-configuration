@@ -26,6 +26,7 @@ import java.util.Optional;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromOrderType;
+import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromSecureAccommodationOrder;
 
 @Slf4j
 @Service
@@ -38,7 +39,14 @@ public class FeeService {
     public FeesData getFeesDataForOrders(Orders orders) {
         return Optional.ofNullable(orders)
             .map(Orders::getOrderType)
-            .map(orderTypeList -> getFees(fromOrderType(orderTypeList)))
+            .map(orderTypeList -> {
+                    if(orders.isSecureAccommodationOrder()) {
+                        return List.of(fromSecureAccommodationOrder(orders.getSecureAccommodationOrderSection()));
+                    } else {
+                        return fromOrderType(orderTypeList);
+                    }
+            })
+            .map(this::getFees)
             .map(this::buildFeesDataFromFeeResponses)
             .orElse(FeesData.builder().totalAmount(BigDecimal.ZERO).build());
     }
