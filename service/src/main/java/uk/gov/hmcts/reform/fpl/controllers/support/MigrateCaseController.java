@@ -344,6 +344,7 @@ public class MigrateCaseController extends CallbackController {
             // remove the hearing from the hearing list
             hearingDetails.removeAll(hearingBookingsToBeRemoved);
             caseDetails.getData().put("hearingDetails", hearingDetails);
+            caseDetails.getData().put("selectedHearingId", hearingDetails.get(hearingDetails.size() - 1).getId());
         } else {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, hearing details not found",
