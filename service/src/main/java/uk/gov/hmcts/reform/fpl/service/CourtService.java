@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static java.util.Comparator.comparing;
@@ -48,16 +49,12 @@ public class CourtService {
     }
 
     public String getPreviousCourtName(CaseData caseData) {
-        if (!caseData.getPastCourtList().isEmpty()) {
-            Court lastCourt = caseData.getPastCourtList().stream()
-                    .map(Element::getValue)
-                    .sorted(comparing(Court::getDateTransferred, nullsFirst(naturalOrder())).reversed())
-                    .findFirst().orElse(null);
-            if (lastCourt != null) {
-                return lastCourt.getName();
-            }
-        }
-        return null;
+        return Optional.ofNullable(caseData.getPastCourtList())
+            .orElse(Collections.emptyList()).stream()
+            .map(Element::getValue)
+            .max(comparing(Court::getDateTransferred, nullsFirst(naturalOrder())))
+            .map(Court::getName)
+            .orElse(null);
     }
 
     public String getCourtName(CaseData caseData) {

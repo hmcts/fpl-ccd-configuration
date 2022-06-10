@@ -275,12 +275,12 @@ class LocalAuthorityChangedHandlerTest {
     @Nested
     class TransferToAnotherCourt {
 
-        final CaseData caseDataTransferredToRcjHighCourt = caseDataBefore.builder()
+        final CaseData caseDataTransferredToRcjHighCourt = CaseData.builder()
             .court(Court.builder().code(RCJ_HIGH_COURT_CODE).build())
             .id(RandomUtils.nextLong())
             .build();
 
-        final CaseData caseDataTransferredToOrdinaryCourt = caseDataBefore.builder()
+        final CaseData caseDataTransferredToOrdinaryCourt = CaseData.builder()
             .court(Court.builder().code("240").build())
             .id(RandomUtils.nextLong())
             .build();
