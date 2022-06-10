@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C36SupervisionOrderType",
+    "ListElementCode": "VARIATION_OF_SUPERVISION_ORDER",
+    "ListElement": "Variation of supervision order",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C36SupervisionOrderType",
+    "ListElementCode": "EXTENSION_OF_SUPERVISION_ORDER",
+    "ListElement": "Extension of supervision order",
+    "DisplayOrder": 2
+  }
+]
