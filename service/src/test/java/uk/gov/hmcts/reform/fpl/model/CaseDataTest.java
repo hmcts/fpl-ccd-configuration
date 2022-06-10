@@ -2082,7 +2082,7 @@ class CaseDataTest {
         }
 
         @Test
-        void shouldThrowExceptionWhenNonOfLocalAuthoritiesIsDesignated() {
+        void shouldReturnNullWhenNoneOfLocalAuthoritiesIsDesignated() {
 
             final LocalAuthority localAuthority1 = LocalAuthority.builder()
                 .name("LA1")
@@ -2096,7 +2096,7 @@ class CaseDataTest {
                 .localAuthorities(wrapElements(localAuthority1, localAuthority2))
                 .build();
 
-            assertThatThrownBy(caseData::getDesignatedLocalAuthority).isInstanceOf(LocalAuthorityNotFound.class);
+            assertThat(caseData.getDesignatedLocalAuthority()).isEqualTo(null);
         }
 
         @ParameterizedTest

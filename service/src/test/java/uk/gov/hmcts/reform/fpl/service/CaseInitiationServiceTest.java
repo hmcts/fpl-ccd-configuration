@@ -441,21 +441,6 @@ class CaseInitiationServiceTest {
     class UserValidation {
 
         @Test
-        void shouldReturnErrorWhenUserInOrganisationButNotInLocalAuthorityAndNotOutsourcingCase() {
-            givenUserInOrganisation(EXTERNAL_ORG_ID);
-            givenUserNotInLocalAuthority();
-
-            CaseData caseData = givenCaseNotOutsourced();
-
-            List<String> errors = underTest.checkUserAllowedToCreateCase(caseData);
-
-            assertThat(errors).containsExactly(
-                "Email not recognised.",
-                "Your email is not associated with a local authority or authorised legal firm.",
-                "Email MyHMCTSsupport@justice.gov.uk for further guidance.");
-        }
-
-        @Test
         void shouldReturnErrorsWhenToggleIsDisabledAndUserIsInLocalAuthorityButNotInOrganisation() {
             givenUserNotInOrganisation();
             givenUserInLocalAuthority(LA1);
