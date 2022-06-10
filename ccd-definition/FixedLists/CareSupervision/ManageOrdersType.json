@@ -96,5 +96,12 @@
     "ListElementCode": "C35A_SUPERVISION_ORDER",
     "ListElement": "Supervision order (C35A)",
     "DisplayOrder": 14
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersType",
+    "ListElementCode": "C36_VARIATION_OR_EXTENSION_OF_SUPERVISION_ORDERS",
+    "ListElement": "Variation or extension of supervision orders (C36)",
+    "DisplayOrder": 15
   }
 ]
