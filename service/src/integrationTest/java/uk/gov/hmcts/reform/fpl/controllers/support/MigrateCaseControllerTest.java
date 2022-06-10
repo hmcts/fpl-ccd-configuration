@@ -755,6 +755,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             List<Element<HearingBooking>> expectedHearingDetails = List.of(hearingBooking1, hearingBooking2);
 
             assertThat(responseData.getHearingDetails()).isEqualTo(expectedHearingDetails);
+            assertThat(responseData.getSelectedHearingId()).isIn(hearingBooking1.getId(), hearingBooking2.getId());
         }
 
         @Test
