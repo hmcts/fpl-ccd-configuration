@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthorityName;
@@ -241,6 +242,34 @@ class CaseInitiationServiceTest {
 
             assertThat(updatedCaseData.getOutsourcingPolicy())
                 .isNull();
+        }
+
+        @Test
+        void shouldUpdateCaseDataWhenRespondentSolicitorUserCreatesCase() {
+            givenUserInOrganisation(RS1.orgId, RS1.name);
+
+            CaseData caseData = CaseData.builder()
+                .representativeType(RepresentativeType.RESPONDENT_SOLICITOR)
+                .build();
+
+            CaseData updatedCaseData = underTest.updateOrganisationsDetails(caseData);
+
+            assertThat(updatedCaseData.getOutsourcingPolicy())
+                .isEqualTo(organisationPolicy(RS1.orgId, RS1.name, SOLICITORA));
+        }
+
+        @Test
+        void shouldUpdateCaseDataWhenChildSolicitorUserCreatesCase() {
+            givenUserInOrganisation(CS1.orgId, CS1.name);
+
+            CaseData caseData = CaseData.builder()
+                .representativeType(RepresentativeType.CHILD_SOLICITOR)
+                .build();
+
+            CaseData updatedCaseData = underTest.updateOrganisationsDetails(caseData);
+
+            assertThat(updatedCaseData.getOutsourcingPolicy())
+                .isEqualTo(organisationPolicy(CS1.orgId, CS1.name, CHILDSOLICITORA));
         }
 
         @Test
@@ -470,7 +499,6 @@ class CaseInitiationServiceTest {
             verify(caseRoleService).grantCaseRoleToUser(CASE_ID, USER_ID, caseRole);
             verifyNoMoreInteractions(caseRoleService);
         }
-
     }
 
     @Nested
@@ -587,6 +615,15 @@ class CaseInitiationServiceTest {
     private void givenUserInOrganisation(String organisationId) {
         Optional<Organisation> organisation = Optional.ofNullable(organisationId)
             .map(orgId -> Organisation.builder().organisationIdentifier(orgId).build());
+        given(organisationService.findOrganisation()).willReturn(organisation);
+    }
+
+    private void givenUserInOrganisation(String organisationId, String organisationName) {
+        Optional<Organisation> organisation = Optional.ofNullable(organisationId)
+            .map(orgId -> Organisation.builder()
+                .organisationIdentifier(orgId)
+                .name(organisationName)
+                .build());
         given(organisationService.findOrganisation()).willReturn(organisation);
     }
 
