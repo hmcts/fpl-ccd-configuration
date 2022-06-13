@@ -15,8 +15,12 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 
@@ -50,7 +54,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-82", this::run82,
         "DFPL-82-rollback", this::run82Rollback,
         "DFPL-622", this::run622,
-        "DFPL-679", this::run679
+        "DFPL-679", this::run679,
+        "DFPL-684", this::run684
     );
 
     @PostMapping("/about-to-submit")
@@ -202,7 +207,41 @@ public class MigrateCaseController extends CallbackController {
             ));
         }
 
+        List<UUID> respondentIdsToBeRemoved = List.of(UUID.fromString("afae84df-1337-4aa5-90ff-4938dbeb241c"),
+            UUID.fromString("f55cd3ab-cb71-4eeb-b786-076eb8728f7c"));
 
+        removeRespondents(caseDetails, caseData, respondentIdsToBeRemoved);
+    }
+
+    private void removeRespondents(CaseDetails caseDetails, CaseData caseData, List<UUID> respondentIdsToBeRemoved) {
+        List<Element<Respondent>> respondents1 = caseData.getRespondents1().stream()
+            .filter(respondent -> !respondentIdsToBeRemoved.contains(respondent.getId()))
+            .collect(toList());
+
+        List<Element<RespondentStatement>> respondentStatements = caseData.getRespondentStatements().stream()
+            .filter(respondentStatement ->
+                !respondentIdsToBeRemoved.contains(respondentStatement.getValue().getRespondentId()))
+            .collect(toList());
+
+        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundles =
+            caseData.getAdditionalApplicationsBundle().stream()
+                .map(bundleElement -> updateRespondentsOfAdditionalApplicationsBundle(bundleElement, respondents1))
+                .collect(toList());
+
+        caseDetails.getData().put("respondents1", respondents1);
+        caseDetails.getData().put("respondentStatements", respondentStatements);
+        caseDetails.getData().put("additionalApplicationsBundle", additionalApplicationsBundles);
+    }
+
+    private Element<AdditionalApplicationsBundle> updateRespondentsOfAdditionalApplicationsBundle (
+        Element<AdditionalApplicationsBundle> bundle, List<Element<Respondent>> respondents) {
+        AdditionalApplicationsBundle additionalApplicationsBundle = bundle.getValue();
+        C2DocumentBundle c2Document = additionalApplicationsBundle.getC2DocumentBundle();
+
+        C2DocumentBundle newC2Document = c2Document.toBuilder().respondents(respondents).build();
+
+        return element(bundle.getId(),
+            additionalApplicationsBundle.toBuilder().c2DocumentBundle(newC2Document).build());
     }
 
     /**
