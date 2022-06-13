@@ -89,9 +89,19 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersBirthCertificateRegistrationDistrict",
             "manageOrdersBirthCertificateRegistrationSubDistrict",
             "manageOrdersBirthCertificateRegistrationCounty",
+            "manageOrdersLeaName",
+            "manageOrdersEndDateWithEducationAge",
             "manageOrdersPlacedUnderOrder",
             "manageOrdersIsExParte",
             "manageOrdersActionsPermitted",
+            "manageOrdersSupervisionOrderType",
+            "manageOrdersC35aOrderExists",
+            "manageOrdersC35aOrderDoesntExistMessage",
+            "manageOrdersSupervisionOrderVariationHeading",
+            "manageOrdersSupervisionOrderExtensionHeading",
+            "manageOrdersSupervisionOrderCourtDirection",
+            "manageOrdersSupervisionOrderApprovalDate",
+            "manageOrdersSupervisionOrderEndDate",
             "manageOrdersOrderCreatedDate"
         );
     }

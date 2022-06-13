@@ -41,9 +41,6 @@ public class HearingVenueLookUpService {
 
     public HearingVenue getHearingVenue(final HearingBooking hearingBooking) {
         if (!HEARING_VENUE_ID_OTHER.equals(hearingBooking.getVenue())) {
-            if (hearingBooking.getVenue() == null) {
-                throw new IllegalStateException("Unexpected null venue." + hearingBooking);
-            }
             return getHearingVenue(hearingBooking.getVenue());
         } else {
             return HearingVenue.builder()

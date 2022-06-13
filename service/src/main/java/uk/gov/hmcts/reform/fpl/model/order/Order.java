@@ -164,6 +164,21 @@ public enum Order {
             WHICH_OTHERS
         )
     ),
+    C36_VARIATION_OR_EXTENSION_OF_SUPERVISION_ORDERS(
+        DIGITAL,
+        "Variation or extension of supervision orders (C36)",
+        "Sections 39(2), 39(3) and 39(4) and Paragraph 6(3) Schedule 3 Children Act 1989",
+        "Variation or extension of supervision orders (C36)",
+        IsFinalOrder.MAYBE,
+        List.of(
+            APPROVER,
+            APPROVAL_DATE,
+            VARY_OR_EXTEND_SUPERVISION_ORDER,
+            ORDER_BY_CONSENT,
+            WHICH_CHILDREN,
+            REVIEW_DRAFT_ORDER
+        )
+    ),
 
     /* MANUAL UPLOADS */
     C24_VARIATION_OF_EMERGENCY_PROTECTION_ORDER(
@@ -238,6 +253,22 @@ public enum Order {
         "Variation/extension of Education supervision order (C36)",
         IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C37_EDUCATION_SUPERVISION_ORDER_DIGITAL(
+        DIGITAL,
+        "Education supervision order (C37)",
+        "Section 36 Children Act 1989",
+        "Education supervision order (C37)",
+        IsFinalOrder.MAYBE,
+        List.of(
+            APPROVER,
+            APPROVAL_DATE,
+            WHICH_CHILDREN,
+            EDUCATION_SUPERVISION,
+            ORDER_BY_CONSENT,
+            REVIEW_DRAFT_ORDER,
+            CLOSE_CASE,
+            WHICH_OTHERS)
     ),
     C37_EDUCATION_SUPERVISION_ORDER(
         MANUAL_UPLOAD,

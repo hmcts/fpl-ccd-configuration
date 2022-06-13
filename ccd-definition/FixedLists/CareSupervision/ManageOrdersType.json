@@ -44,30 +44,37 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageOrdersType",
+    "ListElementCode": "C37_EDUCATION_SUPERVISION_ORDER_DIGITAL",
+    "ListElement": "Education supervision order (C37)",
+    "DisplayOrder": 7
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersType",
     "ListElementCode": "C23_EMERGENCY_PROTECTION_ORDER",
     "ListElement": "Emergency protection order (C23)",
-    "DisplayOrder": 7
+    "DisplayOrder": 8
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageOrdersType",
     "ListElementCode": "C33_INTERIM_CARE_ORDER",
     "ListElement": "Interim care order (C33)",
-    "DisplayOrder": 8
+    "DisplayOrder": 9
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageOrdersType",
     "ListElementCode": "C35B_INTERIM_SUPERVISION_ORDER",
     "ListElement": "Interim supervision order (C35B)",
-    "DisplayOrder": 9
+    "DisplayOrder": 10
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageOrdersType",
     "ListElementCode": "C45A_PARENTAL_RESPONSIBILITY_ORDER",
     "ListElement": "Parental responsibility order (C45A)",
-    "DisplayOrder": 10
+    "DisplayOrder": 12
   },
   {
     "LiveFrom": "01/01/2017",
@@ -96,5 +103,12 @@
     "ListElementCode": "C34B_AUTHORITY_TO_REFUSE_CONTACT",
     "ListElement": "Authority to refuse contact with a child in care (C34B)",
     "DisplayOrder": 15
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersType",
+    "ListElementCode": "C36_VARIATION_OR_EXTENSION_OF_SUPERVISION_ORDERS",
+    "ListElement": "Variation or extension of supervision orders (C36)",
+    "DisplayOrder": 16
   }
 ]

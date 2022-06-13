@@ -89,14 +89,8 @@ public class RespondentValidator {
                     if (isBlank(address.getAddressLine1())) {
                         addErrs.add("Building and Street is required");
                     }
-                    if (isBlank(address.getAddressLine2())) {
-                        addErrs.add("Address Line 2 is required");
-                    }
                     if (isBlank(address.getPostTown())) {
                         addErrs.add("Town or City is required");
-                    }
-                    if (isBlank(address.getCounty())) {
-                        addErrs.add("County is required");
                     }
                     if (isBlank(address.getPostcode())) {
                         addErrs.add("Postcode/Zipcode is required");
