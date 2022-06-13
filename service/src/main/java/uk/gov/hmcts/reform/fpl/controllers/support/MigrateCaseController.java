@@ -233,7 +233,7 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put("additionalApplicationsBundle", additionalApplicationsBundles);
     }
 
-    private Element<AdditionalApplicationsBundle> updateRespondentsOfAdditionalApplicationsBundle (
+    private Element<AdditionalApplicationsBundle> updateRespondentsOfAdditionalApplicationsBundle(
         Element<AdditionalApplicationsBundle> bundle, List<Element<Respondent>> respondents) {
         AdditionalApplicationsBundle additionalApplicationsBundle = bundle.getValue();
         C2DocumentBundle c2Document = additionalApplicationsBundle.getC2DocumentBundle();
