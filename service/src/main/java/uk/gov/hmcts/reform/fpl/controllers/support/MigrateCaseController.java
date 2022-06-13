@@ -190,6 +190,21 @@ public class MigrateCaseController extends CallbackController {
         updateDocumentsSentToParties(caseDetails, caseData, docIds);
     }
 
+    private void run684(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        var caseId = caseData.getId();
+        var expectedCaseId = 1642001990437030L;
+
+        if (caseId != expectedCaseId) {
+            throw new AssertionError(format(
+                "Migration {id = DFPL-684, case reference = %s}, expected case id %d",
+                caseId, expectedCaseId
+            ));
+        }
+
+
+    }
+
     /**
      * Removes a C110A Generated PDF document from the case.
      * Make sure to update:
