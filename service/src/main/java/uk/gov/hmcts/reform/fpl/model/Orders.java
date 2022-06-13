@@ -40,6 +40,8 @@ public class Orders {
     private final EPOType epoType;
     private final String excluded;
     private final Address address;
+    private final String childAssessmentOrderAssessmentDirections;
+    private final String childAssessmentOrderContactDirections;
 
     public boolean orderContainsEPO() {
         return this.getOrderType().contains(EMERGENCY_PROTECTION_ORDER);

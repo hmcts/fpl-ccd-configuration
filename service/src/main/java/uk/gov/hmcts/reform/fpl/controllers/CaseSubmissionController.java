@@ -78,9 +78,12 @@ public class CaseSubmissionController extends CallbackController {
         // check if we want to use a C1 or C110a template
         boolean isStandalone = caseData.getOrders().isC1Order();
 
-        Document document = caseSubmissionService.generateSubmittedFormPDF(caseData, true,
-            isStandalone ? DocmosisTemplates.C1 : DocmosisTemplates.C110A);
+        Document document = caseSubmissionService.generateSubmittedFormPDF(caseData, true, isStandalone);
         data.put("draftApplicationDocument", buildFromDocument(document));
+
+        Document supplement = caseSubmissionService.generateSupplementPDF(caseData, true,
+            DocmosisTemplates.C16_SUPPLEMENT);
+        data.put("draftSupplement", buildFromDocument(supplement));
 
         if (isInOpenState(caseDetails)) {
             try {
@@ -117,8 +120,7 @@ public class CaseSubmissionController extends CallbackController {
 
         if (errors.isEmpty()) {
             boolean isStandalone = caseData.getOrders().isC1Order();
-            Document document = caseSubmissionService.generateSubmittedFormPDF(caseData, false,
-                isStandalone ? DocmosisTemplates.C1 : DocmosisTemplates.C110A);
+            Document document = caseSubmissionService.generateSubmittedFormPDF(caseData, false, isStandalone);
 
             ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
 
@@ -127,6 +129,11 @@ public class CaseSubmissionController extends CallbackController {
             data.put("dateSubmitted", DateTimeFormatter.ISO_LOCAL_DATE.format(zonedDateTime));
             data.put("sendToCtsc", setSendToCtsc(data.get("caseLocalAuthority").toString()).getValue());
             data.put("submittedForm", buildFromDocument(document));
+
+            Document supplement = caseSubmissionService.generateSupplementPDF(caseData, false,
+                DocmosisTemplates.C16_SUPPLEMENT);
+            data.put("supplementDocument", buildFromDocument(supplement));
+
 
             data.putAll(nocFieldPopulator.generate(caseData, RESPONDENT));
             data.putAll(nocFieldPopulator.generate(caseData, CHILD, BLANK));

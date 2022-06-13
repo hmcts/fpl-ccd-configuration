@@ -39,6 +39,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC16Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisFactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearing;
@@ -104,11 +105,50 @@ public class CaseSubmissionGenerationService
     private final CourtService courtService;
     private final CaseSubmissionDocumentAnnexGenerator annexGenerator;
 
+    public DocmosisC16Supplement getC16SupplementData(final CaseData caseData, boolean isDraft) {
+        Language applicationLanguage = Optional.ofNullable(caseData.getC110A()
+            .getLanguageRequirementApplication()).orElse(Language.ENGLISH);
+
+        DocmosisC16Supplement supplement = DocmosisC16Supplement.builder()
+            .welshLanguageRequirement(getWelshLanguageRequirement(caseData, applicationLanguage))
+            .courtName(courtService.getCourtName(caseData))
+            .childrensNames(getChildrensNames(caseData.getAllChildren()))
+            .submittedDate(formatDateDisplay(time.now().toLocalDate(), applicationLanguage))
+            .groundsForChildAssessmentOrderReason(isNotEmpty(caseData.getOrders())
+                ? getGroundsForCAOReason(caseData.getOrders().getOrderType(),
+                caseData.getGroundsForChildAssessmentOrder(),
+                applicationLanguage)
+                : DEFAULT_STRING)
+            .directionsSoughtAssessment(caseData.getOrders().getChildAssessmentOrderAssessmentDirections())
+            .directionsSoughtContact(caseData.getOrders().getChildAssessmentOrderContactDirections())
+            .caseNumber(String.valueOf(caseData.getId()))
+            .build();
+
+        if (isDraft) {
+            supplement.setDraftWaterMark(getDraftWaterMarkData());
+        } else {
+            supplement.setCourtSeal(getCourtSealData(caseData.getImageLanguage()));
+        }
+        return supplement;
+    }
+
     public DocmosisCaseSubmission getTemplateData(final CaseData caseData) {
+        return getTemplateData(caseData, false);
+    }
+
+    public DocmosisCaseSubmission getTemplateData(final CaseData caseData, boolean isC1) {
         Language applicationLanguage = Optional.ofNullable(caseData.getC110A()
             .getLanguageRequirementApplication()).orElse(Language.ENGLISH);
 
         return DocmosisCaseSubmission.builder()
+            .applicationType(isC1 ? "C1" : "C110A")
+            .applicationTitle(isC1 ? "Application for an order \n" +
+                "under the Children Act 1989"
+                : "Application for a care or supervision\n" +
+                "order and other orders under Part 4 \n" +
+                "of the Children Act 1989 or an\n" +
+                "emergency protection order under\n" +
+                "section 44 of the Children Act 1989\n")
             .applicantOrganisations(getApplicantsOrganisations(caseData))
             .respondentNames(getRespondentsNames(caseData.getAllRespondents()))
             .courtName(courtService.getCourtName(caseData))
@@ -135,11 +175,6 @@ public class CaseSubmissionGenerationService
                 caseData.getGroundsForEPO(),
                 applicationLanguage)
                                  : DEFAULT_STRING)
-            .groundsForChildAssessmentOrderReason(isNotEmpty(caseData.getOrders())
-                ? getGroundsForCAOReason(caseData.getOrders().getOrderType(),
-                caseData.getGroundsForChildAssessmentOrder(),
-                applicationLanguage)
-                : DEFAULT_STRING)
             .groundsThresholdReason(caseData.getGrounds() != null
                                     ? buildGroundsThresholdReason(caseData.getGrounds().getThresholdReason(),
                 applicationLanguage) : DEFAULT_STRING)
@@ -187,6 +222,17 @@ public class CaseSubmissionGenerationService
             .map(Applicant::getParty)
             .filter(Objects::nonNull)
             .map(ApplicantParty::getOrganisationName)
+            .filter(StringUtils::isNotBlank)
+            .collect(joining(NEW_LINE));
+    }
+
+    private String getChildrensNames(final List<Element<Child>> children) {
+        return children.stream()
+            .map(Element::getValue)
+            .filter(Objects::nonNull)
+            .map(Child::getParty)
+            .filter(Objects::nonNull)
+            .map(ChildParty::getFullName)
             .filter(StringUtils::isNotBlank)
             .collect(joining(NEW_LINE));
     }
