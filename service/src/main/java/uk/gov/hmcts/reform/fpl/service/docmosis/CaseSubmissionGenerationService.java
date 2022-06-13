@@ -38,8 +38,8 @@ import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC16Supplement;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisFactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearing;
@@ -142,13 +142,13 @@ public class CaseSubmissionGenerationService
 
         return DocmosisCaseSubmission.builder()
             .applicationType(isC1 ? "C1" : "C110A")
-            .applicationTitle(isC1 ? "Application for an order \n" +
-                "under the Children Act 1989"
-                : "Application for a care or supervision\n" +
-                "order and other orders under Part 4 \n" +
-                "of the Children Act 1989 or an\n" +
-                "emergency protection order under\n" +
-                "section 44 of the Children Act 1989\n")
+            .applicationTitle(isC1 ? "Application for an order \n"
+                + "under the Children Act 1989"
+                : "Application for a care or supervision\n"
+                + "order and other orders under Part 4 \n"
+                + "of the Children Act 1989 or an\n"
+                + "emergency protection order under\n"
+                + "section 44 of the Children Act 1989\n")
             .applicantOrganisations(getApplicantsOrganisations(caseData))
             .respondentNames(getRespondentsNames(caseData.getAllRespondents()))
             .courtName(courtService.getCourtName(caseData))

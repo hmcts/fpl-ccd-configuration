@@ -32,8 +32,8 @@ public class OrdersNeededAboutToSubmitCallbackController extends CallbackControl
 
         if (orderType.isPresent()
             && orderType.get().contains(OrderType.CHILD_ASSESSMENT_ORDER.name()) && orderType.get().size() > 1) {
-            return respond(caseDetails, List.of("You have selected a standalone order, " +
-                "this cannot be applied for alongside other orders."));
+            return respond(caseDetails, List.of("You have selected a standalone order, "
+                + "this cannot be applied for alongside other orders."));
         }
         return respond(caseDetails);
     }
