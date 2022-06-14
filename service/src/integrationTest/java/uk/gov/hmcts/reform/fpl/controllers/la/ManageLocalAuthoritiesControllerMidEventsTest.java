@@ -186,6 +186,25 @@ class ManageLocalAuthoritiesControllerMidEventsTest extends AbstractCallbackTest
 
             assertThat(updated.getLocalAuthoritiesEventData()).isEqualTo(expectedEventData);
         }
+
+        @Test
+        void shouldReturnCurrentCourtNameAndCourtsListForSelection() {
+            final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
+                .localAuthorityAction(TRANSFER_COURT)
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .caseLocalAuthority(LOCAL_AUTHORITY_2_CODE)
+                .localAuthoritiesEventData(eventData)
+                .build();
+
+            final CaseData updated = extractCaseData(postMidEvent(caseData, callback));
+
+            assertThat(updated.getLocalAuthoritiesEventData().getCurrentCourtNameWithoutTransferLA()).isNotBlank();
+            assertThat(updated.getLocalAuthoritiesEventData().getCourtsToTransferWithoutTransferLA()).isNotNull();
+            assertThat(updated.getLocalAuthoritiesEventData().getCourtsToTransferWithoutTransferLA().getListItems())
+                .hasSize(75);
+        }
     }
 
     @Nested
