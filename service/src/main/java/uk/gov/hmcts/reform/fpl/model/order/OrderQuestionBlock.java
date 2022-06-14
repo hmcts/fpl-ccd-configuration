@@ -90,6 +90,13 @@ public enum OrderQuestionBlock {
         List.of("manageOrdersOrderToAmend")),
     UPLOAD_AMENDED_ORDER("uploadAmendedOrder", OrderSection.AMEND_DOWNLOAD,
         List.of("manageOrdersAmendedOrder")),
+    EDUCATION_SUPERVISION("manageOrdersEducationSupervision", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersLeaName","manageOrdersEndDateWithEducationAge")),
+    VARY_OR_EXTEND_SUPERVISION_ORDER("manageOrdersVaryOrExtendSupervisionOrder", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersSupervisionOrderType", "manageOrdersC35aOrderExists",
+            "manageOrdersC35aOrderDoesntExistMessage", "manageOrdersSupervisionOrderVariationHeading",
+            "manageOrdersSupervisionOrderExtensionHeading", "manageOrdersSupervisionOrderCourtDirection",
+            "manageOrdersSupervisionOrderApprovalDate", "manageOrdersSupervisionOrderEndDate")),
     ORDER_PLACED_CHILD_IN_CUSTODY("orderPlacedChildInCustody", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersPlacedUnderOrder", "manageOrdersOrderCreatedDate", "manageOrdersActionsPermitted",
             "manageOrdersIsExParte"));

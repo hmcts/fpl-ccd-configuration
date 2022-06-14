@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.INTERPRETER;
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.NONE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.SOMETHING_ELSE;
@@ -60,6 +61,53 @@ class HearingBookingTest {
     void shouldReturnFalseIfHearingTypeIsNotOfTypeFinal() {
         HearingBooking hearingBooking = HearingBooking.builder().type(CASE_MANAGEMENT).build();
         assertThat(hearingBooking.isOfType(FINAL)).isFalse();
+    }
+
+    @Nested
+    class StartsAfterToday {
+
+        @Test
+        void shouldReturnFalseForHearingStartedToday() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .startDate(LocalDateTime.now())
+                .build();
+
+            assertThat(hearingBooking.startsAfterToday()).isFalse();
+        }
+
+        @Test
+        void shouldReturnFalseForHearingStartedInPast() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .startDate(LocalDateTime.now().minusDays(1))
+                .build();
+
+            assertThat(hearingBooking.startsAfterToday()).isFalse();
+        }
+
+        @Test
+        void shouldReturnTrueForHearingStartingLaterToday() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .startDate(LocalDate.now().plusDays(1).atStartOfDay().minusSeconds(1))
+                .build();
+
+            assertThat(hearingBooking.startsAfterToday()).isTrue();
+        }
+
+        @Test
+        void shouldReturnTrueForHearingStartingAfterToday() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(1))
+                .build();
+
+            assertThat(hearingBooking.startsAfterToday()).isTrue();
+        }
+
+        @Test
+        void shouldReturnFalseForHearingWithoutStartDate() {
+            HearingBooking hearingBooking = HearingBooking.builder().build();
+
+            assertThat(hearingBooking.startsAfterToday()).isFalse();
+        }
     }
 
     @Nested
@@ -250,6 +298,18 @@ class HearingBookingTest {
                 .build();
 
             assertThat(hearingBooking.toLabel()).isEqualTo("Case management hearing, 30 October 2020 - vacated");
+        }
+
+        @Test
+        void shouldThrowIllegalStateExceptionIfHearingTypeIsNull() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .type(null)
+                .startDate(LocalDate.of(2020, 10, 10).atStartOfDay())
+                .build();
+
+            assertThatExceptionOfType(IllegalStateException.class)
+                .isThrownBy(() -> hearingBooking.toLabel())
+                .withMessageContaining("Unexpected null hearing type.");
         }
 
     }
