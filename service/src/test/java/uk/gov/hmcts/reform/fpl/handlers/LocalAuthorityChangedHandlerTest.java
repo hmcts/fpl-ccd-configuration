@@ -33,6 +33,7 @@ import static com.google.common.collect.Sets.newHashSet;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
@@ -85,6 +86,8 @@ class LocalAuthorityChangedHandlerTest {
         .build();
 
     private final Set<String> recipients = Set.of("test1@test.com", "test2@test,com");
+
+    private final Set<String> emptyRecipients = Set.of();
 
     @Nested
     class SharedLocalAuthorityAdded {
@@ -319,11 +322,19 @@ class LocalAuthorityChangedHandlerTest {
                 caseDataTransferredToOrdinaryCourt.getId());
 
             verifyNoMoreInteractions(notificationService);
-            verify(localAuthorityRecipients).getRecipients(RecipientsRequest.builder()
-                .caseData(caseDataTransferredToOrdinaryCourt)
-                .secondaryLocalAuthorityExcluded(true)
-                .legalRepresentativesExcluded(true)
-                .build());
+        }
+
+        @Test
+        void shouldNotNotifyDesignatedLocalAuthorityIfNoRecipients() {
+            when(localAuthorityRecipients.getRecipients(any())).thenReturn(emptyRecipients);
+            when(localAuthorityService.getDesignatedLocalAuthority(caseDataBefore))
+                .thenReturn(localAuthority);
+            when(notifyDataProvider.getNotifyDataFoTransferredToAnotherCourt(caseDataTransferredToOrdinaryCourt))
+                .thenReturn(notifyData);
+
+            underTest.notifyDesignatedLocalAuthority(transferredToOrdinaryCourtEvent);
+
+            verifyNoInteractions(notificationService);
         }
 
         @Test
@@ -343,11 +354,6 @@ class LocalAuthorityChangedHandlerTest {
                 caseDataTransferredToOrdinaryCourt.getId());
 
             verifyNoMoreInteractions(notificationService);
-            verify(localAuthorityRecipients).getRecipients(RecipientsRequest.builder()
-                .caseData(caseDataTransferredToOrdinaryCourt)
-                .designatedLocalAuthorityExcluded(true)
-                .legalRepresentativesExcluded(true)
-                .build());
         }
 
         @Test
@@ -416,6 +422,18 @@ class LocalAuthorityChangedHandlerTest {
         }
 
         @Test
+        void shouldNotNotifyChildSolicitorsIfNoRecpients() {
+            when(notifyDataProvider.getNotifyDataFoTransferredToAnotherCourt(caseDataTransferredToOrdinaryCourt))
+                .thenReturn(notifyData);
+            when(representativesInbox.getChildrenSolicitorEmails(caseDataTransferredToOrdinaryCourt, DIGITAL_SERVICE))
+                .thenReturn(newHashSet());
+
+            underTest.notifyChildSolicitors(transferredToOrdinaryCourtEvent);
+
+            verifyNoInteractions(notificationService);
+        }
+
+        @Test
         void shouldNotifyRespondentSolicitors() {
             when(notifyDataProvider.getNotifyDataFoTransferredToAnotherCourt(caseDataTransferredToOrdinaryCourt))
                 .thenReturn(notifyData);
@@ -430,6 +448,47 @@ class LocalAuthorityChangedHandlerTest {
                 notifyData,
                 caseDataTransferredToOrdinaryCourt.getId());
             verifyNoMoreInteractions(notificationService);
+        }
+
+        @Test
+        void shouldNotNotifyRespondentSolicitorsIfNoRecipients() {
+            when(notifyDataProvider.getNotifyDataFoTransferredToAnotherCourt(caseDataTransferredToOrdinaryCourt))
+                .thenReturn(notifyData);
+            when(representativesInbox.getRespondentSolicitorEmails(caseDataTransferredToOrdinaryCourt, DIGITAL_SERVICE))
+                .thenReturn(newHashSet());
+
+            underTest.notifyRespondentSolicitors(transferredToOrdinaryCourtEvent);
+
+            verifyNoInteractions(notificationService);
+        }
+
+        @Test
+        void shouldNotifyAdmins() {
+            when(notifyDataProvider.getNotifyDataFoTransferredToAnotherCourt(caseDataTransferredToOrdinaryCourt))
+                .thenReturn(notifyData);
+            when(courtService.getCourtEmail(caseDataTransferredToOrdinaryCourt))
+                .thenReturn("admin@test.com");
+
+            underTest.notifyAdmin(transferredToOrdinaryCourtEvent);
+
+            verify(notificationService).sendEmail(
+                CASE_TRANSFERRED_TO_ANOTHER_COURT_TEMPLATE,
+                "admin@test.com",
+                notifyData,
+                caseDataTransferredToOrdinaryCourt.getId());
+            verifyNoMoreInteractions(notificationService);
+        }
+
+        @Test
+        void shouldNotNotifyAdminsIfNoRecicpient() {
+            when(notifyDataProvider.getNotifyDataFoTransferredToAnotherCourt(caseDataTransferredToOrdinaryCourt))
+                .thenReturn(notifyData);
+            when(courtService.getCourtEmail(caseDataTransferredToOrdinaryCourt))
+                .thenReturn(null);
+
+            underTest.notifyAdmin(transferredToOrdinaryCourtEvent);
+
+            verifyNoInteractions(notificationService);
         }
     }
 }
