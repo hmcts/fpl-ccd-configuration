@@ -74,7 +74,8 @@ idam-pr:
 xui-webapp:
   enabled: true
   redis:
-    enabled: false
+    enabled: true
+    architecture: replication
   nodejs:
     imagePullPolicy: Always
     replicas: 1
