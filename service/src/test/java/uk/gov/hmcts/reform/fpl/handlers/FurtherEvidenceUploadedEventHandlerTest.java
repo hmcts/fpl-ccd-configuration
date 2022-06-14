@@ -48,6 +48,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.time.LocalDateTime.now;
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -1191,6 +1192,39 @@ class FurtherEvidenceUploadedEventHandlerTest {
             any(),
             eq(POSITION_STATEMENT_RESPONDENT),
             any());
+    }
+
+    void shouldNotSendNotificationWhenNoNewCourtBundleIsUploadedByLA() {
+        String hearing1 = "1stHearing";
+        String hearing2 = "2ndHearing";
+        String hearing3 = "3rdHearing";
+        List<Element<HearingCourtBundle>> firstHearingBundle = createCourtBundleList(2, hearing1, "LA");
+        List<Element<HearingCourtBundle>> secondHearingBundle = createCourtBundleList(2, hearing2, "LA");
+        List<Element<HearingCourtBundle>> thirdHearingBundle = createCourtBundleList(2, hearing3, "LA");
+
+        List<Element<HearingCourtBundle>> totalHearing = new ArrayList<>();
+        totalHearing.addAll(firstHearingBundle);
+        totalHearing.addAll(secondHearingBundle);
+        totalHearing.addAll(thirdHearingBundle);
+
+        Collections.shuffle(totalHearing);
+
+        verifyNotificationForCourtBundleTemplate(
+            userDetailsLA(),
+            DESIGNATED_LOCAL_AUTHORITY,
+            (caseData) -> caseData.getCourtBundleListV2().addAll(totalHearing),
+            (caseData) -> caseData.getCourtBundleListV2().addAll(totalHearing),
+            emptyList());
+    }
+
+    @Test
+    void shouldNotSendNotificationWhenNoCourtBundleIsUploadedByLA() {
+        verifyNotificationForCourtBundleTemplate(
+                userDetailsLA(),
+                DESIGNATED_LOCAL_AUTHORITY,
+                EMPTY_CASE_DATA_MODIFIER,
+                EMPTY_CASE_DATA_MODIFIER,
+                emptyList());
     }
 
     private static List<String> buildNonConfidentialDocumentsNamesList() {
