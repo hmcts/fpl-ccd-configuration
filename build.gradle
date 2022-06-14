@@ -23,6 +23,9 @@ dependencyCheck {
   analyzers {
   // Disable scanning of .NET related binaries
     assemblyEnabled = false
+    ossIndex {
+      enabled = false
+    }
   }
   analyzedTypes = ['jar']
   scanConfigurations = ['runtimeClasspath']

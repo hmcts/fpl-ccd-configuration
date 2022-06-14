@@ -35,6 +35,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POS
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testEmail;
 
 class RepresentativesInboxTest {
 
@@ -456,6 +457,15 @@ class RepresentativesInboxTest {
                 .build()
         );
 
+        Element<Respondent> respondentWithSolicitor = element(
+            Respondent.builder()
+                .party(RespondentParty.builder().address(Address.builder().build()).build())
+                .solicitor(RespondentSolicitor.builder()
+                    .email(testEmail().getEmail())
+                    .build())
+                .build()
+        );
+
         return Stream.of(
             Arguments.of(
                 List.of(RESPONDENT_WITH_EMAIL_REP, RESPONDENT_UNREPRESENTED),
@@ -466,7 +476,12 @@ class RepresentativesInboxTest {
                 Set.of(RESPONDENT_UNREPRESENTED.getValue().getParty())
             ),
             Arguments.of(List.of(RESPONDENT_WITH_EMAIL_REP, RESPONDENT_WITH_DIGITAL_REP), Set.of()),
-            Arguments.of(List.of(respondentWithIncompleteAddress, respondentWithoutAddress), Set.of())
+            Arguments.of(List.of(respondentWithIncompleteAddress, respondentWithoutAddress), Set.of()),
+            Arguments.of(List.of(respondentWithSolicitor), Set.of()),
+            Arguments.of(
+                List.of(respondentWithSolicitor, RESPONDENT_UNREPRESENTED),
+                Set.of(RESPONDENT_UNREPRESENTED.getValue().getParty())
+            )
         );
     }
 

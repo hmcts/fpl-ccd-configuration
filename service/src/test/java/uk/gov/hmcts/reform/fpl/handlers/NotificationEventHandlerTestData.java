@@ -16,6 +16,7 @@ public class NotificationEventHandlerTestData {
     public static final String CAFCASS_NAME = "cafcass";
     public static final String GATEKEEPER_EMAIL_ADDRESS = "FamilyPublicLaw+gatekeeper@gmail.com";
     public static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
+    public static final String SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+hn@gmail.com";
     public static final String ALLOCATED_JUDGE_EMAIL_ADDRESS = "judge@gmail.com";
     public static final String COURT_CODE = "11";
     public static final String CTSC_INBOX = "Ctsc+test@gmail.com";
