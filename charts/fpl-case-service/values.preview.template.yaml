@@ -74,8 +74,10 @@ idam-pr:
 xui-webapp:
   enabled: true
   redis:
-    enabled: false
-    architecture: replication
+    enabled: true
+    architecture: standalone
+    auth:
+      enabled: true
   nodejs:
     imagePullPolicy: Always
     replicas: 1
@@ -97,7 +99,7 @@ xui-webapp:
       SERVICES_TERMS_AND_CONDITIONS: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal
       JURISDICTIONS: PUBLICLAW
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
-      FEATURE_REDIS_ENABLED: false
+      FEATURE_REDIS_ENABLED: true
       FEATURE_APP_INSIGHTS_ENABLED: false
       FEATURE_SECURE_COOKIE_ENABLED: false
       FEATURE_PROXY_ENABLED: false
