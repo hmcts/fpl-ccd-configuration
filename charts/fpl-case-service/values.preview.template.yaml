@@ -75,6 +75,8 @@ xui-webapp:
   enabled: true
   redis:
     enabled: true
+    auth:
+      enabled: false
   nodejs:
     imagePullPolicy: Always
     replicas: 1
