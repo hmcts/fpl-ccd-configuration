@@ -39,9 +39,7 @@ import java.util.UUID;
 import static java.util.Map.of;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -78,7 +76,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
     void mocking() {
         givenCurrentUserWithName("Emma Taylor");
 
-        doReturn(document).when(caseSubmissionService).generateSubmittedFormPDF(any(), eq(false));
+        doReturn(document).when(caseSubmissionService).generateSubmittedFormPDF(any(), eq(false), anyBoolean());
 
         given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENT, "2313.pdf"))
             .willReturn(document);

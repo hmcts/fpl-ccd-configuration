@@ -20,8 +20,7 @@ import java.util.List;
 
 import static java.util.Map.of;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -55,7 +54,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
 
     @BeforeEach
     void mocking() {
-        given(caseSubmissionService.generateSubmittedFormPDF(any(), eq(true)))
+        given(caseSubmissionService.generateSubmittedFormPDF(any(), eq(true), anyBoolean()))
             .willReturn(document);
         given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENT, "2313.pdf"))
             .willReturn(document);

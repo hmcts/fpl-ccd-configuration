@@ -81,9 +81,11 @@ public class CaseSubmissionController extends CallbackController {
         Document document = caseSubmissionService.generateSubmittedFormPDF(caseData, true, isStandalone);
         data.put("draftApplicationDocument", buildFromDocument(document));
 
-        Document supplement = caseSubmissionService.generateSupplementPDF(caseData, true,
-            DocmosisTemplates.C16_SUPPLEMENT);
-        data.put("draftSupplement", buildFromDocument(supplement));
+        if (isStandalone) {
+            Document supplement = caseSubmissionService.generateSupplementPDF(caseData, true,
+                DocmosisTemplates.C16_SUPPLEMENT);
+            data.put("draftSupplement", buildFromDocument(supplement));
+        }
 
         if (isInOpenState(caseDetails)) {
             try {
@@ -119,7 +121,7 @@ public class CaseSubmissionController extends CallbackController {
         List<String> errors = validate(caseData);
 
         if (errors.isEmpty()) {
-            boolean isStandalone = caseData.getOrders().isC1Order();
+            boolean isStandalone = caseData.getOrders() != null && caseData.getOrders().isC1Order();
             Document document = caseSubmissionService.generateSubmittedFormPDF(caseData, false, isStandalone);
 
             ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
@@ -130,10 +132,11 @@ public class CaseSubmissionController extends CallbackController {
             data.put("sendToCtsc", setSendToCtsc(data.get("caseLocalAuthority").toString()).getValue());
             data.put("submittedForm", buildFromDocument(document));
 
-            Document supplement = caseSubmissionService.generateSupplementPDF(caseData, false,
-                DocmosisTemplates.C16_SUPPLEMENT);
-            data.put("supplementDocument", buildFromDocument(supplement));
-
+            if (isStandalone) {
+                Document supplement = caseSubmissionService.generateSupplementPDF(caseData, false,
+                    DocmosisTemplates.C16_SUPPLEMENT);
+                data.put("supplementDocument", buildFromDocument(supplement));
+            }
 
             data.putAll(nocFieldPopulator.generate(caseData, RESPONDENT));
             data.putAll(nocFieldPopulator.generate(caseData, CHILD, BLANK));
