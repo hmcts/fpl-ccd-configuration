@@ -51,8 +51,10 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-82", this::run82,
         "DFPL-82-rollback", this::run82Rollback,
         "DFPL-622", this::run622,
-        "DFPL-679", this::run679,
-        "DFPL-666", this::run666
+        "DFPL-666", this::run666,
+        "DFPL-694", this::run694,
+        "DFPL-695", this::run695,
+        "DFPL-697", this::run697
     );
 
     @PostMapping("/about-to-submit")
@@ -200,11 +202,15 @@ public class MigrateCaseController extends CallbackController {
      *  - migrationId
      * @param caseDetails - the caseDetails to update
      */
-    private void run679(CaseDetails caseDetails) {
-        var migrationId = "DFPL-679";
-        var expectedCaseId = 1648131786635895L;
-        var expectedDocId = UUID.fromString("86675977-4125-40e6-959b-d62f2ba80900");
+    private void run694(CaseDetails caseDetails) {
+        var migrationId = "DFPL-694";
+        var expectedCaseId = 1643970994251861L;
+        var expectedDocId = UUID.fromString("e32175d7-28ea-4041-8f1c-1087326ee331");
 
+        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
+    }
+
+    private void removeC110a(CaseDetails caseDetails, String migrationId, long expectedCaseId, UUID expectedDocId) {
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();
 
@@ -224,6 +230,22 @@ public class MigrateCaseController extends CallbackController {
             ));
         }
         caseDetails.getData().put("submittedForm", null);
+    }
+
+    private void run695(CaseDetails caseDetails) {
+        var migrationId = "DFPL-695";
+        var expectedCaseId = 1654079894022178L;
+        var expectedDocId = UUID.fromString("d78acec6-f57c-45ed-a343-04f5261b738b");
+
+        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
+    }
+
+    private void run697(CaseDetails caseDetails) {
+        var migrationId = "DFPL-697";
+        var expectedCaseId = 1643970994251861L;
+        var expectedDocId = UUID.fromString("e32175d7-28ea-4041-8f1c-1087326ee331");
+
+        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
     }
 
     private void run622(CaseDetails caseDetails) {
