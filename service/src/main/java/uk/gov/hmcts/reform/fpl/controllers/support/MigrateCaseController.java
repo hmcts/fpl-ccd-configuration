@@ -50,7 +50,9 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-82", this::run82,
         "DFPL-82-rollback", this::run82Rollback,
         "DFPL-622", this::run622,
-        "DFPL-679", this::run679
+        "DFPL-694", this::run694,
+        "DFPL-695", this::run695,
+        "DFPL-697", this::run697
     );
 
     @PostMapping("/about-to-submit")
@@ -198,10 +200,62 @@ public class MigrateCaseController extends CallbackController {
      *  - migrationId
      * @param caseDetails - the caseDetails to update
      */
-    private void run679(CaseDetails caseDetails) {
-        var migrationId = "DFPL-679";
-        var expectedCaseId = 1648131786635895L;
-        var expectedDocId = UUID.fromString("86675977-4125-40e6-959b-d62f2ba80900");
+    private void run694(CaseDetails caseDetails) {
+        var migrationId = "DFPL-694";
+        var expectedCaseId = 1643970994251861L;
+        var expectedDocId = UUID.fromString("e32175d7-28ea-4041-8f1c-1087326ee331");
+
+        CaseData caseData = getCaseData(caseDetails);
+        var caseId = caseData.getId();
+
+        if (caseId != expectedCaseId) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId
+            ));
+        }
+
+        var documentUrl = caseData.getC110A().getDocument().getUrl();
+        var docId = UUID.fromString(documentUrl.substring(documentUrl.length() - 36));
+        if (!docId.equals(expectedDocId)) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected c110a document id %s",
+                migrationId, caseId, expectedDocId
+            ));
+        }
+        caseDetails.getData().put("submittedForm", null);
+    }
+
+    private void run695(CaseDetails caseDetails) {
+        var migrationId = "DFPL-695";
+        var expectedCaseId = 1654079894022178L;
+        var expectedDocId = UUID.fromString("d78acec6-f57c-45ed-a343-04f5261b738b");
+
+        CaseData caseData = getCaseData(caseDetails);
+        var caseId = caseData.getId();
+
+        if (caseId != expectedCaseId) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId
+            ));
+        }
+
+        var documentUrl = caseData.getC110A().getDocument().getUrl();
+        var docId = UUID.fromString(documentUrl.substring(documentUrl.length() - 36));
+        if (!docId.equals(expectedDocId)) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected c110a document id %s",
+                migrationId, caseId, expectedDocId
+            ));
+        }
+        caseDetails.getData().put("submittedForm", null);
+    }
+
+    private void run697(CaseDetails caseDetails) {
+        var migrationId = "DFPL-697";
+        var expectedCaseId = 1643970994251861L;
+        var expectedDocId = UUID.fromString("e32175d7-28ea-4041-8f1c-1087326ee331");
 
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();
