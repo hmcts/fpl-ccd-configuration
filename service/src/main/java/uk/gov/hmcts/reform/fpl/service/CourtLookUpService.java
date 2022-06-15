@@ -22,7 +22,7 @@ public class CourtLookUpService {
 
     public static final String RCJ_HIGH_COURT_REGION = "London";
 
-    public static final String RCJ_HIGH_COURT_NAME = "High Court Family Division - (100)";
+    public static final String RCJ_HIGH_COURT_NAME = "High Court Family Division";
 
     private final ObjectMapper objectMapper;
 
