@@ -30,6 +30,8 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_O
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35B_INTERIM_SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C36_VARIATION_OR_EXTENSION_OF_SUPERVISION_ORDERS;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C37_EDUCATION_SUPERVISION_ORDER_DIGITAL;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43A_SPECIAL_GUARDIANSHIP_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C45A_PARENTAL_RESPONSIBILITY_ORDER;
@@ -66,6 +68,11 @@ class OrderDocumentGeneratorHolderTest {
     @Mock
     private C35bISODocumentParameterGenerator c35bISODocumentParameterGenerator;
     @Mock
+    private C36VariationOrExtensionOfSupervisionOrdersParameterGenerator
+        c36VariationOrExtensionOfSupervisionOrdersParameterGenerator;
+    @Mock
+    private C37EducationSupervisionOrderParameterGenerator c37EducationSupervisionOrderParameterGenerator;
+    @Mock
     private C43aSpecialGuardianshipOrderDocumentParameterGenerator c43aSGODocumentParameterGenerator;
     @Mock
     private C43ChildArrangementOrderDocumentParameterGenerator c43ChildArrangementOrderDocumentParameterGenerator;
@@ -94,7 +101,8 @@ class OrderDocumentGeneratorHolderTest {
             c26SecureAccommodationOrderDocumentParameterGenerator, c29RecoveryOfAChildDocumentParameterGenerator,
             c32CareOrderDocumentParameterGenerator, c32bDischargeOfCareOrderDocumentParameterGenerator,
             c33InterimCareOrderDocumentParameterGenerator, c35aSupervisionOrderDocumentParameterGenerator,
-            c47AAppointmentOfAChildrensGuardianParameterGenerator, c35bISODocumentParameterGenerator,
+            c37EducationSupervisionOrderParameterGenerator, c47AAppointmentOfAChildrensGuardianParameterGenerator,
+            c35bISODocumentParameterGenerator, c36VariationOrExtensionOfSupervisionOrdersParameterGenerator,
             c43ChildArrangementOrderDocumentParameterGenerator, c43aSGODocumentParameterGenerator,
             c45aParentalResponsibilityOrderDocumentParameterGenerator
         );
@@ -112,6 +120,9 @@ class OrderDocumentGeneratorHolderTest {
                 put(C33_INTERIM_CARE_ORDER, c33InterimCareOrderDocumentParameterGenerator);
                 put(C35A_SUPERVISION_ORDER, c35aSupervisionOrderDocumentParameterGenerator);
                 put(C35B_INTERIM_SUPERVISION_ORDER, c35bISODocumentParameterGenerator);
+                put(C36_VARIATION_OR_EXTENSION_OF_SUPERVISION_ORDERS,
+                    c36VariationOrExtensionOfSupervisionOrdersParameterGenerator);
+                put(C37_EDUCATION_SUPERVISION_ORDER_DIGITAL, c37EducationSupervisionOrderParameterGenerator);
                 put(C43A_SPECIAL_GUARDIANSHIP_ORDER, c43aSGODocumentParameterGenerator);
                 put(C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER,
                     c43ChildArrangementOrderDocumentParameterGenerator);

@@ -14,13 +14,18 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.Constants.COURT_1;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 public class ManageOrderDocumentServiceTest {
-    private static final CaseData CASE_DATA = CaseData.builder().caseLocalAuthority(LOCAL_AUTHORITY_1_CODE).build();
+    private static final CaseData CASE_DATA = CaseData.builder()
+        .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+        .court(COURT_1)
+        .build();
 
     private final ChildrenSmartSelector childrenSmartSelector = mock(ChildrenSmartSelector.class);
     private final LocalAuthorityNameLookupConfiguration laNameLookup =
@@ -41,7 +46,9 @@ public class ManageOrderDocumentServiceTest {
         Map<String, String> expectedGrammar = Map.of(
             "childOrChildren", "child",
             "childIsOrAre", "is",
-            "localAuthorityName", LOCAL_AUTHORITY_1_NAME
+            "childWasOrWere", "was",
+            "localAuthorityName", LOCAL_AUTHORITY_1_NAME,
+            "courtName", LOCAL_AUTHORITY_1_COURT_NAME
         );
 
         assertThat(manageOrderDocumentService.commonContextElements(CASE_DATA)).isEqualTo(expectedGrammar);
@@ -55,7 +62,9 @@ public class ManageOrderDocumentServiceTest {
         Map<String, String> expectedGrammar = Map.of(
             "childOrChildren", "children",
             "childIsOrAre", "are",
-            "localAuthorityName", LOCAL_AUTHORITY_1_NAME
+            "childWasOrWere", "were",
+            "localAuthorityName", LOCAL_AUTHORITY_1_NAME,
+            "courtName", LOCAL_AUTHORITY_1_COURT_NAME
         );
 
         assertThat(manageOrderDocumentService.commonContextElements(CASE_DATA)).isEqualTo(expectedGrammar);
