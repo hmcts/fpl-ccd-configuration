@@ -127,7 +127,7 @@ class DraftOrdersApprovedEventHandlerEmailTemplateTest extends EmailTemplateTest
                 .line("You should now check the orders to see if you have any directions and compliance dates.")
                 .line()
                 .line("You can review the orders by:")
-                .line(" ")
+                .list("signing into http://fake-url/cases/case-details/100#Orders")
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .line()
