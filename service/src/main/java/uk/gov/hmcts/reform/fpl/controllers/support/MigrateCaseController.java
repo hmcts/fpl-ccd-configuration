@@ -205,6 +205,10 @@ public class MigrateCaseController extends CallbackController {
         var expectedCaseId = 1643970994251861L;
         var expectedDocId = UUID.fromString("e32175d7-28ea-4041-8f1c-1087326ee331");
 
+        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
+    }
+
+    private void removeC110a(CaseDetails caseDetails, String migrationId, long expectedCaseId, UUID expectedDocId) {
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();
 
@@ -231,25 +235,7 @@ public class MigrateCaseController extends CallbackController {
         var expectedCaseId = 1654079894022178L;
         var expectedDocId = UUID.fromString("d78acec6-f57c-45ed-a343-04f5261b738b");
 
-        CaseData caseData = getCaseData(caseDetails);
-        var caseId = caseData.getId();
-
-        if (caseId != expectedCaseId) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, expected case id %d",
-                migrationId, caseId, expectedCaseId
-            ));
-        }
-
-        var documentUrl = caseData.getC110A().getDocument().getUrl();
-        var docId = UUID.fromString(documentUrl.substring(documentUrl.length() - 36));
-        if (!docId.equals(expectedDocId)) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, expected c110a document id %s",
-                migrationId, caseId, expectedDocId
-            ));
-        }
-        caseDetails.getData().put("submittedForm", null);
+        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
     }
 
     private void run697(CaseDetails caseDetails) {
@@ -257,25 +243,7 @@ public class MigrateCaseController extends CallbackController {
         var expectedCaseId = 1643970994251861L;
         var expectedDocId = UUID.fromString("e32175d7-28ea-4041-8f1c-1087326ee331");
 
-        CaseData caseData = getCaseData(caseDetails);
-        var caseId = caseData.getId();
-
-        if (caseId != expectedCaseId) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, expected case id %d",
-                migrationId, caseId, expectedCaseId
-            ));
-        }
-
-        var documentUrl = caseData.getC110A().getDocument().getUrl();
-        var docId = UUID.fromString(documentUrl.substring(documentUrl.length() - 36));
-        if (!docId.equals(expectedDocId)) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, expected c110a document id %s",
-                migrationId, caseId, expectedDocId
-            ));
-        }
-        caseDetails.getData().put("submittedForm", null);
+        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
     }
 
     private void run622(CaseDetails caseDetails) {
