@@ -421,11 +421,9 @@ class OrderShowHideQuestionsCalculatorTest {
         Map<String, String> refusedContactOrderQuestions = new HashMap<>(commonQuestions);
         refusedContactOrderQuestions.put("hearingDetails", "NO");
         refusedContactOrderQuestions.put("linkApplication", "NO");
-        refusedContactOrderQuestions.put("orderPlacedChildInCustody", "NO");
         refusedContactOrderQuestions.put("furtherDirections", "NO");
         refusedContactOrderQuestions.put("orderTitle", "NO");
         refusedContactOrderQuestions.put("approvalDate", "YES");
-        refusedContactOrderQuestions.put("furtherDirections", "NO");
         refusedContactOrderQuestions.put("orderDetails", "NO");
         refusedContactOrderQuestions.put("approvalDateTime", "NO");
         refusedContactOrderQuestions.put("epoIncludePhrase", "NO");
@@ -455,6 +453,9 @@ class OrderShowHideQuestionsCalculatorTest {
         refusedContactOrderQuestions.put("parentResponsible", "NO");
         refusedContactOrderQuestions.put("childPlacementApplications", "NO");
         refusedContactOrderQuestions.put("childPlacementQuestions", "NO");
+        refusedContactOrderQuestions.put("manageOrdersVaryOrExtendSupervisionOrder", "NO");
+        refusedContactOrderQuestions.put("manageOrdersEducationSupervision", "NO");
+        refusedContactOrderQuestions.put("orderPlacedChildInCustody","NO");
 
         Map<String, String> secureAccommodationOrderQuestions = new HashMap<>(commonQuestions);
         secureAccommodationOrderQuestions.put("orderTitle", "NO");
@@ -645,6 +646,8 @@ class OrderShowHideQuestionsCalculatorTest {
         supervisionEducationOrder.put("isFinalOrder", "YES");
         supervisionEducationOrder.put("appointedGuardian", "NO");
         supervisionEducationOrder.put("parentResponsible", "NO");
+        supervisionEducationOrder.put("respondentsRefused", "NO");
+        supervisionEducationOrder.put("refuseContactQuestions", "NO");
         supervisionEducationOrder.put("childPlacementApplications", "NO");
         supervisionEducationOrder.put("childPlacementQuestions", "NO");
         supervisionEducationOrder.put("orderPlacedChildInCustody", "NO");
@@ -682,6 +685,8 @@ class OrderShowHideQuestionsCalculatorTest {
         varyOrExtendSupervisionOrder.put("isFinalOrder", "YES");
         varyOrExtendSupervisionOrder.put("appointedGuardian", "NO");
         varyOrExtendSupervisionOrder.put("parentResponsible", "NO");
+        varyOrExtendSupervisionOrder.put("respondentsRefused", "NO");
+        varyOrExtendSupervisionOrder.put("refuseContactQuestions", "NO");
         varyOrExtendSupervisionOrder.put("childPlacementApplications", "NO");
         varyOrExtendSupervisionOrder.put("childPlacementQuestions", "NO");
         varyOrExtendSupervisionOrder.put("orderPlacedChildInCustody", "NO");
@@ -797,7 +802,6 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("childPlacementApplications", "NO"),
                 Map.entry("childPlacementQuestions", "NO"),
                 Map.entry("manageOrdersEducationSupervision", "NO"),
-                Map.entry("orderPlacedChildInCustody", "NO"),
                 Map.entry("manageOrdersVaryOrExtendSupervisionOrder", "NO"),
                 Map.entry("appointedGuardian", "NO"),
                 Map.entry("respondentsRefused", "NO"),
