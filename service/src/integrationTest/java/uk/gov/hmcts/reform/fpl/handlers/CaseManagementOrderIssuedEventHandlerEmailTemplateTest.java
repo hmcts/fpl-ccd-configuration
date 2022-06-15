@@ -157,7 +157,7 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
                 .line("You should now check the order to see your directions and compliance dates.")
                 .line()
                 .line("You can review the order by:")
-                .line()
+                .line("* signing into http://fake-url/cases/case-details/123456#Orders")
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .line()
