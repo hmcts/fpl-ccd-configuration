@@ -120,7 +120,8 @@ public class DraftOrdersApprovedEventHandler {
                 .map(Element::getValue)
                 .orElse(null);
 
-            NotifyData content = contentProvider.buildOrdersApprovedContent(caseData, hearing, approvedOrders, DIGITAL_SERVICE);
+            NotifyData content = contentProvider.buildOrdersApprovedContent(caseData, hearing, approvedOrders,
+                DIGITAL_SERVICE);
 
             notificationService.sendEmail(
                     JUDGE_APPROVES_DRAFT_ORDERS,
