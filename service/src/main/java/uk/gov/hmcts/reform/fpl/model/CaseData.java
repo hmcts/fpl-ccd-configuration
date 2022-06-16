@@ -1146,4 +1146,11 @@ public class CaseData {
             .map(Orders::isDischargeOfCareOrder)
             .orElse(false);
     }
+
+    @JsonIgnore
+    public boolean isC1Application() {
+        return ofNullable(getOrders())
+            .map(Orders::isC1Order)
+            .orElse(false);
+    }
 }
