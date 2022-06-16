@@ -71,15 +71,13 @@ public class TaskListService {
 
     private List<Event> getEvents(CaseData caseData) {
 
+        // Core Events for all combinations of C110a + C1 apps
         final List<Event> events = new ArrayList<>(List.of(
             ORDERS_SOUGHT,
-            HEARING_URGENCY,
             featureToggles.isApplicantAdditionalContactsEnabled() ? LOCAL_AUTHORITY_DETAILS : ORGANISATION_DETAILS,
             CHILDREN,
             RESPONDENTS,
-            ALLOCATION_PROPOSAL,
             OTHER_PROCEEDINGS,
-            INTERNATIONAL_ELEMENT,
             OTHERS,
             COURT_SERVICES,
             SUBMIT_APPLICATION,
@@ -92,10 +90,18 @@ public class TaskListService {
             events.add(SELECT_COURT);
         }
 
+        // C1s and C110a's (except DoC)
         if (!caseData.isDischargeOfCareApplication()) {
             events.add(GROUNDS);
             events.add(RISK_AND_HARM);
             events.add(FACTORS_AFFECTING_PARENTING);
+        }
+
+        // C110a's only
+        if (!caseData.isC1Application()) {
+            events.add(HEARING_URGENCY);
+            events.add(ALLOCATION_PROPOSAL);
+            events.add(INTERNATIONAL_ELEMENT);
         }
 
         return events;
