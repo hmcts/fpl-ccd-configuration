@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.utils;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import static java.lang.String.format;
