@@ -54,7 +54,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
 
     @BeforeEach
     void mocking() {
-        given(caseSubmissionService.generateSubmittedFormPDF(any(), eq(true), anyBoolean()))
+        given(caseSubmissionService.generateC110aSubmittedFormPDF(any(), eq(true)))
             .willReturn(document);
         given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENT, "2313.pdf"))
             .willReturn(document);

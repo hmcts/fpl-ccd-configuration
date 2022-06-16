@@ -14,17 +14,11 @@ public class SubmittedFormFilenameHelper {
         // NO-OP
     }
 
-    public static String buildFileName(final CaseData caseData, final boolean isDraft) {
-        return buildFileName(caseData, isDraft, false);
-    }
-
-
-    public static String buildFileName(final CaseData caseData, final boolean isDraft, boolean isC1) {
+    public static String buildFileName(final CaseData caseData, final boolean isDraft, DocmosisTemplates template) {
         String caseName = Strings.nullToEmpty(caseData.getCaseName()).trim();
 
         if (isDraft) {
-            String documentTitle = isC1 ? "c1_application_%s.pdf" : "c110a_application_%s.pdf";
-            return format("draft_%s", format(documentTitle,
+            return format("draft_%s", format(template.getDocumentTitle(),
                 formatLocalDateToString(now(), "ddMMM").toLowerCase()));
         }
 

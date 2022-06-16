@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService
 
 import java.util.Optional;
 
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C1;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C110A;
 import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFileName;
 import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildGenericFileName;
@@ -28,12 +29,16 @@ public class CaseSubmissionService {
     private final UploadDocumentService uploadDocumentService;
     private final CaseSubmissionGenerationService documentGenerationService;
 
-    public Document generateSubmittedFormPDF(final CaseData caseData, final boolean isDraft) {
-        return generateSubmittedFormPDF(caseData, isDraft, false);
+    public Document generateC110aSubmittedFormPDF(final CaseData caseData, final boolean isDraft) {
+        return generateSubmittedFormPDF(caseData, isDraft, C110A);
     }
 
-    public Document generateSubmittedFormPDF(final CaseData caseData, final boolean isDraft, boolean isC1) {
-        DocmosisCaseSubmission submittedCase = documentGenerationService.getTemplateData(caseData, isC1);
+    public Document generateC1SubmittedFormPDF(final CaseData caseData, final boolean isDraft) {
+        return generateSubmittedFormPDF(caseData, isDraft, C1);
+    }
+
+    private Document generateSubmittedFormPDF(CaseData caseData, boolean isDraft, DocmosisTemplates template) {
+        DocmosisCaseSubmission submittedCase = documentGenerationService.getTemplateData(caseData);
 
         documentGenerationService.populateCaseNumber(submittedCase, caseData.getId());
         documentGenerationService.populateDraftWaterOrCourtSeal(submittedCase, isDraft,caseData.getImageLanguage());
@@ -41,11 +46,11 @@ public class CaseSubmissionService {
             .orElse(Language.ENGLISH);
 
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(submittedCase,
-            C110A,
+            template,
             RenderFormat.PDF,
             applicationLanguage);
 
-        return uploadDocumentService.uploadPDF(document.getBytes(), buildFileName(caseData, isDraft, isC1));
+        return uploadDocumentService.uploadPDF(document.getBytes(), buildFileName(caseData, isDraft, template));
     }
 
     public Document generateSupplementPDF(final CaseData caseData, final boolean isDraft, DocmosisTemplates template) {

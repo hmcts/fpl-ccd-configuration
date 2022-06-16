@@ -70,7 +70,7 @@ class CaseSubmissionServiceTest {
 
     @Test
     void shouldGenerateCaseSubmissionDocumentSuccessfullyDefault() {
-        caseSubmissionService.generateSubmittedFormPDF(givenCaseData, false);
+        caseSubmissionService.generateC110aSubmittedFormPDF(givenCaseData, false);
 
         verify(documentGeneratorService).generateDocmosisDocument(caseSubmissionDataCaptor.capture(),
             eq(C110A),
@@ -85,7 +85,7 @@ class CaseSubmissionServiceTest {
 
     @Test
     void shouldGenerateCaseSubmissionDocumentSuccessfullyIfWelsh() {
-        caseSubmissionService.generateSubmittedFormPDF(givenCaseData.toBuilder()
+        caseSubmissionService.generateC110aSubmittedFormPDF(givenCaseData.toBuilder()
             .c110A(uk.gov.hmcts.reform.fpl.model.group.C110A.builder()
                 .languageRequirementApplication(Language.WELSH)
                 .build())

@@ -76,7 +76,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
     void mocking() {
         givenCurrentUserWithName("Emma Taylor");
 
-        doReturn(document).when(caseSubmissionService).generateSubmittedFormPDF(any(), eq(false), anyBoolean());
+        doReturn(document).when(caseSubmissionService).generateC110aSubmittedFormPDF(any(), eq(false));
 
         given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENT, "2313.pdf"))
             .willReturn(document);

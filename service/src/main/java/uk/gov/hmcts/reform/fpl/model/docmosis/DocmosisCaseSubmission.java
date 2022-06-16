@@ -11,8 +11,6 @@ import java.util.List;
 @Builder(builderClassName = "Builder", toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocmosisCaseSubmission implements DocmosisData {
-    private final String applicationType;
-    private final String applicationTitle;
     private final List<DocmosisRespondent> respondents;
     private final List<DocmosisApplicant> applicants;
     private final List<DocmosisChild> children;

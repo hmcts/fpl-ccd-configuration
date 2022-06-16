@@ -133,22 +133,10 @@ public class CaseSubmissionGenerationService
     }
 
     public DocmosisCaseSubmission getTemplateData(final CaseData caseData) {
-        return getTemplateData(caseData, false);
-    }
-
-    public DocmosisCaseSubmission getTemplateData(final CaseData caseData, boolean isC1) {
         Language applicationLanguage = Optional.ofNullable(caseData.getC110A()
             .getLanguageRequirementApplication()).orElse(Language.ENGLISH);
 
         return DocmosisCaseSubmission.builder()
-            .applicationType(isC1 ? "C1" : "C110A")
-            .applicationTitle(isC1 ? "Application for an order \n"
-                + "under the Children Act 1989"
-                : "Application for a care or supervision\n"
-                + "order and other orders under Part 4 \n"
-                + "of the Children Act 1989 or an\n"
-                + "emergency protection order under\n"
-                + "section 44 of the Children Act 1989\n")
             .applicantOrganisations(getApplicantsOrganisations(caseData))
             .respondentNames(getRespondentsNames(caseData.getAllRespondents()))
             .courtName(courtService.getCourtName(caseData))
