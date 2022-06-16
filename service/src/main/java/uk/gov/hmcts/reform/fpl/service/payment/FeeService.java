@@ -40,11 +40,11 @@ public class FeeService {
         return Optional.ofNullable(orders)
             .map(Orders::getOrderType)
             .map(orderTypeList -> {
-                    if(orders.isSecureAccommodationOrder()) {
-                        return List.of(fromSecureAccommodationOrder(orders.getSecureAccommodationOrderSection()));
-                    } else {
-                        return fromOrderType(orderTypeList);
-                    }
+                if (orders.isSecureAccommodationOrder()) {
+                    return List.of(fromSecureAccommodationOrder(orders.getSecureAccommodationOrderSection()));
+                } else {
+                    return fromOrderType(orderTypeList);
+                }
             })
             .map(this::getFees)
             .map(this::buildFeesDataFromFeeResponses)

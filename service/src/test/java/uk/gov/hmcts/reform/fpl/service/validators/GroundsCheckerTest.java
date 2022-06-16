@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
+import uk.gov.hmcts.reform.fpl.model.GroundsForSecureAccommodationOrder;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
@@ -115,5 +116,39 @@ class GroundsCheckerTest {
 
         assertThat(errors).isEmpty();
         assertThat(isCompleted).isTrue();
+    }
+
+    @Test
+    void shouldReturnEmptyErrorsWhenGroundsProvidedForSecureAccommodationOrder() {
+        final CaseData caseData = CaseData.builder()
+            .orders(Orders.builder().orderType(List.of(OrderType.SECURE_ACCOMMODATION_ORDER)).build())
+            .groundsForSecureAccommodationOrder(GroundsForSecureAccommodationOrder.builder()
+                .grounds(List.of("grounds1", "grounds2"))
+                .reasonAndLength("No reason and 2 days")
+                .build())
+            .build();
+
+        final List<String> errors = groundsChecker.validate(caseData);
+        final boolean isCompleted = groundsChecker.isCompleted(caseData);
+
+        assertThat(errors).isEmpty();
+        assertThat(isCompleted).isTrue();
+    }
+
+    @Test
+    void shouldReturnErrorsWhenGroundsNotProvidedForSecureAccommodationOrder() {
+        final CaseData caseData = CaseData.builder()
+            .orders(Orders.builder().orderType(List.of(OrderType.SECURE_ACCOMMODATION_ORDER)).build())
+            .groundsForSecureAccommodationOrder(GroundsForSecureAccommodationOrder.builder()
+                .build())
+            .build();
+
+        final List<String> errors = groundsChecker.validate(caseData);
+        final boolean isCompleted = groundsChecker.isCompleted(caseData);
+
+        assertThat(errors).containsExactlyInAnyOrder(
+            "Please give reasons for the application and length of the order sought",
+            "Select at least one option for how this case meets grounds for a secure accommodation order");
+        assertThat(isCompleted).isFalse();
     }
 }

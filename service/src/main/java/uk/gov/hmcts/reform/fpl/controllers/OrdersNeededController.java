@@ -67,7 +67,7 @@ public class OrdersNeededController extends CallbackController {
                     data.remove("groundsForEPO");
                     data.remove(showEpoFieldId);
                 }
-                if(!orderTypes.contains(OrderType.SECURE_ACCOMMODATION_ORDER.name())) {
+                if (!orderTypes.contains(OrderType.SECURE_ACCOMMODATION_ORDER.name())) {
                     removeSecureAccommodationOrderFields(data);
                 } else {
                     data.put("secureAccommodationOrderType", YesNo.YES);

@@ -1149,7 +1149,7 @@ public class CaseData {
     }
 
     @JsonIgnore
-    public boolean isSecureAccommodationOrderType(){
+    public boolean isSecureAccommodationOrderType() {
         return ofNullable(getOrders())
             .map(Orders::isSecureAccommodationOrder)
             .orElse(false);

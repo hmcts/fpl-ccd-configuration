@@ -15,7 +15,7 @@ public class OrdersNeededValidator {
 
         List<OrderType> orderTypes = caseData.getOrders().getOrderType();
         // If secure accommodation order is selected, this should be the only order selected
-        if(orderTypes != null && orderTypes.contains(OrderType.SECURE_ACCOMMODATION_ORDER) && orderTypes.size() > 1) {
+        if (orderTypes != null && orderTypes.contains(OrderType.SECURE_ACCOMMODATION_ORDER) && orderTypes.size() > 1) {
             errors.add("If secure accommodation order is selected, this should be the only order selected");
         }
 

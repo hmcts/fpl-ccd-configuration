@@ -24,7 +24,7 @@ public class GroundsChecker extends PropertiesChecker {
     public List<String> validate(CaseData caseData) {
         if (hasEmergencyProtectionOrder(caseData)) {
             return super.validate(caseData, List.of("grounds", "groundsForEPO"), Default.class, EPOGroup.class);
-        } else if(hasSecureAccommodationOrder(caseData)) {
+        } else if (hasSecureAccommodationOrder(caseData)) {
             return super.validate(caseData, List.of("groundsForSecureAccommodationOrder"),
                 SecureAccommodationGroup.class);
         } else {
@@ -40,7 +40,7 @@ public class GroundsChecker extends PropertiesChecker {
 
     @Override
     public boolean isCompleted(CaseData caseData) {
-        if(hasSecureAccommodationOrder(caseData)) {
+        if (hasSecureAccommodationOrder(caseData)) {
             return isSecureAccommodationOrderGroundsCompleted(caseData.getGroundsForSecureAccommodationOrder());
         }
         return true;

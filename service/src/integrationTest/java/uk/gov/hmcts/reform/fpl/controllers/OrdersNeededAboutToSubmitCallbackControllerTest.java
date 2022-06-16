@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,5 +40,25 @@ class OrdersNeededAboutToSubmitCallbackControllerTest extends AbstractCallbackTe
 
         assertThat(response.getData().get("otherOrderType")).isEqualTo("YES");
         assertThat(response.getData().get("EPO_REASONING_SHOW")).isEqualTo(null);
+    }
+
+    @Test
+    void shouldShowSecureAccommodationOrderFieldWhenSecureAccommodationOrderIsSelected() {
+        AboutToStartOrSubmitCallbackResponse response =
+            postAboutToSubmitEvent("fixtures/caseSecureAccommodationOrder.json");
+
+        assertThat(response.getData().get("secureAccommodationOrderType")).isEqualTo("YES");
+        assertThat(response.getData().get("otherOrderType")).isEqualTo("NO");
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldRemoveSecureAccommodationOrderDataWhenSecureAccommodationOrderIsUnselected() {
+        AboutToStartOrSubmitCallbackResponse response =
+            postAboutToSubmitEvent("fixtures/caseWithSecureAccommodationOrderRemoved.json");
+
+        assertThat(response.getData().get("secureAccommodationOrderType")).isEqualTo("NO");
+        assertThat(((Map<String, Object>) response.getData().get("orders")).get("secureAccommodationOrderSection"))
+            .isEqualTo(null);
     }
 }
