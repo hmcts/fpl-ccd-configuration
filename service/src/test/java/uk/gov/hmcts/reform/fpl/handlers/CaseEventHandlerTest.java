@@ -16,8 +16,10 @@ import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.apache.commons.lang3.RandomUtils.nextLong;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -69,13 +71,13 @@ class CaseEventHandlerTest {
 
         when(caseSubmissionChecker.validateAsGroups(caseData)).thenReturn(eventsErrors);
         when(taskListService.getTasksForOpenCase(caseData)).thenReturn(tasks);
-        when(taskListRenderer.render(tasks, eventsErrors)).thenReturn(renderedTaskLists);
+        when(taskListRenderer.render(tasks, eventsErrors, Optional.empty())).thenReturn(renderedTaskLists);
 
         caseEventHandler.handleCaseDataChange(caseDataChanged);
 
         verify(taskListService).getTasksForOpenCase(caseData);
         verify(caseSubmissionChecker).validateAsGroups(caseData);
-        verify(taskListRenderer).render(tasks, eventsErrors);
+        verify(taskListRenderer).render(tasks, eventsErrors, Optional.empty());
 
         verify(coreCaseDataService).triggerEvent(
             JURISDICTION,
