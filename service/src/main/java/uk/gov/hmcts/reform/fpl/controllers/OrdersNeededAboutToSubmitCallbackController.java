@@ -35,8 +35,8 @@ public class OrdersNeededAboutToSubmitCallbackController extends CallbackControl
         @RequestBody CallbackRequest callbackrequest) {
         final String showEpoFieldId = "EPO_REASONING_SHOW";
         final CaseData caseData = getCaseData(callbackrequest);
-        final String representativeType = Objects.nonNull(caseData.getRepresentativeType()) ?
-            caseData.getRepresentativeType().toString() : "LOCAL_AUTHORITY";
+        final String representativeType = Objects.nonNull(caseData.getRepresentativeType())
+            ? caseData.getRepresentativeType().toString() : "LOCAL_AUTHORITY";
         final String ordersText = Objects.equals(representativeType, "LOCAL_AUTHORITY") ? "orders" : "ordersSolicitor";
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
