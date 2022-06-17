@@ -64,9 +64,9 @@ public class TaskListRenderer {
 
         lines.add("<div class='width-50'>");
         applicationType.ifPresent(s -> {
-                lines.add(NEW_LINE);
-                lines.add(String.format("<div class='govuk-tag govuk-tag--blue'>%s Application</div>", s));
-            });
+            lines.add(NEW_LINE);
+            lines.add(String.format("<div class='govuk-tag govuk-tag--blue'>%s Application</div>", s));
+        });
 
         groupInSections(allTasks).forEach(section -> lines.addAll(renderSection(section)));
 
