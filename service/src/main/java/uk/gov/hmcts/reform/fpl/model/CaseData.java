@@ -185,7 +185,7 @@ public class CaseData {
     @Deprecated
     private final List<@NotNull(message = "Add applicant's details") Element<Applicant>> applicants;
 
-    private List<@NotNull(message = "Add local authority's details") Element<LocalAuthority>> localAuthorities;
+    private List<@NotNull(message = "Add applicant's details") Element<LocalAuthority>> localAuthorities;
 
     @Valid
     @NotEmpty(message = "Add the respondents' details")

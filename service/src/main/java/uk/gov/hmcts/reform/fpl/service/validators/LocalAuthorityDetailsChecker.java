@@ -26,7 +26,7 @@ public class LocalAuthorityDetailsChecker implements EventChecker {
         final List<LocalAuthority> localAuthorities = unwrapElements(caseData.getLocalAuthorities());
 
         if (isEmpty(localAuthorities)) {
-            return List.of("Add local authority's details");
+            return List.of("Add applicant's details");
         }
 
         return validateLocalAuthority(localAuthorities.get(0));
@@ -34,7 +34,7 @@ public class LocalAuthorityDetailsChecker implements EventChecker {
 
     private List<String> validateLocalAuthority(LocalAuthority localAuthority) {
         if (isNull(localAuthority)) {
-            return List.of("Add local authority's details");
+            return List.of("Add applicant's details");
         }
 
         final List<String> errors = new ArrayList<>();
