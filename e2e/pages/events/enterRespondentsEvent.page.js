@@ -8,6 +8,11 @@ module.exports = {
         firstName: `#respondents1_${index}_party_firstName`,
         lastName: `#respondents1_${index}_party_lastName`,
         dateOfBirth: `(//*[contains(@class, "collection-title")])[${index + 1}]/parent::div//*[@id="dateOfBirth"]`,
+        addressKnow: {
+          yes: `#respondents1_${index}_party_addressKnow_Yes`,
+          no: `#respondents1_${index}_party_addressKnow_No`,
+        },
+        addressNotKnowReason: `#respondents1_${index}_party_addressNotKnowReason`,
         address: `#respondents1_${index}_party_address_address`,
         telephone: `input[id="respondents1_${index}_party_telephoneNumber_telephoneNumber"]`,
         gender: `#respondents1_${index}_party_gender`,
@@ -57,9 +62,15 @@ module.exports = {
     if (respondent.gender === 'They identify in another way') {
       I.fillField(this.fields(elementIndex).respondent.genderIdentification, '');
     }
-    await within(this.fields(elementIndex).respondent.address, async () => {
-      await postcodeLookup.enterAddressManually(respondent.address);
-    });
+    if(respondent.addressKnow === 'No'){
+      I.checkOption(this.fields(elementIndex).respondent.addressKnow.no);
+      I.selectOption(this.fields(elementIndex).respondent.gender, respondent.gender);
+    } else if(respondent.address){
+      I.checkOption(this.fields(elementIndex).respondent.addressKnow.yes);
+      await within(this.fields(elementIndex).respondent.address, async () => {
+        await postcodeLookup.enterAddressManually(respondent.address);
+      });
+    }
     I.fillField(this.fields(elementIndex).respondent.telephone, respondent.telephone);
     I.fillField(this.fields(elementIndex).respondent.relationshipToChild, respondent.relationshipToChild);
   },

@@ -8,7 +8,7 @@
     "TabDisplayOrder": 9,
     "CaseFieldID": "courtBundleTabHeading",
     "TabFieldDisplayOrder": 1,
-    "TabShowCondition": "courtBundleList!=\"\""
+    "TabShowCondition": "courtBundleListV2!=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -27,7 +27,7 @@
     "TabID": "CourtBundleTab",
     "TabLabel": "Court bundle",
     "TabDisplayOrder": 9,
-    "CaseFieldID": "courtBundleList",
+    "CaseFieldID": "courtBundleListV2",
     "TabFieldDisplayOrder": 3
   }
 ]
