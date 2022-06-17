@@ -318,6 +318,7 @@ class CaseSubmissionGenerationServiceTest {
                 + "Education supervision order\n"
                 + "Emergency protection order\n"
                 + "Variation or discharge of care or supervision order\n"
+                + "Child Assessment Order\n"
                 + "expected other order";
             assertThat(caseSubmission.getOrdersNeeded()).isEqualTo(expectedOrdersNeeded);
         }
