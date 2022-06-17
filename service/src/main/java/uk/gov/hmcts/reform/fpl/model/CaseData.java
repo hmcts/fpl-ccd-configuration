@@ -173,6 +173,7 @@ public class CaseData {
     @NotNull(message = "Add the orders and directions sought")
     @Valid
     private final Orders orders;
+    private final Orders ordersSolicitor;
     @NotNull(message = "Add the grounds for the application")
     @Valid
     private final Grounds grounds;

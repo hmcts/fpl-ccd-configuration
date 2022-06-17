@@ -69,6 +69,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderListToShow",
+    "Label": " ",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ShowWhichOrderList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "groundsForEPO",
     "Label": "How are there grounds for an emergency protection order?",
     "FieldType": "GroundsForEPO",
@@ -422,6 +432,15 @@
     "ID": "orders",
     "Label": "Orders and directions needed",
     "FieldType": "Orders",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "ordersSolicitor",
+    "Label": "Orders and directions needed",
+    "FieldType": "OrdersSolicitor",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

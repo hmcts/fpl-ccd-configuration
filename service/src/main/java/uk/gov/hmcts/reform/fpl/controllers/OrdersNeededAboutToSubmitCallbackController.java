@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.Court;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @Api
@@ -34,13 +35,16 @@ public class OrdersNeededAboutToSubmitCallbackController extends CallbackControl
         @RequestBody CallbackRequest callbackrequest) {
         final String showEpoFieldId = "EPO_REASONING_SHOW";
         final CaseData caseData = getCaseData(callbackrequest);
+        final String representativeType = Objects.nonNull(caseData.getRepresentativeType()) ?
+            caseData.getRepresentativeType().toString() : "LOCAL_AUTHORITY";
+        final String ordersText = Objects.equals(representativeType, "LOCAL_AUTHORITY") ? "orders" : "ordersSolicitor";
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
 
-        Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get("orders"))
+        Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get(ordersText))
             .map(orders -> (List<String>) orders.get("orderType"));
 
-        String courtID = Optional.ofNullable((Map<String, Object>) data.get("orders"))
+        String courtID = Optional.ofNullable((Map<String, Object>) data.get(ordersText))
             .map(orders -> (String) orders.get("court"))
             .map(Object::toString)
             .orElse(null);
@@ -69,9 +73,15 @@ public class OrdersNeededAboutToSubmitCallbackController extends CallbackControl
 
         Court selectedCourt = getCourtSelection(courtID);
 
-        if (selectedCourt != null) {
+        if (Objects.nonNull(selectedCourt)) {
             data.remove("court");
             data.put("court", selectedCourt);
+        }
+
+        if (Objects.equals(ordersText, "ordersSolicitor")) {
+            data.remove("orders");
+            data.put("orders", data.get("ordersSolicitor"));
+            data.remove("ordersSolicitor");
         }
 
         return respond(caseDetails);
