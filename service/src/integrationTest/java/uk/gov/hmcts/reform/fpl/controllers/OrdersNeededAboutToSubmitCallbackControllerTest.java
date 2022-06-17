@@ -47,4 +47,12 @@ class OrdersNeededAboutToSubmitCallbackControllerTest extends AbstractCallbackTe
 
         assertThat(response.getData().get("court")).isNotNull();
     }
+
+    @Test
+    void shouldSetOrdersSolicitorToNullForSolicitorsAfterOrderSubmitted() {
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent("fixtures/caseRespondentSolicitor.json");
+
+        assertThat(response.getData().get("representativeType")).isEqualTo("RESPONDENT_SOLICITOR");
+        assertThat(response.getData().get("ordersSolicitor")).isNull();
+    }
 }
