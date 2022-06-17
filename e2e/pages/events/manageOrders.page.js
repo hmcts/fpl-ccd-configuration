@@ -31,6 +31,7 @@ const orders = {
     c43a: 'C43A_SPECIAL_GUARDIANSHIP_ORDER',
     c45a: 'C45A_PARENTAL_RESPONSIBILITY_ORDER',
     c47a: 'C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN',
+    c34b: 'C34B_AUTHORITY_TO_REFUSE_CONTACT',
     other: 'OTHER_ORDER',
   },
   title: {
@@ -47,6 +48,7 @@ const orders = {
     c43: 'Child arrangements, Prohibited steps and Specific issue order (C43)',
     c45a: 'Parental responsibility order (C45A)',
     c47a: 'Appointment of a children\'s guardian (C47A)',
+    c34b: 'Authority to refuse contact with a child in care (C34B)',
     other: 'Other',
   },
   otherOrderTitle: '#manageOrdersUploadTypeOtherTitle',
@@ -183,6 +185,9 @@ const section4 = {
   orderByConsent: '#manageOrdersIsByConsent_Yes',
   guardianSelector: {
     selector: index => `#appointedGuardianSelector_option${index}-SELECTED`,
+  },
+  respondentsRefusedSelector: {
+    selector: index => `#respondentsRefusedSelector_option${index}-SELECTED`,
   },
   parentResponsible: '#manageOrdersParentResponsible',
   relationshipToChild: {
@@ -509,6 +514,14 @@ const selectGuardian = async (indexes = []) => {
   await I.runAccessibilityTest();
 };
 
+const selectRespondentsRefused = async (indexes = []) => {
+  indexes.forEach((selectorIndex) => {
+    I.checkOption(section4.respondentsRefusedSelector.selector(selectorIndex));
+  });
+
+  await I.runAccessibilityTest();
+};
+
 const selectSingleChild = async (childName) => {
   I.see('Which child is the order for?');
   I.selectOption('Which child is the order for?', childName);
@@ -579,6 +592,6 @@ module.exports = {
   selectUploadOrder, specifyOtherOrderTitle, uploadManualOrder, selectManualOrderNeedSealing, selectOperationInClosedState, selectOthers,
   selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate, linkApplication, confirmNoApplicationCanBeLinked, selectOrderByConsent, selectGuardian,
   selectC43Orders, enterRecitalsAndPreambles, selectSingleChild, selectReasonForSecureAccommodation, selectWhetherChildIsRepresented, selectJurisdiction,
-  enterNameOfParentResponsible, selectParentResponsible, selectFatherAsResponsible, selectPlacementApplication, fillPlacementOrderSpecificFields,
+  enterNameOfParentResponsible, selectParentResponsible, selectFatherAsResponsible, selectPlacementApplication, fillPlacementOrderSpecificFields, selectRespondentsRefused,
   enterOfficerName, selectIsExparte, selectWhichOrder, enterOrderMadeDate, selectOrderPermissions,
 };

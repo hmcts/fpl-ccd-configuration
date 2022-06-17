@@ -21,6 +21,8 @@ public class OrderDocumentGeneratorHolder {
     private final C23EPODocumentParameterGenerator c23EPODocumentParameterGenerator;
     private final C26SecureAccommodationOrderDocumentParameterGenerator
         c26SecureAccommodationOrderDocumentParameterGenerator;
+    private final C34BAuthorityToRefuseContactOrderParameterGenerator
+        c34BAuthorityToRefuseContactOrderParameterGenerator;
     private final C29RecoveryOfAChildDocumentParameterGenerator c29RecoveryOfAChildDocumentParameterGenerator;
     private final C32CareOrderDocumentParameterGenerator c32CareOrderDocumentParameterGenerator;
     private final C32bDischargeOfCareOrderDocumentParameterGenerator c32bDischargeOfCareOrderDocumentParameterGenerator;
@@ -63,7 +65,8 @@ public class OrderDocumentGeneratorHolder {
                 c43ASpecialGuardianshipOrderDocumentParameterGenerator,
                 c47AParameterGenerator,
                 c45aParentalResponsibilityOrderDocumentParameterGenerator,
-                c36VariationOrExtensionOfSupervisionOrdersParameterGenerator
+                c36VariationOrExtensionOfSupervisionOrdersParameterGenerator,
+                c34BAuthorityToRefuseContactOrderParameterGenerator
             ).stream().collect(Collectors.toMap(DocmosisParameterGenerator::accept, Function.identity()));
         }
         return typeToGenerator;
