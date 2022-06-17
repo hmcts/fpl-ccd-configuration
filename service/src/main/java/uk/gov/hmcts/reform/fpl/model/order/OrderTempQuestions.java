@@ -36,6 +36,8 @@ public class OrderTempQuestions {
     String uploadOrderFile;
     String previewOrder;
     String appointedGuardian;
+    String respondentsRefused;
+    String refuseContactQuestions;
     String orderIsByConsent;
     String whichOthers;
     String orderToAmend;
@@ -44,4 +46,6 @@ public class OrderTempQuestions {
     String orderPlacedChildInCustody;
     String childPlacementApplications;
     String childPlacementQuestions;
+    String manageOrdersEducationSupervision;
+    String manageOrdersVaryOrExtendSupervisionOrder;
 }

@@ -460,6 +460,7 @@ public class CaseData {
     private final Selector careOrderSelector;
     private final Selector newHearingSelector;
     private final Selector appointedGuardianSelector;
+    private final Selector respondentsRefusedSelector;
 
     private final String orderAppliesToAllChildren;
     private final String sendOrderToAllOthers;
