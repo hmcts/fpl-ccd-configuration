@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -10,13 +12,19 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
+import static java.util.Objects.nonNull;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -346,5 +354,87 @@ class OthersServiceTest {
             .gender("Female")
             .detailsHidden("Yes")
             .build()));
+    }
+
+    private DynamicList buildSingleSelector(int selectedIdx) {
+        return buildSingleSelector(selectedIdx, null);
+    }
+
+    private DynamicList buildSingleSelector(int selectedIdx, Others others) {
+
+        List<Element<Other>> allElements = new ArrayList<>();
+        DynamicList.DynamicListBuilder builder = DynamicList.builder();
+
+        if (!nonNull(others)) {
+            others = Others.builder()
+                .firstOther(Other.builder().name("First Other").build())
+                .additionalOthers(List.of(element(Other.builder().name("Additional Other 1").build())))
+                .build();
+        }
+
+        if (!nonNull(others.getFirstOther())) {
+            throw new IllegalStateException("firstOther must not be null");
+        }
+        allElements.add(element(others.getFirstOther()));
+        if (nonNull(others.getAdditionalOthers())) {
+            allElements.addAll(others.getAdditionalOthers());
+        }
+
+        List<DynamicListElement> listItems = allElements.stream().map(
+            (e) -> DynamicListElement.builder()
+                .code(e.getId()).label(e.getValue().getName())
+                .build())
+            .collect(Collectors.toList());
+        builder.listItems(listItems);
+        builder.value(listItems.get(selectedIdx));
+        return builder.build();
+    }
+
+    @Test
+    void shouldReturnNullWhenThereIsNoOtherPerson() {
+        CaseData caseData = CaseData.builder().build();
+        Element<Other> selected = service.getSelectedPreparedOther(caseData, buildSingleSelector(0));
+        assertThat(selected).isNull();
+    }
+
+    @Test
+    void shouldReturnSelectedOtherPersonWithoutAdditionalOthers() {
+        Others others = Others.builder()
+            .firstOther(Other.builder().name("First Other").build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .others(others)
+            .build();
+        Element<Other> selected = service.getSelectedPreparedOther(caseData, buildSingleSelector(0, others));
+        assertThat(selected).isNotNull();
+        assertThat(selected.getValue().getName()).isEqualTo("First Other");
+    }
+
+    private static Stream<Arguments> selectedPreparedOthersSource() {
+        return Stream.of(
+            Arguments.of(0, "First Other"),
+            Arguments.of(1, "Other 2"),
+            Arguments.of(2, "Other 3")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("selectedPreparedOthersSource")
+    void shouldReturnSelectedOtherPerson(int selectedIdx, String expectedName) {
+        Others others = Others.builder()
+            .firstOther(Other.builder().name("First Other").build())
+            .additionalOthers(List.of(
+                element(Other.builder().name("Other 2").build()),
+                element(Other.builder().name("Other 3").build())
+            ))
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .others(others)
+            .build();
+        Element<Other> selected = service.getSelectedPreparedOther(caseData, buildSingleSelector(selectedIdx, others));
+        assertThat(selected).isNotNull();
+        assertThat(selected.getValue().getName()).isEqualTo(expectedName);
     }
 }

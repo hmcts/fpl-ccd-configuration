@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
@@ -124,7 +125,8 @@ public class OthersService {
             .flatMap(otherId -> preparedOthers.getAdditionalOthers().stream()
                 .filter(o -> otherId.equals(o.getId()))
                 .findFirst())
-            .orElseGet(() -> element(firstOtherUUID, preparedOthers.getFirstOther()));
+            .orElseGet(() -> nonNull(preparedOthers.getFirstOther())
+                ? element(firstOtherUUID, preparedOthers.getFirstOther()) : null);
     }
 
     private boolean useAllOthers(String sendOrdersToAllOthers) {
