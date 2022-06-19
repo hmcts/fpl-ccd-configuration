@@ -24,6 +24,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -91,7 +92,8 @@ public class Other implements Representable, ConfidentialParty<Other> {
         return OtherParty.builder()
             .firstName(this.getName())
             .address(this.getAddress())
-            .dateOfBirth(LocalDate.parse(this.getDateOfBirth(), DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+            .dateOfBirth(nonNull(this.getDateOfBirth()) ? LocalDate.parse(this.getDateOfBirth(),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd")) : null)
             .telephoneNumber(Telephone.builder().telephoneNumber(this.telephone).build())
             .build();
     }
