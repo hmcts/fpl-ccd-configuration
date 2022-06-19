@@ -6,10 +6,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -23,14 +27,17 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Map.entry;
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -40,9 +47,27 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.CAFCASS_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.LA_LEGAL_REPRESENTATIVE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_1;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_2;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_3;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_4;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_5;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_6;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_7;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_8;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_9;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_PERSON_1;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_1;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_10;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_2;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_3;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_4;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_5;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_6;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_7;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_8;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_9;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
@@ -578,5 +603,43 @@ class RepresentativesServiceTest {
             .email(String.format("%s@hmcts.net", RandomStringUtils.randomAlphanumeric(5)))
             .build();
         return element(representative);
+    }
+
+    private static Stream<Arguments> resolveRepresentativeRoleSource() {
+        return Stream.of(
+            Arguments.of(OTHER, 1, REPRESENTING_PERSON_1),
+            Arguments.of(OTHER, 2, REPRESENTING_OTHER_PERSON_1),
+            Arguments.of(OTHER, 3, REPRESENTING_OTHER_PERSON_2),
+            Arguments.of(OTHER, 4, REPRESENTING_OTHER_PERSON_3),
+            Arguments.of(OTHER, 5, REPRESENTING_OTHER_PERSON_4),
+            Arguments.of(OTHER, 6, REPRESENTING_OTHER_PERSON_5),
+            Arguments.of(OTHER, 7, REPRESENTING_OTHER_PERSON_6),
+            Arguments.of(OTHER, 8, REPRESENTING_OTHER_PERSON_7),
+            Arguments.of(OTHER, 9, REPRESENTING_OTHER_PERSON_8),
+            Arguments.of(OTHER, 10, REPRESENTING_OTHER_PERSON_9),
+            Arguments.of(OTHER, 11, null),
+            Arguments.of(RESPONDENT, 1, REPRESENTING_RESPONDENT_1),
+            Arguments.of(RESPONDENT, 2, REPRESENTING_RESPONDENT_2),
+            Arguments.of(RESPONDENT, 3, REPRESENTING_RESPONDENT_3),
+            Arguments.of(RESPONDENT, 4, REPRESENTING_RESPONDENT_4),
+            Arguments.of(RESPONDENT, 5, REPRESENTING_RESPONDENT_5),
+            Arguments.of(RESPONDENT, 6, REPRESENTING_RESPONDENT_6),
+            Arguments.of(RESPONDENT, 7, REPRESENTING_RESPONDENT_7),
+            Arguments.of(RESPONDENT, 8, REPRESENTING_RESPONDENT_8),
+            Arguments.of(RESPONDENT, 9, REPRESENTING_RESPONDENT_9),
+            Arguments.of(RESPONDENT, 10, REPRESENTING_RESPONDENT_10),
+            Arguments.of(RESPONDENT, 11, null)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("resolveRepresentativeRoleSource")
+    void shouldResolveRepresentativeRole(Type type, int sequenceNo, RepresentativeRole expectedRole) {
+        if (Objects.nonNull(expectedRole)) {
+            assertThat(representativesService.resolveRepresentativeRole(type, sequenceNo)).isEqualTo(expectedRole);
+        } else {
+            assertThatThrownBy(() -> representativesService.resolveRepresentativeRole(type, sequenceNo))
+                .isInstanceOf(IllegalStateException.class);
+        }
     }
 }
