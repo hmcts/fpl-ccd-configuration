@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.OtherToRespondentEventData;
@@ -178,31 +177,8 @@ public class RespondentController extends CallbackController {
         OtherToRespondentEventData eventData = caseData.getOtherToRespondentEventData();
         Other selectedPreparedOther = othersService.getSelectedPreparedOther(caseData, eventData.getOthersList())
             .getValue();
-
-        RespondentParty respondentParty = RespondentParty.builder()
-            .address(selectedPreparedOther.getAddress())
-            .addressKnow(selectedPreparedOther.getAddressKnow())
-            .addressNotKnowReason(selectedPreparedOther.getAddressNotKnowReason())
-            .contactDetailsHidden(selectedPreparedOther.getDetailsHidden())
-            .contactDetailsHiddenReason(selectedPreparedOther.getDetailsHiddenReason())
-            .dateOfBirth(selectedPreparedOther.toParty().getDateOfBirth())
-            .email(selectedPreparedOther.toParty().getEmail())
-            .firstName(selectedPreparedOther.getName()) // other does not have first name, use other.getName() instead
-            .gender(selectedPreparedOther.getGender())
-            .genderIdentification(selectedPreparedOther.getGenderIdentification())
-            //.lastName() // other does not have last name
-            .litigationIssuesDetails(selectedPreparedOther.getLitigationIssuesDetails())
-            .litigationIssues(selectedPreparedOther.getLitigationIssues())
-            .organisationName(selectedPreparedOther.toParty().getOrganisationName())
-            .partyType(selectedPreparedOther.toParty().getPartyType())
-            .relationshipToChild(selectedPreparedOther.getChildInformation())
-            .telephoneNumber(selectedPreparedOther.toParty().getTelephoneNumber())
-            .build();
-
-        Respondent transformedRespondent = Respondent.builder()
-            .representedBy(selectedPreparedOther.getRepresentedBy())
-            .party(respondentParty).build();
-        caseDetails.getData().put(TRANSFORMED_RESPONDENT, transformedRespondent);
+        caseDetails.getData().put(TRANSFORMED_RESPONDENT,
+            respondentService.transformOtherToRespondent(selectedPreparedOther));
 
         return respond(caseDetails);
     }
