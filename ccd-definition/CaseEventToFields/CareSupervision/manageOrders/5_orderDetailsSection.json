@@ -747,7 +747,7 @@
     "CaseEventID": "manageOrders",
     "CaseFieldID": "manageOrdersAssessingBody",
     "PageFieldDisplayOrder": 45,
-    "DisplayContext": "OPTIONAL",
+    "DisplayContext": "MANDATORY",
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,

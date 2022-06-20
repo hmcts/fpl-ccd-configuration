@@ -93,7 +93,18 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersOrderCreatedDate",
             "manageOrdersChildAssessmentType",
             "manageOrdersAssessmentStartDate",
-            "manageOrdersDurationOfAssessment"
+            "manageOrdersDurationOfAssessment",
+            "manageOrdersPlaceOfAssessment",
+            "manageOrdersAssessingBody",
+            "manageOrdersChildKeepAwayFromHome",
+            "manageOrdersFullAddressToStayIfKeepAwayFromHome",
+            "manageOrdersStartDateOfStayIfKeepAwayFromHome",
+            "manageOrdersEndDateOfStayIfKeepAwayFromHome",
+            "manageOrdersChildFirstContactIfKeepAwayFromHome",
+            "manageOrdersChildSecondContactIfKeepAwayFromHome",
+            "manageOrdersChildThirdContactIfKeepAwayFromHome",
+            "manageOrdersIsCostOrderExist",
+            "manageOrdersCostOrderDetails"
         );
     }
 }

@@ -541,7 +541,7 @@ class OrderShowHideQuestionsCalculatorTest {
         childAssessmentOrder.put("epoExpiryDate", "NO");
         childAssessmentOrder.put("epoTypeAndPreventRemoval", "NO");
         childAssessmentOrder.put("cafcassJurisdictions", "NO");
-        childAssessmentOrder.put("selectSingleChild", "NO");
+        childAssessmentOrder.put("selectSingleChild", "YES");
         childAssessmentOrder.put("reasonForSecureAccommodation", "NO");
         childAssessmentOrder.put("childLegalRepresentation", "NO");
         childAssessmentOrder.put("orderJurisdiction", "NO");
@@ -552,7 +552,7 @@ class OrderShowHideQuestionsCalculatorTest {
         childAssessmentOrder.put("whichOthers", "YES");
         childAssessmentOrder.put("dischargeOfCareDetails", "NO");
         childAssessmentOrder.put("closeCase", "YES");
-        childAssessmentOrder.put("whichChildren", "YES");
+        childAssessmentOrder.put("whichChildren", "NO");
         childAssessmentOrder.put("orderIsByConsent", "YES");
         childAssessmentOrder.put("furtherDirections", "NO");
         childAssessmentOrder.put("isFinalOrder", "NO");
