@@ -3958,5 +3958,49 @@
       "PostTown": "York",
       "PostCode": "YO1 9WD"
     }
+  },
+  {
+    "hearingVenueId": 432,
+    "venue": "Medway Civil and Family Court",
+    "address": {
+      "AddressLine1": "Medway Civil and Family Court, Gun Wharf",
+      "AddressLine2": "Dock Road",
+      "PostTown": "Chatham",
+      "County": "Kent",
+      "PostCode": "ME4 4TR"
+    }
+  },
+  {
+    "hearingVenueId": 433,
+    "venue": "Medway Family & Civil Court 1 - Holiday Inn",
+    "address": {
+      "AddressLine1": "Medway Family & Civil Court 1 - Holiday Inn, The Holiday Inn",
+      "AddressLine2": "Maidstone Road",
+      "PostTown": "Rochester",
+      "County": "Kent",
+      "PostCode": "ME5 9SF"
+    }
+  },
+  {
+    "hearingVenueId": 434,
+    "venue": "Medway Family & Civil Court 2 - Orida",
+    "address": {
+      "AddressLine1": "Medway Family & Civil Court 2 - Orida",
+      "AddressLine2": "Bearsted Road",
+      "PostTown": "Maidstone",
+      "County": "Kent",
+      "PostCode": "ME14 5AA"
+    }
+  },
+  {
+    "hearingVenueId": 435,
+    "venue": "Medway Family & Civil Court 3 - The Brook",
+    "address": {
+      "AddressLine1": "Medway Family & Civil Court 3 - The Brook",
+      "AddressLine2": "The Court House",
+      "PostTown": "Chatham",
+      "County": "Kent",
+      "PostCode": "ME4 4JZ"
+    }
   }
 ]
