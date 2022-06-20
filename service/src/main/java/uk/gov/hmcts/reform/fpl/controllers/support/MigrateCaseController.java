@@ -160,22 +160,6 @@ public class MigrateCaseController extends CallbackController {
         }
     }
 
-    private void run500(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-        var caseId = caseData.getId();
-        List<UUID> docIds = List.of(UUID.fromString("ad5c738e-d7aa-4ccf-b53b-0b1e40a19182"),
-                UUID.fromString("61f97374-360b-4759-9329-af10fae1317e"));
-
-        if (caseId != 1643728359576136L) {
-            throw new AssertionError(format(
-                    "Migration {id = DFPL-500, case reference = %s}, expected case id 1643728359576136",
-                    caseId
-            ));
-        }
-
-        updateDocumentsSentToParties(caseDetails, caseData, docIds);
-    }
-
     private void run482(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();
