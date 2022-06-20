@@ -44,7 +44,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-500", this::run500,
         "DFPL-451", this::run451,
         "DFPL-482", this::run482,
         "DFPL-373", this::run373,
