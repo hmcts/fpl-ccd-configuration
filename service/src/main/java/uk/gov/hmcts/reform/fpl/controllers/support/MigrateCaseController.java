@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,8 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
+    private final DocumentListService documentListService;
+
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-451", this::run451,
         "DFPL-482", this::run482,
@@ -304,5 +307,6 @@ public class MigrateCaseController extends CallbackController {
             .collect(toList());
 
         caseDetails.getData().put("respondentStatements", respondentStatements);
+        caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
     }
 }
