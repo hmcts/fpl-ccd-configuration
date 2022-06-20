@@ -153,10 +153,6 @@ public class DraftOrderService {
                 hearing.getValue(),
                 time.now().toLocalDate(),
                 eventData.isCmoAgreed() ? AGREED_CMO : DRAFT_CMO,
-                // DFPL-552 the uploading option is removed, but user can still access exiting Case Summary
-                // DFPL-526 Future case summaries are collected and put in the new 'Hearing Document' tab .
-                // Confirmed by services:
-                // no data migration is required as exiting docs are out of date as soon as the hearing is completed
                 null,
                 eventData.getCmoToSendTranslationRequirements()
             ));
