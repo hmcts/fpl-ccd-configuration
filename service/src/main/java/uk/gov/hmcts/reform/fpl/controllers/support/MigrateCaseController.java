@@ -12,12 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.CourtBundle;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
-import uk.gov.hmcts.reform.fpl.model.SentDocument;
-import uk.gov.hmcts.reform.fpl.model.SentDocuments;
+import uk.gov.hmcts.reform.fpl.model.*;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 
@@ -47,8 +42,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-451", this::run451,
         "DFPL-482", this::run482,
         "DFPL-373", this::run373,
-        "DFPL-82", this::run82,
-        "DFPL-82-rollback", this::run82Rollback,
+        "DFPL-701", this::run701,
         "DFPL-622", this::run622,
         "DFPL-666", this::run666,
         "DFPL-694", this::run694,
@@ -356,5 +350,27 @@ public class MigrateCaseController extends CallbackController {
                 migrationId, caseId
             ));
         }
+    }
+
+    private void run701(CaseDetails caseDetails){
+        CaseData caseData = getCaseData(caseDetails);
+        var caseId = caseData.getId();
+        //var expectedCaseId = 1652954493114372L;
+        var expectedCaseId = 1649066340329198L;
+        var respondentStatementIdToRemove = "62e64784-04c2-4279-b689-0a8aa62f2b52";
+
+        if (caseId != expectedCaseId) {
+            throw new AssertionError(format(
+                "Migration {id = DFPL-701, case reference = %s}, expected case id %d",
+                caseId, expectedCaseId
+            ));
+        }
+
+        List<Element<RespondentStatement>> respondentStatements = caseData.getRespondentStatements().stream()
+            .filter(respondentStatement ->
+                !respondentStatement.getId().toString().equals(respondentStatementIdToRemove))
+            .collect(toList());
+
+        caseDetails.getData().put("respondentStatements", respondentStatements);
     }
 }

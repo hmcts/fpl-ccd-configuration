@@ -16,12 +16,7 @@ import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.CourtBundle;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
-import uk.gov.hmcts.reform.fpl.model.SentDocument;
-import uk.gov.hmcts.reform.fpl.model.SentDocuments;
+import uk.gov.hmcts.reform.fpl.model.*;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.group.C110A;
@@ -713,6 +708,65 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .isInstanceOf(AssertionError.class)
                 .hasMessage("Migration {id = DFPL-666, case reference = 1642779142991513},"
                             + " more than one hearing booking 68cb7808-c12f-4936-8737-b55c424bdeb6 found");
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl701 {
+        private final String migrationId = "DFPL-701";
+        private final long validCaseId = 1652954493114372L;
+        private final long invalidCaseId = 1626258358022000L;
+
+        @Test
+        void shouldPerformMigrationWhenNameMatches() {
+            UUID uuidToBeDeleted = UUID.fromString("62e64784-04c2-4279-b689-0a8aa62f2b52");
+
+            List<Element<Respondent>> respondents = List.of(element(Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Respondent")
+                    .lastName("One")
+                    .build())
+                .build()));
+
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .state(State.SUBMITTED)
+                .respondents1(respondents)
+                .respondentStatements(List.of(element(uuidToBeDeleted, RespondentStatement.builder()
+                    .respondentId(respondents.get(0).getId())
+                    .supportingEvidenceBundle(List.of(element(SupportingEvidenceBundle.builder()
+                        .document(null)
+                        .build())))
+                    .build())))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+
+            List<Element<RespondentStatement>> postMigrateRespondentStatements = responseData.getRespondentStatements();
+
+            List<UUID> respondentStatementUUIDs = postMigrateRespondentStatements.stream()
+                .map(statement -> statement.getValue().getRespondentId())
+                .collect(toList());
+
+            assertThat(respondentStatementUUIDs).doesNotContain(uuidToBeDeleted);
+        }
+
+        @Test
+        void shouldThrowAssertionErrorWhenCaseIdIsInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(invalidCaseId)
+                .state(State.SUBMITTED)
+                .build();
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-701, case reference = 1626258358022000},"
+                    + " expected case id 1652954493114372");
         }
     }
 
