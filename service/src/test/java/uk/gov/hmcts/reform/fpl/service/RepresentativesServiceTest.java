@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
@@ -641,5 +643,104 @@ class RepresentativesServiceTest {
             assertThatThrownBy(() -> representativesService.resolveRepresentativeRole(type, sequenceNo))
                 .isInstanceOf(IllegalStateException.class);
         }
+    }
+
+    private static Stream<Arguments> updateRepresentativeRoleForOtherChangeToFirstOtherSource() {
+        return Stream.of(
+            Arguments.of(1, REPRESENTING_PERSON_1),
+            Arguments.of(2, REPRESENTING_OTHER_PERSON_1),
+            Arguments.of(3, REPRESENTING_OTHER_PERSON_2),
+            Arguments.of(4, REPRESENTING_OTHER_PERSON_3),
+            Arguments.of(5, REPRESENTING_OTHER_PERSON_4),
+            Arguments.of(6, REPRESENTING_OTHER_PERSON_5),
+            Arguments.of(7, REPRESENTING_OTHER_PERSON_6),
+            Arguments.of(8, REPRESENTING_OTHER_PERSON_7),
+            Arguments.of(9, REPRESENTING_OTHER_PERSON_8),
+            Arguments.of(10, REPRESENTING_OTHER_PERSON_9)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("updateRepresentativeRoleForOtherChangeToFirstOtherSource")
+    void shouldUpdateRepresentativeRoleForOtherChangeToFirstOther(int targetOtherPos, RepresentativeRole expected) {
+        UUID representativeId = UUID.randomUUID();
+        final CaseData caseData = CaseData.builder()
+            .representatives(List.of(
+                element(representativeId, Representative.builder()
+                    .fullName("Rep1")
+                    .build())
+            ))
+            .build();
+
+        Other targetOther = Other.builder().name("TARGET OTHER").build();
+        targetOther.addRepresentative(UUID.randomUUID(), representativeId);
+
+        Others.OthersBuilder builder = Others.builder();
+        if (targetOtherPos == 1) {
+            builder.firstOther(targetOther);
+        } else {
+            builder.firstOther(Other.builder().name("ANY OTHER").build());
+        }
+
+        List<Element<Other>> additionalOthers = new ArrayList<>();
+        for (int i = 0; i < 9; i++) {
+            if (targetOtherPos == (i + 2)) {
+                additionalOthers.add(element(targetOther));
+            } else {
+                additionalOthers.add(element(Other.builder().name("ANY OTHER").build()));
+            }
+        }
+        builder.additionalOthers(additionalOthers);
+
+        Others others = builder.build();
+        representativesService.updateRepresentativeRoleForOthers(caseData, others);
+        assertThat(unwrapElements(caseData.getRepresentatives())
+            .stream().map(Representative::getRole).collect(Collectors.toSet()))
+            .isEqualTo(Set.of(expected));
+    }
+
+    private static Stream<Arguments> shouldUpdateRepresentativeRoleSource() {
+        return Stream.of(
+            Arguments.of(1, RESPONDENT, REPRESENTING_RESPONDENT_1),
+            Arguments.of(2, RESPONDENT, REPRESENTING_RESPONDENT_2),
+            Arguments.of(3, RESPONDENT, REPRESENTING_RESPONDENT_3),
+            Arguments.of(4, RESPONDENT, REPRESENTING_RESPONDENT_4),
+            Arguments.of(5, RESPONDENT, REPRESENTING_RESPONDENT_5),
+            Arguments.of(6, RESPONDENT, REPRESENTING_RESPONDENT_6),
+            Arguments.of(7, RESPONDENT, REPRESENTING_RESPONDENT_7),
+            Arguments.of(8, RESPONDENT, REPRESENTING_RESPONDENT_8),
+            Arguments.of(9, RESPONDENT, REPRESENTING_RESPONDENT_9),
+            Arguments.of(10, RESPONDENT, REPRESENTING_RESPONDENT_10),
+
+            Arguments.of(1, OTHER, REPRESENTING_PERSON_1),
+            Arguments.of(2, OTHER, REPRESENTING_OTHER_PERSON_1),
+            Arguments.of(3, OTHER, REPRESENTING_OTHER_PERSON_2),
+            Arguments.of(4, OTHER, REPRESENTING_OTHER_PERSON_3),
+            Arguments.of(5, OTHER, REPRESENTING_OTHER_PERSON_4),
+            Arguments.of(6, OTHER, REPRESENTING_OTHER_PERSON_5),
+            Arguments.of(7, OTHER, REPRESENTING_OTHER_PERSON_6),
+            Arguments.of(8, OTHER, REPRESENTING_OTHER_PERSON_7),
+            Arguments.of(9, OTHER, REPRESENTING_OTHER_PERSON_8),
+            Arguments.of(10, OTHER, REPRESENTING_OTHER_PERSON_9)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("shouldUpdateRepresentativeRoleSource")
+    void shouldUpdateRepresentativeRole(int sequenceNo, RepresentativeRole.Type type, RepresentativeRole expected) {
+        UUID representativeId = UUID.randomUUID();
+        CaseData caseData = CaseData.builder()
+            .representatives(List.of(
+                element(representativeId, Representative.builder()
+                    .fullName("Rep1")
+                    .build())
+            ))
+            .build();
+
+        List<Element<UUID>> representedBy = List.of(element(representativeId));
+        representativesService.updateRepresentativeRole(caseData, representedBy, type, sequenceNo);
+        assertThat(unwrapElements(caseData.getRepresentatives())
+            .stream().map(Representative::getRole).collect(Collectors.toSet()))
+            .isEqualTo(Set.of(expected));
     }
 }

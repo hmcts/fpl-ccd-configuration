@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.RespondentsUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -33,12 +32,11 @@ import uk.gov.hmcts.reform.fpl.service.respondent.RespondentValidator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.UUID.randomUUID;
-import static java.util.stream.Collectors.toSet;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type;
@@ -48,9 +46,6 @@ import static uk.gov.hmcts.reform.fpl.model.Respondent.expandCollection;
 import static uk.gov.hmcts.reform.fpl.model.common.Element.newElement;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Slf4j
 @Api
@@ -237,33 +232,10 @@ public class RespondentController extends CallbackController {
         caseDetails.getData().put(RESPONDENTS_KEY, caseData.getAllRespondents()); // sync caseDetails as well
         prepareNewRespondents(caseDetails, caseData, caseDataBefore);
         // Setting "representatives" to caseDetails
-        {
-            RepresentativeRole targetRole = representativeService
-                .resolveRepresentativeRole(Type.RESPONDENT, caseData.getRespondents1().size());
-            unwrapElements(selectedPreparedOther.getValue().getRepresentedBy()).forEach(representativeId -> {
-                findElement(representativeId, caseData.getRepresentatives())
-                    .ifPresent(ele -> ele.setValue(ele.getValue().toBuilder().role(targetRole).build()));
-            });
-        }
-        if (!isNull(newOthers) && !isNull(newOthers.getFirstOther())) {
-            int sequenceNo = 1;
-            {
-                RepresentativeRole targetRole = representativeService.resolveRepresentativeRole(Type.OTHER, sequenceNo);
-                unwrapElements(newOthers.getFirstOther().getRepresentedBy()).forEach(representativeId -> {
-                    findElement(representativeId, caseData.getRepresentatives())
-                        .ifPresent(ele -> ele.setValue(ele.getValue().toBuilder()
-                            .role(targetRole).build()));
-                });
-            }
-            for (Element<Other> otherElement : nullSafeList(newOthers.getAdditionalOthers())) {
-                sequenceNo++;
-                RepresentativeRole targetRole = representativeService.resolveRepresentativeRole(Type.OTHER, sequenceNo);
-                unwrapElements(otherElement.getValue().getRepresentedBy()).forEach(representativeId -> {
-                    findElement(representativeId, caseData.getRepresentatives())
-                        .ifPresent(ele -> ele.setValue(ele.getValue().toBuilder()
-                            .role(targetRole).build()));
-                });
-            }
+        representativeService.updateRepresentativeRole(caseData, selectedPreparedOther.getValue().getRepresentedBy(),
+            Type.RESPONDENT, caseData.getRespondents1().size());
+        if (nonNull(newOthers) && nonNull(newOthers.getFirstOther())) {
+            representativeService.updateRepresentativeRoleForOthers(caseData, newOthers);
         }
         caseDetails.getData().put(REPRESENTATIVES_KEY, caseData.getRepresentatives());
 
