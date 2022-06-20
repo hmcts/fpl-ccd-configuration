@@ -257,53 +257,50 @@ public class RepresentativeService {
     }
 
     public RepresentativeRole resolveRepresentativeRole(RepresentativeRole.Type type, int sequenceNo) {
-        switch (type) {
-            case OTHER:
-                switch (sequenceNo) {
-                    case 1:
-                        return REPRESENTING_PERSON_1;
-                    case 2:
-                        return REPRESENTING_OTHER_PERSON_1;
-                    case 3:
-                        return REPRESENTING_OTHER_PERSON_2;
-                    case 4:
-                        return REPRESENTING_OTHER_PERSON_3;
-                    case 5:
-                        return REPRESENTING_OTHER_PERSON_4;
-                    case 6:
-                        return REPRESENTING_OTHER_PERSON_5;
-                    case 7:
-                        return REPRESENTING_OTHER_PERSON_6;
-                    case 8:
-                        return REPRESENTING_OTHER_PERSON_7;
-                    case 9:
-                        return REPRESENTING_OTHER_PERSON_8;
-                    case 10:
-                        return REPRESENTING_OTHER_PERSON_9;
-                }
-            case RESPONDENT:
-                switch (sequenceNo) {
-                    case 1:
-                        return REPRESENTING_RESPONDENT_1;
-                    case 2:
-                        return REPRESENTING_RESPONDENT_2;
-                    case 3:
-                        return REPRESENTING_RESPONDENT_3;
-                    case 4:
-                        return REPRESENTING_RESPONDENT_4;
-                    case 5:
-                        return REPRESENTING_RESPONDENT_5;
-                    case 6:
-                        return REPRESENTING_RESPONDENT_6;
-                    case 7:
-                        return REPRESENTING_RESPONDENT_7;
-                    case 8:
-                        return REPRESENTING_RESPONDENT_8;
-                    case 9:
-                        return REPRESENTING_RESPONDENT_9;
-                    case 10:
-                        return REPRESENTING_RESPONDENT_10;
-                }
+        if (type == OTHER) {
+            if (sequenceNo == 1) {
+                return REPRESENTING_PERSON_1;
+            } else if (sequenceNo == 2) {
+                return REPRESENTING_OTHER_PERSON_1;
+            } else if (sequenceNo == 3) {
+                return REPRESENTING_OTHER_PERSON_2;
+            } else if (sequenceNo == 4) {
+                return REPRESENTING_OTHER_PERSON_3;
+            } else if (sequenceNo == 5) {
+                return REPRESENTING_OTHER_PERSON_4;
+            } else if (sequenceNo == 6) {
+                return REPRESENTING_OTHER_PERSON_5;
+            } else if (sequenceNo == 7) {
+                return REPRESENTING_OTHER_PERSON_6;
+            } else if (sequenceNo == 8) {
+                return REPRESENTING_OTHER_PERSON_7;
+            } else if (sequenceNo == 9) {
+                return REPRESENTING_OTHER_PERSON_8;
+            } else if (sequenceNo == 10) {
+                return REPRESENTING_OTHER_PERSON_9;
+            }
+        } else if (type == RESPONDENT) {
+            if (sequenceNo == 1) {
+                return REPRESENTING_RESPONDENT_1;
+            } else if (sequenceNo == 2) {
+                return REPRESENTING_RESPONDENT_2;
+            } else if (sequenceNo == 3) {
+                return REPRESENTING_RESPONDENT_3;
+            } else if (sequenceNo == 4) {
+                return REPRESENTING_RESPONDENT_4;
+            } else if (sequenceNo == 5) {
+                return REPRESENTING_RESPONDENT_5;
+            } else if (sequenceNo == 6) {
+                return REPRESENTING_RESPONDENT_6;
+            } else if (sequenceNo == 7) {
+                return REPRESENTING_RESPONDENT_7;
+            } else if (sequenceNo == 8) {
+                return REPRESENTING_RESPONDENT_8;
+            } else if (sequenceNo == 9) {
+                return REPRESENTING_RESPONDENT_9;
+            } else if (sequenceNo == 10) {
+                return REPRESENTING_RESPONDENT_10;
+            }
         }
         throw new IllegalStateException(
             String.format("Unable to resolve RepresentativeRole: {0} [{1}]", type.name(), sequenceNo));
