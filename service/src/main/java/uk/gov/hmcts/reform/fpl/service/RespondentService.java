@@ -247,6 +247,7 @@ public class RespondentService {
             .litigationIssues(other.getLitigationIssues())
             .organisationName(other.toParty().getOrganisationName())
             .partyType(other.toParty().getPartyType())
+            .placeOfBirth(other.getBirthPlace())
             .relationshipToChild(other.getChildInformation())
             .telephoneNumber(other.toParty().getTelephoneNumber())
             .build();
