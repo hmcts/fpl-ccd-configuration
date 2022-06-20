@@ -207,26 +207,16 @@ public class RespondentController extends CallbackController {
 
         OtherToRespondentEventData eventData = caseData.getOtherToRespondentEventData();
 
-        // build new allOthers collection
         UUID firstOtherUUID = randomUUID();
         Element<Other> selectedPreparedOther = othersService.getSelectedPreparedOther(caseData,
             eventData.getOthersList(), firstOtherUUID);
-        List<Element<Other>> newAllOthers  = new ArrayList<>(caseData.getAllOthers());
-        if (selectedPreparedOther.getId().equals(firstOtherUUID)) {
-            if (!newAllOthers.removeIf(ele ->
-                !(caseData.getOthers().getAdditionalOthers().stream().map(Element::getId)).collect(toSet())
-                    .contains(ele.getId()))) {
-                throw new IllegalStateException("Unable to remove firstOther from newAllOthers list");
-            }
+        boolean isFirstOtherSelected = selectedPreparedOther.getId().equals(firstOtherUUID);
+        List<Element<Other>> newAllOthers;
+        if (isFirstOtherSelected) {
+            newAllOthers = respondentService.buildNewAllOthersWhenFirstOtherSelected(caseData);
         } else {
-            Optional<Element<Other>> otherToBeRemoved = findElement(selectedPreparedOther.getId(), newAllOthers);
-            if (otherToBeRemoved.isPresent()) {
-                if (!newAllOthers.removeIf(ele -> ele.getId().equals(otherToBeRemoved.get().getId()))) {
-                    throw new IllegalStateException("Unable to remove other from additionalOthers");
-                }
-            } else {
-                throw new IllegalStateException("Unable to remove other from additionalOthers");
-            }
+            newAllOthers = respondentService.buildNewAllOthersWhenAdditionalOtherSelected(caseData,
+                selectedPreparedOther);
         }
 
         // Setting "confidentialOthers" to caseDetails

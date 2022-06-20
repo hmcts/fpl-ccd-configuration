@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -253,6 +254,30 @@ public class RespondentService {
         return Respondent.builder()
             .representedBy(other.getRepresentedBy())
             .party(respondentParty).build();
+    }
+
+    public List<Element<Other>> buildNewAllOthersWhenAdditionalOtherSelected(
+        CaseData caseData, Element<Other> selectedOther){
+        List<Element<Other>> newAllOthers = new ArrayList<>(caseData.getAllOthers());
+        Optional<Element<Other>> otherToBeRemoved = findElement(selectedOther.getId(), newAllOthers);
+        if (otherToBeRemoved.isPresent()) {
+            if (!newAllOthers.removeIf(ele -> ele.getId().equals(otherToBeRemoved.get().getId()))) {
+                throw new IllegalStateException("Unable to remove other from additionalOthers");
+            }
+        } else {
+            throw new IllegalStateException("Unable to remove other from additionalOthers");
+        }
+        return newAllOthers;
+    }
+
+    public List<Element<Other>> buildNewAllOthersWhenFirstOtherSelected(CaseData caseData) {
+        List<Element<Other>> newAllOthers = new ArrayList<>(caseData.getAllOthers());
+        if (!newAllOthers.removeIf(ele ->
+            !(caseData.getOthers().getAdditionalOthers().stream().map(Element::getId)).collect(toSet())
+                .contains(ele.getId()))) {
+            throw new IllegalStateException("Unable to remove firstOther from newAllOthers list");
+        }
+        return newAllOthers;
     }
 
 }
