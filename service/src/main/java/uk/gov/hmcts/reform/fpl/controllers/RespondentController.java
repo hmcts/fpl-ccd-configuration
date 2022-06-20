@@ -231,6 +231,7 @@ public class RespondentController extends CallbackController {
         caseData.getAllRespondents().add(element(selectedPreparedOther.getId(), transformedRespondent));
         caseDetails.getData().put(RESPONDENTS_KEY, caseData.getAllRespondents()); // sync caseDetails as well
         prepareNewRespondents(caseDetails, caseData, caseDataBefore);
+
         // Setting "representatives" to caseDetails
         representativeService.updateRepresentativeRole(caseData, selectedPreparedOther.getValue().getRepresentedBy(),
             Type.RESPONDENT, caseData.getRespondents1().size());

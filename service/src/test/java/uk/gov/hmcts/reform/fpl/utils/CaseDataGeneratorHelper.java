@@ -216,24 +216,28 @@ public class CaseDataGeneratorHelper {
     }
 
     public static Others createOthers() {
+        return createOthers(randomUUID());
+    }
+
+    public static Others createOthers(UUID otherPerson1Uuid) {
         return Others.builder()
             .firstOther(Other.builder()
                 .birthPlace("Newry")
                 .childInformation("Child suffers from ADD")
-                .dateOfBirth("02/02/05")
+                .dateOfBirth("2005-06-04")
                 .gender("Male")
                 .name("Kyle Stafford")
                 .telephone(TELEPHONE)
                 .address(address())
                 .build())
-            .additionalOthers(ElementUtils.wrapElements(Other.builder()
+            .additionalOthers(List.of(element(otherPerson1Uuid, Other.builder()
                 .birthPlace("Craigavon")
-                .dateOfBirth("02/02/05")
+                .dateOfBirth("2002-02-05")
                 .gender("Female")
                 .name("Sarah Simpson")
                 .telephone(TELEPHONE)
                 .address(address())
-                .build()))
+                .build())))
             .build();
     }
 
