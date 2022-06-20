@@ -258,7 +258,7 @@ public class RespondentService {
     }
 
     public List<Element<Other>> buildNewAllOthersWhenAdditionalOtherSelected(
-        CaseData caseData, Element<Other> selectedOther){
+        CaseData caseData, Element<Other> selectedOther) {
         List<Element<Other>> newAllOthers = new ArrayList<>(caseData.getAllOthers());
         Optional<Element<Other>> otherToBeRemoved = findElement(selectedOther.getId(), newAllOthers);
         if (otherToBeRemoved.isPresent()) {
