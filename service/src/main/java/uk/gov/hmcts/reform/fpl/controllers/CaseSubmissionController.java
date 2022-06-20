@@ -57,6 +57,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFie
 public class CaseSubmissionController extends CallbackController {
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
     private static final String CONSENT_TEMPLATE = "I, %s, believe that the facts stated in this application are true.";
+    public static final String DRAFT_APPLICATION_DOCUMENT = "draftApplicationDocument";
     private final CaseSubmissionService caseSubmissionService;
     private final FeeService feeService;
     private final FeatureToggleService featureToggleService;
@@ -79,7 +80,7 @@ public class CaseSubmissionController extends CallbackController {
         if (caseData.isC1Application()) {
             // C1
             Document document = caseSubmissionService.generateC1SubmittedFormPDF(caseData, true);
-            data.put("draftApplicationDocument", buildFromDocument(document));
+            data.put(DRAFT_APPLICATION_DOCUMENT, buildFromDocument(document));
 
             Document supplement = caseSubmissionService.generateSupplementPDF(caseData, true,
                 DocmosisTemplates.C16_SUPPLEMENT);
@@ -87,7 +88,7 @@ public class CaseSubmissionController extends CallbackController {
         } else {
             // C110a
             Document document = caseSubmissionService.generateC110aSubmittedFormPDF(caseData, true);
-            data.put("draftApplicationDocument", buildFromDocument(document));
+            data.put(DRAFT_APPLICATION_DOCUMENT, buildFromDocument(document));
         }
 
         if (isInOpenState(caseDetails)) {
@@ -150,7 +151,7 @@ public class CaseSubmissionController extends CallbackController {
             data.putAll(nocFieldPopulator.generate(caseData, CHILD, BLANK));
         }
 
-        removeTemporaryFields(caseDetails, "draftApplicationDocument", "submissionConsentLabel");
+        removeTemporaryFields(caseDetails, DRAFT_APPLICATION_DOCUMENT, "submissionConsentLabel");
 
         return respond(caseDetails, errors);
     }

@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
+import uk.gov.hmcts.reform.fpl.model.GroundsForChildAssessmentOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Orders;
@@ -39,6 +40,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisAnnexDocuments;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC16Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisFactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearing;
@@ -80,6 +82,7 @@ import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissio
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
@@ -392,6 +395,133 @@ class CaseSubmissionGenerationServiceTest {
                 + "Authorisation to search for another child on the premises\n"
                 + "Other order under section 48 of the Children Act 1989";
             assertThat(caseSubmission.getOrdersNeeded()).isEqualTo(expectedOrdersNeeded);
+        }
+    }
+
+    @Nested
+    class DocmosisCaseSubmissionChildrenNamesTest {
+
+        @Test
+        void shouldPopulateOneChildsNames() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .children1(of(
+                    element(Child.builder()
+                        .party(ChildParty.builder().firstName("David").lastName("Test").build())
+                        .build())
+                ))
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.CHILD_ASSESSMENT_ORDER))
+                    .childAssessmentOrderAssessmentDirections("assessment")
+                    .childAssessmentOrderContactDirections("contact")
+                    .build())
+                .groundsForChildAssessmentOrder(GroundsForChildAssessmentOrder.builder()
+                    .thresholdDetails("details")
+                    .build())
+                .build();
+
+            DocmosisC16Supplement supplement = underTest.getC16SupplementData(updatedCaseData, false);
+            assertThat(supplement.getChildrensNames()).isEqualTo("David Test");
+        }
+
+        @Test
+        void shouldPopulateMultipleChildrensNames() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .children1(of(
+                    element(Child.builder()
+                        .party(ChildParty.builder().firstName("David").lastName("Test").build())
+                        .build()),
+                    element(Child.builder()
+                        .party(ChildParty.builder().firstName("Davina").lastName("Test").build())
+                        .build())
+                ))
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.CHILD_ASSESSMENT_ORDER))
+                    .childAssessmentOrderAssessmentDirections("assessment")
+                    .childAssessmentOrderContactDirections("contact")
+                    .build())
+                .groundsForChildAssessmentOrder(GroundsForChildAssessmentOrder.builder()
+                    .thresholdDetails("details")
+                    .build())
+                .build();
+
+            DocmosisC16Supplement supplement = underTest.getC16SupplementData(updatedCaseData, false);
+            assertThat(supplement.getChildrensNames()).isEqualTo("David Test\n"
+                + "Davina Test");
+        }
+
+
+    }
+
+    @Nested
+    class DocmosisC16SupplementTest {
+
+        @Test
+        void shouldPopulateC16Supplement() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.CHILD_ASSESSMENT_ORDER))
+                    .childAssessmentOrderAssessmentDirections("assessment")
+                    .childAssessmentOrderContactDirections("contact")
+                    .build())
+                .groundsForChildAssessmentOrder(GroundsForChildAssessmentOrder.builder()
+                    .thresholdDetails("details")
+                    .build())
+                .build();
+
+            DocmosisC16Supplement supplement = underTest.getC16SupplementData(updatedCaseData, false);
+            assertThat(supplement.getDirectionsSoughtAssessment()).isEqualTo("assessment");
+            assertThat(supplement.getDirectionsSoughtContact()).isEqualTo("contact");
+            assertThat(supplement.getGroundsForChildAssessmentOrderReason()).isEqualTo("details");
+        }
+
+        @Test
+        void shouldNotPopulateDraftWatermarkOrSealIfDraft() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.CHILD_ASSESSMENT_ORDER))
+                    .childAssessmentOrderAssessmentDirections("assessment")
+                    .childAssessmentOrderContactDirections("contact")
+                    .build())
+                .groundsForChildAssessmentOrder(GroundsForChildAssessmentOrder.builder()
+                    .thresholdDetails("details")
+                    .build())
+                .build();
+
+            DocmosisC16Supplement supplement = underTest.getC16SupplementData(updatedCaseData, true);
+            assertThat(supplement.getDraftWaterMark()).isNotEmpty();
+            assertThat(supplement.getCourtSeal()).isNullOrEmpty();
+        }
+
+        @Test
+        void shouldPopulateDraftWatermarkOrSealIfNotDraft() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.CHILD_ASSESSMENT_ORDER))
+                    .childAssessmentOrderAssessmentDirections("assessment")
+                    .childAssessmentOrderContactDirections("contact")
+                    .build())
+                .groundsForChildAssessmentOrder(GroundsForChildAssessmentOrder.builder()
+                    .thresholdDetails("details")
+                    .build())
+                .build();
+
+            DocmosisC16Supplement supplement = underTest.getC16SupplementData(updatedCaseData, false);
+            assertThat(supplement.getDraftWaterMark()).isNullOrEmpty();
+            assertThat(supplement.getCourtSeal()).isNotEmpty();
+        }
+
+        @Test
+        void shouldUseDashIfNoCAOGrounds() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.CHILD_ASSESSMENT_ORDER))
+                    .childAssessmentOrderAssessmentDirections("assessment")
+                    .childAssessmentOrderContactDirections("contact")
+                    .build())
+                .build();
+
+            DocmosisC16Supplement supplement = underTest.getC16SupplementData(updatedCaseData, false);
+            assertThat(supplement.getGroundsForChildAssessmentOrderReason()).isEqualTo("-");
         }
     }
 
