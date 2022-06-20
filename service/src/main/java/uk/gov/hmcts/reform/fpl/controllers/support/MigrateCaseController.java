@@ -288,8 +288,7 @@ public class MigrateCaseController extends CallbackController {
     private void run701(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();
-        //var expectedCaseId = 1652954493114372L;
-        var expectedCaseId = 1649066340329198L;
+        var expectedCaseId = 1652954493114372L;
         var respondentStatementIdToRemove = "62e64784-04c2-4279-b689-0a8aa62f2b52";
 
         if (caseId != expectedCaseId) {
