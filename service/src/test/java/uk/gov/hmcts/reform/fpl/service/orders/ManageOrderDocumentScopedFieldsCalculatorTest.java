@@ -93,8 +93,7 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersOrderCreatedDate",
             "manageOrdersChildAssessmentType",
             "manageOrdersAssessmentStartDate",
-            "manageOrdersDurationOfAssessment",
-            "manageOrdersChildToBeProducedToWhom"
+            "manageOrdersDurationOfAssessment"
         );
     }
 }

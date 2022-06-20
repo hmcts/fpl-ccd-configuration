@@ -298,7 +298,6 @@ public class DocmosisOrderCaseDataGenerator {
                         .manageOrdersChildAssessmentType(PSYCHIATRIC_ASSESSMENT)
                         .manageOrdersAssessmentStartDate(LocalDate.of(2022, 6, 4))
                         .manageOrdersDurationOfAssessment(7)
-                        .manageOrdersChildToBeProducedToWhom("Carrie Lam")
                         .build()
                 );
             default:

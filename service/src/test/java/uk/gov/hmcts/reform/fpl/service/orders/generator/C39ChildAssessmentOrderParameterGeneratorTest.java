@@ -90,7 +90,6 @@ class C39ChildAssessmentOrderParameterGeneratorTest {
                 .manageOrdersAssessmentStartDate(LocalDate.of(2022, Month.JUNE, 4))
                 .manageOrdersChildAssessmentType(assessmentType)
                 .manageOrdersDurationOfAssessment(duration)
-                .manageOrdersChildToBeProducedToWhom("Carrie Lam")
                 .manageOrdersIsByConsent(YES.getValue())
                 .build())
             .build();

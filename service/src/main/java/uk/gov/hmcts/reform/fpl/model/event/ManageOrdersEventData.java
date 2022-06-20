@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.enums.ReasonForSecureAccommodation;
 import uk.gov.hmcts.reform.fpl.enums.RelationshipWithChild;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.WalesOffices;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersChildAssessmentType;
 import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -100,8 +101,18 @@ public class ManageOrdersEventData {
     LocalDate manageOrdersOrderCreatedDate;
     LocalDate manageOrdersAssessmentStartDate;
     ManageOrdersChildAssessmentType manageOrdersChildAssessmentType;
-    String manageOrdersChildToBeProducedToWhom;
     Integer manageOrdersDurationOfAssessment;
+    String manageOrdersPlaceOfAssessment;
+    String manageOrdersAssessingBody;
+    YesNo manageOrdersChildKeepAwayFromHome;
+    Address manageOrdersFullAddressToStayIfKeepAwayFromHome;
+    LocalDate manageOrdersStartDateOfStayIfKeepAwayFromHome;
+    LocalDate manageOrdersEndDateOfStayIfKeepAwayFromHome;
+    String manageOrdersChildFirstContactIfKeepAwayFromHome;
+    String manageOrdersChildSecondContactIfKeepAwayFromHome;
+    String manageOrdersChildThirdContactIfKeepAwayFromHome;
+    YesNo manageOrdersIsCostOrderExist;
+    String manageOrdersCostOrderDetails;
 
 
     @JsonIgnore

@@ -153,7 +153,7 @@ public enum Order {
         List.of(
             APPROVER,
             APPROVAL_DATE,
-            WHICH_CHILDREN,
+            SELECT_SINGLE_CHILD,
             CHILD_ASSESSMENT_ORDER,
             ORDER_BY_CONSENT,
             REVIEW_DRAFT_ORDER,
