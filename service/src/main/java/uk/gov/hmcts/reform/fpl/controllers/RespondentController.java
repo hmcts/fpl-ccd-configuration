@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.service.respondent.RespondentValidator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -185,8 +186,11 @@ public class RespondentController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         OtherToRespondentEventData eventData = caseData.getOtherToRespondentEventData();
 
-        CaseData dummyCaseData = CaseData.builder()
-            .respondents1(List.of(newElement(eventData.getTransformedRespondent())))
+        List<Element<Respondent>> newRespondents = caseData.getRespondents1().stream().collect(Collectors.toList());
+        newRespondents.add(newElement(eventData.getTransformedRespondent()));
+
+        CaseData dummyCaseData = caseData.builder()
+            .respondents1(newRespondents)
             .build();
 
         List<String> errors = respondentValidator.validate(dummyCaseData, dummyCaseData, true);

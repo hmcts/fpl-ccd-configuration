@@ -23,6 +23,7 @@ import java.util.function.Function;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toSet;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -36,6 +37,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedV
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithRandomUUID;
 
 class ElementUtilsTest {
 
@@ -342,6 +344,34 @@ class ElementUtilsTest {
         @Test
         void shouldWrapNonNullObjectsWithElement() {
             assertThat(wrapElements("First", null)).containsExactly(element1);
+        }
+    }
+
+    @Nested
+    class WrapElementsWithRandomUUID {
+
+        Element<String> element1 = Element.<String>builder().value("First").build();
+        Element<String> element2 = Element.<String>builder().value("Second").build();
+
+        @Test
+        void shouldWrapAllObjectsWithElement() {
+            assertThat(wrapElementsWithRandomUUID("First", "Second")).hasSize(2);
+            assertThat(wrapElementsWithRandomUUID("First", "Second")
+                .stream().map(Element::getId).collect(toSet()))
+                .hasSize(2);
+        }
+
+        @Test
+        void shouldReturnEmptyElementListIfNoObjectsToWrap() {
+            assertThat(wrapElementsWithRandomUUID()).isEmpty();
+        }
+
+        @Test
+        void shouldWrapNonNullObjectsWithElement() {
+            assertThat(wrapElementsWithRandomUUID("First", null)).hasSize(1);
+            assertThat(wrapElementsWithRandomUUID("First", null)
+                .stream().map(Element::getId).collect(toSet()))
+                .hasSize(1);
         }
     }
 

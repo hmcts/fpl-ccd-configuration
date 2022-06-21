@@ -144,4 +144,12 @@ public class ElementUtils {
 
         return elements;
     }
+
+    @SafeVarargs
+    public static <T> List<Element<T>> wrapElementsWithRandomUUID(T... elements) {
+        return Stream.of(elements)
+            .filter(Objects::nonNull)
+            .map(ElementUtils::element)
+            .collect(toList());
+    }
 }

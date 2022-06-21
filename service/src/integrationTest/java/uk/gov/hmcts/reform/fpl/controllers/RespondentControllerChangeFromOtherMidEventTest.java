@@ -1,13 +1,17 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -15,24 +19,41 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.event.OtherToRespondentEventData;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithRandomUUID;
 
 @WebMvcTest(RespondentController.class)
 @OverrideAutoConfiguration(enabled = true)
 class RespondentControllerChangeFromOtherMidEventTest extends AbstractCallbackTest {
 
+    @MockBean
+    private RequestData requestData;
+    private static final String CONFIRM_IF_LEGAL_REP_ERROR = "Confirm if respondent has legal representation";
+    private static final String DOB_ERROR = "Date of birth for respondent cannot be in the future";
+    private static final String MAX_RESPONDENTS_ERROR = "Maximum number of respondents is 10";
+
     RespondentControllerChangeFromOtherMidEventTest() {
         super("enter-respondents/change-from-other");
+    }
+
+    @BeforeEach
+    void before() {
+        given(requestData.userRoles()).willReturn(Set.of(UserRole.HMCTS_ADMIN.getRoleName()));
     }
 
     private DynamicList buildDynamicList(UUID otherPerson1Uuid, int selected) {
@@ -43,6 +64,19 @@ class RespondentControllerChangeFromOtherMidEventTest extends AbstractCallbackTe
         return DynamicList.builder()
             .listItems(listItems)
             .value(listItems.get(selected))
+            .build();
+    }
+
+    private Respondent respondent(LocalDate dateOfBirth) {
+        return respondent(dateOfBirth, false);
+    }
+
+    private Respondent respondent(LocalDate dateOfBirth, boolean isLegalRepAnswered) {
+        return Respondent.builder()
+            .party(RespondentParty.builder()
+                .dateOfBirth(dateOfBirth)
+                .build())
+            .legalRepresentation(isLegalRepAnswered ? "No" : null)
             .build();
     }
 
@@ -109,5 +143,73 @@ class RespondentControllerChangeFromOtherMidEventTest extends AbstractCallbackTe
         CaseData responseCaseData = extractCaseData(callbackResponse);
         assertThat(responseCaseData.getOtherToRespondentEventData().getTransformedRespondent()).isEqualTo(
             expectedRespondent);
+    }
+
+    @Test
+    void shouldReturnMaximumRespondentErrorsWhenNumberOfRespondentsExceeds10() {
+        CaseData caseData = CaseData.builder()
+            .respondents1(wrapElements(
+                respondent(dateNow()), respondent(dateNow()), respondent(dateNow()), respondent(dateNow()),
+                respondent(dateNow()), respondent(dateNow()), respondent(dateNow()), respondent(dateNow()),
+                respondent(dateNow()), respondent(dateNow())))
+            .otherToRespondentEventData(OtherToRespondentEventData.builder()
+                .transformedRespondent(respondent(dateNow()))
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
+        assertThat(callbackResponse.getErrors()).contains(MAX_RESPONDENTS_ERROR);
+    }
+
+    @Test
+    void shouldReturnDateOfBirthErrorsForRespondentWhenFutureDateOfBirth() {
+        CaseData caseData = CaseData.builder()
+            .respondents1(wrapElements(respondent(dateNow())))
+            .otherToRespondentEventData(OtherToRespondentEventData.builder()
+                .transformedRespondent(respondent(dateNow().plusDays(1)))
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
+        assertThat(callbackResponse.getErrors()).contains(DOB_ERROR);
+    }
+
+    @Test
+    void shouldReturnNoDateOfBirthErrorsForRespondentWhenValidDateOfBirth() {
+        CaseData caseData = CaseData.builder()
+            .respondents1(wrapElements(respondent(dateNow())))
+            .otherToRespondentEventData(OtherToRespondentEventData.builder()
+                .transformedRespondent(respondent(dateNow().minusDays(1)))
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
+        assertThat(callbackResponse.getErrors()).doesNotContain(DOB_ERROR);
+    }
+
+    @Test
+    void shouldReturnErrorWhenLegalRepNotAnswered() {
+        CaseData caseData = CaseData.builder()
+            .respondents1(wrapElementsWithRandomUUID(respondent(dateNow(), true)))
+            .otherToRespondentEventData(OtherToRespondentEventData.builder()
+                .transformedRespondent(respondent(dateNow().minusDays(1), false))
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
+        assertThat(callbackResponse.getErrors()).contains(CONFIRM_IF_LEGAL_REP_ERROR);
+    }
+
+    @Test
+    void shouldNotReturnErrorWhenLegalRepAnswered() {
+        CaseData caseData = CaseData.builder()
+            .respondents1(wrapElementsWithRandomUUID(respondent(dateNow(), true)))
+            .otherToRespondentEventData(OtherToRespondentEventData.builder()
+                .transformedRespondent(respondent(dateNow().minusDays(1), true))
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
+        assertThat(callbackResponse.getErrors()).doesNotContain(CONFIRM_IF_LEGAL_REP_ERROR);
     }
 }
