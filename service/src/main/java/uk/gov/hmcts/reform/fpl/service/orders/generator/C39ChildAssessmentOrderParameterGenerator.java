@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGener
 
 import java.time.LocalDate;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
@@ -54,10 +55,12 @@ public class C39ChildAssessmentOrderParameterGenerator implements DocmosisParame
             .append(eventData.getManageOrdersChildAssessmentType().getTitle())
             .append(" of the child.\n\n");
 
-        stringBuilder.append(String.format("The Court directs that the child is to be assessed at %s. ",
-                eventData.getManageOrdersPlaceOfAssessment()))
-            .append(String.format("The child is to be assessed by %s.\n\n",
-                eventData.getManageOrdersAssessingBody()));
+        if (isBlank(eventData.getManageOrdersPlaceOfAssessment())) {
+            stringBuilder.append(String.format("The Court directs that the child is to be assessed at %s. ",
+                    eventData.getManageOrdersPlaceOfAssessment()))
+                .append(String.format("The child is to be assessed by %s.\n\n",
+                    eventData.getManageOrdersAssessingBody()));
+        }
 
         if (YesNo.YES.equals(eventData.getManageOrdersChildKeepAwayFromHome())) {
             stringBuilder.append(String.format("The child may be kept away from home and stay at %s from %s to %s.\n",
