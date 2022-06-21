@@ -133,10 +133,11 @@ class HearingVenueLookUpServiceTest {
                 .build();
 
             String actualFormattedHearingVenue = hearingVenueLookUpService.buildHearingVenue(hearingVenue);
-            String expectedFormattedHearingVenue = String.format("%s, %s, %s, %s",
+            String expectedFormattedHearingVenue = String.format("%s, %s, %s, %s, %s",
                 venueAddress.getAddressLine1(),
                 venueAddress.getAddressLine2(),
                 venueAddress.getPostTown(),
+                venueAddress.getCounty(),
                 venueAddress.getPostcode());
 
             assertThat(actualFormattedHearingVenue).isEqualTo(expectedFormattedHearingVenue);
