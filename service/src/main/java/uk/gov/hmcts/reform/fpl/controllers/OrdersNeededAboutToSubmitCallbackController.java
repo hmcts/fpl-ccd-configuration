@@ -37,14 +37,14 @@ public class OrdersNeededAboutToSubmitCallbackController extends CallbackControl
         final CaseData caseData = getCaseData(callbackrequest);
         final String representativeType = Objects.nonNull(caseData.getRepresentativeType())
             ? caseData.getRepresentativeType().toString() : "LOCAL_AUTHORITY";
-        final String ordersText = Objects.equals(representativeType, "LOCAL_AUTHORITY") ? "orders" : "ordersSolicitor";
+        final String ordersFieldName = representativeType.equals("LOCAL_AUTHORITY") ? "orders" : "ordersSolicitor";
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
 
-        Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get(ordersText))
+        Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get(ordersFieldName))
             .map(orders -> (List<String>) orders.get("orderType"));
 
-        String courtID = Optional.ofNullable((Map<String, Object>) data.get(ordersText))
+        String courtID = Optional.ofNullable((Map<String, Object>) data.get(ordersFieldName))
             .map(orders -> (String) orders.get("court"))
             .map(Object::toString)
             .orElse(null);
@@ -78,7 +78,7 @@ public class OrdersNeededAboutToSubmitCallbackController extends CallbackControl
             data.put("court", selectedCourt);
         }
 
-        if (Objects.equals(ordersText, "ordersSolicitor")) {
+        if (ordersFieldName.equals("ordersSolicitor")) {
             data.remove("orders");
             data.put("orders", data.get("ordersSolicitor"));
             data.remove("ordersSolicitor");
