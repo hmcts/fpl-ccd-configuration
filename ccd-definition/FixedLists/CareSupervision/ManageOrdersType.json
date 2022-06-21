@@ -100,8 +100,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageOrdersType",
+    "ListElementCode": "C34B_AUTHORITY_TO_REFUSE_CONTACT",
+    "ListElement": "Authority to refuse contact with a child in care (C34B)",
+    "DisplayOrder": 15
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersType",
     "ListElementCode": "C36_VARIATION_OR_EXTENSION_OF_SUPERVISION_ORDERS",
     "ListElement": "Variation or extension of supervision orders (C36)",
-    "DisplayOrder": 15
+    "DisplayOrder": 16
   }
 ]
