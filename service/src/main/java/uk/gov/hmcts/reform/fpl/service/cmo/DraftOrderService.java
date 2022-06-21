@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -134,7 +133,6 @@ public class DraftOrderService {
 
     public UUID updateCase(UploadDraftOrdersData eventData, List<Element<HearingBooking>> hearings,
                            List<Element<HearingOrder>> cmoDrafts,
-                           List<Element<HearingFurtherEvidenceBundle>> evidenceBundles,
                            List<Element<HearingOrdersBundle>> bundles) {
 
         final UUID selectedHearingId = getSelectedHearingId(eventData);

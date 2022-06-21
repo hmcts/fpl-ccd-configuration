@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -534,12 +533,9 @@ class DraftOrderServiceTest {
                 .build();
 
             List<Element<HearingOrder>> unsealedOrders = newArrayList();
-            List<Element<HearingFurtherEvidenceBundle>> bundles = newArrayList();
             List<Element<HearingOrdersBundle>> ordersBundles = newArrayList();
 
-            service.updateCase(eventData, hearings, unsealedOrders, bundles, ordersBundles);
-
-            assertThat(bundles).isEmpty();
+            service.updateCase(eventData, hearings, unsealedOrders, ordersBundles);
 
             assertThat(unsealedOrders).hasSize(1)
                 .first()
@@ -588,7 +584,7 @@ class DraftOrderServiceTest {
             HearingOrdersBundle ordersBundle = ordersBundle(selectedHearing.getId(), previousCmoOrder, c21Order);
             List<Element<HearingOrdersBundle>> ordersBundles = wrapElements(ordersBundle);
 
-            service.updateCase(eventData, hearings, unsealedOrders, List.of(), ordersBundles);
+            service.updateCase(eventData, hearings, unsealedOrders, ordersBundles);
 
             HearingOrder expectedOrder = HearingOrder.builder()
                 .title("Agreed CMO discussed at hearing")
@@ -640,11 +636,10 @@ class DraftOrderServiceTest {
                 .orderToSendTranslationRequirements1(TRANSLATION_REQUIREMENTS)
                 .build();
 
-            List<Element<HearingFurtherEvidenceBundle>> evidenceBundles = newArrayList();
             List<Element<HearingOrder>> unsealedOrders = newArrayList();
             List<Element<HearingOrdersBundle>> ordersBundles = newArrayList();
 
-            service.updateCase(eventData, hearings, unsealedOrders, evidenceBundles, ordersBundles);
+            service.updateCase(eventData, hearings, unsealedOrders, ordersBundles);
 
             assertThat(ordersBundles).hasSize(1);
             assertThat(ordersBundles.get(0)).extracting(Element::getValue).isEqualTo(ordersBundle);
@@ -678,7 +673,7 @@ class DraftOrderServiceTest {
 
             List<Element<HearingOrdersBundle>> ordersBundles = wrapElements(originalOrdersBundle);
 
-            service.updateCase(eventData, hearings, emptyList(), emptyList(), ordersBundles);
+            service.updateCase(eventData, hearings, emptyList(), ordersBundles);
 
             HearingOrdersBundle expectedOrdersBundle = originalOrdersBundle.toBuilder()
                 .orders(newArrayList(cmoOrder, hearingOrder1, hearingOrder3))
@@ -711,7 +706,7 @@ class DraftOrderServiceTest {
             List<Element<HearingOrdersBundle>> ordersBundles = wrapElements(selectedHearingOrderBundle,
                 otherOrdersBundle);
 
-            service.updateCase(eventData, hearings, emptyList(), emptyList(), ordersBundles);
+            service.updateCase(eventData, hearings, emptyList(), ordersBundles);
 
             assertThat(ordersBundles).extracting(Element::getValue).containsExactly(otherOrdersBundle);
         }
@@ -736,7 +731,7 @@ class DraftOrderServiceTest {
             List<Element<HearingOrdersBundle>> ordersBundles = wrapElements(ordersBundle);
             List<Element<HearingOrder>> unsealedOrders = newArrayList();
 
-            service.updateCase(eventData, hearings, unsealedOrders, List.of(), ordersBundles);
+            service.updateCase(eventData, hearings, unsealedOrders, ordersBundles);
 
             HearingOrder expectedOrder = HearingOrder.builder()
                 .title("Agreed CMO discussed at hearing")
@@ -765,7 +760,7 @@ class DraftOrderServiceTest {
                 .build();
 
             Exception exception = assertThrows(Exception.class,
-                () -> service.updateCase(eventData, hearings, newArrayList(), newArrayList(), newArrayList()));
+                () -> service.updateCase(eventData, hearings, newArrayList(), newArrayList()));
 
             assertThat(exception).isInstanceOf(HearingNotFoundException.class);
         }
