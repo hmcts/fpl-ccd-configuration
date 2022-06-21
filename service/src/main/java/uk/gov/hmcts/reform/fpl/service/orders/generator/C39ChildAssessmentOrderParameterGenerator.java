@@ -55,7 +55,7 @@ public class C39ChildAssessmentOrderParameterGenerator implements DocmosisParame
             .append(eventData.getManageOrdersChildAssessmentType().getTitle())
             .append(" of the child.\n\n");
 
-        if (isBlank(eventData.getManageOrdersPlaceOfAssessment())) {
+        if (!isBlank(eventData.getManageOrdersPlaceOfAssessment())) {
             stringBuilder.append(String.format("The Court directs that the child is to be assessed at %s. ",
                     eventData.getManageOrdersPlaceOfAssessment()))
                 .append(String.format("The child is to be assessed by %s.\n\n",
