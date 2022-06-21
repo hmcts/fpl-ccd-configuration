@@ -459,6 +459,25 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "respondentsRefusedSelector",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Select person(s) refused contact",
+    "FieldType": "RespondentsRefusedSelector",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondentsRefused_label",
+    "Label": " ",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Displays a list of respondents for the selected order, usage of this should be readonly"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "whichChildIsTheOrderFor",
     "Label": "Which child is the order for?",
@@ -660,6 +679,98 @@
     "FieldType": "Date",
     "Label": "When was the order made?",
     "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersLeaName",
+    "FieldType": "Text",
+    "Label": "Name of Local Education Authority (LEA)",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersEndDateWithEducationAge",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ManageOrderEndDateTypeWithEducationAge",
+    "Label": "When does it end?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersC35aOrderExists",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Does a supervision order (C35a) already exist for this case?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersC35aOrderDoesntExistMessage",
+    "FieldType": "Label",
+    "Label": "There is no existing supervision order (C35a) so you cannot proceed.",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersSupervisionOrderType",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "C36SupervisionOrderType",
+    "Label": "Please select the required order",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersSupervisionOrderVariationHeading",
+    "FieldType": "Label",
+    "Label": "The court varies this supervision order for the care order.",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersSupervisionOrderExtensionHeading",
+    "FieldType": "Label",
+    "Label": "The court extends this supervision order for the care order.",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersSupervisionOrderCourtDirection",
+    "FieldType": "TextArea",
+    "Label": "The court directs that",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersSupervisionOrderApprovalDate",
+    "FieldType": "Date",
+    "Label": "Approval Date",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersSupervisionOrderEndDate",
+    "FieldType": "Date",
+    "Label": "End Date",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {

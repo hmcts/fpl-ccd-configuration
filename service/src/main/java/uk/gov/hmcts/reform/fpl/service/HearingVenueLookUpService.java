@@ -75,7 +75,8 @@ public class HearingVenueLookUpService {
             return "";
         } else {
             return Stream.of(hearingVenue.getAddress().getAddressLine1(), hearingVenue.getAddress().getAddressLine2(),
-                hearingVenue.getAddress().getPostTown(), hearingVenue.getAddress().getPostcode())
+                hearingVenue.getAddress().getPostTown(), hearingVenue.getAddress().getCounty(),
+                hearingVenue.getAddress().getPostcode())
                 .filter(StringUtils::isNotBlank)
                 .collect(joining(", "));
         }

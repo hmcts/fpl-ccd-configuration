@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.C29ActionsPermitted;
+import uk.gov.hmcts.reform.fpl.enums.C36OrderType;
 import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.EnglandOffices;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.WalesOffices;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersChildAssessmentType;
+import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrderEndDateOption;
 import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -93,6 +95,8 @@ public class ManageOrdersEventData {
     String manageOrdersBirthCertificateRegistrationDistrict;
     String manageOrdersBirthCertificateRegistrationSubDistrict;
     String manageOrdersBirthCertificateRegistrationCounty;
+    String manageOrdersLeaName;
+    ManageOrderEndDateOption manageOrdersEndDateWithEducationAge;
     PlacedUnderOrder manageOrdersPlacedUnderOrder;
     String manageOrdersIsExParte;
     List<C29ActionsPermitted> manageOrdersActionsPermitted;
@@ -113,7 +117,10 @@ public class ManageOrdersEventData {
     String manageOrdersChildThirdContactIfKeepAwayFromHome;
     YesNo manageOrdersIsCostOrderExist;
     String manageOrdersCostOrderDetails;
-
+    C36OrderType manageOrdersSupervisionOrderType;
+    String manageOrdersSupervisionOrderCourtDirection;
+    LocalDate manageOrdersSupervisionOrderApprovalDate;
+    LocalDate manageOrdersSupervisionOrderEndDate;
 
     @JsonIgnore
     public LocalDateTime getManageOrdersApprovalDateOrDateTime() {

@@ -116,8 +116,12 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         Map.entry("parentResponsible", "NO"),
         Map.entry("childPlacementApplications", "NO"),
         Map.entry("childPlacementQuestions", "NO"),
+        Map.entry("manageOrdersChildAssessment", "NO"),
+        Map.entry("manageOrdersEducationSupervision", "NO"),
         Map.entry("orderPlacedChildInCustody", "NO"),
-        Map.entry("manageOrdersChildAssessment", "NO")
+        Map.entry("manageOrdersVaryOrExtendSupervisionOrder", "NO"),
+        Map.entry("respondentsRefused", "NO"),
+        Map.entry("refuseContactQuestions", "NO")
     ));
 
     private static final String FAMILY_MAN_CASE_NUMBER = "CASE_NUMBER";
@@ -563,8 +567,12 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("parentResponsible", "NO"),
             Map.entry("childPlacementApplications", "NO"),
             Map.entry("childPlacementQuestions", "NO"),
+            Map.entry("manageOrdersChildAssessment", "NO"),
+            Map.entry("manageOrdersEducationSupervision", "NO"),
             Map.entry("orderPlacedChildInCustody", "NO"),
-            Map.entry("manageOrdersChildAssessment", "NO")
+            Map.entry("manageOrdersVaryOrExtendSupervisionOrder", "NO"),
+            Map.entry("refuseContactQuestions", "NO"),
+            Map.entry("respondentsRefused", "NO")
         );
 
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
@@ -616,8 +624,12 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("parentResponsible", "NO"),
             Map.entry("childPlacementApplications", "NO"),
             Map.entry("childPlacementQuestions", "NO"),
+            Map.entry("manageOrdersChildAssessment", "NO"),
+            Map.entry("manageOrdersEducationSupervision", "NO"),
             Map.entry("orderPlacedChildInCustody", "NO"),
-            Map.entry("manageOrdersChildAssessment", "NO")
+            Map.entry("manageOrdersVaryOrExtendSupervisionOrder", "NO"),
+            Map.entry("refuseContactQuestions", "NO"),
+            Map.entry("respondentsRefused", "NO")
         );
 
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
