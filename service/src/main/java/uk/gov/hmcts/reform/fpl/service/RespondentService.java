@@ -39,6 +39,7 @@ import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APP
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
@@ -274,7 +275,7 @@ public class RespondentService {
     public List<Element<Other>> buildNewAllOthersWhenFirstOtherSelected(CaseData caseData) {
         List<Element<Other>> newAllOthers = new ArrayList<>(caseData.getAllOthers());
         if (!newAllOthers.removeIf(ele ->
-            !(caseData.getOthers().getAdditionalOthers().stream().map(Element::getId)).collect(toSet())
+            !(nullSafeList(caseData.getOthers().getAdditionalOthers()).stream().map(Element::getId)).collect(toSet())
                 .contains(ele.getId()))) {
             throw new IllegalStateException("Unable to remove firstOther from newAllOthers list");
         }

@@ -152,4 +152,11 @@ public class ElementUtils {
             .map(ElementUtils::element)
             .collect(toList());
     }
+
+    public static <T> List<Element<T>> wrapElementsWithRandomUUID(List<T> elements) {
+        return nullSafeCollection(elements).stream()
+            .filter(Objects::nonNull)
+            .map(ElementUtils::element)
+            .collect(toList());
+    }
 }

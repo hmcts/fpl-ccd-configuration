@@ -14,17 +14,15 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.OtherToRespondentEventData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -33,6 +31,7 @@ import java.util.stream.Stream;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildDynamicListFromOthers;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithRandomUUID;
@@ -54,17 +53,6 @@ class RespondentControllerChangeFromOtherMidEventTest extends AbstractCallbackTe
     @BeforeEach
     void before() {
         given(requestData.userRoles()).willReturn(Set.of(UserRole.HMCTS_ADMIN.getRoleName()));
-    }
-
-    private DynamicList buildDynamicList(UUID otherPerson1Uuid, int selected) {
-        List<DynamicListElement> listItems = List.of(
-            DynamicListElement.builder().code(randomUUID()).label("Kyle Stafford").build(),
-            DynamicListElement.builder().code(otherPerson1Uuid).label("Sarah Simpson").build()
-        );
-        return DynamicList.builder()
-            .listItems(listItems)
-            .value(listItems.get(selected))
-            .build();
     }
 
     private Respondent respondent(LocalDate dateOfBirth) {
@@ -130,11 +118,12 @@ class RespondentControllerChangeFromOtherMidEventTest extends AbstractCallbackTe
     @MethodSource("shouldPopulateTransformedRespondentSource")
     void shouldPopulateTransformedRespondent(int selected, Respondent expectedRespondent) {
         UUID otherPerson1Uuid = randomUUID();
+        Others others = createOthers(otherPerson1Uuid);
         CaseDetails caseDetails = CaseDetails.builder()
             .id(RandomUtils.nextLong())
             .data(Map.of(
-                "othersList", buildDynamicList(otherPerson1Uuid, selected),
-                "others", createOthers(otherPerson1Uuid)))
+                "othersList", buildDynamicListFromOthers(others, selected),
+                "others", others))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails,"enter-respondent");
