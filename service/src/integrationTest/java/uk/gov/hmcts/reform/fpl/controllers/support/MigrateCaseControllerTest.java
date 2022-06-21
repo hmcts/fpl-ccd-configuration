@@ -768,9 +768,13 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .id(validCaseId)
                 .state(State.SUBMITTED)
                 .respondents1(respondents)
-                .respondentStatements(List.of(element(RespondentStatement.builder()
-                    .respondentId(uuidsToBeDeleted.get(0))
-                    .build()),
+                .respondentStatements(List.of(
+                    element(RespondentStatement.builder()
+                        .respondentId(respondents.get(0).getId())
+                        .build()),
+                    element(RespondentStatement.builder()
+                        .respondentId(uuidsToBeDeleted.get(0))
+                        .build()),
                     element(RespondentStatement.builder()
                         .respondentId(uuidsToBeDeleted.get(1))
                         .build())))
