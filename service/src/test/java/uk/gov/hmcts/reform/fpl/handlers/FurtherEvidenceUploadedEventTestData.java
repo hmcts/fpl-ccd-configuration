@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -63,15 +64,16 @@ public class FurtherEvidenceUploadedEventTestData {
     public static CaseData buildSubmittedCaseData() {
         return commonCaseBuilder()
             .applicationDocuments(new ArrayList<>())
-            .courtBundleListV2(new ArrayList<>())
+            .hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(new ArrayList<>())
+                .caseSummaryList(new ArrayList<>())
+                .positionStatementChildList(new ArrayList<>())
+                .positionStatementRespondentList(new ArrayList<>()).build())
             .furtherEvidenceDocuments(new ArrayList<>())
             .furtherEvidenceDocumentsLA(new ArrayList<>())
             .furtherEvidenceDocumentsSolicitor(new ArrayList<>())
             .hearingFurtherEvidenceDocuments(new ArrayList<>())
             .respondentStatements(new ArrayList<>())
-            .caseSummaryList(new ArrayList<>())
-            .positionStatementChildList(new ArrayList<>())
-            .positionStatementRespondentList(new ArrayList<>())
             .build();
     }
 
@@ -259,9 +261,11 @@ public class FurtherEvidenceUploadedEventTestData {
 
     public static CaseData buildCaseDataWithCourtBundleList(int count, String hearing, String uploadedBy) {
         return commonCaseBuilder()
-            .courtBundleListV2(
-                createCourtBundleList(count, hearing, uploadedBy)
-            ).build();
+            .hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(
+                    createCourtBundleList(count, hearing, uploadedBy)
+                ).build())
+            .build();
     }
 
     public static List<Element<HearingCourtBundle>> createCourtBundleList(int count, String hearing,

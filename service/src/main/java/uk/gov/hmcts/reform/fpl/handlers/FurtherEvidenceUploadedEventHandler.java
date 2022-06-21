@@ -176,12 +176,15 @@ public class FurtherEvidenceUploadedEventHandler {
         final CaseData caseDataBefore = event.getCaseDataBefore();
         final UserDetails uploader = event.getInitiatedBy();
 
-        List<HearingDocument> newHearingDocuments = getNewHearingDocuments(caseData.getCaseSummaryList(),
-            caseDataBefore.getCaseSummaryList());
-        newHearingDocuments.addAll(getNewHearingDocuments(caseData.getPositionStatementChildList(),
-            caseDataBefore.getPositionStatementChildList()));
-        newHearingDocuments.addAll(getNewHearingDocuments(caseData.getPositionStatementRespondentList(),
-            caseDataBefore.getPositionStatementRespondentList()));
+        List<HearingDocument> newHearingDocuments = getNewHearingDocuments(
+            caseData.getHearingDocuments().getCaseSummaryList(),
+            caseDataBefore.getHearingDocuments().getCaseSummaryList());
+        newHearingDocuments.addAll(getNewHearingDocuments(
+            caseData.getHearingDocuments().getPositionStatementChildList(),
+            caseDataBefore.getHearingDocuments().getPositionStatementChildList()));
+        newHearingDocuments.addAll(getNewHearingDocuments(
+            caseData.getHearingDocuments().getPositionStatementRespondentList(),
+            caseDataBefore.getHearingDocuments().getPositionStatementRespondentList()));
 
         if (!newHearingDocuments.isEmpty()) {
             final Set<String> recipients = new LinkedHashSet<>();
@@ -208,14 +211,17 @@ public class FurtherEvidenceUploadedEventHandler {
             cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
 
         if (recipientIsEngland.isPresent()) {
-            List<HearingDocument> newCaseSummaries = getNewHearingDocuments(caseData.getCaseSummaryList(),
-                caseDataBefore.getCaseSummaryList());
+            List<HearingDocument> newCaseSummaries = getNewHearingDocuments(
+                caseData.getHearingDocuments().getCaseSummaryList(),
+                caseDataBefore.getHearingDocuments().getCaseSummaryList());
             List<HearingDocument> newPositionStatementChildren =
-                getNewHearingDocuments(caseData.getPositionStatementChildList(),
-                    caseDataBefore.getPositionStatementChildList());
+                getNewHearingDocuments(
+                    caseData.getHearingDocuments().getPositionStatementChildList(),
+                    caseDataBefore.getHearingDocuments().getPositionStatementChildList());
             List<HearingDocument> newPositionStatementRespondents =
-                getNewHearingDocuments(caseData.getPositionStatementRespondentList(),
-                    caseDataBefore.getPositionStatementRespondentList());
+                getNewHearingDocuments(
+                    caseData.getHearingDocuments().getPositionStatementRespondentList(),
+                    caseDataBefore.getHearingDocuments().getPositionStatementRespondentList());
 
             sendHearingDocumentsToCafcass(caseData, newCaseSummaries, CASE_SUMMARY);
             sendHearingDocumentsToCafcass(caseData, newPositionStatementChildren, POSITION_STATEMENT_CHILD);
@@ -498,13 +504,13 @@ public class FurtherEvidenceUploadedEventHandler {
 
     private Map<String, Set<DocumentReference>> getNewCourtBundles(CaseData caseData, CaseData caseDataBefore) {
         Map<String, List<CourtBundle>> oldMapOfCourtBundles =
-            unwrapElements(caseDataBefore.getCourtBundleListV2()).stream()
+            unwrapElements(caseDataBefore.getHearingDocuments().getCourtBundleListV2()).stream()
                 .collect(
                     groupingBy(HearingCourtBundle::getHearing,
                         flatMapping(courtBundle -> unwrapElements(courtBundle.getCourtBundle()).stream(),
                             toList())));
 
-        return unwrapElements(caseData.getCourtBundleListV2()).stream()
+        return unwrapElements(caseData.getHearingDocuments().getCourtBundleListV2()).stream()
                 .collect(
                     groupingBy(HearingCourtBundle::getHearing,
                         flatMapping(courtBundle -> {

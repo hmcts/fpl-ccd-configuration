@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -438,8 +439,10 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 hearing,
                 "LA");
         CaseData caseDataBefore = commonCaseBuilder()
-                .courtBundleList(caseData.getCourtBundleList())
-                .build();
+            .hearingDocuments(HearingDocuments.builder()
+                .courtBundleList(caseData.getHearingDocuments().getCourtBundleList())
+                .build())
+            .build();
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
                 new FurtherEvidenceUploadedEvent(
@@ -469,12 +472,14 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 2,
                 hearing,
                 "LA");
-        List<Element<HearingCourtBundle>> courtBundleList = caseData.getCourtBundleListV2();
+        List<Element<HearingCourtBundle>> courtBundleList = caseData.getHearingDocuments().getCourtBundleListV2();
         Element<HearingCourtBundle> existingBundle = courtBundleList.remove(1);
 
         CaseData caseDataBefore = commonCaseBuilder()
+            .hearingDocuments(HearingDocuments.builder()
                 .courtBundleListV2(List.of(existingBundle))
-                .build();
+                .build()
+            ).build();
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
                 new FurtherEvidenceUploadedEvent(
@@ -522,12 +527,16 @@ class FurtherEvidenceUploadedEventHandlerTest {
         Collections.shuffle(totalHearing);
 
         CaseData caseData = commonCaseBuilder()
+            .hearingDocuments(HearingDocuments.builder()
                 .courtBundleListV2(totalHearing)
-                .build();
+                .build())
+            .build();
 
         CaseData caseDataBefore = commonCaseBuilder()
+            .hearingDocuments(HearingDocuments.builder()
                 .courtBundleListV2(oldHearing)
-                .build();
+                .build())
+            .build();
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
                 new FurtherEvidenceUploadedEvent(
@@ -1036,7 +1045,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         verifyNotificationForCourtBundleTemplate(
             userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) -> caseData.getCourtBundleListV2().addAll(totalHearing),
+            (caseData) -> caseData.getHearingDocuments().getCourtBundleListV2().addAll(totalHearing),
             List.of(hearing1, hearing2, hearing3));
     }
 
@@ -1054,9 +1063,11 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         CaseData caseDataBefore = buildSubmittedCaseData();
         CaseData caseData = buildSubmittedCaseData().toBuilder()
-            .caseSummaryList(caseSummaryList)
-            .positionStatementChildList(positionStatementChildList)
-            .positionStatementRespondentList(positionStatementRespondentList).build();
+            .hearingDocuments(HearingDocuments.builder()
+                .caseSummaryList(caseSummaryList)
+                .positionStatementChildList(positionStatementChildList)
+                .positionStatementRespondentList(positionStatementRespondentList).build())
+            .build();
 
         final Set<String> respondentSolicitors = Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_3_EMAIL);
         when(furtherEvidenceNotificationService.getRespondentSolicitorEmails(caseData))
@@ -1114,9 +1125,11 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         CaseData caseDataBefore = buildSubmittedCaseData();
         CaseData caseData = buildSubmittedCaseData().toBuilder()
-            .caseSummaryList(caseSummaryList)
-            .positionStatementChildList(positionStatementChildList)
-            .positionStatementRespondentList(positionStatementRespondentList).build();
+            .hearingDocuments(HearingDocuments.builder()
+                .caseSummaryList(caseSummaryList)
+                .positionStatementChildList(positionStatementChildList)
+                .positionStatementRespondentList(positionStatementRespondentList).build())
+            .build();
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
             new FurtherEvidenceUploadedEvent(
@@ -1163,13 +1176,17 @@ class FurtherEvidenceUploadedEventHandlerTest {
             PositionStatementRespondent.builder().hearing(hearing).document(positionStatementRespondentDoc).build());;
 
         CaseData caseDataBefore = buildSubmittedCaseData().toBuilder()
-            .caseSummaryList(caseSummaryList)
-            .positionStatementChildList(positionStatementChildList)
-            .positionStatementRespondentList(positionStatementRespondentList).build();
+            .hearingDocuments(HearingDocuments.builder()
+                .caseSummaryList(caseSummaryList)
+                .positionStatementChildList(positionStatementChildList)
+                .positionStatementRespondentList(positionStatementRespondentList).build())
+            .build();
         CaseData caseData = buildSubmittedCaseData().toBuilder()
-            .caseSummaryList(caseSummaryList)
-            .positionStatementChildList(positionStatementChildList)
-            .positionStatementRespondentList(positionStatementRespondentList).build();
+            .hearingDocuments(HearingDocuments.builder()
+                .caseSummaryList(caseSummaryList)
+                .positionStatementChildList(positionStatementChildList)
+                .positionStatementRespondentList(positionStatementRespondentList).build())
+            .build();
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
             new FurtherEvidenceUploadedEvent(
@@ -1212,8 +1229,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
         verifyNotificationForCourtBundleTemplate(
             userDetailsLA(),
             DESIGNATED_LOCAL_AUTHORITY,
-            (caseData) -> caseData.getCourtBundleListV2().addAll(totalHearing),
-            (caseData) -> caseData.getCourtBundleListV2().addAll(totalHearing),
+            (caseData) -> caseData.getHearingDocuments().getCourtBundleListV2().addAll(totalHearing),
+            (caseData) -> caseData.getHearingDocuments().getCourtBundleListV2().addAll(totalHearing),
             emptyList());
     }
 

@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
@@ -1631,7 +1632,8 @@ class ManageDocumentServiceTest {
 
         CaseData caseData = CaseData.builder()
             .manageDocumentsCourtBundle(editedCourtBundle)
-            .courtBundleListV2(courtBundleList)
+            .hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(courtBundleList).build())
             .hearingDocumentsHearingList(selectedHearingId.toString())
             .hearingDetails(hearingBookings)
             .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
@@ -1666,7 +1668,8 @@ class ManageDocumentServiceTest {
 
         CaseData caseData = CaseData.builder()
             .manageDocumentsCourtBundle(newCourtBundle)
-            .courtBundleListV2(courtBundleList)
+            .hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(courtBundleList).build())
             .hearingDocumentsHearingList(selectedHearingId.toString())
             .hearingDetails(hearingBookings)
             .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
@@ -1736,7 +1739,8 @@ class ManageDocumentServiceTest {
 
         CaseData caseData = CaseData.builder()
             .manageDocumentsCourtBundle(courtBundle)
-            .courtBundleListV2(courtBundleList)
+            .hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(courtBundleList).build())
             .hearingDocumentsHearingList(selectedHearingId.toString())
             .hearingDetails(hearingBookings)
             .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
@@ -1766,7 +1770,8 @@ class ManageDocumentServiceTest {
 
         CaseData caseData = CaseData.builder()
             .manageDocumentsCourtBundle(courtBundle)
-            .courtBundleListV2(courtBundleList)
+            .hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(courtBundleList).build())
             .hearingDocumentsHearingList(selectedHearingId.toString())
             .hearingDetails(hearingBookings)
             .build();

@@ -192,7 +192,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
                 .courtBundleNC(courtBundle)
                 .build()
         );
-        assertThat(responseData.getCourtBundleListV2()).first()
+        assertThat(responseData.getHearingDocuments().getCourtBundleListV2()).first()
             .isEqualTo(expected);
         assertExpectedFieldsAreRemoved(responseData);
     }
@@ -446,7 +446,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
         } catch (RuntimeException e) {
             String exceptionText = e.getMessage();
-            assertThat(exceptionText.contains("IllegalStateException") 
+            assertThat(exceptionText.contains("IllegalStateException")
                 && exceptionText.contains("Unexpected null manage document LA."));
         }
     }

@@ -694,11 +694,10 @@ public class CaseData {
     private final PositionStatementRespondent manageDocumentsPositionStatementRespondent;
     private final DynamicList manageDocumentsChildrenList;
     private final DynamicList hearingDocumentsRespondentList;
-    private final List<Element<HearingCourtBundle>> courtBundleListV2;
-    private final List<Element<CourtBundle>> courtBundleList;
-    private final List<Element<CaseSummary>> caseSummaryList;
-    private final List<Element<PositionStatementChild>> positionStatementChildList;
-    private final List<Element<PositionStatementRespondent>> positionStatementRespondentList;
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final HearingDocuments hearingDocuments = HearingDocuments.builder().build();
 
     public DynamicList buildDynamicChildrenList() {
         return buildDynamicChildrenList(null);
@@ -718,22 +717,6 @@ public class CaseData {
 
     public List<Element<CourtBundle>> getManageDocumentsCourtBundle() {
         return defaultIfNull(manageDocumentsCourtBundle, new ArrayList<>());
-    }
-
-    public List<Element<HearingCourtBundle>> getCourtBundleListV2() {
-        return defaultIfNull(courtBundleListV2, new ArrayList<>());
-    }
-
-    public List<Element<CaseSummary>> getCaseSummaryList() {
-        return defaultIfNull(caseSummaryList, new ArrayList<>());
-    }
-
-    public List<Element<PositionStatementChild>> getPositionStatementChildList() {
-        return defaultIfNull(positionStatementChildList, new ArrayList<>());
-    }
-
-    public List<Element<PositionStatementRespondent>> getPositionStatementRespondentList() {
-        return defaultIfNull(positionStatementRespondentList, new ArrayList<>());
     }
 
     public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocuments() {

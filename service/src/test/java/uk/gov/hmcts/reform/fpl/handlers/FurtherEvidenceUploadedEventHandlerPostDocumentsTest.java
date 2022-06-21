@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -189,7 +190,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
             );
         furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
 
-        List<HearingCourtBundle> courtBundles = unwrapElements(caseData.getCourtBundleListV2());
+        List<HearingCourtBundle> courtBundles = unwrapElements(caseData.getHearingDocuments().getCourtBundleListV2());
         Set<DocumentReference> documentReferences = courtBundles.stream()
             .flatMap(hearingCourtBundle -> unwrapElements(hearingCourtBundle.getCourtBundle()).stream())
             .map(CourtBundle::getDocument)
@@ -218,7 +219,8 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
             hearing,
             "LA");
         CaseData caseDataBefore = commonCaseBuilder()
-            .courtBundleListV2(caseData.getCourtBundleListV2())
+            .hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(caseData.getHearingDocuments().getCourtBundleListV2()).build())
             .build();
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
@@ -249,7 +251,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
             2,
             hearing,
             "LA");
-        List<Element<HearingCourtBundle>> courtBundleList = caseData.getCourtBundleListV2();
+        List<Element<HearingCourtBundle>> courtBundleList = caseData.getHearingDocuments().getCourtBundleListV2();
         Element<HearingCourtBundle> existingBundle = courtBundleList.remove(1);
 
         CaseData caseDataBefore = commonCaseBuilder()
@@ -301,11 +303,15 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
         Collections.shuffle(totalHearing);
 
         CaseData caseData = commonCaseBuilder()
-            .courtBundleListV2(totalHearing)
+            .hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(totalHearing)
+                .build())
             .build();
 
         CaseData caseDataBefore = commonCaseBuilder()
-            .courtBundleListV2(oldHearing)
+            .hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(oldHearing)
+                .build())
             .build();
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =

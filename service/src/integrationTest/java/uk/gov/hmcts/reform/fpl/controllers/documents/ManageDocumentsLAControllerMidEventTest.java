@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -145,7 +146,8 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData caseData = CaseData.builder()
             .hearingDetails(hearingBookings)
-            .courtBundleListV2(courtBundleList)
+            .hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(courtBundleList).build())
             .hearingDocumentsHearingList(hearingList)
             .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
             .manageDocumentLA(buildManagementDocument(HEARING_DOCUMENTS))
@@ -155,7 +157,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             "initialise-manage-document-collections", USER_ROLES);
 
         CaseData responseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-        assertThat(responseData.getCourtBundleListV2()).isEqualTo(courtBundleList);
+        assertThat(responseData.getHearingDocuments().getCourtBundleListV2()).isEqualTo(courtBundleList);
 
         assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
             .type(HEARING_DOCUMENTS)

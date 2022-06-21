@@ -351,7 +351,7 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         CaseData responseData = extractCaseData(
             postAboutToSubmitEvent(caseData, USER_ROLES));
-        assertThat(responseData.getCaseSummaryList())
+        assertThat(responseData.getHearingDocuments().getCaseSummaryList())
             .contains(element(selectedHearingId, manageDocumentCaseSummary));
     }
 
