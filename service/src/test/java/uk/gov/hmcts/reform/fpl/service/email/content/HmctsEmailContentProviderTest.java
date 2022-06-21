@@ -123,7 +123,7 @@ class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
                 .build())
             .build();
 
-        SubmitCaseHmctsTemplate expectedTempalte = SubmitCaseHmctsTemplate.builder()
+        SubmitCaseHmctsTemplate expectedTemplate = SubmitCaseHmctsTemplate.builder()
             .court(COURT_NAME)
             .localAuthority(LOCAL_AUTHORITY_NAME)
             .dataPresent(YES.getValue())
@@ -140,6 +140,6 @@ class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
             .childLastName(CHILD_LAST_NAME)
             .build();
 
-        assertThat(underTest.buildHmctsSubmissionNotification(caseData)).isEqualTo(expectedTempalte);
+        assertThat(underTest.buildHmctsSubmissionNotification(caseData)).isEqualTo(expectedTemplate);
     }
 }
