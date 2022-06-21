@@ -553,7 +553,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "changeOtherToRespondent",
-    "Name": "Other person to respondent",
+    "Name": "Change other to respondent",
     "Description": "Changing other to respondent",
     "DisplayOrder": 16,
     "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING",
