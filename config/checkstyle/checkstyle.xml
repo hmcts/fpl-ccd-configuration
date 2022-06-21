@@ -19,7 +19,6 @@
   <property name="charset" value="UTF-8"/>
 
   <property name="severity" value="warning"/>
-
   <property name="fileExtensions" value="java, properties, xml"/>
   <!-- Checks for whitespace                               -->
   <!-- See http://checkstyle.sf.net/config_whitespace.html -->
@@ -49,7 +48,9 @@
       <property name="allowByTailComment" value="true"/>
       <property name="allowNonPrintableEscapes" value="true"/>
     </module>
-    <module name="AvoidStarImport"/>
+    <module name="AvoidStarImport">
+      <property name="excludes" value="uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock"/>
+    </module>
     <module name="OneTopLevelClass"/>
     <module name="NoLineWrap"/>
     <module name="EmptyBlock">
