@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
 
@@ -25,13 +26,28 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/callback/orders-needed")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class OrdersNeededAboutToSubmitCallbackController extends CallbackController {
+public class OrdersNeededController extends CallbackController {
 
     private final HmctsCourtLookupConfiguration courtLookup;
 
-    @PostMapping("/about-to-submit")
+    @PostMapping("/about-to-start")
     @SuppressWarnings("unchecked")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
+        @RequestBody CallbackRequest callbackrequest) {
+        final CaseData caseData = getCaseData(callbackrequest);
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        Map<String, Object> data = caseDetails.getData();
+
+        if (Objects.isNull(caseData.getRepresentativeType())) {
+            data.put("representativeType", RepresentativeType.LOCAL_AUTHORITY);
+        }
+
+        return respond(caseDetails);
+    }
+
+    @PostMapping("/about-to-submit")
+    @SuppressWarnings("unchecked")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(
         @RequestBody CallbackRequest callbackrequest) {
         final String showEpoFieldId = "EPO_REASONING_SHOW";
         final CaseData caseData = getCaseData(callbackrequest);
@@ -74,14 +90,11 @@ public class OrdersNeededAboutToSubmitCallbackController extends CallbackControl
         Court selectedCourt = getCourtSelection(courtID);
 
         if (Objects.nonNull(selectedCourt)) {
-            data.remove("court");
             data.put("court", selectedCourt);
         }
 
         if (ordersFieldName.equals("ordersSolicitor")) {
-            data.remove("orders");
             data.put("orders", data.get("ordersSolicitor"));
-            data.remove("ordersSolicitor");
         }
 
         return respond(caseDetails);

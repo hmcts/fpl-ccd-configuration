@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
-import java.util.List;
 import java.util.Map;
 
 import static org.apache.http.HttpStatus.SC_FORBIDDEN;
@@ -179,54 +178,6 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
         CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
         assertThat(updatedCaseData.getCourt()).isNull();
-    }
-
-    @Test
-    void shouldSetCorrectOrderListToShowParamWhenLocalAuthorityIsApplicant() {
-        givenCurrentUserWithEmail(LOCAL_AUTHORITY_3_USER_EMAIL);
-
-        given(organisationApi.findUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN)).willReturn(testOrganisation());
-
-        CaseData caseData = CaseData.builder()
-            .caseName("name")
-            .representativeType(RepresentativeType.LOCAL_AUTHORITY)
-            .build();
-
-        Map<String, Object> caseDetails = postAboutToSubmitEvent(caseData).getData();
-
-        assertThat(caseDetails.get("orderListToShow")).isEqualTo(List.of("SHOW_LA"));
-    }
-
-    @Test
-    void shouldSetCorrectOrderListToShowParamWhenChildSolicitorIsApplicant() {
-        givenCurrentUserWithEmail(LOCAL_AUTHORITY_3_USER_EMAIL);
-
-        given(organisationApi.findUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN)).willReturn(testOrganisation());
-
-        CaseData caseData = CaseData.builder()
-            .caseName("name")
-            .representativeType(RepresentativeType.CHILD_SOLICITOR)
-            .build();
-
-        Map<String, Object> caseDetails = postAboutToSubmitEvent(caseData).getData();
-
-        assertThat(caseDetails.get("orderListToShow")).isEqualTo(List.of("SHOW_SOLICITOR"));
-    }
-
-    @Test
-    void shouldSetCorrectOrderListToShowParamWhenRespondentSolicitorIsApplicant() {
-        givenCurrentUserWithEmail(LOCAL_AUTHORITY_3_USER_EMAIL);
-
-        given(organisationApi.findUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN)).willReturn(testOrganisation());
-
-        CaseData caseData = CaseData.builder()
-            .caseName("name")
-            .representativeType(RepresentativeType.RESPONDENT_SOLICITOR)
-            .build();
-
-        Map<String, Object> caseDetails = postAboutToSubmitEvent(caseData).getData();
-
-        assertThat(caseDetails.get("orderListToShow")).isEqualTo(List.of("SHOW_SOLICITOR"));
     }
 
     private Map<String, Object> orgPolicy(String id, String role) {

@@ -69,16 +69,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "orderListToShow",
-    "Label": " ",
-    "FieldType": "MultiSelectList",
-    "FieldTypeParameter": "ShowWhichOrderList",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "groundsForEPO",
     "Label": "How are there grounds for an emergency protection order?",
     "FieldType": "GroundsForEPO",
@@ -238,7 +228,8 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "LocalAuthority",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "This holds all applicants, not just LAs"
   },
   {
     "LiveFrom": "01/01/2017",

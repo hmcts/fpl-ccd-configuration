@@ -185,6 +185,7 @@ public class CaseData {
     @Deprecated
     private final List<@NotNull(message = "Add applicant's details") Element<Applicant>> applicants;
 
+    // This holds all applicants, not just LA's
     private List<@NotNull(message = "Add applicant's details") Element<LocalAuthority>> localAuthorities;
 
     @Valid

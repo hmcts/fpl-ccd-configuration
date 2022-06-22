@@ -52,7 +52,6 @@ public class CaseInitiationController extends CallbackController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackrequest) {
-        final String orderListToShow = "orderListToShow";
         final CaseData caseData = getCaseData(callbackrequest);
         final CaseDetailsMap caseDetails = caseDetailsMap(callbackrequest.getCaseDetails());
 
@@ -66,18 +65,6 @@ public class CaseInitiationController extends CallbackController {
         caseDetails.putIfNotEmpty("multiCourts", updatedCaseData.getMultiCourts());
 
         caseDetails.removeAll("outsourcingType", "outsourcingLAs");
-
-        if (Objects.nonNull(caseData.getRepresentativeType())) {
-            if (Objects.equals(caseData.getRepresentativeType().toString(), "LOCAL_AUTHORITY")) {
-                caseDetails.remove(orderListToShow);
-                caseDetails.putIfNotEmpty(orderListToShow, ImmutableList.of("SHOW_LA"));
-
-            } else if (Objects.equals(caseData.getRepresentativeType().toString(), "RESPONDENT_SOLICITOR")
-                || Objects.equals(caseData.getRepresentativeType().toString(), "CHILD_SOLICITOR")) {
-                caseDetails.remove(orderListToShow);
-                caseDetails.putIfNotEmpty(orderListToShow, ImmutableList.of("SHOW_SOLICITOR"));
-            }
-        }
 
         return respond(caseDetails);
     }
