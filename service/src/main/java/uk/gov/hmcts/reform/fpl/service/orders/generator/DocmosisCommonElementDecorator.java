@@ -68,6 +68,7 @@ public class DocmosisCommonElementDecorator {
             .crest(DocmosisImages.CREST.getValue())
             .draftbackground(DRAFT == status ? DocmosisImages.DRAFT_WATERMARK.getValue() : null)
             .courtseal(courtService.getCourtSeal(caseData, status))
+            .isHighCourtCase(courtService.isHighCourtCase(caseData))
             .build();
     }
 }

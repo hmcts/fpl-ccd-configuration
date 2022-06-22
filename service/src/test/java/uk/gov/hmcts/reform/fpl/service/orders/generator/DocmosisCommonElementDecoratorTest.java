@@ -28,7 +28,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.HIGH_COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
@@ -114,13 +113,13 @@ class DocmosisCommonElementDecoratorTest {
                 .build();
 
         when(courtService.getCourtSeal(caseData, SEALED))
-                .thenReturn(HIGH_COURT_SEAL.getValue(caseData.getImageLanguage()));
+                .thenReturn(null);
         when(extractionService.getCourtName(caseData)).thenReturn(COURT_NAME);
         when(childrenSmartSelector.getSelectedChildren(caseData)).thenReturn(CHILDREN);
 
         DocmosisParameters decorated = underTest.decorate(DOCMOSIS_PARAMETERS, caseData, SEALED, ORDER_TYPE);
         DocmosisParameters expectedParameters = expectedCommonParameters(EXPECTED_APPROVAL_DATE)
-                .courtseal(HIGH_COURT_SEAL.getValue(Language.ENGLISH))
+                .courtseal(null)
                 .build();
 
         assertThat(decorated).isEqualTo(expectedParameters);

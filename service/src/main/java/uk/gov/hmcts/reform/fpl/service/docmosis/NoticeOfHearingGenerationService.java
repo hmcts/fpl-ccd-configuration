@@ -42,6 +42,7 @@ public class NoticeOfHearingGenerationService {
             .postingDate(formatLocalDateToString(time.now().toLocalDate(), DATE))
             .additionalNotes(hearingBooking.getAdditionalNotes())
             .courtseal(courtService.getCourtSeal(caseData, SEALED))
+            .isHighCourtCase(courtService.isHighCourtCase(caseData))
             .crest(CREST.getValue())
             .build();
     }

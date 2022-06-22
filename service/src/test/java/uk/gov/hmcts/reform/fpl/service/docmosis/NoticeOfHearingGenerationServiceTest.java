@@ -199,6 +199,7 @@ class NoticeOfHearingGenerationServiceTest {
             .additionalNotes(NOTES)
             .courtName(DEFAULT_LA_COURT)
             .courtseal("[userImage:familycourtseal.png]")
+            .isHighCourtCase(false)
             .crest("[userImage:crest.png]")
             .build();
     }

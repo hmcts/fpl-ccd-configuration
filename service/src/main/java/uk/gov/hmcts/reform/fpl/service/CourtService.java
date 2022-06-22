@@ -20,7 +20,6 @@ import static java.util.Comparator.naturalOrder;
 import static java.util.Comparator.nullsFirst;
 import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.HIGH_COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
@@ -79,9 +78,7 @@ public class CourtService {
     public String getCourtSeal(CaseData caseData, OrderStatus status) {
         String seal = null;
         if (SEALED == status) {
-            if (isHighCourtCase(caseData)) {
-                seal = HIGH_COURT_SEAL.getValue(caseData.getImageLanguage());
-            } else {
+            if (!isHighCourtCase(caseData)) {
                 seal = COURT_SEAL.getValue(caseData.getImageLanguage());
             }
         }

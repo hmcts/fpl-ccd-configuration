@@ -56,7 +56,8 @@ public class StandardDirectionOrderGenerationService extends
                 .applicantName(dataService.getApplicantName(caseData))
                 .directions(buildDirections(standardDirectionOrder.getDirections()))
                 .hearingBooking(dataService.getHearingBookingData(firstHearing))
-                .crest(getCrestData());
+                .crest(getCrestData())
+                .isHighCourtCase(courtService.isHighCourtCase(caseData));
 
         if (standardDirectionOrder.isSealed()) {
             orderBuilder.courtseal(courtService.getCourtSeal(caseData, OrderStatus.SEALED));

@@ -22,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.HIGH_COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -395,7 +394,7 @@ class CourtServiceTest {
                     .build();
             String courtSeal = underTest.getCourtSeal(caseData, SEALED);
 
-            assertThat(courtSeal).isEqualTo(HIGH_COURT_SEAL.getValue(caseData.getImageLanguage()));
+            assertThat(courtSeal).isNull();
         }
 
         @Test
