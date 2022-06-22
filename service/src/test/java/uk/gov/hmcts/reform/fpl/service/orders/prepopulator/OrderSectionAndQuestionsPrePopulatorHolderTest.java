@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkApplicat
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkedToHearingBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ParentalResponsibilityPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBlockOrderPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.RespondentsRefusedBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.SingleChildSelectionBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.TranslationRequirementsBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichChildrenBlockPrePopulator;
@@ -48,6 +49,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINKED_TO_H
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINK_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_TO_AMEND;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.PARENTAL_RESPONSIBILITY;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.RESPONDENTS_REFUSED;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SELECT_SINGLE_CHILD;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TRANSLATION_REQUIREMENTS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
@@ -87,6 +89,8 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
     private ParentalResponsibilityPrePopulator parentalResponsibilityPrePopulator;
     @Mock
     private ChildPlacementOrderPrePopulator childPlacementOrderPrePopulator;
+    @Mock
+    private RespondentsRefusedBlockPrePopulator respondentsRefusedBlockPrePopulator;
 
     // Section blocks
     @Mock
@@ -128,6 +132,7 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             closeCaseBlockPrePopulator,
             translationRequirementsBlockPrePopulator,
             appointedGuardianBlockPrePopulator,
+            respondentsRefusedBlockPrePopulator,
             whichOthersBlockPrePopulator,
             amendOrderToDownloadPrePopulator,
             parentalResponsibilityPrePopulator
@@ -141,6 +146,7 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             Map.entry(APPROVER, approverBlockPrePopulator),
             Map.entry(WHICH_CHILDREN, whichChildrenBlockPrePopulator),
             Map.entry(APPOINTED_GUARDIAN, appointedGuardianBlockPrePopulator),
+            Map.entry(RESPONDENTS_REFUSED, respondentsRefusedBlockPrePopulator),
             Map.entry(SELECT_SINGLE_CHILD, singleChildSelectionBlockPrePopulator),
             Map.entry(EPO_TYPE_AND_PREVENT_REMOVAL, epoTypeAndPreventRemovalBlockPrePopulator),
             Map.entry(CLOSE_CASE, closeCaseBlockPrePopulator),

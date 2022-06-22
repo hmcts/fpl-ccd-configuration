@@ -40,6 +40,7 @@ public class Orders {
     private final EPOType epoType;
     private final String excluded;
     private final Address address;
+    private final String court;
     private final String childAssessmentOrderAssessmentDirections;
     private final String childAssessmentOrderContactDirections;
 
