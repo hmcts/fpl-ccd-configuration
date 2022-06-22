@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.service.respondent.RespondentValidator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -46,7 +47,9 @@ import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.model.Respondent.expandCollection;
 import static uk.gov.hmcts.reform.fpl.model.common.Element.newElement;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
+import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.getConfidentialItemToAdd;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 
 @Slf4j
 @Api
@@ -206,18 +209,33 @@ public class RespondentController extends CallbackController {
 
         OtherToRespondentEventData eventData = caseData.getOtherToRespondentEventData();
 
-        UUID firstOtherUUID = randomUUID();
+        Set<UUID> additionalOtherIds = nullSafeList(caseData.getOthers().getAdditionalOthers())
+            .stream().map(Element::getId).collect(Collectors.toSet());
+        UUID firstOtherUUID = caseData.getConfidentialOthers().stream().map(Element::getId)
+            .filter(co -> !additionalOtherIds.contains(co)).findFirst().orElse(randomUUID());
+        // used for mapping confidential detail for firstOther
+
         Element<Other> selectedPreparedOther = othersService.getSelectedPreparedOther(caseData,
             eventData.getOthersList(), firstOtherUUID);
         boolean isFirstOtherSelected = selectedPreparedOther.getId().equals(firstOtherUUID);
-        List<Element<Other>> newAllOthers;
+        List<Element<Other>> newAllOthersWithDetailsHidden;
         if (isFirstOtherSelected) {
-            newAllOthers = respondentService.buildNewAllOthersWhenFirstOtherSelected(caseData);
+            newAllOthersWithDetailsHidden = respondentService.buildNewAllOthersWhenFirstOtherSelected(caseData);
         } else {
-            newAllOthers = respondentService.buildNewAllOthersWhenAdditionalOtherSelected(caseData,
-                selectedPreparedOther);
+            newAllOthersWithDetailsHidden = respondentService.buildNewAllOthersWhenAdditionalOtherSelected(caseData,
+                selectedPreparedOther, firstOtherUUID);
         }
-
+        List<Element<Other>> newAllOthers = new ArrayList<>();
+        final List<Element<Other>> confidentialOthers = caseData.getConfidentialOthers();
+        newAllOthersWithDetailsHidden.forEach(element -> {
+            if (element.getValue().containsConfidentialDetails()) {
+                Other confidentialOther = getConfidentialItemToAdd(confidentialOthers, element);
+                newAllOthers.add(element(element.getId(), othersService
+                    .addConfidentialDetails(confidentialOther, element)));
+            } else {
+                newAllOthers.add(element);
+            }
+        });
         // Setting "confidentialOthers" to caseDetails
         confidentialDetailsService.addConfidentialDetailsToCase(caseDetails, newAllOthers, OTHER);
         // Setting "others" to caseDetails from previous built new allOthers collection
@@ -232,8 +250,11 @@ public class RespondentController extends CallbackController {
 
         // build new respondents1
         Respondent transformedRespondent = eventData.getTransformedRespondent();
-        caseData.getAllRespondents().add(element(selectedPreparedOther.getId(), transformedRespondent));
-        caseDetails.getData().put(RESPONDENTS_KEY, caseData.getAllRespondents()); // sync caseDetails as well
+        List<Element<Respondent>> newRespondents = confidentialDetailsService.prepareCollection(
+            caseData.getAllRespondents(), caseData.getConfidentialRespondents(), expandCollection());
+        newRespondents.add(element(selectedPreparedOther.getId(), transformedRespondent));
+        caseDetails.getData().put(RESPONDENTS_KEY, newRespondents);
+        caseData = getCaseData(caseDetails); // update case data
         prepareNewRespondents(caseDetails, caseData, caseDataBefore);
 
         // Setting "representatives" to caseDetails

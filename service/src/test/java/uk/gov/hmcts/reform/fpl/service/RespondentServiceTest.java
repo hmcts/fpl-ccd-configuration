@@ -685,7 +685,7 @@ class RespondentServiceTest {
             .build();
 
         List<Element<Other>> actual = service.buildNewAllOthersWhenAdditionalOtherSelected(caseData,
-            element(selectedUUID, Other.builder().build()));
+            element(selectedUUID, Other.builder().build()), UUID.randomUUID());
         assertThat(actual).hasSize(2);
         assertThat(unwrapElements(actual).stream().map(Other::getName)).isEqualTo(expected);
     }

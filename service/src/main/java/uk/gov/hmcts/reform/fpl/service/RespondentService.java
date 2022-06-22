@@ -38,7 +38,9 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -259,7 +261,7 @@ public class RespondentService {
     }
 
     public List<Element<Other>> buildNewAllOthersWhenAdditionalOtherSelected(
-        CaseData caseData, Element<Other> selectedOther) {
+        CaseData caseData, Element<Other> selectedOther, UUID firstOtherUUID) {
         List<Element<Other>> newAllOthers = new ArrayList<>(caseData.getAllOthers());
         Optional<Element<Other>> otherToBeRemoved = findElement(selectedOther.getId(), newAllOthers);
         if (otherToBeRemoved.isPresent()) {
@@ -268,6 +270,14 @@ public class RespondentService {
             }
         } else {
             throw new IllegalStateException("Unable to remove other from additionalOthers");
+        }
+
+        Optional<Element<Other>> firstOtherElement = findElements(caseData.getOthers().getFirstOther(),
+            caseData.getAllOthers()).stream().findFirst();
+        if (firstOtherElement.isPresent()) {
+            if (newAllOthers.removeIf(ele -> Objects.equals(firstOtherElement.get().getId(), ele.getId()))) {
+                newAllOthers.add(element(firstOtherUUID, firstOtherElement.get().getValue()));
+            }
         }
         return newAllOthers;
     }

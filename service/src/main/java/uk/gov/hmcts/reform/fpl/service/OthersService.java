@@ -133,7 +133,7 @@ public class OthersService {
         return "Yes".equals(sendOrdersToAllOthers);
     }
 
-    private Other addConfidentialDetails(Other confidentialOther, Element<Other> other) {
+    public Other addConfidentialDetails(Other confidentialOther, Element<Other> other) {
         Other ret = other.getValue().toBuilder()
             .telephone(confidentialOther.getTelephone())
             .address(confidentialOther.getAddress())
