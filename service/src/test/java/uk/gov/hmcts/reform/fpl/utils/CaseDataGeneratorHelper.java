@@ -282,6 +282,7 @@ public class CaseDataGeneratorHelper {
                 additionalOthers.add(element(uuids.get(i), otherList.get(i)));
             }
         }
+        builder.additionalOthers(additionalOthers);
         return builder.build();
     }
 
