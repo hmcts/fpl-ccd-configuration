@@ -60,7 +60,7 @@ public class CaseSubmissionChecker extends CompoundEventChecker {
         events.add(CASE_NAME);
         events.add(ORDERS_SOUGHT);
         if (!caseData.isC1Application()) {
-            events.add(HEARING_URGENCY);
+            events.add(HEARING_URGENCY); // present but optional for C1s
         }
 
         if (!caseData.isDischargeOfCareApplication()) {
