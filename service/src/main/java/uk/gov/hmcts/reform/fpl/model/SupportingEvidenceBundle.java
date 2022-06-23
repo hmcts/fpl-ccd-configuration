@@ -43,10 +43,12 @@ public class SupportingEvidenceBundle implements TranslatableItem, FurtherDocume
     private final DocumentReference translatedDocument;
     private final LocalDateTime translationUploadDateTime;
     private final LanguageTranslationRequirement translationRequirements;
+    private YesNo hasConfidentialAddress;
 
     @JsonIgnore
     public boolean isConfidentialDocument() {
-        return confidential != null && confidential.contains("CONFIDENTIAL");
+        return (confidential != null && confidential.contains("CONFIDENTIAL"))
+               || YesNo.YES.equals(hasConfidentialAddress);
     }
 
     @JsonIgnore
