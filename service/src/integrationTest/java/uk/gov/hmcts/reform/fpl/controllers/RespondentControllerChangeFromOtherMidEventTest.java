@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -31,8 +33,12 @@ import java.util.stream.Stream;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_PERSON_1;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_1;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildDynamicListFromOthers;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithRandomUUID;
 
@@ -130,8 +136,41 @@ class RespondentControllerChangeFromOtherMidEventTest extends AbstractCallbackTe
 
         assertThat(callbackResponse.getData()).containsKey("transformedRespondent");
         CaseData responseCaseData = extractCaseData(callbackResponse);
-        assertThat(responseCaseData.getOtherToRespondentEventData().getTransformedRespondent()).isEqualTo(
-            expectedRespondent);
+        assertThat(responseCaseData.getOtherToRespondentEventData().getTransformedRespondent().getParty())
+            .isEqualTo(expectedRespondent.getParty());
+    }
+
+    @ParameterizedTest
+    @MethodSource("shouldPopulateTransformedRespondentSource")
+    void shouldPopulateTransformedRespondentWithRepresentative(int selected, Respondent expectedRespondent) {
+        UUID otherPerson1UUID = randomUUID();
+        UUID representativeUUID = randomUUID();
+
+        Others others = createOthers(otherPerson1UUID);
+        if (selected == 0) {
+            others.getFirstOther().addRepresentative(representativeUUID);
+        } else {
+            others.getAdditionalOthers().get(selected - 1).getValue().addRepresentative(representativeUUID);
+        }
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(RandomUtils.nextLong())
+            .data(Map.of(
+                "representatives", List.of(element(representativeUUID, Representative.builder()
+                    .role(selected == 0 ? REPRESENTING_PERSON_1 : REPRESENTING_OTHER_PERSON_1)
+                    .build())),
+                "othersList", buildDynamicListFromOthers(others, selected),
+                "others", others))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails,"enter-respondent");
+
+        assertThat(callbackResponse.getData()).containsKey("transformedRespondent");
+        CaseData responseCaseData = extractCaseData(callbackResponse);
+        expectedRespondent.addRepresentative(representativeUUID);
+        Respondent transformedRespondent = responseCaseData.getOtherToRespondentEventData().getTransformedRespondent();
+        assertThat(transformedRespondent.getParty()).isEqualTo(expectedRespondent.getParty());
+        assertThat(transformedRespondent.getRepresentedBy()).hasSize(1);
+        assertThat(unwrapElements(transformedRespondent.getRepresentedBy())).isEqualTo(List.of(representativeUUID));
     }
 
     @Test
