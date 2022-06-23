@@ -24,7 +24,7 @@ public class CourtBundle extends DocumentMetaData {
     public String getHasConfidentialAddress() {
         return (document != null
                 && (!YesNo.YES.getValue().equalsIgnoreCase(hasConfidentialAddress)
-                     || !YesNo.NO.getValue().equalsIgnoreCase(hasConfidentialAddress)))
+                     && !YesNo.NO.getValue().equalsIgnoreCase(hasConfidentialAddress)))
             ? YesNo.NO.getValue() : hasConfidentialAddress;
     }
 
@@ -52,6 +52,6 @@ public class CourtBundle extends DocumentMetaData {
     @JsonIgnore
     public boolean isConfidentialDocument() {
         return (confidential != null && confidential.contains("CONFIDENTIAL"))
-            || (YesNo.YES.getValue().equalsIgnoreCase(hasConfidentialAddress));
+            || (YesNo.YES.getValue().equalsIgnoreCase(getHasConfidentialAddress()));
     }
 }
