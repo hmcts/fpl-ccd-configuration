@@ -31,9 +31,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
@@ -71,7 +72,50 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
     void before() {
         given(requestData.userRoles()).willReturn(Set.of(UserRole.HMCTS_ADMIN.getRoleName()));
     }
-    
+
+    private List<Element<LocalAuthority>> localAuthorities() {
+        return wrapElements(LocalAuthority.builder()
+            .name(LOCAL_AUTHORITY_1_NAME)
+            .email(LOCAL_AUTHORITY_1_INBOX)
+            .designated(YesNo.YES.getValue())
+            .build());
+    }
+
+    private OtherToRespondentEventData otherToRespondentEventData(Respondent transformedRespondent, Others others,
+                                                                  int selectedOtherSeq) {
+        return OtherToRespondentEventData.builder()
+            .transformedRespondent(transformedRespondent)
+            .othersList(buildDynamicListFromOthers(others, selectedOtherSeq))
+            .build();
+    }
+
+    private RepresentativeRole resolveOtherRepresentativeRole(int i) {
+        switch (i) {
+            case 0:
+                return RepresentativeRole.REPRESENTING_PERSON_1;
+            case 1:
+                return RepresentativeRole.REPRESENTING_OTHER_PERSON_1;
+            case 2:
+                return RepresentativeRole.REPRESENTING_OTHER_PERSON_2;
+            case 3:
+                return RepresentativeRole.REPRESENTING_OTHER_PERSON_3;
+            case 4:
+                return RepresentativeRole.REPRESENTING_OTHER_PERSON_4;
+            case 5:
+                return RepresentativeRole.REPRESENTING_OTHER_PERSON_5;
+            case 6:
+                return RepresentativeRole.REPRESENTING_OTHER_PERSON_6;
+            case 7:
+                return RepresentativeRole.REPRESENTING_OTHER_PERSON_7;
+            case 8:
+                return RepresentativeRole.REPRESENTING_OTHER_PERSON_8;
+            case 9:
+                return RepresentativeRole.REPRESENTING_OTHER_PERSON_9;
+            default:
+                return null;
+        }
+    }
+
     private RepresentativeRole resolveRespondentRepresentativeRole(int i) {
         switch (i) {
             case 1:
@@ -173,14 +217,14 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         return respondents;
     }
 
-    private static Others prepareOthersTestingData(int numberOfAdditionalOther,
+    private Others prepareOthersTestingData(int numberOfAdditionalOther,
                                                    boolean firstOtherDetailsHidden,
                                                    boolean additionalOtherDetailsHidden) {
         return prepareOthersTestingData(numberOfAdditionalOther, firstOtherDetailsHidden,
             (i) -> additionalOtherDetailsHidden);
     }
 
-    private static Others prepareOthersTestingData(int numberOfAdditionalOther,
+    private Others prepareOthersTestingData(int numberOfAdditionalOther,
                                                    boolean firstOtherDetailsHidden,
                                                    Predicate<Integer> condition) {
         List<Element<Other>> additionalOthers = new ArrayList<>();
@@ -201,43 +245,8 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         return others;
     }
 
-    private static Representative prepareOtherRepresenatative(int selectedOtherSeq) {
-        RepresentativeRole role = null;
-        switch (selectedOtherSeq) {
-            case 0:
-                role = RepresentativeRole.REPRESENTING_PERSON_1;
-                break;
-            case 1:
-                role = RepresentativeRole.REPRESENTING_OTHER_PERSON_1;
-                break;
-            case 2:
-                role = RepresentativeRole.REPRESENTING_OTHER_PERSON_2;
-                break;
-            case 3:
-                role = RepresentativeRole.REPRESENTING_OTHER_PERSON_3;
-                break;
-            case 4:
-                role = RepresentativeRole.REPRESENTING_OTHER_PERSON_4;
-                break;
-            case 5:
-                role = RepresentativeRole.REPRESENTING_OTHER_PERSON_5;
-                break;
-            case 6:
-                role = RepresentativeRole.REPRESENTING_OTHER_PERSON_6;
-                break;
-            case 7:
-                role = RepresentativeRole.REPRESENTING_OTHER_PERSON_7;
-                break;
-            case 8:
-                role = RepresentativeRole.REPRESENTING_OTHER_PERSON_8;
-                break;
-            case 9:
-                role = RepresentativeRole.REPRESENTING_OTHER_PERSON_9;
-                break;
-            default:
-                role = null;
-        }
-
+    private Representative prepareOtherRepresentative(int otherSequence) {
+        RepresentativeRole role = resolveOtherRepresentativeRole(otherSequence);
         return Representative.builder()
             .fullName("Joyce")
             .role(role)
@@ -255,7 +264,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
                     .telephoneNumber(Telephone.builder().telephoneNumber(telephoneNumber).build())
                     .build())
                 .build())
-        ).collect(Collectors.toList());
+        ).collect(toList());
     }
 
     private List<Element<Other>> prepareConfidentialOthersFromAllOthers(List<Element<Other>> allOthers) {
@@ -268,7 +277,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
                     .telephone(telephoneNumber)
                     .address(buildHiddenAddress(e.getValue().getName()))
                     .build())
-        ).collect(Collectors.toList());
+        ).collect(toList());
     }
 
     private List<Element<Other>> prepareSingleConfidentialOther(int selectedOtherSeq,
@@ -314,22 +323,15 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         Respondent transformedRespondent = prepareTransformedRespondentTestingData(false);
 
         CaseData caseData = CaseData.builder()
-            .localAuthorities(wrapElements(LocalAuthority.builder()
-                .name(LOCAL_AUTHORITY_1_NAME)
-                .email(LOCAL_AUTHORITY_1_INBOX)
-                .designated(YesNo.YES.getValue())
-                .build()))
+            .localAuthorities(localAuthorities())
             .others(others)
             .respondents1(wrapElementsWithRandomUUID(respondents))
-            .otherToRespondentEventData(OtherToRespondentEventData.builder()
-                .transformedRespondent(transformedRespondent)
-                .othersList(buildDynamicListFromOthers(others, selectedOtherSeq))
-                .build())
+            .otherToRespondentEventData(otherToRespondentEventData(transformedRespondent, others, selectedOtherSeq))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
-
         CaseData responseCaseData = extractCaseData(callbackResponse);
+
         assertThat(responseCaseData.getAllOthers()).hasSize(numberOfAdditionalOther);
         assertThat(responseCaseData.getAllOthers().stream()
             .filter(o -> String.format("Marco %s", selectedOtherSeq).equals(o.getValue().getName()))).isEmpty();
@@ -359,22 +361,15 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
 
         CaseData caseData = CaseData.builder()
             .confidentialOthers(prepareSingleConfidentialOther(selectedOtherSeq, firstOther, additionalOthers))
-            .localAuthorities(wrapElements(LocalAuthority.builder()
-                .name(LOCAL_AUTHORITY_1_NAME)
-                .email(LOCAL_AUTHORITY_1_INBOX)
-                .designated(YesNo.YES.getValue())
-                .build()))
+            .localAuthorities(localAuthorities())
             .others(others)
             .respondents1(wrapElementsWithRandomUUID(respondents))
-            .otherToRespondentEventData(OtherToRespondentEventData.builder()
-                .transformedRespondent(transformedRespondent)
-                .othersList(buildDynamicListFromOthers(others, selectedOtherSeq))
-                .build())
+            .otherToRespondentEventData(otherToRespondentEventData(transformedRespondent, others, selectedOtherSeq))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
-
         CaseData responseCaseData = extractCaseData(callbackResponse);
+
         assertThat(responseCaseData.getAllOthers()).hasSize(numberOfAdditionalOther);
         assertThat(responseCaseData.getAllOthers().stream()
             .filter(o -> String.format("Marco %s", selectedOtherSeq).equals(o.getValue().getName()))).isEmpty();
@@ -420,22 +415,15 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         CaseData caseData = CaseData.builder()
             .confidentialRespondents(prepareConfidentialRespondentsFromRespondents1(respondents1))
             .confidentialOthers(prepareSingleConfidentialOther(selectedOtherSeq, firstOther, additionalOthers))
-            .localAuthorities(wrapElements(LocalAuthority.builder()
-                .name(LOCAL_AUTHORITY_1_NAME)
-                .email(LOCAL_AUTHORITY_1_INBOX)
-                .designated(YesNo.YES.getValue())
-                .build()))
+            .localAuthorities(localAuthorities())
             .others(others)
             .respondents1(respondents1)
-            .otherToRespondentEventData(OtherToRespondentEventData.builder()
-                .transformedRespondent(transformedRespondent)
-                .othersList(buildDynamicListFromOthers(others, selectedOtherSeq))
-                .build())
+            .otherToRespondentEventData(otherToRespondentEventData(transformedRespondent, others, selectedOtherSeq))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
-
         CaseData responseCaseData = extractCaseData(callbackResponse);
+
         assertThat(responseCaseData.getAllOthers()).hasSize(numberOfAdditionalOther);
         assertThat(responseCaseData.getAllOthers().stream()
             .filter(o -> String.format("Marco %s", selectedOtherSeq).equals(o.getValue().getName()))).isEmpty();
@@ -453,7 +441,6 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         assertThat(responseCaseData.getAllRespondents()).hasSize(numberOfRespondent + 1);
         assertThat(responseCaseData.findRespondent(numberOfRespondent)).contains(
             prepareExpectedTransformedRespondent(true));
-
         // Check converted respondent's confidential address
         UUID targetUUID = responseCaseData.getAllRespondents().stream().filter(
             e -> Objects.equals(e.getValue(), responseCaseData.findRespondent(numberOfRespondent).get())
@@ -463,7 +450,6 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
             .map(Element::getValue)
             .findFirst())
             .contains(prepareExpectedTransformedConfidentialRespondent());
-
         // Check existing respondent address
         UUID prevExistingRespondentUUID = responseCaseData.getAllRespondents().stream().filter(
             e -> Objects.equals(e.getValue(), responseCaseData.findRespondent(numberOfRespondent - 1).get())
@@ -494,22 +480,15 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         CaseData caseData = CaseData.builder()
             .confidentialRespondents(prepareConfidentialRespondentsFromRespondents1(respondents1))
             .confidentialOthers(prepareConfidentialOthersFromAllOthers(allOthers))
-            .localAuthorities(wrapElements(LocalAuthority.builder()
-                .name(LOCAL_AUTHORITY_1_NAME)
-                .email(LOCAL_AUTHORITY_1_INBOX)
-                .designated(YesNo.YES.getValue())
-                .build()))
+            .localAuthorities(localAuthorities())
             .respondents1(respondents1)
             .others(others)
-            .otherToRespondentEventData(OtherToRespondentEventData.builder()
-                .transformedRespondent(transformedRespondent)
-                .othersList(buildDynamicListFromOthers(others, selectedOtherSeq))
-                .build())
+            .otherToRespondentEventData(otherToRespondentEventData(transformedRespondent, others, selectedOtherSeq))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
-
         CaseData responseCaseData = extractCaseData(callbackResponse);
+
         assertThat(responseCaseData.getAllOthers()).hasSize(numberOfAdditionalOther);
         assertThat(responseCaseData.getAllOthers().stream()
             .filter(o -> String.format("Marco %s", selectedOtherSeq).equals(o.getValue().getName()))).isEmpty();
@@ -527,7 +506,6 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         assertThat(responseCaseData.getAllRespondents()).hasSize(numberOfRespondent + 1);
         assertThat(responseCaseData.findRespondent(numberOfRespondent)).contains(
             prepareExpectedTransformedRespondent(true));
-
         // Check converted respondent's confidential address
         UUID targetUUID = responseCaseData.getAllRespondents().stream().filter(
             e -> Objects.equals(e.getValue(), responseCaseData.findRespondent(numberOfRespondent).get())
@@ -535,7 +513,6 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         assertThat(responseCaseData.getConfidentialRespondents().stream()
             .filter(e -> targetUUID.equals(e.getId())).map(Element::getValue).findFirst())
             .contains(prepareExpectedTransformedConfidentialRespondent());
-
         // Check existing respondent address
         UUID prevExistingRespondentUUID = responseCaseData.getAllRespondents().stream().filter(
             e -> Objects.equals(e.getValue(), responseCaseData.findRespondent(numberOfRespondent - 1).get())
@@ -547,11 +524,6 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
             .contains(prepareExpectedExistingConfidentialRespondent(numberOfRespondent - 1));
     }
 
-
-    public static Stream<Arguments> othersToRespondentParam2() {
-        return Stream.of(Arguments.of(1, 1, 1));
-    }
-
     @ParameterizedTest
     @MethodSource("othersToRespondentParam")
     void shouldConvertOthersWithRepresentativeToRespondent(
@@ -559,7 +531,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         int numberOfAdditionalOther,
         int numberOfRespondent) {
         Others others = prepareOthersTestingData(numberOfAdditionalOther, false, false);
-        Element<Representative> representativeForOther = element(prepareOtherRepresenatative(selectedOtherSeq));
+        Element<Representative> representativeForOther = element(prepareOtherRepresentative(selectedOtherSeq));
         if (selectedOtherSeq == 0) {
             others.getFirstOther().addRepresentative(representativeForOther.getId());
         } else {
@@ -575,22 +547,15 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
 
         CaseData caseData = CaseData.builder()
             .representatives(List.of(representativeForOther))
-            .localAuthorities(wrapElements(LocalAuthority.builder()
-                .name(LOCAL_AUTHORITY_1_NAME)
-                .email(LOCAL_AUTHORITY_1_INBOX)
-                .designated(YesNo.YES.getValue())
-                .build()))
+            .localAuthorities(localAuthorities())
             .others(others)
             .respondents1(respondents1)
-            .otherToRespondentEventData(OtherToRespondentEventData.builder()
-                .transformedRespondent(transformedRespondent)
-                .othersList(buildDynamicListFromOthers(others, selectedOtherSeq))
-                .build())
+            .otherToRespondentEventData(otherToRespondentEventData(transformedRespondent, others, selectedOtherSeq))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
-
         CaseData responseCaseData = extractCaseData(callbackResponse);
+
         assertThat(responseCaseData.getAllOthers()).hasSize(numberOfAdditionalOther);
         assertThat(responseCaseData.getAllOthers().stream()
             .filter(o -> String.format("Marco %s", selectedOtherSeq).equals(o.getValue().getName()))).isEmpty();
@@ -612,6 +577,93 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         assertThat(unwrapElements(responseCaseData.getRepresentatives()).stream()
             .map(Representative::getRole).findFirst())
             .contains(resolveRespondentRepresentativeRole(numberOfRespondent + 1));
+    }
+
+    @ParameterizedTest
+    @MethodSource("othersToRespondentParam")
+    void shouldConvertOthersWithRepresentativesToRespondent(
+            int selectedOtherSeq,
+            int numberOfAdditionalOther,
+            int numberOfRespondent) {
+        Others others = prepareOthersTestingData(numberOfAdditionalOther, false, false);
+        List<Element<Representative>> representatives = new ArrayList<>();
+        List<UUID> representativeIdsInTransformedRespondent = new ArrayList<>();
+        for (int i = 0; i < numberOfAdditionalOther + 1; i++) {
+            Element<Representative> representativeElement = element(prepareOtherRepresentative(i));
+            if (i == 0) {
+                others.getFirstOther().addRepresentative(representativeElement.getId());
+            } else {
+                others.getAdditionalOthers().get(i - 1).getValue().addRepresentative(representativeElement.getId());
+            }
+            if (i == selectedOtherSeq) {
+                representativeIdsInTransformedRespondent.add(representativeElement.getId());
+            }
+            representatives.add(representativeElement);
+        }
+
+        Respondent transformedRespondent = prepareTransformedRespondentTestingData(false);
+        representativeIdsInTransformedRespondent.forEach(uuid -> transformedRespondent.addRepresentative(uuid));
+
+        List<Respondent> respondents = prepareRespondentsTestingData(numberOfRespondent);
+        List<Element<Respondent>> respondents1 = wrapElementsWithRandomUUID(respondents);
+
+        CaseData caseData = CaseData.builder()
+            .representatives(representatives)
+            .localAuthorities(localAuthorities())
+            .others(others)
+            .respondents1(respondents1)
+            .otherToRespondentEventData(otherToRespondentEventData(transformedRespondent, others, selectedOtherSeq))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
+        CaseData responseCaseData = extractCaseData(callbackResponse);
+
+        assertThat(responseCaseData.getAllOthers()).hasSize(numberOfAdditionalOther);
+        assertThat(responseCaseData.getAllOthers().stream()
+            .filter(o -> String.format("Marco %s", selectedOtherSeq).equals(o.getValue().getName()))).isEmpty();
+        if (numberOfAdditionalOther > 0) {
+            assertThat(responseCaseData.getOthers().getFirstOther().toParty()).isEqualTo(
+                Other.builder()
+                    .name(String.format("Marco %s", selectedOtherSeq == 0 ? 1 : 0))
+                    .detailsHidden("No")
+                    .build().toParty());
+        } else {
+            assertThat(responseCaseData.getOthers()).isNull();
+        }
+        // verify the respondent count should be increased by 1
+        assertThat(responseCaseData.getAllRespondents()).hasSize(numberOfRespondent + 1);
+        // verify respondent content was transferred successfully
+        assertThat(responseCaseData.findRespondent(numberOfRespondent).map(Respondent::getParty))
+            .contains(prepareExpectedTransformedRespondent(false).getParty());
+        // verify if the transformed respondent's representative ids are migrated to respondent's representedBy
+        assertThat(responseCaseData.findRespondent(numberOfRespondent).map(Respondent::getRepresentedBy).map(
+            ElementUtils::unwrapElements).orElse(List.of())).isEqualTo(representativeIdsInTransformedRespondent);
+        // verify if the representative's count = other's count
+        assertThat(responseCaseData.getRepresentatives()).hasSize(numberOfAdditionalOther + 1);
+        // verify the new respondent's roles
+        representativeIdsInTransformedRespondent.forEach(representativeId -> {
+            assertThat(
+                ElementUtils.findElement(representativeId, responseCaseData.getRepresentatives())
+                    .map(Element::getValue)
+                    .map(Representative::getRole)
+                    .stream().collect(toSet())
+            ).isEqualTo(Set.of(resolveRespondentRepresentativeRole(numberOfRespondent + 1)));
+        });
+        // verify the non-affected other's representatives
+        List<Element<Other>> responseAllOthers = responseCaseData.getAllOthers();
+        for (int i = 0; i < responseAllOthers.size(); i++) {
+            final int finalI = i;
+            unwrapElements(responseAllOthers).get(i).getRepresentedBy()
+                .stream().map(Element::getValue).collect(toSet()).forEach(
+                    representativeId -> {
+                        assertThat(
+                            ElementUtils.findElement(representativeId, responseCaseData.getRepresentatives())
+                                .map(Element::getValue)
+                                .map(Representative::getRole)
+                                .stream().collect(toSet())
+                        ).isEqualTo(Set.of(resolveOtherRepresentativeRole(finalI)));
+                    });
+        }
     }
 
 }
