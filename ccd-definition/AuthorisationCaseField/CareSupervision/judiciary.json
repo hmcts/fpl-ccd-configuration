@@ -3735,20 +3735,20 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondentsRefusedSelector",
     "UserRole": "caseworker-publiclaw-judiciary",
-    "CRUD": "R"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "refusedOrdersTabHeading",
     "UserRole": "caseworker-publiclaw-judiciary",
-    "CRUD": "R"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CaseFieldID": "othersList",
-    "CRUD": "R"
+    "CRUD": "CRU"
   }
 ]
