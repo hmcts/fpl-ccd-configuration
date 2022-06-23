@@ -71,6 +71,12 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
             .build();
     }
 
+    private static Address buildHiddenAddress(String identifier) {
+        return Address.builder()
+            .addressLine1(String.format("Secret Address %s", identifier))
+            .build();
+    }
+
     public static Stream<Arguments> othersToRespondentParam() {
         Stream.Builder<Arguments> builder = Stream.builder();
         for (int i = 0; i < 10; i++) { // selectedOtherSeq
@@ -144,8 +150,8 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
 
     @ParameterizedTest
     @MethodSource("othersToRespondentParam")
-    void shouldConvertOthersWithHiddenDetailsToRespondent(int selectedOtherSeq, int numberOfAdditionalOther,
-                                                          int numberOfRespondent) {
+    void shouldConvertOthersWithHiddenDetailsToRespondentWhereNoConfidentialRespondent(
+        int selectedOtherSeq, int numberOfAdditionalOther, int numberOfRespondent) {
         List<Element<Other>> additionalOthers = new ArrayList<>();
         for (int i = 0; i < numberOfAdditionalOther; i++) {
             additionalOthers.add(element(Other.builder()
@@ -523,13 +529,4 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
                 .build());
     }
 
-    private Address buildHiddenAddress(String identifier) {
-        return Address.builder()
-            .addressLine1(String.format("Secret Address %s", identifier))
-            .build();
-    }
-
-    public static Stream<Arguments> othersToRespondentParam2() {
-        return Stream.of(Arguments.of(1, 1, 1));
-    }
 }

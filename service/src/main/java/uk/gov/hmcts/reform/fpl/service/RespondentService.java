@@ -265,19 +265,17 @@ public class RespondentService {
         List<Element<Other>> newAllOthers = new ArrayList<>(caseData.getAllOthers());
         Optional<Element<Other>> otherToBeRemoved = findElement(selectedOther.getId(), newAllOthers);
         if (otherToBeRemoved.isPresent()) {
-            if (!newAllOthers.removeIf(ele -> ele.getId().equals(otherToBeRemoved.get().getId()))) {
-                throw new IllegalStateException("Unable to remove other from additionalOthers");
-            }
+            newAllOthers.removeIf(ele -> ele.getId().equals(otherToBeRemoved.get().getId()));
         } else {
             throw new IllegalStateException("Unable to remove other from additionalOthers");
         }
 
+        // replacing the id of elemented firstOther with given firstOtherUUID
         Optional<Element<Other>> firstOtherElement = findElements(caseData.getOthers().getFirstOther(),
-            caseData.getAllOthers()).stream().findFirst();
+            newAllOthers).stream().findFirst();
         if (firstOtherElement.isPresent()) {
-            if (newAllOthers.removeIf(ele -> Objects.equals(firstOtherElement.get().getId(), ele.getId()))) {
-                newAllOthers.add(element(firstOtherUUID, firstOtherElement.get().getValue()));
-            }
+            newAllOthers.removeIf(ele -> Objects.equals(firstOtherElement.get().getId(), ele.getId()));
+            newAllOthers.add(0, element(firstOtherUUID, firstOtherElement.get().getValue()));
         }
         return newAllOthers;
     }
