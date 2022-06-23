@@ -3749,6 +3749,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CaseFieldID": "othersList",
-    "CRUD": "CRU"
+    "CRUD": "R"
   }
 ]
