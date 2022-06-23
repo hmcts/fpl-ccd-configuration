@@ -174,6 +174,33 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         ).collect(Collectors.toList());
     }
 
+    private List<Element<Other>> prepareConfidentialOthersFromAllOthers(List<Element<Other>> allOthers) {
+        return allOthers.stream().map(
+            e -> element(
+                e.getId(),
+                e.getValue()
+                    .toBuilder()
+                    .detailsHidden(null)
+                    .telephone(telephoneNumber)
+                    .address(buildHiddenAddress(e.getValue().getName()))
+                    .build())
+        ).collect(Collectors.toList());
+    }
+
+    private List<Element<Other>> prepareSingleConfidentialOther(int selectedOtherSeq,
+                                                                Other firstOther,
+                                                                List<Element<Other>> additionalOthers) {
+        return List.of(element(
+            (selectedOtherSeq == 0 ? UUID.randomUUID() : additionalOthers.get(selectedOtherSeq - 1).getId()),
+            (selectedOtherSeq == 0 ? firstOther : additionalOthers.get(selectedOtherSeq - 1).getValue())
+                .toBuilder()
+                .detailsHidden(null)
+                .telephone(telephoneNumber)
+                .address(buildHiddenAddress("selected other"))
+                .build())
+        );
+    }
+
     private static Address buildHiddenAddress(String identifier) {
         return Address.builder()
             .addressLine1(String.format("Secret Address %s", identifier))
@@ -247,16 +274,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         Respondent transformedRespondent = prepareTransformedRespondentTestingData(true);
 
         CaseData caseData = CaseData.builder()
-            .confidentialOthers(List.of(
-                element(
-                    (selectedOtherSeq == 0 ? UUID.randomUUID() : additionalOthers.get(selectedOtherSeq - 1).getId()),
-                    (selectedOtherSeq == 0 ? firstOther : additionalOthers.get(selectedOtherSeq - 1).getValue())
-                        .toBuilder()
-                        .detailsHidden(null)
-                        .telephone(telephoneNumber)
-                        .address(buildHiddenAddress("selected other"))
-                        .build())
-            ))
+            .confidentialOthers(prepareSingleConfidentialOther(selectedOtherSeq, firstOther, additionalOthers))
             .localAuthorities(wrapElements(LocalAuthority.builder()
                 .name(LOCAL_AUTHORITY_1_NAME)
                 .email(LOCAL_AUTHORITY_1_INBOX)
@@ -317,16 +335,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
 
         CaseData caseData = CaseData.builder()
             .confidentialRespondents(prepareConfidentialRespondentsFromRespondents1(respondents1))
-            .confidentialOthers(List.of(
-                element(
-                    (selectedOtherSeq == 0 ? UUID.randomUUID() : additionalOthers.get(selectedOtherSeq - 1).getId()),
-                    (selectedOtherSeq == 0 ? firstOther : additionalOthers.get(selectedOtherSeq - 1).getValue())
-                        .toBuilder()
-                        .detailsHidden(null)
-                        .telephone(telephoneNumber)
-                        .address(buildHiddenAddress("SHOULDN'T EXIST"))
-                        .build())
-            ))
+            .confidentialOthers(prepareSingleConfidentialOther(selectedOtherSeq, firstOther, additionalOthers))
             .localAuthorities(wrapElements(LocalAuthority.builder()
                 .name(LOCAL_AUTHORITY_1_NAME)
                 .email(LOCAL_AUTHORITY_1_INBOX)
@@ -366,7 +375,9 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
             e -> Objects.equals(e.getValue(), responseCaseData.findRespondent(numberOfRespondent).get())
         ).map(Element::getId).findFirst().orElse(UUID.randomUUID());
         assertThat(responseCaseData.getConfidentialRespondents().stream()
-            .filter(e -> targetUUID.equals(e.getId())).map(Element::getValue).findFirst())
+            .filter(e -> targetUUID.equals(e.getId()))
+            .map(Element::getValue)
+            .findFirst())
             .contains(prepareExpectedTransformedConfidentialRespondent());
 
         // Check existing respondent address
@@ -374,7 +385,9 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
             e -> Objects.equals(e.getValue(), responseCaseData.findRespondent(numberOfRespondent - 1).get())
         ).map(Element::getId).findFirst().orElse(UUID.randomUUID());
         assertThat(responseCaseData.getConfidentialRespondents().stream()
-            .filter(e -> prevExistingRespondentUUID.equals(e.getId())).map(Element::getValue).findFirst())
+            .filter(e -> prevExistingRespondentUUID.equals(e.getId()))
+            .map(Element::getValue)
+            .findFirst())
             .contains(prepareExpectedExistingConfidentialRespondent(numberOfRespondent - 1));
     }
 
@@ -396,16 +409,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
 
         CaseData caseData = CaseData.builder()
             .confidentialRespondents(prepareConfidentialRespondentsFromRespondents1(respondents1))
-            .confidentialOthers(allOthers.stream().map(
-                e -> element(
-                    e.getId(),
-                    e.getValue()
-                        .toBuilder()
-                        .detailsHidden(null)
-                        .telephone(telephoneNumber)
-                        .address(buildHiddenAddress(e.getValue().getName()))
-                        .build())
-            ).collect(Collectors.toList()))
+            .confidentialOthers(prepareConfidentialOthersFromAllOthers(allOthers))
             .localAuthorities(wrapElements(LocalAuthority.builder()
                 .name(LOCAL_AUTHORITY_1_NAME)
                 .email(LOCAL_AUTHORITY_1_INBOX)
@@ -453,7 +457,9 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
             e -> Objects.equals(e.getValue(), responseCaseData.findRespondent(numberOfRespondent - 1).get())
         ).map(Element::getId).findFirst().orElse(UUID.randomUUID());
         assertThat(responseCaseData.getConfidentialRespondents().stream()
-            .filter(e -> prevExistingRespondentUUID.equals(e.getId())).map(Element::getValue).findFirst())
+            .filter(e -> prevExistingRespondentUUID.equals(e.getId()))
+            .map(Element::getValue)
+            .findFirst())
             .contains(prepareExpectedExistingConfidentialRespondent(numberOfRespondent - 1));
     }
 
