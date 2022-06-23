@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -15,12 +16,14 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.event.OtherToRespondentEventData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,8 +38,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_1;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_10;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_2;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_3;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_4;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_5;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_6;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_7;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_8;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_9;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildDynamicListFromOthers;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithRandomUUID;
 
@@ -57,15 +71,42 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
     void before() {
         given(requestData.userRoles()).willReturn(Set.of(UserRole.HMCTS_ADMIN.getRoleName()));
     }
+    
+    private RepresentativeRole resolveRespondentRepresentativeRole(int i) {
+        switch (i) {
+            case 1:
+                return REPRESENTING_RESPONDENT_1;
+            case 2:
+                return REPRESENTING_RESPONDENT_2;
+            case 3:
+                return REPRESENTING_RESPONDENT_3;
+            case 4:
+                return REPRESENTING_RESPONDENT_4;
+            case 5:
+                return REPRESENTING_RESPONDENT_5;
+            case 6:
+                return REPRESENTING_RESPONDENT_6;
+            case 7:
+                return REPRESENTING_RESPONDENT_7;
+            case 8:
+                return REPRESENTING_RESPONDENT_8;
+            case 9:
+                return REPRESENTING_RESPONDENT_9;
+            case 10:
+                return REPRESENTING_RESPONDENT_10;
+            default:
+                return null;
+        }
+    }
 
-    private Respondent prepareTransformedRespondentTestingData(boolean contactDeatilsHidden) {
+    private Respondent prepareTransformedRespondentTestingData(boolean contactDetailsHidden) {
         return Respondent.builder()
             .party(RespondentParty.builder()
                 .firstName("Johnny")
                 .telephoneNumber(Telephone.builder().telephoneNumber(telephoneNumber).build())
                 .address(buildHiddenAddress("Converting"))
                 .addressKnow("Yes")
-                .contactDetailsHidden(YesNo.from(contactDeatilsHidden).getValue())
+                .contactDetailsHidden(YesNo.from(contactDetailsHidden).getValue())
                 .build())
             .legalRepresentation("No")
             .build();
@@ -158,6 +199,49 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
             .additionalOthers(additionalOthers)
             .build();
         return others;
+    }
+
+    private static Representative prepareOtherRepresenatative(int selectedOtherSeq) {
+        RepresentativeRole role = null;
+        switch (selectedOtherSeq) {
+            case 0:
+                role = RepresentativeRole.REPRESENTING_PERSON_1;
+                break;
+            case 1:
+                role = RepresentativeRole.REPRESENTING_OTHER_PERSON_1;
+                break;
+            case 2:
+                role = RepresentativeRole.REPRESENTING_OTHER_PERSON_2;
+                break;
+            case 3:
+                role = RepresentativeRole.REPRESENTING_OTHER_PERSON_3;
+                break;
+            case 4:
+                role = RepresentativeRole.REPRESENTING_OTHER_PERSON_4;
+                break;
+            case 5:
+                role = RepresentativeRole.REPRESENTING_OTHER_PERSON_5;
+                break;
+            case 6:
+                role = RepresentativeRole.REPRESENTING_OTHER_PERSON_6;
+                break;
+            case 7:
+                role = RepresentativeRole.REPRESENTING_OTHER_PERSON_7;
+                break;
+            case 8:
+                role = RepresentativeRole.REPRESENTING_OTHER_PERSON_8;
+                break;
+            case 9:
+                role = RepresentativeRole.REPRESENTING_OTHER_PERSON_9;
+                break;
+            default:
+                role = null;
+        }
+
+        return Representative.builder()
+            .fullName("Joyce")
+            .role(role)
+            .build();
     }
 
     private List<Element<Respondent>> prepareConfidentialRespondentsFromRespondents1(
@@ -469,18 +553,28 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
     }
 
     @ParameterizedTest
-    @MethodSource("othersToRespondentParam2")
+    @MethodSource("othersToRespondentParam")
     void shouldConvertOthersWithRepresentativeToRespondent(
         int selectedOtherSeq,
         int numberOfAdditionalOther,
         int numberOfRespondent) {
         Others others = prepareOthersTestingData(numberOfAdditionalOther, false, false);
-        List<Respondent> respondents = prepareRespondentsTestingData(numberOfRespondent);
-        Respondent transformedRespondent = prepareTransformedRespondentTestingData(false);
+        Element<Representative> representativeForOther = element(prepareOtherRepresenatative(selectedOtherSeq));
+        if (selectedOtherSeq == 0) {
+            others.getFirstOther().addRepresentative(representativeForOther.getId());
+        } else {
+            others.getAdditionalOthers().get(selectedOtherSeq - 1).getValue()
+                .addRepresentative(representativeForOther.getId());
+        }
 
+        Respondent transformedRespondent = prepareTransformedRespondentTestingData(false);
+        transformedRespondent.addRepresentative(representativeForOther.getId());
+
+        List<Respondent> respondents = prepareRespondentsTestingData(numberOfRespondent);
         List<Element<Respondent>> respondents1 = wrapElementsWithRandomUUID(respondents);
 
         CaseData caseData = CaseData.builder()
+            .representatives(List.of(representativeForOther))
             .localAuthorities(wrapElements(LocalAuthority.builder()
                 .name(LOCAL_AUTHORITY_1_NAME)
                 .email(LOCAL_AUTHORITY_1_INBOX)
@@ -510,9 +604,14 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
             assertThat(responseCaseData.getOthers()).isNull();
         }
         assertThat(responseCaseData.getAllRespondents()).hasSize(numberOfRespondent + 1);
-        assertThat(responseCaseData.findRespondent(numberOfRespondent)).contains(
-            prepareExpectedTransformedRespondent(false)
-        );
+        assertThat(responseCaseData.findRespondent(numberOfRespondent).map(Respondent::getParty))
+            .contains(prepareExpectedTransformedRespondent(false).getParty());
+        assertThat(responseCaseData.findRespondent(numberOfRespondent).map(Respondent::getRepresentedBy).map(
+            ElementUtils::unwrapElements).orElse(List.of())).isEqualTo(List.of(representativeForOther.getId()));
+        assertThat(responseCaseData.getRepresentatives()).hasSize(1);
+        assertThat(unwrapElements(responseCaseData.getRepresentatives()).stream()
+            .map(Representative::getRole).findFirst())
+            .contains(resolveRespondentRepresentativeRole(numberOfRespondent + 1));
     }
 
 }
