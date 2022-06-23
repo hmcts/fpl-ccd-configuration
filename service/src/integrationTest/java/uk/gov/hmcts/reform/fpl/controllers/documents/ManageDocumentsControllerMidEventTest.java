@@ -11,6 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
@@ -90,8 +91,9 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(extractedCaseData.getManageDocument()).isEqualTo(ManageDocument.builder()
             .type(CORRESPONDENCE)
-            .hasHearings("No")
-            .hasC2s("No")
+            .hasHearings(YesNo.NO.getValue())
+            .hasC2s(YesNo.NO.getValue())
+            .hasConfidentialAddress(YesNo.NO.getValue())
             .build());
     }
 
@@ -113,8 +115,9 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(extractedCaseData.getManageDocument()).isEqualTo(ManageDocument.builder()
             .type(CORRESPONDENCE)
-            .hasHearings("No")
-            .hasC2s("No")
+            .hasHearings(YesNo.NO.getValue())
+            .hasC2s(YesNo.NO.getValue())
+            .hasConfidentialAddress(YesNo.NO.getValue())
             .build());
     }
 
@@ -145,8 +148,9 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(extractedCaseData.getManageDocument()).isEqualTo(ManageDocument.builder()
             .type(ADDITIONAL_APPLICATIONS_DOCUMENTS)
-            .hasHearings("No")
-            .hasC2s("Yes")
+            .hasHearings(YesNo.NO.getValue())
+            .hasC2s(YesNo.YES.getValue())
+            .hasConfidentialAddress(YesNo.NO.getValue())
             .build());
     }
 

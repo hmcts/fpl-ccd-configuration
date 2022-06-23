@@ -11,7 +11,10 @@ import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.exceptions.RespondentNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.DocumentWithConfidentialAddress;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -26,8 +29,10 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.ConfidentialBundleHelper;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -57,6 +62,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.ADDITIONAL_APPLICATIONS_BUNDLE_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_DOCUMENTS_COLLECTION_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.RESPONDENTS_LIST_KEY;
@@ -132,6 +138,7 @@ class ManageDocumentServiceTest {
         ManageDocument expectedManageDocument = ManageDocument.builder()
             .hasHearings(YES.getValue())
             .hasC2s(YES.getValue())
+            .hasConfidentialAddress(NO.getValue())
             .build();
 
         Map<String, Object> updates = underTest.baseEventData(caseData);
@@ -161,6 +168,7 @@ class ManageDocumentServiceTest {
         ManageDocument expectedManageDocument = ManageDocument.builder()
             .hasHearings(NO.getValue())
             .hasC2s(NO.getValue())
+            .hasConfidentialAddress(NO.getValue())
             .build();
 
         Map<String, Object> updates = underTest.baseEventData(caseData);
@@ -873,7 +881,8 @@ class ManageDocumentServiceTest {
 
         Map<String, Object> expectedData = Map.of(
             C2_DOCUMENTS_COLLECTION_KEY,
-            List.of(element(anotherC2DocumentId, c2Bundle), element(selectedC2DocumentId, expectedC2Bundle)));
+            List.of(element(anotherC2DocumentId, c2Bundle), element(selectedC2DocumentId, expectedC2Bundle)),
+            DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY, emptyList());
 
         assertThat(actualData).isEqualTo(expectedData);
     }
@@ -910,7 +919,8 @@ class ManageDocumentServiceTest {
 
         Map<String, Object> expectedData = Map.of(ADDITIONAL_APPLICATIONS_BUNDLE_KEY,
             List.of(element(applicationsBundle.getId(),
-                applicationsBundle.getValue().toBuilder().c2DocumentBundle(expectedC2Bundle).build())));
+                applicationsBundle.getValue().toBuilder().c2DocumentBundle(expectedC2Bundle).build())),
+            DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY, emptyList());
 
         assertThat(actualData).isEqualTo(expectedData);
     }
@@ -944,7 +954,8 @@ class ManageDocumentServiceTest {
         Map<String, Object> expectedData = Map.of(ADDITIONAL_APPLICATIONS_BUNDLE_KEY,
             List.of(element(applicationsBundle.getId(),
                 applicationsBundle.getValue().toBuilder()
-                    .otherApplicationsBundle(expectedOtherApplication).build())));
+                    .otherApplicationsBundle(expectedOtherApplication).build())),
+                DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY, emptyList());
 
         assertThat(actualData).isEqualTo(expectedData);
     }
@@ -1132,7 +1143,8 @@ class ManageDocumentServiceTest {
             .supportingEvidenceBundle(List.of(supportingEvidencePast, supportingEvidenceFuture)).build();
 
         Map<String, Object> expectedBundles = Map.of(
-            C2_DOCUMENTS_COLLECTION_KEY, List.of(element(selectedC2DocumentId, updatedBundle)));
+            C2_DOCUMENTS_COLLECTION_KEY, List.of(element(selectedC2DocumentId, updatedBundle)),
+            DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY, emptyList());
 
         assertThat(updatedBundles).isEqualTo(expectedBundles);
     }
@@ -1178,7 +1190,8 @@ class ManageDocumentServiceTest {
         Map<String, Object> expectedData = Map.of(ADDITIONAL_APPLICATIONS_BUNDLE_KEY,
             List.of(element(applicationsBundle.getId(),
                 applicationsBundle.getValue().toBuilder()
-                    .otherApplicationsBundle(expectedOtherApplication).build())));
+                    .otherApplicationsBundle(expectedOtherApplication).build())),
+            DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY, emptyList());
 
         assertThat(actualData).isEqualTo(expectedData);
     }
@@ -1519,6 +1532,107 @@ class ManageDocumentServiceTest {
         CaseData caseData = CaseData.builder().respondentStatementList(dynamicList).build();
 
         assertThat(underTest.getSelectedRespondentId(caseData)).isEqualTo(selectedRespondentId);
+    }
+
+    @Test
+    void shouldGetDocWithConfidentialAddrFromRespondentStatementElements() {
+        CaseData caseData = CaseData.builder().build();
+        UUID uuid = randomUUID();
+        DocumentReference confidentialDoc = DocumentReference.builder()
+            .filename("test file name 1")
+            .binaryUrl("test url 1").build();
+
+        DocumentReference normalDoc = DocumentReference.builder()
+            .filename("test file name 2")
+            .binaryUrl("test url 2").build();
+
+
+        List<Element<SupportingEvidenceBundle>> bundles =  List.of(
+            element(uuid, SupportingEvidenceBundle.builder()
+                .name("test bundle name 1")
+                .document(confidentialDoc)
+                .hasConfidentialAddress(YES)
+                .build()),
+            element(uuid, SupportingEvidenceBundle.builder()
+                .name("test bundle name 2")
+                .document(normalDoc)
+                .hasConfidentialAddress(NO)
+                .build())
+        );
+
+        {
+            List<ConfidentialBundle> confidentialBundle = List.of(buildConfidentialBundle(bundles));
+            List<Element<DocumentWithConfidentialAddress>> resultLIst =
+                underTest.getDocumentsWithConfidentialAddress(caseData, new ArrayList<>(),
+                    ConfidentialBundleHelper.getSupportingEvidenceBundle(confidentialBundle));
+            List<Element<DocumentWithConfidentialAddress>> expected = List.of(
+                element(uuid, DocumentWithConfidentialAddress.builder()
+                    .name("test bundle name 1")
+                    .document(confidentialDoc).build())
+            );
+            assertThat(resultLIst).isEqualTo(expected);
+        }
+    }
+
+    @Test
+    void shouldGetDocWithConfidentialAddrFromHearingCourtBundles() {
+        CaseData caseData = CaseData.builder().build();
+        UUID uuid1 = randomUUID();
+        UUID uuid2 = randomUUID();
+
+        DocumentReference confidentialDoc = DocumentReference.builder()
+            .filename("test file name 1")
+            .binaryUrl("test url 1").build();
+
+        DocumentReference normalDoc = DocumentReference.builder()
+            .filename("test file name 2")
+            .binaryUrl("test url 2").build();
+
+        List<Element<CourtBundle>> courtBundles = List.of(
+            element(uuid1, CourtBundle.builder()
+                .document(confidentialDoc)
+                .hasConfidentialAddress(YES).build()),
+            element(uuid2, CourtBundle.builder()
+                .document(normalDoc)
+                .hasConfidentialAddress(NO).build()));
+
+        List<Element<HearingCourtBundle>> hearingCourtBundles = List.of(
+            element(randomUUID(), HearingCourtBundle.builder()
+                .hearing("Test hearing")
+                .courtBundle(courtBundles)
+                .build()));
+
+        List<Element<DocumentWithConfidentialAddress>> resultLIst =
+            underTest.getDocumentsWithConfidentialAddressFromCourtBundles(caseData, caseData.getCourtBundleListV2(),
+                hearingCourtBundles);
+
+        List<Element<DocumentWithConfidentialAddress>> expected = List.of(
+            element(uuid1, DocumentWithConfidentialAddress.builder()
+                .name("Court bundle of Test hearing")
+                .document(confidentialDoc).build())
+        );
+
+        assertThat(resultLIst).isEqualTo(expected);
+    }
+
+    private ConfidentialBundle buildConfidentialBundle(List<Element<SupportingEvidenceBundle>> bundles) {
+        return new ConfidentialBundle() {
+
+            @Override
+            public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle() {
+                return bundles;
+            }
+
+            @Override
+            public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceLA() {
+                return bundles;
+            }
+
+            @Override
+            public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceNC() {
+                return bundles;
+            }
+        };
     }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
