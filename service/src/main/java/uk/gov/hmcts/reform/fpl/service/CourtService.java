@@ -77,10 +77,8 @@ public class CourtService {
 
     public String getCourtSeal(CaseData caseData, OrderStatus status) {
         String seal = null;
-        if (SEALED == status) {
-            if (!isHighCourtCase(caseData)) {
-                seal = COURT_SEAL.getValue(caseData.getImageLanguage());
-            }
+        if (SEALED == status && !isHighCourtCase(caseData)) {
+            seal = COURT_SEAL.getValue(caseData.getImageLanguage());
         }
         return seal;
     }
