@@ -1,0 +1,24 @@
+[
+    {
+      "LiveFrom": "01/01/2017",
+      "ID": "OtherColleagueRole",
+      "ListElementCode": "PARALEGAL",
+      "ListElement": "Paralegal",
+      "DisplayOrder": 1
+    },
+    {
+      "LiveFrom": "01/01/2017",
+      "ID": "OtherColleagueRole",
+      "ListElementCode": "BARRISTER",
+      "ListElement": "Barrister",
+      "DisplayOrder": 2
+    },
+    {
+      "LiveFrom": "01/01/2017",
+      "ID": "OtherColleagueRole",
+      "ListElementCode": "LEGAL_ADVISOR",
+      "ListElement": "Legal Advisor",
+      "DisplayOrder": 3
+    }
+]
+  

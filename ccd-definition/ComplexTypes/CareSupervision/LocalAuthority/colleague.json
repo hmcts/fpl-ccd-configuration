@@ -11,9 +11,10 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Colleague",
-    "ListElementCode": "title",
-    "FieldType": "Text",
-    "ElementLabel": "Title",
+    "ListElementCode": "otherColleagueRole",
+    "FieldType": "DynamicList",
+    "FieldTypeParameter": "OtherColleagueRole",
+    "ElementLabel": "Role",
     "SecurityClassification": "Public",
     "FieldShowCondition": "role=\"OTHER\""
   },
