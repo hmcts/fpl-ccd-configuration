@@ -19,7 +19,14 @@ public class CourtBundle extends DocumentMetaData {
     private String hearing;
     private DocumentReference document;
     private List<String> confidential;
-    private YesNo hasConfidentialAddress;
+    private String hasConfidentialAddress;
+
+    public String getHasConfidentialAddress() {
+        return (document != null
+                && (!YesNo.YES.getValue().equalsIgnoreCase(hasConfidentialAddress)
+                     || !YesNo.NO.getValue().equalsIgnoreCase(hasConfidentialAddress)))
+            ? YesNo.NO.getValue() : hasConfidentialAddress;
+    }
 
     @JsonIgnore
     @Override
@@ -33,7 +40,7 @@ public class CourtBundle extends DocumentMetaData {
                        String uploadedBy,
                        String hearing,
                        List<String> confidential,
-                       YesNo hasConfidentialAddress) {
+                       String hasConfidentialAddress) {
         super.dateTimeUploaded = dateTimeUploaded;
         super.uploadedBy = uploadedBy;
         this.confidential = confidential;
@@ -45,6 +52,6 @@ public class CourtBundle extends DocumentMetaData {
     @JsonIgnore
     public boolean isConfidentialDocument() {
         return (confidential != null && confidential.contains("CONFIDENTIAL"))
-            || (YesNo.YES.equals(hasConfidentialAddress));
+            || (YesNo.YES.getValue().equalsIgnoreCase(hasConfidentialAddress));
     }
 }
