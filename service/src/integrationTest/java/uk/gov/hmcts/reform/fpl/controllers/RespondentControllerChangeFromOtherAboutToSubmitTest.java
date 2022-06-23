@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -71,6 +72,55 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
             .build();
     }
 
+    private List<Respondent> prepareRespondentsTestingData(int numberOfRespondent) {
+        return prepareRespondentsTestingData(numberOfRespondent, false);
+    }
+
+    private List<Respondent> prepareRespondentsTestingData(int numberOfRespondent, boolean respondnentDetailsHidden) {
+        List<Respondent> respondents = new ArrayList<>();
+        for (int j = 0; j < numberOfRespondent; j++) {
+            respondents.add(
+                Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .firstName(String.format("existing respondent %s", j))
+                        .dateOfBirth(dateNow())
+                        .contactDetailsHidden(YesNo.from(respondnentDetailsHidden).getValue())
+                        .build())
+                    .legalRepresentation("No")
+                    .build()
+            );
+        }
+        return respondents;
+    }
+
+    private static Others prepareOthersTestingData(int numberOfAdditionalOther,
+                                                   boolean firstOtherDetailsHidden,
+                                                   boolean additionalOtherDetailsHidden) {
+        return prepareOthersTestingData(numberOfAdditionalOther, firstOtherDetailsHidden,
+            (i) -> additionalOtherDetailsHidden);
+    }
+
+    private static Others prepareOthersTestingData(int numberOfAdditionalOther,
+                                                   boolean firstOtherDetailsHidden,
+                                                   Predicate<Integer> condition) {
+        List<Element<Other>> additionalOthers = new ArrayList<>();
+        for (int i = 0; i < numberOfAdditionalOther; i++) {
+            additionalOthers.add(element(Other.builder()
+                .name(String.format("Marco %s", i + 1))
+                .detailsHidden(YesNo.from(condition.test(i)).getValue())
+                .build()));
+        }
+        Other firstOther = Other.builder()
+            .name("Marco 0")
+            .detailsHidden(YesNo.from(firstOtherDetailsHidden).getValue())
+            .build();
+        Others others = Others.builder()
+            .firstOther(firstOther)
+            .additionalOthers(additionalOthers)
+            .build();
+        return others;
+    }
+
     private static Address buildHiddenAddress(String identifier) {
         return Address.builder()
             .addressLine1(String.format("Secret Address %s", identifier))
@@ -95,21 +145,8 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
     @MethodSource("othersToRespondentParam")
     void shouldConvertOthersToRespondent(int selectedOtherSeq, int numberOfAdditionalOther,
                                          int numberOfRespondent) {
-        List<Element<Other>> additionalOthers = new ArrayList<>();
-        for (int i = 0; i < numberOfAdditionalOther; i++) {
-            additionalOthers.add(element(Other.builder().name(String.format("Marco %s", i + 1)).build()));
-        }
-
-        Other firstOther = Other.builder().name("Marco 0").build();
-        Others others = Others.builder()
-            .firstOther(firstOther)
-            .additionalOthers(additionalOthers)
-            .build();
-
-        List<Respondent> respondents = new ArrayList<>();
-        for (int j = 0; j < numberOfRespondent; j++) {
-            respondents.add(respondent(dateNow()));
-        }
+        Others others = prepareOthersTestingData(numberOfAdditionalOther, false, false);
+        List<Respondent> respondents = prepareRespondentsTestingData(numberOfRespondent);
 
         Respondent transformedRespondent = Respondent.builder()
             .party(RespondentParty.builder()
@@ -139,8 +176,11 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         assertThat(responseCaseData.getAllOthers().stream()
             .filter(o -> String.format("Marco %s", selectedOtherSeq).equals(o.getValue().getName()))).isEmpty();
         if (numberOfAdditionalOther > 0) {
-            assertThat(responseCaseData.getOthers().getFirstOther()).isEqualTo(Other.builder()
-                .name(String.format("Marco %s", selectedOtherSeq == 0 ? 1 : 0)).build());
+            assertThat(responseCaseData.getOthers().getFirstOther()).isEqualTo(
+                Other.builder()
+                    .detailsHidden("No")
+                    .name(String.format("Marco %s", selectedOtherSeq == 0 ? 1 : 0))
+                    .build());
         } else {
             assertThat(responseCaseData.getOthers()).isNull();
         }
@@ -152,26 +192,12 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
     @MethodSource("othersToRespondentParam")
     void shouldConvertOthersWithHiddenDetailsToRespondentWhereNoConfidentialRespondent(
         int selectedOtherSeq, int numberOfAdditionalOther, int numberOfRespondent) {
-        List<Element<Other>> additionalOthers = new ArrayList<>();
-        for (int i = 0; i < numberOfAdditionalOther; i++) {
-            additionalOthers.add(element(Other.builder()
-                .name(String.format("Marco %s", i + 1))
-                .detailsHidden((selectedOtherSeq - 1) == i ? "Yes" : "No")
-                .build()));
-        }
-        Other firstOther = Other.builder()
-            .name("Marco 0")
-            .detailsHidden("No")
-            .build();
-        Others others = Others.builder()
-            .firstOther(firstOther)
-            .additionalOthers(additionalOthers)
-            .build();
+        Others others = prepareOthersTestingData(numberOfAdditionalOther, false,
+            (i) -> (selectedOtherSeq - 1) == i);
+        Other firstOther = others.getFirstOther();
+        List<Element<Other>> additionalOthers = others.getAdditionalOthers();
+        List<Respondent> respondents = prepareRespondentsTestingData(numberOfRespondent);
 
-        List<Respondent> respondents = new ArrayList<>();
-        for (int j = 0; j < numberOfRespondent; j++) {
-            respondents.add(respondent(dateNow()));
-        }
         Respondent transformedRespondent = Respondent.builder()
             .party(RespondentParty.builder()
                 .firstName("Johnny")
@@ -254,35 +280,12 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         int selectedOtherSeq,
         int numberOfAdditionalOther,
         int numberOfRespondent) {
-        List<Element<Other>> additionalOthers = new ArrayList<>();
-        for (int i = 0; i < numberOfAdditionalOther; i++) {
-            additionalOthers.add(element(Other.builder()
-                .name(String.format("Marco %s", i + 1))
-                .detailsHidden((selectedOtherSeq - 1) == i ? "Yes" : "No")
-                .build()));
-        }
-        Other firstOther = Other.builder()
-            .name("Marco 0")
-            .detailsHidden(selectedOtherSeq == 0 ? "Yes" : "No")
-            .build();
-        Others others = Others.builder()
-            .firstOther(firstOther)
-            .additionalOthers(additionalOthers)
-            .build();
+        Others others = prepareOthersTestingData(numberOfAdditionalOther, selectedOtherSeq == 0,
+            (i) -> (selectedOtherSeq - 1) == i);
+        Other firstOther = others.getFirstOther();
+        List<Element<Other>> additionalOthers = others.getAdditionalOthers();
 
-        List<Respondent> respondents = new ArrayList<>();
-        for (int j = 0; j < numberOfRespondent; j++) {
-            respondents.add(
-                Respondent.builder()
-                    .party(RespondentParty.builder()
-                        .firstName(String.format("existing respondent %s", j))
-                        .dateOfBirth(dateNow())
-                        .contactDetailsHidden("Yes")
-                        .build())
-                    .legalRepresentation("No")
-                    .build()
-            );
-        }
+        List<Respondent> respondents = prepareRespondentsTestingData(numberOfRespondent, true);
         Respondent transformedRespondent = Respondent.builder()
             .party(RespondentParty.builder()
                 .firstName("Johnny")
@@ -393,38 +396,13 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         int selectedOtherSeq,
         int numberOfAdditionalOther,
         int numberOfRespondent) {
-        List<Element<Other>> additionalOthers = new ArrayList<>();
-        for (int i = 0; i < numberOfAdditionalOther; i++) {
-            additionalOthers.add(element(Other.builder()
-                .name(String.format("Marco %s", i + 1))
-                .detailsHidden("Yes")
-                .build()));
-        }
-        Other firstOther = Other.builder()
-            .name("Marco 0")
-            .detailsHidden("Yes")
-            .build();
-        Others others = Others.builder()
-            .firstOther(firstOther)
-            .additionalOthers(additionalOthers)
-            .build();
+
+        Others others = prepareOthersTestingData(numberOfAdditionalOther, true, true);
         List<Element<Other>> allOthers = new ArrayList<>();
         allOthers.add(element(others.getFirstOther()));
         allOthers.addAll(others.getAdditionalOthers());
 
-        List<Respondent> respondents = new ArrayList<>();
-        for (int j = 0; j < numberOfRespondent; j++) {
-            respondents.add(
-                Respondent.builder()
-                    .party(RespondentParty.builder()
-                        .firstName(String.format("existing respondent %s", j))
-                        .dateOfBirth(dateNow())
-                        .contactDetailsHidden("Yes")
-                        .build())
-                    .legalRepresentation("No")
-                    .build()
-            );
-        }
+        List<Respondent> respondents = prepareRespondentsTestingData(numberOfRespondent, true);
         Respondent transformedRespondent = Respondent.builder()
             .party(RespondentParty.builder()
                 .firstName("Johnny")
@@ -527,6 +505,68 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
                     .telephoneNumber(Telephone.builder().telephoneNumber(hiddenTelephoneNumber).build())
                     .build())
                 .build());
+    }
+
+
+    public static Stream<Arguments> othersToRespondentParam2() {
+        return Stream.of(Arguments.of(1, 1, 1));
+    }
+
+    @ParameterizedTest
+    @MethodSource("othersToRespondentParam2")
+    void shouldConvertOthersWithRepresentativeToRespondent(
+        int selectedOtherSeq,
+        int numberOfAdditionalOther,
+        int numberOfRespondent) {
+        Others others = prepareOthersTestingData(numberOfAdditionalOther, false, false);
+        List<Respondent> respondents = prepareRespondentsTestingData(numberOfRespondent);
+        Respondent transformedRespondent = Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName("Johnny")
+                .contactDetailsHidden("No")
+                .build())
+            .legalRepresentation("No")
+            .build();
+
+        List<Element<Respondent>> respondents1 = wrapElementsWithRandomUUID(respondents);
+
+        CaseData caseData = CaseData.builder()
+            .localAuthorities(wrapElements(LocalAuthority.builder()
+                .name(LOCAL_AUTHORITY_1_NAME)
+                .email(LOCAL_AUTHORITY_1_INBOX)
+                .designated(YesNo.YES.getValue())
+                .build()))
+            .others(others)
+            .respondents1(respondents1)
+            .otherToRespondentEventData(OtherToRespondentEventData.builder()
+                .transformedRespondent(transformedRespondent)
+                .othersList(buildDynamicListFromOthers(others, selectedOtherSeq))
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
+
+        CaseData responseCaseData = extractCaseData(callbackResponse);
+        assertThat(responseCaseData.getAllOthers()).hasSize(numberOfAdditionalOther);
+        assertThat(responseCaseData.getAllOthers().stream()
+            .filter(o -> String.format("Marco %s", selectedOtherSeq).equals(o.getValue().getName()))).isEmpty();
+        if (numberOfAdditionalOther > 0) {
+            assertThat(responseCaseData.getOthers().getFirstOther()).isEqualTo(
+                Other.builder()
+                    .name(String.format("Marco %s", selectedOtherSeq == 0 ? 1 : 0))
+                    .detailsHidden("No")
+                    .build());
+        } else {
+            assertThat(responseCaseData.getOthers()).isNull();
+        }
+        assertThat(responseCaseData.getAllRespondents()).hasSize(numberOfRespondent + 1);
+        assertThat(responseCaseData.findRespondent(numberOfRespondent)).contains(Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName("Johnny")
+                .contactDetailsHidden("No")
+                .build())
+            .legalRepresentation("No")
+            .build());
     }
 
 }
