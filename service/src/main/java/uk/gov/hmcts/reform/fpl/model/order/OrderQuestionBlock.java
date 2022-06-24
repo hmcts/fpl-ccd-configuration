@@ -22,7 +22,7 @@ public enum OrderQuestionBlock {
             "manageOrdersChildFirstContactIfKeepAwayFromHome",
             "manageOrdersChildSecondContactIfKeepAwayFromHome",
             "manageOrdersChildThirdContactIfKeepAwayFromHome",
-            "manageOrdersIsCostOrderExist",
+            "manageOrdersDoesCostOrderExist",
             "manageOrdersCostOrderDetails")),
     LINKED_TO_HEARING("hearingDetails", OrderSection.HEARING_DETAILS,
         List.of("manageOrdersApprovedAtHearing", "manageOrdersApprovedAtHearingList",

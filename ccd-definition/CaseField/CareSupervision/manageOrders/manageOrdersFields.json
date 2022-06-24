@@ -885,7 +885,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "manageOrdersIsCostOrderExist",
+    "ID": "manageOrdersDoesCostOrderExist",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "YesOrNo",
     "Label": "Is there a costs order?",

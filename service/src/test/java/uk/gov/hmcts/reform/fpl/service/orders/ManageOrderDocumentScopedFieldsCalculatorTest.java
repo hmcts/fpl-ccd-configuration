@@ -106,7 +106,7 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersChildFirstContactIfKeepAwayFromHome",
             "manageOrdersChildSecondContactIfKeepAwayFromHome",
             "manageOrdersChildThirdContactIfKeepAwayFromHome",
-            "manageOrdersIsCostOrderExist",
+            "manageOrdersDoesCostOrderExist",
             "manageOrdersCostOrderDetails",
             "manageOrdersSupervisionOrderType",
             "manageOrdersC35aOrderExists",

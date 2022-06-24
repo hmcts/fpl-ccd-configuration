@@ -315,7 +315,7 @@ public class DocmosisOrderCaseDataGenerator {
                         .manageOrdersChildFirstContactIfKeepAwayFromHome("Child First Contact")
                         .manageOrdersChildSecondContactIfKeepAwayFromHome("Child Second Contact")
                         .manageOrdersChildThirdContactIfKeepAwayFromHome("Child Third Contact")
-                        .manageOrdersIsCostOrderExist(YesNo.YES)
+                        .manageOrdersDoesCostOrderExist(YesNo.YES)
                         .manageOrdersCostOrderDetails("Cost Order Details")
                         .build()
                 );

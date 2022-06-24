@@ -116,7 +116,7 @@ class C39ChildAssessmentOrderParameterGeneratorTest {
             .manageOrdersPlaceOfAssessment("Place Of Assessment")
             .manageOrdersAssessingBody("Assessing Body")
             .manageOrdersChildKeepAwayFromHome(YesNo.from(childKeepAwayFromHome))
-            .manageOrdersIsCostOrderExist(YesNo.from(isCostOrderExist));
+            .manageOrdersDoesCostOrderExist(YesNo.from(isCostOrderExist));
 
         if (childKeepAwayFromHome) {
             eventBuilder

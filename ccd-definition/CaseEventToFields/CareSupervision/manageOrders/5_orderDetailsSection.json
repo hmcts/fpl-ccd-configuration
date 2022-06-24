@@ -1005,7 +1005,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageOrders",
-    "CaseFieldID": "manageOrdersIsCostOrderExist",
+    "CaseFieldID": "manageOrdersDoesCostOrderExist",
     "PageFieldDisplayOrder": 71,
     "DisplayContext": "MANDATORY",
     "PageID": "OrderDetails",
@@ -1024,7 +1024,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.manageOrdersChildAssessment=\"YES\" AND manageOrdersIsCostOrderExist=\"Yes\"",
+    "FieldShowCondition": "orderTempQuestions.manageOrdersChildAssessment=\"YES\" AND manageOrdersDoesCostOrderExist=\"Yes\"",
     "ShowSummaryChangeOption": "Y"
   }
 ]

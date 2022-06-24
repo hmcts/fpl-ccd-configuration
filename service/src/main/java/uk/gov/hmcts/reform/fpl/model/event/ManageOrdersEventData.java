@@ -115,7 +115,7 @@ public class ManageOrdersEventData {
     String manageOrdersChildFirstContactIfKeepAwayFromHome;
     String manageOrdersChildSecondContactIfKeepAwayFromHome;
     String manageOrdersChildThirdContactIfKeepAwayFromHome;
-    YesNo manageOrdersIsCostOrderExist;
+    YesNo manageOrdersDoesCostOrderExist;
     String manageOrdersCostOrderDetails;
     C36OrderType manageOrdersSupervisionOrderType;
     String manageOrdersSupervisionOrderCourtDirection;

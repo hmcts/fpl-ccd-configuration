@@ -3859,7 +3859,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "manageOrdersIsCostOrderExist",
+    "CaseFieldID": "manageOrdersDoesCostOrderExist",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },

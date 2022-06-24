@@ -87,7 +87,7 @@ public class C39ChildAssessmentOrderParameterGenerator implements DocmosisParame
             .append(eventData.getWhichChildIsTheOrderFor().getValueLabel())
             .append(" and must comply with the directions in this order.");
 
-        if (YesNo.YES.equals(eventData.getManageOrdersIsCostOrderExist())) {
+        if (YesNo.YES.equals(eventData.getManageOrdersDoesCostOrderExist())) {
             stringBuilder.append("\n\n").append(eventData.getManageOrdersCostOrderDetails());
         }
 
