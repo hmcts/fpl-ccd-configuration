@@ -2033,6 +2033,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentsWithConfidentialAddress",
+    "Label": "Document with confidential address",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentWithConfidentialAddress",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "warning_label",
     "Label": "<div class='govuk-tag govuk-tag--red'>Please don't use to assign respondent/child solicitor</div>",
     "FieldType": "Label",
