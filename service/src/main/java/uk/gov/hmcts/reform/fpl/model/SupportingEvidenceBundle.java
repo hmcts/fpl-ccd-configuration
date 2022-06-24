@@ -47,9 +47,7 @@ public class SupportingEvidenceBundle implements TranslatableItem, FurtherDocume
     private String hasConfidentialAddress;
 
     public String getHasConfidentialAddress() {
-        return ((!isBlank(name) || document != null)
-                && (!YesNo.YES.getValue().equalsIgnoreCase(hasConfidentialAddress)
-                    && !YesNo.NO.getValue().equalsIgnoreCase(hasConfidentialAddress)))
+        return ((!isBlank(name) || document != null) && (!YesNo.isYesOrNo(hasConfidentialAddress)))
             ? YesNo.NO.getValue() : hasConfidentialAddress;
     }
 

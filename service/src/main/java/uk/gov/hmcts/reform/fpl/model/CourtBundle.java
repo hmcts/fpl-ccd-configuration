@@ -22,9 +22,7 @@ public class CourtBundle extends DocumentMetaData {
     private String hasConfidentialAddress;
 
     public String getHasConfidentialAddress() {
-        return (document != null
-                && (!YesNo.YES.getValue().equalsIgnoreCase(hasConfidentialAddress)
-                     && !YesNo.NO.getValue().equalsIgnoreCase(hasConfidentialAddress)))
+        return (document != null && (!YesNo.isYesOrNo(hasConfidentialAddress)))
             ? YesNo.NO.getValue() : hasConfidentialAddress;
     }
 
