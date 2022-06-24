@@ -189,7 +189,8 @@ public class RespondentController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         OtherToRespondentEventData eventData = caseData.getOtherToRespondentEventData();
 
-        List<Element<Respondent>> newRespondents = caseData.getRespondents1().stream().collect(Collectors.toList());
+        List<Element<Respondent>> newRespondents = confidentialDetailsService.prepareCollection(
+            caseData.getAllRespondents(), caseData.getConfidentialRespondents(), expandCollection());
         newRespondents.add(newElement(eventData.getTransformedRespondent()));
 
         CaseData dummyCaseData = caseData.builder()

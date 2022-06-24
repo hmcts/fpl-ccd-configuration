@@ -14,16 +14,19 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.event.OtherToRespondentEventData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,6 +36,13 @@ import java.util.stream.Stream;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.localAuthorities;
+import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.otherToRespondentEventData;
+import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.prepareConfidentialOthersFromAllOthers;
+import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.prepareConfidentialRespondentsFromRespondents1;
+import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.prepareOthersTestingData;
+import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.prepareRespondentsTestingData;
+import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.prepareTransformedRespondentTestingData;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_1;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_PERSON_1;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildDynamicListFromOthers;
@@ -171,6 +181,30 @@ class RespondentControllerChangeFromOtherMidEventTest extends AbstractCallbackTe
         assertThat(transformedRespondent.getParty()).isEqualTo(expectedRespondent.getParty());
         assertThat(transformedRespondent.getRepresentedBy()).hasSize(1);
         assertThat(unwrapElements(transformedRespondent.getRepresentedBy())).isEqualTo(List.of(representativeUUID));
+    }
+
+    @Test
+    void shouldNotReturnErrorWhenExistingRespondentHavingConfidentialDetails() {
+        Others others = prepareOthersTestingData(0, true, true);
+        List<Element<Other>> allOthers = new ArrayList<>();
+        allOthers.add(element(others.getFirstOther()));
+
+        List<Respondent> respondents = prepareRespondentsTestingData(1, true);
+        Respondent transformedRespondent = prepareTransformedRespondentTestingData(true);
+
+        List<Element<Respondent>> respondents1 = wrapElementsWithRandomUUID(respondents);
+
+        CaseData caseData = CaseData.builder()
+            .confidentialRespondents(prepareConfidentialRespondentsFromRespondents1(respondents1))
+            .confidentialOthers(prepareConfidentialOthersFromAllOthers(allOthers))
+            .localAuthorities(localAuthorities())
+            .respondents1(respondents1)
+            .others(others)
+            .otherToRespondentEventData(otherToRespondentEventData(transformedRespondent, others, 0))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
+        assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
     @Test
