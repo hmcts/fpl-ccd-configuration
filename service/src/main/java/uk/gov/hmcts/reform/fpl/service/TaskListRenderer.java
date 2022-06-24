@@ -68,7 +68,7 @@ public class TaskListRenderer {
             lines.add(String.format("<div class='govuk-tag govuk-tag--blue'>%s Application</div>", s));
         });
 
-        groupInSections(allTasks).forEach(section -> lines.addAll(renderSection(section)));
+        groupInSections(allTasks, applicationType).forEach(section -> lines.addAll(renderSection(section)));
 
         lines.add("</div>");
 
@@ -77,13 +77,20 @@ public class TaskListRenderer {
         return String.join("\n\n", lines);
     }
 
-    private List<TaskSection> groupInSections(List<Task> allTasks) {
+    private List<TaskSection> groupInSections(List<Task> allTasks, Optional<String> applicationType) {
         final Map<Event, Task> tasks = allTasks.stream().collect(toMap(Task::getEvent, identity()));
+
+        Task hearingUrgency = tasks.get(HEARING_URGENCY);
+        applicationType.ifPresent(s -> {
+            if (s.equals("C1")) {
+                hearingUrgency.withHint("Optional for C1 applications");
+            }
+        });
 
         final TaskSection applicationDetails = newSection("Add application details")
             .withTask(tasks.get(CASE_NAME))
             .withTask(tasks.get(ORDERS_SOUGHT))
-            .withTask(tasks.get(HEARING_URGENCY));
+            .withTask(hearingUrgency);
 
         final TaskSection applicationGrounds = newSection("Add grounds for the application");
 
