@@ -15,10 +15,12 @@ public class CaseSummary extends HearingDocument {
     public CaseSummary(DocumentReference document,
                        LocalDateTime dateTimeUploaded,
                        String uploadedBy,
-                       String hearing) {
+                       String hearing,
+                       String hasConfidentialAddress) {
         super.dateTimeUploaded = dateTimeUploaded;
         super.uploadedBy = uploadedBy;
         super.hearing = hearing;
         super.document = document;
+        super.hasConfidentialAddress = hasConfidentialAddress;
     }
 }

@@ -222,6 +222,27 @@
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsCourtBundle",
+    "ListElementCode": "hasConfidentialAddressLabel",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>There is a confidential address on this case. Please check and confirm your document doesn't contain a confidential address before proceeding</strong></div>",
+    "FieldShowCondition": "manageDocument.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsCourtBundle",
+    "ListElementCode": "hasConfidentialAddress",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "manageDocument.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
     "CaseFieldID": "manageDocumentsCaseSummary",
     "ListElementCode": "hearing",
     "FieldDisplayOrder": 1,
@@ -236,6 +257,27 @@
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Attach case summary"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsCaseSummary",
+    "ListElementCode": "hasConfidentialAddressLabel",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>There is a confidential address on this case. Please check and confirm your document doesn't contain a confidential address before proceeding</strong></div>",
+    "FieldShowCondition": "manageDocument.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsCaseSummary",
+    "ListElementCode": "hasConfidentialAddress",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "manageDocument.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -260,6 +302,27 @@
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsPositionStatementChild",
+    "ListElementCode": "hasConfidentialAddressLabel",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>There is a confidential address on this case. Please check and confirm your document doesn't contain a confidential address before proceeding</strong></div>",
+    "FieldShowCondition": "manageDocument.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsPositionStatementChild",
+    "ListElementCode": "hasConfidentialAddress",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "manageDocument.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
     "CaseFieldID": "manageDocumentsPositionStatementRespondent",
     "ListElementCode": "hearing",
     "FieldDisplayOrder": 1,
@@ -274,5 +337,26 @@
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Attach position statement respondent"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsPositionStatementRespondent",
+    "ListElementCode": "hasConfidentialAddressLabel",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>There is a confidential address on this case. Please check and confirm your document doesn't contain a confidential address before proceeding</strong></div>",
+    "FieldShowCondition": "manageDocument.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsPositionStatementRespondent",
+    "ListElementCode": "hasConfidentialAddress",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "manageDocument.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
   }
 ]
