@@ -636,6 +636,11 @@ public class CaseData {
         return Optional.ofNullable(confidentialOthers).orElse(new ArrayList<>());
     }
 
+    public boolean hasConfidentialParty() {
+        return isNotEmpty(getConfidentialChildren()) || isNotEmpty(getConfidentialRespondents())
+               || isNotEmpty(getConfidentialOthers());
+    }
+
     private final String caseNote;
     private final List<Element<CaseNote>> caseNotes;
     private final List<Element<EmailAddress>> gatekeeperEmails;
@@ -1161,4 +1166,6 @@ public class CaseData {
             .map(Orders::isDischargeOfCareOrder)
             .orElse(false);
     }
+
+    private List<Element<DocumentWithConfidentialAddress>> documentsWithConfidentialAddress;
 }

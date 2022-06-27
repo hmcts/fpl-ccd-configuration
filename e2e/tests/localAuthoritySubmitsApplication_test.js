@@ -12,9 +12,17 @@ let caseId;
 
 Feature('Local authority creates application');
 
-async function setupScenario(I) {
-  if (!caseId) { caseId = await I.submitNewCase(config.swanseaLocalAuthorityUserOne); }
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+async function setupScenario(I, reuse = true) {
+  let navigateCaseId;
+  if (reuse == false) {
+    navigateCaseId = await I.submitNewCase(config.swanseaLocalAuthorityUserOne);
+  } else {
+    if (!caseId) {
+      caseId = await I.submitNewCase(config.swanseaLocalAuthorityUserOne);
+    }
+    navigateCaseId = caseId;
+  }
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, navigateCaseId);
 }
 
 Scenario('local authority sees task list', async ({I, caseViewPage}) => {
@@ -69,7 +77,8 @@ Scenario('local authority changes case name @create-case-with-mandatory-sections
 });
 
 Scenario('Local authority request discharge of order @cross-browser', async ({I, caseViewPage, enterOrdersAndDirectionsNeededEventPage}) => {
-  await setupScenario(I);
+  // Run in a new case, so it does not affect the execution of next scenario
+  await setupScenario(I, false);
   await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
   enterOrdersAndDirectionsNeededEventPage.checkOtherOrder();
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
@@ -118,6 +127,7 @@ Scenario('local authority enters orders and directions @create-case-with-mandato
   enterOrdersAndDirectionsNeededEventPage.enterOrderDetails('Test');
   enterOrdersAndDirectionsNeededEventPage.checkDirections();
   enterOrdersAndDirectionsNeededEventPage.enterDirections('Test');
+  enterOrdersAndDirectionsNeededEventPage.enterCourt('Barnet');
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
 
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOrdersAndDirectionsNeeded);
@@ -132,6 +142,7 @@ Scenario('local authority enters orders and directions @create-case-with-mandato
   I.seeInTab(['Orders and directions needed', 'Which order do you need?'], 'Test');
   I.seeInTab(['Orders and directions needed', 'Do you need any other directions?'], 'Yes');
   I.seeInTab(['Orders and directions needed', 'Give details'], 'Test');
+  I.seeInTab(['Orders and directions needed', 'Which court are you issuing for?'], 'Barnet');
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   caseViewPage.checkTaskIsFinished(config.applicationActions.enterOrdersAndDirectionsNeeded);

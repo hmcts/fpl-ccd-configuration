@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
@@ -28,6 +29,8 @@ import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
+import uk.gov.hmcts.reform.fpl.utils.ConfidentialBundleHelper;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -53,6 +56,7 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CAS
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CHILDREN_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.COURT_BUNDLE_HEARING_LABEL_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.COURT_BUNDLE_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_DOCUMENT_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_DOCUMENT_RESPONDENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_DOCUMENT_TYPE;
@@ -169,8 +173,15 @@ public class ManageDocumentsLAController extends CallbackController {
                 List<Element<SupportingEvidenceBundle>> currentBundle;
 
                 if (RESPONDENT_STATEMENT.equals(caseData.getManageDocumentSubtypeListLA())) {
-                    caseDetailsMap.putIfNotEmpty("respondentStatements",
-                        manageDocumentService.getUpdatedRespondentStatements(caseData, NOT_SOLICITOR));
+                    List<Element<RespondentStatement>> respondentStatements =
+                        manageDocumentService.getUpdatedRespondentStatements(caseData, NOT_SOLICITOR);
+                    caseDetailsMap.putIfNotEmpty("respondentStatements", respondentStatements);
+                    caseDetailsMap.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
+                        manageDocumentService.getDocumentsWithConfidentialAddress(caseData,
+                            ConfidentialBundleHelper.getSupportingEvidenceBundle(
+                                ElementUtils.unwrapElements(caseData.getRespondentStatements())),
+                            ConfidentialBundleHelper.getSupportingEvidenceBundle(
+                                ElementUtils.unwrapElements(respondentStatements))));
                 } else if (APPLICATION_DOCUMENTS.equals(caseData.getManageDocumentSubtypeListLA())) {
                     //Application documents
 
@@ -189,6 +200,12 @@ public class ManageDocumentsLAController extends CallbackController {
                     caseDetailsMap.putIfNotEmpty(
                         HEARING_FURTHER_EVIDENCE_DOCUMENTS_KEY, updatedBundle
                     );
+                    caseDetailsMap.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
+                        manageDocumentService.getDocumentsWithConfidentialAddress(caseData,
+                            ConfidentialBundleHelper.getSupportingEvidenceBundle(
+                                ElementUtils.unwrapElements(caseData.getHearingFurtherEvidenceDocuments())),
+                            ConfidentialBundleHelper.getSupportingEvidenceBundle(
+                                ElementUtils.unwrapElements(updatedBundle))));
                     //Non-hearing-related evidence
                 } else {
                     currentBundle = manageDocumentService.setDateTimeUploadedOnSupportingEvidence(
@@ -200,6 +217,10 @@ public class ManageDocumentsLAController extends CallbackController {
                         caseDetailsMap, currentBundle, FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY
                     );
                     caseDetailsMap.putIfNotEmpty(FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY, currentBundle);
+                    caseDetailsMap.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
+                        manageDocumentService.getDocumentsWithConfidentialAddress(caseData,
+                            caseData.getFurtherEvidenceDocumentsLA(),
+                            currentBundle));
                 }
                 break;
             case CORRESPONDENCE:
@@ -216,6 +237,10 @@ public class ManageDocumentsLAController extends CallbackController {
                     caseDetailsMap, sortedDocuments, CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY
                 );
                 caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY, sortedDocuments);
+                caseDetailsMap.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
+                    manageDocumentService.getDocumentsWithConfidentialAddress(caseData,
+                        caseData.getCorrespondenceDocumentsLA(),
+                        sortedDocuments));
                 break;
             case ADDITIONAL_APPLICATIONS_DOCUMENTS:
                 caseDetailsMap.putIfNotEmpty(

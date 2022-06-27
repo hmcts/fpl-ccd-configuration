@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -101,8 +102,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
             .type(FURTHER_EVIDENCE_DOCUMENTS)
-            .hasHearings("Yes")
-            .hasC2s("No")
+            .hasHearings(YesNo.YES.getValue())
+            .hasC2s(YesNo.NO.getValue())
+            .hasConfidentialAddress(YesNo.NO.getValue())
             .build());
     }
 
@@ -122,8 +124,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
             .type(CORRESPONDENCE)
-            .hasHearings("No")
-            .hasC2s("No")
+            .hasHearings(YesNo.NO.getValue())
+            .hasC2s(YesNo.NO.getValue())
+            .hasConfidentialAddress(YesNo.NO.getValue())
             .build());
     }
 
@@ -161,8 +164,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
             .type(HEARING_DOCUMENTS)
-            .hasHearings("Yes")
-            .hasC2s("No")
+            .hasHearings(YesNo.YES.getValue())
+            .hasC2s(YesNo.NO.getValue())
+            .hasConfidentialAddress(YesNo.NO.getValue())
             .build());
     }
 
@@ -195,8 +199,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
             .type(ADDITIONAL_APPLICATIONS_DOCUMENTS)
-            .hasHearings("No")
-            .hasC2s("Yes")
+            .hasHearings(YesNo.NO.getValue())
+            .hasC2s(YesNo.YES.getValue())
+            .hasConfidentialAddress(YesNo.NO.getValue())
             .build());
     }
 
