@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 
 import java.util.List;
 import java.util.Map;
@@ -65,7 +66,8 @@ public class HearingCourtBundleTest {
                     "document_binary_url", CONFIDENTIAL_COURT_BUNDLE.getDocument().getBinaryUrl(),
                     "document_filename", CONFIDENTIAL_COURT_BUNDLE.getDocument().getFilename(),
                     "document_url", CONFIDENTIAL_COURT_BUNDLE.getDocument().getUrl()
-                ))
+                )),
+                Map.entry("hasConfidentialAddress", YesNo.NO.getValue())
             )));
 
         List<Map<String, Object>> expectedNCCourtBundle = List.of(Map.of(
@@ -76,7 +78,8 @@ public class HearingCourtBundleTest {
                     "document_binary_url", NON_CONFIDENTIAL_COURT_BUNDLE.getDocument().getBinaryUrl(),
                     "document_filename", NON_CONFIDENTIAL_COURT_BUNDLE.getDocument().getFilename(),
                     "document_url", NON_CONFIDENTIAL_COURT_BUNDLE.getDocument().getUrl()
-                ))
+                )),
+                Map.entry("hasConfidentialAddress", YesNo.NO.getValue())
             )));
 
         Map<String, Object> expectedHearingCourtBundle = Map.of(
@@ -101,5 +104,38 @@ public class HearingCourtBundleTest {
 
         assertThat(unwrapElements(hearingCourtBundle.getCourtBundle()))
             .isEqualTo(List.of(NON_CONFIDENTIAL_COURT_BUNDLE, CONFIDENTIAL_COURT_BUNDLE));
+    }
+
+    @Test
+    void testSerialisationAndDeserialisationIfEmptyBundle() {
+        HearingCourtBundle initialHearingCourtBundle = HearingCourtBundle.builder()
+            .hearing(TEST_HEARING)
+            .courtBundle(List.of(element(
+                TEST_ID,
+                CourtBundle.builder()
+                    .build()
+            )))
+            .courtBundleNC(List.of(element(
+                TEST_ID,
+                CourtBundle.builder()
+                    .build()
+            )))
+            .build();
+
+        Map<String, Object> serialised = objectMapper.convertValue(initialHearingCourtBundle, new TypeReference<>() {});
+        HearingCourtBundle deserialised = objectMapper.convertValue(serialised, HearingCourtBundle.class);
+
+        List<Map<String, Object>> expectedCourtBundle = List.of(Map.of(
+            "id", TEST_ID.toString(),
+            "value", Map.ofEntries()));
+
+        Map<String, Object> expectedHearingCourtBundle = Map.of(
+            "hearing", TEST_HEARING,
+            "courtBundle", expectedCourtBundle,
+            "courtBundleNC", expectedCourtBundle
+        );
+
+        assertThat(serialised).isEqualTo(expectedHearingCourtBundle);
+        assertThat(deserialised).isEqualTo(initialHearingCourtBundle);
     }
 }

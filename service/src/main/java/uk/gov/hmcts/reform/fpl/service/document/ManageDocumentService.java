@@ -461,7 +461,8 @@ public class ManageDocumentService {
     private List<Element<DocumentWithConfidentialAddress>> buildDocumentWithConfidentialAddress(
             List<Element<SupportingEvidenceBundle>> supportingEvidenceBundles, boolean filterConfidentialAddress) {
         return Optional.ofNullable(supportingEvidenceBundles).orElse(new ArrayList<>()).stream()
-            .filter(doc -> !filterConfidentialAddress || YesNo.YES.equals(doc.getValue().getHasConfidentialAddress()))
+            .filter(doc -> !filterConfidentialAddress
+                           || YesNo.YES.getValue().equalsIgnoreCase(doc.getValue().getHasConfidentialAddress()))
             .map(supportingEvidenceBundle -> element(supportingEvidenceBundle.getId(),
                 DocumentWithConfidentialAddress.builder()
                     .name(supportingEvidenceBundle.getValue().getName())
@@ -477,7 +478,7 @@ public class ManageDocumentService {
                 hearingCourtBundle.getCourtBundle().stream()
                     .filter(courtBundle ->
                         !filterConfidentialAddress
-                        || YesNo.YES.equals(courtBundle.getValue().getHasConfidentialAddress()))
+                        || YesNo.YES.getValue().equalsIgnoreCase(courtBundle.getValue().getHasConfidentialAddress()))
                     .map(courtBundle -> element(courtBundle.getId(),
                         DocumentWithConfidentialAddress.builder()
                             .document(courtBundle.getValue().getDocument())
