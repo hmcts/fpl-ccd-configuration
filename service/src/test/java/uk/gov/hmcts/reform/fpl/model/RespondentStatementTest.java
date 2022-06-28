@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import java.time.LocalDateTime;
@@ -79,7 +80,8 @@ class RespondentStatementTest {
                     "document_binary_url", "binaryUrl",
                     "document_filename", "filename",
                     "document_url", "url"
-                ))
+                )),
+                Map.entry("hasConfidentialAddress", YesNo.NO.getValue())
             )
         ));
 
@@ -89,6 +91,45 @@ class RespondentStatementTest {
             "supportingEvidenceBundle", expectedBundles,
             "supportingEvidenceLA", expectedBundles,
             "supportingEvidenceNC", List.of()
+        );
+
+        Map<String, Object> serialised = objectMapper.convertValue(initial, new TypeReference<>() {});
+
+        RespondentStatement deserialised = objectMapper.convertValue(serialised,
+            RespondentStatement.class);
+
+        assertThat(serialised).isEqualTo(expectedBundle);
+        assertThat(deserialised).isEqualTo(initial);
+    }
+
+    @Test
+    void testSerialisationAndDeserialisationIfEmptyBundle() {
+        String respondentName = "Sam Watson";
+        UUID respondentId = UUID.randomUUID();
+
+        RespondentStatement initial = RespondentStatement.builder()
+            .respondentName(respondentName)
+            .respondentId(respondentId)
+            .supportingEvidenceBundle(List.of(element(
+                UUID.fromString("dc6b2154-9e5d-480d-adca-d70b4e1f6384"),
+                SupportingEvidenceBundle.builder()
+                    .build()
+            )))
+            .build();
+
+        List<Map<String, Object>> expectedBundles = List.of(Map.of(
+            "id", "dc6b2154-9e5d-480d-adca-d70b4e1f6384",
+            "value", Map.ofEntries(
+                Map.entry("needTranslation", "NO")
+            )
+        ));
+
+        Map<String, Object> expectedBundle = Map.of(
+            "respondentName", respondentName,
+            "respondentId", respondentId.toString(),
+            "supportingEvidenceBundle", expectedBundles,
+            "supportingEvidenceLA", expectedBundles,
+            "supportingEvidenceNC", expectedBundles
         );
 
         Map<String, Object> serialised = objectMapper.convertValue(initial, new TypeReference<>() {});
