@@ -8,9 +8,11 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -98,8 +100,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
             .type(FURTHER_EVIDENCE_DOCUMENTS)
-            .hasHearings("Yes")
-            .hasC2s("No")
+            .hasHearings(YesNo.YES.getValue())
+            .hasC2s(YesNo.NO.getValue())
+            .hasConfidentialAddress(YesNo.NO.getValue())
             .build());
     }
 
@@ -119,8 +122,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
             .type(CORRESPONDENCE)
-            .hasHearings("No")
-            .hasC2s("No")
+            .hasHearings(YesNo.NO.getValue())
+            .hasC2s(YesNo.NO.getValue())
+            .hasConfidentialAddress(YesNo.NO.getValue())
             .build());
     }
 
@@ -130,7 +134,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
         LocalDateTime today = LocalDateTime.now();
         HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
 
-        List<Element<CourtBundle>> courtBundleList = buildCourtBundleList(selectedHearingId);
+        List<Element<HearingCourtBundle>> courtBundleList = buildCourtBundleList(selectedHearingId);
 
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(createHearingBooking(today.plusDays(5), today.plusDays(6))),
@@ -143,7 +147,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData caseData = CaseData.builder()
             .hearingDetails(hearingBookings)
-            .courtBundleList(courtBundleList)
+            .courtBundleListV2(courtBundleList)
             .courtBundleHearingList(hearingList)
             .manageDocumentLA(buildManagementDocument(COURT_BUNDLE))
             .build();
@@ -152,12 +156,13 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             "initialise-manage-document-collections", USER_ROLES);
 
         CaseData responseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-        assertThat(responseData.getCourtBundleList()).isEqualTo(courtBundleList);
+        assertThat(responseData.getCourtBundleListV2()).isEqualTo(courtBundleList);
 
         assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
             .type(COURT_BUNDLE)
-            .hasHearings("Yes")
-            .hasC2s("No")
+            .hasHearings(YesNo.YES.getValue())
+            .hasC2s(YesNo.NO.getValue())
+            .hasConfidentialAddress(YesNo.NO.getValue())
             .build());
     }
 
@@ -190,8 +195,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
             .type(ADDITIONAL_APPLICATIONS_DOCUMENTS)
-            .hasHearings("No")
-            .hasC2s("Yes")
+            .hasHearings(YesNo.NO.getValue())
+            .hasC2s(YesNo.YES.getValue())
+            .hasConfidentialAddress(YesNo.NO.getValue())
             .build());
     }
 
@@ -383,8 +389,14 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .build());
     }
 
-    private List<Element<CourtBundle>> buildCourtBundleList(UUID hearingId) {
-        return List.of(element(hearingId, CourtBundle.builder().hearing("test hearing").build()));
+    private List<Element<HearingCourtBundle>> buildCourtBundleList(UUID hearingId) {
+        List<Element<CourtBundle>> courtBundle = List.of(element(CourtBundle.builder().build()));
+        return List.of(element(
+            hearingId,
+            HearingCourtBundle.builder()
+                .hearing("Test hearing")
+                .courtBundle(courtBundle)
+                .build()));
     }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {

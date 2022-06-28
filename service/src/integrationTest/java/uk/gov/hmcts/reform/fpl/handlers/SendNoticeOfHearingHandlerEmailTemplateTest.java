@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingNoOtherAddressEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
@@ -49,7 +50,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 })
 @MockBeans(value = {
     @MockBean(SendDocumentService.class),
-    @MockBean(TranslationRequestService.class)
+    @MockBean(TranslationRequestService.class),
+    @MockBean(CafcassNotificationService.class)
 })
 class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String CHILD_LAST_NAME = "Mortarion";

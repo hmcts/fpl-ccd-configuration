@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -30,14 +29,15 @@ public class ManageOrdersClosedCaseFieldGenerator {
 
         Map<String, Object> data = new HashMap<>();
 
-        if (IsFinalOrder.YES.equals(order.getIsFinalOrder())
-            || BooleanUtils.toBoolean(manageOrdersEventData.getManageOrdersIsFinalOrder())) {
+        boolean isFinalOrder = IsFinalOrder.YES.equals(order.getIsFinalOrder())
+                || BooleanUtils.toBoolean(manageOrdersEventData.getManageOrdersIsFinalOrder());
+
+        if (isFinalOrder) {
             data.put("children1", childrenSmartFinalOrderUpdater.updateFinalOrderIssued(caseData));
         }
 
-        String isFinalOrder = manageOrdersEventData.getManageOrdersIsFinalOrder();
         boolean shouldCloseCase = BooleanUtils.toBoolean(manageOrdersEventData.getManageOrdersCloseCase());
-        if (shouldCloseCase && YES.getValue().equals(isFinalOrder)) {
+        if (shouldCloseCase && isFinalOrder) {
             data.put("state", CLOSED);
             data.put("closeCaseTabField", CloseCase.builder().date(time.now().toLocalDate()).build());
         }

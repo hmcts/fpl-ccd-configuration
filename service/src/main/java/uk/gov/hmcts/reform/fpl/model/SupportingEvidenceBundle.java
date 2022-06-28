@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.interfaces.FurtherDocument;
 import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.PastOrPresentDate;
 
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
@@ -28,7 +30,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @Builder(toBuilder = true)
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SupportingEvidenceBundle implements TranslatableItem {
+public class SupportingEvidenceBundle implements TranslatableItem, FurtherDocument {
     private final String name;
     private final String notes;
     @PastOrPresentDate(message = "Date received cannot be in the future")
@@ -42,10 +44,17 @@ public class SupportingEvidenceBundle implements TranslatableItem {
     private final DocumentReference translatedDocument;
     private final LocalDateTime translationUploadDateTime;
     private final LanguageTranslationRequirement translationRequirements;
+    private String hasConfidentialAddress;
+
+    public String getHasConfidentialAddress() {
+        return ((!isBlank(name) || document != null) && (!YesNo.isYesOrNo(hasConfidentialAddress)))
+            ? YesNo.NO.getValue() : hasConfidentialAddress;
+    }
 
     @JsonIgnore
     public boolean isConfidentialDocument() {
-        return confidential != null && confidential.contains("CONFIDENTIAL");
+        return (confidential != null && confidential.contains("CONFIDENTIAL"))
+               || YesNo.YES.getValue().equalsIgnoreCase(getHasConfidentialAddress());
     }
 
     @JsonIgnore

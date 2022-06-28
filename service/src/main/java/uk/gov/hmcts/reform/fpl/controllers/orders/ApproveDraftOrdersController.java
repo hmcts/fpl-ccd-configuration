@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
-import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrdersEventNotificationBuilder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
@@ -24,11 +23,9 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.reviewDecisionFields;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.transientFields;
-import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 
 @Api
 @RestController
@@ -38,7 +35,6 @@ public class ApproveDraftOrdersController extends CallbackController {
 
     private final ApproveDraftOrdersService approveDraftOrdersService;
     private final DraftOrdersEventNotificationBuilder draftOrdersEventNotificationBuilder;
-    private final OthersService othersService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -77,16 +73,6 @@ public class ApproveDraftOrdersController extends CallbackController {
 
         List<String> errors = approveDraftOrdersService.validateDraftOrdersReviewDecision(caseData, data);
 
-        if (isEmpty(errors) && isNotEmpty(caseData.getAllOthers())) {
-            caseDetails.getData().put("hasOthers", "Yes");
-            caseDetails.getData().put("others_label", othersService.getOthersLabel(caseData.getAllOthers()));
-            caseDetails.getData().put("othersSelector", newSelector(caseData.getAllOthers().size()));
-
-            if (approveDraftOrdersService.hasApprovedReviewDecision(caseData, data)) {
-                caseDetails.getData().put("reviewCMOShowOthers", "Yes");
-            }
-        }
-
         return respond(caseDetails, errors);
     }
 
@@ -109,6 +95,9 @@ public class ApproveDraftOrdersController extends CallbackController {
 
             // review C21 orders
             approveDraftOrdersService.reviewC21Orders(caseData, data, selectedOrdersBundle);
+
+            // update list of rejected orders
+            approveDraftOrdersService.updateRejectedHearingOrders(data);
 
             caseDetails.getData().put("lastHearingOrderDraftsHearingId",
                 selectedOrdersBundle.getValue().getHearingId());

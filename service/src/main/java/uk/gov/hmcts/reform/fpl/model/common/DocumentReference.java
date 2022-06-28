@@ -17,6 +17,8 @@ public class DocumentReference {
     private final String binaryUrl;
     @JsonIgnore
     private Long size;
+    @JsonIgnore
+    private String type;
 
     @Deprecated
     public static DocumentReference buildFromDocument(uk.gov.hmcts.reform.document.domain.Document document) {
