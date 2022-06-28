@@ -42,6 +42,7 @@ public class Orders {
     private final String excluded;
     private final Address address;
     private final SecureAccommodationOrderSection secureAccommodationOrderSection;
+    private final String court;
 
     public boolean orderContainsEPO() {
         return this.getOrderType().contains(EMERGENCY_PROTECTION_ORDER);
