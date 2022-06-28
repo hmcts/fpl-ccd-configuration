@@ -113,6 +113,7 @@ class ManageDocumentsLAServiceTest {
         ManageDocumentLA expectedManageDocument = ManageDocumentLA.builder()
             .hasHearings(YES.getValue())
             .hasC2s(YES.getValue())
+            .hasConfidentialAddress(NO.getValue())
             .build();
 
         Map<String, Object> listAndLabel = manageDocumentLAService.baseEventData(caseData);
@@ -130,6 +131,7 @@ class ManageDocumentsLAServiceTest {
         ManageDocumentLA expectedManageDocument = ManageDocumentLA.builder()
             .hasHearings(NO.getValue())
             .hasC2s(NO.getValue())
+            .hasConfidentialAddress(NO.getValue())
             .build();
 
         Map<String, Object> listAndLabel = manageDocumentLAService.baseEventData(caseData);
@@ -145,6 +147,7 @@ class ManageDocumentsLAServiceTest {
         ManageDocumentLA expectedManageDocument = ManageDocumentLA.builder()
             .hasHearings(NO.getValue())
             .hasC2s(NO.getValue())
+            .hasConfidentialAddress(NO.getValue())
             .build();
 
         Map<String, Object> listAndLabel = manageDocumentLAService.baseEventData(caseData);
