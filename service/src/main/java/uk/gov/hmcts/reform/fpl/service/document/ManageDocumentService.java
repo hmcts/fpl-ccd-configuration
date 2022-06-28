@@ -121,6 +121,7 @@ public class ManageDocumentService {
 
         if (hasHearings == YES) {
             eventData.put(MANAGE_DOCUMENTS_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
+            eventData.put(HEARING_DOCUMENT_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
         }
 
         if (hasC2s == YES) {
