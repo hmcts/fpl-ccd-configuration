@@ -11,6 +11,8 @@ public enum OrderType {
     EMERGENCY_PROTECTION_ORDER("Emergency protection order", "Gorchymyn Diogelu Brys"),
     OTHER("Variation or discharge of care or supervision order",
         "Amrywio neu ddiddymu gorchymyn gofal neu oruchwyliaeth"),
+    //todo - welsh translation
+    CHILD_ASSESSMENT_ORDER("Child Assessment Order", "Child Assessment Order"),
     // TODO welshLabel
     SECURE_ACCOMMODATION_ORDER("Secure Accommodation order", "");
 

@@ -17,6 +17,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.CHILD_ASSESSMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.SECURE_ACCOMMODATION_ORDER;
@@ -43,9 +44,15 @@ public class Orders {
     private final Address address;
     private final SecureAccommodationOrderSection secureAccommodationOrderSection;
     private final String court;
+    private final String childAssessmentOrderAssessmentDirections;
+    private final String childAssessmentOrderContactDirections;
 
     public boolean orderContainsEPO() {
         return this.getOrderType().contains(EMERGENCY_PROTECTION_ORDER);
+    }
+
+    public boolean isC1Order() {
+        return this.getOrderType().contains(CHILD_ASSESSMENT_ORDER);
     }
 
     public boolean isDischargeOfCareOrder() {
