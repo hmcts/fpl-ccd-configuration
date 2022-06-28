@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.AmendedReturnedCaseEvent;
@@ -57,7 +56,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFie
 public class CaseSubmissionController extends CallbackController {
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
     private static final String CONSENT_TEMPLATE = "I, %s, believe that the facts stated in this application are true.";
-    public static final String DRAFT_APPLICATION_DOCUMENT = "draftApplicationDocument";
     private final CaseSubmissionService caseSubmissionService;
     private final FeeService feeService;
     private final FeatureToggleService featureToggleService;
@@ -76,20 +74,8 @@ public class CaseSubmissionController extends CallbackController {
 
         data.remove(DISPLAY_AMOUNT_TO_PAY);
 
-        // check if we want to use a C1 or C110a template
-        if (caseData.isC1Application()) {
-            // C1
-            Document document = caseSubmissionService.generateC1SubmittedFormPDF(caseData, true);
-            data.put(DRAFT_APPLICATION_DOCUMENT, buildFromDocument(document));
-
-            Document supplement = caseSubmissionService.generateSupplementPDF(caseData, true,
-                DocmosisTemplates.C16_SUPPLEMENT);
-            data.put("draftSupplement", buildFromDocument(supplement));
-        } else {
-            // C110a
-            Document document = caseSubmissionService.generateC110aSubmittedFormPDF(caseData, true);
-            data.put(DRAFT_APPLICATION_DOCUMENT, buildFromDocument(document));
-        }
+        Document document = caseSubmissionService.generateSubmittedFormPDF(caseData, true);
+        data.put("draftApplicationDocument", buildFromDocument(document));
 
         if (isInOpenState(caseDetails)) {
             try {
@@ -125,6 +111,7 @@ public class CaseSubmissionController extends CallbackController {
         List<String> errors = validate(caseData);
 
         if (errors.isEmpty()) {
+            Document document = caseSubmissionService.generateSubmittedFormPDF(caseData, false);
 
             ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
 
@@ -132,26 +119,13 @@ public class CaseSubmissionController extends CallbackController {
             data.put("dateAndTimeSubmitted", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(zonedDateTime));
             data.put("dateSubmitted", DateTimeFormatter.ISO_LOCAL_DATE.format(zonedDateTime));
             data.put("sendToCtsc", setSendToCtsc(data.get("caseLocalAuthority").toString()).getValue());
-
-            if (caseData.isC1Application()) {
-                // C1
-                Document document = caseSubmissionService.generateC1SubmittedFormPDF(caseData, false);
-                data.put("submittedForm", buildFromDocument(document));
-
-                Document supplement = caseSubmissionService.generateSupplementPDF(caseData, false,
-                    DocmosisTemplates.C16_SUPPLEMENT);
-                data.put("supplementDocument", buildFromDocument(supplement));
-            } else {
-                // C110A
-                Document document = caseSubmissionService.generateC110aSubmittedFormPDF(caseData, false);
-                data.put("submittedForm", buildFromDocument(document));
-            }
+            data.put("submittedForm", buildFromDocument(document));
 
             data.putAll(nocFieldPopulator.generate(caseData, RESPONDENT));
             data.putAll(nocFieldPopulator.generate(caseData, CHILD, BLANK));
         }
 
-        removeTemporaryFields(caseDetails, DRAFT_APPLICATION_DOCUMENT, "submissionConsentLabel");
+        removeTemporaryFields(caseDetails, "draftApplicationDocument", "submissionConsentLabel");
 
         return respond(caseDetails, errors);
     }

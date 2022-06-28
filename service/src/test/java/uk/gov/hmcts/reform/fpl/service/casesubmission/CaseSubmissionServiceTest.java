@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC16Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -24,13 +23,10 @@ import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C110A;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C16_SUPPLEMENT;
-import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisC16Supplement;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisCaseSubmission;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -52,24 +48,16 @@ class CaseSubmissionServiceTest {
     @Captor
     private ArgumentCaptor<DocmosisCaseSubmission> caseSubmissionDataCaptor;
 
-    @Captor
-    private ArgumentCaptor<DocmosisC16Supplement> caseSubmissionSupplementDataCaptor;
-
-
     @Autowired
     private CaseSubmissionService caseSubmissionService;
 
     private CaseData givenCaseData;
     private DocmosisCaseSubmission expectedCaseSubmission;
-    private DocmosisC16Supplement expectedC16Supplement;
 
     @BeforeEach
     void setup() {
         expectedCaseSubmission = expectedDocmosisCaseSubmission();
-        expectedC16Supplement = expectedDocmosisC16Supplement();
         given(templateDataGenerationService.getTemplateData(any())).willReturn(expectedCaseSubmission);
-        given(templateDataGenerationService.getC16SupplementData(any(), anyBoolean()))
-            .willReturn(expectedC16Supplement);
 
         given(documentGeneratorService
             .generateDocmosisDocument(any(DocmosisData.class), any(), any(), any()))
@@ -82,7 +70,7 @@ class CaseSubmissionServiceTest {
 
     @Test
     void shouldGenerateCaseSubmissionDocumentSuccessfullyDefault() {
-        caseSubmissionService.generateC110aSubmittedFormPDF(givenCaseData, false);
+        caseSubmissionService.generateSubmittedFormPDF(givenCaseData, false);
 
         verify(documentGeneratorService).generateDocmosisDocument(caseSubmissionDataCaptor.capture(),
             eq(C110A),
@@ -97,7 +85,7 @@ class CaseSubmissionServiceTest {
 
     @Test
     void shouldGenerateCaseSubmissionDocumentSuccessfullyIfWelsh() {
-        caseSubmissionService.generateC110aSubmittedFormPDF(givenCaseData.toBuilder()
+        caseSubmissionService.generateSubmittedFormPDF(givenCaseData.toBuilder()
             .c110A(uk.gov.hmcts.reform.fpl.model.group.C110A.builder()
                 .languageRequirementApplication(Language.WELSH)
                 .build())
@@ -110,21 +98,6 @@ class CaseSubmissionServiceTest {
 
         DocmosisCaseSubmission caseSubmission = caseSubmissionDataCaptor.getValue();
         assertThat(caseSubmission).isEqualTo(expectedCaseSubmission);
-
-        verify(uploadDocumentService).uploadPDF(eq(PDF), any());
-    }
-
-    @Test
-    void shouldGenerateSupplementSuccessfullyIfC1Application() {
-        caseSubmissionService.generateSupplementPDF(givenCaseData, false, C16_SUPPLEMENT);
-
-        verify(documentGeneratorService).generateDocmosisDocument(caseSubmissionSupplementDataCaptor.capture(),
-            eq(C16_SUPPLEMENT),
-            eq(RenderFormat.PDF),
-            eq(Language.ENGLISH));
-
-        DocmosisC16Supplement c16Supplement = caseSubmissionSupplementDataCaptor.getValue();
-        assertThat(c16Supplement).isEqualTo(expectedC16Supplement);
 
         verify(uploadDocumentService).uploadPDF(eq(PDF), any());
     }

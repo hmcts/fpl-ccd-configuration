@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Getter
@@ -27,7 +26,7 @@ public class TaskSection {
     }
 
     public TaskSection withTask(Task task) {
-        ofNullable(task).ifPresent(tasks::add);
+        tasks.add(task);
         return this;
     }
 

@@ -59,9 +59,7 @@ public class CaseSubmissionChecker extends CompoundEventChecker {
 
         events.add(CASE_NAME);
         events.add(ORDERS_SOUGHT);
-        if (!caseData.isC1Application()) {
-            events.add(HEARING_URGENCY); // present but optional for C1s
-        }
+        events.add(HEARING_URGENCY);
 
         if (!caseData.isDischargeOfCareApplication()) {
             events.add(GROUNDS);
@@ -75,10 +73,7 @@ public class CaseSubmissionChecker extends CompoundEventChecker {
 
         events.add(CHILDREN);
         events.add(RESPONDENTS);
-
-        if (!caseData.isC1Application()) {
-            events.add(ALLOCATION_PROPOSAL);
-        }
+        events.add(ALLOCATION_PROPOSAL);
 
         if (YES.equals(caseData.getMultiCourts())) {
             events.add(SELECT_COURT);

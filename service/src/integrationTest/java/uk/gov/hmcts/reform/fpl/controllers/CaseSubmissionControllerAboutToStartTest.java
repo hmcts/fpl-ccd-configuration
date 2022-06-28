@@ -6,7 +6,6 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
@@ -56,12 +55,8 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
 
     @BeforeEach
     void mocking() {
-        given(caseSubmissionService.generateC110aSubmittedFormPDF(any(), eq(true)))
-                .willReturn(document);
-        given(caseSubmissionService.generateC1SubmittedFormPDF(any(), eq(true)))
-                .willReturn(document);
-        given(caseSubmissionService.generateSupplementPDF(any(), eq(true), any()))
-                .willReturn(document);
+        given(caseSubmissionService.generateSubmittedFormPDF(any(), eq(true)))
+            .willReturn(document);
         given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENT, "2313.pdf"))
             .willReturn(document);
         given(caseSubmissionService.getSigneeName(any())).willReturn("Emma Taylor");
@@ -131,30 +126,6 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
                     "document_filename", "file.pdf",
                     "document_binary_url",
                     "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary"));
-    }
-
-    @Test
-    void shouldHaveSupplementAndDocumentIfC1OrderChosen() {
-        given(feeService.getFeesDataForOrders(any())).willThrow(new FeeRegisterException(300, "duplicate", null));
-
-        CaseDetails details = populatedCaseDetails();
-        // Use a C1 supplement document
-        details.getData().put("orders", Orders.builder().orderType(List.of(OrderType.CHILD_ASSESSMENT_ORDER)).build());
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(details);
-
-        assertThat(callbackResponse.getData())
-                .containsEntry("draftSupplement",
-                        of("document_url", "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
-                                "document_filename", "file.pdf",
-                                "document_binary_url",
-                                "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary"));
-        assertThat(callbackResponse.getData())
-                .containsEntry("draftApplicationDocument",
-                        of("document_url", "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
-                                "document_filename", "file.pdf",
-                                "document_binary_url",
-                                "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary"));
     }
 
     private static FeesData feesData(long amount) {

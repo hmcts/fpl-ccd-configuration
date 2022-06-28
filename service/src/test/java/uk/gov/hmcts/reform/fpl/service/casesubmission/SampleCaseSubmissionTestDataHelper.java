@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service.casesubmission;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC16Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisFactorsParenting;
@@ -277,15 +276,5 @@ public class SampleCaseSubmissionTestDataHelper {
                 .guardian("John Watson")
                 .sameGuardianDetails("No\nSome guardian not needed")
                 .build());
-    }
-
-    public static DocmosisC16Supplement expectedDocmosisC16Supplement() {
-        return DocmosisC16Supplement.builder()
-            .childrensNames("Bobby Smith")
-            .caseNumber("01234567890")
-            .directionsSoughtAssessment("Directions sought in respect of assessment")
-            .directionsSoughtContact("Directions sought in respect of contact")
-            .groundsForChildAssessmentOrderReason("Reason for the grounds being met")
-            .build();
     }
 }

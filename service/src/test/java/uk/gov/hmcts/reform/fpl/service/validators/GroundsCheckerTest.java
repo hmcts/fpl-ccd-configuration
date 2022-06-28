@@ -10,7 +10,6 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
-import uk.gov.hmcts.reform.fpl.model.GroundsForChildAssessmentOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -117,40 +116,4 @@ class GroundsCheckerTest {
         assertThat(errors).isEmpty();
         assertThat(isCompleted).isTrue();
     }
-
-    @Test
-    void shouldReturnEmptyErrorsWhenGroundsProvidedForRequestedChildAssessmentOrder() {
-        final GroundsForChildAssessmentOrder grounds = GroundsForChildAssessmentOrder.builder()
-            .thresholdDetails("Custom details")
-            .build();
-        final CaseData caseData = CaseData.builder()
-            .orders(Orders.builder()
-                .orderType(List.of(OrderType.CHILD_ASSESSMENT_ORDER))
-                .build())
-            .groundsForChildAssessmentOrder(grounds)
-            .build();
-
-        final List<String> errors = groundsChecker.validate(caseData);
-        final boolean isCompleted = groundsChecker.isCompleted(caseData);
-
-        assertThat(errors).isEmpty();
-        assertThat(isCompleted).isTrue();
-    }
-
-    @Test
-    void shouldReturnErrorWhenChildAssessmentOrderRequestedButNoGroundsProvided() {
-        final CaseData caseData = CaseData.builder()
-            .orders(Orders.builder()
-                .orderType(List.of(OrderType.CHILD_ASSESSMENT_ORDER))
-                .build())
-            .build();
-
-        final List<String> errors = groundsChecker.validate(caseData);
-        final boolean isCompleted = groundsChecker.isCompleted(caseData);
-
-        assertThat(errors).containsExactlyInAnyOrder("Add the grounds for the application");
-        assertThat(isCompleted).isFalse();
-    }
-
-
 }

@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
-import uk.gov.hmcts.reform.fpl.model.GroundsForChildAssessmentOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
 import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
@@ -23,9 +22,6 @@ public class GroundsChecker extends PropertiesChecker {
     public List<String> validate(CaseData caseData) {
         if (hasEmergencyProtectionOrder(caseData)) {
             return super.validate(caseData, List.of("grounds", "groundsForEPO"), Default.class, EPOGroup.class);
-        } else if (isNotEmpty(caseData.getOrders())
-            && caseData.getOrders().getOrderType().contains(OrderType.CHILD_ASSESSMENT_ORDER)) {
-            return super.validate(caseData, List.of("groundsForChildAssessmentOrder"));
         } else {
             return super.validate(caseData, List.of("grounds"));
         }
@@ -33,9 +29,7 @@ public class GroundsChecker extends PropertiesChecker {
 
     @Override
     public boolean isStarted(CaseData caseData) {
-        return isGroundsStarted(caseData.getGrounds())
-            || isEPOGroundsStarted(caseData.getGroundsForEPO())
-            || isChildAssessmentOrderGroundsStarted(caseData.getGroundsForChildAssessmentOrder());
+        return isGroundsStarted(caseData.getGrounds()) || isEPOGroundsStarted(caseData.getGroundsForEPO());
     }
 
     private boolean hasEmergencyProtectionOrder(CaseData caseData) {
@@ -49,10 +43,6 @@ public class GroundsChecker extends PropertiesChecker {
 
     private static boolean isEPOGroundsStarted(GroundsForEPO grounds) {
         return isNotEmpty(grounds) && isNotEmpty(grounds.getReason());
-    }
-
-    private static boolean isChildAssessmentOrderGroundsStarted(GroundsForChildAssessmentOrder grounds) {
-        return isNotEmpty(grounds) && isNotEmpty(grounds.getThresholdDetails());
     }
 
     @Override

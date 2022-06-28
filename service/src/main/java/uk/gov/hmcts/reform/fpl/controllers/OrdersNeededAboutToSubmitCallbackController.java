@@ -21,24 +21,6 @@ import java.util.Optional;
 @RequestMapping("/callback/orders-needed")
 public class OrdersNeededAboutToSubmitCallbackController extends CallbackController {
 
-    @PostMapping("/mid-event")
-    @SuppressWarnings("unchecked")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        Map<String, Object> data = caseDetails.getData();
-
-        Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get("orders"))
-            .map(orders -> (List<String>) orders.get("orderType"));
-
-        if (orderType.isPresent()
-            && orderType.get().contains(OrderType.CHILD_ASSESSMENT_ORDER.name()) && orderType.get().size() > 1) {
-            return respond(caseDetails, List.of("You have selected a standalone order, "
-                + "this cannot be applied for alongside other orders."));
-        }
-        return respond(caseDetails);
-    }
-
-
     @PostMapping("/about-to-submit")
     @SuppressWarnings("unchecked")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
