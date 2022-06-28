@@ -176,6 +176,9 @@ public class CaseData {
     @NotNull(message = "Add the grounds for the application")
     @Valid
     private final Grounds grounds;
+    @NotNull(message = "Add the grounds for the application")
+    @Valid
+    private final GroundsForChildAssessmentOrder groundsForChildAssessmentOrder;
     @NotNull(message = "Add the grounds for the application", groups = EPOGroup.class)
     @Valid
     private final GroundsForEPO groundsForEPO;
@@ -1167,5 +1170,12 @@ public class CaseData {
             .orElse(false);
     }
 
+    @JsonIgnore
+    public boolean isC1Application() {
+        return ofNullable(getOrders())
+            .map(Orders::isC1Order)
+            .orElse(false);
+    }
+    
     private List<Element<DocumentWithConfidentialAddress>> documentsWithConfidentialAddress;
 }
