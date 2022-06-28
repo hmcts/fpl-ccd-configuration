@@ -116,14 +116,6 @@ public class MigrateCaseController extends CallbackController {
      *  - migrationId
      * @param caseDetails - the caseDetails to update
      */
-    private void run694(CaseDetails caseDetails) {
-        var migrationId = "DFPL-694";
-        var expectedCaseId = 1643970994251861L;
-        var expectedDocId = UUID.fromString("e32175d7-28ea-4041-8f1c-1087326ee331");
-
-        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
-    }
-
     private void run709(CaseDetails caseDetails) {
         var migrationId = "DFPL-709";
         var expectedCaseId = 1654863367762430L;
