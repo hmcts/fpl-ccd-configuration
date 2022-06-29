@@ -31,6 +31,7 @@ public class OrdersNeededController extends CallbackController {
     private final OrdersNeededValidator ordersNeededValidator;
 
     @PostMapping("/mid-event")
+    @SuppressWarnings("unchecked")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         final CaseData caseData = getCaseData(callbackrequest);
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
@@ -38,29 +39,19 @@ public class OrdersNeededController extends CallbackController {
 
         final List<String> errors = ordersNeededValidator.validate(caseData);
 
-        if (isNotEmpty(errors)) {
-            return respond(data, errors);
-        } else {
-            return respond(data);
-        }
-    }
-
-
-    @PostMapping("/mid-event")
-    @SuppressWarnings("unchecked")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        Map<String, Object> data = caseDetails.getData();
-
         Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get("orders"))
             .map(orders -> (List<String>) orders.get("orderType"));
 
         if (orderType.isPresent()
             && orderType.get().contains(OrderType.CHILD_ASSESSMENT_ORDER.name()) && orderType.get().size() > 1) {
-            return respond(caseDetails, List.of("You have selected a standalone order, "
-                + "this cannot be applied for alongside other orders."));
+            errors.add("You have selected a standalone order, this cannot be applied for alongside other orders.");
         }
-        return respond(caseDetails);
+
+        if (isNotEmpty(errors)) {
+            return respond(data, errors);
+        } else {
+            return respond(data);
+        }
     }
 
 
