@@ -309,7 +309,4 @@ ccd-case-document-am-api:
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       DM_STORE_BASE_URL: http://dm-store-aat.service.core-compute-aat.internal
       CCD_DATA_STORE_API_BASE_URL: http://${SERVICE_NAME}-ccd-data-store-api
-    keyVaults:
-      ccd:
-        secrets:
-          - ccd-case-document-am-api-s2s-secret
+    keyVaults: []
