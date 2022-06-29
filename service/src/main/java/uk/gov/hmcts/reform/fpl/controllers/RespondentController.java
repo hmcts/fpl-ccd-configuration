@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static java.util.UUID.randomUUID;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type;
@@ -201,42 +200,46 @@ public class RespondentController extends CallbackController {
         return respond(caseDetails, errors);
     }
 
-    @PostMapping("/change-from-other/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleChangeFromOtherAboutToSubmit(
-        @RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
-        final CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
-
-        OtherToRespondentEventData eventData = caseData.getOtherToRespondentEventData();
-
+    private UUID getFirstOtherId(CaseData caseData) {
         Set<UUID> additionalOtherIds = nullSafeList(caseData.getOthers().getAdditionalOthers())
             .stream().map(Element::getId).collect(Collectors.toSet());
         UUID firstOtherUUID = caseData.getConfidentialOthers().stream().map(Element::getId)
-            .filter(co -> !additionalOtherIds.contains(co)).findFirst().orElse(randomUUID());
-        // used for mapping confidential detail for firstOther
+            .filter(co -> !additionalOtherIds.contains(co)).findFirst()
+            .orElse(UUID.fromString("00000000-0000-0000-0000-000000000000"));
+        return firstOtherUUID;
+    }
 
-        Element<Other> selectedPreparedOther = othersService.getSelectedPreparedOther(caseData,
-            eventData.getOthersList(), firstOtherUUID);
-        boolean isFirstOtherSelected = selectedPreparedOther.getId().equals(firstOtherUUID);
+    private Element<Other> getSelectedOther(CaseData caseData) {
+        UUID firstOtherUUID = getFirstOtherId(caseData);
+        return othersService.getSelectedPreparedOther(caseData,
+            caseData.getOtherToRespondentEventData().getOthersList(), firstOtherUUID);
+    }
+
+    private List<Element<Other>> buildNewAllOthers(CaseData caseData, Element<Other> selectedOther) {
+        UUID firstOtherUUID = getFirstOtherId(caseData);
+        boolean isFirstOtherSelected = selectedOther.getId().equals(firstOtherUUID);
         List<Element<Other>> newAllOthersWithDetailsHidden;
         if (isFirstOtherSelected) {
             newAllOthersWithDetailsHidden = respondentService.buildNewAllOthersWhenFirstOtherSelected(caseData);
         } else {
             newAllOthersWithDetailsHidden = respondentService.buildNewAllOthersWhenAdditionalOtherSelected(caseData,
-                selectedPreparedOther, firstOtherUUID);
+                selectedOther, firstOtherUUID);
         }
-        List<Element<Other>> newAllOthers = new ArrayList<>();
+        List<Element<Other>> ret = new ArrayList<>();
         final List<Element<Other>> confidentialOthers = caseData.getConfidentialOthers();
         newAllOthersWithDetailsHidden.forEach(element -> {
             if (element.getValue().containsConfidentialDetails()) {
                 Other confidentialOther = getConfidentialItemToAdd(confidentialOthers, element);
-                newAllOthers.add(element(element.getId(), othersService
+                ret.add(element(element.getId(), othersService
                     .addConfidentialDetails(confidentialOther, element)));
             } else {
-                newAllOthers.add(element);
+                ret.add(element);
             }
         });
+        return ret;
+    }
+
+    private Others prepareNewOthers(CaseDetails caseDetails, List<Element<Other>> newAllOthers) {
         // Setting "confidentialOthers" to caseDetails
         confidentialDetailsService.addConfidentialDetailsToCase(caseDetails, newAllOthers, OTHER);
         // Setting "others" to caseDetails from previous built new allOthers collection
@@ -248,23 +251,45 @@ public class RespondentController extends CallbackController {
         } else {
             caseDetails.getData().put(OTHERS_KEY, newOthers);
         }
+        return newOthers;
+    }
 
-        // build new respondents1
+    private void addTransformedRespondentToRespondents(CaseDetails caseDetails, CaseData caseData,
+                                                       Element<Other> selectedOther) {
+        OtherToRespondentEventData eventData = caseData.getOtherToRespondentEventData();
         Respondent transformedRespondent = eventData.getTransformedRespondent();
         List<Element<Respondent>> newRespondents = confidentialDetailsService.prepareCollection(
             caseData.getAllRespondents(), caseData.getConfidentialRespondents(), expandCollection());
-        newRespondents.add(element(selectedPreparedOther.getId(), transformedRespondent));
+        newRespondents.add(element(selectedOther.getId(), transformedRespondent));
         caseDetails.getData().put(RESPONDENTS_KEY, newRespondents);
-        caseData = getCaseData(caseDetails); // update case data
-        prepareNewRespondents(caseDetails, caseData, caseDataBefore);
+    }
 
-        // Setting "representatives" to caseDetails
-        representativeService.updateRepresentativeRole(caseData, selectedPreparedOther.getValue().getRepresentedBy(),
-            Type.RESPONDENT, caseData.getRespondents1().size());
+    private void prepareUpdatedRepresentative(CaseDetails caseDetails, CaseData caseData, Others newOthers,
+                                              Element<Other> selectedOther) {
+        representativeService.updateRepresentativeRole(caseData, selectedOther.getValue()
+            .getRepresentedBy(), Type.RESPONDENT, caseData.getRespondents1().size());
         if (nonNull(newOthers) && nonNull(newOthers.getFirstOther())) {
             representativeService.updateRepresentativeRoleForOthers(caseData, newOthers);
         }
         caseDetails.getData().put(REPRESENTATIVES_KEY, caseData.getRepresentatives());
+    }
+
+    @PostMapping("/change-from-other/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handleChangeFromOtherAboutToSubmit(
+        @RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+        final CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
+
+        Element<Other> selectedOther = getSelectedOther(caseData);
+        List<Element<Other>> newAllOthers = buildNewAllOthers(caseData, selectedOther);
+        final Others newOthers = prepareNewOthers(caseDetails, newAllOthers);
+        // build new respondents1
+        addTransformedRespondentToRespondents(caseDetails, caseData, selectedOther);
+        caseData = getCaseData(caseDetails); // update case data object
+        prepareNewRespondents(caseDetails, caseData, caseDataBefore);
+        // Setting "representatives" to caseDetails
+        prepareUpdatedRepresentative(caseDetails, caseData, newOthers, selectedOther);
 
         return respond(removeTemporaryFields(caseDetails, OtherToRespondentEventData.class));
     }
