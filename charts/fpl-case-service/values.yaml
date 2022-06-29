@@ -77,3 +77,6 @@ java:
         - AppInsightsInstrumentationKey
         - scheduler-db-password
   applicationPort: 4000
+
+ccd-case-document-am-api:
+  enabled: false
