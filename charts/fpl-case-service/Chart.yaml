@@ -1,7 +1,7 @@
 name: fpl-case-service
 apiVersion: v2
 home: https://github.com/hmcts/fpl-ccd-configuration
-version: 1.12.41
+version: 1.12.42
 description: FPL Case Service
 maintainers:
   - name: HMCTS Family Public Law team
@@ -27,3 +27,7 @@ dependencies:
     version: ~0.1.6
     repository: '@hmctspublic'
     condition: aac-manage-case-assignment.enabled
+  - name: ccd-case-document-am-api
+    version: 1.7.3
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: ccd-case-document-am-api.enabled
