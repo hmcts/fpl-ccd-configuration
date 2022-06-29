@@ -52,7 +52,8 @@ public class Orders {
     }
 
     public boolean isC1Order() {
-        return this.getOrderType().contains(CHILD_ASSESSMENT_ORDER);
+        return this.getOrderType().contains(CHILD_ASSESSMENT_ORDER)
+               || isSecureAccommodationOrder();
     }
 
     public boolean isDischargeOfCareOrder() {

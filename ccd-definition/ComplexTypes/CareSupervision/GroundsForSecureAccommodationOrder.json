@@ -16,14 +16,5 @@
     "FieldType": "TextArea",
     "ElementLabel": "The reason(s) for the application and length of order applied for",
     "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "GroundsForSecureAccommodationOrder",
-    "ListElementCode": "supportingDocuments",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "Document",
-    "ElementLabel": "Supporting documents",
-    "SecurityClassification": "Public"
   }
 ]

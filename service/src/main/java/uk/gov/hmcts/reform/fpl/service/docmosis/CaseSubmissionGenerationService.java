@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderReasonsType;
 import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderGround;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.FactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForChildAssessmentOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
+import uk.gov.hmcts.reform.fpl.model.GroundsForSecureAccommodationOrder;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.HearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.InternationalElement;
@@ -39,6 +41,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC16Supplement;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC20Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisFactorsParenting;
@@ -55,6 +58,7 @@ import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -122,6 +126,36 @@ public class CaseSubmissionGenerationService
             .directionsSoughtAssessment(caseData.getOrders().getChildAssessmentOrderAssessmentDirections())
             .directionsSoughtContact(caseData.getOrders().getChildAssessmentOrderContactDirections())
             .caseNumber(String.valueOf(caseData.getId()))
+            .build();
+
+        if (isDraft) {
+            supplement.setDraftWaterMark(getDraftWaterMarkData());
+        } else {
+            supplement.setCourtSeal(getCourtSealData(caseData.getImageLanguage()));
+        }
+        return supplement;
+    }
+
+
+    public DocmosisC20Supplement getC20SupplementData(final CaseData caseData, boolean isDraft) {
+        Language applicationLanguage = Optional.ofNullable(caseData.getC110A()
+            .getLanguageRequirementApplication()).orElse(Language.ENGLISH);
+
+        Orders orders = caseData.getOrders();
+        GroundsForSecureAccommodationOrder grounds = caseData.getGroundsForSecureAccommodationOrder();
+
+        DocmosisC20Supplement supplement = DocmosisC20Supplement.builder()
+            .caseNumber(String.valueOf(caseData.getId()))
+            .welshLanguageRequirement(getWelshLanguageRequirement(caseData, applicationLanguage))
+            .courtName(courtService.getCourtName(caseData))
+            .childrensNames(getChildrensNames(caseData.getAllChildren()))
+            .submittedDate(formatDateDisplay(time.now().toLocalDate(), applicationLanguage))
+            .section(orders.getSecureAccommodationOrderSection().getLabel())
+            .grounds(grounds.getGrounds().stream()
+                .sorted(Comparator.comparingInt(SecureAccommodationOrderGround::getDisplayOrder))
+                .map(SecureAccommodationOrderGround::getLabel)
+                .collect(toList()))
+            .reasonAndLength(grounds.getReasonAndLength())
             .build();
 
         if (isDraft) {

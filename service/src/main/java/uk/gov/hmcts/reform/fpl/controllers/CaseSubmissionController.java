@@ -82,8 +82,7 @@ public class CaseSubmissionController extends CallbackController {
             Document document = caseSubmissionService.generateC1SubmittedFormPDF(caseData, true);
             data.put(DRAFT_APPLICATION_DOCUMENT, buildFromDocument(document));
 
-            Document supplement = caseSubmissionService.generateSupplementPDF(caseData, true,
-                DocmosisTemplates.C16_SUPPLEMENT);
+            Document supplement = caseSubmissionService.generateC1SupplementPDF(caseData, true);
             data.put("draftSupplement", buildFromDocument(supplement));
         } else {
             // C110a
@@ -138,8 +137,7 @@ public class CaseSubmissionController extends CallbackController {
                 Document document = caseSubmissionService.generateC1SubmittedFormPDF(caseData, false);
                 data.put("submittedForm", buildFromDocument(document));
 
-                Document supplement = caseSubmissionService.generateSupplementPDF(caseData, false,
-                    DocmosisTemplates.C16_SUPPLEMENT);
+                Document supplement = caseSubmissionService.generateC1SupplementPDF(caseData, false);
                 data.put("supplementDocument", buildFromDocument(supplement));
             } else {
                 // C110A

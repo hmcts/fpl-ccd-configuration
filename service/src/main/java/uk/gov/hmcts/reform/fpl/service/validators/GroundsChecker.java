@@ -72,8 +72,7 @@ public class GroundsChecker extends PropertiesChecker {
 
     private static boolean isSecureAccommodationOrderGroundsStarted(GroundsForSecureAccommodationOrder saoGrounds) {
         return isNotEmpty(saoGrounds)
-               && anyNonEmpty(saoGrounds.getGrounds(), saoGrounds.getReasonAndLength(),
-            saoGrounds.getSupportingDocuments());
+               && anyNonEmpty(saoGrounds.getGrounds(), saoGrounds.getReasonAndLength());
     }
 
     private static boolean isSecureAccommodationOrderGroundsCompleted(GroundsForSecureAccommodationOrder saoGrounds) {

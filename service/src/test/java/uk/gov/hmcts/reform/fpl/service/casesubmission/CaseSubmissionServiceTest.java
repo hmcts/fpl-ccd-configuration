@@ -116,7 +116,7 @@ class CaseSubmissionServiceTest {
 
     @Test
     void shouldGenerateSupplementSuccessfullyIfC1Application() {
-        caseSubmissionService.generateSupplementPDF(givenCaseData, false, C16_SUPPLEMENT);
+        caseSubmissionService.generateSupplementPDF(givenCaseData, false, C16_SUPPLEMENT, expectedC16Supplement);
 
         verify(documentGeneratorService).generateDocmosisDocument(caseSubmissionSupplementDataCaptor.capture(),
             eq(C16_SUPPLEMENT),

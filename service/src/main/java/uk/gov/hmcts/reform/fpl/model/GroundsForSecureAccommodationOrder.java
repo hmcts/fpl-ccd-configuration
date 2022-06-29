@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderGround;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.validation.groups.SecureAccommodationGroup;
 
@@ -21,13 +22,9 @@ public class GroundsForSecureAccommodationOrder {
     @Size(min = 1,
         message = "Select at least one option for how this case meets grounds for an secure accommodation order",
         groups = SecureAccommodationGroup.class)
-    private List<@NotBlank(
-        message = "Select at least one option for how this case meets grounds for an secure accommodation order",
-        groups = SecureAccommodationGroup.class) String> grounds;
+    private List<SecureAccommodationOrderGround> grounds;
 
     @NotBlank(message = "Please give reasons for the application and length of the order sought",
         groups = SecureAccommodationGroup.class)
     private String reasonAndLength;
-
-    private List<DocumentReference> supportingDocuments;
 }

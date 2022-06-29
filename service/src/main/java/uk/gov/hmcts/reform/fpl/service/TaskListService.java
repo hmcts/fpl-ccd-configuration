@@ -71,6 +71,7 @@ public class TaskListService {
 
     private List<Event> getEvents(CaseData caseData) {
 
+        // Core Events for all combinations of C110a + C1 apps
         final List<Event> events = new ArrayList<>(List.of(
             ORDERS_SOUGHT,
             featureToggles.isApplicantAdditionalContactsEnabled() ? LOCAL_AUTHORITY_DETAILS : ORGANISATION_DETAILS,
