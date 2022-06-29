@@ -1551,12 +1551,12 @@ class ManageDocumentServiceTest {
             element(uuid, SupportingEvidenceBundle.builder()
                 .name("test bundle name 1")
                 .document(confidentialDoc)
-                .hasConfidentialAddress(YES)
+                .hasConfidentialAddress(YES.getValue())
                 .build()),
             element(uuid, SupportingEvidenceBundle.builder()
                 .name("test bundle name 2")
                 .document(normalDoc)
-                .hasConfidentialAddress(NO)
+                .hasConfidentialAddress(NO.getValue())
                 .build())
         );
 
@@ -1591,10 +1591,10 @@ class ManageDocumentServiceTest {
         List<Element<CourtBundle>> courtBundles = List.of(
             element(uuid1, CourtBundle.builder()
                 .document(confidentialDoc)
-                .hasConfidentialAddress(YES).build()),
+                .hasConfidentialAddress(YES.getValue()).build()),
             element(uuid2, CourtBundle.builder()
                 .document(normalDoc)
-                .hasConfidentialAddress(NO).build()));
+                .hasConfidentialAddress(NO.getValue()).build()));
 
         List<Element<HearingCourtBundle>> hearingCourtBundles = List.of(
             element(randomUUID(), HearingCourtBundle.builder()
