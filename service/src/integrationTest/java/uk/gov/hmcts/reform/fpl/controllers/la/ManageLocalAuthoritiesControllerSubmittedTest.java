@@ -44,6 +44,7 @@ import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_2_ID;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_2_INBOX;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_2_NAME;
 import static uk.gov.hmcts.reform.fpl.Constants.PRIVATE_SOLICITOR_USER_EMAIL;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_2_USER_EMAIL;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CASE_TRANSFERRED_NEW_DESIGNATED_LA_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CASE_TRANSFERRED_PREV_DESIGNATED_LA_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CASE_TRANSFERRED_TO_ANOTHER_COURT_TEMPLATE;
@@ -69,6 +70,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildParty;
 class ManageLocalAuthoritiesControllerSubmittedTest extends AbstractCallbackTest {
 
     private static final Long CASE_ID = 1234L;
+    private static final String CASE_NAME = "Case name";
 
     @MockBean
     private NotificationClient notificationClient;
@@ -111,7 +113,7 @@ class ManageLocalAuthoritiesControllerSubmittedTest extends AbstractCallbackTest
 
         final CaseData caseDataBefore = CaseData.builder()
             .id(CASE_ID)
-            .caseName("Case name")
+            .caseName(CASE_NAME)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .sharedLocalAuthorityPolicy(null)
             .localAuthorityPolicy(designatedOrganisationPolicy)
@@ -161,11 +163,13 @@ class ManageLocalAuthoritiesControllerSubmittedTest extends AbstractCallbackTest
 
         final CaseData caseDataBefore = CaseData.builder()
             .id(CASE_ID)
-            .caseName("Case name")
+            .caseName(CASE_NAME)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .sharedLocalAuthorityPolicy(secondaryOrganisationPolicy)
             .localAuthorityPolicy(designatedOrganisationPolicy)
-            .localAuthorities(wrapElements(designatedLocalAuthority, secondaryLocalAuthority))
+            .localAuthorities(wrapElements(
+                designatedLocalAuthority,
+                secondaryLocalAuthority.toBuilder().email(LOCAL_AUTHORITY_2_USER_EMAIL).build()))
             .build();
 
         final CaseData caseData = caseDataBefore.toBuilder()
@@ -183,11 +187,19 @@ class ManageLocalAuthoritiesControllerSubmittedTest extends AbstractCallbackTest
 
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 
-        checkUntil(() -> verify(notificationClient).sendEmail(
-            LOCAL_AUTHORITY_REMOVED_SHARED_LA_TEMPLATE,
-            LOCAL_AUTHORITY_2_INBOX,
-            toMap(secondaryLocalAuthorityData),
-            notificationReference(CASE_ID)));
+        checkUntil(() -> {
+            verify(notificationClient).sendEmail(
+                LOCAL_AUTHORITY_REMOVED_SHARED_LA_TEMPLATE,
+                LOCAL_AUTHORITY_2_INBOX,
+                toMap(secondaryLocalAuthorityData),
+                notificationReference(CASE_ID));
+
+            verify(notificationClient).sendEmail(
+                LOCAL_AUTHORITY_REMOVED_SHARED_LA_TEMPLATE,
+                LOCAL_AUTHORITY_2_USER_EMAIL,
+                toMap(secondaryLocalAuthorityData),
+                notificationReference(CASE_ID));
+        });
 
         verifyNoMoreInteractions(notificationClient, coreCaseDataService);
     }
@@ -197,8 +209,9 @@ class ManageLocalAuthoritiesControllerSubmittedTest extends AbstractCallbackTest
 
         final CaseData caseDataBefore = CaseData.builder()
             .id(CASE_ID)
-            .caseName("Case name")
+            .caseName(CASE_NAME)
             .children1(List.of(testChild("Alex", "Green", BOY, now().toLocalDate())))
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .localAuthorityPolicy(designatedOrganisationPolicy)
             .localAuthorities(wrapElements(designatedLocalAuthority, secondaryLocalAuthority))
             .localAuthoritiesEventData(LocalAuthoritiesEventData.builder()
@@ -209,7 +222,8 @@ class ManageLocalAuthoritiesControllerSubmittedTest extends AbstractCallbackTest
         final CaseData caseData = caseDataBefore.toBuilder()
             .caseLocalAuthority(LOCAL_AUTHORITY_2_CODE)
             .localAuthorityPolicy(secondaryOrganisationPolicy)
-            .localAuthorities(wrapElements(secondaryLocalAuthority.toBuilder().designated("Yes").build()))
+            .localAuthorities(wrapElements(
+                secondaryLocalAuthority.toBuilder().email(LOCAL_AUTHORITY_2_USER_EMAIL).designated("Yes").build()))
             .build();
 
         final CaseTransferredNotifyData notifyData = CaseTransferredNotifyData
@@ -228,6 +242,12 @@ class ManageLocalAuthoritiesControllerSubmittedTest extends AbstractCallbackTest
             verify(notificationClient).sendEmail(
                 CASE_TRANSFERRED_NEW_DESIGNATED_LA_TEMPLATE,
                 LOCAL_AUTHORITY_2_INBOX,
+                toMap(notifyData),
+                notificationReference(CASE_ID));
+
+            verify(notificationClient).sendEmail(
+                CASE_TRANSFERRED_NEW_DESIGNATED_LA_TEMPLATE,
+                LOCAL_AUTHORITY_2_USER_EMAIL,
                 toMap(notifyData),
                 notificationReference(CASE_ID));
 

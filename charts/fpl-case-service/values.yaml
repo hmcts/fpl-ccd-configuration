@@ -77,3 +77,6 @@ java:
         - scheduler-db-password
         - rcj-family-high-court-inbox
   applicationPort: 4000
+
+ccd-case-document-am-api:
+  enabled: false
