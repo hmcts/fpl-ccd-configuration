@@ -8,10 +8,12 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderKind;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -199,6 +201,19 @@ public class DraftOrderService {
         return selectedHearingId;
     }
 
+    public void additionalApplicationUpdateCase(List<Element<HearingOrder>> draftOrders,
+                                                 List<Element<HearingOrdersBundle>> bundles) {
+
+        for (int i = 0; i < draftOrders.size(); i++) {
+            Element<HearingOrder> hearingOrder = draftOrders.get(i);
+            hearingOrder.getValue().setDateSent(time.now().toLocalDate());
+            hearingOrder.getValue().setStatus(SEND_TO_JUDGE);
+            hearingOrder.getValue().setTranslationRequirements(LanguageTranslationRequirement.NO);
+        }
+
+        addOrdersToBundle(bundles, draftOrders, null, C21);
+    }
+
     public List<Element<HearingOrdersBundle>> migrateCmoDraftToOrdersBundles(CaseData caseData) {
 
         List<Element<HearingOrder>> cmoDrafts = caseData.getDraftUploadedCMOs();
@@ -278,7 +293,7 @@ public class DraftOrderService {
         HearingBooking hearingBooking = Optional.ofNullable(hearing).map(Element::getValue).orElse(null);
 
         HearingOrdersBundle hearingOrdersBundle = bundles.stream()
-            .filter(bundle -> Objects.equals(bundle.getValue().getHearingId(), hearingId))
+                .filter(bundle -> Objects.equals(bundle.getValue().getHearingId(), hearingId))
             .map(Element::getValue)
             .findFirst()
             .orElseGet(() -> addNewDraftBundle(bundles));
