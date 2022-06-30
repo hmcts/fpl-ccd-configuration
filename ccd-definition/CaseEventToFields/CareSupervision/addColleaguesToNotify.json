@@ -22,6 +22,7 @@
     "Label": "Colleagues for ${respondentName}'s solicitor",
     "PageDisplayOrder": 1,
     "PageFieldDisplayOrder": 2,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   }
 ]

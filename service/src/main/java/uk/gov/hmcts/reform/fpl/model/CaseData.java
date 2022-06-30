@@ -1151,4 +1151,10 @@ public class CaseData {
     }
 
     private List<Element<DocumentWithConfidentialAddress>> documentsWithConfidentialAddress;
+
+    private List<Element<Colleague>> colleaguesToNotify;
+
+    public List<Element<Colleague>> getColleaguesToNotify() {
+        return colleaguesToNotify != null ? colleaguesToNotify : new ArrayList<>();
+    }
 }

@@ -42,6 +42,14 @@ public class UserService {
         return roles != null && roles.contains(HMCTS_ADMIN.getRoleName());
     }
 
+    public boolean isChildSolicitor(Long caseId) {
+        return hasAnyCaseRoleFrom(CaseRole.childSolicitors(), caseId);
+    }
+
+    public boolean isRespondentSolicitor(Long caseId) {
+        return hasAnyCaseRoleFrom(CaseRole.respondentSolicitors(), caseId);
+    }
+
     public boolean hasAnyCaseRoleFrom(List<CaseRole> caseRoles, Long caseId) {
         final Set<CaseRole> userCaseRoles = getCaseRoles(caseId);
         return userCaseRoles.stream().anyMatch(caseRoles::contains);
