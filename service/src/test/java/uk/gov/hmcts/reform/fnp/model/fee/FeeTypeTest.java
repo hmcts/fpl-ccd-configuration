@@ -53,6 +53,7 @@ class FeeTypeTest {
     private static Stream<Arguments> orderToFeeTypeSource() {
         // Will throw an IllegalArgumentException if there is no corresponding FeeType
         return Arrays.stream(OrderType.values())
+            .filter(orderType -> !OrderType.SECURE_ACCOMMODATION_ORDER.equals(orderType))
             .map(orderType -> Arguments.of(List.of(orderType), List.of(FeeType.valueOf(orderType.name()))));
     }
 
