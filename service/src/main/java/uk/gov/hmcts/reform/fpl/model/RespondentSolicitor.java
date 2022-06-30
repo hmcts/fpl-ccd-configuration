@@ -7,9 +7,8 @@ import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import javax.validation.Valid;
-
 import java.util.List;
+import javax.validation.Valid;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;

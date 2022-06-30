@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -21,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 
@@ -33,51 +31,14 @@ public class ColleaguesToNotifyController extends CallbackController {
 
     private final UserService userService;
 
-    private Optional<WithSolicitor> getRepresentedRespondent(Set<CaseRole> roles, CaseData caseData) {
-        List<CaseRole> respondentSolicitorRoles = CaseRole.respondentSolicitors();
-        // Check if they are a respondent solicitor
-        for (int i = 0; i < respondentSolicitorRoles.size(); i++) {
-            if (roles.contains(respondentSolicitorRoles.get(i))) {
-                if (i > caseData.getRespondents1().size()) {
-                    // this respondent doesn't exist so cannot have a solicitor
-                    return Optional.empty();
-                }
-                return Optional.ofNullable(caseData.getRespondents1().get(i).getValue());
-            }
-        }
-        return Optional.empty();
-    }
-    private Optional<WithSolicitor> getRepresentedChild(Set<CaseRole> roles, CaseData caseData) {
-        List<CaseRole> childSolicitorRoles = CaseRole.childSolicitors();
-        // Check if they are a respondent solicitor
-        for (int i = 0; i < childSolicitorRoles.size(); i++) {
-            if (roles.contains(childSolicitorRoles.get(i))) {
-                if (i > caseData.getChildren1().size()) {
-                    // this child doesn't exist so cannot have a solicitor
-                    return Optional.empty();
-                }
-                return Optional.ofNullable(caseData.getChildren1().get(i).getValue());
-            }
-        }
-        return Optional.empty();
-    }
 
-    private Optional<WithSolicitor> caseRoleToRepresented(CaseData caseData) {
-        if (userService.isRespondentSolicitor(caseData.getId())) {
-            return getRepresentedRespondent(userService.getCaseRoles(caseData.getId()), caseData);
-        } else if (userService.isChildSolicitor(caseData.getId())) {
-            return getRepresentedChild(userService.getCaseRoles(caseData.getId()), caseData);
-        } else {
-            return Optional.empty();
-        }
-    }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         final CaseDetails caseDetails = callbackrequest.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
 
-        Optional<WithSolicitor> represented = caseRoleToRepresented(caseData);
+        Optional<WithSolicitor> represented = userService.caseRoleToRepresented(caseData);
 
         List<String> errors;
         if (represented.isEmpty()) {
@@ -97,7 +58,7 @@ public class ColleaguesToNotifyController extends CallbackController {
         final CaseData caseData = getCaseData(callbackrequest);
         final CaseDetailsMap caseDetails = caseDetailsMap(callbackrequest.getCaseDetails());
 
-        Optional<WithSolicitor> represented = caseRoleToRepresented(caseData);
+        Optional<WithSolicitor> represented = userService.caseRoleToRepresented(caseData);
 
         List<String> errors;
         if (represented.isEmpty()) {
