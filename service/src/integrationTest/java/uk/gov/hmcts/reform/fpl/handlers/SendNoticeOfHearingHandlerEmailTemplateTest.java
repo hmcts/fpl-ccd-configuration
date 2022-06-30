@@ -112,9 +112,9 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .h1("Next steps")
                 .line("You can check what you need to do before the hearing by:")
+                .list("signing into " + caseDetailsUrl(CASE_ID, TabUrlAnchor.HEARINGS))
                 .line()
-                .line()
-                .list("using this link " + GOV_NOTIFY_DOC_URL)
+                .list("using this link http://fake-url/binary/url")
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .end("Please do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
