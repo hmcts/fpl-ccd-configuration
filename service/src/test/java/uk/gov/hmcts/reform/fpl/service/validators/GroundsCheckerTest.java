@@ -8,6 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderGround;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForChildAssessmentOrder;
@@ -158,7 +159,8 @@ class GroundsCheckerTest {
         final CaseData caseData = CaseData.builder()
             .orders(Orders.builder().orderType(List.of(OrderType.SECURE_ACCOMMODATION_ORDER)).build())
             .groundsForSecureAccommodationOrder(GroundsForSecureAccommodationOrder.builder()
-                .grounds(List.of("grounds1", "grounds2"))
+                .grounds(List.of(SecureAccommodationOrderGround.ABSCOND_FROM_ACCOMMODATION,
+                    SecureAccommodationOrderGround.SELF_INJURY))
                 .reasonAndLength("No reason and 2 days")
                 .build())
             .build();

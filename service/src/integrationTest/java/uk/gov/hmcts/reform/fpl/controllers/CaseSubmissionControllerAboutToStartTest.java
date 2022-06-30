@@ -60,7 +60,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
                 .willReturn(document);
         given(caseSubmissionService.generateC1SubmittedFormPDF(any(), eq(true)))
                 .willReturn(document);
-        given(caseSubmissionService.generateSupplementPDF(any(), eq(true), any(), any()))
+        given(caseSubmissionService.generateC1SupplementPDF(any(), eq(true)))
                 .willReturn(document);
         given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENT, "2313.pdf"))
             .willReturn(document);

@@ -49,7 +49,7 @@ public class GroundsChecker extends PropertiesChecker {
         if (hasSecureAccommodationOrder(caseData)) {
             return isSecureAccommodationOrderGroundsCompleted(caseData.getGroundsForSecureAccommodationOrder());
         }
-        return true;
+        return super.isCompleted(caseData);
     }
 
     private boolean hasEmergencyProtectionOrder(CaseData caseData) {
