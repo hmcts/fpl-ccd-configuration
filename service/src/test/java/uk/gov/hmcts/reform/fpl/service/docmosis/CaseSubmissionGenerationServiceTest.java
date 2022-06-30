@@ -16,6 +16,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderGround;
+import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderSection;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
@@ -26,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForChildAssessmentOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
+import uk.gov.hmcts.reform.fpl.model.GroundsForSecureAccommodationOrder;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -41,6 +44,7 @@ import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisAnnexDocuments;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC16Supplement;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC20Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisFactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearing;
@@ -523,6 +527,74 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisC16Supplement supplement = underTest.getC16SupplementData(updatedCaseData, false);
             assertThat(supplement.getGroundsForChildAssessmentOrderReason()).isEqualTo("-");
+        }
+    }
+
+    @Nested
+    class DocmosisC20SupplementTest {
+
+        @Test
+        void shouldPopulateC20Supplement() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.SECURE_ACCOMMODATION_ORDER))
+                    .secureAccommodationOrderSection(SecureAccommodationOrderSection.ENGLAND)
+                    .build())
+                .groundsForSecureAccommodationOrder(GroundsForSecureAccommodationOrder.builder()
+                    .grounds(List.of(SecureAccommodationOrderGround.ABSCOND_FROM_ACCOMMODATION,
+                        SecureAccommodationOrderGround.APPROVAL_OF_SECRETARY_OF_STATE,
+                        SecureAccommodationOrderGround.SELF_INJURY))
+                    .reasonAndLength("Reason for grounds")
+                    .build())
+                .build();
+
+            DocmosisC20Supplement supplement = underTest.getC20SupplementData(updatedCaseData, false);
+            assertThat(supplement.getGrounds())
+                .isEqualTo(List.of(SecureAccommodationOrderGround.ABSCOND_FROM_ACCOMMODATION.getLabel(),
+                    SecureAccommodationOrderGround.SELF_INJURY.getLabel(),
+                    SecureAccommodationOrderGround.APPROVAL_OF_SECRETARY_OF_STATE.getLabel()));
+            assertThat(supplement.getReasonAndLength()).isEqualTo("Reason for grounds");
+            assertThat(supplement.getSection()).isEqualTo(SecureAccommodationOrderSection.ENGLAND.getLabel());
+        }
+
+        @Test
+        void shouldNotPopulateDraftWatermarkOrSealIfDraft() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.SECURE_ACCOMMODATION_ORDER))
+                    .secureAccommodationOrderSection(SecureAccommodationOrderSection.ENGLAND)
+                    .build())
+                .groundsForSecureAccommodationOrder(GroundsForSecureAccommodationOrder.builder()
+                    .grounds(List.of(SecureAccommodationOrderGround.ABSCOND_FROM_ACCOMMODATION,
+                        SecureAccommodationOrderGround.APPROVAL_OF_SECRETARY_OF_STATE,
+                        SecureAccommodationOrderGround.SELF_INJURY))
+                    .reasonAndLength("Reason for grounds")
+                    .build())
+                .build();
+
+            DocmosisC20Supplement supplement = underTest.getC20SupplementData(updatedCaseData, true);
+            assertThat(supplement.getDraftWaterMark()).isNotEmpty();
+            assertThat(supplement.getCourtSeal()).isNullOrEmpty();
+        }
+
+        @Test
+        void shouldPopulateDraftWatermarkOrSealIfNotDraft() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.SECURE_ACCOMMODATION_ORDER))
+                    .secureAccommodationOrderSection(SecureAccommodationOrderSection.ENGLAND)
+                    .build())
+                .groundsForSecureAccommodationOrder(GroundsForSecureAccommodationOrder.builder()
+                    .grounds(List.of(SecureAccommodationOrderGround.ABSCOND_FROM_ACCOMMODATION,
+                        SecureAccommodationOrderGround.APPROVAL_OF_SECRETARY_OF_STATE,
+                        SecureAccommodationOrderGround.SELF_INJURY))
+                    .reasonAndLength("Reason for grounds")
+                    .build())
+                .build();
+
+            DocmosisC20Supplement supplement = underTest.getC20SupplementData(updatedCaseData, false);
+            assertThat(supplement.getDraftWaterMark()).isNullOrEmpty();
+            assertThat(supplement.getCourtSeal()).isNotEmpty();
         }
     }
 

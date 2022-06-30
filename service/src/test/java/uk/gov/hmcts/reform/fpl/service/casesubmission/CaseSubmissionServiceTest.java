@@ -10,17 +10,21 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC16Supplement;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC20Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.CaseSubmissionGenerationService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
+
+import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,7 +34,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C110A;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C16_SUPPLEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C20_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisC16Supplement;
+import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisC20Supplement;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisCaseSubmission;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -53,7 +59,7 @@ class CaseSubmissionServiceTest {
     private ArgumentCaptor<DocmosisCaseSubmission> caseSubmissionDataCaptor;
 
     @Captor
-    private ArgumentCaptor<DocmosisC16Supplement> caseSubmissionSupplementDataCaptor;
+    private ArgumentCaptor<DocmosisData> caseSubmissionSupplementDataCaptor;
 
 
     @Autowired
@@ -62,14 +68,18 @@ class CaseSubmissionServiceTest {
     private CaseData givenCaseData;
     private DocmosisCaseSubmission expectedCaseSubmission;
     private DocmosisC16Supplement expectedC16Supplement;
+    private DocmosisC20Supplement expectedC20Supplement;
 
     @BeforeEach
     void setup() {
         expectedCaseSubmission = expectedDocmosisCaseSubmission();
         expectedC16Supplement = expectedDocmosisC16Supplement();
+        expectedC20Supplement = expectedDocmosisC20Supplement();
         given(templateDataGenerationService.getTemplateData(any())).willReturn(expectedCaseSubmission);
         given(templateDataGenerationService.getC16SupplementData(any(), anyBoolean()))
             .willReturn(expectedC16Supplement);
+        given(templateDataGenerationService.getC20SupplementData(any(), anyBoolean()))
+            .willReturn(expectedC20Supplement);
 
         given(documentGeneratorService
             .generateDocmosisDocument(any(DocmosisData.class), any(), any(), any()))
@@ -123,7 +133,7 @@ class CaseSubmissionServiceTest {
             eq(RenderFormat.PDF),
             eq(Language.ENGLISH));
 
-        DocmosisC16Supplement c16Supplement = caseSubmissionSupplementDataCaptor.getValue();
+        DocmosisData c16Supplement = caseSubmissionSupplementDataCaptor.getValue();
         assertThat(c16Supplement).isEqualTo(expectedC16Supplement);
 
         verify(uploadDocumentService).uploadPDF(eq(PDF), any());
@@ -138,5 +148,45 @@ class CaseSubmissionServiceTest {
         final String actualSigneeName = caseSubmissionService.getSigneeName(caseData);
 
         assertThat(actualSigneeName).isEqualTo("John Smith");
+    }
+
+    @Test
+    void shouldGenerateC16SupplementSuccessfully() {
+        CaseData caseData = givenCaseData.toBuilder()
+            .orders(givenCaseData.getOrders().toBuilder()
+                .orderType(List.of(OrderType.CHILD_ASSESSMENT_ORDER))
+                .build())
+            .build();
+        caseSubmissionService.generateC1SupplementPDF(caseData, false);
+
+        verify(documentGeneratorService).generateDocmosisDocument(caseSubmissionSupplementDataCaptor.capture(),
+            eq(C16_SUPPLEMENT),
+            eq(RenderFormat.PDF),
+            eq(Language.ENGLISH));
+
+        DocmosisData c16Supplement = caseSubmissionSupplementDataCaptor.getValue();
+        assertThat(c16Supplement).isEqualTo(expectedC16Supplement);
+
+        verify(uploadDocumentService).uploadPDF(eq(PDF), any());
+    }
+
+    @Test
+    void shouldGenerateC20SupplementSuccessfully() {
+        CaseData caseData = givenCaseData.toBuilder()
+            .orders(givenCaseData.getOrders().toBuilder()
+                .orderType(List.of(OrderType.SECURE_ACCOMMODATION_ORDER))
+                .build())
+            .build();
+        caseSubmissionService.generateC1SupplementPDF(caseData, false);
+
+        verify(documentGeneratorService).generateDocmosisDocument(caseSubmissionSupplementDataCaptor.capture(),
+            eq(C20_SUPPLEMENT),
+            eq(RenderFormat.PDF),
+            eq(Language.ENGLISH));
+
+        DocmosisData c20Supplement = caseSubmissionSupplementDataCaptor.getValue();
+        assertThat(c20Supplement).isEqualTo(expectedC20Supplement);
+
+        verify(uploadDocumentService).uploadPDF(eq(PDF), any());
     }
 }

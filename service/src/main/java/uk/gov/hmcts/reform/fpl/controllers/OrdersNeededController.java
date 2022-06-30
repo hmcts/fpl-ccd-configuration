@@ -28,6 +28,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OrdersNeededController extends CallbackController {
 
+    public static final String ORDERS = "orders";
     private final OrdersNeededValidator ordersNeededValidator;
 
     @PostMapping("/mid-event")
@@ -39,7 +40,7 @@ public class OrdersNeededController extends CallbackController {
 
         final List<String> errors = ordersNeededValidator.validate(caseData);
 
-        Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get("orders"))
+        Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get(ORDERS))
             .map(orders -> (List<String>) orders.get("orderType"));
 
         if (orderType.isPresent()
@@ -64,7 +65,7 @@ public class OrdersNeededController extends CallbackController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
 
-        Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get("orders"))
+        Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get(ORDERS))
             .map(orders -> (List<String>) orders.get("orderType"));
 
         if (orderType.isPresent()) {
@@ -102,7 +103,7 @@ public class OrdersNeededController extends CallbackController {
     private void removeSecureAccommodationOrderFields(Map<String, Object> data) {
         data.remove("groundsForSecureAccommodationOrder");
         // remove the secureAccommodationOrderSection field
-        ((Map<String, Object>) data.get("orders")).remove("secureAccommodationOrderSection");
+        ((Map<String, Object>) data.get(ORDERS)).remove("secureAccommodationOrderSection");
 
         // set this control flag to NO
         data.put("secureAccommodationOrderType", YesNo.NO);
