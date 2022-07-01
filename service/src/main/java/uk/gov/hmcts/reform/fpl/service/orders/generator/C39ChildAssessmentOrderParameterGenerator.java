@@ -83,8 +83,8 @@ public class C39ChildAssessmentOrderParameterGenerator implements DocmosisParame
             .append(eventData.getManageOrdersDurationOfAssessment())
             .append(String.format(" day%s from the date it begins.\n\n",
                 eventData.getManageOrdersDurationOfAssessment() > 1 ? "s" : ""))
-            .append("Notice: Any person who is in a position to produce the child must do so to ")
-            .append(eventData.getWhichChildIsTheOrderFor().getValueLabel())
+            .append("Notice: Any person who is in a position to produce the child must do so to")
+            .append(" an office of the local authority")
             .append(" and must comply with the directions in this order.");
 
         if (YesNo.YES.equals(eventData.getManageOrdersDoesCostOrderExist())) {

@@ -162,7 +162,8 @@ class C39ChildAssessmentOrderParameterGeneratorTest {
 
         orderDetails += "The assessment is to begin by "
             + "4th June 2022 and last no more than %s day%s from the date it begins.\n\n"
-            + "Notice: Any person who is in a position to produce the child must do so to Carrie Lam "
+            + "Notice: Any person who is in a position to produce the child must do so to "
+            + "an office of the local authority "
             + "and must comply with the directions in this order.";
 
         if (isCostOrderExist) {
