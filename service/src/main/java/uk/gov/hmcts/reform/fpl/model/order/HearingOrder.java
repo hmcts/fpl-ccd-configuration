@@ -86,7 +86,7 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
             .title(draftOrder.getTitle())
             .order(draftOrder.getDocument())
             .hearing("No hearing")
-            .dateSent(draftOrder.getDateTimeUploaded())
+            .dateSent(draftOrder.getDateUploaded())
             .status(SEND_TO_JUDGE)
             .judgeTitleAndName("")
             .supportingDocs(null)

@@ -12,5 +12,5 @@ import java.time.LocalDate;
 public class DraftOrder {
     private String title;
     private DocumentReference document;
-    private LocalDate dateTimeUploaded;
+    private LocalDate dateUploaded;
 }
