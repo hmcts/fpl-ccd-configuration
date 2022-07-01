@@ -163,10 +163,12 @@ class FeatureToggleServiceTest {
     private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
             Arguments.of(
+                (Runnable) () -> service.isRestrictedFromCaseSubmission("test-name"),
                 (Runnable) () -> service.isCtscEnabled("test name"),
-                buildAttributes("report")),
+                buildAttributes("localAuthorityName")),
             Arguments.of(
                 (Runnable) () -> service.isCtscEnabled("test name"),
+                (Runnable) () -> service.isRestrictedFromCaseSubmission("test-name"),
                 buildAttributes("localAuthorityName"))
         );
     }
