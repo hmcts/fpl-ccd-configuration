@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 
 import java.util.Optional;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -35,6 +36,8 @@ class LocalAuthorityRecipientsServiceTest {
     static final String FALLBACK_INBOX = "FamilyPublicLaw@gmail.com";
     private static final String LA_1_INBOX = "la1@gmail.com";
     private static final String LA_2_INBOX = "la2@gmail.com";
+    private static final String LA_1_GROUP_EMAIL = "lagroup1@gmail.com";
+    private static final String LA_2_GROUP_EMAIL = "lagroup2@gmail.com";
     private static final String LA_1_CODE = "LA1";
     private static final String LA_2_CODE = "LA2";
     private static final String LA_1_ID = "ORG1";
@@ -101,9 +104,14 @@ class LocalAuthorityRecipientsServiceTest {
     }
 
     @Test
-    void shouldReturnFallbackWhenNoOtherEmailsFound() {
+    void shouldReturnFallbackWhenNoEmailsFoundForTheLocalAuthority() {
         final CaseData caseData = CaseData.builder()
             .caseLocalAuthority(LA_1_CODE)
+            .localAuthorities(wrapElements(LocalAuthority.builder()
+                .id(LA_1_ID)
+                .designated(YES.getValue())
+                .email(EMPTY)
+                .build()))
             .build();
 
         given(localAuthorityEmails.getSharedInbox(LA_1_CODE)).willReturn(Optional.empty());
@@ -139,7 +147,7 @@ class LocalAuthorityRecipientsServiceTest {
         }
 
         @Test
-        void shouldNotReturnLocalAuthorityEmailsWhenNoGroupEmailOrColleagues() {
+        void shouldNotReturnLocalAuthorityEmailsWhenNoGroupEmailOrSharedInboxOrColleagues() {
             final CaseData caseData = CaseData.builder()
                 .caseLocalAuthority(LA_1_CODE)
                 .localAuthorities(wrapElements(LocalAuthority.builder()
@@ -151,31 +159,36 @@ class LocalAuthorityRecipientsServiceTest {
 
             final RecipientsRequest recipientsRequest = RecipientsRequest.builder().caseData(caseData).build();
 
+            given(localAuthorityEmails.getSharedInbox(LA_1_CODE)).willReturn(Optional.empty());
             given(featureToggles.emailsToSolicitorEnabled(LA_1_CODE)).willReturn(true);
 
             assertThat(underTest.getRecipients(recipientsRequest)).containsExactly(FALLBACK_INBOX);
         }
 
         @Test
-        void shouldReturnLocalAuthorityGroupEmailWhenAdditionalContactsAreToggledOff() {
+        void shouldReturnLocalAuthoritySharedEmailAndGroupEmailWhenAdditionalContactsAreToggledOff() {
             final CaseData caseData = CaseData.builder()
                 .caseLocalAuthority(LA_1_CODE)
                 .localAuthorities(wrapElements(LocalAuthority.builder()
                     .id(LA_1_ID)
                     .designated(YES.getValue())
-                    .email(LA_1_INBOX)
+                    .email(LA_1_GROUP_EMAIL)
                     .colleagues(wrapElements(designatedLAColleague1, designatedLAColleague2, designatedLAColleague3))
                     .build()))
                 .build();
 
+            given(localAuthorityEmails.getSharedInbox(LA_1_CODE)).willReturn(Optional.of(LA_1_INBOX));
             given(featureToggles.emailsToSolicitorEnabled(LA_1_CODE)).willReturn(false);
             final RecipientsRequest recipientsRequest = RecipientsRequest.builder().caseData(caseData).build();
 
-            assertThat(underTest.getRecipients(recipientsRequest)).containsExactly(LA_1_INBOX);
+            assertThat(underTest.getRecipients(recipientsRequest)).containsExactlyInAnyOrder(
+                LA_1_INBOX,
+                LA_1_GROUP_EMAIL
+            );
         }
 
         @Test
-        void shouldReturnGroupEmailWhenNoNotificationRecipientsAmongColleagues() {
+        void shouldReturnGroupEmailAndLASharedInboxWhenNoNotificationRecipientsAmongColleagues() {
 
             final CaseData caseData = CaseData.builder()
                 .caseLocalAuthority(LA_1_CODE)
@@ -183,16 +196,20 @@ class LocalAuthorityRecipientsServiceTest {
                 .localAuthorities(wrapElements(LocalAuthority.builder()
                     .id(LA_1_ID)
                     .designated(YES.getValue())
-                    .email(LA_1_INBOX)
+                    .email(LA_1_GROUP_EMAIL)
                     .colleagues(wrapElements(designatedLAColleague1))
                     .build()))
                 .build();
 
+            given(localAuthorityEmails.getSharedInbox(LA_1_CODE)).willReturn(Optional.of(LA_1_INBOX));
             given(featureToggles.emailsToSolicitorEnabled(LA_1_CODE)).willReturn(true);
 
             final RecipientsRequest recipientsRequest = RecipientsRequest.builder().caseData(caseData).build();
 
-            assertThat(underTest.getRecipients(recipientsRequest)).containsExactly(LA_1_INBOX);
+            assertThat(underTest.getRecipients(recipientsRequest)).containsExactlyInAnyOrder(
+                LA_1_INBOX,
+                LA_1_GROUP_EMAIL
+            );
         }
 
         @Test
@@ -208,6 +225,7 @@ class LocalAuthorityRecipientsServiceTest {
                     .build()))
                 .build();
 
+            given(localAuthorityEmails.getSharedInbox(LA_1_CODE)).willReturn(Optional.empty());
             given(featureToggles.emailsToSolicitorEnabled(LA_1_CODE)).willReturn(true);
 
             final RecipientsRequest recipientsRequest = RecipientsRequest.builder().caseData(caseData).build();
@@ -218,7 +236,7 @@ class LocalAuthorityRecipientsServiceTest {
         }
 
         @Test
-        void shouldReturnGroupEmailAndAdditionalContactsEmails() {
+        void shouldReturnGroupEmailAndLASharedInboxAndAdditionalContactsEmails() {
 
             final CaseData caseData = CaseData.builder()
                 .caseLocalAuthority(LA_1_CODE)
@@ -226,17 +244,19 @@ class LocalAuthorityRecipientsServiceTest {
                 .localAuthorities(wrapElements(LocalAuthority.builder()
                     .id(LA_1_ID)
                     .designated(YES.getValue())
-                    .email(LA_1_INBOX)
+                    .email(LA_1_GROUP_EMAIL)
                     .colleagues(wrapElements(designatedLAColleague1, designatedLAColleague2, designatedLAColleague3))
                     .build()))
                 .build();
 
+            given(localAuthorityEmails.getSharedInbox(LA_1_CODE)).willReturn(Optional.of(LA_1_INBOX));
             given(featureToggles.emailsToSolicitorEnabled(LA_1_CODE)).willReturn(true);
 
             final RecipientsRequest recipientsRequest = RecipientsRequest.builder().caseData(caseData).build();
 
             assertThat(underTest.getRecipients(recipientsRequest)).containsExactlyInAnyOrder(
                 LA_1_INBOX,
+                LA_1_GROUP_EMAIL,
                 designatedLAColleague2.getEmail(),
                 designatedLAColleague3.getEmail());
         }
@@ -270,7 +290,7 @@ class LocalAuthorityRecipientsServiceTest {
         }
 
         @Test
-        void shouldNoReturnContactsWhenSecondaryLocalAuthorityExcluded() {
+        void shouldNotReturnContactsWhenSecondaryLocalAuthorityExcluded() {
 
             final CaseData caseData = CaseData.builder()
                 .caseLocalAuthority(LA_1_CODE)
@@ -289,7 +309,6 @@ class LocalAuthorityRecipientsServiceTest {
                         .build()))
                 .build();
 
-
             given(localAuthorityEmails.getSharedInbox(LA_2_CODE)).willReturn(Optional.of(LA_2_INBOX));
             given(featureToggles.emailsToSolicitorEnabled(LA_2_CODE)).willReturn(true);
 
@@ -301,7 +320,7 @@ class LocalAuthorityRecipientsServiceTest {
         }
 
         @Test
-        void shouldNoReturnContactsWhenAdditionalContactsToggleIsOffAndGroupEmailNotPresent() {
+        void shouldNotReturnSecondaryLAContactsWhenAdditionalContactsToggledOffAndGroupAndSharedLAEmailNotPresent() {
 
             final CaseData caseData = CaseData.builder()
                 .caseLocalAuthority(LA_1_CODE)
@@ -309,16 +328,19 @@ class LocalAuthorityRecipientsServiceTest {
                 .localAuthorities(wrapElements(
                     LocalAuthority.builder()
                         .id(LA_1_ID)
+                        .email(LA_1_INBOX)
                         .designated("Yes")
                         .colleagues(wrapElements(designatedLAColleague1))
                         .build(),
                     LocalAuthority.builder()
                         .id(LA_2_ID)
+                        .email(EMPTY)
                         .designated("No")
                         .colleagues(wrapElements(secondaryLAColleague1, secondaryLAColleague2, secondaryLAColleague3))
                         .build()))
                 .build();
 
+            given(localAuthorityEmails.getSharedInbox(LA_1_CODE)).willReturn(Optional.of(LA_1_INBOX));
             given(localAuthorityEmails.getSharedInbox(LA_2_CODE)).willReturn(Optional.empty());
             given(featureToggles.emailsToSolicitorEnabled(LA_2_CODE)).willReturn(false);
 
@@ -326,11 +348,11 @@ class LocalAuthorityRecipientsServiceTest {
                 .secondaryLocalAuthorityExcluded(false)
                 .caseData(caseData).build();
 
-            assertThat(underTest.getRecipients(recipientsRequest)).containsExactly(FALLBACK_INBOX);
+            assertThat(underTest.getRecipients(recipientsRequest)).containsExactly(LA_1_INBOX);
         }
 
         @Test
-        void shouldNoReturnContactsWhenNoSecondaryLocalAuthority() {
+        void shouldNotReturnContactsWhenNoSecondaryLocalAuthority() {
 
             final CaseData caseData = CaseData.builder()
                 .caseLocalAuthority(LA_1_CODE)
@@ -343,6 +365,7 @@ class LocalAuthorityRecipientsServiceTest {
                         .build()))
                 .build();
 
+            given(localAuthorityEmails.getSharedInbox(LA_1_CODE)).willReturn(Optional.empty());
             given(featureToggles.emailsToSolicitorEnabled(LA_2_CODE)).willReturn(true);
 
             final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
@@ -353,7 +376,7 @@ class LocalAuthorityRecipientsServiceTest {
         }
 
         @Test
-        void shouldNoReturnAdditionalEmailWhenNoNotificationRecipientsAmongColleagues() {
+        void shouldNotReturnAdditionalEmailWhenNoNotificationRecipientsAmongColleagues() {
 
             final CaseData caseData = CaseData.builder()
                 .caseLocalAuthority(LA_1_CODE)
@@ -367,23 +390,28 @@ class LocalAuthorityRecipientsServiceTest {
                     LocalAuthority.builder()
                         .id(LA_2_ID)
                         .designated("No")
-                        .email(LA_2_INBOX)
+                        .email(LA_2_GROUP_EMAIL)
                         .colleagues(wrapElements(secondaryLAColleague1))
                         .build()))
                 .build();
 
-            given(localAuthorityEmails.getSharedInbox(LA_2_CODE)).willReturn(Optional.empty());
+            given(localAuthorityEmails.getSharedInbox(LA_1_CODE)).willReturn(Optional.of(LA_1_INBOX));
+            given(localAuthorityEmails.getSharedInbox(LA_2_CODE)).willReturn(Optional.of(LA_2_INBOX));
             given(featureToggles.emailsToSolicitorEnabled(LA_2_CODE)).willReturn(true);
 
             final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
                 .secondaryLocalAuthorityExcluded(false)
                 .caseData(caseData).build();
 
-            assertThat(underTest.getRecipients(recipientsRequest)).containsExactly(LA_2_INBOX);
+            assertThat(underTest.getRecipients(recipientsRequest)).containsExactlyInAnyOrder(
+                LA_1_INBOX,
+                LA_2_INBOX,
+                LA_2_GROUP_EMAIL
+            );
         }
 
         @Test
-        void shouldReturnSecondaryLocalAuthorityGroupInbox() {
+        void shouldReturnSecondaryLocalAuthorityGroupInboxAndSharedInbox() {
 
             final CaseData caseData = CaseData.builder()
                 .caseLocalAuthority(LA_1_CODE)
@@ -392,23 +420,29 @@ class LocalAuthorityRecipientsServiceTest {
                     LocalAuthority.builder()
                         .id(LA_1_ID)
                         .designated("Yes")
+                        .email(LA_1_INBOX)
                         .colleagues(wrapElements(designatedLAColleague1))
                         .build(),
                     LocalAuthority.builder()
                         .id(LA_2_ID)
                         .designated("No")
-                        .email(LA_2_INBOX)
+                        .email(LA_2_GROUP_EMAIL)
                         .colleagues(wrapElements(secondaryLAColleague1))
                         .build()))
                 .build();
 
+            given(localAuthorityEmails.getSharedInbox(LA_2_CODE)).willReturn(Optional.of(LA_2_INBOX));
             given(featureToggles.emailsToSolicitorEnabled(LA_2_CODE)).willReturn(false);
 
             final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
                 .secondaryLocalAuthorityExcluded(false)
                 .caseData(caseData).build();
 
-            assertThat(underTest.getRecipients(recipientsRequest)).containsExactly(LA_2_INBOX);
+            assertThat(underTest.getRecipients(recipientsRequest)).containsExactlyInAnyOrder(
+                LA_1_INBOX,
+                LA_2_GROUP_EMAIL,
+                LA_2_INBOX
+            );
         }
 
         @Test
@@ -430,6 +464,7 @@ class LocalAuthorityRecipientsServiceTest {
                         .build()))
                 .build();
 
+            given(localAuthorityEmails.getSharedInbox(LA_1_CODE)).willReturn(Optional.empty());
             given(localAuthorityEmails.getSharedInbox(LA_2_CODE)).willReturn(Optional.empty());
             given(featureToggles.emailsToSolicitorEnabled(LA_2_CODE)).willReturn(true);
 
@@ -496,7 +531,7 @@ class LocalAuthorityRecipientsServiceTest {
                 LocalAuthority.builder()
                     .id(LA_1_ID)
                     .designated("Yes")
-                    .email(LA_1_INBOX)
+                    .email(LA_1_GROUP_EMAIL)
                     .colleagues(wrapElements(designatedLAColleague1, designatedLAColleague2, designatedLAColleague3))
                     .build(),
                 LocalAuthority.builder()
@@ -508,6 +543,8 @@ class LocalAuthorityRecipientsServiceTest {
             .legalRepresentatives(wrapElements(legalRepresentative1, legalRepresentative2))
             .build();
 
+        given(localAuthorityEmails.getSharedInbox(LA_1_CODE)).willReturn(Optional.of(LA_1_INBOX));
+        given(localAuthorityEmails.getSharedInbox(LA_2_CODE)).willReturn(Optional.of(LA_2_INBOX));
         given(featureToggles.emailsToSolicitorEnabled(LA_1_CODE)).willReturn(true);
         given(featureToggles.emailsToSolicitorEnabled(LA_2_CODE)).willReturn(true);
 
@@ -516,6 +553,7 @@ class LocalAuthorityRecipientsServiceTest {
 
         assertThat(underTest.getRecipients(recipientsRequest)).containsExactlyInAnyOrder(
             LA_1_INBOX,
+            LA_1_GROUP_EMAIL,
             LA_2_INBOX,
             designatedLAColleague2.getEmail(),
             designatedLAColleague3.getEmail(),
