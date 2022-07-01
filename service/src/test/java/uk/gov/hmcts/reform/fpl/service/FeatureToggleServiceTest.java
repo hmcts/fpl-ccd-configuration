@@ -56,18 +56,6 @@ class FeatureToggleServiceTest {
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForCtscReport(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isCtscReportEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("CTSC"),
-            argThat(ldUser(ENVIRONMENT).build()),
-            eq(false));
-    }
-
-    @ParameterizedTest
     @MethodSource("userAttributesTestSource")
     void shouldNotAccumulateAttributesBetweenRequests(Runnable functionToTest, Runnable accumulateFunction,
                                                       List<UserAttribute> attributes) {
@@ -175,12 +163,10 @@ class FeatureToggleServiceTest {
     private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
             Arguments.of(
-                (Runnable) () -> service.isCtscReportEnabled(),
                 (Runnable) () -> service.isCtscEnabled("test name"),
                 buildAttributes("report")),
             Arguments.of(
                 (Runnable) () -> service.isCtscEnabled("test name"),
-                (Runnable) () -> service.isCtscReportEnabled(),
                 buildAttributes("localAuthorityName"))
         );
     }
