@@ -23,6 +23,7 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.getConfidentialItemToAdd;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeCollection;
 
 @Service
 public class OthersService {
@@ -116,17 +117,27 @@ public class OthersService {
     }
 
     public Element<Other> getSelectedPreparedOther(CaseData caseData, DynamicList singleSelector) {
-        return getSelectedPreparedOther(caseData, singleSelector, randomUUID());
+        return getSelectedOther(prepareOthers(caseData), singleSelector, randomUUID());
     }
 
-    public Element<Other> getSelectedPreparedOther(CaseData caseData, DynamicList singleSelector, UUID firstOtherUUID) {
-        Others preparedOthers = prepareOthers(caseData);
+    private Element<Other> getSelectedOther(Others others, DynamicList singleSelector, UUID firstOtherUUID) {
+        if (others == null) {
+            return null;
+        }
         return ofNullable(singleSelector).map(DynamicList::getValueCodeAsUUID)
-            .flatMap(otherId -> preparedOthers.getAdditionalOthers().stream()
+            .flatMap(otherId -> nullSafeCollection(others.getAdditionalOthers()).stream()
                 .filter(o -> otherId.equals(o.getId()))
                 .findFirst())
-            .orElseGet(() -> nonNull(preparedOthers.getFirstOther())
-                ? element(firstOtherUUID, preparedOthers.getFirstOther()) : null);
+            .orElseGet(() -> nonNull(others.getFirstOther())
+                ? element(firstOtherUUID, others.getFirstOther()) : null);
+    }
+
+    public Element<Other> getSelectedOther(CaseData caseData, DynamicList singleSelector) {
+        return getSelectedOther(caseData, singleSelector, randomUUID());
+    }
+
+    public Element<Other> getSelectedOther(CaseData caseData, DynamicList singleSelector, UUID firstOtherUUID) {
+        return getSelectedOther(caseData.getOthers(), singleSelector, firstOtherUUID);
     }
 
     private boolean useAllOthers(String sendOrdersToAllOthers) {

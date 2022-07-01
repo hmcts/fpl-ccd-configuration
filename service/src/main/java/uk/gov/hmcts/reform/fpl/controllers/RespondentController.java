@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.service.respondent.RespondentValidator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -211,23 +212,16 @@ public class RespondentController extends CallbackController {
 
     private Element<Other> getSelectedOther(CaseData caseData) {
         UUID firstOtherUUID = getFirstOtherId(caseData);
-        return othersService.getSelectedPreparedOther(caseData,
+        return othersService.getSelectedOther(caseData,
             caseData.getOtherToRespondentEventData().getOthersList(), firstOtherUUID);
     }
 
     private List<Element<Other>> buildNewAllOthers(CaseData caseData, Element<Other> selectedOther) {
-        UUID firstOtherUUID = getFirstOtherId(caseData);
-        boolean isFirstOtherSelected = selectedOther.getId().equals(firstOtherUUID);
-        List<Element<Other>> newAllOthersWithDetailsHidden;
-        if (isFirstOtherSelected) {
-            newAllOthersWithDetailsHidden = respondentService.buildNewAllOthersWhenFirstOtherSelected(caseData);
-        } else {
-            newAllOthersWithDetailsHidden = respondentService.buildNewAllOthersWhenAdditionalOtherSelected(caseData,
-                selectedOther, firstOtherUUID);
-        }
+        List<Element<Other>> listOfNewOtherElement = new ArrayList<>(caseData.getAllOthers());
+        listOfNewOtherElement.removeIf(ele -> Objects.equals(ele.getValue(), selectedOther.getValue()));
         List<Element<Other>> ret = new ArrayList<>();
         final List<Element<Other>> confidentialOthers = caseData.getConfidentialOthers();
-        newAllOthersWithDetailsHidden.forEach(element -> {
+        listOfNewOtherElement.forEach(element -> {
             if (element.getValue().containsConfidentialDetails()) {
                 Other confidentialOther = getConfidentialItemToAdd(confidentialOthers, element);
                 ret.add(element(element.getId(), othersService

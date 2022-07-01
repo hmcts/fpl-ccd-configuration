@@ -395,6 +395,9 @@ class OthersServiceTest {
         CaseData caseData = CaseData.builder().build();
         Element<Other> selected = service.getSelectedPreparedOther(caseData, buildSingleSelector(0));
         assertThat(selected).isNull();
+
+        selected = service.getSelectedOther(caseData, buildSingleSelector(0));
+        assertThat(selected).isNull();
     }
 
     @Test
@@ -409,6 +412,27 @@ class OthersServiceTest {
         Element<Other> selected = service.getSelectedPreparedOther(caseData, buildSingleSelector(0, others));
         assertThat(selected).isNotNull();
         assertThat(selected.getValue().getName()).isEqualTo("First Other");
+
+        selected = service.getSelectedOther(caseData, buildSingleSelector(0, others));
+        assertThat(selected).isNotNull();
+        assertThat(selected.getValue().getName()).isEqualTo("First Other");
+    }
+
+    @Test
+    void shouldReturnSelectedFirstOtherWithProvidedFirstUUID() {
+        Others others = Others.builder()
+            .firstOther(Other.builder().name("First Other").build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .others(others)
+            .build();
+        UUID firstOtherUUID = randomUUID();
+        Element<Other> selected = service.getSelectedOther(caseData, buildSingleSelector(0, others),
+            firstOtherUUID);
+        assertThat(selected).isNotNull();
+        assertThat(selected.getValue().getName()).isEqualTo("First Other");
+        assertThat(selected.getId()).isEqualTo(firstOtherUUID);
     }
 
     private static Stream<Arguments> selectedPreparedOthersSource() {

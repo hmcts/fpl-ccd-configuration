@@ -31,17 +31,13 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElements;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
@@ -258,36 +254,6 @@ public class RespondentService {
         return Respondent.builder()
             .representedBy(other.getRepresentedBy())
             .party(respondentParty).build();
-    }
-
-    public List<Element<Other>> buildNewAllOthersWhenAdditionalOtherSelected(
-        CaseData caseData, Element<Other> selectedOther, UUID firstOtherUUID) {
-        List<Element<Other>> newAllOthers = new ArrayList<>(caseData.getAllOthers());
-        Optional<Element<Other>> otherToBeRemoved = findElement(selectedOther.getId(), newAllOthers);
-        if (otherToBeRemoved.isPresent()) {
-            newAllOthers.removeIf(ele -> ele.getId().equals(otherToBeRemoved.get().getId()));
-        } else {
-            throw new IllegalStateException("Unable to remove other from additionalOthers");
-        }
-
-        // replacing the id of elemented firstOther with given firstOtherUUID
-        Optional<Element<Other>> firstOtherElement = findElements(caseData.getOthers().getFirstOther(),
-            newAllOthers).stream().findFirst();
-        if (firstOtherElement.isPresent()) {
-            newAllOthers.removeIf(ele -> Objects.equals(firstOtherElement.get().getId(), ele.getId()));
-            newAllOthers.add(0, element(firstOtherUUID, firstOtherElement.get().getValue()));
-        }
-        return newAllOthers;
-    }
-
-    public List<Element<Other>> buildNewAllOthersWhenFirstOtherSelected(CaseData caseData) {
-        List<Element<Other>> newAllOthers = new ArrayList<>(caseData.getAllOthers());
-        if (!newAllOthers.removeIf(ele ->
-            !(nullSafeList(caseData.getOthers().getAdditionalOthers()).stream().map(Element::getId)).collect(toSet())
-                .contains(ele.getId()))) {
-            throw new IllegalStateException("Unable to remove firstOther from newAllOthers list");
-        }
-        return newAllOthers;
     }
 
 }

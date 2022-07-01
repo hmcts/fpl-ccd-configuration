@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
@@ -18,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -35,7 +32,6 @@ import java.time.Month;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,7 +40,6 @@ import static uk.gov.hmcts.reform.ccd.model.Organisation.organisation;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper.respondent;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.caseRoleDynamicList;
@@ -633,61 +628,6 @@ class RespondentServiceTest {
                 .build())
             .build();
         assertThat(service.transformOtherToRespondent(other)).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldBuildNewAllOtherWhenFirstOtherSelected() {
-        CaseData caseData = CaseData.builder()
-            .others(Others.builder()
-                .firstOther(Other.builder()
-                    .name("FirstOther")
-                    .build())
-                .additionalOthers(List.of(
-                    element(Other.builder().name("Add 1").build()),
-                    element(Other.builder().name("Add 2").build())
-                ))
-                .build())
-            .build();
-
-        List<Element<Other>> actual = service.buildNewAllOthersWhenFirstOtherSelected(caseData);
-        assertThat(actual).hasSize(2);
-        assertThat(unwrapElements(actual).stream().map(Other::getName)).isEqualTo(List.of("Add 1", "Add 2"));
-    }
-
-    private static Stream<Arguments> shouldBuildNewAllOtherWhenAdditionalOtherSelectedSource() {
-        return Stream.of(
-            Arguments.of(UUID.fromString("16b6a7c3-f37a-426e-a4c8-f3d789d8b533"), // Add 1
-                UUID.fromString("ddf98a79-4408-469d-9fa6-0f832c42900c"), // Add 2
-                UUID.fromString("16b6a7c3-f37a-426e-a4c8-f3d789d8b533"), // selected Add 1
-                List.of("FirstOther", "Add 2")),
-
-            Arguments.of(UUID.fromString("16b6a7c3-f37a-426e-a4c8-f3d789d8b533"), // Add 1
-                UUID.fromString("ddf98a79-4408-469d-9fa6-0f832c42900c"), // Add 2
-                UUID.fromString("ddf98a79-4408-469d-9fa6-0f832c42900c"), // selected Add 2
-                List.of("FirstOther", "Add 1"))
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("shouldBuildNewAllOtherWhenAdditionalOtherSelectedSource")
-    public void shouldBuildNewAllOtherWhenAdditionalOtherSelected(UUID uuid0, UUID uuid1, UUID selectedUUID,
-                                                                  List<String> expected) {
-        CaseData caseData = CaseData.builder()
-            .others(Others.builder()
-                .firstOther(Other.builder()
-                    .name("FirstOther")
-                    .build())
-                .additionalOthers(List.of(
-                    element(uuid0, Other.builder().name("Add 1").build()),
-                    element(uuid1, Other.builder().name("Add 2").build())
-                ))
-                .build())
-            .build();
-
-        List<Element<Other>> actual = service.buildNewAllOthersWhenAdditionalOtherSelected(caseData,
-            element(selectedUUID, Other.builder().build()), UUID.randomUUID());
-        assertThat(actual).hasSize(2);
-        assertThat(unwrapElements(actual).stream().map(Other::getName)).isEqualTo(expected);
     }
 
 }
