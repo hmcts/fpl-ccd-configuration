@@ -39,8 +39,7 @@ class LocalAuthorityDetailsCheckerTest {
             "Enter local authority's name",
             "Enter local authority's pba number",
             "Enter local authority's address",
-            "Enter local authority's phone number",
-            "Add a case solicitor"
+            "Enter local authority's phone number"
         );
     }
 
@@ -68,7 +67,7 @@ class LocalAuthorityDetailsCheckerTest {
     }
 
     @Test
-    void shouldReturnErrorsWhenNoSolicitorAdded() {
+    void shouldNotReturnErrorsWhenNoSolicitorAdded() {
         final CaseData caseData = CaseData.builder()
             .localAuthorities(wrapElements(getPopulatedLocalAuthority()
                 .toBuilder()
@@ -81,7 +80,7 @@ class LocalAuthorityDetailsCheckerTest {
                 .build()))
             .build();
 
-        assertThat(underTest.validate(caseData)).containsExactly("Add a case solicitor");
+        assertThat(underTest.validate(caseData)).isEmpty();
     }
 
     @Test
@@ -96,7 +95,6 @@ class LocalAuthorityDetailsCheckerTest {
             .build();
 
         assertThat(underTest.validate(caseData)).containsExactly(
-            "Add a case solicitor",
             "Select colleague case role",
             "Enter colleague email",
             "Select send them case update notifications"

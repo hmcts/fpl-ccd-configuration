@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.validators;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.fpl.enums.ColleagueRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
@@ -78,14 +77,6 @@ public class LocalAuthorityDetailsChecker implements EventChecker {
 
     private List<String> validateAdditionalContacts(List<Colleague> colleagues) {
         final List<String> errors = new ArrayList<>();
-
-        boolean missingSolicitor = colleagues.stream()
-            .map(Colleague::getRole)
-            .noneMatch(ColleagueRole.SOLICITOR::equals);
-
-        if (missingSolicitor) {
-            errors.add("Add a case solicitor");
-        }
 
         if (colleagues.size() == 1) {
             errors.addAll(validateAdditionalContact(colleagues.get(0)));
