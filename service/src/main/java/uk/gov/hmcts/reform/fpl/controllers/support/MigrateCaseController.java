@@ -53,10 +53,9 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-622", this::run622,
         "DFPL-684", this::run684,
         "DFPL-666", this::run666,
-        "DFPL-694", this::run694,
-        "DFPL-695", this::run695,
-        "DFPL-697", this::run697,
-        "DFPL-703", this::run703
+        "DFPL-709", this::run709,
+        "DFPL-710", this::run710,
+        "DFPL-711", this::run711
     );
 
     @PostMapping("/about-to-submit")
@@ -170,18 +169,26 @@ public class MigrateCaseController extends CallbackController {
      *  - migrationId
      * @param caseDetails - the caseDetails to update
      */
-    private void run694(CaseDetails caseDetails) {
-        var migrationId = "DFPL-694";
-        var expectedCaseId = 1643970994251861L;
-        var expectedDocId = UUID.fromString("e32175d7-28ea-4041-8f1c-1087326ee331");
+    private void run709(CaseDetails caseDetails) {
+        var migrationId = "DFPL-709";
+        var expectedCaseId = 1654863367762430L;
+        var expectedDocId = UUID.fromString("a36c79a6-86e4-4cee-ae29-f7e0f1c927dc");
 
         removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
     }
 
-    private void run703(CaseDetails caseDetails) {
-        var migrationId = "DFPL-703";
-        var expectedCaseId = 1651739759566998L;
-        var expectedDocId = UUID.fromString("98b778e5-0d5e-461d-89d1-d99923006797");
+    private void run710(CaseDetails caseDetails) {
+        var migrationId = "DFPL-710";
+        var expectedCaseId = 1654596348943113L;
+        var expectedDocId = UUID.fromString("6900eb4e-4131-4496-92f3-10e269da9f88");
+
+        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
+    }
+
+    private void run711(CaseDetails caseDetails) {
+        var migrationId = "DFPL-711";
+        var expectedCaseId = 1645094438293807L;
+        var expectedDocId = UUID.fromString("022e4acf-28b2-4889-9ecb-322c65be5bd1");
 
         removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
     }
@@ -206,22 +213,6 @@ public class MigrateCaseController extends CallbackController {
             ));
         }
         caseDetails.getData().put("submittedForm", null);
-    }
-
-    private void run695(CaseDetails caseDetails) {
-        var migrationId = "DFPL-695";
-        var expectedCaseId = 1654079894022178L;
-        var expectedDocId = UUID.fromString("d78acec6-f57c-45ed-a343-04f5261b738b");
-
-        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
-    }
-
-    private void run697(CaseDetails caseDetails) {
-        var migrationId = "DFPL-697";
-        var expectedCaseId = 1643970994251861L;
-        var expectedDocId = UUID.fromString("e32175d7-28ea-4041-8f1c-1087326ee331");
-
-        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
     }
 
     private void run622(CaseDetails caseDetails) {
