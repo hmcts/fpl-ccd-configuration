@@ -264,9 +264,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         private Stream<Arguments> provideMigrationTestData() {
             return Stream.of(
-                Arguments.of("DFPL-709", 1654863367762430L, UUID.fromString("a36c79a6-86e4-4cee-ae29-f7e0f1c927dc")),
-                Arguments.of("DFPL-710", 1654596348943113L, UUID.fromString("6900eb4e-4131-4496-92f3-10e269da9f88")),
-                Arguments.of("DFPL-711", 1645094438293807L, UUID.fromString("022e4acf-28b2-4889-9ecb-322c65be5bd1"))
+                Arguments.of("DFPL-719", 1646909193411659L, UUID.fromString("d04517ec-d3f8-4e2a-abd9-febf83ba1610"))
             );
         }
 
