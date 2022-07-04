@@ -118,8 +118,6 @@ public class Other implements Representable, ConfidentialParty<Other> {
             .address(null)
             .telephone(null)
             .build();
-        // note: this.toBuilder() will remove the representedBy
-        other.representedBy.addAll(this.getRepresentedBy());
         return other;
     }
 

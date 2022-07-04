@@ -223,9 +223,13 @@ public class RespondentController extends CallbackController {
         final List<Element<Other>> confidentialOthers = caseData.getConfidentialOthers();
         listOfNewOtherElement.forEach(element -> {
             if (element.getValue().containsConfidentialDetails()) {
-                Other confidentialOther = getConfidentialItemToAdd(confidentialOthers, element);
-                ret.add(element(element.getId(), othersService
-                    .addConfidentialDetails(confidentialOther, element)));
+                Element<Other> otherElementWithConfidentialDetails = element(element.getId(), othersService
+                    .addConfidentialDetails(getConfidentialItemToAdd(confidentialOthers, element), element));
+                // copying the representedBy to confidential others
+                element.getValue().getRepresentedBy()
+                    .forEach(uuid -> otherElementWithConfidentialDetails.getValue()
+                        .addRepresentative(uuid.getId(), uuid.getValue()));
+                ret.add(otherElementWithConfidentialDetails);
             } else {
                 ret.add(element);
             }
@@ -237,9 +241,22 @@ public class RespondentController extends CallbackController {
         // Setting "confidentialOthers" to caseDetails
         confidentialDetailsService.addConfidentialDetailsToCase(caseDetails, newAllOthers, OTHER);
         // Setting "others" to caseDetails from previous built new allOthers collection
-        List<Element<Other>> allOthersWithoutConfidentialDetails = confidentialDetailsService
+        List<Element<Other>> preparingNewOthers = confidentialDetailsService
             .removeConfidentialDetails(newAllOthers);
-        Others newOthers = Others.from(allOthersWithoutConfidentialDetails);
+        preparingNewOthers.forEach(
+            preparingNewOther -> newAllOthers.stream()
+                .filter(newOther -> newOther.getId().equals(preparingNewOther.getId()))
+                .findFirst().ifPresent(
+                    newOther -> {
+                        for (Element<UUID> uuid : newOther.getValue().getRepresentedBy()) {
+                            if (!preparingNewOther.getValue().getRepresentedBy().contains(uuid)) {
+                                preparingNewOther.getValue().getRepresentedBy().add(uuid);
+                            }
+                        }
+                    }
+                )
+        );
+        Others newOthers = Others.from(preparingNewOthers);
         if (isNull(newOthers)) {
             caseDetails.getData().remove(OTHERS_KEY);
         } else {

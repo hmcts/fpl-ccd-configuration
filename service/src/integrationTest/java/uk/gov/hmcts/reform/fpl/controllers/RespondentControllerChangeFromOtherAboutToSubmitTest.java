@@ -31,6 +31,7 @@ import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.localAuthorities;
 import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.otherToRespondentEventData;
 import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.prepareConfidentialOthersFromAllOthers;
+import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.prepareConfidentialOthersTestingData;
 import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.prepareConfidentialRespondentsFromRespondents1;
 import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.prepareExpectedExistingConfidentialRespondent;
 import static uk.gov.hmcts.reform.fpl.controllers.ChangeFromOtherUtils.prepareExpectedTransformedConfidentialRespondent;
@@ -160,7 +161,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
 
     @ParameterizedTest
     @MethodSource("othersToRespondentParam")
-    void shouldConvertOthersWithDetailsHiddenToRespondentWithDetailsHiddenAndNoMoreConfidentialOthers(
+    void shouldConvertConfidentialOthersToConfidentialRespondentAndNoMoreConfidentialOthers(
         int selectedOtherSeq,
         int numberOfAdditionalOther,
         int numberOfRespondent) {
@@ -227,7 +228,10 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
     @MethodSource("othersToRespondentParam")
     void shouldConvertConfidentialOthersToConfidentialRespondentAndRetainConfidentialOthers(
         int selectedOtherSeq, int numberOfAdditionalOther, int numberOfRespondent) {
-        Others others = prepareOthersTestingData(numberOfAdditionalOther, true, true);
+        boolean firstOtherDetailsHidden = true;
+        boolean additionalOtherDetailsHidden = true;
+        Others others = prepareOthersTestingData(numberOfAdditionalOther, firstOtherDetailsHidden,
+            additionalOtherDetailsHidden);
         List<Element<Other>> allOthers = new ArrayList<>();
         allOthers.add(element(others.getFirstOther()));
         allOthers.addAll(others.getAdditionalOthers());
@@ -243,6 +247,8 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
             .localAuthorities(localAuthorities())
             .respondents1(respondents1)
             .others(others)
+            .confidentialOthers(prepareConfidentialOthersTestingData(others, firstOtherDetailsHidden,
+                (i) -> additionalOtherDetailsHidden))
             .otherToRespondentEventData(otherToRespondentEventData(transformedRespondent, others, selectedOtherSeq))
             .build();
 
@@ -382,11 +388,17 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         assertThat(responseCaseData.getAllOthers().stream()
             .filter(o -> String.format("Marco %s", selectedOtherSeq).equals(o.getValue().getName()))).isEmpty();
         if (numberOfAdditionalOther > 0) {
-            assertThat(responseCaseData.getOthers().getFirstOther().toParty()).isEqualTo(
-                Other.builder()
-                    .name(String.format("Marco %s", selectedOtherSeq == 0 ? 1 : 0))
-                    .detailsHidden("No")
-                    .build().toParty());
+            Other expectedFirstOther = Other.builder()
+                .name(String.format("Marco %s", selectedOtherSeq == 0 ? 1 : 0))
+                .detailsHidden("No")
+                .build();
+            if (selectedOtherSeq == 0) {
+                expectedFirstOther.getRepresentedBy().addAll(
+                    caseData.getOthers().getAdditionalOthers().get(0).getValue().getRepresentedBy());
+            } else {
+                expectedFirstOther.getRepresentedBy().addAll(caseData.getOthers().getFirstOther().getRepresentedBy());
+            }
+            assertThat(responseCaseData.getOthers().getFirstOther()).isEqualTo(expectedFirstOther);
         } else {
             assertThat(responseCaseData.getOthers()).isNull();
         }
@@ -395,6 +407,105 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         // verify respondent content was transferred successfully
         assertThat(responseCaseData.findRespondent(numberOfRespondent).map(Respondent::getParty))
             .contains(prepareExpectedTransformedRespondent(false).getParty());
+        // verify if the transformed respondent's representative ids are migrated to respondent's representedBy
+        assertThat(responseCaseData.findRespondent(numberOfRespondent).map(Respondent::getRepresentedBy).map(
+            ElementUtils::unwrapElements).orElse(List.of())).isEqualTo(representativeIdsInTransformedRespondent);
+        // verify if the representative's count = other's count
+        assertThat(responseCaseData.getRepresentatives()).hasSize(numberOfAdditionalOther + 1);
+        // verify the new respondent's roles
+        representativeIdsInTransformedRespondent.forEach(representativeId -> {
+            assertThat(
+                ElementUtils.findElement(representativeId, responseCaseData.getRepresentatives())
+                    .map(Element::getValue)
+                    .map(Representative::getRole)
+                    .stream().collect(toSet())
+            ).isEqualTo(Set.of(resolveRespondentRepresentativeRole(numberOfRespondent + 1)));
+        });
+        // verify the non-affected other's representatives
+        List<Element<Other>> responseAllOthers = responseCaseData.getAllOthers();
+        for (int i = 0; i < responseAllOthers.size(); i++) {
+            final int finalI = i;
+            assertThat(unwrapElements(responseAllOthers).get(i).getRepresentedBy()).isNotEmpty();
+            unwrapElements(responseAllOthers).get(i).getRepresentedBy()
+                .stream().map(Element::getValue).collect(toSet()).forEach(
+                    representativeId -> {
+                        assertThat(
+                            ElementUtils.findElement(representativeId, responseCaseData.getRepresentatives())
+                                .map(Element::getValue)
+                                .map(Representative::getRole)
+                                .stream().collect(toSet())
+                        ).isEqualTo(Set.of(resolveOtherRepresentativeRole(finalI)));
+                    });
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("othersToRespondentParam")
+    void shouldConvertConfidentialOthersWithRepresentativesToRespondent(
+        int selectedOtherSeq,
+        int numberOfAdditionalOther,
+        int numberOfRespondent) {
+        boolean firstOtherDetailsHidden = true;
+        boolean additionalOtherDetailsHidden = true;
+        Others others = prepareOthersTestingData(numberOfAdditionalOther, firstOtherDetailsHidden,
+            additionalOtherDetailsHidden);
+        List<Element<Representative>> representatives = new ArrayList<>();
+        List<UUID> representativeIdsInTransformedRespondent = new ArrayList<>();
+        for (int i = 0; i < numberOfAdditionalOther + 1; i++) {
+            Element<Representative> representativeElement = element(prepareOtherRepresentative(i));
+            if (i == 0) {
+                others.getFirstOther().addRepresentative(representativeElement.getId());
+            } else {
+                others.getAdditionalOthers().get(i - 1).getValue().addRepresentative(representativeElement.getId());
+            }
+            if (i == selectedOtherSeq) {
+                representativeIdsInTransformedRespondent.add(representativeElement.getId());
+            }
+            representatives.add(representativeElement);
+        }
+
+        Respondent transformedRespondent = prepareTransformedRespondentTestingData(true);
+        representativeIdsInTransformedRespondent.forEach(uuid -> transformedRespondent.addRepresentative(uuid));
+
+        List<Respondent> respondents = prepareRespondentsTestingData(numberOfRespondent);
+        List<Element<Respondent>> respondents1 = wrapElementsWithRandomUUID(respondents);
+
+        CaseData caseData = CaseData.builder()
+            .representatives(representatives)
+            .localAuthorities(localAuthorities())
+            .others(others)
+            .confidentialOthers(prepareConfidentialOthersTestingData(others, firstOtherDetailsHidden,
+                (i) -> additionalOtherDetailsHidden))
+            .respondents1(respondents1)
+            .otherToRespondentEventData(otherToRespondentEventData(transformedRespondent, others, selectedOtherSeq))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
+        CaseData responseCaseData = extractCaseData(callbackResponse);
+
+        assertThat(responseCaseData.getAllOthers()).hasSize(numberOfAdditionalOther);
+        assertThat(responseCaseData.getAllOthers().stream()
+            .filter(o -> String.format("Marco %s", selectedOtherSeq).equals(o.getValue().getName()))).isEmpty();
+        if (numberOfAdditionalOther > 0) {
+            Other expectedFirstOther = Other.builder()
+                .name(String.format("Marco %s", selectedOtherSeq == 0 ? 1 : 0))
+                .detailsHidden("Yes")
+                .build();
+            if (selectedOtherSeq == 0) {
+                expectedFirstOther.getRepresentedBy().addAll(
+                    caseData.getOthers().getAdditionalOthers().get(0).getValue().getRepresentedBy());
+            } else {
+                expectedFirstOther.getRepresentedBy().addAll(caseData.getOthers().getFirstOther().getRepresentedBy());
+            }
+            assertThat(responseCaseData.getOthers().getFirstOther()).isEqualTo(expectedFirstOther);
+        } else {
+            assertThat(responseCaseData.getOthers()).isNull();
+        }
+        // verify the respondent count should be increased by 1
+        assertThat(responseCaseData.getAllRespondents()).hasSize(numberOfRespondent + 1);
+        // verify respondent content was transferred successfully
+        assertThat(responseCaseData.findRespondent(numberOfRespondent).map(Respondent::getParty))
+            .contains(prepareExpectedTransformedRespondent(true).getParty());
         // verify if the transformed respondent's representative ids are migrated to respondent's representedBy
         assertThat(responseCaseData.findRespondent(numberOfRespondent).map(Respondent::getRepresentedBy).map(
             ElementUtils::unwrapElements).orElse(List.of())).isEqualTo(representativeIdsInTransformedRespondent);

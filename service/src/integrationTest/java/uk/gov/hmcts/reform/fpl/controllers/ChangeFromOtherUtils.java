@@ -207,6 +207,28 @@ public abstract class ChangeFromOtherUtils {
             .build();
     }
 
+    public static List<Element<Other>> prepareConfidentialOthersTestingData(
+        Others others, boolean firstOtherDetailsHidden,
+        Predicate<Integer> additionalOtherDetailsHiddenDecider) {
+        List<Element<Other>> ret = new ArrayList<>();
+        if (firstOtherDetailsHidden) {
+            ret.add(element(Other.builder()
+                .address(Address.builder().addressLine1("FIRST OTHER SECRET ADDRESS 1").build())
+                .build()));
+        }
+        if (others.getAdditionalOthers() != null) {
+            for (int i = 0; i < others.getAdditionalOthers().size(); i++) {
+                if (additionalOtherDetailsHiddenDecider.test(i)) {
+                    Element<Other> ao = others.getAdditionalOthers().get(i);
+                    ret.add(element(ao.getId(), Other.builder()
+                        .address(Address.builder().addressLine1("ADDITIONAL OTHER SECRET ADDRESS 1").build())
+                        .build()));
+                }
+            }
+        }
+        return ret;
+    }
+
     public static Others prepareOthersTestingData(int numberOfAdditionalOther, boolean firstOtherDetailsHidden,
                                                   boolean additionalOtherDetailsHidden) {
         return prepareOthersTestingData(numberOfAdditionalOther, firstOtherDetailsHidden,
@@ -214,12 +236,12 @@ public abstract class ChangeFromOtherUtils {
     }
 
     public static Others prepareOthersTestingData(int numberOfAdditionalOther, boolean firstOtherDetailsHidden,
-                                                  Predicate<Integer> condition) {
+                                                  Predicate<Integer> additionalOtherDetailsHiddenDecider) {
         List<Element<Other>> additionalOthers = new ArrayList<>();
         for (int i = 0; i < numberOfAdditionalOther; i++) {
             additionalOthers.add(element(Other.builder()
                 .name(String.format("Marco %s", i + 1))
-                .detailsHidden(YesNo.from(condition.test(i)).getValue())
+                .detailsHidden(YesNo.from(additionalOtherDetailsHiddenDecider.test(i)).getValue())
                 .build()));
         }
         Other firstOther = Other.builder()

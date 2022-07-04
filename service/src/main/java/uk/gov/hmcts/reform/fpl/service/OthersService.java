@@ -149,7 +149,6 @@ public class OthersService {
             .telephone(confidentialOther.getTelephone())
             .address(confidentialOther.getAddress())
             .build();
-        other.getValue().getRepresentedBy().forEach(uuid -> ret.addRepresentative(uuid.getId(), uuid.getValue()));
         return ret;
     }
 
