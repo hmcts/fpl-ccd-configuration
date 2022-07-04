@@ -40,14 +40,6 @@ public class OrdersNeededController extends CallbackController {
 
         final List<String> errors = ordersNeededValidator.validate(caseData);
 
-        Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get(ORDERS))
-            .map(orders -> (List<String>) orders.get("orderType"));
-
-        if (orderType.isPresent()
-            && orderType.get().contains(OrderType.CHILD_ASSESSMENT_ORDER.name()) && orderType.get().size() > 1) {
-            errors.add("You have selected a standalone order, this cannot be applied for alongside other orders.");
-        }
-
         if (isNotEmpty(errors)) {
             return respond(data, errors);
         } else {

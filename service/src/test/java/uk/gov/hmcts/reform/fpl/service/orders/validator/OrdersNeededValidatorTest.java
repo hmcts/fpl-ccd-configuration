@@ -33,6 +33,7 @@ public class OrdersNeededValidatorTest {
             .build();
 
         assertThat(underTest.validate(caseData))
-            .containsExactly("If secure accommodation order is selected, this should be the only order selected");
+            .containsExactly("You have selected a standalone order, "
+                             + "this cannot be applied for alongside other orders.");
     }
 }
