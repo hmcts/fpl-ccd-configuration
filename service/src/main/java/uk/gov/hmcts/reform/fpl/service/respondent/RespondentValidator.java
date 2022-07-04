@@ -58,7 +58,7 @@ public class RespondentValidator {
         return errors;
     }
 
-    private List<String> validateDob(CaseData caseData, boolean convertedFromOther) {
+    private List<String> validateDob(CaseData caseData, boolean hideRespondentIndex) {
         List<String> dobErrors = new ArrayList<>();
         List<Element<Respondent>> allRespondents = caseData.getAllRespondents();
 
@@ -67,7 +67,7 @@ public class RespondentValidator {
             if (dob != null) {
                 if (dob.isAfter(time.now().toLocalDate())) {
                     dobErrors.add(String.format("Date of birth for respondent %scannot be in the future",
-                        convertedFromOther ? "" : ((i + 1) + " ")));
+                        hideRespondentIndex ? "" : ((i + 1) + " ")));
                 }
             }
         }
