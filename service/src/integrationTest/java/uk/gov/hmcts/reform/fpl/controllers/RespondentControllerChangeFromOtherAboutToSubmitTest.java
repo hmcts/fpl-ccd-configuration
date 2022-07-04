@@ -225,7 +225,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
 
     @ParameterizedTest
     @MethodSource("othersToRespondentParam")
-    void shouldConvertOthersWithDetailsHiddenToRespondentWithDetailsHiddenAndRetainConfidentialOthers(
+    void shouldConvertConfidentialOthersToConfidentialRespondentAndRetainConfidentialOthers(
         int selectedOtherSeq, int numberOfAdditionalOther, int numberOfRespondent) {
         Others others = prepareOthersTestingData(numberOfAdditionalOther, true, true);
         List<Element<Other>> allOthers = new ArrayList<>();
@@ -413,6 +413,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         List<Element<Other>> responseAllOthers = responseCaseData.getAllOthers();
         for (int i = 0; i < responseAllOthers.size(); i++) {
             final int finalI = i;
+            assertThat(unwrapElements(responseAllOthers).get(i).getRepresentedBy()).isNotEmpty();
             unwrapElements(responseAllOthers).get(i).getRepresentedBy()
                 .stream().map(Element::getValue).collect(toSet()).forEach(
                     representativeId -> {
