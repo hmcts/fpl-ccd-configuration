@@ -31,6 +31,11 @@ public enum YesNo {
             .orElse(NOT_SPECIFIED);
     }
 
+    public static boolean isYesOrNo(String value) {
+        return YesNo.YES.getValue().equalsIgnoreCase(value)
+               || YesNo.NO.getValue().equalsIgnoreCase(value);
+    }
+
     public String getValue(Language language) {
         return language == Language.WELSH ? welshValue : value;
     }
