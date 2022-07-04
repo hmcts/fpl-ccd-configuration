@@ -88,7 +88,7 @@ public class SendNoticeOfHearingHandler {
             final String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 
             NotifyData notifyData = noticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
-                caseData, event.getSelectedHearing(), EMAIL
+                caseData, event.getSelectedHearing(), DIGITAL_SERVICE
             );
             notificationService.sendEmail(NOTICE_OF_NEW_HEARING, recipient, notifyData, caseData.getId());
         }
