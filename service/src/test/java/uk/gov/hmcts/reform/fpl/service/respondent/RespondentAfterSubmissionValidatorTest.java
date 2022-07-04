@@ -409,6 +409,7 @@ class RespondentAfterSubmissionValidatorTest {
                 }),
             Arguments.of(true,
                 new String[] {
+                    "You cannot change organisation details for respondent's legal representative",
                     "You cannot change organisation details for respondent's legal representative"
                 })
         );
@@ -474,6 +475,7 @@ class RespondentAfterSubmissionValidatorTest {
                 "You cannot change organisation details for respondent 2's legal representative"
             }),
             Arguments.of(true, new String[] {
+                "You cannot change organisation details for respondent's legal representative",
                 "You cannot change organisation details for respondent's legal representative"
             })
         );

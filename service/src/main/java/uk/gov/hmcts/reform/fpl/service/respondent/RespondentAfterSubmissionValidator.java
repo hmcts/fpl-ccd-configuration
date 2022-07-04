@@ -56,8 +56,7 @@ public class RespondentAfterSubmissionValidator {
     }
 
     public List<String> validate(CaseData caseData, CaseData caseDataBefore, boolean hideRespondentIndex) {
-
-        LinkedHashSet<String> errors = new LinkedHashSet<>();
+        List<String> errors = new ArrayList<>();
 
         Set<UUID> currentRespondentIds = getIds(caseData.getAllRespondents());
         Set<UUID> previousRespondentIds = getIds(caseDataBefore.getAllRespondents());
@@ -100,7 +99,7 @@ public class RespondentAfterSubmissionValidator {
             errors.addAll(validateLegalRepresentation(caseData, hideRespondentIndex));
         }
 
-        return errors.stream().collect(toList());
+        return errors;
     }
 
     private List<String> legalRepresentationErrors(Respondent respondent, int i) {
