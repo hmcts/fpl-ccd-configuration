@@ -24,6 +24,8 @@ import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.group.C110A;
@@ -262,9 +264,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         private Stream<Arguments> provideMigrationTestData() {
             return Stream.of(
-                Arguments.of("DFPL-694", 1643970994251861L, UUID.fromString("e32175d7-28ea-4041-8f1c-1087326ee331")),
-                Arguments.of("DFPL-695", 1654079894022178L, UUID.fromString("d78acec6-f57c-45ed-a343-04f5261b738b")),
-                Arguments.of("DFPL-697", 1643970994251861L, UUID.fromString("e32175d7-28ea-4041-8f1c-1087326ee331"))
+                Arguments.of("DFPL-709", 1654863367762430L, UUID.fromString("a36c79a6-86e4-4cee-ae29-f7e0f1c927dc")),
+                Arguments.of("DFPL-710", 1654596348943113L, UUID.fromString("6900eb4e-4131-4496-92f3-10e269da9f88")),
+                Arguments.of("DFPL-711", 1645094438293807L, UUID.fromString("022e4acf-28b2-4889-9ecb-322c65be5bd1"))
             );
         }
 
@@ -527,6 +529,123 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .isInstanceOf(AssertionError.class)
                 .hasMessage("Migration {id = DFPL-622, case reference = 1643728359576136},"
                     + " expected case id 1639491786898849");
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl684 {
+        private final String migrationId = "DFPL-684";
+        private final long validCaseId = 1642001990437030L;
+        private final long invalidCaseId = 1626258358022000L;
+
+        @Test
+        void shouldPerformMigrationWhenNameMatches() {
+            List<UUID> uuidsToBeDeleted = List.of(UUID.fromString("afae84df-1337-4aa5-90ff-4938dbeb241c"),
+                UUID.fromString("f55cd3ab-cb71-4eeb-b786-076eb8728f7c"));
+
+            List<Element<Respondent>> respondents = List.of(element(Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .firstName("Respondent")
+                        .lastName("One")
+                        .build())
+                    .build()),
+                element(Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .firstName("Respondent")
+                        .lastName("Two")
+                        .build())
+                    .build()),
+                element(uuidsToBeDeleted.get(0), Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .firstName("Respondent")
+                        .lastName("Three")
+                        .build())
+                    .build()),
+                element(Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .firstName("Respondent")
+                        .lastName("Four")
+                        .build())
+                    .build()),
+                element(uuidsToBeDeleted.get(1), Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .firstName("Respondent")
+                        .lastName("Five")
+                        .build())
+                    .build()));
+
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .state(State.SUBMITTED)
+                .respondents1(respondents)
+                .respondentStatements(List.of(
+                    element(RespondentStatement.builder()
+                        .respondentId(respondents.get(0).getId())
+                        .build()),
+                    element(RespondentStatement.builder()
+                        .respondentId(uuidsToBeDeleted.get(0))
+                        .build()),
+                    element(RespondentStatement.builder()
+                        .respondentId(uuidsToBeDeleted.get(1))
+                        .build())))
+                .additionalApplicationsBundle(List.of(element(AdditionalApplicationsBundle.builder()
+                        .c2DocumentBundle(C2DocumentBundle.builder()
+                            .respondents(respondents)
+                            .build())
+                        .build()),
+                    element(AdditionalApplicationsBundle.builder()
+                        .c2DocumentBundle(C2DocumentBundle.builder()
+                            .respondents(respondents)
+                            .build())
+                        .build())))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+
+            List<Element<Respondent>> postMigrateRespondents = responseData.getRespondents1();
+            List<Element<RespondentStatement>> postMigrateRespondentStatements = responseData.getRespondentStatements();
+            List<Element<AdditionalApplicationsBundle>> postMigrationApplicationBundles = responseData
+                .getAdditionalApplicationsBundle();
+
+            List<UUID> expectedRetainedUUIDs = List.of(respondents.get(0).getId(), respondents.get(1).getId(),
+                respondents.get(3).getId());
+
+            List<UUID> retainedRespondentUUIDs = postMigrateRespondents.stream()
+                .map(Element::getId)
+                .collect(toList());
+
+            assertThat(retainedRespondentUUIDs).isEqualTo(expectedRetainedUUIDs);
+
+            List<UUID> respondentStatementUUIDs = postMigrateRespondentStatements.stream()
+                .map(statement -> statement.getValue().getRespondentId())
+                .collect(toList());
+
+            assertThat(respondentStatementUUIDs).doesNotContainAnyElementsOf(uuidsToBeDeleted);
+
+            List<UUID> additionalApplicationUUIDs = postMigrationApplicationBundles.stream()
+                .flatMap(bundle -> bundle.getValue().getC2DocumentBundle().getRespondents().stream())
+                .map(Element::getId)
+                .collect(toList());
+
+            assertThat(additionalApplicationUUIDs).doesNotContainAnyElementsOf(uuidsToBeDeleted);
+        }
+
+        @Test
+        void shouldThrowAssersionErrorWhenCaseIdIsInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(invalidCaseId)
+                .state(State.SUBMITTED)
+                .build();
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-684, case reference = 1626258358022000},"
+                            + " expected case id 1642001990437030");
         }
     }
 
