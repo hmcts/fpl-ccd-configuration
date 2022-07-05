@@ -26,5 +26,14 @@
     "ElementLabel": "Controls display of manageDocumentsSupportingC2List and manageDocumentsNoC2sLabel",
     "SecurityClassification": "Public",
     "FieldShowCondition": "type=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentType",
+    "ListElementCode": "hasConfidentialAddress",
+    "FieldType": "Text",
+    "ElementLabel": "Controls display of hasConfidentialAddress",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"DO NOT SHOW\""
   }
 ]

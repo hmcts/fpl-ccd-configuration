@@ -456,6 +456,7 @@ public class CaseData {
     private final Selector careOrderSelector;
     private final Selector newHearingSelector;
     private final Selector appointedGuardianSelector;
+    private final Selector respondentsRefusedSelector;
 
     private final String orderAppliesToAllChildren;
     private final String sendOrderToAllOthers;
@@ -632,6 +633,11 @@ public class CaseData {
 
     public List<Element<Other>> getConfidentialOthers() {
         return Optional.ofNullable(confidentialOthers).orElse(new ArrayList<>());
+    }
+
+    public boolean hasConfidentialParty() {
+        return isNotEmpty(getConfidentialChildren()) || isNotEmpty(getConfidentialRespondents())
+               || isNotEmpty(getConfidentialOthers());
     }
 
     private final String caseNote;
@@ -1143,4 +1149,6 @@ public class CaseData {
             .map(Orders::isDischargeOfCareOrder)
             .orElse(false);
     }
+
+    private List<Element<DocumentWithConfidentialAddress>> documentsWithConfidentialAddress;
 }
