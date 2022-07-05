@@ -249,6 +249,8 @@ public class RespondentController extends CallbackController {
                 .findFirst().ifPresent(
                     newOther -> {
                         for (Element<UUID> uuid : newOther.getValue().getRepresentedBy()) {
+                            // when others do not have confidential information
+                            // representedBy will not be removed.
                             if (!preparingNewOther.getValue().getRepresentedBy().contains(uuid)) {
                                 preparingNewOther.getValue().getRepresentedBy().add(uuid);
                             }

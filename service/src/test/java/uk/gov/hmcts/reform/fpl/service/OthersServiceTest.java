@@ -155,23 +155,30 @@ class OthersServiceTest {
         assertThat(others).isEqualTo(Others.builder().additionalOthers(emptyList()).build());
     }
 
-    @ParameterizedTest
-    @ValueSource(ints = {10, 15, 20, 25})
-    void shouldReturnOthersWhenOthersIsPrePopulated(int mode) {
-        Other firstOther = otherWithDetailsHiddenValue("No");
-        if (mode / 10 == 1) {
-            firstOther.addRepresentative(randomUUID());
-        }
-        List<Element<Other>> additionalOthers = othersWithRemovedConfidentialFields();
-        if (mode % 10 == 5) {
-            additionalOthers.forEach(ao -> ao.getValue().addRepresentative(randomUUID()));
-        }
+    @Test
+    void shouldNotRemoveRepresentedByWhenPrepareConfidentialOthers() {
+        List<Element<Other>> confidentialOthers = new ArrayList<>();
+        Other firstOther = othersWithRemovedConfidentialFields().get(0).getValue();
+        firstOther.addRepresentative(randomUUID());
+        confidentialOthers.addAll(othersWithConfidentialFields(randomUUID()));
 
-        CaseData caseData = buildCaseDataWithOthers(firstOther, additionalOthers, null);
+        List<Element<Other>> othersWithRemovedConfidentialFields = othersWithRemovedConfidentialFields();
+        othersWithRemovedConfidentialFields.forEach(ao -> ao.getValue().addRepresentative(randomUUID()));
+
+        othersWithRemovedConfidentialFields.forEach(ao -> confidentialOthers
+            .addAll(othersWithConfidentialFields(ao.getId())));
+
+        CaseData caseData = buildCaseDataWithOthers(firstOther, othersWithRemovedConfidentialFields,
+            confidentialOthers);
 
         Others others = service.prepareOthers(caseData);
 
-        assertThat(caseData.getOthers()).isEqualTo(others);
+        assertThat(others).isNotNull();
+        assertThat(others.getFirstOther()).isNotNull();
+        assertThat(others.getFirstOther().getRepresentedBy()).hasSize(1);
+        assertThat(others.getAdditionalOthers()).isNotNull();
+        assertThat(others.getAdditionalOthers()).hasSize(1);
+        assertThat(others.getAdditionalOthers().get(0).getValue().getRepresentedBy()).hasSize(1);
     }
 
     @Test

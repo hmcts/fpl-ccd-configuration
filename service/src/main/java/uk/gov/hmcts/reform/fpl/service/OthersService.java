@@ -70,8 +70,13 @@ public class OthersService {
         caseData.getAllOthers().forEach(element -> {
             if (element.getValue().containsConfidentialDetails()) {
                 Other confidentialOther = getConfidentialItemToAdd(caseData.getConfidentialOthers(), element);
-
-                others.add(element(element.getId(), addConfidentialDetails(confidentialOther, element)));
+                Element<Other> otherElementWithConfidentialDetails = element(element.getId(),
+                    addConfidentialDetails(confidentialOther, element));
+                // copying the representedBy to confidential others since addConfidentialDetails will remove them
+                element.getValue().getRepresentedBy()
+                    .forEach(uuid -> otherElementWithConfidentialDetails.getValue()
+                        .addRepresentative(uuid.getId(), uuid.getValue()));
+                others.add(otherElementWithConfidentialDetails);
             } else {
                 others.add(element);
             }
@@ -159,7 +164,11 @@ public class OthersService {
         if (!others.isEmpty()) {
             return confidentialOthers.stream()
                 .filter(other -> !ids.contains(other.getId()))
-                .map(other -> addConfidentialDetails(other.getValue(), others.get(0)))
+                .map(other -> {
+                    Other ret = addConfidentialDetails(other.getValue(), others.get(0));
+                    ret.getRepresentedBy().addAll(others.get(0).getValue().getRepresentedBy());
+                    return ret;
+                })
                 .findFirst()
                 .orElse(others.get(0).getValue());
         }
