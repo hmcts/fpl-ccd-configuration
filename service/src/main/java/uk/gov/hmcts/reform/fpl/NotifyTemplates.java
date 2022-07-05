@@ -19,7 +19,7 @@ public final class NotifyTemplates {
     public static final String INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE
         = "3284c63a-b88f-4a20-979a-ea7d017b45aa";
     public static final String ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES =
-        "a0f911cf-4010-4022-bf34-a183cd711b8e";
+        "f6c91430-5b83-4058-914f-3111e52ed6c3";
     public static final String PLACEMENT_ORDER_GENERATED_NOTIFICATION_TEMPLATE =
         "673ff6f1-2a1f-4f0a-8e3b-d2044047304d";
     public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN = "bb40930c-a583-4868-a1f6-1e398e7554d3";
@@ -27,7 +27,7 @@ public final class NotifyTemplates {
         "1827ae2d-d7c3-4094-8978-c2f77d7713fa";
     public static final String DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE = "f9ef5385-258b-4d57-84b4-4915afd3ba5e";
     public static final String CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE =
-        "369882a3-743d-49c9-bab8-1b8a445d1b5d";
+        "e6e899b1-ce44-4626-bb44-b9532af3983f";
     public static final String CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE =
         "90c5f4b3-738b-4c8d-b433-c8c90095f815";
     public static final String CMO_REJECTED_BY_JUDGE_TEMPLATE = "acb99554-4806-41f9-a95b-df7ee9b9b878";
@@ -67,7 +67,7 @@ public final class NotifyTemplates {
     public static final String SDO_REMOVAL_NOTIFICATION_TEMPLATE = "8f66e70f-e328-4a22-aa17-f52f44e69d45";
     public static final String JUDICIAL_MESSAGE_ADDED_TEMPLATE = "bf041444-5a4e-4045-878a-4833f57b7d96";
     public static final String JUDICIAL_MESSAGE_REPLY_TEMPLATE = "e0603270-376b-4d9b-8570-7fd6f2e295ec";
-    public static final String JUDGE_APPROVES_DRAFT_ORDERS = "632ea051-0ab0-447d-9d6c-54118b04a5c1";
+    public static final String JUDGE_APPROVES_DRAFT_ORDERS = "ad724f72-eae8-4774-b12a-0c3c658b7095";
     public static final String JUDGE_REJECTS_DRAFT_ORDERS = "6d0ab7cb-8f1e-4ac0-b51d-11cf0b6ee568";
     public static final String FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE = "917c07b2-b414-41ab-9d0b-14a570fad413";
     public static final String DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE = "47b6ec09-da8c-452d-9ec7-bc3153890959";
