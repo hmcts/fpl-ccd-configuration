@@ -40,7 +40,8 @@ class LocalAuthorityDetailsCheckerTest {
             "Enter local authority's name",
             "Enter local authority's pba number",
             "Enter local authority's address",
-            "Enter local authority's phone number"
+            "Enter local authority's phone number",
+            "Add a colleague"
         );
     }
 
