@@ -47,7 +47,6 @@ import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.model.Respondent.expandCollection;
 import static uk.gov.hmcts.reform.fpl.model.common.Element.newElement;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
-import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.getConfidentialItemToAdd;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 
@@ -202,6 +201,8 @@ public class RespondentController extends CallbackController {
     }
 
     private UUID getFirstOtherId(CaseData caseData) {
+        // if firstOther exists confidentialOthers, it should return its uuid in confidentialOthers
+        // otherwise, it returns 00000000-0000-0000-0000-000000000000
         Set<UUID> additionalOtherIds = nullSafeList(caseData.getOthers().getAdditionalOthers())
             .stream().map(Element::getId).collect(Collectors.toSet());
         UUID firstOtherUUID = caseData.getConfidentialOthers().stream().map(Element::getId)
@@ -216,49 +217,15 @@ public class RespondentController extends CallbackController {
             caseData.getOtherToRespondentEventData().getOthersList(), firstOtherUUID);
     }
 
-    private List<Element<Other>> buildNewAllOthers(CaseData caseData, Element<Other> selectedOther) {
-        List<Element<Other>> listOfNewOtherElement = new ArrayList<>(caseData.getAllOthers());
-        listOfNewOtherElement.removeIf(ele -> Objects.equals(ele.getValue(), selectedOther.getValue()));
-        List<Element<Other>> ret = new ArrayList<>();
-        final List<Element<Other>> confidentialOthers = caseData.getConfidentialOthers();
-        listOfNewOtherElement.forEach(element -> {
-            if (element.getValue().containsConfidentialDetails()) {
-                Element<Other> otherElementWithConfidentialDetails = element(element.getId(), othersService
-                    .addConfidentialDetails(getConfidentialItemToAdd(confidentialOthers, element), element));
-                // copying the representedBy to confidential others
-                element.getValue().getRepresentedBy()
-                    .forEach(uuid -> otherElementWithConfidentialDetails.getValue()
-                        .addRepresentative(uuid.getId(), uuid.getValue()));
-                ret.add(otherElementWithConfidentialDetails);
-            } else {
-                ret.add(element);
-            }
-        });
-        return ret;
-    }
+    private Others prepareNewOthers(CaseData caseData, CaseDetails caseDetails, Element<Other> selectedOther) {
+        List<Element<Other>> newAllOthers = new ArrayList<>(caseData.getAllOthers());
+        newAllOthers.removeIf(ele -> Objects.equals(ele.getValue(), selectedOther.getValue()));
 
-    private Others prepareNewOthers(CaseDetails caseDetails, List<Element<Other>> newAllOthers) {
-        // Setting "confidentialOthers" to caseDetails
-        confidentialDetailsService.addConfidentialDetailsToCase(caseDetails, newAllOthers, OTHER);
-        // Setting "others" to caseDetails from previous built new allOthers collection
-        List<Element<Other>> preparingNewOthers = confidentialDetailsService
-            .removeConfidentialDetails(newAllOthers);
-        preparingNewOthers.forEach(
-            preparingNewOther -> newAllOthers.stream()
-                .filter(newOther -> newOther.getId().equals(preparingNewOther.getId()))
-                .findFirst().ifPresent(
-                    newOther -> {
-                        for (Element<UUID> uuid : newOther.getValue().getRepresentedBy()) {
-                            // when others do not have confidential information
-                            // representedBy will not be removed.
-                            if (!preparingNewOther.getValue().getRepresentedBy().contains(uuid)) {
-                                preparingNewOther.getValue().getRepresentedBy().add(uuid);
-                            }
-                        }
-                    }
-                )
-        );
-        Others newOthers = Others.from(preparingNewOthers);
+        // remove the other person from confidentialOthers if any
+        caseData.getConfidentialOthers().removeIf(co -> Objects.equals(co.getId(), selectedOther.getId()));
+        caseDetails.getData().put(OTHER.getConfidentialKey(), caseData.getConfidentialOthers());
+
+        Others newOthers = Others.from(newAllOthers);
         if (isNull(newOthers)) {
             caseDetails.getData().remove(OTHERS_KEY);
         } else {
@@ -268,12 +235,12 @@ public class RespondentController extends CallbackController {
     }
 
     private void addTransformedRespondentToRespondents(CaseDetails caseDetails, CaseData caseData,
-                                                       Element<Other> selectedOther) {
+                                                       UUID newRespondentId) {
         OtherToRespondentEventData eventData = caseData.getOtherToRespondentEventData();
         Respondent transformedRespondent = eventData.getTransformedRespondent();
         List<Element<Respondent>> newRespondents = confidentialDetailsService.prepareCollection(
             caseData.getAllRespondents(), caseData.getConfidentialRespondents(), expandCollection());
-        newRespondents.add(element(selectedOther.getId(), transformedRespondent));
+        newRespondents.add(element(newRespondentId, transformedRespondent));
         caseDetails.getData().put(RESPONDENTS_KEY, newRespondents);
     }
 
@@ -295,10 +262,11 @@ public class RespondentController extends CallbackController {
         final CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         Element<Other> selectedOther = getSelectedOther(caseData);
-        List<Element<Other>> newAllOthers = buildNewAllOthers(caseData, selectedOther);
-        final Others newOthers = prepareNewOthers(caseDetails, newAllOthers);
-        // build new respondents1
-        addTransformedRespondentToRespondents(caseDetails, caseData, selectedOther);
+        final Others newOthers = prepareNewOthers(caseData, caseDetails, selectedOther);
+        // add the transformedRespondent to respondents1 with the same other id
+        // therefore, relations in representedBy can be kept unchanged
+        UUID selectedOtherId = selectedOther.getId();
+        addTransformedRespondentToRespondents(caseDetails, caseData, selectedOtherId);
         caseData = getCaseData(caseDetails); // update case data object
         prepareNewRespondents(caseDetails, caseData, caseDataBefore);
         // Setting "representatives" to caseDetails

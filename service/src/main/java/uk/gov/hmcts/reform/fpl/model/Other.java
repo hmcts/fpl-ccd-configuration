@@ -45,18 +45,31 @@ public class Other implements Representable, ConfidentialParty<Other> {
     private final String litigationIssuesDetails;
     private final String detailsHidden;
     private final String detailsHiddenReason;
-    private final List<Element<UUID>> representedBy = new ArrayList<>();
+    private List<Element<UUID>> representedBy;
     private final String addressNotKnowReason;
     private final String addressKnow;
 
+    public List<Element<UUID>> getRepresentedBy() {
+        if (this.representedBy == null) {
+            this.representedBy = new ArrayList<>();
+        }
+        return this.representedBy;
+    }
+
     public void addRepresentative(UUID representativeId) {
         if (!unwrapElements(representedBy).contains(representativeId)) {
+            if (this.representedBy == null) {
+                this.representedBy = new ArrayList<>();
+            }
             this.representedBy.add(element(representativeId));
         }
     }
 
     public void addRepresentative(UUID id, UUID representativeId) {
         if (!unwrapElements(representedBy).contains(representativeId)) {
+            if (this.representedBy == null) {
+                this.representedBy = new ArrayList<>();
+            }
             this.representedBy.add(element(id, representativeId));
         }
     }
