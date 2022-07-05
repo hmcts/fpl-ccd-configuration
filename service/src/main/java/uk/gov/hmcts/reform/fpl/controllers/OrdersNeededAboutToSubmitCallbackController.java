@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,37 +12,33 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.orders.validator.OrdersNeededValidator;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-
 @Api
 @RestController
 @RequestMapping("/callback/orders-needed")
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class OrdersNeededController extends CallbackController {
+public class OrdersNeededAboutToSubmitCallbackController extends CallbackController {
 
     public static final String ORDERS = "orders";
-    private final OrdersNeededValidator ordersNeededValidator;
 
     @PostMapping("/mid-event")
     @SuppressWarnings("unchecked")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
-        final CaseData caseData = getCaseData(callbackrequest);
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
 
-        final List<String> errors = ordersNeededValidator.validate(caseData);
+        Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get("orders"))
+            .map(orders -> (List<String>) orders.get("orderType"));
 
-        if (isNotEmpty(errors)) {
-            return respond(data, errors);
-        } else {
-            return respond(data);
+        if (orderType.isPresent()
+            && orderType.get().contains(OrderType.CHILD_ASSESSMENT_ORDER.name()) && orderType.get().size() > 1) {
+            return respond(caseDetails, List.of("You have selected a standalone order, "
+                + "this cannot be applied for alongside other orders."));
         }
+        return respond(caseDetails);
     }
 
 

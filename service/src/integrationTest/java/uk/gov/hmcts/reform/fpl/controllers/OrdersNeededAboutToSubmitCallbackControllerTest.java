@@ -10,7 +10,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@WebMvcTest(OrdersNeededController.class)
+@WebMvcTest(OrdersNeededAboutToSubmitCallbackController.class)
 @OverrideAutoConfiguration(enabled = true)
 class OrdersNeededAboutToSubmitCallbackControllerTest extends AbstractCallbackTest {
 
