@@ -78,7 +78,9 @@ public class LocalAuthorityDetailsChecker implements EventChecker {
     private List<String> validateAdditionalContacts(List<Colleague> colleagues) {
         final List<String> errors = new ArrayList<>();
 
-        if (colleagues.size() == 1) {
+        if (colleagues.size() == 0) {
+            errors.add("Add a colleague");
+        } else if (colleagues.size() == 1) {
             errors.addAll(validateAdditionalContact(colleagues.get(0)));
         } else {
             for (int i = 0; i < colleagues.size(); i++) {

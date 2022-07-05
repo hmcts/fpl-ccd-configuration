@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -81,6 +82,18 @@ class LocalAuthorityDetailsCheckerTest {
             .build();
 
         assertThat(underTest.validate(caseData)).isEmpty();
+    }
+
+    @Test
+    void shouldReturnErrorsWhenNoColleagueAdded() {
+        final CaseData caseData = CaseData.builder()
+                .localAuthorities(wrapElements(getPopulatedLocalAuthority()
+                        .toBuilder()
+                        .colleagues(Collections.emptyList())
+                        .build()))
+                .build();
+        assertThat(underTest.validate(caseData))
+                .containsExactly("Add a colleague");
     }
 
     @Test
