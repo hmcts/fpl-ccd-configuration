@@ -23,7 +23,7 @@
     "CaseEventID": "enterGrounds",
     "CaseFieldID": "groundsForChildAssessmentOrder",
     "ListElementCode": "thresholdDetails",
-    "EventElementLabel": "State your reason(s) for believing the grounds exist. If you are relying on a report or other documentary evidence, state the date(s) and author(s) and attach a copy.",
+    "EventElementLabel": "State your reason(s) for believing the grounds exist. If you are relying on a report or other documentary evidence, state the date(s) and author(s) and attach a copy in the \"Upload documents\" section.",
     "DisplayContext": "MANDATORY"
   }
 ]
