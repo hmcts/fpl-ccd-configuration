@@ -292,7 +292,7 @@ public class DraftOrderService {
         HearingBooking hearingBooking = Optional.ofNullable(hearing).map(Element::getValue).orElse(null);
 
         HearingOrdersBundle hearingOrdersBundle = bundles.stream()
-                .filter(bundle -> Objects.equals(bundle.getValue().getHearingId(), hearingId))
+            .filter(bundle -> Objects.equals(bundle.getValue().getHearingId(), hearingId))
             .map(Element::getValue)
             .findFirst()
             .orElseGet(() -> addNewDraftBundle(bundles));
