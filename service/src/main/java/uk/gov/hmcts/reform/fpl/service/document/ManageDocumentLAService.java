@@ -45,12 +45,14 @@ public class ManageDocumentLAService {
 
     public Map<String, Object> baseEventData(CaseData caseData) {
         Map<String, Object> listAndLabel = new HashMap<>();
+        final YesNo hasConfidentialAddress = YesNo.from(caseData.hasConfidentialParty());
 
         ManageDocumentLA manageDocument = defaultIfNull(caseData.getManageDocumentLA(),
             ManageDocumentLA.builder().build())
             .toBuilder()
             .hasHearings(YesNo.from(isNotEmpty(caseData.getHearingDetails())).getValue())
             .hasC2s(YesNo.from(caseData.hasApplicationBundles()).getValue())
+            .hasConfidentialAddress(hasConfidentialAddress.getValue())
             .build();
 
         listAndLabel.put(MANAGE_DOCUMENT_LA_KEY, manageDocument);

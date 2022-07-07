@@ -150,8 +150,7 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .line("You can review the order by:")
                 .line()
-                .list("signing into http://fake-url/cases/case-details/12345#Orders",
-                    "using this link http://fake-url/documents/some-random-string/binary")
+                .list("signing into http://fake-url/cases/case-details/12345#Orders")
                 .line()
                 .line("HM Courts & Tribunal Service")
                 .line()
@@ -168,8 +167,7 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .line("You can review the order by:")
                 .line()
-                .list("signing into http://fake-url/cases/case-details/12345#Orders",
-                    "using this link http://fake-url/documents/some-random-string/binary")
+                .list("signing into http://fake-url/cases/case-details/12345#Orders")
                 .line()
                 .line("HM Courts & Tribunal Service")
                 .line()
