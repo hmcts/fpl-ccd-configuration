@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
@@ -50,6 +51,7 @@ public class FurtherEvidenceUploadedEventTestData {
     public static final DocumentReference PDF_DOCUMENT_1 = getPDFDocument();
     public static final DocumentReference PDF_DOCUMENT_2 = getPDFDocument();
     public static final DocumentReference NON_PDF_DOCUMENT_1 = getNonPDFDocument();
+    private static final FurtherEvidenceType DEFAULT_FURTHER_EVIDENCE_TYPE = GUARDIAN_REPORTS;
 
     private FurtherEvidenceUploadedEventTestData() {
     }
@@ -67,8 +69,12 @@ public class FurtherEvidenceUploadedEventTestData {
     }
 
     public static CaseData buildCaseDataWithNonConfidentialLADocuments() {
+        return buildCaseDataWithNonConfidentialLADocuments(DEFAULT_FURTHER_EVIDENCE_TYPE);
+    }
+
+    public static CaseData buildCaseDataWithNonConfidentialLADocuments(FurtherEvidenceType type) {
         return commonCaseBuilder()
-            .furtherEvidenceDocumentsLA(buildNonConfidentialPdfDocumentList(LA_USER))
+            .furtherEvidenceDocumentsLA(buildNonConfidentialPdfDocumentList(LA_USER, type))
             .build();
     }
 
@@ -96,6 +102,14 @@ public class FurtherEvidenceUploadedEventTestData {
         return commonCaseBuilder()
             .furtherEvidenceDocumentsSolicitor(
                 removeEvidenceBundleType(buildNonConfidentialPdfDocumentList(uploadedBy)))
+            .build();
+    }
+
+    public static CaseData buildCaseDataWithNonConfidentialPDFDocumentsSolicitor(final String uploadedBy,
+                                                                                 FurtherEvidenceType type) {
+        return commonCaseBuilder()
+            .furtherEvidenceDocumentsSolicitor(
+                buildNonConfidentialPdfDocumentList(uploadedBy, type))
             .build();
     }
 
@@ -157,6 +171,16 @@ public class FurtherEvidenceUploadedEventTestData {
                 .build();
     }
 
+    public static CaseData buildCaseDataWithHearingFurtherEvidenceBundle(FurtherEvidenceType type) {
+        HearingFurtherEvidenceBundle bundle = HearingFurtherEvidenceBundle.builder()
+            .hearingName("Case management hearing, 1 April 2022")
+            .supportingEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER, type))
+            .build();
+        return commonCaseBuilder()
+            .hearingFurtherEvidenceDocuments(wrapElements(bundle))
+            .build();
+    }
+
     public static CaseData buildCaseDataWithNonConfidentialNonPDFRespondentStatementsSolicitor() {
         return commonCaseBuilder()
             .respondentStatements(buildRespondentStatementsList(
@@ -188,10 +212,22 @@ public class FurtherEvidenceUploadedEventTestData {
             createDummyEvidenceBundle(CONFIDENTIAL_2, uploadedBy, true, PDF_DOCUMENT_2));
     }
 
-    public static List<Element<SupportingEvidenceBundle>> buildNonConfidentialPdfDocumentList(final String uploadedBy) {
+    public static List<Element<SupportingEvidenceBundle>> buildConfidentialDocumentList(final String uploadedBy,
+                                                                                        FurtherEvidenceType type) {
         return wrapElements(
-            createDummyEvidenceBundle(NON_CONFIDENTIAL_1, uploadedBy, false, PDF_DOCUMENT_1),
-            createDummyEvidenceBundle(NON_CONFIDENTIAL_2, uploadedBy, false, PDF_DOCUMENT_2));
+            createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, true, PDF_DOCUMENT_1, type),
+            createDummyEvidenceBundle(CONFIDENTIAL_2, uploadedBy, true, PDF_DOCUMENT_2, type));
+    }
+
+    public static List<Element<SupportingEvidenceBundle>> buildNonConfidentialPdfDocumentList(final String uploadedBy) {
+        return buildNonConfidentialPdfDocumentList(uploadedBy, DEFAULT_FURTHER_EVIDENCE_TYPE);
+    }
+
+    public static List<Element<SupportingEvidenceBundle>>
+        buildNonConfidentialPdfDocumentList(final String uploadedBy, FurtherEvidenceType type) {
+        return wrapElements(
+            createDummyEvidenceBundle(NON_CONFIDENTIAL_1, uploadedBy, false, PDF_DOCUMENT_1, type),
+            createDummyEvidenceBundle(NON_CONFIDENTIAL_2, uploadedBy, false, PDF_DOCUMENT_2, type));
     }
 
 
@@ -203,13 +239,19 @@ public class FurtherEvidenceUploadedEventTestData {
 
     public static SupportingEvidenceBundle  createDummyEvidenceBundle(final String name, final String uploadedBy,
                                                                       boolean confidential, DocumentReference docRef) {
+        return createDummyEvidenceBundle(name, uploadedBy, confidential, docRef, DEFAULT_FURTHER_EVIDENCE_TYPE);
+    }
+
+    public static SupportingEvidenceBundle  createDummyEvidenceBundle(final String name, final String uploadedBy,
+                                                                      boolean confidential, DocumentReference docRef,
+                                                                      FurtherEvidenceType type) {
         SupportingEvidenceBundle.SupportingEvidenceBundleBuilder document
             = SupportingEvidenceBundle.builder()
             .name(name)
             .uploadedBy(uploadedBy)
             .dateTimeUploaded(LocalDateTime.now())
             .document(docRef)
-            .type(GUARDIAN_REPORTS);
+            .type(type);
 
         if (confidential) {
             document.confidential(List.of(CONFIDENTIAL_MARKER));
