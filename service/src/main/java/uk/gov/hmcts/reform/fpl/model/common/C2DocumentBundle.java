@@ -9,6 +9,7 @@ import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
+import uk.gov.hmcts.reform.fpl.enums.UrgencyTImeFrameType;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
@@ -32,6 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public class C2DocumentBundle implements ApplicationsBundle {
     private final UUID id;
     private C2ApplicationType type;
+    private final UrgencyTImeFrameType urgencyTimeFrameType;
     private final String nameOfRepresentative;
     private final String usePbaPayment;
     private final String pbaNumber;

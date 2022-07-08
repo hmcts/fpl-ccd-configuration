@@ -9,6 +9,7 @@ import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
+import uk.gov.hmcts.reform.fpl.enums.UrgencyTImeFrameType;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
@@ -32,6 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public class OtherApplicationsBundle implements ApplicationsBundle {
     private final UUID id;
     private final OtherApplicationType applicationType;
+    private final UrgencyTImeFrameType urgencyTImeFrameType;
     private final ParentalResponsibilityType parentalResponsibilityType;
     private final DocumentReference document;
     private final String uploadedDateTime;

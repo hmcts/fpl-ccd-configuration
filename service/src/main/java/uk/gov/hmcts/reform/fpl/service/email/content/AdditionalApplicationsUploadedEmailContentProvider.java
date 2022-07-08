@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
+import uk.gov.hmcts.reform.fpl.enums.UrgencyTImeFrameType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
@@ -16,13 +17,19 @@ import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded.AdditionalApplicationsUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.OTHER_APPLICATIONS;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildUnformattedCalloutWithNextHearing;
 
 @Component
@@ -40,7 +47,25 @@ public class AdditionalApplicationsUploadedEmailContentProvider extends Abstract
             .childLastName(lastName)
             .caseUrl(getCaseUrl(caseData.getId(), OTHER_APPLICATIONS))
             .applicationTypes(getApplicationTypes(caseData.getAdditionalApplicationsBundle().get(0).getValue()))
+            .urgencyDetails(getUrgencyDetails(caseData.getAdditionalApplicationsBundle().get(0).getValue()))
             .build();
+    }
+
+    private String getUrgencyDetails(AdditionalApplicationsBundle additionalApplicationsBundle) {
+        Function<UrgencyTImeFrameType, String> dateFunction = urgencyTImeFrameType ->
+                String.join(" ",
+                        "This application will need to be considered by the judge on",
+                        formatLocalDateToString(LocalDate.now().plusDays(urgencyTImeFrameType.getCount()), DATE));
+
+        Optional<String> other = Optional.ofNullable(additionalApplicationsBundle.getOtherApplicationsBundle())
+                .map(OtherApplicationsBundle::getUrgencyTImeFrameType)
+                .map(dateFunction);
+
+        Optional<String> c2 = Optional.ofNullable(additionalApplicationsBundle.getC2DocumentBundle())
+                .map(C2DocumentBundle::getUrgencyTimeFrameType)
+                .map(dateFunction);
+
+        return other.orElse(c2.orElse(""));
     }
 
     public BaseCaseNotifyData getPbaPaymentNotTakenNotifyData(final CaseData caseData) {

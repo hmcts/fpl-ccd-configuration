@@ -35,8 +35,8 @@
     "ID": "OtherDocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
-    "EventElementLabel": "Supplements",
-    "ListElementCode": "supplementsBundle",
+    "ListElementCode": "urgencyTimeFrame",
+    "EventElementLabel": "Please state how soon your want the judge to consider your application?",
     "FieldDisplayOrder": "4",
     "DisplayContext": "OPTIONAL"
   },
@@ -45,8 +45,18 @@
     "ID": "OtherDocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
-    "ListElementCode": "supplementsBundle.name",
+    "EventElementLabel": "Supplements",
+    "ListElementCode": "supplementsBundle",
     "FieldDisplayOrder": "5",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "ListElementCode": "supplementsBundle.name",
+    "FieldDisplayOrder": "6",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -56,7 +66,7 @@
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "ListElementCode": "supplementsBundle.secureAccommodationType",
     "EventElementLabel": "Which jurisdiction?",
-    "FieldDisplayOrder": "6",
+    "FieldDisplayOrder": "7",
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "temporaryOtherApplicationsBundle.supplementsBundle.name=\"C20_SECURE_ACCOMMODATION\""
   },
@@ -66,7 +76,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "ListElementCode": "supplementsBundle.notes",
-    "FieldDisplayOrder": "7",
+    "FieldDisplayOrder": "8",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -76,7 +86,7 @@
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "EventElementLabel": "Upload document",
     "ListElementCode": "supplementsBundle.document",
-    "FieldDisplayOrder": "8",
+    "FieldDisplayOrder": "9",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -86,7 +96,7 @@
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "EventElementLabel": "Supporting Documents",
     "ListElementCode": "supportingEvidenceBundle",
-    "FieldDisplayOrder": "9",
+    "FieldDisplayOrder": "10",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -96,7 +106,7 @@
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "EventElementLabel": "File name",
     "ListElementCode": "supportingEvidenceBundle.name",
-    "FieldDisplayOrder": "10",
+    "FieldDisplayOrder": "11",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -105,7 +115,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "ListElementCode": "supportingEvidenceBundle.notes",
-    "FieldDisplayOrder": "11",
+    "FieldDisplayOrder": "12",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -124,7 +134,7 @@
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "ListElementCode": "supportingEvidenceBundle.document",
     "EventElementLabel": "Upload document",
-    "FieldDisplayOrder": "12",
+    "FieldDisplayOrder": "13",
     "DisplayContext": "MANDATORY"
   }
 ]
