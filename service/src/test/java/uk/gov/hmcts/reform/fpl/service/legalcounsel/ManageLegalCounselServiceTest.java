@@ -53,7 +53,8 @@ class ManageLegalCounselServiceTest {
         TEST_LEGAL_COUNSELLOR.getId(), TEST_LEGAL_COUNSELLOR.getValue().toBuilder().userId(USER_ID).build()
     );
     private static final String UNREGISTERED_USER_ERROR_MESSAGE_TEMPLATE = "Unable to grant access "
-        + "[%s is not a Registered User] - Email address for Counsel/External solicitor is not registered on the system. "
+        + "[%s is not a Registered User] - "
+        + "Email address for Counsel/External solicitor is not registered on the system. "
         + "They can register at https://manage-org.platform.hmcts.net/register-org/register";
 
     private final CaseConverter caseConverter = getCaseConverterInstance();
