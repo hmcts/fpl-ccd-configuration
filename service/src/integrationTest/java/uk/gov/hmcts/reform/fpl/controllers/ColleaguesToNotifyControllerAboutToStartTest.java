@@ -1,0 +1,111 @@
+package uk.gov.hmcts.reform.fpl.controllers;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Colleague;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.UserService;
+
+import java.util.List;
+import java.util.Optional;
+
+import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+
+@WebMvcTest(ChildController.class)
+@OverrideAutoConfiguration(enabled = true)
+public class ColleaguesToNotifyControllerAboutToStartTest extends AbstractCallbackTest {
+
+    private final long CASE_ID = 1;
+
+    private final List<Element<Colleague>> COLLEAGUES = wrapElements(
+        Colleague.builder()
+            .email("solicitor@solicitors.uk")
+            .fullName("Solicitor Colleague")
+            .build());
+
+    private final RespondentSolicitor SOLICITOR_A = RespondentSolicitor.builder()
+        .firstName("Solicitor")
+        .lastName("One")
+        .build();
+
+    private final RespondentSolicitor SOLICITOR_WITH_COLLEAGUES = RespondentSolicitor.builder()
+        .firstName("Solicitor")
+        .lastName("Two")
+        .colleaguesToBeNotified(COLLEAGUES)
+        .build();
+
+
+    private final Respondent RESPONDENT_ONE = Respondent.builder()
+        .party(RespondentParty.builder().firstName("David").lastName("Jones").build())
+        .solicitor(SOLICITOR_A)
+        .build();
+
+    private final Respondent RESPONDENT_WITH_SOLICITOR_COLLEAGUES = Respondent.builder()
+        .party(RespondentParty.builder().firstName("Alex").lastName("Smith").build())
+        .solicitor(SOLICITOR_WITH_COLLEAGUES)
+        .build();
+
+    @MockBean
+    private UserService userService;
+
+    protected ColleaguesToNotifyControllerAboutToStartTest() {
+        super("add-colleagues-to-notify");
+    }
+
+    @Test
+    void shouldSetRespondentNameIfTheyAreRepresented() {
+        givenCaseRoles(CASE_ID, USER_ID, CaseRole.SOLICITORA);
+        given(userService.caseRoleToRepresented(any())).willReturn(Optional.of(RESPONDENT_ONE));
+
+        CaseData caseData = CaseData.builder()
+            .respondents1(wrapElements(RESPONDENT_ONE))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseData);
+
+        assertThat(callbackResponse.getData()).extracting("respondentName").isEqualTo("David Jones");
+    }
+
+    @Test
+    void shouldSetColleagesIfTheyHaveBeenAddedPreviously() {
+        givenCaseRoles(CASE_ID, USER_ID, CaseRole.SOLICITORA);
+        given(userService.caseRoleToRepresented(any())).willReturn(Optional.of(RESPONDENT_WITH_SOLICITOR_COLLEAGUES));
+
+        CaseData caseData = CaseData.builder()
+            .respondents1(wrapElements(RESPONDENT_WITH_SOLICITOR_COLLEAGUES))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseData);
+        CaseData after = extractCaseData(callbackResponse);
+
+        assertThat(after.getColleaguesToNotify()).isEqualTo(COLLEAGUES);
+    }
+
+    @Test
+    void shouldThrowErrorIfNotRepresentingAnyone() {
+        givenCaseRoles(CASE_ID, USER_ID, CaseRole.SOLICITORB);
+        given(userService.caseRoleToRepresented(any())).willReturn(Optional.empty());
+
+        CaseData caseData = CaseData.builder()
+            .respondents1(wrapElements(RESPONDENT_ONE))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseData);
+
+        assertThat(callbackResponse.getErrors()).contains("There is no one this user is representing on this case.");
+        assertThat(callbackResponse.getData()).extracting("respondentName").isNull();
+        assertThat(callbackResponse.getData()).extracting("colleaguesToNotify").isEqualTo(emptyList());
+    }
+}

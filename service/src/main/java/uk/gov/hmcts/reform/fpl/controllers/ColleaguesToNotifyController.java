@@ -31,8 +31,6 @@ public class ColleaguesToNotifyController extends CallbackController {
 
     private final UserService userService;
 
-
-
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         final CaseDetails caseDetails = callbackrequest.getCaseDetails();
