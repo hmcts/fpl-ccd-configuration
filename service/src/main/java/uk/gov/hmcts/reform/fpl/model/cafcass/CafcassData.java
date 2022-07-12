@@ -2,9 +2,6 @@ package uk.gov.hmcts.reform.fpl.model.cafcass;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public interface CafcassData {
     String SAME_DAY = "same day";
@@ -56,7 +53,7 @@ public interface CafcassData {
         throw new UnsupportedOperationException();
     }
 
-    default LocalDateTime getHearingDate() {
+    default String  getHearingDate() {
         throw new UnsupportedOperationException();
     }
 
@@ -73,10 +70,6 @@ public interface CafcassData {
     }
 
     default String getNotificationType()  {
-        throw new UnsupportedOperationException();
-    }
-
-    default LocalDate getOrderApprovalDate()   {
         throw new UnsupportedOperationException();
     }
 }
