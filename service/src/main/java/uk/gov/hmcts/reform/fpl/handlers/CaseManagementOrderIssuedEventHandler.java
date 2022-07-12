@@ -116,6 +116,7 @@ public class CaseManagementOrderIssuedEventHandler {
                     ORDER,
                     OrderCafcassData.builder()
                             .documentName(issuedCmo.getOrder().getFilename())
+                            .orderApprovalDate(issuedCmo.getDateIssued())
                             .build()
             );
         }

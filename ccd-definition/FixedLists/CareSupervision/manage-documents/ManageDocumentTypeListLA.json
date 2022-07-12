@@ -9,8 +9,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocumentTypeListLA",
-    "ListElementCode": "COURT_BUNDLE",
-    "ListElement": "Court bundle",
+    "ListElementCode": "HEARING_DOCUMENTS",
+    "ListElement": "Hearing Documents",
     "DisplayOrder": 2
   },
   {

@@ -39,9 +39,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.lang.System.lineSeparator;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toSet;
+import static java.util.Set.of;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
@@ -140,21 +138,17 @@ public class DraftOrdersApprovedEventHandler {
                 cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
 
         if (recipientIsEngland.isPresent()) {
-            List<HearingOrder> approvedOrders = event.getApprovedOrders();
-
-            String content = String.join("",
-                    lineSeparator(),
-                    approvedOrders.stream()
-                        .map(HearingOrder::getTitle)
-                        .collect(joining(lineSeparator())));
-
-            cafcassNotificationService.sendEmail(caseData,
-                    approvedOrders.stream().map(HearingOrder::getOrder).collect(toSet()),
-                    ORDER,
-                    OrderCafcassData.builder()
-                        .documentName(content)
-                        .build()
-            );
+            event.getApprovedOrders()
+                .forEach(hearingOrder ->
+                    cafcassNotificationService.sendEmail(caseData,
+                            of(hearingOrder.getOrder()),
+                            ORDER,
+                            OrderCafcassData.builder()
+                                    .documentName(hearingOrder.getTitle())
+                                    .orderApprovalDate(hearingOrder.getDateIssued())
+                                    .build()
+                        )
+                );
         }
     }
 
