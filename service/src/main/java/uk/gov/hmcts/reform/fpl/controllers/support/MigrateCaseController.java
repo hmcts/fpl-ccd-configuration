@@ -180,6 +180,7 @@ public class MigrateCaseController extends CallbackController {
 
         removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
     }
+
     private void run735(CaseDetails caseDetails) {
         var migrationId = "DFPL-735";
         var expectedCaseId = 1655286118759043L;
@@ -187,6 +188,7 @@ public class MigrateCaseController extends CallbackController {
 
         removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
     }
+
     private void run736(CaseDetails caseDetails) {
         var migrationId = "DFPL-736";
         var expectedCaseId = 1656319106830085L;
@@ -194,6 +196,7 @@ public class MigrateCaseController extends CallbackController {
 
         removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
     }
+
     private void run726(CaseDetails caseDetails) {
         var migrationId = "DFPL-726";
         var expectedCaseId = 1651829414420283L;
@@ -201,6 +204,7 @@ public class MigrateCaseController extends CallbackController {
 
         removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
     }
+
     private void run725(CaseDetails caseDetails) {
         var migrationId = "DFPL-725";
         var expectedCaseId = 1654773142311280L;
