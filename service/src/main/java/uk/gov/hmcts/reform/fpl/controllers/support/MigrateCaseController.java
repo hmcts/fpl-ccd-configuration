@@ -46,14 +46,12 @@ public class MigrateCaseController extends CallbackController {
     private final DocumentListService documentListService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-451", this::run451,
-        "DFPL-482", this::run482,
-        "DFPL-373", this::run373,
-        "DFPL-701", this::run701,
-        "DFPL-622", this::run622,
-        "DFPL-684", this::run684,
-        "DFPL-666", this::run666,
-        "DFPL-719", this::run719
+        "DFPL-733", this::run733,
+        "DFPL-734", this::run734,
+        "DFPL-735", this::run735,
+        "DFPL-736", this::run736,
+        "DFPL-726", this::run726,
+        "DFPL-725", this::run725
     );
 
     @PostMapping("/about-to-submit")
@@ -167,10 +165,46 @@ public class MigrateCaseController extends CallbackController {
      *  - migrationId
      * @param caseDetails - the caseDetails to update
      */
-    private void run719(CaseDetails caseDetails) {
-        var migrationId = "DFPL-719";
-        var expectedCaseId = 1646909193411659L;
-        var expectedDocId = UUID.fromString("d04517ec-d3f8-4e2a-abd9-febf83ba1610");
+    private void run733(CaseDetails caseDetails) {
+        var migrationId = "DFPL-733";
+        var expectedCaseId = 1655396292296801L;
+        var expectedDocId = UUID.fromString("854f3df6-765b-4ee9-a6b4-eedc702837e0");
+
+        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
+    }
+
+    private void run734(CaseDetails caseDetails) {
+        var migrationId = "DFPL-734";
+        var expectedCaseId = 1653312644320480L;
+        var expectedDocId = UUID.fromString("b86a46b9-84d3-4a05-a4eb-16daaad75a89");
+
+        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
+    }
+    private void run735(CaseDetails caseDetails) {
+        var migrationId = "DFPL-735";
+        var expectedCaseId = 1655286118759043L;
+        var expectedDocId = UUID.fromString("2765508d-8dc5-41ab-bdeb-1082597c3628");
+
+        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
+    }
+    private void run736(CaseDetails caseDetails) {
+        var migrationId = "DFPL-736";
+        var expectedCaseId = 1656319106830085L;
+        var expectedDocId = UUID.fromString("9ef09ed4-b208-4166-af6a-1c741bb676d1");
+
+        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
+    }
+    private void run726(CaseDetails caseDetails) {
+        var migrationId = "DFPL-726";
+        var expectedCaseId = 1651829414420283L;
+        var expectedDocId = UUID.fromString("df338226-8816-453a-acc5-baba31712a0c");
+
+        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
+    }
+    private void run725(CaseDetails caseDetails) {
+        var migrationId = "DFPL-725";
+        var expectedCaseId = 1654773142311280L;
+        var expectedDocId = UUID.fromString("79e7dbe4-71b7-40c3-81f4-a8954c5b8bed");
 
         removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
     }
