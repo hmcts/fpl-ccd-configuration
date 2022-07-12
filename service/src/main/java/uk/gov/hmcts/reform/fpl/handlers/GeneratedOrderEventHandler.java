@@ -119,7 +119,6 @@ public class GeneratedOrderEventHandler {
                     ORDER,
                     OrderCafcassData.builder()
                             .documentName(orderEvent.getOrderDocument().getFilename())
-                            .orderApprovalDate(orderEvent.getOrderApprovalDate())
                             .build()
             );
         }

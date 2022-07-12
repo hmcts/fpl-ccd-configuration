@@ -24,10 +24,8 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.DocumentInfo;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
-import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.FurtherDocument;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
@@ -44,7 +42,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiPredicate;
@@ -83,7 +80,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 public class FurtherEvidenceUploadedEventHandler {
     public static final String FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION = "Further documents for main application";
     public static final String CORRESPONDENCE = "Correspondence";
-    public static final String ADDITIONAL_APPLICATIONS = "additional applications";
     private final FurtherEvidenceNotificationService furtherEvidenceNotificationService;
     private final FurtherEvidenceUploadDifferenceCalculator furtherEvidenceDifferenceCalculator;
     private final TranslationRequestService translationRequestService;
@@ -311,9 +307,6 @@ public class FurtherEvidenceUploadedEventHandler {
             documentInfoConsumer.accept(getHearingFurtherEvidenceDocuments(caseData,
                     caseDataBefore));
 
-            documentInfoConsumer.accept(getOtherApplicationBundle(caseData,
-                    caseDataBefore));
-
             if (!documentReferences.isEmpty()) {
                 String documentTypes = documentInfos.stream()
                         .filter(documentInfo ->
@@ -340,41 +333,6 @@ public class FurtherEvidenceUploadedEventHandler {
                 );
             }
         }
-    }
-
-    private DocumentInfo getOtherApplicationBundle(CaseData caseData, CaseData caseDataBefore) {
-        Set<DocumentReference> oldDocumentReferences = unwrapElements(
-                    caseDataBefore.getAdditionalApplicationsBundle()
-                ).stream()
-                .map(AdditionalApplicationsBundle::getOtherApplicationsBundle)
-                .filter(Objects::nonNull)
-                .map(OtherApplicationsBundle::getAllDocumentReferences)
-                .filter(Objects::nonNull)
-                .flatMap(List::stream)
-                .map(Element::getValue)
-                .collect(toSet());
-
-        return unwrapElements(caseData.getAdditionalApplicationsBundle()).stream()
-                .map(AdditionalApplicationsBundle::getOtherApplicationsBundle)
-                .filter(Objects::nonNull)
-                .map(OtherApplicationsBundle::getAllDocumentReferences)
-                .filter(Objects::nonNull)
-                .flatMap(List::stream)
-                .map(Element::getValue)
-                .filter(not(oldDocumentReferences::contains))
-                .map(documentRef -> {
-                    documentRef.setType(ADDITIONAL_APPLICATIONS);
-                    return documentRef;
-                })
-                .collect(collectingAndThen(toSet(),
-                    data -> DocumentInfo.builder()
-                        .documentReferences(data)
-                        .documentTypes(data.stream()
-                                .map(DocumentReference::getType)
-                                .collect(toList()))
-                        .documentType(ADDITIONAL_APPLICATIONS)
-                        .build())
-                );
     }
 
     private DocumentInfo getHearingFurtherEvidenceDocuments(CaseData caseData, CaseData caseDataBefore) {
@@ -484,12 +442,10 @@ public class FurtherEvidenceUploadedEventHandler {
                         DocumentInfo.builder()
                             .documentReferences(data)
                             .documentTypes(data.stream()
-                                    .map(DocumentReference::getType)
-                                    .collect(toList()))
+                                .map(DocumentReference::getType)
+                                .collect(toList()))
                             .documentType(FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
-                            .build()
-                        )
-                );
+                            .build()));
     }
 
     private <T extends HearingDocument> List<HearingDocument> getNewHearingDocuments(List<Element<T>> documents,
@@ -735,10 +691,10 @@ public class FurtherEvidenceUploadedEventHandler {
                 })
                 .collect(collectingAndThen(toSet(),
                     data -> DocumentInfo.builder()
-                            .documentReferences(data)
-                            .documentTypes(List.of(documentType))
-                            .documentType(type)
-                            .build())
+                        .documentReferences(data)
+                        .documentTypes(List.of(documentType))
+                        .documentType(type)
+                    .build())
                 );
     }
 
