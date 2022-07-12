@@ -160,18 +160,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadCMO",
-    "CaseFieldID": "cmoSupportingDocs",
-    "PageID": "Upload",
-    "PageFieldDisplayOrder": 6,
-    "PageColumnNumber": 1,
-    "PageDisplayOrder": 3,
-    "DisplayContext": "COMPLEX",
-    "ShowSummaryChangeOption": "Y"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadCMO",
     "CaseFieldID": "hearingsForHearingOrderDrafts",
     "PageID": "SelectDraftOrderHearing",
     "PageFieldDisplayOrder": 1,
