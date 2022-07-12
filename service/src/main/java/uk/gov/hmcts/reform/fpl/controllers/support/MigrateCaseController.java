@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
-
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
