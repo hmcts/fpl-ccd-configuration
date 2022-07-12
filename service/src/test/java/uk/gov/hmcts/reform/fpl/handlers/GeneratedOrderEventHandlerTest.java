@@ -37,6 +37,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -83,7 +84,7 @@ class GeneratedOrderEventHandlerTest {
     private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENT = LanguageTranslationRequirement.NO;
     private static final String ORDER_TITLE = "orderTitle";
     private static final GeneratedOrderEvent EVENT = new GeneratedOrderEvent(CASE_DATA, TEST_DOCUMENT,
-        TRANSLATION_REQUIREMENT, ORDER_TITLE);
+        TRANSLATION_REQUIREMENT, ORDER_TITLE, LocalDate.now());
     private static final OrderIssuedNotifyData NOTIFY_DATA_WITH_CASE_URL = mock(OrderIssuedNotifyData.class);
     private static final OrderIssuedNotifyData NOTIFY_DATA_WITHOUT_CASE_URL = mock(OrderIssuedNotifyData.class);
     private static final List<Element<Other>> NO_RECIPIENTS = Collections.emptyList();
