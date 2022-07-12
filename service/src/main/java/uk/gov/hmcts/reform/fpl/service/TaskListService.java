@@ -103,9 +103,12 @@ public class TaskListService {
 
         // C110a's only
         if (!caseData.isC1Application()) {
-            events.add(ALLOCATION_PROPOSAL);
             events.add(INTERNATIONAL_ELEMENT);
             events.add(LANGUAGE_REQUIREMENTS);
+        }
+
+        if (!caseData.isC1Application() || caseData.isSecureAccommodationOrderType()) {
+            events.add(ALLOCATION_PROPOSAL);
         }
 
         return events;
