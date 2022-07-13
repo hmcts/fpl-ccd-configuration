@@ -353,6 +353,7 @@ public class FurtherEvidenceUploadedEventHandler {
                 .flatMap(List::stream)
                 .filter(not(oldSupportingEvidenceBundle::contains))
                 .map(Element::getValue)
+                .filter(bundle -> !NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(bundle.getType()))
                 .map(supportingEvidenceBundle -> {
                     DocumentReference document = supportingEvidenceBundle.getDocument();
                     document.setType(Optional.ofNullable(supportingEvidenceBundle.getType())
@@ -625,11 +626,11 @@ public class FurtherEvidenceUploadedEventHandler {
             if (!doc.isConfidentialDocument()) {
                 ret.get(CHILD_SOLICITOR).add(doc);
                 ret.get(RESPONDENT_SOLICITOR).add(doc);
-            }
-            if (!(doc.isUploadedByHMCTS() && doc.isConfidentialDocument())) {
                 if (!NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(doc.getType())) {
                     ret.get(CAFCASS).add(doc);
                 }
+            }
+            if (!(doc.isUploadedByHMCTS() && doc.isConfidentialDocument())) {
                 ret.get(ALL_LAS).add(doc);
             }
         });

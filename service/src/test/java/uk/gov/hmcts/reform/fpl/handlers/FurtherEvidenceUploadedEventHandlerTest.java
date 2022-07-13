@@ -707,6 +707,33 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 )
             );
 
+        CaseData caseData = buildCaseDataWithHearingFurtherEvidenceBundle(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE);
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            new FurtherEvidenceUploadedEvent(
+                caseData,
+                buildCaseDataWithConfidentialLADocuments(),
+                DESIGNATED_LOCAL_AUTHORITY,
+                userDetailsLA());
+
+        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+
+        verify(cafcassNotificationService, never()).sendEmail(
+            any(),
+            any(),
+            any(),
+            any());
+    }
+
+    @Test
+    void shouldNotEmailCafcassWhenNoticeOfActingOrIssueDocsRelatingToHearingIsUploadedByLA() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+            .thenReturn(
+                Optional.of(
+                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                )
+            );
+
         CaseData caseData = buildCaseDataWithNonConfidentialLADocuments(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE);
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
@@ -911,33 +938,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
                         + "• Child's guardian reports");
         assertThat(newDocumentData.getEmailSubjectInfo())
                 .isEqualTo("Further documents for main application");
-    }
-
-    @Test
-    void shouldNotEmailCafcassWhenNoticeOfActingOrIssueIsUploaded() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-            .thenReturn(
-                Optional.of(
-                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                )
-            );
-
-        CaseData caseData = buildCaseDataWithHearingFurtherEvidenceBundle(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE);
-
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
-                caseData,
-                buildCaseDataWithConfidentialLADocuments(),
-                DESIGNATED_LOCAL_AUTHORITY,
-                userDetailsLA());
-
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
-
-        verify(cafcassNotificationService, never()).sendEmail(
-            any(),
-            any(),
-            any(),
-            any());
     }
 
     @Test
