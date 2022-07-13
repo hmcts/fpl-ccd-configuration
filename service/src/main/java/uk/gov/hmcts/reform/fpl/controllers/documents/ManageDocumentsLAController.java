@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
 import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
@@ -50,20 +49,25 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.RESPONDENT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_HEARING_LABEL_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_HEARING_LIST_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.DOCUMENT_SUB_TYPE;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.MANAGE_DOCUMENT_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RELATED_TO_HEARING;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RESPONDENTS_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_SUPPORTING_DOCUMENTS_COLLECTION;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CASE_SUMMARY_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CHILDREN_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.COURT_BUNDLE_HEARING_LABEL_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.COURT_BUNDLE_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_DOCUMENT_HEARING_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_DOCUMENT_RESPONDENT_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_FURTHER_EVIDENCE_DOCUMENTS_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_CHILD_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_RESPONDENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.PLACEMENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.PLACEMENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LABEL;
@@ -121,14 +125,11 @@ public class ManageDocumentsLAController extends CallbackController {
                 caseDetails.getData().putAll(manageDocumentService.initialiseApplicationBundlesListAndLabel(caseData));
                 supportingEvidence = manageDocumentService.getApplicationsSupportingEvidenceBundles(caseData);
                 break;
-            case COURT_BUNDLE:
+            case HEARING_DOCUMENTS:
                 if (caseData.getHearingDetails() == null || caseData.getHearingDetails().isEmpty()) {
-                    return respond(caseDetails, List.of("There are no hearings to associate a bundle with"));
+                    return respond(caseDetails, List.of("There are no hearings to associate a hearing document with"));
                 }
-                caseDetails.getData().putAll(
-                    manageDocumentLAService.initialiseCourtBundleHearingListAndLabel(caseData)
-                );
-                caseDetails.getData().putAll(manageDocumentLAService.initialiseCourtBundleFields(caseData));
+                caseDetails.getData().putAll(manageDocumentService.initialiseHearingDocumentFields(caseData));
                 break;
             case PLACEMENT_NOTICE_RESPONSE:
                 Map<String, Object> fields = manageDocumentService.initialisePlacementHearingResponseFields(
@@ -255,12 +256,8 @@ public class ManageDocumentsLAController extends CallbackController {
                 caseDetailsMap.putIfNotEmpty(
                     manageDocumentService.buildFinalApplicationBundleSupportingDocuments(caseData, NOT_SOLICITOR));
                 break;
-            case COURT_BUNDLE:
-                List<Element<HearingCourtBundle>> courtBundles = manageDocumentLAService.buildCourtBundleList(caseData);
-                caseDetailsMap.putIfNotEmpty(COURT_BUNDLE_LIST_KEY, courtBundles);
-                caseDetailsMap.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
-                    manageDocumentService.getDocumentsWithConfidentialAddressFromCourtBundles(caseData,
-                        caseData.getCourtBundleListV2(), courtBundles));
+            case HEARING_DOCUMENTS:
+                caseDetailsMap.putIfNotEmpty(manageDocumentService.buildHearingDocumentList(caseData));
                 break;
             case PLACEMENT_NOTICE_RESPONSE:
                 PlacementEventData eventData = manageDocumentService.updatePlacementNoticesLA(caseData);
@@ -270,9 +267,11 @@ public class ManageDocumentsLAController extends CallbackController {
 
         removeTemporaryFields(caseDetailsMap, TEMP_EVIDENCE_DOCUMENTS_KEY, MANAGE_DOCUMENT_LA_KEY,
             C2_SUPPORTING_DOCUMENTS_COLLECTION, SUPPORTING_C2_LABEL, MANAGE_DOCUMENTS_HEARING_LIST_KEY,
-            SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY, COURT_BUNDLE_HEARING_LIST_KEY,
-            COURT_BUNDLE_HEARING_LABEL_KEY, COURT_BUNDLE_KEY, DOCUMENT_SUB_TYPE, RELATED_TO_HEARING,
-            RESPONDENTS_LIST_KEY, PLACEMENT_LIST_KEY, "placementNoticeResponses", "placement");
+            SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY, HEARING_DOCUMENT_HEARING_LIST_KEY,
+            HEARING_DOCUMENT_TYPE, COURT_BUNDLE_HEARING_LABEL_KEY, COURT_BUNDLE_KEY, CASE_SUMMARY_KEY,
+            POSITION_STATEMENT_CHILD_KEY, POSITION_STATEMENT_RESPONDENT_KEY, DOCUMENT_SUB_TYPE, RELATED_TO_HEARING,
+            RESPONDENTS_LIST_KEY, CHILDREN_LIST_KEY, HEARING_DOCUMENT_RESPONDENT_LIST_KEY, PLACEMENT_LIST_KEY,
+            "placementNoticeResponses", "placement");
 
         CaseDetails details = CaseDetails.builder().data(caseDetailsMap).build();
         caseDetailsMap.putAll(documentListService.getDocumentView(getCaseData(details)));

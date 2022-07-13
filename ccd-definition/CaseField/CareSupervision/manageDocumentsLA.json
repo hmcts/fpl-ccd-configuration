@@ -11,15 +11,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "manageDocumentsCourtBundleNoHearingsLabel",
-    "FieldType": "Label",
-    "Label": "There are no hearings to associate a bundle with",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsNoC2sLabel",
     "FieldType": "Label",
     "Label": "There are no additional applications to add documents to",

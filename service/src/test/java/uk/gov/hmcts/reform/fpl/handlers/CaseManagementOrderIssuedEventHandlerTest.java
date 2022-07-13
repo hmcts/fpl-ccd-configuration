@@ -134,7 +134,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
         given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
         given(cafcassLookupConfiguration.getCafcassWelsh(LOCAL_AUTHORITY_CODE))
             .willReturn(Optional.of(new Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)));
-        given(cmoContentProvider.buildCMOIssuedNotificationParameters(CASE_DATA, CMO, EMAIL))
+        given(cmoContentProvider.buildCMOIssuedNotificationParameters(CASE_DATA, CMO, DIGITAL_SERVICE))
             .willReturn(EMAIL_REP_CMO_TEMPLATE_DATA);
 
         underTest.notifyCafcass(EVENT);

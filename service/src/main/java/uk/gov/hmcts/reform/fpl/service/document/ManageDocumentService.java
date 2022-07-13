@@ -8,13 +8,18 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.exceptions.RespondentNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseSummary;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.DocumentWithConfidentialAddress;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
@@ -25,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -84,6 +90,19 @@ public class ManageDocumentService {
     public static final String MANAGE_DOCUMENT_KEY = "manageDocument";
     public static final String ADDITIONAL_APPLICATIONS_BUNDLE_KEY = "additionalApplicationsBundle";
     public static final String RESPONDENTS_LIST_KEY = "respondentStatementList";
+    public static final String CHILDREN_LIST_KEY = "manageDocumentsChildrenList";
+    public static final String HEARING_DOCUMENT_RESPONDENT_LIST_KEY = "hearingDocumentsRespondentList";
+    public static final String HEARING_DOCUMENT_HEARING_LIST_KEY = "hearingDocumentsHearingList";
+    public static final String HEARING_DOCUMENT_TYPE = "manageDocumentsHearingDocumentType";
+    public static final String COURT_BUNDLE_HEARING_LABEL_KEY = "manageDocumentsCourtBundleHearingLabel";
+    public static final String COURT_BUNDLE_KEY = "manageDocumentsCourtBundle";
+    public static final String CASE_SUMMARY_KEY = "manageDocumentsCaseSummary";
+    public static final String POSITION_STATEMENT_CHILD_KEY = "manageDocumentsPositionStatementChild";
+    public static final String POSITION_STATEMENT_RESPONDENT_KEY = "manageDocumentsPositionStatementRespondent";
+    public static final String COURT_BUNDLE_LIST_KEY = "courtBundleListV2";
+    public static final String CASE_SUMMARY_LIST_KEY = "caseSummaryList";
+    public static final String POSITION_STATEMENT_CHILD_LIST_KEY = "positionStatementChildList";
+    public static final String POSITION_STATEMENT_RESPONDENT_LIST_KEY = "positionStatementRespondentList";
     public static final String DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY = "documentsWithConfidentialAddress";
     public static final String PLACEMENT_LIST_KEY = "manageDocumentsPlacementList";
 
@@ -114,6 +133,7 @@ public class ManageDocumentService {
 
         if (hasHearings == YES) {
             eventData.put(MANAGE_DOCUMENTS_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
+            eventData.put(HEARING_DOCUMENT_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
         }
 
         if (hasC2s == YES) {
@@ -122,6 +142,11 @@ public class ManageDocumentService {
 
         if (hasRespondents == YES) {
             eventData.put(RESPONDENTS_LIST_KEY, caseData.buildRespondentDynamicList());
+            eventData.put(HEARING_DOCUMENT_RESPONDENT_LIST_KEY, caseData.buildRespondentDynamicList());
+        }
+
+        if (isNotEmpty(caseData.getAllChildren())) {
+            eventData.put(CHILDREN_LIST_KEY, caseData.buildDynamicChildrenList());
         }
 
         if (hasPlacementNotices == YES) {
@@ -328,6 +353,177 @@ public class ManageDocumentService {
                 .collect(Collectors.toList()));
     }
 
+    public Map<String, Object> initialiseHearingDocumentFields(CaseData caseData) {
+        Map<String, Object> map = new HashMap<>();
+        map.put(HEARING_DOCUMENT_HEARING_LIST_KEY, initialiseHearingDocumentsHearingList((caseData)));
+
+        UUID selectedHearingId = getDynamicListSelectedValue(caseData.getHearingDocumentsHearingList(), mapper);
+        switch (caseData.getManageDocumentsHearingDocumentType()) {
+            case COURT_BUNDLE :
+                map.put(COURT_BUNDLE_KEY, getCourtBundleForHearing(caseData, selectedHearingId));
+                map.put(COURT_BUNDLE_HEARING_LABEL_KEY, getHearingBooking(caseData, selectedHearingId).toLabel());
+                break;
+            case CASE_SUMMARY :
+                map.put(CASE_SUMMARY_KEY, getCaseSummaryForHearing(caseData, selectedHearingId));
+                break;
+            case POSITION_STATEMENT_CHILD :
+                map.put(POSITION_STATEMENT_CHILD_KEY, getPositionStatementChildForHearing(caseData, selectedHearingId));
+                break;
+            case POSITION_STATEMENT_RESPONDENT :
+                map.put(POSITION_STATEMENT_RESPONDENT_KEY,
+                    getPositionStatementRespondentForHearing(caseData, selectedHearingId));
+        }
+        return map;
+    }
+
+    public Map<String, Object> buildHearingDocumentList(CaseData caseData) {
+        Map<String, Object> map = new HashMap<>();
+        UUID selectedHearingId = getDynamicListSelectedValue(caseData.getHearingDocumentsHearingList(), mapper);
+
+        switch (caseData.getManageDocumentsHearingDocumentType()) {
+            case COURT_BUNDLE :
+                List<Element<HearingCourtBundle>> courtBundles = buildCourtBundleList(caseData, selectedHearingId);
+                map.put(COURT_BUNDLE_LIST_KEY, courtBundles);
+                map.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
+                    getDocumentsWithConfidentialAddressFromCourtBundles(caseData,
+                        caseData.getHearingDocuments().getCourtBundleListV2(), courtBundles));
+                break;
+            case CASE_SUMMARY :
+                List<Element<CaseSummary>> caseSummaries = buildHearingDocumentList(caseData, selectedHearingId,
+                    caseData.getHearingDocuments().getCaseSummaryList(), caseData.getManageDocumentsCaseSummary());
+                map.put(CASE_SUMMARY_LIST_KEY, caseSummaries);
+                map.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
+                    getDocumentsWithConfidentialAddressFromHearingDocuments(caseData,
+                        caseData.getHearingDocuments().getCaseSummaryList(), caseSummaries));
+                break;
+            case POSITION_STATEMENT_CHILD :
+                List<Element<PositionStatementChild>> positionStatementChildList =
+                    buildHearingDocumentList(caseData, selectedHearingId,
+                        caseData.getHearingDocuments().getPositionStatementChildList(),
+                        caseData.getManageDocumentsPositionStatementChild().toBuilder()
+                            .childId(caseData.getManageDocumentsChildrenList().getValueCodeAsUUID())
+                            .childName(caseData.getManageDocumentsChildrenList().getValueLabel())
+                            .build());
+                map.put(POSITION_STATEMENT_CHILD_LIST_KEY, positionStatementChildList);
+                map.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
+                    getDocumentsWithConfidentialAddressFromHearingDocuments(caseData,
+                        caseData.getHearingDocuments().getPositionStatementChildList(), positionStatementChildList));
+                break;
+            case POSITION_STATEMENT_RESPONDENT :
+                List<Element<PositionStatementRespondent>> positionStatementRespondentList =
+                    buildHearingDocumentList(caseData, selectedHearingId,
+                        caseData.getHearingDocuments().getPositionStatementRespondentList(),
+                        caseData.getManageDocumentsPositionStatementRespondent().toBuilder()
+                            .respondentId(caseData.getHearingDocumentsRespondentList().getValueCodeAsUUID())
+                            .respondentName(caseData.getHearingDocumentsRespondentList().getValueLabel())
+                            .build());
+                map.put(POSITION_STATEMENT_RESPONDENT_LIST_KEY, positionStatementRespondentList);
+                map.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
+                    getDocumentsWithConfidentialAddressFromHearingDocuments(caseData,
+                        caseData.getHearingDocuments().getPositionStatementRespondentList(),
+                        positionStatementRespondentList));
+        }
+
+        return map;
+    }
+
+    private <T> List<Element<T>> buildHearingDocumentList(CaseData caseData, UUID selectedHearingId,
+                                                          List<Element<T>> hearingDocumentList, T hearingDocument) {
+        if (isNotEmpty(caseData.getHearingDetails())) {
+            return List.of(element(selectedHearingId, hearingDocument));
+        }
+
+        return hearingDocumentList;
+    }
+
+    private List<Element<HearingCourtBundle>> buildCourtBundleList(CaseData caseData, UUID selectedHearingId) {
+        HearingBooking hearingBooking = getHearingBooking(caseData, selectedHearingId);
+        List<Element<CourtBundle>> courtBundleNC = caseData.getManageDocumentsCourtBundle().stream()
+            .filter(doc -> !doc.getValue().isConfidentialDocument())
+            .collect(Collectors.toList());
+
+        return buildHearingDocumentList(caseData, selectedHearingId,
+            caseData.getHearingDocuments().getCourtBundleListV2(),
+            HearingCourtBundle.builder()
+                .hearing(hearingBooking.toLabel())
+                .courtBundle(caseData.getManageDocumentsCourtBundle())
+                .courtBundleNC(courtBundleNC)
+                .build()
+            );
+    }
+
+    private DynamicList initialiseHearingDocumentsHearingList(CaseData caseData) {
+        UUID selectedHearingId = getDynamicListSelectedValue(caseData.getHearingDocumentsHearingList(), mapper);
+        Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(
+            selectedHearingId);
+
+        if (hearingBooking.isEmpty()) {
+            throw new NoHearingBookingException(selectedHearingId);
+        }
+        return caseData.buildDynamicHearingList(selectedHearingId);
+    }
+
+    private <T> T getHearingDocumentForSelectedHearing(List<Element<T>> documents,
+                                                       UUID selectedHearingId) {
+        Optional<Element<T>> hearingDocument = findElement(selectedHearingId, documents);
+        return hearingDocument.map(Element::getValue).orElse(null);
+    }
+
+    private HearingBooking getHearingBooking(CaseData caseData, UUID selectedHearingId) {
+        Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(selectedHearingId);
+
+        if (hearingBooking.isEmpty()) {
+            throw new NoHearingBookingException(selectedHearingId);
+        }
+
+        return hearingBooking.get().getValue();
+    }
+
+    private List<Element<CourtBundle>> getCourtBundleForHearing(CaseData caseData, UUID selectedHearingId) {
+        HearingCourtBundle hearingCourtBundle = getHearingDocumentForSelectedHearing(
+            caseData.getHearingDocuments().getCourtBundleListV2(),
+            selectedHearingId);
+        if (hearingCourtBundle == null) {
+            return List.of(element(CourtBundle.builder().build()));
+        } else {
+            return hearingCourtBundle.getCourtBundle();
+        }
+    }
+
+    private CaseSummary getCaseSummaryForHearing(CaseData caseData, UUID selectedHearingId) {
+        CaseSummary caseSummary = getHearingDocumentForSelectedHearing(
+            caseData.getHearingDocuments().getCaseSummaryList(),
+            selectedHearingId);
+        if (caseSummary == null) {
+            caseSummary = CaseSummary.builder()
+                .hearing(getHearingBooking(caseData, selectedHearingId).toLabel()).build();
+        }
+        return caseSummary;
+    }
+
+    private PositionStatementChild getPositionStatementChildForHearing(CaseData caseData, UUID selectedHearingId) {
+        PositionStatementChild positionStatementChild = getHearingDocumentForSelectedHearing(
+            caseData.getHearingDocuments().getPositionStatementChildList(),
+            selectedHearingId);
+        if (positionStatementChild == null) {
+            positionStatementChild = PositionStatementChild.builder()
+                .hearing(getHearingBooking(caseData, selectedHearingId).toLabel()).build();
+        }
+        return positionStatementChild;
+    }
+
+    private PositionStatementRespondent getPositionStatementRespondentForHearing(CaseData caseData,
+                                                                                 UUID selectedHearingId) {
+        PositionStatementRespondent positionStatementRespondent = getHearingDocumentForSelectedHearing(
+            caseData.getHearingDocuments().getPositionStatementRespondentList(),
+            selectedHearingId);
+        if (positionStatementRespondent == null) {
+            positionStatementRespondent = PositionStatementRespondent.builder()
+                .hearing(getHearingBooking(caseData, selectedHearingId).toLabel()).build();
+        }
+        return positionStatementRespondent;
+    }
+
     private List<Element<AdditionalApplicationsBundle>> updateAdditionalDocumentsBundle(
         CaseData caseData, UUID selectedBundleId, boolean setSolicitorUploaded) {
 
@@ -476,6 +672,15 @@ public class ManageDocumentService {
              buildDocumentWithConfidentialAddressFromCourtBundles(updatedDocuments, true));
     }
 
+    public <T extends HearingDocument> List<Element<DocumentWithConfidentialAddress>>
+        getDocumentsWithConfidentialAddressFromHearingDocuments(
+            CaseData caseData, List<Element<T>> existingDocuments,
+            List<Element<T>> updatedDocuments) {
+        return updateDocumentWithConfidentialAddress(caseData,
+            buildDocumentWithConfidentialAddressFromHearingDocuments(existingDocuments, false),
+            buildDocumentWithConfidentialAddressFromHearingDocuments(updatedDocuments, true));
+    }
+
     private List<Element<DocumentWithConfidentialAddress>> buildDocumentWithConfidentialAddress(
             List<Element<SupportingEvidenceBundle>> supportingEvidenceBundles, boolean filterConfidentialAddress) {
         return Optional.ofNullable(supportingEvidenceBundles).orElse(new ArrayList<>()).stream()
@@ -504,6 +709,31 @@ public class ManageDocumentService {
                             .build()))
                     .collect(Collectors.toList()))
             .flatMap(List::stream).collect(Collectors.toList());
+    }
+
+    private <T extends HearingDocument> List<Element<DocumentWithConfidentialAddress>>
+        buildDocumentWithConfidentialAddressFromHearingDocuments(
+            List<Element<T>> hearingDocuments, boolean filterConfidentialAddress) {
+        return Optional.ofNullable(hearingDocuments).orElse(new ArrayList<>()).stream()
+            .filter(doc -> !filterConfidentialAddress
+                           || YesNo.YES.getValue().equalsIgnoreCase(doc.getValue().getHasConfidentialAddress()))
+            .map(hearingDocument -> element(hearingDocument.getId(),
+                DocumentWithConfidentialAddress.builder()
+                    .name(getHearingDocumentName(hearingDocument.getValue()))
+                    .document(hearingDocument.getValue().getDocument()).build()))
+            .collect(Collectors.toList());
+    }
+
+    private String getHearingDocumentName(HearingDocument doc) {
+        String prefix = "Hearing document";
+        if (doc instanceof CaseSummary) {
+            prefix = "Case Summary";
+        } else if (doc instanceof PositionStatementRespondent) {
+            prefix = "Position statement (respondent)";
+        } else if (doc instanceof PositionStatementChild) {
+            prefix = "Position statement (child)";
+        }
+        return prefix + " of " + doc.getHearing();
     }
 
     private List<Element<DocumentWithConfidentialAddress>> updateDocumentWithConfidentialAddress(CaseData caseData,

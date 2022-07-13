@@ -55,11 +55,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
 
     @Test
     void shouldAddCMOToListWithDraftStatusAndNotMigrateDocs() {
-        List<Element<SupportingEvidenceBundle>> bundles = List.of(element(
-            SupportingEvidenceBundle.builder()
-                .name("case summary")
-                .build()
-        ));
 
         List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(now().plusDays(3));
 
@@ -68,7 +63,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
             .futureHearingsForCMO(dynamicList(hearings))
             .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
             .cmoUploadType(CMOType.DRAFT)
-            .cmoSupportingDocs(bundles)
             .build();
 
         CaseData caseData = CaseData.builder()
@@ -78,7 +72,7 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
-        HearingOrder cmo = orderWithDocs(hearings.get(0).getValue(), HearingOrderType.DRAFT_CMO, DRAFT, bundles);
+        HearingOrder cmo = orderWithDocs(hearings.get(0).getValue(), HearingOrderType.DRAFT_CMO, DRAFT, null);
 
         List<Element<HearingOrder>> unsealedCMOs = responseData.getDraftUploadedCMOs();
 
@@ -103,17 +97,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
             .build());
 
         UUID bundleId = UUID.randomUUID();
-        List<Element<SupportingEvidenceBundle>> cmoBundles = List.of(element(bundleId,
-            SupportingEvidenceBundle.builder()
-                .name("case summary")
-                .build()));
-
-        List<Element<SupportingEvidenceBundle>> hearingDocsBundles = List.of(element(bundleId,
-            SupportingEvidenceBundle.builder()
-                .name("case summary")
-                .uploadedBy("Test LA")
-                .dateTimeUploaded(now())
-                .build()));
 
         List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(now().minusDays(3));
 
@@ -122,7 +105,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
             .pastHearingsForCMO(dynamicList(hearings))
             .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
             .cmoUploadType(CMOType.AGREED)
-            .cmoSupportingDocs(cmoBundles)
             .build();
 
         CaseData caseData = CaseData.builder()
@@ -132,7 +114,7 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
-        HearingOrder cmo = orderWithDocs(hearings.get(0).getValue(), AGREED_CMO, SEND_TO_JUDGE, cmoBundles);
+        HearingOrder cmo = orderWithDocs(hearings.get(0).getValue(), AGREED_CMO, SEND_TO_JUDGE, null);
 
         List<Element<HearingOrder>> unsealedCMOs = responseData.getDraftUploadedCMOs();
 
@@ -145,17 +127,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
         hearings.get(0).getValue().setCaseManagementOrderId(unsealedCMOs.get(0).getId());
 
         assertThat(responseData.getHearingDetails()).isEqualTo(hearings);
-
-        List<Element<HearingFurtherEvidenceBundle>> furtherEvidenceBundle = List.of(
-            element(hearings.get(0).getId(), HearingFurtherEvidenceBundle.builder()
-                .hearingName(hearings.get(0).getValue().toLabel())
-                .supportingEvidenceBundle(hearingDocsBundles)
-                .build())
-        );
-
-        assertThat(responseData.getHearingFurtherEvidenceDocuments())
-            .hasSize(1)
-            .isEqualTo(furtherEvidenceBundle);
     }
 
     @Test
@@ -165,12 +136,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
         Element<SupportingEvidenceBundle> existingSupportingDoc = element(
             SupportingEvidenceBundle.builder()
                 .name("case summary doc1")
-                .build()
-        );
-
-        Element<SupportingEvidenceBundle> newSupportingDoc = element(
-            SupportingEvidenceBundle.builder()
-                .name("case summary doc2")
                 .build()
         );
 
@@ -186,7 +151,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
                 Pair.of(hearings.get(0).getValue().toLabel(), hearings.get(0).getId())))
             .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
             .cmoUploadType(CMOType.DRAFT)
-            .cmoSupportingDocs(List.of(newSupportingDoc))
             .build();
 
         CaseData caseData = CaseData.builder()
@@ -203,7 +167,7 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
 
         HearingOrder cmo = orderWithDocs(
             hearings.get(0).getValue(), HearingOrderType.DRAFT_CMO, DRAFT,
-            List.of(newSupportingDoc));
+            null);
 
         List<Element<HearingOrder>> unsealedCMOs = responseData.getDraftUploadedCMOs();
 
@@ -235,7 +199,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
                 .showReplacementCMO(YesNo.NO)
                 .replacementCMO(DOCUMENT_REFERENCE)
                 .previousCMO(DOCUMENT_REFERENCE)
-                .cmoSupportingDocs(List.of())
                 .cmoToSend(DOCUMENT_REFERENCE)
                 .showCMOsSentToJudge(YesNo.NO)
                 .cmosSentToJudge("DUMMY DATA")
@@ -306,7 +269,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
                 .showReplacementCMO(YesNo.NO)
                 .replacementCMO(DOCUMENT_REFERENCE)
                 .previousCMO(DOCUMENT_REFERENCE)
-                .cmoSupportingDocs(List.of())
                 .cmoToSend(DOCUMENT_REFERENCE)
                 .showCMOsSentToJudge(YesNo.NO)
                 .cmosSentToJudge("DUMMY DATA")
