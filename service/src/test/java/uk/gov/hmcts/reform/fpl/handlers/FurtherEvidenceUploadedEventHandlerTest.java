@@ -326,7 +326,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
             userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
             (caseData) ->  caseData.getHearingFurtherEvidenceDocuments().addAll(
                 buildHearingFurtherEvidenceBundle(buildConfidentialDocumentList(LA_USER))),
-            Set.of(ALL_LAS, CAFCASS),
+            Set.of(ALL_LAS),
             CONFIDENTIAL);
     }
 
