@@ -247,7 +247,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
             userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
             (caseData) ->  caseData.getRespondentStatements().addAll(
                 buildRespondentStatementsList(buildConfidentialDocumentList(LA_USER))),
-            Set.of(ALL_LAS, CAFCASS),
+            Set.of(ALL_LAS),
             CONFIDENTIAL);
     }
 
@@ -279,7 +279,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         verifyNotificationFurtherDocumentsTemplate(
             userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
             (caseData) ->  caseData.getFurtherEvidenceDocumentsLA().addAll(buildConfidentialDocumentList(LA_USER)),
-            Set.of(ALL_LAS, CAFCASS),
+            Set.of(ALL_LAS),
             CONFIDENTIAL);
     }
 
@@ -914,7 +914,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     @Test
-    void shouldNotEmailCafcassWhenHearingFurtherEvidenceBundleIsUploaded() {
+    void shouldNotEmailCafcassWhenNoticeOfActingOrIssueIsUploaded() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
             .thenReturn(
                 Optional.of(
@@ -933,7 +933,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
 
-        verify(cafcassNotificationService).sendEmail(
+        verify(cafcassNotificationService, never()).sendEmail(
             any(),
             any(),
             any(),

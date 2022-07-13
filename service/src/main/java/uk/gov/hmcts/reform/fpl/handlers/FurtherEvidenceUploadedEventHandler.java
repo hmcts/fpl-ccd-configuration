@@ -562,11 +562,11 @@ public class FurtherEvidenceUploadedEventHandler {
                 getEvidenceBundleFromRespondentStatements(beforeCaseData));
         unwrapElements(respondentStatements).forEach(respondentStatement -> {
             if (!respondentStatement.isConfidentialDocument()) {
+                ret.get(CAFCASS).add(respondentStatement);
                 ret.get(CHILD_SOLICITOR).add(respondentStatement);
                 ret.get(RESPONDENT_SOLICITOR).add(respondentStatement);
             }
             if (!(respondentStatement.isUploadedByHMCTS() && respondentStatement.isConfidentialDocument())) {
-                ret.get(CAFCASS).add(respondentStatement);
                 ret.get(ALL_LAS).add(respondentStatement);
             }
         });
@@ -581,9 +581,9 @@ public class FurtherEvidenceUploadedEventHandler {
             if (!doc.isConfidentialDocument()) {
                 ret.get(CHILD_SOLICITOR).add(doc);
                 ret.get(RESPONDENT_SOLICITOR).add(doc);
-            }
-            if (!NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(doc.getType())) {
-                ret.get(CAFCASS).add(doc);
+                if (!NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(doc.getType())) {
+                    ret.get(CAFCASS).add(doc);
+                }
             }
             ret.get(ALL_LAS).add(doc);
         });
