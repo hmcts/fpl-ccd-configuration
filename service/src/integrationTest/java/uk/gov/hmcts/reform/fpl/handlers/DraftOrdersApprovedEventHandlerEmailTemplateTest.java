@@ -38,12 +38,11 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
@@ -143,26 +142,21 @@ class DraftOrdersApprovedEventHandlerEmailTemplateTest extends EmailTemplateTest
 
         underTest.sendNotificationToCafcassViaSendGrid(draftOrdersApproved);
 
-        verify(cafcassNotificationService, times(2)).sendEmail(
+        verify(cafcassNotificationService).sendEmail(
                 isA(CaseData.class),
                 documArgumentCaptor.capture(),
                 same(ORDER),
                 orderCafcassDataArgumentCaptor.capture()
         );
 
-        Set<DocumentReference> documentReferences = documArgumentCaptor.getAllValues().stream()
-                .flatMap(Set::stream)
-                .collect(toSet());
-
-        assertThat(documentReferences)
+        assertThat(documArgumentCaptor.getValue())
                 .containsExactlyElementsOf(
                         draftOrdersApproved.getApprovedOrders().stream()
                                 .map(HearingOrder::getOrder)
-                                .collect(toSet()));
-
-        assertThat(orderCafcassDataArgumentCaptor.getAllValues())
-                .extracting("documentName")
-                .contains("Agreed CMO discussed at hearing", "Test order");
+                                .collect(Collectors.toSet()));
+        assertThat(orderCafcassDataArgumentCaptor.getValue()
+                        .getDocumentName())
+                .isEqualTo("\nAgreed CMO discussed at hearing\nTest order");
     }
 
     @Test
