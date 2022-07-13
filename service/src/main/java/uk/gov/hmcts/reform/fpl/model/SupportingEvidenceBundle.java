@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
@@ -43,10 +44,17 @@ public class SupportingEvidenceBundle implements TranslatableItem, FurtherDocume
     private final DocumentReference translatedDocument;
     private final LocalDateTime translationUploadDateTime;
     private final LanguageTranslationRequirement translationRequirements;
+    private String hasConfidentialAddress;
+
+    public String getHasConfidentialAddress() {
+        return ((!isBlank(name) || document != null) && (!YesNo.isYesOrNo(hasConfidentialAddress)))
+            ? YesNo.NO.getValue() : hasConfidentialAddress;
+    }
 
     @JsonIgnore
     public boolean isConfidentialDocument() {
-        return confidential != null && confidential.contains("CONFIDENTIAL");
+        return (confidential != null && confidential.contains("CONFIDENTIAL"))
+               || YesNo.YES.getValue().equalsIgnoreCase(getHasConfidentialAddress());
     }
 
     @JsonIgnore

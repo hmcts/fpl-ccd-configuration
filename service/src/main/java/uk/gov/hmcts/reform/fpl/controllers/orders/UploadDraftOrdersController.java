@@ -84,7 +84,7 @@ public class UploadDraftOrdersController extends CallbackController {
         List<Element<HearingFurtherEvidenceBundle>> evidenceDocuments = caseData.getHearingFurtherEvidenceDocuments();
         List<Element<HearingOrdersBundle>> bundles = service.migrateCmoDraftToOrdersBundles(caseData);
 
-        UUID hearingId = service.updateCase(eventData, hearings, unsealedCMOs, evidenceDocuments, bundles);
+        UUID hearingId = service.updateCase(eventData, hearings, unsealedCMOs, bundles);
 
         // update case data
         caseDetails.getData().put("draftUploadedCMOs", unsealedCMOs);
