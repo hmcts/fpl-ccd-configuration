@@ -58,6 +58,8 @@ java:
         - cafcass-notification-recipient-new-application
         - cafcass-notification-recipient-new-document
         - cafcass-notification-recipient-additional-document
+        - cafcass-notification-recipient-notice-of-hearing
+        - cafcass-notification-recipient-change-of-address
         - ld-sdk-key
         - ctsc-inbox
         - ctsc-team-lead-inbox
@@ -72,7 +74,8 @@ idam-pr:
 xui-webapp:
   enabled: true
   redis:
-    enabled: true
+    enabled: false
+    architecture: replication
   nodejs:
     imagePullPolicy: Always
     replicas: 1
@@ -89,12 +92,12 @@ xui-webapp:
       HEALTH_TERMS_AND_CONDITIONS_API: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal/health
       SERVICES_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}
       SERVICES_CCD_DATA_STORE_API: http://${SERVICE_NAME}-ccd-data-store-api
-      SERVICES_DOCUMENTS_API_V2: http://ccd-case-document-am-api-aat.service.core-compute-aat.internal
+      SERVICES_DOCUMENTS_API_V2: http://ccd-case-document-am-api-${SERVICE_FQDN}
       SERVICES_CCD_CASE_ASSIGNMENT_API: http://aac-${SERVICE_FQDN}
       SERVICES_TERMS_AND_CONDITIONS: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal
       JURISDICTIONS: PUBLICLAW
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
-      FEATURE_REDIS_ENABLED: true
+      FEATURE_REDIS_ENABLED: false
       FEATURE_APP_INSIGHTS_ENABLED: false
       FEATURE_SECURE_COOKIE_ENABLED: false
       FEATURE_PROXY_ENABLED: false
@@ -174,7 +177,7 @@ ccd:
         DATA_STORE_DB_MAX_POOL_SIZE: 80
         DATA_STORE_DB_OPTIONS: "?stringtype=unspecified&ssl=disable&gssEncMode=disable"
         CCD_DOCUMENT_URL_PATTERN: ^https?://(((?:dm-store-aat\.service\.core-compute-aat\.internal(?::\d+)?)\/documents\/[A-Za-z0-9-]+(?:\/binary)?))
-        CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api-aat.service.core-compute-aat.internal
+        CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api-${SERVICE_FQDN}
       keyVaults: []
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
       autoscaling:
@@ -210,11 +213,16 @@ ccd:
 
   elasticsearch:
     clusterName: "es"
-    imageTag: "6.4.2"
+    imageTag: "7.11.1"
     replicas: 1
     minimumMasterNodes: 1
     antiAffinity: "soft"
     esJavaOpts: "-Xmx512m -Xms512m"
+    extraEnvs:
+      - name: discovery.type
+        value: single-node
+      - name: cluster.initial_master_nodes
+        value: ""
     persistence:
       enabled: false
     ingress:
@@ -286,3 +294,19 @@ aac-manage-case-assignment:
           - idam-noc-approver-username
           - idam-noc-approver-password
           - notify-mca-api-key-secret
+
+ccd-case-document-am-api:
+  enabled: true
+  java:
+    releaseNameOverride: ${SERVICE_NAME}-cdam
+    imagePullPolicy: Always
+    image: hmctspublic.azurecr.io/ccd/case-document-am-api:latest
+    ingressHost: ccd-case-document-am-api-${SERVICE_FQDN}
+    environment:
+      IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
+      IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
+      OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      DM_STORE_BASE_URL: http://dm-store-aat.service.core-compute-aat.internal
+      CCD_DATA_STORE_API_BASE_URL: http://${SERVICE_NAME}-ccd-data-store-api
+    keyVaults: []

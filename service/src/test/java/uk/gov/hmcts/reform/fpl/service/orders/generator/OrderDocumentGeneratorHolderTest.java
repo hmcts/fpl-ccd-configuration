@@ -24,11 +24,15 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.A70_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C26_SECURE_ACCOMMODATION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C29_RECOVERY_OF_A_CHILD;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C34B_AUTHORITY_TO_REFUSE_CONTACT;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35B_INTERIM_SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C36_VARIATION_OR_EXTENSION_OF_SUPERVISION_ORDERS;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C37_EDUCATION_SUPERVISION_ORDER_DIGITAL;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43A_SPECIAL_GUARDIANSHIP_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C45A_PARENTAL_RESPONSIBILITY_ORDER;
@@ -53,15 +57,24 @@ class OrderDocumentGeneratorHolderTest {
     @Mock
     private C26SecureAccommodationOrderDocumentParameterGenerator c26SecureAccommodationOrderDocumentParameterGenerator;
     @Mock
+    private C29RecoveryOfAChildDocumentParameterGenerator c29RecoveryOfAChildDocumentParameterGenerator;
+    @Mock
     private C32CareOrderDocumentParameterGenerator c32CareOrderDocumentParameterGenerator;
     @Mock
     private C32bDischargeOfCareOrderDocumentParameterGenerator c32bDischargeOfCareOrderDocumentParameterGenerator;
     @Mock
     private C33InterimCareOrderDocumentParameterGenerator c33InterimCareOrderDocumentParameterGenerator;
     @Mock
+    private C34BAuthorityToRefuseContactOrderParameterGenerator c34BAuthorityToRefuseContactOrderParameterGenerator;
+    @Mock
     private C35aSupervisionOrderDocumentParameterGenerator c35aSupervisionOrderDocumentParameterGenerator;
     @Mock
     private C35bISODocumentParameterGenerator c35bISODocumentParameterGenerator;
+    @Mock
+    private C36VariationOrExtensionOfSupervisionOrdersParameterGenerator
+        c36VariationOrExtensionOfSupervisionOrdersParameterGenerator;
+    @Mock
+    private C37EducationSupervisionOrderParameterGenerator c37EducationSupervisionOrderParameterGenerator;
     @Mock
     private C43aSpecialGuardianshipOrderDocumentParameterGenerator c43aSGODocumentParameterGenerator;
     @Mock
@@ -88,11 +101,14 @@ class OrderDocumentGeneratorHolderTest {
         generators = List.of(
             a70PlacementOrderDocumentParameterGenerator,
             c21BlankOrderDocumentParameterGenerator, c23EPODocumentParameterGenerator,
-            c26SecureAccommodationOrderDocumentParameterGenerator, c32CareOrderDocumentParameterGenerator,
-            c32bDischargeOfCareOrderDocumentParameterGenerator, c33InterimCareOrderDocumentParameterGenerator,
-            c35aSupervisionOrderDocumentParameterGenerator, c47AAppointmentOfAChildrensGuardianParameterGenerator,
-            c35bISODocumentParameterGenerator, c43ChildArrangementOrderDocumentParameterGenerator,
-            c43aSGODocumentParameterGenerator, c45aParentalResponsibilityOrderDocumentParameterGenerator
+            c26SecureAccommodationOrderDocumentParameterGenerator, c29RecoveryOfAChildDocumentParameterGenerator,
+            c32CareOrderDocumentParameterGenerator, c32bDischargeOfCareOrderDocumentParameterGenerator,
+            c33InterimCareOrderDocumentParameterGenerator, c35aSupervisionOrderDocumentParameterGenerator,
+            c37EducationSupervisionOrderParameterGenerator, c47AAppointmentOfAChildrensGuardianParameterGenerator,
+            c35bISODocumentParameterGenerator, c36VariationOrExtensionOfSupervisionOrdersParameterGenerator,
+            c43ChildArrangementOrderDocumentParameterGenerator, c43aSGODocumentParameterGenerator,
+            c45aParentalResponsibilityOrderDocumentParameterGenerator,
+            c34BAuthorityToRefuseContactOrderParameterGenerator
         );
         collectors = List.of(c23EPOAdditionalDocumentsCollector);
 
@@ -102,16 +118,21 @@ class OrderDocumentGeneratorHolderTest {
                 put(C21_BLANK_ORDER, c21BlankOrderDocumentParameterGenerator);
                 put(C23_EMERGENCY_PROTECTION_ORDER, c23EPODocumentParameterGenerator);
                 put(C26_SECURE_ACCOMMODATION_ORDER, c26SecureAccommodationOrderDocumentParameterGenerator);
+                put(C29_RECOVERY_OF_A_CHILD, c29RecoveryOfAChildDocumentParameterGenerator);
                 put(C32A_CARE_ORDER, c32CareOrderDocumentParameterGenerator);
                 put(C32B_DISCHARGE_OF_CARE_ORDER, c32bDischargeOfCareOrderDocumentParameterGenerator);
                 put(C33_INTERIM_CARE_ORDER, c33InterimCareOrderDocumentParameterGenerator);
                 put(C35A_SUPERVISION_ORDER, c35aSupervisionOrderDocumentParameterGenerator);
                 put(C35B_INTERIM_SUPERVISION_ORDER, c35bISODocumentParameterGenerator);
+                put(C36_VARIATION_OR_EXTENSION_OF_SUPERVISION_ORDERS,
+                    c36VariationOrExtensionOfSupervisionOrdersParameterGenerator);
+                put(C37_EDUCATION_SUPERVISION_ORDER_DIGITAL, c37EducationSupervisionOrderParameterGenerator);
                 put(C43A_SPECIAL_GUARDIANSHIP_ORDER, c43aSGODocumentParameterGenerator);
                 put(C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER,
                     c43ChildArrangementOrderDocumentParameterGenerator);
                 put(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, c47AAppointmentOfAChildrensGuardianParameterGenerator);
                 put(C45A_PARENTAL_RESPONSIBILITY_ORDER, c45aParentalResponsibilityOrderDocumentParameterGenerator);
+                put(C34B_AUTHORITY_TO_REFUSE_CONTACT, c34BAuthorityToRefuseContactOrderParameterGenerator);
             }
         };
 

@@ -11,12 +11,14 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_FUTURE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_PAST_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.RE_LIST_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsControllerTest {
@@ -42,6 +44,21 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
         assertThat(updatedCaseData.getPreviousHearingVenue()).isEqualTo(PreviousHearingVenue.builder()
             .previousVenue("Aberdeen Tribunal Hearing Centre, 48 Huntly Street, AB1, Aberdeen, AB10 1SH")
             .build());
+        assertThat(updatedCaseData.getHasPreviousHearingVenue()).isEqualTo("Yes");
+    }
+
+    @Test
+    void shouldSetHasPreviousHearingVenueAsNoWhenPreviousHearingVenueIsNull() {
+        Element<HearingBooking> pastHearing1 = element(testHearing(now().minusDays(3), true));
+
+        CaseData initialCaseData = CaseData.builder()
+            .hearingOption(NEW_HEARING)
+            .hearingDetails(List.of(pastHearing1))
+            .build();
+
+        CaseData updatedCaseData = extractCaseData(postEditHearingMidEvent(initialCaseData));
+        assertDoesNotThrow(() -> extractCaseData(postEditHearingMidEvent(initialCaseData)));
+        assertThat(updatedCaseData.getHasPreviousHearingVenue()).isEqualTo("No");
     }
 
     @Test
@@ -195,6 +212,18 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
         AboutToStartOrSubmitCallbackResponse response = postEditHearingMidEvent(initialCaseData);
 
         assertThat(response.getErrors()).contains(ERROR_MESSAGE);
+    }
+
+    @Test
+    void canCreateNewHearingWhenPreviousHearingVenueNull() {
+        CaseData initialCaseData = CaseData.builder()
+            .hearingOption(NEW_HEARING)
+            .previousHearingVenue(null)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postEditHearingMidEvent(initialCaseData);
+
+        assertThat(response.getData().get("hasPreviousHearingVenue")).isEqualTo(NO.getValue());
     }
 
     @Test

@@ -456,6 +456,7 @@ public class CaseData {
     private final Selector careOrderSelector;
     private final Selector newHearingSelector;
     private final Selector appointedGuardianSelector;
+    private final Selector respondentsRefusedSelector;
 
     private final String orderAppliesToAllChildren;
     private final String sendOrderToAllOthers;
@@ -634,6 +635,11 @@ public class CaseData {
         return Optional.ofNullable(confidentialOthers).orElse(new ArrayList<>());
     }
 
+    public boolean hasConfidentialParty() {
+        return isNotEmpty(getConfidentialChildren()) || isNotEmpty(getConfidentialRespondents())
+               || isNotEmpty(getConfidentialOthers());
+    }
+
     private final String caseNote;
     private final List<Element<CaseNote>> caseNotes;
     private final List<Element<EmailAddress>> gatekeeperEmails;
@@ -685,15 +691,20 @@ public class CaseData {
     private final Object courtBundleHearingList;
     private final Object respondentStatementList;
 
-    private final CourtBundle manageDocumentsCourtBundle;
+    private final List<Element<CourtBundle>> manageDocumentsCourtBundle;
+    private final List<Element<HearingCourtBundle>> courtBundleListV2;
     private final List<Element<CourtBundle>> courtBundleList;
 
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceDocumentsTemp() {
         return defaultIfNull(supportingEvidenceDocumentsTemp, new ArrayList<>());
     }
 
-    public List<Element<CourtBundle>> getCourtBundleList() {
-        return defaultIfNull(courtBundleList, new ArrayList<>());
+    public List<Element<CourtBundle>> getManageDocumentsCourtBundle() {
+        return defaultIfNull(manageDocumentsCourtBundle, new ArrayList<>());
+    }
+
+    public List<Element<HearingCourtBundle>> getCourtBundleListV2() {
+        return defaultIfNull(courtBundleListV2, new ArrayList<>());
     }
 
     public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocuments() {
@@ -752,6 +763,13 @@ public class CaseData {
     }
 
     @JsonIgnore
+    public Optional<HearingBooking> getFirstHearingOfTypes(List<HearingType> types) {
+        return unwrapElements(hearingDetails).stream()
+            .filter(hearingBooking -> types.stream().anyMatch(type -> hearingBooking.isOfType(type)))
+            .min(comparing(HearingBooking::getStartDate));
+    }
+
+    @JsonIgnore
     public Optional<HearingBooking> getNextHearingAfter(LocalDateTime time) {
         return unwrapElements(hearingDetails).stream()
             .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(time))
@@ -806,6 +824,7 @@ public class CaseData {
 
     private final List<Element<HearingOrder>> draftUploadedCMOs;
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
+    private List<Element<HearingOrder>> refusedHearingOrders;
     private final UUID lastHearingOrderDraftsHearingId;
 
     @JsonIgnore
@@ -953,6 +972,7 @@ public class CaseData {
     private final String hearingVenue;
     private final Address hearingVenueCustom;
     private final String firstHearingFlag; //also used for logic surrounding legacy hearings
+    private final String hasPreviousHearingVenue;
     private final PreviousHearingVenue previousHearingVenue;
     private String previousVenueId;
     private final String noticeOfHearingNotes;
@@ -1131,4 +1151,6 @@ public class CaseData {
             .map(Orders::isDischargeOfCareOrder)
             .orElse(false);
     }
+
+    private List<Element<DocumentWithConfidentialAddress>> documentsWithConfidentialAddress;
 }

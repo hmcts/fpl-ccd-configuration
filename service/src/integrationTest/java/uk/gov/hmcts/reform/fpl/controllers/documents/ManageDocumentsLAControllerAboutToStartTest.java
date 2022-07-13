@@ -119,6 +119,7 @@ class ManageDocumentsLAControllerAboutToStartTest extends AbstractCallbackTest {
         ManageDocumentLA expectedManageDocument = ManageDocumentLA.builder()
             .hasHearings(YES.getValue())
             .hasC2s(YES.getValue())
+            .hasConfidentialAddress(NO.getValue())
             .hasPlacementNotices(NO.getValue())
             .build();
 

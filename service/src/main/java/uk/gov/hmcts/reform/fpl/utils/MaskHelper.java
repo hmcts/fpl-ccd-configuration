@@ -14,9 +14,10 @@ public class MaskHelper {
     }
 
     public static String maskEmail(String email) {
-        return Optional.ofNullable(email)
-                .map(e -> e.replaceAll("[^@]", "*"))
-                .orElse("");
+        return email;
+//        return Optional.ofNullable(email)
+//                .map(e -> e.replaceAll("[^@]", "*"))
+//                .orElse("");
     }
 
 }

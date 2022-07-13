@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
 import uk.gov.hmcts.reform.fpl.model.Placement;
@@ -108,6 +109,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .hasHearings(YES.getValue())
             .hasC2s(NO.getValue())
             .hasPlacementNotices(NO.getValue())
+            .hasConfidentialAddress(NO.getValue())
             .build());
     }
 
@@ -130,6 +132,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .hasHearings(NO.getValue())
             .hasC2s(NO.getValue())
             .hasPlacementNotices(NO.getValue())
+            .hasConfidentialAddress(NO.getValue())
             .build());
     }
 
@@ -139,7 +142,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
         LocalDateTime today = LocalDateTime.now();
         HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
 
-        List<Element<CourtBundle>> courtBundleList = buildCourtBundleList(selectedHearingId);
+        List<Element<HearingCourtBundle>> courtBundleList = buildCourtBundleList(selectedHearingId);
 
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(createHearingBooking(today.plusDays(5), today.plusDays(6))),
@@ -152,7 +155,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData caseData = CaseData.builder()
             .hearingDetails(hearingBookings)
-            .courtBundleList(courtBundleList)
+            .courtBundleListV2(courtBundleList)
             .courtBundleHearingList(hearingList)
             .manageDocumentLA(buildManagementDocument(COURT_BUNDLE))
             .build();
@@ -161,13 +164,14 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             "initialise-manage-document-collections", USER_ROLES);
 
         CaseData responseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-        assertThat(responseData.getCourtBundleList()).isEqualTo(courtBundleList);
+        assertThat(responseData.getCourtBundleListV2()).isEqualTo(courtBundleList);
 
         assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
             .type(COURT_BUNDLE)
             .hasHearings(YES.getValue())
             .hasC2s(NO.getValue())
             .hasPlacementNotices(NO.getValue())
+            .hasConfidentialAddress(NO.getValue())
             .build());
     }
 
@@ -203,6 +207,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .hasHearings(NO.getValue())
             .hasC2s(YES.getValue())
             .hasPlacementNotices(NO.getValue())
+            .hasConfidentialAddress(NO.getValue())
             .build());
     }
 
@@ -233,7 +238,6 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .hasC2s(NO.getValue())
             .hasPlacementNotices(YES.getValue())
             .build());
-
     }
 
     @Test
@@ -424,8 +428,14 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .build());
     }
 
-    private List<Element<CourtBundle>> buildCourtBundleList(UUID hearingId) {
-        return List.of(element(hearingId, CourtBundle.builder().hearing("test hearing").build()));
+    private List<Element<HearingCourtBundle>> buildCourtBundleList(UUID hearingId) {
+        List<Element<CourtBundle>> courtBundle = List.of(element(CourtBundle.builder().build()));
+        return List.of(element(
+            hearingId,
+            HearingCourtBundle.builder()
+                .hearing("Test hearing")
+                .courtBundle(courtBundle)
+                .build()));
     }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {

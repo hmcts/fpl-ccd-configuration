@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.enums.AddressNotKnowReason;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -77,6 +78,7 @@ class OthersCheckerIsStartedTest {
                 Other.builder().detailsHidden("No").build(),
                 Other.builder().litigationIssues("No").build(),
                 Other.builder().telephone("777").build(),
+                Other.builder().addressNotKnowReason(AddressNotKnowReason.DECEASED.getType()).build(),
                 Other.builder().address(Address.builder().addressLine1("Test").build()).build(),
                 Other.builder().address(Address.builder().addressLine2("Test").build()).build(),
                 Other.builder().address(Address.builder().addressLine3("Test").build()).build(),

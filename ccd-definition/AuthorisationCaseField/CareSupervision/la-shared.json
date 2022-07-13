@@ -429,6 +429,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "courtBundleListV2",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2ApplicationType",
     "UserRole": "[LASHARED]",
     "CRUD": "CRU"
@@ -926,6 +933,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "cmoSupportingDocs",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRUD",
+    "Comment": "Requires idam role otherwise cannot add to"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cmosSentToJudge",
     "UserRole": "[LASHARED]",
     "CRUD": "CRU"
@@ -941,6 +956,153 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cmoToSend",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "cmoToSendTranslationRequirements",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderToSend0",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderToSendTranslationRequirements0",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderToSend1",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderToSendTranslationRequirements1",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderToSend2",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderToSendTranslationRequirements2",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderToSend3",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderToSendTranslationRequirements3",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderToSend4",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderToSendTranslationRequirements4",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderToSend5",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderToSendTranslationRequirements5",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderToSend6",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderToSendTranslationRequirements6",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderToSend7",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderToSendTranslationRequirements7",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderToSend8",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderToSendTranslationRequirements8",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderToSend9",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderToSendTranslationRequirements9",
     "UserRole": "[LASHARED]",
     "CRUD": "CRU"
   },
@@ -1013,6 +1175,14 @@
     "CaseFieldID": "manageLegalRepresentativesLabel",
     "UserRole": "[LASHARED]",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "legalRepresentatives",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRUD",
+    "Comment": "Requires idam role otherwise cannot add to"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1094,9 +1264,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "manageDocumentsCourtBundle",
+    "CaseFieldID": "manageDocumentsCourtBundleHearingLabel",
     "UserRole": "[LASHARED]",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageDocumentsCourtBundle",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1167,6 +1344,13 @@
     "CaseFieldID": "currentHearingOrderDrafts",
     "UserRole": "[LASHARED]",
     "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderToSendOptionCount",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1402,5 +1586,12 @@
         "CRUD": "CRUD"
       }
     ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "documentsWithConfidentialAddress",
+    "UserRole": "[LASHARED]",
+    "CRUD": "R"
   }
 ]

@@ -239,14 +239,26 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageDocumentsLA",
-    "CaseFieldID": "manageDocumentsCourtBundle",
+    "CaseFieldID": "manageDocumentsCourtBundleHearingLabel",
     "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "CourtBundle",
+    "PageDisplayOrder": 4,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N",
+    "PageShowCondition": "manageDocumentLA.type=\"COURT_BUNDLE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "manageDocumentsCourtBundle",
+    "PageFieldDisplayOrder": 2,
     "DisplayContext": "COMPLEX",
     "PageID": "CourtBundle",
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "Y",
-    "PageShowCondition": "manageDocumentLA.type=\"COURT_BUNDLE\""
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",

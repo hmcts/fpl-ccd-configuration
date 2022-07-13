@@ -331,6 +331,21 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
+    void shouldThrowIllegalStateExceptionIfManageDocumentIsNullWhenTryingToGetManageDocumentsType() {
+        CaseData caseData = CaseData.builder()
+            .manageDocument(null)
+            .build();
+
+        try {
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
+        } catch (RuntimeException e) {
+            String exceptionText = e.getMessage();
+            assertThat(exceptionText.contains("IllegalStateException")
+                && exceptionText.contains("Unexpected null manage document."));
+        }
+    }
+
+    @Test
     void shouldUpdatePlacementsForAdmin() {
         PlacementNoticeDocument laResponseOld = PlacementNoticeDocument.builder()
             .type(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)

@@ -24,9 +24,9 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "orderAppliesToAllChildren",
             "children_label",
             "childSelector",
+            "appointedGuardians_label",
             "appointedGuardianSelector",
             "manageOrdersIsByConsent",
-            "appointedGuardians_label",
             "manageOrdersTitle",
             "manageOrdersDirections",
             "manageOrdersCareOrderIssuedDate",
@@ -79,6 +79,8 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersOrderToAmend",
             "manageOrdersAmendedOrder",
             "manageOrdersTranslationNeeded",
+            "respondentsRefused_label",
+            "respondentsRefusedSelector",
             "manageOrdersRelationshipWithChild",
             "manageOrdersChildPlacementApplication",
             "manageOrdersSerialNumber",
@@ -86,7 +88,21 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersBirthCertificateDate",
             "manageOrdersBirthCertificateRegistrationDistrict",
             "manageOrdersBirthCertificateRegistrationSubDistrict",
-            "manageOrdersBirthCertificateRegistrationCounty"
+            "manageOrdersBirthCertificateRegistrationCounty",
+            "manageOrdersLeaName",
+            "manageOrdersEndDateWithEducationAge",
+            "manageOrdersPlacedUnderOrder",
+            "manageOrdersIsExParte",
+            "manageOrdersActionsPermitted",
+            "manageOrdersSupervisionOrderType",
+            "manageOrdersC35aOrderExists",
+            "manageOrdersC35aOrderDoesntExistMessage",
+            "manageOrdersSupervisionOrderVariationHeading",
+            "manageOrdersSupervisionOrderExtensionHeading",
+            "manageOrdersSupervisionOrderCourtDirection",
+            "manageOrdersSupervisionOrderApprovalDate",
+            "manageOrdersSupervisionOrderEndDate",
+            "manageOrdersOrderCreatedDate"
         );
     }
 }

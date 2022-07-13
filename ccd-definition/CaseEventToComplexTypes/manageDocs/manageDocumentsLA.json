@@ -131,8 +131,29 @@
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
-    "ListElementCode": "uploadedBy",
+    "ListElementCode": "hasConfidentialAddressLabel",
     "FieldDisplayOrder": 9,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>There is a confidential address on this case. Please check and confirm your document doesn't contain a confidential address before proceeding</strong></div>",
+    "FieldShowCondition": "manageDocumentLA.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "supportingEvidenceDocumentsTemp",
+    "ListElementCode": "hasConfidentialAddress",
+    "FieldDisplayOrder": 10,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "manageDocumentLA.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "supportingEvidenceDocumentsTemp",
+    "ListElementCode": "uploadedBy",
+    "FieldDisplayOrder": 11,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "manageDocumentLA.type=\"DO_NOT_SHOW\""
   },
@@ -142,7 +163,7 @@
     "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "dateTimeUploaded",
-    "FieldDisplayOrder": 10,
+    "FieldDisplayOrder": 12,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "manageDocumentLA.type=\"DO_NOT_SHOW\""
   },
@@ -151,19 +172,63 @@
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "manageDocumentsCourtBundle",
-    "ListElementCode": "hearing",
+    "ListElementCode": "document",
     "FieldDisplayOrder": 1,
-    "DisplayContext": "READONLY"
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Upload document"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "manageDocumentsCourtBundle",
-    "ListElementCode": "document",
+    "ListElementCode": "confidentialWarningLabel",
     "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if documents are confidential</strong></div><br>",
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "manageDocumentsCourtBundle",
+    "ListElementCode": "confidential",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL",
+    "EventElementLabel": "Tick to restrict to the LA, Cafcass and HMCTS staff",
+    "FieldShowCondition": "name!=\"SHOW_IN_EVENT_ONLY\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "manageDocumentsCourtBundle",
+    "ListElementCode": "confidentialTabLabel",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "name=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "manageDocumentsCourtBundle",
+    "ListElementCode": "hasConfidentialAddressLabel",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>There is a confidential address on this case. Please check and confirm your document doesn't contain a confidential address before proceeding</strong></div>",
+    "FieldShowCondition": "manageDocumentLA.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "manageDocumentsCourtBundle",
+    "ListElementCode": "hasConfidentialAddress",
+    "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Attach court bundle"
+    "FieldShowCondition": "manageDocumentLA.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
   },
   {
     "LiveFrom": "01/01/2017",
