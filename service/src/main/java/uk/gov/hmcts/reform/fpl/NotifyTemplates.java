@@ -15,7 +15,7 @@ public final class NotifyTemplates {
     public static final String INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS
         = "62791aee-6caf-4a22-a599-fcfc4381ba20";
     public static final String INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC
-        = "d5f41125-76d0-43f9-971b-fe1ff6a26acf";
+        = "ec65728e-39da-4a04-b1df-66363f4d858d";
     public static final String INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE
         = "3284c63a-b88f-4a20-979a-ea7d017b45aa";
     public static final String ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES =

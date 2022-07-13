@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
+import uk.gov.hmcts.reform.fpl.enums.UrgencyTImeFrameType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded.Addit
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,6 +34,10 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C13A_SPECIAL_GUARDIANSHIP;
 import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C20_SECURE_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.OTHER_APPLICATIONS;
+import static uk.gov.hmcts.reform.fpl.enums.UrgencyTImeFrameType.WITHIN_2_DAYS;
+import static uk.gov.hmcts.reform.fpl.enums.UrgencyTImeFrameType.WITHIN_5_DAYS;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ContextConfiguration(classes = {AdditionalApplicationsUploadedEmailContentProvider.class})
@@ -68,6 +74,39 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
                 "C1 - Parental responsibility by the father",
                 "C13A - Special guardianship order",
                 "C20 - Secure accommodation (England)"))
+            .urgencyDetails("")
+            .build();
+
+        AdditionalApplicationsUploadedTemplate actualParameters = underTest.getNotifyData(caseData);
+
+        assertThat(actualParameters).isEqualTo(expectedParameters);
+    }
+
+    @Test
+    void shouldReturnExpectedMapWithGivenCaseDetailsWithUrgencyDetails() {
+        CaseData caseData = buildCaseData().toBuilder()
+                .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
+                .otherApplicationsBundle(
+                    OtherApplicationsBundle.builder()
+                        .applicationType(OtherApplicationType.C1_PARENTAL_RESPONSIBILITY)
+                        .parentalResponsibilityType(ParentalResponsibilityType.PR_BY_FATHER)
+                        .urgencyTImeFrameType(UrgencyTImeFrameType.WITHIN_2_DAYS)
+                        .build()
+                )
+                .build()))
+            .build();
+
+        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(CHILD_LAST_NAME);
+        when(time.now()).thenReturn(FUTURE_HEARING_DATE.minusDays(1));
+
+        AdditionalApplicationsUploadedTemplate expectedParameters = AdditionalApplicationsUploadedTemplate.builder()
+            .callout(RESPONDENT_LAST_NAME + ", 12345, " + HEARING_CALLOUT)
+            .lastName(CHILD_LAST_NAME)
+            .childLastName(CHILD_LAST_NAME)
+            .caseUrl(caseUrl(CASE_REFERENCE, OTHER_APPLICATIONS))
+            .applicationTypes(List.of("C1 - Parental responsibility by the father"))
+            .urgencyDetails("This application will need to be considered by the judge on "
+                    + formatLocalDateToString(LocalDate.now().plusDays(WITHIN_2_DAYS.getCount()),DATE))
             .build();
 
         AdditionalApplicationsUploadedTemplate actualParameters = underTest.getNotifyData(caseData);
@@ -98,6 +137,40 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
                 .childLastName(CHILD_LAST_NAME)
                 .caseUrl(caseUrl(CASE_REFERENCE, OTHER_APPLICATIONS))
                 .applicationTypes(List.of("C2 (With notice) - Parental responsibility by the father"))
+                .urgencyDetails("")
+                .build();
+
+        AdditionalApplicationsUploadedTemplate actualParameters = underTest.getNotifyData(caseData);
+
+        assertThat(actualParameters).isEqualTo(expectedParameters);
+    }
+
+    @Test
+    void shouldReturnExpectedMapWithGivenCaseDetailsWhenRequestingC2WithParentalResponsibilityAndUrgency() {
+        CaseData caseData = buildCaseData().toBuilder()
+            .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder().c2DocumentBundle(
+                C2DocumentBundle.builder()
+                    .type(C2ApplicationType.WITH_NOTICE)
+                    .c2AdditionalOrdersRequested(List.of(C2AdditionalOrdersRequested.PARENTAL_RESPONSIBILITY))
+                    .parentalResponsibilityType(ParentalResponsibilityType.PR_BY_FATHER)
+                    .supplementsBundle(List.of())
+                    .urgencyTimeFrameType(WITHIN_5_DAYS)
+                    .build())
+                .build()))
+            .build();
+
+        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(CHILD_LAST_NAME);
+        when(time.now()).thenReturn(FUTURE_HEARING_DATE.minusDays(1));
+
+        AdditionalApplicationsUploadedTemplate expectedParameters =
+            AdditionalApplicationsUploadedTemplate.builder()
+                .callout(RESPONDENT_LAST_NAME + ", 12345, " + HEARING_CALLOUT)
+                .lastName(CHILD_LAST_NAME)
+                .childLastName(CHILD_LAST_NAME)
+                .caseUrl(caseUrl(CASE_REFERENCE, OTHER_APPLICATIONS))
+                .applicationTypes(List.of("C2 (With notice) - Parental responsibility by the father"))
+                .urgencyDetails("This application will need to be considered by the judge on "
+                        + formatLocalDateToString(LocalDate.now().plusDays(WITHIN_5_DAYS.getCount()),DATE))
                 .build();
 
         AdditionalApplicationsUploadedTemplate actualParameters = underTest.getNotifyData(caseData);

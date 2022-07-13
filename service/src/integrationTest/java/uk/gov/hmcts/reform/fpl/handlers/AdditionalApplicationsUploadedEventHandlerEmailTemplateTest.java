@@ -40,9 +40,12 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_WITH_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.OTHER_APPLICATIONS;
+import static uk.gov.hmcts.reform.fpl.enums.UrgencyTImeFrameType.WITHIN_5_DAYS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ContextConfiguration(classes = {
@@ -125,6 +128,53 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
                 .list("check the applications",
                     "check payment has been taken",
                     "send a message to the judge or legal adviser")
+                .line()
+                .line()
+                .line()
+                .end("To review the application, sign in to " + caseDetailsUrl(CASE_ID, OTHER_APPLICATIONS))
+            );
+    }
+
+    @Test
+    void notifyAdminUrgency() {
+        given(requestData.userRoles()).willReturn(Set.of("caseworker-publiclaw-solicitor"));
+        CaseData caseData = CASE_DATA.toBuilder()
+                .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder()
+                            .type(WITH_NOTICE)
+                            .supplementsBundle(List.of())
+                            .build())
+                    .otherApplicationsBundle(OtherApplicationsBundle.builder()
+                            .applicationType(C1_WITH_SUPPLEMENT)
+                            .urgencyTImeFrameType(WITHIN_5_DAYS)
+                            .supplementsBundle(List.of())
+                            .build())
+                    .build()))
+                .build();
+
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, CASE_DATA, APPLICANT));
+
+        assertThat(response())
+            .hasSubject("New application uploaded, " + CHILD_LAST_NAME)
+            .hasBody(emailContent()
+                .line("New applications have been made for the case:")
+                .line()
+                .callout(RESPONDENT_LAST_NAME + ", " + FAMILY_MAN_CASE_NUMBER + ", hearing 20 Feb 2099")
+                .line()
+                .h1("Applications")
+                .line()
+                .line()
+                .list("C2 (With notice)")
+                .list("C1 - With supplement")
+                .line()
+                .h1("Next steps")
+                .line("You need to:")
+                .list("check the applications",
+                        "check payment has been taken",
+                        "send a message to the judge or legal adviser")
+                .line()
+                .line("This application will need to be considered by the judge on "
+                   + formatLocalDateToString(LocalDate.now().plusDays(WITHIN_5_DAYS.getCount()),DATE))
                 .line()
                 .end("To review the application, sign in to " + caseDetailsUrl(CASE_ID, OTHER_APPLICATIONS))
             );
