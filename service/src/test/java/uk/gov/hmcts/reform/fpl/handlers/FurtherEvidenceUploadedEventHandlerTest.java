@@ -699,7 +699,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     @Test
-    void shouldNotEmailCafcassWhenNoticeOfActingOrIssueDocsIsUploadedByLA() {
+    void shouldNotEmailCafcassWhenNoticeOfActingOrIssueDocsRelatingToHearingIsUploadedByLA() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
             .thenReturn(
                 Optional.of(
@@ -726,7 +726,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     @Test
-    void shouldNotEmailCafcassWhenNoticeOfActingOrIssueDocsRelatingToHearingIsUploadedByLA() {
+    void shouldNotEmailCafcassWhenNoticeOfActingOrIssueDocsIsUploadedByLA() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
             .thenReturn(
                 Optional.of(
