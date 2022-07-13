@@ -41,8 +41,7 @@ public class ManageOrdersEventBuilder {
                     caseData,
                     lastGeneratedOrder.getDocument(),
                     lastGeneratedOrder.getTranslationRequirements(),
-                    lastGeneratedOrder.asLabel(),
-                    lastGeneratedOrder.getApprovalDate()
+                    lastGeneratedOrder.asLabel()
                 );
             }
         }

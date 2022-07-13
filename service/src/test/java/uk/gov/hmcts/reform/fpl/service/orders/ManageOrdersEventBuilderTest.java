@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.orders.amendment.find.AmendedOrderFinder;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,7 +83,6 @@ class ManageOrdersEventBuilderTest {
     @Test
     void buildGeneratedGeneralOrder() {
         CaseData caseData = CaseData.builder().orderCollection(wrapElements(order)).build();
-        when(order.getApprovalDate()).thenReturn(LocalDate.now());
         when(historyService.lastGeneratedOrder(caseData)).thenReturn(order);
         when(order.getDocument()).thenReturn(orderDocument);
         when(order.asLabel()).thenReturn(ORDER_TITLE);
@@ -93,8 +91,7 @@ class ManageOrdersEventBuilderTest {
         assertThat(underTest.build(caseData, caseDataBefore)).isEqualTo(new GeneratedOrderEvent(caseData,
             orderDocument,
             TRANSLATION_REQUIREMENT,
-            ORDER_TITLE,
-            LocalDate.now()));
+            ORDER_TITLE));
     }
 
     @Test
