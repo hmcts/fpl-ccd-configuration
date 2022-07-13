@@ -1,3 +1,4 @@
+
 package uk.gov.hmcts.reform.fpl.controllers.documents;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
+import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
@@ -47,8 +49,8 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.RESPONDENT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.ADDITIONAL_APPLICATIONS_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.CORRESPONDENCE;
-import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.FURTHER_EVIDENCE_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.HEARING_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C17A_EXTENSION_OF_ESO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -170,13 +172,14 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
 
         CaseData caseData = CaseData.builder()
             .hearingDetails(List.of(element(hearingId, hearingBooking)))
-            .courtBundleHearingList(DynamicList.builder()
+            .hearingDocumentsHearingList(DynamicList.builder()
                 .value(DynamicListElement.builder()
                     .code(hearingId)
                     .build())
                 .build())
             .manageDocumentsCourtBundle(courtBundle)
-            .manageDocumentLA(buildManagementDocument(COURT_BUNDLE))
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
+            .manageDocumentLA(buildManagementDocument(HEARING_DOCUMENTS))
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
@@ -189,7 +192,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
                 .courtBundleNC(courtBundle)
                 .build()
         );
-        assertThat(responseData.getCourtBundleListV2()).first()
+        assertThat(responseData.getHearingDocuments().getCourtBundleListV2()).first()
             .isEqualTo(expected);
         assertExpectedFieldsAreRemoved(responseData);
     }
@@ -443,7 +446,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
         } catch (RuntimeException e) {
             String exceptionText = e.getMessage();
-            assertThat(exceptionText.contains("IllegalStateException") 
+            assertThat(exceptionText.contains("IllegalStateException")
                 && exceptionText.contains("Unexpected null manage document LA."));
         }
     }
