@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
 import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import java.util.HashMap;
@@ -16,15 +15,12 @@ import java.util.Map;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CHILDREN_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_DOCUMENT_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_DOCUMENT_RESPONDENT_LIST_KEY;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.PLACEMENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
