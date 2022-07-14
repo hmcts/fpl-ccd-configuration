@@ -51,13 +51,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "UploadedOrderType",
-    "ListElementCode": "C39",
-    "ListElement": "Child assessment order - C39",
-    "DisplayOrder": 7
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "UploadedOrderType",
     "ListElementCode": "C34A",
     "ListElement": "Contact with a child in care - C34A",
     "DisplayOrder": 8
