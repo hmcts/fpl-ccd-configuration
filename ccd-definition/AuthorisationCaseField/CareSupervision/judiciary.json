@@ -793,7 +793,28 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "courtBundleTabHeading",
+    "CaseFieldID": "hearingDocumentsTabHeading",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "caseSummaryList",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "positionStatementChildList",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "positionStatementRespondentList",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "R"
   },
@@ -2889,6 +2910,69 @@
     "CaseFieldID": "manageDocumentsRespondentStatementsHeading",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingDocumentsHearingList",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageDocumentsHearingDocumentNoHearingsLabel",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageDocumentsHearingDocumentType",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageDocumentsCourtBundle",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageDocumentsCaseSummary",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageDocumentsPositionStatementChild",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageDocumentsPositionStatementRespondent",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageDocumentsChildrenList",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingDocumentsRespondentList",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
