@@ -143,7 +143,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
     }
 
     private C43ChildArrangementOrderDocmosisParameters.C43ChildArrangementOrderDocmosisParametersBuilder<?, ?>
-    expectedCommonParameters() {
+        expectedCommonParameters() {
         String orderDetails = String.format("The Court orders\n\n%s", RECITALS_AND_PREAMBLES);
         String directions = String.format("%s\n\n%s\n\n%s", DIRECTIONS, FURTHER_DIRECTIONS,
             C43ChildArrangementOrderDocumentParameterGenerator.CONDITIONS_MESSAGE);
