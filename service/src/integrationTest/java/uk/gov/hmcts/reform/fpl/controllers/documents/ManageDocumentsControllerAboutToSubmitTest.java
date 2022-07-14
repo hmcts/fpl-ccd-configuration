@@ -9,10 +9,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
+import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -24,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
@@ -38,8 +41,10 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.ADDITIONAL_APPLICATIONS_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.HEARING_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -322,6 +327,35 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
+    public void shouldBuildHearingDocumentList() {
+        UUID selectedHearingId = randomUUID();
+        LocalDateTime today = LocalDateTime.now();
+        HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
+
+        List<Element<HearingBooking>> hearingBookings = List.of(element(selectedHearingId, selectedHearingBooking));
+
+        DynamicList hearingList = ElementUtils.asDynamicList(hearingBookings,
+            selectedHearingId, HearingBooking::toLabel);
+
+        CaseSummary manageDocumentCaseSummary = CaseSummary.builder().build();
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .hearingDetails(hearingBookings)
+            .hearingDocumentsHearingList(hearingList)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.CASE_SUMMARY)
+            .manageDocument(buildManagementDocument(HEARING_DOCUMENTS))
+            .manageDocumentsCaseSummary(manageDocumentCaseSummary)
+            .build();
+
+
+        CaseData responseData = extractCaseData(
+            postAboutToSubmitEvent(caseData, USER_ROLES));
+        assertThat(responseData.getHearingDocuments().getCaseSummaryList())
+            .contains(element(selectedHearingId, manageDocumentCaseSummary));
+    }
+
+    @Test
     void shouldThrowIllegalStateExceptionIfManageDocumentIsNullWhenTryingToGetManageDocumentsType() {
         CaseData caseData = CaseData.builder()
             .manageDocument(null)
@@ -331,7 +365,7 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
         } catch (RuntimeException e) {
             String exceptionText = e.getMessage();
-            assertThat(exceptionText.contains("IllegalStateException") 
+            assertThat(exceptionText.contains("IllegalStateException")
                 && exceptionText.contains("Unexpected null manage document."));
         }
     }

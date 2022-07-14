@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
+import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -41,8 +43,8 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.RESPONDENT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.ADDITIONAL_APPLICATIONS_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.CORRESPONDENCE;
-import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.FURTHER_EVIDENCE_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.HEARING_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
@@ -147,19 +149,21 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData caseData = CaseData.builder()
             .hearingDetails(hearingBookings)
-            .courtBundleListV2(courtBundleList)
-            .courtBundleHearingList(hearingList)
-            .manageDocumentLA(buildManagementDocument(COURT_BUNDLE))
+            .hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(courtBundleList).build())
+            .hearingDocumentsHearingList(hearingList)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
+            .manageDocumentLA(buildManagementDocument(HEARING_DOCUMENTS))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
             "initialise-manage-document-collections", USER_ROLES);
 
         CaseData responseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-        assertThat(responseData.getCourtBundleListV2()).isEqualTo(courtBundleList);
+        assertThat(responseData.getHearingDocuments().getCourtBundleListV2()).isEqualTo(courtBundleList);
 
         assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
-            .type(COURT_BUNDLE)
+            .type(HEARING_DOCUMENTS)
             .hasHearings(YesNo.YES.getValue())
             .hasC2s(YesNo.NO.getValue())
             .hasConfidentialAddress(YesNo.NO.getValue())
@@ -355,13 +359,15 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
     @Test
     void shouldThrowErrorWhenCourtBundleSelectedButNoHearingsFound() {
         CaseData caseData = CaseData.builder()
-            .manageDocumentLA(buildManagementDocument(COURT_BUNDLE))
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
+            .manageDocumentLA(buildManagementDocument(HEARING_DOCUMENTS))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
             "initialise-manage-document-collections", USER_ROLES);
 
-        assertThat(callbackResponse.getErrors()).containsExactly("There are no hearings to associate a bundle with");
+        assertThat(callbackResponse.getErrors()).containsExactly(
+            "There are no hearings to associate a hearing document with");
     }
 
     @Test
