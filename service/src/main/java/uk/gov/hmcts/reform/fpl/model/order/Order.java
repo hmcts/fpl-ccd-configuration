@@ -10,7 +10,48 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.*;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPOINTED_GUARDIAN;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVER;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CAFCASS_JURISDICTIONS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_ASSESSMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_PLACEMENT;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_PLACEMENT_APPLICATIONS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CLOSE_CASE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DISCHARGE_DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EDUCATION_SUPERVISION;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_CHILDREN_DESCRIPTION;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_DATE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_INCLUDE_PHRASE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE_AND_PREVENT_REMOVAL;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.FURTHER_DIRECTIONS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ICO_EXCLUSION;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.IS_CHILD_REPRESENTED;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINKED_TO_HEARING;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINK_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.NEED_SEALING;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_BY_CONSENT;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_PLACED_CHILD_IN_CUSTODY;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_TO_AMEND;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.PARENTAL_RESPONSIBILITY;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REASON_FOR_SECURE_ACCOMMODATION;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REFUSE_CONTACT_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.RESPONDENTS_REFUSED;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REVIEW_DRAFT_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SECURE_ACCOMMODATION_ORDER_JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SELECT_SINGLE_CHILD;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TITLE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TRANSLATION_REQUIREMENTS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.UPLOAD_AMENDED_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.UPLOAD_ORDER_FILE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.VARY_OR_EXTEND_SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_OTHERS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSourceType.AMENDED;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSourceType.DIGITAL;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSourceType.MANUAL_UPLOAD;
@@ -106,6 +147,22 @@ public enum Order {
         List.of(
             LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, ICO_EXCLUSION,
             FURTHER_DIRECTIONS, MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS, REVIEW_DRAFT_ORDER, WHICH_OTHERS)
+    ),
+    C39_CHILD_ASSESSMENT_ORDER(
+        DIGITAL,
+        "Child assessment order",
+        "Section 43 Children Act 1989",
+        "Child assessment order (C39)",
+        IsFinalOrder.YES,
+        List.of(
+            APPROVER,
+            APPROVAL_DATE,
+            SELECT_SINGLE_CHILD,
+            CHILD_ASSESSMENT_ORDER,
+            ORDER_BY_CONSENT,
+            REVIEW_DRAFT_ORDER,
+            CLOSE_CASE,
+            WHICH_OTHERS)
     ),
     C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER(
         DIGITAL,
@@ -291,14 +348,6 @@ public enum Order {
         "Extension of an education supervision order (C38B)",
         "",
         "Extension of an education supervision order (C38B)",
-        IsFinalOrder.NO,
-        Constants.MANUAL_UPLOAD_QUESTIONS
-    ),
-    C39_CHILD_ASSESSMENT_ORDER(
-        MANUAL_UPLOAD,
-        "Child assessment order (C39)",
-        "",
-        "Child assessment order (C39)",
         IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
