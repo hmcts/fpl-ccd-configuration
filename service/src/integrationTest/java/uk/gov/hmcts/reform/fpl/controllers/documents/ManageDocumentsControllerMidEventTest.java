@@ -175,6 +175,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
             .hasHearings(NO.getValue())
             .hasC2s(NO.getValue())
             .hasPlacementNotices(YES.getValue())
+            .hasConfidentialAddress(NO.getValue())
             .build());
     }
 
@@ -220,6 +221,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
             .hasHearings(NO.getValue())
             .hasC2s(NO.getValue())
             .hasPlacementNotices(YES.getValue())
+            .hasConfidentialAddress(NO.getValue())
             .build());
     }
 
