@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
+import uk.gov.hmcts.reform.fpl.enums.ChildArrangementsOrderType;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
@@ -31,6 +32,11 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
     private static final String DIRECTIONS = "Directions";
     private static final String FURTHER_DIRECTIONS = "Further directions";
     private static final String ORDER_TITLE = "Title";
+    private static final String CHILD_LIVE_TEXT = "The Child Arrangement Order is for the child to live with.\n\n";
+    private static final String CHILD_CONTACT_TEXT =
+        "The Child Arrangement Order is for the child to have contact with.\n\n";
+    private static final ChildArrangementsOrderType CHILD_LIVE = ChildArrangementsOrderType.CHILD_LIVE;
+    private static final ChildArrangementsOrderType CHILD_CONTACT = ChildArrangementsOrderType.CHILD_CONTACT;
 
     @Mock
     private LocalAuthorityNameLookupConfiguration laNameLookup;
@@ -54,7 +60,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
         List<C43OrderType> c43OrderTypes = List.of(C43OrderType.CHILD_ARRANGEMENT_ORDER,
             C43OrderType.SPECIFIC_ISSUE_ORDER, C43OrderType.PROHIBITED_STEPS_ORDER);
 
-        CaseData caseData = buildCaseData(c43OrderTypes);
+        CaseData caseData = buildCaseData(c43OrderTypes, CHILD_LIVE);
 
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
@@ -62,7 +68,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
 
-        assertThat(generatedParameters).isEqualTo(expectedCommonParameters()
+        assertThat(generatedParameters).isEqualTo(expectedCommonParametersChildArrangementOrder()
             .orderHeader(ORDER_HEADER)
             .orderMessage(C43ChildArrangementOrderDocumentParameterGenerator.WARNING_MESSAGE)
             .build());
@@ -73,7 +79,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
         List<C43OrderType> c43OrderTypes = List.of(
             C43OrderType.SPECIFIC_ISSUE_ORDER, C43OrderType.PROHIBITED_STEPS_ORDER);
 
-        CaseData caseData = buildCaseData(c43OrderTypes);
+        CaseData caseData = buildCaseData(c43OrderTypes, null);
 
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
@@ -85,11 +91,43 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
     }
 
     @Test
+    void shouldContainCorrectTextWhenChildArrangementOrderTypeIsLiveWith() {
+        List<C43OrderType> c43OrderTypes = List.of(C43OrderType.CHILD_ARRANGEMENT_ORDER,
+            C43OrderType.SPECIFIC_ISSUE_ORDER, C43OrderType.PROHIBITED_STEPS_ORDER);
+
+        CaseData caseData = buildCaseData(c43OrderTypes, CHILD_LIVE);
+
+        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
+        when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
+        when(c43ChildArrangementOrderTitleGenerator.getOrderTitle(any())).thenReturn(ORDER_TITLE);
+
+        DocmosisParameters generatedParameters = underTest.generate(caseData);
+
+        assertThat(generatedParameters.toString()).contains(CHILD_LIVE_TEXT);
+    }
+
+    @Test
+    void shouldContainCorrectTextWhenChildArrangementOrderTypeIsContactWith() {
+        List<C43OrderType> c43OrderTypes = List.of(C43OrderType.CHILD_ARRANGEMENT_ORDER,
+            C43OrderType.SPECIFIC_ISSUE_ORDER, C43OrderType.PROHIBITED_STEPS_ORDER);
+
+        CaseData caseData = buildCaseData(c43OrderTypes, CHILD_CONTACT);
+
+        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
+        when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
+        when(c43ChildArrangementOrderTitleGenerator.getOrderTitle(any())).thenReturn(ORDER_TITLE);
+
+        DocmosisParameters generatedParameters = underTest.generate(caseData);
+
+        assertThat(generatedParameters.toString()).contains(CHILD_CONTACT_TEXT);
+    }
+
+    @Test
     void template() {
         assertThat(underTest.template()).isEqualTo(DocmosisTemplates.ORDER_V2);
     }
 
-    private CaseData buildCaseData(List<C43OrderType> c43OrderTypes) {
+    private CaseData buildCaseData(List<C43OrderType> c43OrderTypes, ChildArrangementsOrderType childArrOrderType) {
         return CaseData.builder()
             .caseLocalAuthority(LA_CODE)
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -99,13 +137,30 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
                 .manageOrdersRecitalsAndPreambles(RECITALS_AND_PREAMBLES)
                 .manageOrdersDirections(DIRECTIONS)
                 .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
+                .manageOrdersChildArrangementsOrderType(childArrOrderType)
                 .build())
             .build();
     }
 
     private C43ChildArrangementOrderDocmosisParameters.C43ChildArrangementOrderDocmosisParametersBuilder<?, ?>
-        expectedCommonParameters() {
+    expectedCommonParameters() {
         String orderDetails = String.format("The Court orders\n\n%s", RECITALS_AND_PREAMBLES);
+        String directions = String.format("%s\n\n%s\n\n%s", DIRECTIONS, FURTHER_DIRECTIONS,
+            C43ChildArrangementOrderDocumentParameterGenerator.CONDITIONS_MESSAGE);
+
+        return C43ChildArrangementOrderDocmosisParameters.builder()
+            .orderTitle(ORDER_TITLE)
+            .orderByConsent(CONSENT)
+            .orderDetails(orderDetails)
+            .furtherDirections(directions)
+            .localAuthorityName(LA_NAME)
+            .noticeHeader("Notice")
+            .noticeMessage(C43ChildArrangementOrderDocumentParameterGenerator.NOTICE_MESSAGE);
+    }
+
+    private C43ChildArrangementOrderDocmosisParameters.C43ChildArrangementOrderDocmosisParametersBuilder<?, ?>
+        expectedCommonParametersChildArrangementOrder() {
+        String orderDetails = String.format("%sThe Court orders\n\n%s", CHILD_LIVE_TEXT, RECITALS_AND_PREAMBLES);
         String directions = String.format("%s\n\n%s\n\n%s", DIRECTIONS, FURTHER_DIRECTIONS,
             C43ChildArrangementOrderDocumentParameterGenerator.CONDITIONS_MESSAGE);
 
