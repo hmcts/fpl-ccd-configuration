@@ -202,13 +202,12 @@ public class RespondentController extends CallbackController {
 
     private UUID getFirstOtherId(CaseData caseData) {
         // if firstOther exists confidentialOthers, it should return its uuid in confidentialOthers
-        // otherwise, it returns 00000000-0000-0000-0000-000000000000
+        // otherwise, it returns a random UUID
         Set<UUID> additionalOtherIds = nullSafeList(caseData.getOthers().getAdditionalOthers())
             .stream().map(Element::getId).collect(Collectors.toSet());
-        UUID firstOtherUUID = caseData.getConfidentialOthers().stream().map(Element::getId)
+        return caseData.getConfidentialOthers().stream().map(Element::getId)
             .filter(co -> !additionalOtherIds.contains(co)).findFirst()
-            .orElse(UUID.fromString("00000000-0000-0000-0000-000000000000"));
-        return firstOtherUUID;
+            .orElse(UUID.randomUUID());
     }
 
     private Element<Other> getSelectedOther(CaseData caseData) {
