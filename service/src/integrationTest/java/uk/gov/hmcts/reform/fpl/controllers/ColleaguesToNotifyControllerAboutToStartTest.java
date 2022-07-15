@@ -26,32 +26,32 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @OverrideAutoConfiguration(enabled = true)
 public class ColleaguesToNotifyControllerAboutToStartTest extends AbstractCallbackTest {
 
-    private final long CASE_ID = 1;
+    private static final long CASE_ID = 1;
 
-    private final List<Element<Colleague>> COLLEAGUES = wrapElements(
+    private static final List<Element<Colleague>> COLLEAGUES = wrapElements(
         Colleague.builder()
             .email("solicitor@solicitors.uk")
             .fullName("Solicitor Colleague")
             .build());
 
-    private final RespondentSolicitor SOLICITOR_A = RespondentSolicitor.builder()
+    private static final RespondentSolicitor SOLICITOR_A = RespondentSolicitor.builder()
         .firstName("Solicitor")
         .lastName("One")
         .build();
 
-    private final RespondentSolicitor SOLICITOR_WITH_COLLEAGUES = RespondentSolicitor.builder()
+    private static final RespondentSolicitor SOLICITOR_WITH_COLLEAGUES = RespondentSolicitor.builder()
         .firstName("Solicitor")
         .lastName("Two")
         .colleaguesToBeNotified(COLLEAGUES)
         .build();
 
 
-    private final Respondent RESPONDENT_ONE = Respondent.builder()
+    private static final Respondent RESPONDENT_ONE = Respondent.builder()
         .party(RespondentParty.builder().firstName("David").lastName("Jones").build())
         .solicitor(SOLICITOR_A)
         .build();
 
-    private final Respondent RESPONDENT_WITH_SOLICITOR_COLLEAGUES = Respondent.builder()
+    private static final Respondent RESPONDENT_WITH_SOLICITOR_COLLEAGUES = Respondent.builder()
         .party(RespondentParty.builder().firstName("Alex").lastName("Smith").build())
         .solicitor(SOLICITOR_WITH_COLLEAGUES)
         .build();
