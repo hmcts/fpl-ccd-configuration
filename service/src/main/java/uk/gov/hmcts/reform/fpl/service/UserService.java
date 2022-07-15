@@ -5,14 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
@@ -43,14 +40,6 @@ public class UserService {
     public boolean isHmctsAdminUser() {
         Set<String> roles = getIdamRoles();
         return roles != null && roles.contains(HMCTS_ADMIN.getRoleName());
-    }
-
-    public boolean isChildSolicitor(Long caseId) {
-        return hasAnyCaseRoleFrom(CaseRole.childSolicitors(), caseId);
-    }
-
-    public boolean isRespondentSolicitor(Long caseId) {
-        return hasAnyCaseRoleFrom(CaseRole.respondentSolicitors(), caseId);
     }
 
     public boolean hasAnyCaseRoleFrom(List<CaseRole> caseRoles, Long caseId) {
