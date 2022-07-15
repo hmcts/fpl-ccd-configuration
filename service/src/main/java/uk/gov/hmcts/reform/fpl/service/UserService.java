@@ -74,47 +74,4 @@ public class UserService {
         return requestData.userRoles();
     }
 
-    // TODO - do these belong here or in another service
-    public Optional<WithSolicitor> getRepresentedRespondent(CaseData caseData) {
-        Set<CaseRole> roles = getCaseRoles(caseData.getId());
-        List<CaseRole> respondentSolicitorRoles = CaseRole.respondentSolicitors();
-        // Check if they are a respondent solicitor
-        for (int i = 0; i < respondentSolicitorRoles.size(); i++) {
-            if (roles.contains(respondentSolicitorRoles.get(i))) {
-                if (i > caseData.getRespondents1().size()) {
-                    // this respondent doesn't exist so cannot have a solicitor
-                    return Optional.empty();
-                }
-                return Optional.ofNullable(caseData.getRespondents1().get(i).getValue());
-            }
-        }
-        return Optional.empty();
-    }
-
-    public Optional<WithSolicitor> getRepresentedChild(CaseData caseData) {
-        Set<CaseRole> roles = getCaseRoles(caseData.getId());
-        List<CaseRole> childSolicitorRoles = CaseRole.childSolicitors();
-        // Check if they are a respondent solicitor
-        for (int i = 0; i < childSolicitorRoles.size(); i++) {
-            if (roles.contains(childSolicitorRoles.get(i))) {
-                if (i > caseData.getChildren1().size()) {
-                    // this child doesn't exist so cannot have a solicitor
-                    return Optional.empty();
-                }
-                return Optional.ofNullable(caseData.getChildren1().get(i).getValue());
-            }
-        }
-        return Optional.empty();
-    }
-
-    public Optional<WithSolicitor> caseRoleToRepresented(CaseData caseData) {
-        if (isRespondentSolicitor(caseData.getId())) {
-            return getRepresentedRespondent(caseData);
-        } else if (isChildSolicitor(caseData.getId())) {
-            return getRepresentedChild(caseData);
-        } else {
-            return Optional.empty();
-        }
-    }
-
 }

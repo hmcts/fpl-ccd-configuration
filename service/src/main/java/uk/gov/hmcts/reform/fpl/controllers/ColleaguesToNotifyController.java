@@ -10,16 +10,18 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
-import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.CaseRoleLookupService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 
@@ -29,14 +31,20 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ColleaguesToNotifyController extends CallbackController {
 
-    private final UserService userService;
+    private final CaseRoleLookupService caseRoleLookupService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         final CaseDetails caseDetails = callbackrequest.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
 
-        Optional<WithSolicitor> represented = userService.caseRoleToRepresented(caseData);
+        List<SolicitorRole> roles = caseRoleLookupService.getCaseSolicitorRolesForCurrentUser(caseData.getId());
+        List<WithSolicitor> represented = roles.stream()
+            .map(role -> role.getRepresentedPerson(caseData))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .map(Element::getValue)
+            .collect(Collectors.toList());
 
         List<String> errors;
         if (represented.isEmpty()) {
@@ -44,9 +52,11 @@ public class ColleaguesToNotifyController extends CallbackController {
             return respond(caseDetails, errors);
         }
 
-        caseDetails.getData().put("respondentName", represented.get().toParty().getFullName());
+        // Use the first party we are representing - solicitors shouldn't be representing multiple
+        // todo - what about children's solicitors...
+        caseDetails.getData().put("respondentName", represented.get(0).toParty().getFullName());
         caseDetails.getData().put("colleaguesToNotify",
-            represented.get().getSolicitor().getColleaguesToBeNotified());
+            represented.get(0).getSolicitor().getColleaguesToBeNotified());
 
         return respond(caseDetails);
     }
@@ -56,7 +66,13 @@ public class ColleaguesToNotifyController extends CallbackController {
         final CaseData caseData = getCaseData(callbackrequest);
         final CaseDetailsMap caseDetails = caseDetailsMap(callbackrequest.getCaseDetails());
 
-        Optional<WithSolicitor> represented = userService.caseRoleToRepresented(caseData);
+        List<SolicitorRole> roles = caseRoleLookupService.getCaseSolicitorRolesForCurrentUser(caseData.getId());
+        List<WithSolicitor> represented = roles.stream()
+            .map(role -> role.getRepresentedPerson(caseData))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .map(Element::getValue)
+            .collect(Collectors.toList());
 
         List<String> errors;
         if (represented.isEmpty()) {
@@ -64,23 +80,23 @@ public class ColleaguesToNotifyController extends CallbackController {
             return respond(caseDetails, errors);
         }
 
-        if (userService.isRespondentSolicitor(caseData.getId())) {
+        if (roles.get(0).getRepresenting().equals(SolicitorRole.Representing.RESPONDENT)) {
             // Update the respondent who's solicitor it is
             List<Element<Respondent>> respondents = caseData.getRespondents1();
 
             for (Element<Respondent> respondent : respondents) {
-                if (respondent.getValue().equals(represented.get())) {
+                if (respondent.getValue().equals(represented.get(0))) {
                     respondent.getValue().getSolicitor().setColleaguesToBeNotified(caseData.getColleaguesToNotify());
                 }
             }
 
             caseDetails.put("respondents1", respondents);
-        } else if (userService.isChildSolicitor(caseData.getId())) {
+        } else if (roles.get(0).getRepresenting().equals(SolicitorRole.Representing.CHILD)) {
             // Update the child who's solicitor it is
             List<Element<Child>> children = caseData.getChildren1();
 
             for (Element<Child> child : children) {
-                if (child.getValue().equals(represented.get())) {
+                if (child.getValue().equals(represented.get(0))) {
                     child.getValue().getSolicitor().setColleaguesToBeNotified(caseData.getColleaguesToNotify());
                 }
             }

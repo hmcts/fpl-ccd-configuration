@@ -6,20 +6,19 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.CaseRoleLookupService;
 
 import java.util.List;
-import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -58,7 +57,7 @@ public class ColleaguesToNotifyControllerAboutToStartTest extends AbstractCallba
         .build();
 
     @MockBean
-    private UserService userService;
+    private CaseRoleLookupService caseRoleLookupService;
 
     protected ColleaguesToNotifyControllerAboutToStartTest() {
         super("add-colleagues-to-notify");
@@ -67,38 +66,46 @@ public class ColleaguesToNotifyControllerAboutToStartTest extends AbstractCallba
     @Test
     void shouldSetRespondentNameIfTheyAreRepresented() {
         givenCaseRoles(CASE_ID, USER_ID, CaseRole.SOLICITORA);
-        given(userService.caseRoleToRepresented(any())).willReturn(Optional.of(RESPONDENT_ONE));
+        given(caseRoleLookupService.getCaseSolicitorRolesForCurrentUser(CASE_ID))
+            .willReturn(List.of(SolicitorRole.SOLICITORA));
 
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
             .respondents1(wrapElements(RESPONDENT_ONE))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseData);
 
+        assertThat(callbackResponse.getErrors()).isNull();
         assertThat(callbackResponse.getData()).extracting("respondentName").isEqualTo("David Jones");
     }
 
     @Test
     void shouldSetColleagesIfTheyHaveBeenAddedPreviously() {
         givenCaseRoles(CASE_ID, USER_ID, CaseRole.SOLICITORA);
-        given(userService.caseRoleToRepresented(any())).willReturn(Optional.of(RESPONDENT_WITH_SOLICITOR_COLLEAGUES));
+        given(caseRoleLookupService.getCaseSolicitorRolesForCurrentUser(CASE_ID))
+            .willReturn(List.of(SolicitorRole.SOLICITORA));
 
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
             .respondents1(wrapElements(RESPONDENT_WITH_SOLICITOR_COLLEAGUES))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseData);
         CaseData after = extractCaseData(callbackResponse);
 
+        assertThat(callbackResponse.getErrors()).isNull();
         assertThat(after.getColleaguesToNotify()).isEqualTo(COLLEAGUES);
     }
 
     @Test
     void shouldThrowErrorIfNotRepresentingAnyone() {
         givenCaseRoles(CASE_ID, USER_ID, CaseRole.SOLICITORB);
-        given(userService.caseRoleToRepresented(any())).willReturn(Optional.empty());
+        given(caseRoleLookupService.getCaseSolicitorRolesForCurrentUser(CASE_ID))
+            .willReturn(List.of());
 
         CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
             .respondents1(wrapElements(RESPONDENT_ONE))
             .build();
 
