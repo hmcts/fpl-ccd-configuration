@@ -30,7 +30,6 @@ class UploadDraftOrdersDataTest {
                 "currentHearingOrderDrafts",
                 "uploadedCaseManagementOrder",
                 "replacementCMO",
-                "cmoSupportingDocs",
                 "pastHearingsForCMO",
                 "futureHearingsForCMO",
                 "hearingsForHearingOrderDrafts",

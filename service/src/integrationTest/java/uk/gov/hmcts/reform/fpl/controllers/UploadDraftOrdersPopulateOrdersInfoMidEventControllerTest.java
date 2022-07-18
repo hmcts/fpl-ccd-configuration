@@ -100,7 +100,6 @@ class UploadDraftOrdersPopulateOrdersInfoMidEventControllerTest extends Abstract
             .pastHearingsForCMO(pastHearingList)
             .hearingOrderDraftKind(List.of(CMO))
             .cmoUploadType(CMOType.AGREED)
-            .cmoSupportingDocs(supportingDocs)
             .build();
 
         CaseData caseData = CaseData.builder()
@@ -116,7 +115,6 @@ class UploadDraftOrdersPopulateOrdersInfoMidEventControllerTest extends Abstract
         assertThat(updatedEventData.getPreviousCMO()).isEqualTo(DOCUMENT);
         assertThat(updatedEventData.getCmoToSend()).isEqualTo(DOCUMENT);
         assertThat(updatedEventData.getShowReplacementCMO()).isEqualTo(YesNo.YES);
-        assertThat(updatedEventData.getCmoSupportingDocs()).isEqualTo(supportingDocs);
         assertThat(updatedEventData.getCmoHearingInfo()).isEqualTo("Case management hearing, 17 March 2020");
         assertThat(updatedEventData.getPastHearingsForCMO()).isEqualTo(pastHearingListAsMap);
         assertThat(updatedEventData.getCmoJudgeInfo()).isEqualTo("Her Honour Judge Judy");
@@ -160,7 +158,6 @@ class UploadDraftOrdersPopulateOrdersInfoMidEventControllerTest extends Abstract
             .cmoUploadType(CMOType.DRAFT)
             .previousCMO(draftCMO.getValue().getOrder())
             .showCMOsSentToJudge(YesNo.NO)
-            .cmoSupportingDocs(updatedSupportingDocs)
             .build();
 
         CaseData caseData = CaseData.builder()
@@ -176,7 +173,6 @@ class UploadDraftOrdersPopulateOrdersInfoMidEventControllerTest extends Abstract
         assertThat(updatedEventData.getPreviousCMO()).isEqualTo(DOCUMENT);
         assertThat(updatedEventData.getCmoToSend()).isEqualTo(DOCUMENT);
         assertThat(updatedEventData.getShowReplacementCMO()).isEqualTo(YesNo.YES);
-        assertThat(updatedEventData.getCmoSupportingDocs()).isEqualTo(updatedSupportingDocs);
         assertThat(updatedEventData.getCmoHearingInfo()).isEqualTo("Case management hearing, 17 March 2021");
         assertThat(updatedEventData.getFutureHearingsForCMO()).isEqualTo(hearingListAsMap);
         assertThat(updatedEventData.getCmoJudgeInfo()).isEqualTo("Her Honour Judge Judy");
