@@ -10,6 +10,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public enum OrderQuestionBlock {
 
+    CHILD_ASSESSMENT_ORDER("manageOrdersChildAssessment", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersChildAssessmentType", "manageOrdersAssessmentStartDate",
+            "manageOrdersDurationOfAssessment",
+            "manageOrdersPlaceOfAssessment",
+            "manageOrdersAssessingBody",
+            "manageOrdersChildKeepAwayFromHome",
+            "manageOrdersFullAddressToStayIfKeepAwayFromHome",
+            "manageOrdersStartDateOfStayIfKeepAwayFromHome",
+            "manageOrdersEndDateOfStayIfKeepAwayFromHome",
+            "manageOrdersChildFirstContactIfKeepAwayFromHome",
+            "manageOrdersChildSecondContactIfKeepAwayFromHome",
+            "manageOrdersChildThirdContactIfKeepAwayFromHome",
+            "manageOrdersDoesCostOrderExist",
+            "manageOrdersCostOrderDetails")),
     LINKED_TO_HEARING("hearingDetails", OrderSection.HEARING_DETAILS,
         List.of("manageOrdersApprovedAtHearing", "manageOrdersApprovedAtHearingList",
             "manageOrdersApprovalDate", "manageOrdersApprovalDateTime", "judgeAndLegalAdvisor")),
