@@ -114,7 +114,14 @@ public enum CafcassRequestEmailContentProvider {
         caseData.getFamilyManCaseNumber(),
         getHearingDetails(caseData, cafcassData)),
         CafcassRequestEmailContentProvider::getNoticeOfHearingMessage,
-        CafcassEmailConfiguration::getRecipientForNoticeOfHearing);
+        CafcassEmailConfiguration::getRecipientForNoticeOfHearing),
+
+    PLACEMENT_APPLICATION("Placement Application",
+        (caseData, cafcassData) ->  String.format(getSubject(),
+            caseData.getFamilyManCaseNumber(),
+            "Placement Application"),
+        CafcassRequestEmailContentProvider::getPlacementApplicationMessage,
+        CafcassEmailConfiguration::getRecipientForNewApplication);
 
 
 
@@ -192,6 +199,15 @@ public enum CafcassRequestEmailContentProvider {
                 System.lineSeparator(),
                 "Hearing time:", cafcassData.getHearingTime()
         );
+    }
+
+    private static String getPlacementApplicationMessage(CaseData caseData, CafcassData cafcassData) {
+        return String.join(" ",
+            "There's a new Placement Application for:",
+            System.lineSeparator(),
+            cafcassData.getFirstRespondentName(), caseData.getFamilyManCaseNumber(),
+            System.lineSeparator(), System.lineSeparator(),
+            "Child name:", cafcassData.getPlacementChildName());
     }
 
     private static String getSubject() {

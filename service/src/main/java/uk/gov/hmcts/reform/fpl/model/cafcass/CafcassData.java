@@ -72,4 +72,8 @@ public interface CafcassData {
     default String getNotificationType()  {
         throw new UnsupportedOperationException();
     }
+
+    default String getPlacementChildName() {
+        throw new UnsupportedOperationException();
+    }
 }
