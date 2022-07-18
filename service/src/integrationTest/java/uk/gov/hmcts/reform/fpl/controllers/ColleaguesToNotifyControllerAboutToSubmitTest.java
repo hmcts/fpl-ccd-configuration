@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.service.CaseRoleLookupService;
 
 import java.util.List;
 
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
