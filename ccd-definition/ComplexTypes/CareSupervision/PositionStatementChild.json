@@ -1,0 +1,70 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PositionStatementChild",
+    "ListElementCode": "hearing",
+    "FieldType": "Text",
+    "ElementLabel": "Position statement child for",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PositionStatementChild",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "Position statement child",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PositionStatementChild",
+    "ListElementCode": "dateTimeUploaded",
+    "FieldType": "DateTime",
+    "ElementLabel": "Date and time uploaded",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PositionStatementChild",
+    "ListElementCode": "uploadedBy",
+    "FieldType": "Text",
+    "ElementLabel": "Uploaded by",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PositionStatementChild",
+    "ListElementCode": "childName",
+    "FieldType": "Text",
+    "ElementLabel": "Child name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PositionStatementChild",
+    "ListElementCode": "childId",
+    "FieldType": "Text",
+    "ElementLabel": "Child",
+    "FieldShowCondition": "childId=\"DO NOT SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PositionStatementChild",
+    "ListElementCode": "hasConfidentialAddressLabel",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Presentational only - used to display a warning label in the event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PositionStatementChild",
+    "ListElementCode": "hasConfidentialAddress",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Document contains a confidential address?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  }
+]

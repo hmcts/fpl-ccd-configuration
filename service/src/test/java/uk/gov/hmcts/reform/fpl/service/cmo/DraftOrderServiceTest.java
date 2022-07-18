@@ -6,7 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
 import uk.gov.hmcts.reform.fpl.enums.CMOType;
@@ -17,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -29,7 +27,6 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -48,7 +45,6 @@ import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
@@ -77,14 +73,10 @@ class DraftOrderServiceTest {
 
     private DraftOrderService service;
 
-    @Mock
-    private DocumentUploadHelper documentUploadHelper;
-
     @BeforeEach
     void init() {
         service = new DraftOrderService(new ObjectMapper(),
             time,
-            documentUploadHelper,
             new HearingOrderKindEventDataBuilder(new IdentityService(), new OptionCountBuilder())
         );
     }
@@ -201,7 +193,6 @@ class DraftOrderServiceTest {
                 .hearingOrderDraftKind(List.of(HearingOrderKind.CMO))
                 .cmoUploadType(CMOType.AGREED)
                 .pastHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
-                .cmoSupportingDocs(bundle)
                 .build();
 
             CaseData caseData = CaseData.builder()
@@ -218,7 +209,6 @@ class DraftOrderServiceTest {
                 .cmoToSend(previousCmo.getValue().getOrder())
                 .cmoHearingInfo("Case management hearing, 2 March 2020")
                 .cmoJudgeInfo("His Honour Judge Dredd")
-                .cmoSupportingDocs(bundle)
                 .pastHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
                 .futureHearingsForCMO(dynamicList(emptyList()))
                 .hearingsForHearingOrderDrafts(dynamicList(hearings, defaultListItem("No hearing")))
@@ -231,8 +221,6 @@ class DraftOrderServiceTest {
         void shouldPullExistingInfoAndReplaceDocumentsWhenNewDocumentsAreUploaded() {
             Element<SupportingEvidenceBundle> supportingDoc = element(
                 SupportingEvidenceBundle.builder().name("case summary").build());
-            Element<SupportingEvidenceBundle> newSupportingDoc = element(
-                SupportingEvidenceBundle.builder().name("new support document").build());
 
             DocumentReference previousOrder = testDocumentReference();
             DocumentReference newOrder = testDocumentReference();
@@ -251,7 +239,6 @@ class DraftOrderServiceTest {
             UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
                 .hearingOrderDraftKind(List.of(HearingOrderKind.CMO))
                 .futureHearingsForCMO(dynamicList(futureHearings.get(0).getId(), futureHearings))
-                .cmoSupportingDocs(List.of(newSupportingDoc))
                 .cmoUploadType(CMOType.DRAFT)
                 .previousCMO(previousOrder)
                 .replacementCMO(newOrder)
@@ -272,7 +259,6 @@ class DraftOrderServiceTest {
                 .cmoToSend(newOrder)
                 .cmoHearingInfo("Case management hearing, 2 March 2050")
                 .cmoJudgeInfo("His Honour Judge Dredd")
-                .cmoSupportingDocs(List.of(newSupportingDoc))
                 .futureHearingsForCMO(dynamicList(futureHearings.get(0).getId(), futureHearings))
                 .pastHearingsForCMO(dynamicList(emptyList()))
                 .hearingsForHearingOrderDrafts(dynamicList(emptyList(), defaultListItem("No hearing")))
@@ -300,7 +286,6 @@ class DraftOrderServiceTest {
             UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
                 .hearingOrderDraftKind(List.of(HearingOrderKind.CMO))
                 .futureHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
-                .cmoSupportingDocs(null)
                 .cmoUploadType(CMOType.DRAFT)
                 .previousCMO(previousCmo.getValue().getOrder())
                 .build();
@@ -319,7 +304,6 @@ class DraftOrderServiceTest {
                 .cmoToSend(previousCmo.getValue().getOrder())
                 .cmoHearingInfo("Case management hearing, 2 March 2050")
                 .cmoJudgeInfo("His Honour Judge Dredd")
-                .cmoSupportingDocs(List.of())
                 .futureHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
                 .pastHearingsForCMO(dynamicList(emptyList()))
                 .hearingsForHearingOrderDrafts(dynamicList(emptyList(), defaultListItem("No hearing")))
@@ -539,27 +523,19 @@ class DraftOrderServiceTest {
 
             List<Element<HearingBooking>> hearings = hearings();
 
-            List<Element<SupportingEvidenceBundle>> bundle = wrapElements(SupportingEvidenceBundle.builder()
-                .name("name")
-                .build());
-
             UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
                 .hearingOrderDraftKind(List.of(HearingOrderKind.CMO))
                 .uploadedCaseManagementOrder(testDocumentReference())
                 .futureHearingsForCMO(dynamicList(hearings.get(0).getId(), List.of(hearings.get(0))))
                 .pastHearingsForCMO(dynamicList(hearings.get(1).getId(), List.of(hearings.get(1))))
-                .cmoSupportingDocs(bundle)
                 .cmoUploadType(CMOType.DRAFT)
                 .cmoToSendTranslationRequirements(TRANSLATION_REQUIREMENTS)
                 .build();
 
             List<Element<HearingOrder>> unsealedOrders = newArrayList();
-            List<Element<HearingFurtherEvidenceBundle>> bundles = newArrayList();
             List<Element<HearingOrdersBundle>> ordersBundles = newArrayList();
 
-            service.updateCase(eventData, hearings, unsealedOrders, bundles, ordersBundles);
-
-            assertThat(bundles).isEmpty();
+            service.updateCase(eventData, hearings, unsealedOrders, ordersBundles);
 
             assertThat(unsealedOrders).hasSize(1)
                 .first()
@@ -567,7 +543,7 @@ class DraftOrderServiceTest {
                 .isEqualTo(HearingOrder.builder()
                     .type(DRAFT_CMO)
                     .title("Draft CMO from advocates' meeting")
-                    .supportingDocs(bundle)
+                    .supportingDocs(null)
                     .judgeTitleAndName("His Honour Judge Dredd")
                     .hearing("Case management hearing, 2 March 2020")
                     .dateSent(time.now().toLocalDate())
@@ -580,82 +556,6 @@ class DraftOrderServiceTest {
                 .first()
                 .extracting(hearing -> hearing.getValue().getCaseManagementOrderId())
                 .isEqualTo(unsealedOrders.get(0).getId());
-        }
-
-        @Test
-        void shouldMigrateBundleWhenUploadedCMOIsAgreed() {
-            when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn("Test LA");
-
-            List<Element<HearingBooking>> hearings = hearings();
-
-            List<Element<SupportingEvidenceBundle>> bundle = List.of(
-                buildSupportingEvidenceBundleElement("name"));
-
-            UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
-                .hearingOrderDraftKind(List.of(HearingOrderKind.CMO))
-                .pastHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
-                .uploadedCaseManagementOrder(testDocumentReference())
-                .cmoSupportingDocs(bundle)
-                .cmoToSendTranslationRequirements(TRANSLATION_REQUIREMENTS)
-                .cmoUploadType(CMOType.AGREED)
-                .build();
-
-            List<Element<HearingOrder>> unsealedOrders = newArrayList();
-            List<Element<HearingFurtherEvidenceBundle>> bundles = newArrayList();
-            List<Element<HearingOrdersBundle>> ordersBundles = newArrayList();
-
-            service.updateCase(eventData, hearings, unsealedOrders, bundles, ordersBundles);
-
-            assertThat(bundles).hasSize(1)
-                .isEqualTo(List.of(element(
-                    hearings.get(0).getId(),
-                    HearingFurtherEvidenceBundle.builder()
-                        .hearingName("Case management hearing, 2 March 2020")
-                        .supportingEvidenceBundle(bundle)
-                        .build()
-                )));
-        }
-
-        @Test
-        void shouldUpdateExistingBundleWhenUploadedCMOIsAgreed() {
-            when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn("Test LA");
-
-            List<Element<HearingBooking>> hearings = hearings();
-
-            Element<SupportingEvidenceBundle> doc1 = buildSupportingEvidenceBundleElement("1");
-            Element<SupportingEvidenceBundle> doc2 = buildSupportingEvidenceBundleElement("2");
-            Element<SupportingEvidenceBundle> doc3 = buildSupportingEvidenceBundleElement("3");
-
-            Element<SupportingEvidenceBundle> updatedDoc2 = element(doc2.getId(), doc2.getValue().toBuilder()
-                .name("2 updated")
-                .build());
-            Element<SupportingEvidenceBundle> newDoc = buildSupportingEvidenceBundleElement("3");
-
-            Element<HearingFurtherEvidenceBundle> existingHearingBundle = element(
-                hearings.get(0).getId(),
-                HearingFurtherEvidenceBundle.builder()
-                    .supportingEvidenceBundle(newArrayList(doc1, doc2, doc3))
-                    .build());
-
-            List<Element<SupportingEvidenceBundle>> cmoSupportingDocuments = List.of(doc1, updatedDoc2, doc3, newDoc);
-
-            UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
-                .hearingOrderDraftKind(List.of(HearingOrderKind.CMO))
-                .pastHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
-                .uploadedCaseManagementOrder(testDocumentReference())
-                .cmoSupportingDocs(cmoSupportingDocuments)
-                .cmoUploadType(CMOType.AGREED)
-                .cmoToSendTranslationRequirements(TRANSLATION_REQUIREMENTS)
-                .build();
-
-            List<Element<HearingOrder>> unsealedOrders = newArrayList();
-            List<Element<HearingFurtherEvidenceBundle>> bundles = newArrayList(existingHearingBundle);
-            List<Element<HearingOrdersBundle>> ordersBundles = newArrayList();
-
-            service.updateCase(eventData, hearings, unsealedOrders, bundles, ordersBundles);
-
-            assertThat(bundles.get(0).getValue().getSupportingEvidenceBundle())
-                .containsExactly(doc1, updatedDoc2, doc3, newDoc);
         }
 
         @Test
@@ -684,7 +584,7 @@ class DraftOrderServiceTest {
             HearingOrdersBundle ordersBundle = ordersBundle(selectedHearing.getId(), previousCmoOrder, c21Order);
             List<Element<HearingOrdersBundle>> ordersBundles = wrapElements(ordersBundle);
 
-            service.updateCase(eventData, hearings, unsealedOrders, List.of(), ordersBundles);
+            service.updateCase(eventData, hearings, unsealedOrders, ordersBundles);
 
             HearingOrder expectedOrder = HearingOrder.builder()
                 .title("Agreed CMO discussed at hearing")
@@ -695,7 +595,6 @@ class DraftOrderServiceTest {
                 .hearing("Case management hearing, 2 March 2020")
                 .judgeTitleAndName("His Honour Judge Dredd")
                 .translationRequirements(TRANSLATION_REQUIREMENTS)
-                .supportingDocs(List.of())
                 .build();
 
             assertThat(unsealedOrders).hasSize(2)
@@ -713,42 +612,6 @@ class DraftOrderServiceTest {
             assertThat(ordersBundles).hasSize(1);
             assertThat(ordersBundles.get(0).getValue().getOrders()).extracting(Element::getValue)
                 .containsExactly(expectedOrder, c21Order.getValue());
-        }
-
-        @Test
-        void shouldUpdateExistingDocumentBundleWithDocsWhenPresent() {
-            when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn("Test LA");
-
-            List<Element<HearingBooking>> hearings = hearings();
-
-            Element<SupportingEvidenceBundle> newEvidenceBundle = buildSupportingEvidenceBundleElement("new");
-
-            UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
-                .hearingOrderDraftKind(List.of(HearingOrderKind.CMO))
-                .pastHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
-                .uploadedCaseManagementOrder(testDocumentReference())
-                .cmoSupportingDocs(List.of(newEvidenceBundle))
-                .cmoUploadType(CMOType.AGREED)
-                .build();
-
-            List<Element<SupportingEvidenceBundle>> currentEvidenceBundles = newArrayList(
-                element(SupportingEvidenceBundle.builder().name("current").build()));
-
-            List<Element<HearingFurtherEvidenceBundle>> bundles = newArrayList(
-                element(hearings.get(0).getId(), HearingFurtherEvidenceBundle.builder()
-                    .hearingName("Case management hearing, 2 March 2020")
-                    .supportingEvidenceBundle(currentEvidenceBundles)
-                    .build()));
-
-            List<Element<HearingOrder>> unsealedOrders = newArrayList();
-            List<Element<HearingOrdersBundle>> ordersBundles = newArrayList();
-
-            service.updateCase(eventData, hearings, unsealedOrders, bundles, ordersBundles);
-
-            assertThat(bundles).hasSize(1)
-                .first()
-                .extracting(bundle -> bundle.getValue().getSupportingEvidenceBundle())
-                .isEqualTo(List.of(currentEvidenceBundles.get(0), newEvidenceBundle));
         }
 
         @Test
@@ -773,11 +636,10 @@ class DraftOrderServiceTest {
                 .orderToSendTranslationRequirements1(TRANSLATION_REQUIREMENTS)
                 .build();
 
-            List<Element<HearingFurtherEvidenceBundle>> evidenceBundles = newArrayList();
             List<Element<HearingOrder>> unsealedOrders = newArrayList();
             List<Element<HearingOrdersBundle>> ordersBundles = newArrayList();
 
-            service.updateCase(eventData, hearings, unsealedOrders, evidenceBundles, ordersBundles);
+            service.updateCase(eventData, hearings, unsealedOrders, ordersBundles);
 
             assertThat(ordersBundles).hasSize(1);
             assertThat(ordersBundles.get(0)).extracting(Element::getValue).isEqualTo(ordersBundle);
@@ -811,7 +673,7 @@ class DraftOrderServiceTest {
 
             List<Element<HearingOrdersBundle>> ordersBundles = wrapElements(originalOrdersBundle);
 
-            service.updateCase(eventData, hearings, emptyList(), emptyList(), ordersBundles);
+            service.updateCase(eventData, hearings, emptyList(), ordersBundles);
 
             HearingOrdersBundle expectedOrdersBundle = originalOrdersBundle.toBuilder()
                 .orders(newArrayList(cmoOrder, hearingOrder1, hearingOrder3))
@@ -844,7 +706,7 @@ class DraftOrderServiceTest {
             List<Element<HearingOrdersBundle>> ordersBundles = wrapElements(selectedHearingOrderBundle,
                 otherOrdersBundle);
 
-            service.updateCase(eventData, hearings, emptyList(), emptyList(), ordersBundles);
+            service.updateCase(eventData, hearings, emptyList(), ordersBundles);
 
             assertThat(ordersBundles).extracting(Element::getValue).containsExactly(otherOrdersBundle);
         }
@@ -869,7 +731,7 @@ class DraftOrderServiceTest {
             List<Element<HearingOrdersBundle>> ordersBundles = wrapElements(ordersBundle);
             List<Element<HearingOrder>> unsealedOrders = newArrayList();
 
-            service.updateCase(eventData, hearings, unsealedOrders, List.of(), ordersBundles);
+            service.updateCase(eventData, hearings, unsealedOrders, ordersBundles);
 
             HearingOrder expectedOrder = HearingOrder.builder()
                 .title("Agreed CMO discussed at hearing")
@@ -879,7 +741,6 @@ class DraftOrderServiceTest {
                 .order(eventData.getUploadedCaseManagementOrder())
                 .hearing("Case management hearing, 2 March 2020")
                 .judgeTitleAndName("His Honour Judge Dredd")
-                .supportingDocs(List.of())
                 .build();
 
             assertThat(ordersBundles).hasSize(1);
@@ -899,7 +760,7 @@ class DraftOrderServiceTest {
                 .build();
 
             Exception exception = assertThrows(Exception.class,
-                () -> service.updateCase(eventData, hearings, newArrayList(), newArrayList(), newArrayList()));
+                () -> service.updateCase(eventData, hearings, newArrayList(), newArrayList()));
 
             assertThat(exception).isInstanceOf(HearingNotFoundException.class);
         }

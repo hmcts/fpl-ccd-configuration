@@ -1,0 +1,30 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingDocumentType",
+    "ListElementCode": "COURT_BUNDLE",
+    "ListElement": "Court bundle",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingDocumentType",
+    "ListElementCode": "CASE_SUMMARY",
+    "ListElement": "Case summary",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingDocumentType",
+    "ListElementCode": "POSITION_STATEMENT_CHILD",
+    "ListElement": "Position statement child",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingDocumentType",
+    "ListElementCode": "POSITION_STATEMENT_RESPONDENT",
+    "ListElement": "Position statement respondent",
+    "DisplayOrder": 4
+  }
+]
