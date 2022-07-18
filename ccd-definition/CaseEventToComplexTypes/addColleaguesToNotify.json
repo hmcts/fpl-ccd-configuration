@@ -28,15 +28,5 @@
     "EventElementLabel": "Email address",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "Colleague",
-    "CaseEventID": "addColleaguesToNotify",
-    "CaseFieldID": "colleaguesToNotify",
-    "ListElementCode": "phone",
-    "EventElementLabel": "Phone number",
-    "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY"
   }
 ]
