@@ -31,7 +31,6 @@ import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.PlacementEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
@@ -68,7 +67,6 @@ public class PlacementEventsHandler {
     private final SendDocumentService sendDocumentService;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final LocalAuthorityRecipientsService localAuthorityRecipients;
-    private final PlacementEmailContentProvider placementEmailContentProvider;
     private final CafcassNotificationService cafcassNotificationService;
 
 
@@ -105,7 +103,7 @@ public class PlacementEventsHandler {
 
         if (recipientIsEngland.isPresent()) {
             PlacementApplicationCafcassData placementApplicationCafcassData =
-                placementEmailContentProvider.buildNewPlacementApplicationNotificationCafcassData(
+                contentProvider.buildNewPlacementApplicationNotificationCafcassData(
                     caseData,
                     event.getPlacement()
                 );
