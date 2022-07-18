@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
@@ -226,4 +227,6 @@ public class PlacementEventData {
     @FieldsGroup(NOTICE_GROUP)
     @JsonDeserialize(using = YesNoDeserializer.class)
     private YesNo sendPlacementNoticeToAllRespondents;
+
+    private UUID placementIdToBeSealed;
 }
