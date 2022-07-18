@@ -1,11 +1,8 @@
 package uk.gov.hmcts.reform.fpl.controllers.placement;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.controllers.PlacementController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Placement;
@@ -14,24 +11,16 @@ import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
-import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
-import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
-import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.Type.ANNEX_B;
 import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(PlacementController.class)
@@ -40,35 +29,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
 
     private static final String RECIPIENT_LOCAL_AUTHORITY = "Local authority";
     private static final String TEST_DESCRIPTION = "Test description";
-    private final Document sealedDocument = testDocument();
-    private final DocumentReference sealedApplication = buildFromDocument(sealedDocument);
     private final DocumentReference application = testDocumentReference("application.doc");
-
-    @MockBean
-    private UploadDocumentService uploadDocumentService;
-
-    @MockBean
-    private DocumentDownloadService documentDownloadService;
-
-    @MockBean
-    private DocumentConversionService documentConversionService;
-
-    @BeforeEach
-    void init() {
-
-        final byte[] applicationContent = testDocumentBinaries();
-        final byte[] applicationContentAsPdf = readBytes("documents/document.pdf");
-        final byte[] sealedApplicationContent = readBytes("documents/document-sealed.pdf");
-
-        when(documentDownloadService.downloadDocument(application.getBinaryUrl()))
-            .thenReturn(applicationContent);
-
-        when(documentConversionService.convertToPdf(applicationContent, application.getFilename()))
-            .thenReturn(applicationContentAsPdf);
-
-        when(uploadDocumentService.uploadPDF(sealedApplicationContent, "application.pdf"))
-            .thenReturn(sealedDocument);
-    }
 
     @Test
     void shouldSaveNewPlacementApplication() {
@@ -107,7 +68,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
         final PlacementEventData actualPlacementData = updatedCaseData.getPlacementEventData();
 
         final Placement expectedNewPlacement = newPlacement.toBuilder()
-            .application(sealedApplication)
+            .application(application)
             .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                 .type(LOCAL_AUTHORITY)
                 .recipientName(RECIPIENT_LOCAL_AUTHORITY)

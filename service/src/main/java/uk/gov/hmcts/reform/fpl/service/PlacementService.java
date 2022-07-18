@@ -53,6 +53,7 @@ import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.MANY;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.ONE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.A92;
@@ -68,7 +69,6 @@ import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientTyp
 import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.PARENT_SECOND;
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.BIRTH_ADOPTION_CERTIFICATE;
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.STATEMENT_OF_FACTS;
-import static uk.gov.hmcts.reform.fpl.model.common.Element.newElement;
 import static uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper.toCCDMoneyGBP;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_WITH_ORDINAL_SUFFIX;
@@ -268,11 +268,13 @@ public class PlacementService {
                 throw new IllegalStateException("Missing placement application document");
             }
 
-            currentPlacement.setApplication(sealingService.sealDocument(applicationDocument, SealType.ENGLISH));
+            currentPlacement.setApplication(applicationDocument);
 
             currentPlacement.setPlacementUploadDateTime(time.now());
 
-            placementData.getPlacements().add(newElement(currentPlacement));
+            Element<Placement> newPlacementElement = element(currentPlacement);
+            placementData.getPlacements().add(newPlacementElement);
+            placementData.setPlacementIdToBeSealed(newPlacementElement.getId());
         }
 
         return placementData;
@@ -665,4 +667,36 @@ public class PlacementService {
         return findElement(childId, caseData.getAllChildren()).orElseThrow();
     }
 
+    public PlacementEventData sealPlacementApplicationAfterEventSubmitted(CaseData caseData) {
+        final PlacementEventData placementData = caseData.getPlacementEventData();
+
+        if (placementData != null) {
+            PlacementEventData.PlacementEventDataBuilder builder = PlacementEventData.builder();
+
+            if (isNotEmpty(placementData.getPlacementIdToBeSealed())) {
+                // seal the placement in placement list with the given ID
+                Placement placementToBeSealed = getPlacementById(caseData, placementData.getPlacementIdToBeSealed());
+                DocumentReference applicationToBeSealed = placementToBeSealed.getApplication();
+
+                DocumentReference sealedApplication = sealingService.sealDocument(applicationToBeSealed,
+                    SealType.ENGLISH);
+
+                placementToBeSealed.setApplication(sealedApplication);
+
+                // seal the current placement if it is the same placement
+                if (placementData.getPlacement() != null && placementData.getPlacement().getApplication() != null
+                    && placementData.getPlacement().getApplication().getBinaryUrl()
+                        .equals(applicationToBeSealed.getBinaryUrl())) {
+                    placementData.getPlacement().setApplication(sealedApplication);
+                }
+
+                return PlacementEventData.builder()
+                    .placements(placementData.getPlacements())
+                    .placement(placementData.getPlacement())
+                    .build();
+            }
+        }
+
+        return null;
+    }
 }

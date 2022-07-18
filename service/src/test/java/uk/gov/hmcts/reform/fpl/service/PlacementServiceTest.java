@@ -940,7 +940,7 @@ class PlacementServiceTest {
         }
 
         @Test
-        void shouldSealApplicationAndAddNewPlacementToListOfExistingPlacements() {
+        void shouldSaveApplicationAndAddNewPlacementToListOfExistingPlacements() {
 
             final Placement existingPlacement = Placement.builder()
                 .childId(child1.getId())
@@ -964,15 +964,17 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .build();
 
-            final PlacementEventData expectedPlacementData = PlacementEventData.builder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(existingPlacement, currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+            assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
+            assertThat(actualPlacementData.getPlacements().stream()
+                .map(Element::getValue).collect(toList())).containsAll(List.of(existingPlacement, currentPlacement));
+            assertThat(actualPlacementData.getPlacementIdToBeSealed())
+                .isEqualTo(actualPlacementData.getPlacements().stream()
+                    .filter(elm -> application.getBinaryUrl().equals(elm.getValue().getApplication().getBinaryUrl()))
+                    .map(Element::getId)
+                    .findFirst().get());
         }
 
         @Test
@@ -1036,7 +1038,10 @@ class PlacementServiceTest {
                 .placements(wrapElements(currentPlacement))
                 .build();
 
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+            assertThat(actualPlacementData.getPlacement()).isEqualTo(currentPlacement);
+            assertThat(actualPlacementData.getPlacements().stream()
+                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
+            assertThat(actualPlacementData.getPlacementIdToBeSealed()).isNull();
 
             verifyNoInteractions(sealingService, time);
         }
@@ -1068,7 +1073,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(LOCAL_AUTHORITY)
                     .recipientName("Local authority")
@@ -1079,12 +1084,9 @@ class PlacementServiceTest {
                     .build()))
                 .build();
 
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+            assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
+            assertThat(actualPlacementData.getPlacements().stream()
+                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1114,7 +1116,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(LOCAL_AUTHORITY)
                     .recipientName("Local authority")
@@ -1123,12 +1125,9 @@ class PlacementServiceTest {
                     .build()))
                 .build();
 
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+            assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
+            assertThat(actualPlacementData.getPlacements().stream()
+                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1158,15 +1157,12 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .build();
 
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+            assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
+            assertThat(actualPlacementData.getPlacements().stream()
+                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1196,7 +1192,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(CAFCASS)
                     .recipientName("Cafcass")
@@ -1207,12 +1203,9 @@ class PlacementServiceTest {
                     .build()))
                 .build();
 
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+            assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
+            assertThat(actualPlacementData.getPlacements().stream()
+                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1242,7 +1235,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(CAFCASS)
                     .recipientName("Cafcass")
@@ -1251,12 +1244,9 @@ class PlacementServiceTest {
                     .build()))
                 .build();
 
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+            assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
+            assertThat(actualPlacementData.getPlacements().stream()
+                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1286,15 +1276,12 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .build();
 
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+            assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
+            assertThat(actualPlacementData.getPlacements().stream()
+                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1325,7 +1312,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(PARENT_FIRST)
                     .recipientName("John Smith - father")
@@ -1337,12 +1324,9 @@ class PlacementServiceTest {
                     .build()))
                 .build();
 
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+            assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
+            assertThat(actualPlacementData.getPlacements().stream()
+                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1373,7 +1357,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(PARENT_FIRST)
                     .recipientName("John Smith - father")
@@ -1383,12 +1367,9 @@ class PlacementServiceTest {
                     .build()))
                 .build();
 
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+            assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
+            assertThat(actualPlacementData.getPlacements().stream()
+                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1419,15 +1400,12 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .build();
 
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+            assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
+            assertThat(actualPlacementData.getPlacements().stream()
+                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1458,7 +1436,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(PARENT_SECOND)
                     .recipientName("Eva Smith - mother")
@@ -1470,12 +1448,9 @@ class PlacementServiceTest {
                     .build()))
                 .build();
 
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+            assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
+            assertThat(actualPlacementData.getPlacements().stream()
+                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1506,7 +1481,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(PARENT_SECOND)
                     .recipientName("Eva Smith - mother")
@@ -1516,12 +1491,9 @@ class PlacementServiceTest {
                     .build()))
                 .build();
 
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+            assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
+            assertThat(actualPlacementData.getPlacements().stream()
+                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1552,15 +1524,12 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .build();
 
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+            assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
+            assertThat(actualPlacementData.getPlacements().stream()
+                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1604,7 +1573,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .noticeDocuments(wrapElements(
                     PlacementNoticeDocument.builder()
                         .type(LOCAL_AUTHORITY)
@@ -1634,12 +1603,9 @@ class PlacementServiceTest {
                         .build()))
                 .build();
 
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+            assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
+            assertThat(actualPlacementData.getPlacements().stream()
+                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1661,6 +1627,28 @@ class PlacementServiceTest {
                 .hasMessage("Missing placement application document");
         }
 
+        @Test
+        void shouldSealPlacementApplication() {
+            final UUID uuid = randomUUID();
+            final Placement currentPlacement = Placement.builder()
+                .application(application)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .placementEventData(PlacementEventData.builder()
+                    .placements(List.of(element(uuid, currentPlacement)))
+                    .placement(currentPlacement)
+                    .placementIdToBeSealed(uuid)
+                    .build())
+                .build();
+
+            PlacementEventData sealedResult = underTest.sealPlacementApplicationAfterEventSubmitted(caseData);
+
+            final Placement expectedPlacement = Placement.builder().application(sealedApplication).build();
+
+            assertThat(sealedResult.getPlacement()).isEqualTo(expectedPlacement);
+            assertThat(sealedResult.getPlacements()).isEqualTo(List.of(element(uuid, expectedPlacement)));
+        }
     }
 
     @Nested
