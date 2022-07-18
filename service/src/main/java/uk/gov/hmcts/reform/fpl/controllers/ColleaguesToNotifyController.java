@@ -92,11 +92,11 @@ public class ColleaguesToNotifyController extends CallbackController {
 
             caseDetails.put("respondents1", respondents);
         } else if (roles.get(0).getRepresenting().equals(SolicitorRole.Representing.CHILD)) {
-            // Update the child who's solicitor it is
             List<Element<Child>> children = caseData.getChildren1();
 
             for (Element<Child> child : children) {
-                if (child.getValue().equals(represented.get(0))) {
+                // Update all children we represent
+                if (represented.contains(child.getValue())) {
                     child.getValue().getSolicitor().setColleaguesToBeNotified(caseData.getColleaguesToNotify());
                 }
             }
