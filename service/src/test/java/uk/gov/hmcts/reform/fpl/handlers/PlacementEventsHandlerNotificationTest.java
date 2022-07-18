@@ -18,6 +18,8 @@ import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.cafcass.PlacementApplicationCafcassData;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.notify.PlacementNotifyData;
@@ -25,10 +27,12 @@ import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementContentProvider;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static java.util.UUID.randomUUID;
@@ -40,6 +44,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_NOTICE_UPLOADED_
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_NOTICE_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.PLACEMENT_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
@@ -67,11 +72,17 @@ class PlacementEventsHandlerNotificationTest {
     @Mock
     private LocalAuthorityRecipientsService localAuthorityRecipients;
 
+    @Mock
+    CafcassNotificationService cafcassNotificationService;
+
     @InjectMocks
     private PlacementEventsHandler underTest;
 
+    private final DocumentReference placementApplication = testDocumentReference();
+
     private final Placement placement = Placement.builder()
         .childId(randomUUID())
+        .application(placementApplication)
         .placementNotice(testDocumentReference())
         .build();
 
@@ -84,6 +95,10 @@ class PlacementEventsHandlerNotificationTest {
         .childName("Alex Brown")
         .localAuthority(LOCAL_AUTHORITY_NAME)
         .caseUrl("http://test.com")
+        .build();
+
+    private final PlacementApplicationCafcassData cafcassData = PlacementApplicationCafcassData.builder()
+        .placementChildName("Alex Brown")
         .build();
 
     @Nested
@@ -180,6 +195,21 @@ class PlacementEventsHandlerNotificationTest {
 
             verify(notificationService)
                 .sendEmail(PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE, cafcass.getEmail(), notifyData, CASE_ID);
+        }
+
+        @Test
+        void shouldNotifyCafcassOnApplication() {
+            final PlacementApplicationSubmitted event = new PlacementApplicationSubmitted(caseData, placement);
+            final Cafcass cafcass = new Cafcass("Cafcass", "cafcass@test.com");
+
+            when(contentProvider.buildNewPlacementApplicationNotificationCafcassData(caseData, placement))
+                .thenReturn(cafcassData);
+            when(cafcassLookupConfiguration.getCafcassEngland("LA1")).thenReturn(Optional.of(cafcass));
+
+            underTest.notifyCafcassSendGrid(event);
+
+            verify(cafcassNotificationService)
+                .sendEmail(caseData, Set.of(placementApplication), PLACEMENT_APPLICATION, cafcassData);
         }
 
     }
