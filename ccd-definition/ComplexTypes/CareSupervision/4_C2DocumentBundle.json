@@ -102,6 +102,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
+    "ListElementCode": "draftOrdersBundle",
+    "ElementLabel": "Draft Orders",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DraftOrder",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
     "ListElementCode": "supplementsBundle",
     "ElementLabel": "Supplements",
     "FieldType": "Collection",

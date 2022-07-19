@@ -95,8 +95,8 @@
     "ID": "C2DocumentBundle",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
-    "EventElementLabel": "Supporting Documents",
-    "ListElementCode": "supportingEvidenceBundle",
+    "EventElementLabel": "Draft Orders",
+    "ListElementCode": "draftOrdersBundle",
     "FieldDisplayOrder": "10",
     "DisplayContext": "OPTIONAL"
   },
@@ -106,7 +106,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "File name",
-    "ListElementCode": "supportingEvidenceBundle.name",
+    "ListElementCode": "draftOrdersBundle.title",
     "FieldDisplayOrder": "11",
     "DisplayContext": "MANDATORY"
   },
@@ -115,8 +115,47 @@
     "ID": "C2DocumentBundle",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "supportingEvidenceBundle.notes",
+    "ListElementCode": "draftOrdersBundle.notes",
     "FieldDisplayOrder": "12",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "draftOrdersBundle.document",
+    "EventElementLabel": "Upload document",
+    "FieldDisplayOrder": "13",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "EventElementLabel": "Supporting Documents",
+    "ListElementCode": "supportingEvidenceBundle",
+    "FieldDisplayOrder": "14",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "EventElementLabel": "File name",
+    "ListElementCode": "supportingEvidenceBundle.name",
+    "FieldDisplayOrder": "15",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "supportingEvidenceBundle.notes",
+    "FieldDisplayOrder": "16",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -135,7 +174,7 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supportingEvidenceBundle.document",
     "EventElementLabel": "Upload document",
-    "FieldDisplayOrder": "13",
+    "FieldDisplayOrder": "17",
     "DisplayContext": "MANDATORY"
   }
 ]
