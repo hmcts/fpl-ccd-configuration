@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded.AdditionalApplicationsUploadedTemplate;
+import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -23,7 +24,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.OTHER_APPLICATIONS;
@@ -37,6 +38,7 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildUnforma
 public class AdditionalApplicationsUploadedEmailContentProvider extends AbstractEmailContentProvider {
     private final Time time;
     private final EmailNotificationHelper helper;
+    private final CalendarService calendarService;
 
     public AdditionalApplicationsUploadedTemplate getNotifyData(final CaseData caseData) {
         String lastName = helper.getEldestChildLastName(caseData.getAllChildren());
@@ -51,21 +53,38 @@ public class AdditionalApplicationsUploadedEmailContentProvider extends Abstract
     }
 
     private String getUrgencyDetails(AdditionalApplicationsBundle additionalApplicationsBundle) {
-        Function<UrgencyTImeFrameType, String> dateFunction = urgencyTImeFrameType ->
-                String.join(" ",
-                        "This application will need to be considered by the judge on",
-                        formatLocalDateToString(LocalDate.now().plusDays(urgencyTImeFrameType.getCount()), DATE));
-
         Optional<String> other = Optional.ofNullable(additionalApplicationsBundle.getOtherApplicationsBundle())
                 .map(OtherApplicationsBundle::getUrgencyTImeFrameType)
-                .map(dateFunction);
+                .map(this::getUrgencyTImeFrame);
 
         Optional<String> c2 = Optional.ofNullable(additionalApplicationsBundle.getC2DocumentBundle())
                 .map(C2DocumentBundle::getUrgencyTimeFrameType)
-                .map(dateFunction);
+                .map(this::getUrgencyTImeFrame);
 
         return other.orElse(c2.orElse(""));
     }
+
+    private String getUrgencyTImeFrame(UrgencyTImeFrameType urgencyTImeFrameType) {
+        BiFunction<LocalDate, String, String> information = (localDate, by) ->
+                String.join(" ",
+                        "This application will need to be considered by the judge",
+                          by,
+                        formatLocalDateToString(localDate, DATE));
+
+        String details;
+        if (urgencyTImeFrameType.getCount() == 0) {
+            LocalDate urgencyDate = LocalDate.now();
+            if (!calendarService.isWorkingDay(urgencyDate)) {
+                urgencyDate = calendarService.getWorkingDayFrom(urgencyDate, 1);
+            }
+            details = information.apply(urgencyDate, "on");
+        } else {
+            LocalDate urgencyDate = calendarService.getWorkingDayFrom(LocalDate.now(), urgencyTImeFrameType.getCount());
+            details = information.apply(urgencyDate, "within");
+        }
+        return details;
+    }
+
 
     public BaseCaseNotifyData getPbaPaymentNotTakenNotifyData(final CaseData caseData) {
         return BaseCaseNotifyData.builder()

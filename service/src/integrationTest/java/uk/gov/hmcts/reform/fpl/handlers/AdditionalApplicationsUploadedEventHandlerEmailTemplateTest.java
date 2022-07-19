@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
+import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import uk.gov.hmcts.reform.fpl.service.email.content.AdditionalApplicationsUploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
@@ -99,6 +100,9 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
     @Autowired
     private Time time;
 
+    @MockBean
+    private CalendarService calendarService;
+
     @BeforeEach
     void setup() {
         given(time.now()).willReturn(HEARING_DATE.minusDays(1));
@@ -137,6 +141,8 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
 
     @Test
     void notifyAdminUrgency() {
+        given(calendarService.getWorkingDayFrom(LocalDate.now(), WITHIN_5_DAYS.getCount()))
+                .willReturn(LocalDate.now().plusDays(WITHIN_5_DAYS.getCount()));
         given(requestData.userRoles()).willReturn(Set.of("caseworker-publiclaw-solicitor"));
         CaseData caseData = CASE_DATA.toBuilder()
                 .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
@@ -173,7 +179,7 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
                         "check payment has been taken",
                         "send a message to the judge or legal adviser")
                 .line()
-                .line("This application will need to be considered by the judge on "
+                .line("This application will need to be considered by the judge within "
                    + formatLocalDateToString(LocalDate.now().plusDays(WITHIN_5_DAYS.getCount()),DATE))
                 .line()
                 .end("To review the application, sign in to " + caseDetailsUrl(CASE_ID, OTHER_APPLICATIONS))
