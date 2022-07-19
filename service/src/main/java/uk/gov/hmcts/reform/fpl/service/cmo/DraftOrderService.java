@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderKind;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
@@ -179,6 +180,19 @@ public class DraftOrderService {
         bundles.removeIf(bundle -> isEmpty(bundle.getValue().getOrders()));
 
         return selectedHearingId;
+    }
+
+    public void additionalApplicationUpdateCase(List<Element<HearingOrder>> draftOrders,
+                                                 List<Element<HearingOrdersBundle>> bundles) {
+
+        for (int i = 0; i < draftOrders.size(); i++) {
+            Element<HearingOrder> hearingOrder = draftOrders.get(i);
+            hearingOrder.getValue().setDateSent(time.now().toLocalDate());
+            hearingOrder.getValue().setStatus(SEND_TO_JUDGE);
+            hearingOrder.getValue().setTranslationRequirements(LanguageTranslationRequirement.NO);
+        }
+
+        addOrdersToBundle(bundles, draftOrders, null, C21);
     }
 
     public List<Element<HearingOrdersBundle>> migrateCmoDraftToOrdersBundles(CaseData caseData) {
