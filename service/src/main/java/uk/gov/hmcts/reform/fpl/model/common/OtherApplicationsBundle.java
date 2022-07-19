@@ -33,7 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public class OtherApplicationsBundle implements ApplicationsBundle {
     private final UUID id;
     private final OtherApplicationType applicationType;
-    private final UrgencyTimeFrameType urgencyTImeFrameType;
+    private final UrgencyTimeFrameType urgencyTimeFrameType;
     private final ParentalResponsibilityType parentalResponsibilityType;
     private final DocumentReference document;
     private final String uploadedDateTime;

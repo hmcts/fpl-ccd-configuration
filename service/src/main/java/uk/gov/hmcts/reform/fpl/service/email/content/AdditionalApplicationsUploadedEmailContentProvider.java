@@ -54,17 +54,17 @@ public class AdditionalApplicationsUploadedEmailContentProvider extends Abstract
 
     private String getUrgencyDetails(AdditionalApplicationsBundle additionalApplicationsBundle) {
         Optional<String> other = Optional.ofNullable(additionalApplicationsBundle.getOtherApplicationsBundle())
-                .map(OtherApplicationsBundle::getUrgencyTImeFrameType)
-                .map(this::getUrgencyTImeFrame);
+                .map(OtherApplicationsBundle::getUrgencyTimeFrameType)
+                .map(this::getUrgencyTimeFrame);
 
         Optional<String> c2 = Optional.ofNullable(additionalApplicationsBundle.getC2DocumentBundle())
                 .map(C2DocumentBundle::getUrgencyTimeFrameType)
-                .map(this::getUrgencyTImeFrame);
+                .map(this::getUrgencyTimeFrame);
 
         return other.orElse(c2.orElse(""));
     }
 
-    private String getUrgencyTImeFrame(UrgencyTimeFrameType urgencyTImeFrameType) {
+    private String getUrgencyTimeFrame(UrgencyTimeFrameType urgencyTImeFrameType) {
         BiFunction<LocalDate, String, String> information = (localDate, by) ->
                 String.join(" ",
                         "This application will need to be considered by the judge",

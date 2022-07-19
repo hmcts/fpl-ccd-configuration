@@ -152,7 +152,7 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
                             .build())
                     .otherApplicationsBundle(OtherApplicationsBundle.builder()
                             .applicationType(C1_WITH_SUPPLEMENT)
-                            .urgencyTImeFrameType(WITHIN_5_DAYS)
+                            .urgencyTimeFrameType(WITHIN_5_DAYS)
                             .supplementsBundle(List.of())
                             .build())
                     .build()))
