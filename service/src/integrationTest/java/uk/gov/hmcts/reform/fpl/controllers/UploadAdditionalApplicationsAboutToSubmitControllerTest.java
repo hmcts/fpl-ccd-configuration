@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
@@ -66,7 +67,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     private static final String APPLICANT_SOMEONE_ELSE = "SOMEONE_ELSE";
     private static final String APPLICANT = "applicant";
     private static final String OTHER_APPLICANT_NAME = "some other name";
-
+    private static final DocumentReference DOCUMENT_REFERENCE = testDocumentReference();
     private static final String ADMIN_ROLE = "caseworker-publiclaw-courtadmin";
 
     private static final DocumentReference UPLOADED_DOCUMENT = testDocumentReference();
@@ -160,6 +161,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         CaseData caseData = CaseData.builder()
             .additionalApplicationType(List.of(AdditionalApplicationType.OTHER_ORDER))
             .temporaryOtherApplicationsBundle(createTemporaryOtherApplicationDocument())
+            .temporaryC2Document(createTemporaryC2Document())
             .temporaryPbaPayment(temporaryPbaPayment)
             .applicantsList(createApplicantsDynamicList(APPLICANT_SOMEONE_ELSE))
             .otherApplicant(OTHER_APPLICANT_NAME)
@@ -309,6 +311,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         CaseData caseData = CaseData.builder()
             .c2DocumentBundle(wrapElements(firstBundleAdded, secondBundleAdded, thirdBundleAdded))
             .applicantsList(createApplicantsDynamicList(APPLICANT))
+            .temporaryC2Document(createTemporaryC2Document())
             .build();
 
         CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, ADMIN_ROLE));
@@ -408,6 +411,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         return C2DocumentBundle.builder()
             .type(WITH_NOTICE)
             .document(UPLOADED_DOCUMENT)
+            .draftOrdersBundle(createDraftOrderBundle())
             .supplementsBundle(wrapElements(createSupplementsBundle()))
             .supportingEvidenceBundle(wrapElements(createSupportingEvidenceBundle()))
             .build();
@@ -464,4 +468,15 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .build();
     }
 
+    private List<Element<DraftOrder>> createDraftOrderBundle() {
+        return List.of(createDraftOrder());
+    }
+
+    private Element<DraftOrder> createDraftOrder() {
+        return element(DraftOrder.builder()
+            .title("Test")
+            .dateUploaded(dateNow())
+            .document(DOCUMENT_REFERENCE)
+            .build());
+    }
 }
