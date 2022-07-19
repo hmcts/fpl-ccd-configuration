@@ -199,4 +199,9 @@
     <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-webmvc@.*$</packageUrl>
     <vulnerabilityName>CVE-2021-22060</vulnerabilityName>
   </suppress>
+  <!-- Known FP, see https://github.com/jeremylong/DependencyCheck/issues/4671 -->
+  <suppress>
+    <notes><![CDATA[Suppressed as known false positive]]></notes>
+    <vulnerabilityName>CVE-2022-31569</vulnerabilityName>
+  </suppress>
 </suppressions>
