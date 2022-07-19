@@ -35,9 +35,9 @@ import static uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType.PR_BY_FAT
 import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C13A_SPECIAL_GUARDIANSHIP;
 import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C20_SECURE_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.OTHER_APPLICATIONS;
-import static uk.gov.hmcts.reform.fpl.enums.UrgencyTImeFrameType.SAME_DAY;
-import static uk.gov.hmcts.reform.fpl.enums.UrgencyTImeFrameType.WITHIN_2_DAYS;
-import static uk.gov.hmcts.reform.fpl.enums.UrgencyTImeFrameType.WITHIN_5_DAYS;
+import static uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType.SAME_DAY;
+import static uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType.WITHIN_2_DAYS;
+import static uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType.WITHIN_5_DAYS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;

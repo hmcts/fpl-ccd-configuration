@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
-import uk.gov.hmcts.reform.fpl.enums.UrgencyTImeFrameType;
+import uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
@@ -64,7 +64,7 @@ public class AdditionalApplicationsUploadedEmailContentProvider extends Abstract
         return other.orElse(c2.orElse(""));
     }
 
-    private String getUrgencyTImeFrame(UrgencyTImeFrameType urgencyTImeFrameType) {
+    private String getUrgencyTImeFrame(UrgencyTimeFrameType urgencyTImeFrameType) {
         BiFunction<LocalDate, String, String> information = (localDate, by) ->
                 String.join(" ",
                         "This application will need to be considered by the judge",

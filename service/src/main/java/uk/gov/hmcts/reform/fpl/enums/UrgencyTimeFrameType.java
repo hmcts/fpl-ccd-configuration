@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum UrgencyTImeFrameType {
+public enum UrgencyTimeFrameType {
     SAME_DAY("Same day", 0),
     WITHIN_2_DAYS("Within 2 days", 2),
     WITHIN_5_DAYS("Within 5 days", 5);
