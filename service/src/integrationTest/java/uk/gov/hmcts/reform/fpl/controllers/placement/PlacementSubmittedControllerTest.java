@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InjectMocks;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -27,7 +26,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
@@ -118,9 +116,6 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
 
     @MockBean
     private DocmosisCoverDocumentsService docmosisCoverDocumentsService;
-
-    @InjectMocks
-    private CoreCaseDataService coreCaseDataService;
 
     @Captor
     private ArgumentCaptor<LetterWithPdfsRequest> sendLetterRequestCaptor;
@@ -396,9 +391,9 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
             when(uploadDocumentService.uploadPDF(sealedApplicationContent, "application.pdf"))
                 .thenReturn(sealedDocument);
 
-            when(coreCaseDataApi.startEventForCaseWorker(any(), any(), any(), any(), any(), any(),
+            given(coreCaseDataApi.startEventForCaseWorker(any(), any(), any(), any(), any(), any(),
                 eq(INTERNAL_CHANGE_PLACEMENT)))
-                .thenReturn(StartEventResponse.builder().eventId(INTERNAL_CHANGE_PLACEMENT).token(EVENT_TOKEN).build());
+                .willReturn(StartEventResponse.builder().eventId(INTERNAL_CHANGE_PLACEMENT).token(EVENT_TOKEN).build());
         }
 
         @Test
@@ -407,12 +402,12 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
 
             Placement placement = Placement.builder()
                 .childId(child1.getId())
-                .childName("Alex Brown")
                 .application(application)
-                .placementUploadDateTime(now()).build();
+                .build();
 
             final CaseData caseData = CaseData.builder()
                 .id(1L)
+                .children1(List.of(child1, child2))
                 .placementEventData(PlacementEventData.builder()
                     .placement(placement)
                     .placements(List.of(element(applicationUUID, placement)))
@@ -422,9 +417,33 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
                 .build();
 
             postSubmittedEvent(caseData);
+
+            Placement sealedPlacement = placement.toBuilder().application(sealedApplication).build();
+
+            final Map<String, Object> expectedCaseChanges = new HashMap<>();
+            expectedCaseChanges.put("placements", List.of(element(applicationUUID, sealedPlacement)));
+            expectedCaseChanges.put("placement", sealedPlacement);
+
+            final CaseDataContent expectedCaseDataContent = CaseDataContent.builder()
+                .event(Event.builder()
+                    .id(INTERNAL_CHANGE_PLACEMENT)
+                    .build())
+                .data(expectedCaseChanges)
+                .eventToken(EVENT_TOKEN)
+                .ignoreWarning(false)
+                .build();
+
+            verify(coreCaseDataApi).submitEventForCaseWorker(
+                USER_AUTH_TOKEN,
+                SERVICE_AUTH_TOKEN,
+                SYS_USER_ID,
+                JURISDICTION,
+                CASE_TYPE,
+                "1",
+                true,
+                expectedCaseDataContent);
         }
     }
-
 
     private CreditAccountPaymentRequest expectedCreditAccountPaymentRequest() {
 

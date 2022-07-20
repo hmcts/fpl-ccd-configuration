@@ -69,6 +69,7 @@ import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.PAR
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.STATEMENT_OF_FACTS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
@@ -968,13 +969,12 @@ class PlacementServiceTest {
                 .build();
 
             assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
-            assertThat(actualPlacementData.getPlacements().stream()
-                .map(Element::getValue).collect(toList())).containsAll(List.of(existingPlacement, currentPlacement));
+            assertThat(unwrapElements(actualPlacementData.getPlacements())).containsAll(List.of(existingPlacement, currentPlacement));
             assertThat(actualPlacementData.getPlacementIdToBeSealed())
                 .isEqualTo(actualPlacementData.getPlacements().stream()
                     .filter(elm -> application.getBinaryUrl().equals(elm.getValue().getApplication().getBinaryUrl()))
                     .map(Element::getId)
-                    .findFirst().get());
+                    .findFirst().orElse(null));
         }
 
         @Test
@@ -1033,14 +1033,8 @@ class PlacementServiceTest {
 
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
-            final PlacementEventData expectedPlacementData = PlacementEventData.builder()
-                .placement(currentPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
             assertThat(actualPlacementData.getPlacement()).isEqualTo(currentPlacement);
-            assertThat(actualPlacementData.getPlacements().stream()
-                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
+            assertThat(unwrapElements(actualPlacementData.getPlacements())).containsAll(List.of(currentPlacement));
             assertThat(actualPlacementData.getPlacementIdToBeSealed()).isNull();
 
             verifyNoInteractions(sealingService, time);
@@ -1085,8 +1079,7 @@ class PlacementServiceTest {
                 .build();
 
             assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
-            assertThat(actualPlacementData.getPlacements().stream()
-                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
+            assertThat(unwrapElements(actualPlacementData.getPlacements())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1126,8 +1119,7 @@ class PlacementServiceTest {
                 .build();
 
             assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
-            assertThat(actualPlacementData.getPlacements().stream()
-                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
+            assertThat(unwrapElements(actualPlacementData.getPlacements())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1161,8 +1153,7 @@ class PlacementServiceTest {
                 .build();
 
             assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
-            assertThat(actualPlacementData.getPlacements().stream()
-                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
+            assertThat(unwrapElements(actualPlacementData.getPlacements())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1204,8 +1195,7 @@ class PlacementServiceTest {
                 .build();
 
             assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
-            assertThat(actualPlacementData.getPlacements().stream()
-                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
+            assertThat(unwrapElements(actualPlacementData.getPlacements())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1245,8 +1235,7 @@ class PlacementServiceTest {
                 .build();
 
             assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
-            assertThat(actualPlacementData.getPlacements().stream()
-                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
+            assertThat(unwrapElements(actualPlacementData.getPlacements())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1280,8 +1269,7 @@ class PlacementServiceTest {
                 .build();
 
             assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
-            assertThat(actualPlacementData.getPlacements().stream()
-                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
+            assertThat(unwrapElements(actualPlacementData.getPlacements())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1325,8 +1313,7 @@ class PlacementServiceTest {
                 .build();
 
             assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
-            assertThat(actualPlacementData.getPlacements().stream()
-                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
+            assertThat(unwrapElements(actualPlacementData.getPlacements())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1368,8 +1355,7 @@ class PlacementServiceTest {
                 .build();
 
             assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
-            assertThat(actualPlacementData.getPlacements().stream()
-                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
+            assertThat(unwrapElements(actualPlacementData.getPlacements())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1404,8 +1390,7 @@ class PlacementServiceTest {
                 .build();
 
             assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
-            assertThat(actualPlacementData.getPlacements().stream()
-                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
+            assertThat(unwrapElements(actualPlacementData.getPlacements())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1449,8 +1434,7 @@ class PlacementServiceTest {
                 .build();
 
             assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
-            assertThat(actualPlacementData.getPlacements().stream()
-                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
+            assertThat(unwrapElements(actualPlacementData.getPlacements())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1492,8 +1476,7 @@ class PlacementServiceTest {
                 .build();
 
             assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
-            assertThat(actualPlacementData.getPlacements().stream()
-                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
+            assertThat(unwrapElements(actualPlacementData.getPlacements())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1528,8 +1511,7 @@ class PlacementServiceTest {
                 .build();
 
             assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
-            assertThat(actualPlacementData.getPlacements().stream()
-                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
+            assertThat(unwrapElements(actualPlacementData.getPlacements())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1604,8 +1586,7 @@ class PlacementServiceTest {
                 .build();
 
             assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
-            assertThat(actualPlacementData.getPlacements().stream()
-                .map(Element::getValue).collect(toList())).containsAll(List.of(currentPlacement));
+            assertThat(unwrapElements(actualPlacementData.getPlacements())).containsAll(List.of(currentPlacement));
         }
 
         @Test

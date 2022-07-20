@@ -671,8 +671,6 @@ public class PlacementService {
         final PlacementEventData placementData = caseData.getPlacementEventData();
 
         if (placementData != null) {
-            PlacementEventData.PlacementEventDataBuilder builder = PlacementEventData.builder();
-
             if (isNotEmpty(placementData.getPlacementIdToBeSealed())) {
                 // seal the placement in placement list with the given ID
                 Placement placementToBeSealed = getPlacementById(caseData, placementData.getPlacementIdToBeSealed());
