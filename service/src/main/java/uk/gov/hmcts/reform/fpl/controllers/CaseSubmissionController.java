@@ -122,7 +122,7 @@ public class CaseSubmissionController extends CallbackController {
             data.put("submittedForm", buildFromDocument(document));
 
             data.putAll(nocFieldPopulator.generate(caseData, RESPONDENT));
-            data.putAll(nocFieldPopulator.generate(caseData, CHILD, BLANK));
+            data.putAll(nocFieldPopulator.generate(caseData, CHILD));
         }
 
         removeTemporaryFields(caseDetails, "draftApplicationDocument", "submissionConsentLabel");
