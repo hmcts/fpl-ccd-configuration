@@ -20,7 +20,6 @@ public enum UploadedOrderType {
     C37("Education supervision order", true),
     C38A("Discharge education supervision order"),
     C38B("Extension of an education supervision order"),
-    C39("Child assessment order"),
     C42("Family assistance order"),
     C43("Child arrangements/Specific issue/Prohibited steps order (including interim orders)"),
     C43A("Special guardianship order"),
