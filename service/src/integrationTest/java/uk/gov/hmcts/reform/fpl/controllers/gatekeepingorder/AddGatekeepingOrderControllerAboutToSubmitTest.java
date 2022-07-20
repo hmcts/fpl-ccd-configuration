@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.CustomDirection;
 import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -260,8 +261,9 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
             .proposalReason("some reason")
             .allocationProposalPresent("Yes")
             .build();
-
+        Court court = Court.builder().build();
         CaseData caseData = CaseData.builder()
+            .court(court)
             .hearingDetails(wrapElements(HearingBooking.builder()
                 .startDate(now())
                 .endDate(now().plusDays(1))
@@ -280,7 +282,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
             .id(1234123412341234L)
             .build();
 
-        given(sealingService.sealDocument(urgentReference, SealType.ENGLISH)).willReturn(sealedUrgentReference);
+        given(sealingService.sealDocument(urgentReference, court, SealType.ENGLISH)).willReturn(sealedUrgentReference);
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
@@ -308,12 +310,12 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
     void shouldUpdateStateAndOrderDocWhenSDOIsSealedThroughUploadRouteAndRemoveRouterAndSendNoticeOfProceedings() {
         DocumentReference sealedDocument = DocumentReference.builder().filename("sealed.pdf").build();
         DocumentReference document = DocumentReference.builder().filename("final.docx").build();
-
+        Court court = Court.builder().build();
         givenCurrentUserWithName("adam");
-        given(sealingService.sealDocument(document, SealType.ENGLISH)).willReturn(sealedDocument);
+        given(sealingService.sealDocument(document, court, SealType.ENGLISH)).willReturn(sealedDocument);
 
         CaseData responseCaseData = extractCaseData(
-            postAboutToSubmitEvent(validCaseDetailsForUploadRoute(document, SEALED))
+            postAboutToSubmitEvent(validCaseDetailsForUploadRoute(document, court, SEALED))
         );
 
         assertThat(responseCaseData.getStandardDirectionOrder().getLastUploadedOrder()).isEqualTo(document);
@@ -332,9 +334,10 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
             .build());
     }
 
-    private CaseData validCaseDetailsForUploadRoute(DocumentReference document, OrderStatus status) {
+    private CaseData validCaseDetailsForUploadRoute(DocumentReference document, Court court, OrderStatus status) {
         CaseData.CaseDataBuilder builder = CaseData.builder()
             .id(1234123412341234L)
+            .court(court)
             .hearingDetails(wrapElements(testHearing()))
             .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                 .gatekeepingOrderSealDecision(GatekeepingOrderSealDecision.builder()

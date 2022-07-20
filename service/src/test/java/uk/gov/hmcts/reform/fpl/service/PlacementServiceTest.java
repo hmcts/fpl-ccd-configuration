@@ -939,10 +939,11 @@ class PlacementServiceTest {
 
         private final DocumentReference application = testDocumentReference();
         private final DocumentReference sealedApplication = testDocumentReference();
+        private final Court court = Court.builder().build();
 
         @BeforeEach
         void init() {
-            when(sealingService.sealDocument(application, SealType.ENGLISH)).thenReturn(sealedApplication);
+            when(sealingService.sealDocument(application, court, SealType.ENGLISH)).thenReturn(sealedApplication);
         }
 
         @Test
@@ -964,6 +965,7 @@ class PlacementServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
+                .court(Court.builder().build())
                 .placementEventData(placementEventData)
                 .build();
 
@@ -1068,6 +1070,7 @@ class PlacementServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
+                 .court(court)
                 .placementEventData(placementEventData)
                 .build();
 
@@ -1114,6 +1117,7 @@ class PlacementServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
+                .court(court)
                 .placementEventData(placementEventData)
                 .build();
 
@@ -1158,6 +1162,7 @@ class PlacementServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
+                .court(court)
                 .placementEventData(placementEventData)
                 .build();
 
@@ -1196,6 +1201,7 @@ class PlacementServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
+                .court(court)
                 .placementEventData(placementEventData)
                 .build();
 
@@ -1242,6 +1248,7 @@ class PlacementServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
+                .court(court)
                 .placementEventData(placementEventData)
                 .build();
 
@@ -1286,6 +1293,7 @@ class PlacementServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
+                .court(court)
                 .placementEventData(placementEventData)
                 .build();
 
@@ -1325,6 +1333,7 @@ class PlacementServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
+                .court(court)
                 .placementEventData(placementEventData)
                 .build();
 
@@ -1373,6 +1382,7 @@ class PlacementServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
+                .court(court)
                 .placementEventData(placementEventData)
                 .build();
 
@@ -1419,6 +1429,7 @@ class PlacementServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
+                .court(court)
                 .placementEventData(placementEventData)
                 .build();
 
@@ -1458,6 +1469,7 @@ class PlacementServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
+                .court(court)
                 .placementEventData(placementEventData)
                 .build();
 
@@ -1506,6 +1518,7 @@ class PlacementServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
+                .court(court)
                 .placementEventData(placementEventData)
                 .build();
 
@@ -1552,6 +1565,7 @@ class PlacementServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
+                .court(Court.builder().build())
                 .placementEventData(placementEventData)
                 .build();
 
@@ -1604,6 +1618,7 @@ class PlacementServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
+                .court(Court.builder().build())
                 .placementEventData(placementEventData)
                 .build();
 

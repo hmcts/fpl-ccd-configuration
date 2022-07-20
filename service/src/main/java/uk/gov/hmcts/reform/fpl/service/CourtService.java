@@ -69,7 +69,11 @@ public class CourtService {
     }
 
     public boolean isHighCourtCase(CaseData caseData) {
-        return Optional.ofNullable(caseData.getCourt())
+        return isHighCourtCase(caseData.getCourt());
+    }
+
+    public boolean isHighCourtCase(Court court) {
+        return Optional.ofNullable(court)
                 .map(Court::getCode)
                 .filter(code -> code.equals(RCJ_HIGH_COURT_CODE))
                 .isPresent();

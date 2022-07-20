@@ -182,5 +182,12 @@ class CalendarServiceTest {
             assertThrows(IllegalArgumentException.class, () ->
                 workingDayService.getWorkingDayFrom(now, 0));
         }
+
+        @Test
+        void should() {
+            LocalDate now = time.now().toLocalDate();
+            LocalDate workingDayFrom = workingDayService.getWorkingDayFrom(now, 5);
+            System.out.println(workingDayFrom);
+        }
     }
 }
