@@ -24,7 +24,6 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
