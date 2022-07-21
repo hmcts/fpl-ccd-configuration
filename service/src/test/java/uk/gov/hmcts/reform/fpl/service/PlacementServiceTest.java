@@ -969,7 +969,8 @@ class PlacementServiceTest {
                 .build();
 
             assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
-            assertThat(unwrapElements(actualPlacementData.getPlacements())).containsAll(List.of(existingPlacement, currentPlacement));
+            assertThat(unwrapElements(actualPlacementData.getPlacements()))
+                .containsAll(List.of(existingPlacement, currentPlacement));
             assertThat(actualPlacementData.getPlacementIdToBeSealed())
                 .isEqualTo(actualPlacementData.getPlacements().stream()
                     .filter(elm -> application.getBinaryUrl().equals(elm.getValue().getApplication().getBinaryUrl()))
