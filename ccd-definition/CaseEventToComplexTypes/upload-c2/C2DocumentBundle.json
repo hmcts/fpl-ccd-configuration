@@ -25,7 +25,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "urgencyTimeFrameType",
-    "EventElementLabel": "Please state how soon your want the judge to consider your application?",
+    "EventElementLabel": "Please state how soon you want the judge to consider your application?",
     "FieldDisplayOrder": "3",
     "DisplayContext": "OPTIONAL"
   },

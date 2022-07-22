@@ -35,8 +35,8 @@
     "ID": "OtherDocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
-    "ListElementCode": "urgencyTimeFrame",
-    "EventElementLabel": "Please state how soon your want the judge to consider your application?",
+    "ListElementCode": "urgencyTimeFrameType",
+    "EventElementLabel": "Please state how soon you want the judge to consider your application?",
     "FieldDisplayOrder": "4",
     "DisplayContext": "OPTIONAL"
   },
@@ -45,7 +45,7 @@
     "ID": "OtherDocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
-    "EventElementLabel": "Supplements",
+    "EventElementLabel": "Supplements dddd",
     "ListElementCode": "supplementsBundle",
     "FieldDisplayOrder": "5",
     "DisplayContext": "OPTIONAL"
