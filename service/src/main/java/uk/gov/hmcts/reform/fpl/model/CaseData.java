@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
+import uk.gov.hmcts.reform.ccd.client.model.SearchCriteria;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
@@ -1158,6 +1159,11 @@ public class CaseData {
     private final PlacementEventData placementEventData = PlacementEventData.builder().build();
 
     private final DynamicList placementList;
+
+    @JsonProperty("SearchCriteria")
+    private SearchCriteria searchCriteria;
+
+    private String caseNameHmctsInternal;
 
     @JsonIgnore
     public boolean isDischargeOfCareApplication() {
