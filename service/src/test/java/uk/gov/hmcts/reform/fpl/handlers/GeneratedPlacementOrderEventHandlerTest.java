@@ -11,9 +11,9 @@ import uk.gov.hmcts.reform.fpl.events.order.GeneratedPlacementOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.cafcass.OrderCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
@@ -23,11 +23,14 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static java.util.Collections.emptySet;
@@ -44,9 +47,6 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_ORDER_GENERATED_
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.CAFCASS;
-import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.PARENT_FIRST;
-import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.PARENT_SECOND;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
@@ -82,6 +82,9 @@ class GeneratedPlacementOrderEventHandlerTest {
 
     @Mock
     private SendDocumentService sendDocumentService;
+
+    @Mock
+    private CafcassNotificationService cafcassNotificationService;
 
     @InjectMocks
     private GeneratedPlacementOrderEventHandler underTest;
@@ -139,20 +142,8 @@ class GeneratedPlacementOrderEventHandlerTest {
                 .placements(wrapElements(
                     Placement.builder()
                         .childId(child.getId())
-                        .noticeDocuments(wrapElements(
-                            PlacementNoticeDocument.builder()
-                                .respondentId(anotherRespondent.getId())
-                                .type(CAFCASS)
-                                .build(),
-                            PlacementNoticeDocument.builder()
-                                .respondentId(mother.getId())
-                                .type(PARENT_SECOND)
-                                .build(),
-                            PlacementNoticeDocument.builder()
-                                .respondentId(father.getId())
-                                .type(PARENT_FIRST)
-                                .build()
-                        )).build()
+                        .placementRespondentsToNotify(List.of(anotherRespondent, father, mother))
+                        .build()
                 )).build()
             ).build();
         when(sealedOrderHistoryService.lastGeneratedOrder(any()))
@@ -176,31 +167,18 @@ class GeneratedPlacementOrderEventHandlerTest {
 
     @Test
     void shouldSendOrderNotification_ToUnrepresentedParentsByPost_And_NotToUnrepresentedChildSolicitorByEmail() {
-        Element<Respondent> anotherRespondent = testRespondent("Someone", "Else");
         Element<Respondent> father = testRespondent("Father", "Jones");
         Element<Respondent> mother = testRespondent("Mother", "Jones");
         Element<Child> child = element(Child.builder().build());
         CaseData caseData = basicCaseData.toBuilder()
-            .respondents1(List.of(anotherRespondent, father, mother))
+            .respondents1(List.of(father, mother))
             .children1(List.of(child))
             .placementEventData(PlacementEventData.builder()
                 .placements(wrapElements(
                     Placement.builder()
                         .childId(child.getId())
-                        .noticeDocuments(wrapElements(
-                            PlacementNoticeDocument.builder()
-                                .respondentId(anotherRespondent.getId())
-                                .type(CAFCASS)
-                                .build(),
-                            PlacementNoticeDocument.builder()
-                                .respondentId(mother.getId())
-                                .type(PARENT_SECOND)
-                                .build(),
-                            PlacementNoticeDocument.builder()
-                                .respondentId(father.getId())
-                                .type(PARENT_FIRST)
-                                .build()
-                        )).build()
+                        .placementRespondentsToNotify(List.of(mother, father))
+                        .build()
                 )).build()
             ).build();
         when(sealedOrderHistoryService.lastGeneratedOrder(any()))
@@ -225,4 +203,39 @@ class GeneratedPlacementOrderEventHandlerTest {
         );
     }
 
+    @Test
+    void shouldSendCafcassEnglandOrderOverSendgrid() {
+        Element<Respondent> father = testRespondent("Father", "Jones");
+        Element<Respondent> mother = testRespondent("Mother", "Jones");
+        Element<Child> child = element(Child.builder().build());
+        CaseData caseData = basicCaseData.toBuilder()
+            .respondents1(List.of(father, mother))
+            .children1(List.of(child))
+            .placementEventData(PlacementEventData.builder()
+                .placements(wrapElements(
+                    Placement.builder()
+                        .childId(child.getId())
+                        .placementRespondentsToNotify(List.of(mother, father))
+                        .build()
+                )).build()
+            ).build();
+
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+            .thenReturn(
+                Optional.of(
+                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                )
+            );
+
+        underTest.sendPlacementOrderEmailToCafcassEngland(new GeneratedPlacementOrderEvent(caseData,
+            ORDER_DOCUMENT,
+            ORDER_NOTIFICATION_DOCUMENT));
+
+        verify(cafcassNotificationService).sendEmail(caseData,
+            Set.of(ORDER_DOCUMENT, ORDER_NOTIFICATION_DOCUMENT),
+            CafcassRequestEmailContentProvider.ORDER,
+            OrderCafcassData.builder()
+                .documentName(ORDER_DOCUMENT.getFilename())
+                .build());
+    }
 }
