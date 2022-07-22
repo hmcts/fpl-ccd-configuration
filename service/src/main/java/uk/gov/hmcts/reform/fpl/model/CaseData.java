@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
+import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
@@ -456,6 +457,7 @@ public class CaseData {
     private final Selector careOrderSelector;
     private final Selector newHearingSelector;
     private final Selector appointedGuardianSelector;
+    private final Selector respondentsRefusedSelector;
 
     private final String orderAppliesToAllChildren;
     private final String sendOrderToAllOthers;
@@ -634,6 +636,11 @@ public class CaseData {
         return Optional.ofNullable(confidentialOthers).orElse(new ArrayList<>());
     }
 
+    public boolean hasConfidentialParty() {
+        return isNotEmpty(getConfidentialChildren()) || isNotEmpty(getConfidentialRespondents())
+               || isNotEmpty(getConfidentialOthers());
+    }
+
     private final String caseNote;
     private final List<Element<CaseNote>> caseNotes;
     private final List<Element<EmailAddress>> gatekeeperEmails;
@@ -682,12 +689,32 @@ public class CaseData {
     private final List<Element<RespondentStatement>> respondentStatements;
     private final Object manageDocumentsHearingList;
     private final Object manageDocumentsSupportingC2List;
-    private final Object courtBundleHearingList;
+    private final Object hearingDocumentsHearingList;
     private final Object respondentStatementList;
 
+    private final HearingDocumentType manageDocumentsHearingDocumentType;
     private final List<Element<CourtBundle>> manageDocumentsCourtBundle;
-    private final List<Element<HearingCourtBundle>> courtBundleListV2;
-    private final List<Element<CourtBundle>> courtBundleList;
+    private final CaseSummary manageDocumentsCaseSummary;
+    private final PositionStatementChild manageDocumentsPositionStatementChild;
+    private final PositionStatementRespondent manageDocumentsPositionStatementRespondent;
+    private final DynamicList manageDocumentsChildrenList;
+    private final DynamicList hearingDocumentsRespondentList;
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final HearingDocuments hearingDocuments = HearingDocuments.builder().build();
+
+    public DynamicList buildDynamicChildrenList() {
+        return buildDynamicChildrenList(null);
+    }
+
+    public DynamicList buildDynamicChildrenList(UUID selected) {
+        return buildDynamicChildrenList(getAllChildren(), selected);
+    }
+
+    public DynamicList buildDynamicChildrenList(List<Element<Child>> children, UUID selected) {
+        return asDynamicList(children, selected, child -> child.getParty().getFullName());
+    }
 
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceDocumentsTemp() {
         return defaultIfNull(supportingEvidenceDocumentsTemp, new ArrayList<>());
@@ -695,10 +722,6 @@ public class CaseData {
 
     public List<Element<CourtBundle>> getManageDocumentsCourtBundle() {
         return defaultIfNull(manageDocumentsCourtBundle, new ArrayList<>());
-    }
-
-    public List<Element<HearingCourtBundle>> getCourtBundleListV2() {
-        return defaultIfNull(courtBundleListV2, new ArrayList<>());
     }
 
     public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocuments() {
@@ -1143,4 +1166,6 @@ public class CaseData {
             .map(Orders::isDischargeOfCareOrder)
             .orElse(false);
     }
+
+    private List<Element<DocumentWithConfidentialAddress>> documentsWithConfidentialAddress;
 }

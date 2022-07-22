@@ -459,6 +459,25 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "respondentsRefusedSelector",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Select person(s) refused contact",
+    "FieldType": "RespondentsRefusedSelector",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondentsRefused_label",
+    "Label": " ",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Displays a list of respondents for the selected order, usage of this should be readonly"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "whichChildIsTheOrderFor",
     "Label": "Which child is the order for?",
@@ -752,6 +771,134 @@
     "FieldType": "Date",
     "Label": "End Date",
     "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersChildAssessmentType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ManageOrdersChildAssessmentType",
+    "Label": "Types of Assessment",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersAssessmentStartDate",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Date",
+    "Label": "Assessment Start Date",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersDurationOfAssessment",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Number",
+    "Label": "Duration of assessment (days)",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N",
+    "Min": "1"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersPlaceOfAssessment",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Text",
+    "Label": "Place of Assessment",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersAssessingBody",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Text",
+    "Label": "Assessing Body",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersChildKeepAwayFromHome",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "YesOrNo",
+    "Label": "Is child kept away from home?",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersFullAddressToStayIfKeepAwayFromHome",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "AddressUK",
+    "Label": "Full address",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersStartDateOfStayIfKeepAwayFromHome",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Date",
+    "Label": "From date",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersEndDateOfStayIfKeepAwayFromHome",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Date",
+    "Label": "To date",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersChildFirstContactIfKeepAwayFromHome",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Text",
+    "Label": "Child's first contact",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersChildSecondContactIfKeepAwayFromHome",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Text",
+    "Label": "Child's second contact",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersChildThirdContactIfKeepAwayFromHome",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Text",
+    "Label": "Child's third contact",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersDoesCostOrderExist",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "YesOrNo",
+    "Label": "Is there a costs order?",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersCostOrderDetails",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "TextArea",
+    "Label": "Cost order details",
+    "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   }
 ]

@@ -172,7 +172,7 @@ class DraftOrdersApprovedEventHandlerTest {
         given(cafcassLookupConfiguration.getCafcassWelsh(LOCAL_AUTHORITY_CODE))
                 .willReturn(Optional.of(cafcass));
         given(reviewDraftOrdersEmailContentProvider.buildOrdersApprovedContent(
-            caseData, HEARING.getValue(), orders, EMAIL)).willReturn(EXPECTED_TEMPLATE);
+            caseData, HEARING.getValue(), orders, DIGITAL_SERVICE)).willReturn(EXPECTED_TEMPLATE);
 
         underTest.sendNotificationToCafcass(new DraftOrdersApproved(caseData, orders));
 

@@ -94,7 +94,7 @@ public class CaseManagementOrderIssuedEventHandler {
             HearingOrder issuedCmo = event.getCmo();
 
             final IssuedCMOTemplate cafcassParameters = contentProvider.buildCMOIssuedNotificationParameters(
-                    caseData, issuedCmo, EMAIL);
+                    caseData, issuedCmo, DIGITAL_SERVICE);
 
             notificationService.sendEmail(
                     CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE,

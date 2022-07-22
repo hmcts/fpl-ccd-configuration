@@ -73,7 +73,7 @@ public class CafcassEmailConfiguration {
     public String getRecipientForNoticeOfHearing() {
         return noticeofhearing;
     }
-  
+
     public String getRecipientForChangeOfAddress() {
         return changeofaddress;
     }

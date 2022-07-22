@@ -252,15 +252,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "localAuthorityColleaguesLabel",
-    "FieldType": "Label",
-    "Label": "<h2 class='govuk-!-margin-bottom-0'>Add colleagues to the case</h2><span class='form-hint'>Add at least 1 case solicitor</span>",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "mainContactLabel",
     "FieldType": "Label",
     "Label": "<h2>Main contact</h2>",
@@ -1970,15 +1961,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "reviewCMOShowOthers",
-    "Label": " ",
-    "FieldType": "Text",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "otherOrderType",
     "Label": " ",
     "FieldType": "YesOrNo",
@@ -2001,6 +1983,16 @@
     "FieldType": "Label",
     "Label": "You must check to see if there are restrictions on who should be notified about the placement application.",
     "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentsWithConfidentialAddress",
+    "Label": "Document with confidential address",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentWithConfidentialAddress",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {

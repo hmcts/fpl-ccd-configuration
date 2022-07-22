@@ -17,6 +17,13 @@
     <notes><![CDATA[
    file name: spring-core-5.3.12.jar
    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-core@.*$</packageUrl>
+    <cve>CVE-2016-1000027</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: spring-core-5.3.12.jar
+   ]]></notes>
     <sha1>662e6536968246af9baa84fbac2d3eb56a04fda9</sha1>
     <cve>CVE-2021-22060</cve>
   </suppress>
@@ -191,5 +198,10 @@
    ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-webmvc@.*$</packageUrl>
     <vulnerabilityName>CVE-2021-22060</vulnerabilityName>
+  </suppress>
+  <!-- Known FP, see https://github.com/jeremylong/DependencyCheck/issues/4671 -->
+  <suppress>
+    <notes><![CDATA[Suppressed as known false positive]]></notes>
+    <vulnerabilityName>CVE-2022-31569</vulnerabilityName>
   </suppress>
 </suppressions>

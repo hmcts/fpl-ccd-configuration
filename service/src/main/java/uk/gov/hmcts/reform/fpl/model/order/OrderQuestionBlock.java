@@ -3,12 +3,27 @@ package uk.gov.hmcts.reform.fpl.model.order;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collections;
 import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
 public enum OrderQuestionBlock {
 
+    CHILD_ASSESSMENT_ORDER("manageOrdersChildAssessment", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersChildAssessmentType", "manageOrdersAssessmentStartDate",
+            "manageOrdersDurationOfAssessment",
+            "manageOrdersPlaceOfAssessment",
+            "manageOrdersAssessingBody",
+            "manageOrdersChildKeepAwayFromHome",
+            "manageOrdersFullAddressToStayIfKeepAwayFromHome",
+            "manageOrdersStartDateOfStayIfKeepAwayFromHome",
+            "manageOrdersEndDateOfStayIfKeepAwayFromHome",
+            "manageOrdersChildFirstContactIfKeepAwayFromHome",
+            "manageOrdersChildSecondContactIfKeepAwayFromHome",
+            "manageOrdersChildThirdContactIfKeepAwayFromHome",
+            "manageOrdersDoesCostOrderExist",
+            "manageOrdersCostOrderDetails")),
     LINKED_TO_HEARING("hearingDetails", OrderSection.HEARING_DETAILS,
         List.of("manageOrdersApprovedAtHearing", "manageOrdersApprovedAtHearingList",
             "manageOrdersApprovalDate", "manageOrdersApprovalDateTime", "judgeAndLegalAdvisor")),
@@ -97,6 +112,9 @@ public enum OrderQuestionBlock {
             "manageOrdersC35aOrderDoesntExistMessage", "manageOrdersSupervisionOrderVariationHeading",
             "manageOrdersSupervisionOrderExtensionHeading", "manageOrdersSupervisionOrderCourtDirection",
             "manageOrdersSupervisionOrderApprovalDate", "manageOrdersSupervisionOrderEndDate")),
+    REFUSE_CONTACT_ORDER("refuseContactQuestions", OrderSection.ORDER_DETAILS, Collections.emptyList()),
+    RESPONDENTS_REFUSED("respondentsRefused", OrderSection.ORDER_DETAILS,
+                       List.of("respondentsRefused_label", "respondentsRefusedSelector")),
     ORDER_PLACED_CHILD_IN_CUSTODY("orderPlacedChildInCustody", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersPlacedUnderOrder", "manageOrdersOrderCreatedDate", "manageOrdersActionsPermitted",
             "manageOrdersIsExParte"));

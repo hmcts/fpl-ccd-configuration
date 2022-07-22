@@ -130,7 +130,7 @@ class SendNoticeOfHearingHandlerTest {
         given(CASE_DATA.getId()).willReturn(CASE_ID);
         given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
         given(cafcassLookup.getCafcass(LOCAL_AUTHORITY_CODE)).willReturn(new Cafcass("", CAFCASS_EMAIL_ADDRESS));
-        given(contentProvider.buildNewNoticeOfHearingNotification(CASE_DATA, HEARING, EMAIL))
+        given(contentProvider.buildNewNoticeOfHearingNotification(CASE_DATA, HEARING, DIGITAL_SERVICE))
             .willReturn(EMAIL_REP_NOTIFY_DATA);
         given(cafcassLookup.getCafcassWelsh(LOCAL_AUTHORITY_CODE))
             .willReturn(Optional.of(
@@ -292,7 +292,7 @@ class SendNoticeOfHearingHandlerTest {
         underTest.sendNoticeOfHearingByPost(new SendNoticeOfHearing(CASE_DATA, HearingBooking.builder()
             .translationRequirements(LanguageTranslationRequirement.WELSH_TO_ENGLISH)
             .build()));
-        
+
         verifyNoInteractions(sendDocumentService, otherRecipientsInbox, notificationService);
     }
 

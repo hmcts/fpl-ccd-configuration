@@ -27,10 +27,12 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C29_RECOVERY_OF_A_CHILD;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C34B_AUTHORITY_TO_REFUSE_CONTACT;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35B_INTERIM_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C36_VARIATION_OR_EXTENSION_OF_SUPERVISION_ORDERS;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C37_EDUCATION_SUPERVISION_ORDER_DIGITAL;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C39_CHILD_ASSESSMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43A_SPECIAL_GUARDIANSHIP_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C45A_PARENTAL_RESPONSIBILITY_ORDER;
@@ -60,6 +62,10 @@ class OrderTest {
             "c32b_discharge_of_care_order.pdf");
         assertThat(C32B_DISCHARGE_OF_CARE_ORDER.fileName(RenderFormat.WORD)).isEqualTo(
             "c32b_discharge_of_care_order.doc");
+        assertThat(C34B_AUTHORITY_TO_REFUSE_CONTACT.fileName(RenderFormat.PDF)).isEqualTo(
+            "c34b_authority_to_refuse_contact.pdf");
+        assertThat(C34B_AUTHORITY_TO_REFUSE_CONTACT.fileName(RenderFormat.WORD)).isEqualTo(
+            "c34b_authority_to_refuse_contact.doc");
         assertThat(C35A_SUPERVISION_ORDER.fileName(RenderFormat.PDF)).isEqualTo("c35a_supervision_order.pdf");
         assertThat(C35A_SUPERVISION_ORDER.fileName(RenderFormat.WORD)).isEqualTo("c35a_supervision_order.doc");
         assertThat(C33_INTERIM_CARE_ORDER.fileName(RenderFormat.PDF)).isEqualTo("c33_interim_care_order.pdf");
@@ -219,6 +225,11 @@ class OrderTest {
             Arguments.of(C33_INTERIM_CARE_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
             Arguments.of(C33_INTERIM_CARE_ORDER, REVIEW, Optional.of(OTHER_DETAILS)),
             Arguments.of(C33_INTERIM_CARE_ORDER, OTHER_DETAILS, Optional.empty()),
+            Arguments.of(C34B_AUTHORITY_TO_REFUSE_CONTACT, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
+            Arguments.of(C34B_AUTHORITY_TO_REFUSE_CONTACT, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
+            Arguments.of(C34B_AUTHORITY_TO_REFUSE_CONTACT, ORDER_DETAILS, Optional.of(REVIEW)),
+            Arguments.of(C34B_AUTHORITY_TO_REFUSE_CONTACT, REVIEW, Optional.of(OTHER_DETAILS)),
+            Arguments.of(C34B_AUTHORITY_TO_REFUSE_CONTACT, OTHER_DETAILS, Optional.empty()),
             Arguments.of(C35A_SUPERVISION_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C35A_SUPERVISION_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C35A_SUPERVISION_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
@@ -229,6 +240,11 @@ class OrderTest {
             Arguments.of(C35B_INTERIM_SUPERVISION_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
             Arguments.of(C35B_INTERIM_SUPERVISION_ORDER, REVIEW, Optional.of(OTHER_DETAILS)),
             Arguments.of(C35B_INTERIM_SUPERVISION_ORDER, OTHER_DETAILS, Optional.empty()),
+            Arguments.of(C39_CHILD_ASSESSMENT_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
+            Arguments.of(C39_CHILD_ASSESSMENT_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
+            Arguments.of(C39_CHILD_ASSESSMENT_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
+            Arguments.of(C39_CHILD_ASSESSMENT_ORDER, REVIEW, Optional.of(OTHER_DETAILS)),
+            Arguments.of(C39_CHILD_ASSESSMENT_ORDER, OTHER_DETAILS, Optional.empty()),
             Arguments.of(C36_VARIATION_OR_EXTENSION_OF_SUPERVISION_ORDERS, ISSUING_DETAILS,
                 Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C36_VARIATION_OR_EXTENSION_OF_SUPERVISION_ORDERS, CHILDREN_DETAILS,
