@@ -1,0 +1,289 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "hmcts-admin",
+    "ReadOnly": "Y",
+    "AccessProfiles": "GS_profile"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "hmcts-judiciary",
+    "ReadOnly": "Y",
+    "AccessProfiles": "GS_profile"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "hmcts-legal-operations",
+    "ReadOnly": "Y",
+    "AccessProfiles": "GS_profile"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "hmcts-ctsc",
+    "ReadOnly": "Y",
+    "AccessProfiles": "GS_profile"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "idam:caseworker-publiclaw-cafcass",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-publiclaw-cafcass"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "idam:caseworker-publiclaw-bulkscan",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-publiclaw-bulkscan"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "idam:caseworker-publiclaw-bulkscansystemupdate",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-publiclaw-bulkscansystemupdate"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "idam:caseworker-publiclaw-courtadmin",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-publiclaw-courtadmin"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "idam:caseworker-publiclaw-gatekeeper",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-publiclaw-gatekeeper"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "idam:caseworker-publiclaw-judiciary",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-publiclaw-judiciary"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "idam:caseworker-publiclaw-magistrate",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-publiclaw-magistrate"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "idam:caseworker-publiclaw-solicitor",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-publiclaw-solicitor"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "idam:caseworker-publiclaw-superuser",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-publiclaw-superuser"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "idam:caseworker-publiclaw-systemupdate",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-publiclaw-systemupdate,GS_profile"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[LASOLICITOR]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[LASOLICITOR]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[SOLICITOR]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[SOLICITOR]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[SOLICITORA]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[SOLICITORA]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[SOLICITORB]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[SOLICITORB]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[SOLICITORC]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[SOLICITORC]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[SOLICITORD]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[SOLICITORD]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[SOLICITORE]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[SOLICITORE]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[SOLICITORF]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[SOLICITORF]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[SOLICITORG]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[SOLICITORG]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[SOLICITORH]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[SOLICITORH]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[SOLICITORI]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[SOLICITORI]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[SOLICITORJ]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[SOLICITORJ]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[CHILDSOLICITORA]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[CHILDSOLICITORA]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[CHILDSOLICITORB]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[CHILDSOLICITORB]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[CHILDSOLICITORC]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[CHILDSOLICITORC]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[CHILDSOLICITORD]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[CHILDSOLICITORD]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[CHILDSOLICITORE]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[CHILDSOLICITORE]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[CHILDSOLICITORF]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[CHILDSOLICITORF]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[CHILDSOLICITORG]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[CHILDSOLICITORG]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[CHILDSOLICITORH]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[CHILDSOLICITORH]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[CHILDSOLICITORI]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[CHILDSOLICITORI]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[CHILDSOLICITORJ]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[CHILDSOLICITORJ]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[CHILDSOLICITORK]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[CHILDSOLICITORK]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[CHILDSOLICITORL]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[CHILDSOLICITORL]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[CHILDSOLICITORM]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[CHILDSOLICITORM]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[CHILDSOLICITORN]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[CHILDSOLICITORN]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[CHILDSOLICITORO]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[CHILDSOLICITORO]"
+  }
+]

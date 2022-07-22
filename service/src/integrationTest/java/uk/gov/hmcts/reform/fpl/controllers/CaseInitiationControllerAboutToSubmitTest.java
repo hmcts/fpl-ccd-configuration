@@ -158,4 +158,18 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
         ), "OrgPolicyCaseAssignedRole", role);
     }
 
+    @Test
+    void shouldAddGlobalSearchTopLevelFields() {
+        CaseData caseData = CaseData.builder()
+            .caseName("GlobalSearchTest CaseName")
+            .build();
+
+        Map<String, Object> caseDetails = postAboutToSubmitEvent(caseData).getData();
+
+        // TODO Test caseManagementLocation and caseManagementCategory as well
+        assertThat(caseDetails.get("caseNameHmctsRestricted")).isEqualTo("GlobalSearchTest CaseName");
+        assertThat(caseDetails.get("caseNameHmctsInternal")).isEqualTo("GlobalSearchTest CaseName");
+        assertThat(caseDetails.get("caseNamePublic")).isEqualTo("GlobalSearchTest CaseName");
+    }
+
 }

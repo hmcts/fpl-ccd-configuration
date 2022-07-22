@@ -15,6 +15,10 @@ import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.group.C110A;
@@ -25,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -295,5 +300,39 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         CaseDetails caseDetails = asCaseDetails(caseData);
         caseDetails.getData().put("migrationId", migrationId);
         return caseDetails;
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl702 {
+        final String migrationId = "DFPL-702";
+
+        @Test
+        void shouldPopulateCaseName() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .caseName("I AM CASE NAME")
+                .children1(List.of(element(Child.builder().party(ChildParty.builder()
+                    .firstName("Kate")
+                    .lastName("Clark")
+                    .dateOfBirth(LocalDate.of(2012, 7, 31))
+                    .build()).build())))
+                .respondents1(List.of(element(Respondent.builder().party(RespondentParty.builder()
+                    .firstName("Ronnie")
+                    .lastName("Clark")
+                        .dateOfBirth(LocalDate.of(1997, 9, 7))
+                    .build()).build())))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+            Map<String, Object> caseDetails = response.getData();
+
+            assertThat(caseDetails.get("caseNameHmctsRestricted")).isEqualTo("I AM CASE NAME");
+            assertThat(caseDetails.get("caseNameHmctsInternal")).isEqualTo("I AM CASE NAME");
+            assertThat(caseDetails.get("caseNamePublic")).isEqualTo("I AM CASE NAME");
+            // TODO test SearchCriteria
+        }
     }
 }

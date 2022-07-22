@@ -40,7 +40,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-798", this::run798,
         "DFPL-802", this::run802,
         "DFPL-692", this::run692,
-        "DFPL-776", this::run776
+        "DFPL-776", this::run776,
+        "DFPL-702", this::run702
     );
 
     @PostMapping("/about-to-submit")
@@ -101,6 +102,20 @@ public class MigrateCaseController extends CallbackController {
         var expectedDocId = UUID.fromString("dcd016c6-a0de-4ed2-91ce-5582a6acaf25");
 
         removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
+    }
+
+    private void run702(CaseDetails caseDetails) {
+        var migrationId = "DFPL-702";
+
+        CaseData caseData = getCaseData(caseDetails);
+        String caseName = caseData.getCaseName();
+
+        // migrating top level fields: case names
+        caseDetails.getData().put("caseNameHmctsRestricted", caseName);
+        caseDetails.getData().put("caseNameHmctsInternal", caseName);
+        caseDetails.getData().put("caseNamePublic", caseName);
+        // migrating caseManagementLocation TODO
+        // migrating caseManagementCategory TODO
     }
 
     private void removeC110a(CaseDetails caseDetails, String migrationId, long expectedCaseId, UUID expectedDocId) {
