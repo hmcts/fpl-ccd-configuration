@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
@@ -37,9 +36,12 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
+import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -117,12 +119,19 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         List<Element<HearingOrder>> unsealedCMOs = caseData.getDraftUploadedCMOs();
-        List<Element<DraftOrder>> draftOrders = caseData.getTemporaryC2Document().getDraftOrdersBundle();
-        unsealedCMOs.addAll(draftOrders.stream()
-            .map(Element::getValue)
-            .map(HearingOrder::from)
-            .map(ElementUtils::element)
-            .collect(Collectors.toList()));
+
+        Optional.ofNullable(caseData.getTemporaryC2Document())
+            .map(C2DocumentBundle::getDraftOrdersBundle)
+            .filter(not(Objects::isNull))
+            .ifPresent(draftOrders ->
+                unsealedCMOs.addAll(
+                    draftOrders.stream()
+                    .map(Element::getValue)
+                    .map(HearingOrder::from)
+                    .map(ElementUtils::element)
+                    .collect(Collectors.toList()))
+            );
+
         List<Element<HearingOrdersBundle>> bundles = draftOrderService.migrateCmoDraftToOrdersBundles(caseData);
 
         draftOrderService.additionalApplicationUpdateCase(unsealedCMOs, bundles);
