@@ -45,7 +45,7 @@
     "ID": "OtherDocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
-    "EventElementLabel": "Supplements dddd",
+    "EventElementLabel": "Supplements",
     "ListElementCode": "supplementsBundle",
     "FieldDisplayOrder": "5",
     "DisplayContext": "OPTIONAL"
