@@ -41,7 +41,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
-import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -122,7 +121,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         Optional.ofNullable(caseData.getTemporaryC2Document())
             .map(C2DocumentBundle::getDraftOrdersBundle)
-            .filter(not(Objects::isNull))
+            .filter(Objects::nonNull)
             .ifPresent(draftOrders ->
                 unsealedCMOs.addAll(
                     draftOrders.stream()
