@@ -45,6 +45,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_NOTICE_UPLOADED_
 import static uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.PLACEMENT_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.PLACEMENT_NOTICE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
@@ -79,11 +80,12 @@ class PlacementEventsHandlerNotificationTest {
     private PlacementEventsHandler underTest;
 
     private final DocumentReference placementApplication = testDocumentReference();
+    private final DocumentReference placementNotice = testDocumentReference();
 
     private final Placement placement = Placement.builder()
         .childId(randomUUID())
         .application(placementApplication)
-        .placementNotice(testDocumentReference())
+        .placementNotice(placementNotice)
         .build();
 
     private final PlacementEventData placementEventData = PlacementEventData.builder()
@@ -183,13 +185,13 @@ class PlacementEventsHandlerNotificationTest {
             .build();
 
         @Test
-        void shouldSendNotificationToCafcass() {
+        void shouldNotifyCafcassWalesAboutNoticeViaNotify() {
 
             final PlacementNoticeAdded event = new PlacementNoticeAdded(caseData, placement);
             final Cafcass cafcass = new Cafcass("Cafcass", "cafcass@test.com");
 
             when(contentProvider.getNoticeChangedCafcassData(caseData, placement)).thenReturn(notifyData);
-            when(cafcassLookupConfiguration.getCafcass("LA1")).thenReturn(cafcass);
+            when(cafcassLookupConfiguration.getCafcassWelsh("LA1")).thenReturn(Optional.of(cafcass));
 
             underTest.notifyCafcassOfNewNotice(event);
 
@@ -198,7 +200,38 @@ class PlacementEventsHandlerNotificationTest {
         }
 
         @Test
-        void shouldNotifyCafcassOnApplication() {
+        void shouldNotifyCafcassEnglandAboutNoticeViaSendGrid() {
+            final PlacementNoticeAdded event = new PlacementNoticeAdded(caseData, placement);
+            final Cafcass cafcass = new Cafcass("Cafcass", "cafcass@test.com");
+
+            when(contentProvider.buildNewPlacementApplicationNotificationCafcassData(caseData, placement))
+                .thenReturn(cafcassData);
+            when(cafcassLookupConfiguration.getCafcassEngland("LA1")).thenReturn(Optional.of(cafcass));
+
+            underTest.notifyCafcassOfNewNoticeSendGrid(event);
+
+            verify(cafcassNotificationService)
+                .sendEmail(caseData, Set.of(placementNotice), PLACEMENT_NOTICE, cafcassData);
+        }
+
+        @Test
+        void shouldNotifyCafcassWalesAboutApplicationViaNotify() {
+
+            final PlacementApplicationSubmitted event = new PlacementApplicationSubmitted(caseData, placement);
+            final Cafcass cafcass = new Cafcass("Cafcass", "cafcass@test.com");
+
+            when(contentProvider.getApplicationChangedCourtData(caseData, placement)).thenReturn(notifyData);
+            when(cafcassLookupConfiguration.getCafcassWelsh("LA1")).thenReturn(Optional.of(cafcass));
+
+            underTest.notifyCafcassOfNewApplicationGovNotify(event);
+
+            verify(notificationService)
+                .sendEmail(PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE, cafcass.getEmail(), notifyData, CASE_ID);
+        }
+
+
+        @Test
+        void shouldNotifyCafcassEnglandAboutApplicationViaSendGrid() {
             final PlacementApplicationSubmitted event = new PlacementApplicationSubmitted(caseData, placement);
             final Cafcass cafcass = new Cafcass("Cafcass", "cafcass@test.com");
 
@@ -206,7 +239,7 @@ class PlacementEventsHandlerNotificationTest {
                 .thenReturn(cafcassData);
             when(cafcassLookupConfiguration.getCafcassEngland("LA1")).thenReturn(Optional.of(cafcass));
 
-            underTest.notifyCafcassSendGrid(event);
+            underTest.notifyCafcassOfNewApplicationSendGrid(event);
 
             verify(cafcassNotificationService)
                 .sendEmail(caseData, Set.of(placementApplication), PLACEMENT_APPLICATION, cafcassData);

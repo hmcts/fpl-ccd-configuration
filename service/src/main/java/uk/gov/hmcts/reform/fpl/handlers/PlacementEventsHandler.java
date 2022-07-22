@@ -49,6 +49,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.A50_PLACEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.PLACEMENT_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.PLACEMENT_NOTICE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.nullifyTemporaryFields;
 
 @Slf4j
@@ -96,7 +97,7 @@ public class PlacementEventsHandler {
 
     @Async
     @EventListener
-    public void notifyCafcassSendGrid(final PlacementApplicationSubmitted event) {
+    public void notifyCafcassOfNewApplicationSendGrid(final PlacementApplicationSubmitted event) {
         final CaseData caseData = event.getCaseData();
         final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
             cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
@@ -112,6 +113,25 @@ public class PlacementEventsHandler {
                 of(event.getPlacement().getApplication()),
                 PLACEMENT_APPLICATION,
                 placementApplicationCafcassData);
+        }
+    }
+
+    @Async
+    @EventListener
+    public void notifyCafcassOfNewApplicationGovNotify(final PlacementApplicationSubmitted event) {
+        final CaseData caseData = event.getCaseData();
+        final Placement placement = event.getPlacement();
+
+        Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
+            .map(CafcassLookupConfiguration.Cafcass::getEmail);
+
+        if (recipientIsWelsh.isPresent()) {
+            log.info("Send email to cafcass about {} new placement application", placement.getChildName());
+
+            final NotifyData notifyData = contentProvider.getApplicationChangedCourtData(caseData, placement);
+
+            notificationService.sendEmail(PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE, recipientIsWelsh.get(),
+                notifyData, caseData.getId());
         }
     }
 
@@ -141,14 +161,40 @@ public class PlacementEventsHandler {
         final CaseData caseData = event.getCaseData();
         final Placement placement = event.getPlacement();
 
-        log.info("Send email to cafcass about {} child placement notice", placement.getChildName());
+        Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
+            .map(CafcassLookupConfiguration.Cafcass::getEmail);
 
-        final NotifyData notifyData = contentProvider.getNoticeChangedCafcassData(caseData, placement);
+        if (recipientIsWelsh.isPresent()) {
 
-        final String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
+            log.info("Send email to cafcass about {} child placement notice", placement.getChildName());
 
-        notificationService
-            .sendEmail(PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE, recipient, notifyData, caseData.getId());
+            final NotifyData notifyData = contentProvider.getNoticeChangedCafcassData(caseData, placement);
+
+            notificationService.sendEmail(PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE, recipientIsWelsh.get(),
+                notifyData, caseData.getId());
+        }
+    }
+
+    @Async
+    @EventListener
+    public void notifyCafcassOfNewNoticeSendGrid(PlacementNoticeAdded event) {
+        final CaseData caseData = event.getCaseData();
+
+        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
+            cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
+
+        if (recipientIsEngland.isPresent()) {
+            PlacementApplicationCafcassData placementApplicationCafcassData =
+                contentProvider.buildNewPlacementApplicationNotificationCafcassData(
+                    caseData,
+                    event.getPlacement()
+                );
+
+            cafcassNotificationService.sendEmail(caseData,
+                of(event.getPlacement().getPlacementNotice()),
+                PLACEMENT_NOTICE,
+                placementApplicationCafcassData);
+        }
     }
 
     @Async
