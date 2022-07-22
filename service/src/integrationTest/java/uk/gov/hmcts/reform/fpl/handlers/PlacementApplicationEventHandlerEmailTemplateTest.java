@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementContentProvider;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
@@ -42,8 +43,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
     @MockBean(CoreCaseDataService.class),
     @MockBean(EventService.class),
     @MockBean(Time.class),
-    @MockBean(SendDocumentService.class)
-
+    @MockBean(SendDocumentService.class),
+    @MockBean(CafcassNotificationService.class)
 })
 class PlacementApplicationEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
