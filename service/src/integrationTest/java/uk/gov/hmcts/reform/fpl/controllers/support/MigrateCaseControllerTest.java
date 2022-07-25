@@ -142,8 +142,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class Dfpl692 {
-        final private String migrationId = "DFPL-692";
-        final private long expectedCaseId = 1641905747009846L;
+        final String migrationId = "DFPL-692";
+        final long expectedCaseId = 1641905747009846L;
         final UUID expectedNotesIdOne = UUID.fromString("7dd3c2ac-d49f-4119-8299-a19a62f1d6db");
         final UUID expectedNotesIdTwo = UUID.fromString("66fb7c25-7860-4a5c-98d4-dd2ff575eb28");
 
@@ -200,7 +200,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         @Test
         void shouldThrowExceptionWhenOneCasNotesIdInvalid() {
-           CaseData caseData = CaseData.builder()
+            CaseData caseData = CaseData.builder()
                 .id(expectedCaseId)
                 .caseNotes(List.of(buildMockCaseNotes(expectedNotesIdOne),
                     buildMockCaseNotes(UUID.randomUUID()),
