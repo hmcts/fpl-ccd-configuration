@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +43,7 @@ public class C2DocumentBundle implements ApplicationsBundle {
     private final String uploadedDateTime;
     private final String author;
     private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
+    private List<Element<DraftOrder>> draftOrdersBundle;
     private final List<Element<Supplement>> supplementsBundle;
     private final List<C2AdditionalOrdersRequested> c2AdditionalOrdersRequested;
     private final ParentalResponsibilityType parentalResponsibilityType;
