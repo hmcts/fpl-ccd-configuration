@@ -111,8 +111,9 @@ class GeneratedPlacementOrderEventHandlerTest {
         when(orderIssuedEmailContentProvider.getNotifyDataForPlacementOrder(basicCaseData, ORDER_DOCUMENT, child))
             .thenReturn(notifyData);
         when(courtService.getCourtEmail(basicCaseData)).thenReturn(DEFAULT_ADMIN_EMAIL);
-        when(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_1_CODE))
-            .thenReturn(new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS));
+        when(cafcassLookupConfiguration.getCafcassWelsh(LOCAL_AUTHORITY_1_CODE))
+            .thenReturn(Optional.of(new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE,
+                CAFCASS_EMAIL_ADDRESS)));
 
         underTest.sendPlacementOrderEmail(
             new GeneratedPlacementOrderEvent(basicCaseData,
