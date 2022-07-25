@@ -1160,7 +1160,7 @@ public class CaseData {
 
     private final DynamicList placementList;
 
-    private SearchCriteria searchCriteria;
+    private SearchCriteria SearchCriteria;
 
     private String caseNameHmctsInternal;
 

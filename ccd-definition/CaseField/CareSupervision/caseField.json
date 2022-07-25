@@ -2007,7 +2007,7 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "searchCriteria",
+    "ID": "SearchCriteria",
     "Label": " ",
     "FieldType": "SearchCriteria",
     "SecurityClassification": "Public",
