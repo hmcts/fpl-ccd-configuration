@@ -3,39 +3,10 @@
     "LiveFrom": "01/01/2017",
     "ID": "UploadedCaseManagementOrder",
     "CaseEventID": "uploadCMO",
-    "CaseFieldID": "cmoSupportingDocs",
-    "ListElementCode": "name",
-    "EventHintText": "Give the document a descriptive name. For example, Case summary",
-    "FieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "UploadedCaseManagementOrder",
-    "CaseEventID": "uploadCMO",
-    "CaseFieldID": "cmoSupportingDocs",
-    "ListElementCode": "notes",
-    "FieldDisplayOrder": 2,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "UploadedCaseManagementOrder",
-    "CaseEventID": "uploadCMO",
-    "CaseFieldID": "cmoSupportingDocs",
-    "ListElementCode": "document",
-    "EventElementLabel": "Upload document",
-    "FieldDisplayOrder": 3,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "UploadedCaseManagementOrder",
-    "CaseEventID": "uploadCMO",
     "CaseFieldID": "currentHearingOrderDrafts",
     "ListElementCode": "title",
     "EventElementLabel": "Order title",
-    "FieldDisplayOrder": 4,
+    "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -45,7 +16,7 @@
     "CaseFieldID": "currentHearingOrderDrafts",
     "ListElementCode": "order",
     "EventElementLabel": "Upload the order",
-    "FieldDisplayOrder": 5,
+    "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -55,7 +26,7 @@
     "CaseFieldID": "currentHearingOrderDrafts",
     "ListElementCode": "status",
     "EventElementLabel": "Status",
-    "FieldDisplayOrder": 5,
+    "FieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "currentHearingOrderDrafts=\"DO_NOT_SHOW\""
   },
@@ -66,7 +37,7 @@
     "CaseFieldID": "currentHearingOrderDrafts",
     "ListElementCode": "dateSent",
     "EventElementLabel": "Date sent",
-    "FieldDisplayOrder": 5,
+    "FieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "currentHearingOrderDrafts=\"DO_NOT_SHOW\""
   }

@@ -54,6 +54,8 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     private CMOStatus status;
     private String judgeTitleAndName;
     private String requestedChanges;
+    // DFPL-552 the uploading option is removed, but user can still access exiting Case Summary
+    // DFPL-526 Future case summaries are collected and put in the new 'Hearing Document' tab .
     private List<Element<SupportingEvidenceBundle>> supportingDocs;
     private String removalReason;
     private final List<Element<Other>> others;
@@ -77,6 +79,20 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
             .judgeTitleAndName(formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()))
             .supportingDocs(supportingDocs)
             .translationRequirements(translationRequirement)
+            .build();
+    }
+
+    public static HearingOrder from(DraftOrder draftOrder) {
+        return HearingOrder.builder()
+            .type(C21)
+            .title(draftOrder.getTitle())
+            .order(draftOrder.getDocument())
+            .hearing("No hearing")
+            .dateSent(draftOrder.getDateUploaded())
+            .status(SEND_TO_JUDGE)
+            .judgeTitleAndName("")
+            .supportingDocs(null)
+            .translationRequirements(NO)
             .build();
     }
 

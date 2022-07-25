@@ -1,20 +1,18 @@
 package uk.gov.hmcts.reform.fpl.service.cmo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Iterables;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderKind;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -23,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -61,7 +58,6 @@ public class DraftOrderService {
     private static final DynamicListElement NO_HEARING = DynamicListElement.defaultListItem("No hearing");
     private final ObjectMapper mapper;
     private final Time time;
-    private final DocumentUploadHelper documentUploadHelper;
     private final HearingOrderKindEventDataBuilder hearingOrderKindEventDataBuilder;
 
     public UploadDraftOrdersData getInitialData(CaseData caseData) {
@@ -117,12 +113,6 @@ public class DraftOrderService {
                     .orElseThrow(() -> new CMONotFoundException("CMO for related hearing could not be found"));
 
                 newEventDataBuilder.previousCMO(cmo.getOrder());
-
-                if (eventData.getPreviousCMO() == null) {
-                    newEventDataBuilder.cmoSupportingDocs(cmo.getSupportingDocs());
-                } else {
-                    newEventDataBuilder.cmoSupportingDocs(eventData.getCmoSupportingDocs());
-                }
             }
 
             newEventDataBuilder
@@ -144,7 +134,6 @@ public class DraftOrderService {
 
     public UUID updateCase(UploadDraftOrdersData eventData, List<Element<HearingBooking>> hearings,
                            List<Element<HearingOrder>> cmoDrafts,
-                           List<Element<HearingFurtherEvidenceBundle>> evidenceBundles,
                            List<Element<HearingOrdersBundle>> bundles) {
 
         final UUID selectedHearingId = getSelectedHearingId(eventData);
@@ -158,24 +147,18 @@ public class DraftOrderService {
 
             DocumentReference cmo = getCMO(eventData, hearing.getValue(), cmoDrafts);
 
-            List<Element<SupportingEvidenceBundle>> supportingDocs = eventData.getCmoSupportingDocs();
-
             Element<HearingOrder> order = element(from(
                 cmo,
                 hearing.getValue(),
                 time.now().toLocalDate(),
                 eventData.isCmoAgreed() ? AGREED_CMO : DRAFT_CMO,
-                supportingDocs,
+                null,
                 eventData.getCmoToSendTranslationRequirements()
             ));
 
             Optional<UUID> previousCmoId = updateHearingWithCmoId(hearing.getValue(), order);
 
             insertOrder(cmoDrafts, order, previousCmoId.orElse(null));
-
-            if (eventData.isCmoAgreed() && !supportingDocs.isEmpty()) {
-                migrateDocuments(evidenceBundles, selectedHearingId, hearing.getValue(), supportingDocs);
-            }
 
             addOrdersToBundle(bundles, List.of(order), hearing, eventData.isCmoAgreed() ? AGREED_CMO : DRAFT_CMO);
         }
@@ -197,6 +180,19 @@ public class DraftOrderService {
         bundles.removeIf(bundle -> isEmpty(bundle.getValue().getOrders()));
 
         return selectedHearingId;
+    }
+
+    public void additionalApplicationUpdateCase(List<Element<HearingOrder>> draftOrders,
+                                                 List<Element<HearingOrdersBundle>> bundles) {
+
+        for (int i = 0; i < draftOrders.size(); i++) {
+            Element<HearingOrder> hearingOrder = draftOrders.get(i);
+            hearingOrder.getValue().setDateSent(time.now().toLocalDate());
+            hearingOrder.getValue().setStatus(SEND_TO_JUDGE);
+            hearingOrder.getValue().setTranslationRequirements(LanguageTranslationRequirement.NO);
+        }
+
+        addOrdersToBundle(bundles, draftOrders, null, C21);
     }
 
     public List<Element<HearingOrdersBundle>> migrateCmoDraftToOrdersBundles(CaseData caseData) {
@@ -241,33 +237,6 @@ public class DraftOrderService {
         bundles.removeIf(b -> isEmpty(b.getValue().getOrders()));
 
         return bundles;
-    }
-
-    private void migrateDocuments(List<Element<HearingFurtherEvidenceBundle>> evidenceBundles, UUID selectedHearingId,
-                                  HearingBooking hearing, List<Element<SupportingEvidenceBundle>> cmoSupportingDocs) {
-        Optional<Element<HearingFurtherEvidenceBundle>> bundle = findElement(selectedHearingId, evidenceBundles);
-
-        List<Element<SupportingEvidenceBundle>> supportingDocs = addAuditData(cmoSupportingDocs);
-
-        if (bundle.isPresent()) {
-            List<Element<SupportingEvidenceBundle>> hearingDocs = bundle.get().getValue().getSupportingEvidenceBundle();
-
-            supportingDocs.forEach(supportingDoc -> {
-                int hearingDocIndex = Iterables.indexOf(hearingDocs,
-                    hearingDoc -> Objects.equals(hearingDoc.getId(), supportingDoc.getId()));
-                if (hearingDocIndex < 0) {
-                    hearingDocs.add(supportingDoc);
-                } else {
-                    hearingDocs.remove(hearingDocIndex);
-                    hearingDocs.add(hearingDocIndex, supportingDoc);
-                }
-            });
-        } else {
-            evidenceBundles.add(element(selectedHearingId, HearingFurtherEvidenceBundle.builder()
-                .hearingName(hearing.toLabel())
-                .supportingEvidenceBundle(supportingDocs)
-                .build()));
-        }
     }
 
     private void addOrdersToBundle(List<Element<HearingOrdersBundle>> bundles,
@@ -431,19 +400,6 @@ public class DraftOrderService {
 
     private boolean includeHearing(Element<HearingOrder> cmo, HearingBooking hearing) {
         return SEND_TO_JUDGE == cmo.getValue().getStatus() && cmo.getId().equals(hearing.getCaseManagementOrderId());
-    }
-
-    private List<Element<SupportingEvidenceBundle>> addAuditData(
-        List<Element<SupportingEvidenceBundle>> cmoSupportingDocs) {
-        String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
-
-        List<Element<SupportingEvidenceBundle>> supportingDocs = new ArrayList<>();
-        cmoSupportingDocs.forEach(cmoSupportingDoc -> supportingDocs.add(
-            element(cmoSupportingDoc.getId(), cmoSupportingDoc.getValue().toBuilder()
-                .dateTimeUploaded(time.now())
-                .uploadedBy(uploadedBy).build())));
-
-        return supportingDocs;
     }
 
     private void sortHearings(List<Element<HearingBooking>> hearings) {
