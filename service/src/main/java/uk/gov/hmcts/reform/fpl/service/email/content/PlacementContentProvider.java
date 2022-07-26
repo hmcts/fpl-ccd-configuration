@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentPr
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.PLACEMENT;
+import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Component
 @RequiredArgsConstructor
@@ -52,6 +53,7 @@ public class PlacementContentProvider extends AbstractEmailContentProvider {
                                                                                                Placement placement) {
         return PlacementApplicationCafcassData.builder()
             .placementChildName(placement.getChildName())
+            .firstRespondentName(getFirstRespondentLastName(caseData))
             .build();
     }
 

@@ -9,4 +9,5 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PlacementApplicationCafcassData implements CafcassData {
     private String placementChildName;
+    private String firstRespondentName;
 }
