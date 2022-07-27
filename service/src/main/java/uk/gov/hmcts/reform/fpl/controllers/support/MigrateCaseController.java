@@ -13,11 +13,15 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseNote;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -32,7 +36,8 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-753", this::run753,
         "DFPL-754", this::run754,
-        "DFPL-755", this::run755
+        "DFPL-755", this::run755,
+        "DFPL-692", this::run692
     );
 
     @PostMapping("/about-to-submit")
@@ -107,5 +112,36 @@ public class MigrateCaseController extends CallbackController {
             ));
         }
         caseDetails.getData().put("submittedForm", null);
+    }
+
+    private void run692(CaseDetails caseDetails) {
+        var migrationId = "DFPL-692";
+        var expectedCaseId = 1641905747009846L;
+
+        CaseData caseData = getCaseData(caseDetails);
+        Long caseId = caseData.getId();
+
+        if (caseId != expectedCaseId) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId
+            ));
+        }
+
+        List<UUID> expectedNotesId = List.of(UUID.fromString("7dd3c2ac-d49f-4119-8299-a19a62f1d6db"),
+            UUID.fromString("66fb7c25-7860-4a5c-98d4-dd2ff575eb28"));
+
+        List<Element<CaseNote>> resultCaseNotes = caseData.getCaseNotes().stream()
+            .filter(caseNoteElement -> !expectedNotesId.contains(caseNoteElement.getId()))
+            .collect(Collectors.toList());
+
+        if (caseData.getCaseNotes().size() - resultCaseNotes.size() != 2) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected caseNotes id not found",
+                migrationId, caseId
+            ));
+        }
+
+        caseDetails.getData().put("caseNotes", resultCaseNotes);
     }
 }

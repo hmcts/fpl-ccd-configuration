@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -13,16 +15,20 @@ import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.utils.RespondentsTestHelper;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -570,6 +576,58 @@ class RespondentServiceTest {
                 .addressLine2("Testing").postcode("XX1 BBB").build()).build()).build());
         assertThat(service.hasAddressChange(Collections.unmodifiableList(respondentsAfter),
             Collections.unmodifiableList(respondentsBefore))).isFalse();
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldTransformOtherToRespondent(boolean hasRepresentative) {
+        UUID id = UUID.randomUUID();
+        UUID representativeId = UUID.randomUUID();
+
+        Other other = Other.builder()
+            .address(Address.builder()
+                .postcode("XXX YYY")
+                .addressLine1("addressLine1")
+                .build())
+            .addressKnow("Yes")
+            .addressNotKnowReason("addressNotKnowReason")
+            .detailsHidden("Yes")
+            .detailsHiddenReason("detailsHiddenReason")
+            .dateOfBirth("1989-06-04")
+            .name("Other Name")
+            .gender("Male")
+            .genderIdentification("genderIdentification")
+            .litigationIssuesDetails("litigationIssuesDetails")
+            .litigationIssues("litigationIssues")
+            .childInformation("childInformation")
+            .telephone("7776894894")
+            .build();
+        if (hasRepresentative) {
+            other.addRepresentative(id, representativeId);
+        }
+
+        Respondent expected = Respondent.builder()
+            .representedBy(hasRepresentative ? List.of(element(id, representativeId)) : Lists.emptyList())
+            .party(RespondentParty.builder()
+                .address(Address.builder()
+                    .postcode("XXX YYY")
+                    .addressLine1("addressLine1")
+                    .build())
+                .addressKnow("Yes")
+                .addressNotKnowReason("addressNotKnowReason")
+                .contactDetailsHiddenReason("detailsHiddenReason")
+                .contactDetailsHidden("Yes")
+                .dateOfBirth(LocalDate.of(1989, Month.JUNE, 4))
+                .firstName("Other Name")
+                .gender("Male")
+                .genderIdentification("genderIdentification")
+                .litigationIssuesDetails("litigationIssuesDetails")
+                .litigationIssues("litigationIssues")
+                .relationshipToChild("childInformation")
+                .telephoneNumber(Telephone.builder().telephoneNumber("7776894894").build())
+                .build())
+            .build();
+        assertThat(service.transformOtherToRespondent(other)).isEqualTo(expected);
     }
 
 }
