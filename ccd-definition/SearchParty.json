@@ -7,5 +7,31 @@
     "SearchPartyAddressLine1": "party.address.AddressLine1",
     "SearchPartyPostCode": "party.address.PostCode",
     "SearchPartyDOB": "party.dateOfBirth"
+  },
+  {
+    "LiveFrom": "01/01/2020",
+    "CaseTypeId": "CARE_SUPERVISION_EPO",
+    "SearchPartyCollectionFieldName": "children1",
+    "SearchPartyName": "party.firstName,party.lastName",
+    "SearchPartyAddressLine1": "party.address.AddressLine1",
+    "SearchPartyPostCode": "party.address.PostCode",
+    "SearchPartyDOB": "party.dateOfBirth"
+  },
+  {
+    "LiveFrom": "01/01/2020",
+    "CaseTypeId": "CARE_SUPERVISION_EPO",
+    "SearchPartyName": "others.firstOther.party.firstName,others.firstOther.party.lastName",
+    "SearchPartyAddressLine1": "others.firstOther.party.address.AddressLine1",
+    "SearchPartyPostCode": "others.firstOther.party.address.PostCode",
+    "SearchPartyDOB": "others.firstOther.party.dateOfBirth"
+  },
+  {
+    "LiveFrom": "01/01/2020",
+    "CaseTypeId": "CARE_SUPERVISION_EPO",
+    "SearchPartyCollectionFieldName": "others.additionalOthers",
+    "SearchPartyName": "party.firstName,party.lastName",
+    "SearchPartyAddressLine1": "party.address.AddressLine1",
+    "SearchPartyPostCode": "party.address.PostCode",
+    "SearchPartyDOB": "party.dateOfBirth"
   }
 ]
