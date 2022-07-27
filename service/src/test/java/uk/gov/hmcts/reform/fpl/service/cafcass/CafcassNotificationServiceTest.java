@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.service.cafcass;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -23,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.email.EmailData;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DocumentMetadataDownloadService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 
 import java.time.LocalDate;
@@ -81,6 +84,8 @@ class CafcassNotificationServiceTest {
     private CafcassEmailConfiguration configuration;
     @Mock
     private CaseUrlService caseUrlService;
+    @Mock
+    private FeatureToggleService featureToggleService;
 
     private CafcassNotificationService underTest;
 
@@ -95,7 +100,8 @@ class CafcassNotificationServiceTest {
                 configuration,
                 caseUrlService,
                 documentMetadataDownloadService,
-                25L
+                25L,
+                featureToggleService
         );
         Child william = Child.builder().party(
                         ChildParty.builder()
@@ -152,8 +158,11 @@ class CafcassNotificationServiceTest {
             ));
     }
 
-    @Test
-    void shouldNotifyOrderRequest() {
+    @ParameterizedTest
+    @CsvSource({"true, William|FM1234|12345|ORDER|18/05/2022",
+            "false, Court Ref. FM1234.- new order"})
+    void shouldNotifyOrderRequest(boolean flag, String subject) {
+        when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(flag);
         when(configuration.getRecipientForOrder()).thenReturn(RECIPIENT_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
             DOCUMENT_CONTENT);
@@ -172,7 +181,7 @@ class CafcassNotificationServiceTest {
         verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
         EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
-        assertThat(data.getSubject()).isEqualTo("William|FM1234|12345|ORDER|18/05/2022");
+        assertThat(data.getSubject()).isEqualTo(subject);
         assertThat(data.getAttachments()).containsExactly(
             document("application/pdf",  DOCUMENT_CONTENT, DOCUMENT_FILENAME)
         );
@@ -183,8 +192,11 @@ class CafcassNotificationServiceTest {
         );
     }
 
-    @Test
-    void shouldNotifyOrderRequestWithHearingSelected() {
+    @ParameterizedTest
+    @CsvSource({"true, William|FM1234|12345|ORDER|16/05/2022 10:30|18/05/2022",
+            "false, Court Ref. FM1234.- new order"})
+    void shouldNotifyOrderRequestWithHearingSelected(boolean flag, String subject) {
+        when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(flag);
         when(configuration.getRecipientForOrder()).thenReturn(RECIPIENT_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
                 DOCUMENT_CONTENT);
@@ -208,7 +220,7 @@ class CafcassNotificationServiceTest {
         verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
         EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
-        assertThat(data.getSubject()).isEqualTo("William|FM1234|12345|ORDER|16/05/2022 10:30|18/05/2022");
+        assertThat(data.getSubject()).isEqualTo(subject);
         assertThat(data.getAttachments()).containsExactly(
                 document("application/pdf",  DOCUMENT_CONTENT, DOCUMENT_FILENAME)
         );
@@ -219,8 +231,11 @@ class CafcassNotificationServiceTest {
         );
     }
 
-    @Test
-    void shouldNotifyUrgentNewApplicationRequest() {
+    @ParameterizedTest
+    @CsvSource({"true, William|FM1234|12345|APPLICATION",
+            "false, 'Urgent application – same day hearing, Oliver Wright'"})
+    void shouldNotifyUrgentNewApplicationRequest(boolean flag, String subject) {
+        when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(flag);
         when(configuration.getRecipientForNewApplication()).thenReturn(RECIPIENT_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL))
             .thenReturn(DOCUMENT_CONTENT);
@@ -249,7 +264,7 @@ class CafcassNotificationServiceTest {
         EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
         assertThat(data.getSubject()).isEqualTo(
-            "William|FM1234|12345|APPLICATION");
+            subject);
 
         assertThat(data.getAttachments()).containsExactly(
             document("application/pdf",  DOCUMENT_CONTENT, DOCUMENT_FILENAME)
@@ -264,8 +279,11 @@ class CafcassNotificationServiceTest {
         );
     }
 
-    @Test
-    void shouldNotifyNewApplicationRequestWhenNoTimeFramePresent() {
+    @ParameterizedTest
+    @CsvSource({"true, William|FM1234|12345|APPLICATION",
+            "false, 'Application received, Oliver Wright'"})
+    void shouldNotifyNewApplicationRequestWhenNoTimeFramePresent(boolean flag, String subject) {
+        when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(flag);
         when(configuration.getRecipientForNewApplication()).thenReturn(RECIPIENT_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL))
                 .thenReturn(DOCUMENT_CONTENT);
@@ -292,8 +310,7 @@ class CafcassNotificationServiceTest {
         verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
         EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
-        assertThat(data.getSubject()).isEqualTo(
-                "William|FM1234|12345|APPLICATION");
+        assertThat(data.getSubject()).isEqualTo(subject);
 
         assertThat(data.getAttachments()).containsExactly(
                 document("application/pdf",  DOCUMENT_CONTENT, DOCUMENT_FILENAME)
@@ -307,8 +324,11 @@ class CafcassNotificationServiceTest {
         );
     }
 
-    @Test
-    void shouldNotifyNonUrgentNewApplicationRequest() {
+    @ParameterizedTest
+    @CsvSource({"true, William|FM1234|12345|APPLICATION",
+            "false, 'Application received – hearing within 7 days, Oliver Wright'"})
+    void shouldNotifyNonUrgentNewApplicationRequest(boolean flag, String subject) {
+        when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(flag);
         when(configuration.getRecipientForNewApplication()).thenReturn(RECIPIENT_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL))
             .thenReturn(DOCUMENT_CONTENT);
@@ -335,8 +355,7 @@ class CafcassNotificationServiceTest {
         verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
         EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
-        assertThat(data.getSubject()).isEqualTo(
-            "William|FM1234|12345|APPLICATION");
+        assertThat(data.getSubject()).isEqualTo(subject);
         assertThat(data.getAttachments()).containsExactly(
             document("application/pdf",  DOCUMENT_CONTENT, DOCUMENT_FILENAME)
         );
@@ -350,8 +369,11 @@ class CafcassNotificationServiceTest {
         );
     }
 
-    @Test
-    void shouldNotifyCourtBundle() {
+    @ParameterizedTest
+    @CsvSource({"true, William|FM1234|12345|BUNDLE",
+            "false, 'Court Ref. FM1234.- new court bundle'"})
+    void shouldNotifyCourtBundle(boolean flag, String subject) {
+        when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(flag);
         when(configuration.getRecipientForCourtBundle()).thenReturn(RECIPIENT_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
                 DOCUMENT_CONTENT);
@@ -369,7 +391,7 @@ class CafcassNotificationServiceTest {
         verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
         EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
-        assertThat(data.getSubject()).isEqualTo("William|FM1234|12345|BUNDLE");
+        assertThat(data.getSubject()).isEqualTo(subject);
         assertThat(data.getAttachments()).containsExactly(
                 document("application/pdf",  DOCUMENT_CONTENT, DOCUMENT_FILENAME)
         );
@@ -380,8 +402,11 @@ class CafcassNotificationServiceTest {
         );
     }
 
-    @Test
-    void shouldNotifyNewDocument() {
+    @ParameterizedTest
+    @CsvSource({"true, William|FM1234|12345|REPORTING TO COURT",
+            "false, 'Court Ref. FM1234.- Further documents for main application'"})
+    void shouldNotifyNewDocument(boolean flag, String subject) {
+        when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(flag);
         when(configuration.getRecipientForNewDocument()).thenReturn(RECIPIENT_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
                 DOCUMENT_CONTENT);
@@ -403,7 +428,7 @@ class CafcassNotificationServiceTest {
         verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
         EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
-        assertThat(data.getSubject()).isEqualTo("William|FM1234|12345|REPORTING TO COURT");
+        assertThat(data.getSubject()).isEqualTo(subject);
         assertThat(data.getAttachments()).containsExactly(
                 document("application/pdf",  DOCUMENT_CONTENT, DOCUMENT_FILENAME)
         );
@@ -414,8 +439,11 @@ class CafcassNotificationServiceTest {
         );
     }
 
-    @Test
-    void shouldNotifyDuplicateNewDocumentsAreUploaded() {
+    @ParameterizedTest
+    @CsvSource({"true, William|FM1234|12345|COURT PAPER",
+            "false, 'Court Ref. FM1234.- Further documents for main application'"})
+    void shouldNotifyDuplicateNewDocumentsAreUploaded(boolean flag, String subject) {
+        when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(flag);
         when(configuration.getRecipientForNewDocument()).thenReturn(RECIPIENT_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
                 DOCUMENT_CONTENT);
@@ -445,7 +473,7 @@ class CafcassNotificationServiceTest {
         verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
         EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
-        assertThat(data.getSubject()).isEqualTo("William|FM1234|12345|COURT PAPER");
+        assertThat(data.getSubject()).isEqualTo(subject);
         assertThat(data.getAttachments()).containsExactly(
                 document("application/pdf",  DOCUMENT_CONTENT, DOCUMENT_FILENAME)
         );
@@ -456,8 +484,11 @@ class CafcassNotificationServiceTest {
         );
     }
 
-    @Test
-    void shouldNotifyAdditionalDocument() {
+    @ParameterizedTest
+    @CsvSource({"true, William|FM1234|12345|EXPERT",
+            "false, 'Court Ref. FM1234.- additional documents'"})
+    void shouldNotifyAdditionalDocument(boolean flag, String subject) {
+        when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(flag);
         when(configuration.getRecipientForAdditionlDocument()).thenReturn(RECIPIENT_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
                 DOCUMENT_CONTENT);
@@ -476,7 +507,7 @@ class CafcassNotificationServiceTest {
         verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
         EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
-        assertThat(data.getSubject()).isEqualTo("William|FM1234|12345|EXPERT");
+        assertThat(data.getSubject()).isEqualTo(subject);
         assertThat(data.getAttachments()).containsExactly(
                 document("application/pdf",  DOCUMENT_CONTENT, DOCUMENT_FILENAME)
         );
@@ -487,8 +518,11 @@ class CafcassNotificationServiceTest {
         );
     }
 
-    @Test
-    void shouldNotifyAdditionalDocumentWithBlankSujbectWhenNoDocumentsPresent() {
+    @ParameterizedTest
+    @CsvSource({"true, 'Court Ref. FM1234.- '",
+            "false, 'Court Ref. FM1234.- '"})
+    void shouldNotifyAdditionalDocumentWithBlankSujbectWhenNoDocumentsPresent(boolean flag, String subject) {
+        when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(flag);
         when(configuration.getRecipientForAdditionlDocument()).thenReturn(RECIPIENT_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
                 DOCUMENT_CONTENT);
@@ -497,6 +531,7 @@ class CafcassNotificationServiceTest {
                 of(),
                 ADDITIONAL_DOCUMENT,
                 NewDocumentData.builder()
+                        .emailSubjectInfo("")
                         .build()
         );
 
@@ -505,11 +540,14 @@ class CafcassNotificationServiceTest {
         verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
         EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
-        assertThat(data.getSubject()).isEmpty();
+        assertThat(data.getSubject()).isEqualTo(subject);
     }
 
-    @Test
-    void shouldNotifyNoficeOfHearing() {
+    @ParameterizedTest
+    @CsvSource({"true, William|FM1234|12345|ORDER|20/04/2050 11:30",
+            "false, 'Court Ref. FM1234.- New case management hearing Oliver Wright - notice of hearing'"})
+    void shouldNotifyNoficeOfHearing(boolean flag, String subject) {
+        when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(flag);
         when(configuration.getRecipientForNoticeOfHearing()).thenReturn(RECIPIENT_EMAIL);
         when(configuration.getSender()).thenReturn(SENDER_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
@@ -540,7 +578,7 @@ class CafcassNotificationServiceTest {
         verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
         EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
-        assertThat(data.getSubject()).isEqualTo("William|FM1234|12345|ORDER|20/04/2050 11:30");
+        assertThat(data.getSubject()).isEqualTo(subject);
 
         assertThat(data.getAttachments()).containsExactly(
                 document("application/pdf",  DOCUMENT_CONTENT, DOCUMENT_FILENAME)
@@ -656,8 +694,11 @@ class CafcassNotificationServiceTest {
                 "which was uploaded to the Public Law Portal entitled", "[GU1234]."));
     }
 
-    @Test
-    void shouldNotifyWithAttachmentAndLinkWhenThereIsSmallAndLargeDocs() {
+    @ParameterizedTest
+    @CsvSource({"true, William|FM1234|12345|EXPERT",
+            "false, 'Court Ref. FM1234.- additional documents'"})
+    void shouldNotifyWithAttachmentAndLinkWhenThereIsSmallAndLargeDocs(boolean flag, String subject) {
+        when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(flag);
         String caseLink = "http://localhost:8080/cases/case-details/200";
         String smallDocumentUrl = "smallDocumentUrl";
 
@@ -714,7 +755,7 @@ class CafcassNotificationServiceTest {
                 .extracting("recipient", "subject", "message")
                 .containsExactlyInAnyOrder(
                         tuple("additionalEmail",
-                                "William|FM1234|12345|EXPERT",
+                                subject,
                                 "Document attached is : small.pdf"),
                         tuple(RECIPIENT_EMAIL,
                                 "Court Ref. FM1234.- new large document added - Expert reports",

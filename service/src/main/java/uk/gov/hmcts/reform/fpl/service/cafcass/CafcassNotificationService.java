@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.email.EmailData;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DocumentMetadataDownloadService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 
 import java.net.URLConnection;
@@ -48,6 +49,7 @@ public class CafcassNotificationService {
     private final CaseUrlService caseUrlService;
     private final DocumentMetadataDownloadService documentMetadataDownloadService;
     private final long maxAttachmentSize;
+    private final FeatureToggleService featureToggleService;
     private static final long  MEGABYTE = 1024L * 1024L;
     private static final String SUBJECT_DELIMITER = "|";
     private static final String VALUE_TO_REPLACE = String.join("",SUBJECT_DELIMITER,"null");
@@ -61,13 +63,15 @@ public class CafcassNotificationService {
                                       CaseUrlService caseUrlService,
                                       DocumentMetadataDownloadService documentMetadataDownloadService,
                                       @Value("${cafcass.notification.maxMbAttachementSize:25}")
-                                      long maxAttachmentSize) {
+                                      long maxAttachmentSize,
+                                      FeatureToggleService featureToggleService) {
         this.emailService = emailService;
         this.documentDownloadService = documentDownloadService;
         this.configuration = configuration;
         this.caseUrlService = caseUrlService;
         this.documentMetadataDownloadService = documentMetadataDownloadService;
         this.maxAttachmentSize = maxAttachmentSize;
+        this.featureToggleService = featureToggleService;
     }
 
     public void sendEmail(CaseData caseData,
@@ -164,7 +168,9 @@ public class CafcassNotificationService {
                               final CafcassRequestEmailContentProvider provider,
                               final CafcassData cafcassData,
                               Optional<DocumentReference> docReference) {
-        if (provider.isGenericSubject() && docReference.isPresent()) {
+        if (featureToggleService.isCafcassSubjectCategorised()
+                && provider.isGenericSubject()
+                && docReference.isPresent()) {
             DocumentReference documentReference = docReference.get();
             String additionalInfo = null;
 
