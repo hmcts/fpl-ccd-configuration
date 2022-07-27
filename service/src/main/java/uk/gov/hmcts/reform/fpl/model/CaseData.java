@@ -1160,9 +1160,6 @@ public class CaseData {
 
     private final DynamicList placementList;
 
-    @JsonProperty("SearchCriteria")
-    private SearchCriteria searchCriteria;
-
     private String caseNameHmctsInternal;
 
     @JsonIgnore
