@@ -1162,8 +1162,6 @@ public class CaseData {
 
     private String caseNameHmctsInternal;
 
-    //private CaseLocation caseManagementLocation;
-
     private DynamicList caseManagementCategory;
 
     @JsonIgnore
