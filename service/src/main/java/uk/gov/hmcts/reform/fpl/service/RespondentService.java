@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -226,6 +227,33 @@ public class RespondentService {
 
     private boolean useAllRespondents(String sendPlacementNoticeToAllRespondents) {
         return "Yes".equals(sendPlacementNoticeToAllRespondents);
+    }
+
+    public Respondent transformOtherToRespondent(Other other) {
+        RespondentParty respondentParty = RespondentParty.builder()
+            .address(other.getAddress())
+            .addressKnow(other.getAddressKnow())
+            .addressNotKnowReason(other.getAddressNotKnowReason())
+            .contactDetailsHidden(other.getDetailsHidden())
+            .contactDetailsHiddenReason(other.getDetailsHiddenReason())
+            .dateOfBirth(other.toParty().getDateOfBirth())
+            .email(other.toParty().getEmail())
+            .firstName(other.getName()) // other does not have first name, use other.getName() instead
+            .gender(other.getGender())
+            .genderIdentification(other.getGenderIdentification())
+            //.lastName() // other does not have last name
+            .litigationIssuesDetails(other.getLitigationIssuesDetails())
+            .litigationIssues(other.getLitigationIssues())
+            .organisationName(other.toParty().getOrganisationName())
+            .partyType(other.toParty().getPartyType())
+            .placeOfBirth(other.getBirthPlace())
+            .relationshipToChild(other.getChildInformation())
+            .telephoneNumber(other.toParty().getTelephoneNumber())
+            .build();
+
+        return Respondent.builder()
+            .representedBy(other.getRepresentedBy())
+            .party(respondentParty).build();
     }
 
 }
