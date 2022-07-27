@@ -56,6 +56,7 @@ import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageLegalCounselEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
+import uk.gov.hmcts.reform.fpl.model.event.OtherToRespondentEventData;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.event.RecordChildrenFinalDecisionsEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
@@ -1170,4 +1171,8 @@ public class CaseData {
     }
 
     private List<Element<DocumentWithConfidentialAddress>> documentsWithConfidentialAddress;
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final OtherToRespondentEventData otherToRespondentEventData = OtherToRespondentEventData.builder().build();
 }
