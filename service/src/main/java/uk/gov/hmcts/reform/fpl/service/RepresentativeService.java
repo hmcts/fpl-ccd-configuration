@@ -8,6 +8,8 @@ import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -25,11 +28,33 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_1;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_2;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_3;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_4;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_5;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_6;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_7;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_8;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_OTHER_PERSON_9;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_PERSON_1;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_1;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_10;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_2;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_3;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_4;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_5;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_6;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_7;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_8;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_9;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -229,5 +254,73 @@ public class RepresentativeService {
         } else {
             return emptyList();
         }
+    }
+
+    public RepresentativeRole resolveRepresentativeRole(RepresentativeRole.Type type, int sequenceNo) {
+        if (type == OTHER) {
+            if (sequenceNo == 1) {
+                return REPRESENTING_PERSON_1;
+            } else if (sequenceNo == 2) {
+                return REPRESENTING_OTHER_PERSON_1;
+            } else if (sequenceNo == 3) {
+                return REPRESENTING_OTHER_PERSON_2;
+            } else if (sequenceNo == 4) {
+                return REPRESENTING_OTHER_PERSON_3;
+            } else if (sequenceNo == 5) {
+                return REPRESENTING_OTHER_PERSON_4;
+            } else if (sequenceNo == 6) {
+                return REPRESENTING_OTHER_PERSON_5;
+            } else if (sequenceNo == 7) {
+                return REPRESENTING_OTHER_PERSON_6;
+            } else if (sequenceNo == 8) {
+                return REPRESENTING_OTHER_PERSON_7;
+            } else if (sequenceNo == 9) {
+                return REPRESENTING_OTHER_PERSON_8;
+            } else if (sequenceNo == 10) {
+                return REPRESENTING_OTHER_PERSON_9;
+            }
+        } else if (type == RESPONDENT) {
+            if (sequenceNo == 1) {
+                return REPRESENTING_RESPONDENT_1;
+            } else if (sequenceNo == 2) {
+                return REPRESENTING_RESPONDENT_2;
+            } else if (sequenceNo == 3) {
+                return REPRESENTING_RESPONDENT_3;
+            } else if (sequenceNo == 4) {
+                return REPRESENTING_RESPONDENT_4;
+            } else if (sequenceNo == 5) {
+                return REPRESENTING_RESPONDENT_5;
+            } else if (sequenceNo == 6) {
+                return REPRESENTING_RESPONDENT_6;
+            } else if (sequenceNo == 7) {
+                return REPRESENTING_RESPONDENT_7;
+            } else if (sequenceNo == 8) {
+                return REPRESENTING_RESPONDENT_8;
+            } else if (sequenceNo == 9) {
+                return REPRESENTING_RESPONDENT_9;
+            } else if (sequenceNo == 10) {
+                return REPRESENTING_RESPONDENT_10;
+            }
+        }
+        throw new IllegalStateException(
+            String.format("Unable to resolve RepresentativeRole: {0} [{1}]", type.name(), sequenceNo));
+    }
+
+    public void updateRepresentativeRoleForOthers(CaseData caseData, Others others) {
+        int sequenceNo = 1;
+        updateRepresentativeRole(caseData, others.getFirstOther().getRepresentedBy(), OTHER, sequenceNo);
+        for (Element<Other> otherElement : nullSafeList(others.getAdditionalOthers())) {
+            updateRepresentativeRole(caseData, otherElement.getValue().getRepresentedBy(), OTHER, ++sequenceNo);
+        }
+    }
+
+    public void updateRepresentativeRole(CaseData caseData, List<Element<UUID>> representedBy,
+                                          RepresentativeRole.Type type, int sequenceNo) {
+        RepresentativeRole targetRole = resolveRepresentativeRole(type, sequenceNo);
+        unwrapElements(representedBy).forEach(representativeId -> {
+            findElement(representativeId, caseData.getRepresentatives())
+                .ifPresent(ele -> ele.setValue(ele.getValue().toBuilder()
+                    .role(targetRole).build()));
+        });
     }
 }
