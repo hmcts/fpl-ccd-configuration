@@ -31,6 +31,8 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
@@ -40,6 +42,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -321,6 +324,35 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         );
 
         assertThat(updatedCaseData.getC2DocumentBundle()).isEqualTo(expectedC2DocumentBundle);
+    }
+
+    @Test
+    void shouldNotUpdateDraftOrdersIfNoDraftOrderUploaded() {
+        C2DocumentBundle firstBundleAdded = C2DocumentBundle.builder()
+            .type(WITHOUT_NOTICE)
+            .uploadedDateTime("14 December 2020, 4:24pm")
+            .document(DocumentReference.builder().filename("Document 1").build())
+            .build();
+
+        List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts = wrapElements(
+            HearingOrdersBundle.builder()
+                .hearingId(UUID.randomUUID())
+                .orders(wrapElements(HearingOrder.builder().order(testDocumentReference()).build()))
+                .build()
+        );
+
+        CaseData caseData = CaseData.builder()
+            .c2DocumentBundle(wrapElements(firstBundleAdded))
+            .applicantsList(createApplicantsDynamicList(APPLICANT))
+            .temporaryC2Document(createTemporaryC2Document().toBuilder()
+                .draftOrdersBundle(List.of()) // C2 app without draft order
+                .build())
+            .hearingOrdersBundlesDrafts(hearingOrdersBundlesDrafts)
+            .build();
+
+        CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, ADMIN_ROLE));
+
+        assertThat(updatedCaseData.getHearingOrdersBundlesDrafts()).isEqualTo(hearingOrdersBundlesDrafts);
     }
 
     private void assertC2DocumentBundle(C2DocumentBundle uploadedC2DocumentBundle) {
