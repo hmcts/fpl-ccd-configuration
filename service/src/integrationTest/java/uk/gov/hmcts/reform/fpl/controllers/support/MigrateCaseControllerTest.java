@@ -14,18 +14,24 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.group.C110A;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -64,12 +70,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         private Stream<Arguments> provideMigrationTestData() {
             return Stream.of(
-                Arguments.of("DFPL-733", 1655396292296801L, UUID.fromString("854f3df6-765b-4ee9-a6b4-eedc702837e0")),
-                Arguments.of("DFPL-734", 1653312644320480L, UUID.fromString("b86a46b9-84d3-4a05-a4eb-16daaad75a89")),
-                Arguments.of("DFPL-735", 1655286118759043L, UUID.fromString("2765508d-8dc5-41ab-bdeb-1082597c3628")),
-                Arguments.of("DFPL-736", 1656319106830085L, UUID.fromString("9ef09ed4-b208-4166-af6a-1c741bb676d1")),
-                Arguments.of("DFPL-725", 1654773142311280L, UUID.fromString("79e7dbe4-71b7-40c3-81f4-a8954c5b8bed")),
-                Arguments.of("DFPL-726", 1651829414420283L, UUID.fromString("df338226-8816-453a-acc5-baba31712a0c"))
+                Arguments.of("DFPL-753", 1655475144643137L, UUID.fromString("e7cff38c-b831-42ac-b45a-aca7ea20a406")),
+                Arguments.of("DFPL-754", 1656080425565600L, UUID.fromString("5ce6ec53-e167-4480-a878-7e78f15f9007")),
+                Arguments.of("DFPL-755", 1652867432494707L, UUID.fromString("d696d4a6-85f7-449b-9127-7d8a8b42bac5"))
             );
         }
 
@@ -133,6 +136,90 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(String.format("Migration {id = %s, case reference = %d}, expected c110a document id %s",
                     migrationId, validCaseId, validDocId));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl692 {
+        final String migrationId = "DFPL-692";
+        final long expectedCaseId = 1641905747009846L;
+        final UUID expectedNotesIdOne = UUID.fromString("7dd3c2ac-d49f-4119-8299-a19a62f1d6db");
+        final UUID expectedNotesIdTwo = UUID.fromString("66fb7c25-7860-4a5c-98d4-dd2ff575eb28");
+
+        @Test
+        void shouldRemoveNotes() {
+            UUID otherNoteId = UUID.randomUUID();
+
+            CaseData caseData = CaseData.builder()
+                .id(expectedCaseId)
+                .caseNotes(List.of(buildMockCaseNotes(expectedNotesIdOne),
+                    buildMockCaseNotes(expectedNotesIdTwo),
+                    buildMockCaseNotes(otherNoteId)))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getCaseNotes().size()).isEqualTo(1);
+            assertThat(responseData.getCaseNotes().stream().map(Element::getId).collect(Collectors.toList()))
+                .doesNotContain(expectedNotesIdOne, expectedNotesIdTwo)
+                .contains(otherNoteId);
+
+        }
+
+        @Test
+        void shouldThrowExceptionWhenCaseIdInvalid() {
+            CaseData caseData = CaseData.builder().id(1L).build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format("Migration {id = %s, case reference = %s}, expected case id %d",
+                    migrationId, 1, expectedCaseId));
+        }
+
+        @Test
+        void shouldThrowExceptionWhenCasNotesIdInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(expectedCaseId)
+                .caseNotes(List.of(buildMockCaseNotes(UUID.randomUUID()),
+                    buildMockCaseNotes(UUID.randomUUID()),
+                    buildMockCaseNotes(UUID.randomUUID()))).build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format(
+                    "Migration {id = %s, case reference = %s}, expected caseNotes id not found",
+                    migrationId, expectedCaseId));
+        }
+
+        @Test
+        void shouldThrowExceptionWhenOneCasNotesIdInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(expectedCaseId)
+                .caseNotes(List.of(buildMockCaseNotes(expectedNotesIdOne),
+                    buildMockCaseNotes(UUID.randomUUID()),
+                    buildMockCaseNotes(UUID.randomUUID()))).build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format(
+                    "Migration {id = %s, case reference = %s}, expected caseNotes id not found",
+                    migrationId, expectedCaseId));
+        }
+
+        private Element<CaseNote> buildMockCaseNotes(UUID id) {
+            return element(id, CaseNote.builder()
+                .createdBy("mockCreatedBy")
+                .date(LocalDate.of(2022, 6, 14))
+                .note("Testing Note")
+                .build());
         }
     }
 

@@ -253,15 +253,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "localAuthorityColleaguesLabel",
-    "FieldType": "Label",
-    "Label": "<h2 class='govuk-!-margin-bottom-0'>Add colleagues to the case</h2><span class='form-hint'>Add at least 1 case solicitor</span>",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "mainContactLabel",
     "FieldType": "Label",
     "Label": "<h2>Main contact</h2>",
@@ -2039,6 +2030,24 @@
     "ID": "warning_label",
     "Label": "<div class='govuk-tag govuk-tag--red'>Please don't use to assign respondent/child solicitor</div>",
     "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "transformedRespondent",
+    "Label": "Respondent's detail",
+    "FieldType": "RespondentNew",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "othersList",
+    "Label": "Select one of the others to be given notice",
+    "FieldType": "DynamicList",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }

@@ -33,20 +33,27 @@ public class RespondentAfterSubmissionValidator {
     private final UserService userService;
 
     public List<String> validateLegalRepresentation(CaseData caseData) {
+        return validateLegalRepresentation(caseData, false);
+    }
+
+    public List<String> validateLegalRepresentation(CaseData caseData, boolean hideRespondentIndex) {
         List<String> errors = new ArrayList<>();
 
         List<Element<Respondent>> respondents = nullSafeList(caseData.getRespondents1());
 
         for (int i = 0; i < respondents.size(); i++) {
             Respondent respondent = respondents.get(i).getValue();
-            errors.addAll(legalRepresentationErrors(respondent, i + 1));
+            errors.addAll(legalRepresentationErrors(respondent, hideRespondentIndex ? -1 : (i + 1)));
         }
 
         return errors;
     }
 
     public List<String> validate(CaseData caseData, CaseData caseDataBefore) {
+        return validate(caseData, caseDataBefore, false);
+    }
 
+    public List<String> validate(CaseData caseData, CaseData caseDataBefore, boolean hideRespondentIndex) {
         List<String> errors = new ArrayList<>();
 
         Set<UUID> currentRespondentIds = getIds(caseData.getAllRespondents());
@@ -70,7 +77,8 @@ public class RespondentAfterSubmissionValidator {
 
                 if (YES.getValue().equals(previous.getLegalRepresentation())
                     && NO.getValue().equals(current.getLegalRepresentation())) {
-                    errors.add(String.format("You cannot remove respondent %d's legal representative", i + 1));
+                    errors.add(String.format("You cannot remove respondent%s's legal representative",
+                        hideRespondentIndex ? "" : (" " + (i + 1))));
                     continue;
                 }
 
@@ -78,14 +86,15 @@ public class RespondentAfterSubmissionValidator {
                     && !Objects.equals(getOrganisationID(current), getOrganisationID(previous))) {
 
                     errors.add(String.format(
-                        "You cannot change organisation details for respondent %d's legal representative", i + 1));
+                        "You cannot change organisation details for respondent%s's legal representative",
+                        hideRespondentIndex ? "" : (" " + (i + 1))));
                     continue;
                 }
 
-                errors.addAll(legalRepresentationErrors(current, i + 1));
+                errors.addAll(legalRepresentationErrors(current, hideRespondentIndex ? -1 : (i + 1)));
             }
         } else {
-            errors.addAll(validateLegalRepresentation(caseData));
+            errors.addAll(validateLegalRepresentation(caseData, hideRespondentIndex));
         }
 
         return errors;
@@ -94,19 +103,22 @@ public class RespondentAfterSubmissionValidator {
     private List<String> legalRepresentationErrors(Respondent respondent, int i) {
         List<String> errors = new ArrayList<>();
         if (respondent.getLegalRepresentation() == null) {
-            errors.add(String.format("Confirm if respondent %d has legal representation", i));
+            errors.add(String.format("Confirm if respondent%s has legal representation", i < 0 ? "" : (" " + i)));
         } else if (YES.getValue().equals(respondent.getLegalRepresentation())) {
             RespondentSolicitor solicitor = respondent.getSolicitor();
             if (isEmpty(solicitor.getFirstName())
                 || isEmpty(solicitor.getLastName())) {
-                errors.add(String.format("Add the full name of respondent %d's legal representative", i));
+                errors.add(String.format("Add the full name of respondent%s's legal representative",
+                    i < 0 ? "" : (" " + i)));
 
             }
             if (isEmpty(solicitor.getEmail())) {
-                errors.add(String.format("Add the email address of respondent %d's legal representative", i));
+                errors.add(String.format("Add the email address of respondent%s's legal representative",
+                    i < 0 ? "" : (" " + i)));
             }
             if (!respondent.hasRegisteredOrganisation() && !respondent.hasUnregisteredOrganisation()) {
-                errors.add(String.format("Add the organisation details for respondent %d's representative", i));
+                errors.add(String.format("Add the organisation details for respondent%s's representative",
+                    i < 0 ? "" : (" " + i)));
             }
         }
         return errors;
