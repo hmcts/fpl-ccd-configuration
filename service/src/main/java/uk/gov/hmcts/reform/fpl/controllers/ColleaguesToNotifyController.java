@@ -46,14 +46,13 @@ public class ColleaguesToNotifyController extends CallbackController {
             .map(Element::getValue)
             .collect(Collectors.toList());
 
-        List<String> errors;
         if (represented.isEmpty()) {
-            errors = List.of("There is no one this user is representing on this case.");
+            List<String> errors = List.of("There is no one this user is representing on this case.");
             return respond(caseDetails, errors);
         }
 
         // Use the first party we are representing - solicitors shouldn't be representing multiple
-        // todo - what about children's solicitors...
+        // except for ChildSolicitors - we use the first anyway and copy it across all of the Children later
         caseDetails.getData().put("respondentName", represented.get(0).toParty().getFullName());
         caseDetails.getData().put("colleaguesToNotify",
             represented.get(0).getSolicitor().getColleaguesToBeNotified());
@@ -74,13 +73,14 @@ public class ColleaguesToNotifyController extends CallbackController {
             .map(Element::getValue)
             .collect(Collectors.toList());
 
-        List<String> errors;
         if (represented.isEmpty()) {
-            errors = List.of("There is no one this user is representing on this case.");
+            List<String> errors = List.of("There is no one this user is representing on this case.");
             return respond(caseDetails, errors);
         }
 
-        if (roles.get(0).getRepresenting().equals(SolicitorRole.Representing.RESPONDENT)) {
+        SolicitorRole.Representing representationType = roles.get(0).getRepresenting();
+
+        if (SolicitorRole.Representing.RESPONDENT.equals(representationType)) {
             // Update the respondent who's solicitor it is
             List<Element<Respondent>> respondents = caseData.getRespondents1();
 
@@ -91,7 +91,7 @@ public class ColleaguesToNotifyController extends CallbackController {
             }
 
             caseDetails.put("respondents1", respondents);
-        } else if (roles.get(0).getRepresenting().equals(SolicitorRole.Representing.CHILD)) {
+        } else if (SolicitorRole.Representing.CHILD.equals(representationType)) {
             List<Element<Child>> children = caseData.getChildren1();
 
             for (Element<Child> child : children) {
@@ -108,12 +108,5 @@ public class ColleaguesToNotifyController extends CallbackController {
         caseDetails.removeAll("respondentName", "colleaguesToNotify");
 
         return respond(caseDetails);
-    }
-
-    @PostMapping("/submitted")
-    public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
-        final CaseData caseData = getCaseData(callbackRequest);
-
-        // Send emails!
     }
 }
