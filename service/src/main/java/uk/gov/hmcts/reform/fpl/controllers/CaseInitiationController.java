@@ -60,7 +60,9 @@ public class CaseInitiationController extends CallbackController {
         caseDetails.putIfNotEmpty("outsourcingPolicy", updatedCaseData.getOutsourcingPolicy());
         caseDetails.putIfNotEmpty("court", updatedCaseData.getCourt());
         caseDetails.putIfNotEmpty("multiCourts", updatedCaseData.getMultiCourts());
+        caseDetails.putIfNotEmpty("caseNameHmctsRestricted", updatedCaseData.getCaseName());
         caseDetails.putIfNotEmpty("caseNameHmctsInternal", updatedCaseData.getCaseName());
+        caseDetails.putIfNotEmpty("caseNamePublic", updatedCaseData.getCaseName());
 
         caseDetails.removeAll("outsourcingType", "outsourcingLAs");
 
