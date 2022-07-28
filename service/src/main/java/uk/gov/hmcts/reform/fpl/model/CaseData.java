@@ -1152,8 +1152,6 @@ public class CaseData extends CaseDataParent {
 
     private final DynamicList placementList;
 
-    private String caseNameHmctsInternal;
-
     private DynamicList caseManagementCategory;
 
     @JsonIgnore
