@@ -36,6 +36,7 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-780", this::run780,
         "DFPL-781", this::run781,
+        "DFPL-782", this::run782,
         "DFPL-692", this::run692
     );
 
@@ -79,6 +80,14 @@ public class MigrateCaseController extends CallbackController {
         var migrationId = "DFPL-781";
         var expectedCaseId = 1651850415891595L;
         var expectedDocId = UUID.fromString("3c9e395e-3911-4c0b-9394-b581338c21c9");
+
+        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
+    }
+
+    private void run782(CaseDetails caseDetails) {
+        var migrationId = "DFPL-782";
+        var expectedCaseId = 1646999222148273L;
+        var expectedDocId = UUID.fromString("26e14f46-271e-4bcd-9fee-7f70bffa6d2f");
 
         removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
     }
