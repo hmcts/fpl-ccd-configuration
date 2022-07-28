@@ -34,9 +34,8 @@ public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-753", this::run753,
-        "DFPL-754", this::run754,
-        "DFPL-755", this::run755,
+        "DFPL-780", this::run780,
+        "DFPL-781", this::run781,
         "DFPL-692", this::run692
     );
 
@@ -68,26 +67,18 @@ public class MigrateCaseController extends CallbackController {
      *  - migrationId
      * @param caseDetails - the caseDetails to update
      */
-    private void run753(CaseDetails caseDetails) {
-        var migrationId = "DFPL-753";
-        var expectedCaseId = 1655475144643137L;
-        var expectedDocId = UUID.fromString("e7cff38c-b831-42ac-b45a-aca7ea20a406");
+    private void run780(CaseDetails caseDetails) {
+        var migrationId = "DFPL-780";
+        var expectedCaseId = 1652257632609744L;
+        var expectedDocId = UUID.fromString("e3f909a2-e7be-445b-b388-5b99bd26f935");
 
         removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
     }
 
-    private void run754(CaseDetails caseDetails) {
-        var migrationId = "DFPL-754";
-        var expectedCaseId = 1656080425565600L;
-        var expectedDocId = UUID.fromString("5ce6ec53-e167-4480-a878-7e78f15f9007");
-
-        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
-    }
-
-    private void run755(CaseDetails caseDetails) {
-        var migrationId = "DFPL-755";
-        var expectedCaseId = 1652867432494707L;
-        var expectedDocId = UUID.fromString("d696d4a6-85f7-449b-9127-7d8a8b42bac5");
+    private void run781(CaseDetails caseDetails) {
+        var migrationId = "DFPL-781";
+        var expectedCaseId = 1651850415891595L;
+        var expectedDocId = UUID.fromString("3c9e395e-3911-4c0b-9394-b581338c21c9");
 
         removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
     }
