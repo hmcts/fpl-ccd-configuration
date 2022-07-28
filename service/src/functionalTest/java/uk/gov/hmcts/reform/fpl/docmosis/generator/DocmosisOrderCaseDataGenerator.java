@@ -76,7 +76,7 @@ public class DocmosisOrderCaseDataGenerator {
         ).build();
     }
 
-    private CaseData.CaseDataBuilder commonCaseData(Order order) {
+    private CaseData.CaseDataBuilder<?,?> commonCaseData(Order order) {
         return CaseData.builder()
             .children1(List.of(FIRST_CHILD))
             .placementEventData(PlacementEventData.builder()
@@ -102,7 +102,7 @@ public class DocmosisOrderCaseDataGenerator {
             .id(1234567890123456L);
     }
 
-    private CaseData.CaseDataBuilder addDataForQuestion(CaseData.CaseDataBuilder builder,
+    private CaseData.CaseDataBuilder<?,?> addDataForQuestion(CaseData.CaseDataBuilder<?,?> builder,
                                                         OrderQuestionBlock questionBlock) {
 
         switch (questionBlock) {
@@ -326,11 +326,11 @@ public class DocmosisOrderCaseDataGenerator {
         return builder;
     }
 
-    private ManageOrdersEventData.ManageOrdersEventDataBuilder getManageOrdersEvent(CaseData.CaseDataBuilder builder) {
+    private ManageOrdersEventData.ManageOrdersEventDataBuilder getManageOrdersEvent(CaseData.CaseDataBuilder<?,?> builder) {
         return getManageOrdersEventData(builder).toBuilder();
     }
 
-    private ManageOrdersEventData getManageOrdersEventData(CaseData.CaseDataBuilder builder) {
+    private ManageOrdersEventData getManageOrdersEventData(CaseData.CaseDataBuilder<?,?> builder) {
         return defaultIfNull(builder.build().getManageOrdersEventData(), ManageOrdersEventData.builder().build());
     }
 

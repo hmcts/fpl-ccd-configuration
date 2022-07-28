@@ -221,19 +221,6 @@ public class CaseData extends CaseDataParent {
     private final Allocation allocationProposal;
     private final Allocation allocationDecision;
 
-    private final List<Element<Direction>> allParties;
-    private final List<Element<Direction>> allPartiesCustom;
-    private final List<Element<Direction>> localAuthorityDirections;
-    private final List<Element<Direction>> localAuthorityDirectionsCustom;
-    private final List<Element<Direction>> courtDirections;
-    private final List<Element<Direction>> courtDirectionsCustom;
-    private final List<Element<Direction>> cafcassDirections;
-    private final List<Element<Direction>> cafcassDirectionsCustom;
-    private final List<Element<Direction>> otherPartiesDirections;
-    private final List<Element<Direction>> otherPartiesDirectionsCustom;
-    private final List<Element<Direction>> respondentDirections;
-    private final List<Element<Direction>> respondentDirectionsCustom;
-
     private final StandardDirectionOrder standardDirectionOrder;
     private final UrgentHearingOrder urgentHearingOrder;
     private final List<Element<StandardDirectionOrder>> hiddenStandardDirectionOrders;

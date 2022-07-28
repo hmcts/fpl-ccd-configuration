@@ -511,17 +511,17 @@ class SealedOrderHistoryServiceTest {
             PLAIN_WORD_DOCUMENT);
     }
 
-    private CaseData.CaseDataBuilder caseData() {
+    private CaseData.CaseDataBuilder<?,?> caseData() {
         return startCommonCaseDataBuilder(startBuildingCommonEventData());
     }
 
-    private CaseData.CaseDataBuilder caseDataWithLinkedApplication() {
+    private CaseData.CaseDataBuilder<?,?> caseDataWithLinkedApplication() {
         return startCommonCaseDataBuilder(
             startBuildingCommonEventData().manageOrdersLinkedApplication(SELECTED_LINKED_APPLICATION_LIST)
         );
     }
 
-    private CaseData.CaseDataBuilder startCommonCaseDataBuilder(
+    private CaseData.CaseDataBuilder<?,?> startCommonCaseDataBuilder(
         ManageOrdersEventData.ManageOrdersEventDataBuilder manageOrdersEventData) {
         return CaseData.builder()
             .allocatedJudge(JUDGE)
