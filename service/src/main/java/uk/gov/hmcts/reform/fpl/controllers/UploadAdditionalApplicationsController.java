@@ -116,17 +116,19 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        if (!isNull(caseData.getTemporaryC2Document())) {
-            List<Element<HearingOrder>> unsealedCMOs = caseData.getDraftUploadedCMOs();
+        if (!isNull(caseData.getTemporaryC2Document())
+            && !caseData.getTemporaryC2Document().getDraftOrdersBundle().isEmpty()) {
+
             List<Element<DraftOrder>> draftOrders = caseData.getTemporaryC2Document().getDraftOrdersBundle();
-            unsealedCMOs.addAll(draftOrders.stream()
+            List<Element<HearingOrder>> newDrafts = draftOrders.stream()
                 .map(Element::getValue)
                 .map(HearingOrder::from)
                 .map(ElementUtils::element)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
+
             List<Element<HearingOrdersBundle>> bundles = draftOrderService.migrateCmoDraftToOrdersBundles(caseData);
 
-            draftOrderService.additionalApplicationUpdateCase(unsealedCMOs, bundles);
+            draftOrderService.additionalApplicationUpdateCase(newDrafts, bundles);
 
             caseDetails.getData().put("hearingOrdersBundlesDrafts", bundles);
         }
