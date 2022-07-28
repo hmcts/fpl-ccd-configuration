@@ -2043,7 +2043,7 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "caseManagementLocation",
+    "ID": "caseManagementCategory",
     "Label": " ",
     "FieldType": "DynamicList",
     "SecurityClassification": "Public",
