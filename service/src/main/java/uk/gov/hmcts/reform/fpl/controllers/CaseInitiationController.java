@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import java.util.List;
+
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.CaseInitiationService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
@@ -63,6 +68,17 @@ public class CaseInitiationController extends CallbackController {
         caseDetails.putIfNotEmpty("caseNameHmctsRestricted", updatedCaseData.getCaseName());
         caseDetails.putIfNotEmpty("caseNameHmctsInternal", updatedCaseData.getCaseName());
         caseDetails.putIfNotEmpty("caseNamePublic", updatedCaseData.getCaseName());
+        // TODO filling in caseManagementLocation with anything for testing
+        caseDetails.putIfNotEmpty("caseManagementLocation", CaseLocation.builder()
+            .baseLocation("1")
+            .region("3").build());
+        // TODO filling in caseManagementCategory
+        caseDetails.putIfNotEmpty("caseManagementCategory", DynamicList.builder()
+            .value(DynamicListElement.builder().code("987").label("Category Label").build())
+            .listItems(List.of(
+                DynamicListElement.builder().code("987").label("Category Label").build()
+            ))
+            .build());
 
         caseDetails.removeAll("outsourcingType", "outsourcingLAs");
 

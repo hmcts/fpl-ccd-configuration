@@ -2061,6 +2061,15 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseManagementLocation",
+    "Label": " ",
+    "FieldType": "CaseLocation",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseManagementCategory",
     "Label": " ",
     "FieldType": "DynamicList",
