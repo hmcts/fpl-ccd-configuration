@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-753", this::run753,
         "DFPL-754", this::run754,
         "DFPL-755", this::run755,
-        "DFPL-692", this::run692
+        "DFPL-692", this::run692,
+        "DFPL-776", this::run776
     );
 
     @PostMapping("/about-to-submit")
@@ -143,5 +145,36 @@ public class MigrateCaseController extends CallbackController {
         }
 
         caseDetails.getData().put("caseNotes", resultCaseNotes);
+    }
+
+    private void run776(CaseDetails caseDetails) {
+        var migrationId = "DFPL-776";
+        var expectedCaseId = 1646318196381762L;
+
+        CaseData caseData = getCaseData(caseDetails);
+        Long caseId = caseData.getId();
+
+        if (caseId != expectedCaseId) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId
+            ));
+        }
+
+        UUID expectedMsgId = UUID.fromString("878a2dd7-8d50-46b1-88d3-a5c6fe9a39ba");
+
+        List<Element<JudicialMessage>> resultJudicialMessages = caseData.getJudicialMessages().stream()
+            .filter(msgElement -> !expectedMsgId.equals(msgElement.getId()))
+            .collect(Collectors.toList());
+
+        // only one message should be removed
+        if (resultJudicialMessages.size() != caseData.getJudicialMessages().size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, invalid JudicialMessage ID",
+                migrationId, caseId
+            ));
+        }
+
+        caseDetails.getData().put("judicialMessages", resultJudicialMessages);
     }
 }

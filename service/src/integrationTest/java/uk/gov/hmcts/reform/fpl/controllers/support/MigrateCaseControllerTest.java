@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.group.C110A;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
@@ -32,6 +33,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -220,6 +222,71 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .date(LocalDate.of(2022, 6, 14))
                 .note("Testing Note")
                 .build());
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl776 {
+        final String migrationId = "DFPL-776";
+        final long expectedCaseId = 1646318196381762L;
+        final UUID expectedMsgId = UUID.fromString("878a2dd7-8d50-46b1-88d3-a5c6fe9a39ba");
+
+        @Test
+        void shouldRemoveMsg() {
+            UUID otherMsgId = UUID.randomUUID();
+
+            CaseData caseData = CaseData.builder()
+                .id(expectedCaseId)
+                .judicialMessages(List.of(
+                    element(otherMsgId, JudicialMessage.builder()
+                        .dateSent("19 May 2022 at 10:16am")
+                        .latestMessage("Test Message").build()),
+                    element(expectedMsgId, JudicialMessage.builder()
+                        .dateSent("19 May 2022 at 11:16am")
+                        .latestMessage("Test Message to be removed").build())
+                ))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getJudicialMessages().size()).isEqualTo(1);
+            assertThat(responseData.getJudicialMessages().stream().map(Element::getId).collect(Collectors.toList()))
+                .doesNotContain(expectedMsgId)
+                .contains(otherMsgId);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenCaseIdInvalid() {
+            CaseData caseData = CaseData.builder().id(1L).build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format("Migration {id = %s, case reference = %s}, expected case id %d",
+                    migrationId, 1, expectedCaseId));
+        }
+
+        @Test
+        void shouldThrowExceptionWhenMsgIdInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(expectedCaseId)
+                .judicialMessages(wrapElements(
+                    JudicialMessage.builder()
+                        .dateSent("19 May 2022 at 10:16am")
+                        .latestMessage("Test Message").build()))
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format(
+                    "Migration {id = %s, case reference = %s}, invalid JudicialMessage ID",
+                    migrationId, expectedCaseId));
         }
     }
 
