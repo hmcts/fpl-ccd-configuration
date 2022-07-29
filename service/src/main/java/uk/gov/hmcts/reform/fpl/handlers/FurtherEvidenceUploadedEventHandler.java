@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.DocumentInfo;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
@@ -314,6 +315,9 @@ public class FurtherEvidenceUploadedEventHandler {
             documentInfoConsumer.accept(getOtherApplicationBundle(caseData,
                     caseDataBefore));
 
+            documentInfoConsumer.accept(getC2DocumentBundle(caseData,
+                    caseDataBefore));
+
             if (!documentReferences.isEmpty()) {
                 String documentTypes = documentInfos.stream()
                         .filter(documentInfo ->
@@ -358,6 +362,41 @@ public class FurtherEvidenceUploadedEventHandler {
                 .map(AdditionalApplicationsBundle::getOtherApplicationsBundle)
                 .filter(Objects::nonNull)
                 .map(OtherApplicationsBundle::getAllDocumentReferences)
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .map(Element::getValue)
+                .filter(not(oldDocumentReferences::contains))
+                .map(documentRef -> {
+                    documentRef.setType(ADDITIONAL_APPLICATIONS);
+                    return documentRef;
+                })
+                .collect(collectingAndThen(toSet(),
+                    data -> DocumentInfo.builder()
+                        .documentReferences(data)
+                        .documentTypes(data.stream()
+                                .map(DocumentReference::getType)
+                                .collect(toList()))
+                        .documentType(ADDITIONAL_APPLICATIONS)
+                        .build())
+                );
+    }
+
+    private DocumentInfo getC2DocumentBundle(CaseData caseData, CaseData caseDataBefore) {
+        Set<DocumentReference> oldDocumentReferences = unwrapElements(
+                    caseDataBefore.getAdditionalApplicationsBundle()
+                ).stream()
+                .map(AdditionalApplicationsBundle::getC2DocumentBundle)
+                .filter(Objects::nonNull)
+                .map(C2DocumentBundle::getAllC2DocumentReferences)
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .map(Element::getValue)
+                .collect(toSet());
+
+        return unwrapElements(caseData.getAdditionalApplicationsBundle()).stream()
+                .map(AdditionalApplicationsBundle::getC2DocumentBundle)
+                .filter(Objects::nonNull)
+                .map(C2DocumentBundle::getAllC2DocumentReferences)
                 .filter(Objects::nonNull)
                 .flatMap(List::stream)
                 .map(Element::getValue)
