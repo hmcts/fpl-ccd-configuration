@@ -327,7 +327,7 @@ public class DocmosisOrderCaseDataGenerator {
     }
 
     private ManageOrdersEventData.ManageOrdersEventDataBuilder
-    getManageOrdersEvent(CaseData.CaseDataBuilder<?,?> builder) {
+        getManageOrdersEvent(CaseData.CaseDataBuilder<?,?> builder) {
         return getManageOrdersEventData(builder).toBuilder();
     }
 
