@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
@@ -36,8 +37,6 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
@@ -117,25 +116,22 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        List<Element<HearingOrder>> unsealedCMOs = caseData.getDraftUploadedCMOs();
+        if (!isNull(caseData.getTemporaryC2Document())
+            && !caseData.getTemporaryC2Document().getDraftOrdersBundle().isEmpty()) {
 
-        Optional.ofNullable(caseData.getTemporaryC2Document())
-            .map(C2DocumentBundle::getDraftOrdersBundle)
-            .filter(Objects::nonNull)
-            .ifPresent(draftOrders ->
-                unsealedCMOs.addAll(
-                    draftOrders.stream()
-                    .map(Element::getValue)
-                    .map(HearingOrder::from)
-                    .map(ElementUtils::element)
-                    .collect(Collectors.toList()))
-            );
+            List<Element<DraftOrder>> draftOrders = caseData.getTemporaryC2Document().getDraftOrdersBundle();
+            List<Element<HearingOrder>> newDrafts = draftOrders.stream()
+                .map(Element::getValue)
+                .map(HearingOrder::from)
+                .map(ElementUtils::element)
+                .collect(Collectors.toList());
 
-        List<Element<HearingOrdersBundle>> bundles = draftOrderService.migrateCmoDraftToOrdersBundles(caseData);
+            List<Element<HearingOrdersBundle>> bundles = draftOrderService.migrateCmoDraftToOrdersBundles(caseData);
 
-        draftOrderService.additionalApplicationUpdateCase(unsealedCMOs, bundles);
+            draftOrderService.additionalApplicationUpdateCase(newDrafts, bundles);
 
-        caseDetails.getData().put("hearingOrdersBundlesDrafts", bundles);
+            caseDetails.getData().put("hearingOrdersBundlesDrafts", bundles);
+        }
 
         List<Element<AdditionalApplicationsBundle>> additionalApplications = defaultIfNull(
             caseData.getAdditionalApplicationsBundle(), new ArrayList<>()
