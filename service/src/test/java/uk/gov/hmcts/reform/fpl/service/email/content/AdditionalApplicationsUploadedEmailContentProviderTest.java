@@ -112,7 +112,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
             .childLastName(CHILD_LAST_NAME)
             .caseUrl(caseUrl(CASE_REFERENCE, OTHER_APPLICATIONS))
             .applicationTypes(List.of("C1 - Parental responsibility by the father"))
-            .urgencyDetails("This application will need to be considered by the judge within "
+            .urgencyDetails("This application has been requested to be considered by "
                     + formatLocalDateToString(LocalDate.now().plusDays(WITHIN_2_DAYS.getCount()),DATE))
             .build();
 
@@ -145,7 +145,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
                 .childLastName(CHILD_LAST_NAME)
                 .caseUrl(caseUrl(CASE_REFERENCE, OTHER_APPLICATIONS))
                 .applicationTypes(List.of("C1 - Parental responsibility by the father"))
-                .urgencyDetails("This application will need to be considered by the judge on "
+                .urgencyDetails("This application has been requested to be considered by "
                         + formatLocalDateToString(LocalDate.now(),DATE))
                 .build();
 
@@ -181,7 +181,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
                 .childLastName(CHILD_LAST_NAME)
                 .caseUrl(caseUrl(CASE_REFERENCE, OTHER_APPLICATIONS))
                 .applicationTypes(List.of("C1 - Parental responsibility by the father"))
-                .urgencyDetails("This application will need to be considered by the judge on "
+                .urgencyDetails("This application has been requested to be considered by "
                         + formatLocalDateToString(nextDay,DATE))
                 .build();
 
@@ -246,7 +246,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
                 .childLastName(CHILD_LAST_NAME)
                 .caseUrl(caseUrl(CASE_REFERENCE, OTHER_APPLICATIONS))
                 .applicationTypes(List.of("C2 (With notice) - Parental responsibility by the father"))
-                .urgencyDetails("This application will need to be considered by the judge within "
+                .urgencyDetails("This application has been requested to be considered by "
                         + formatLocalDateToString(LocalDate.now().plusDays(WITHIN_5_DAYS.getCount()),DATE))
                 .build();
 
