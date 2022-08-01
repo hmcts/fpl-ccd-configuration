@@ -111,7 +111,8 @@ public class AdditionalApplicationsUploadedEventHandler {
                         .map(docType -> String.join(" ", LIST, docType))
                         .collect(Collectors.joining("\n"));
 
-                final Set<DocumentReference> documentReferences = Set.copyOf(getApplicationDocuments(uploadedBundle, true));
+                final Set<DocumentReference> documentReferences = Set.copyOf(getApplicationDocuments(uploadedBundle,
+                        true));
 
                 cafcassNotificationService.sendEmail(
                         caseData,
@@ -259,7 +260,9 @@ public class AdditionalApplicationsUploadedEventHandler {
         }
     }
 
-    private List<DocumentReference> getApplicationDocuments(AdditionalApplicationsBundle bundle, boolean isDraftOrderRequired) {
+    private List<DocumentReference> getApplicationDocuments(
+            AdditionalApplicationsBundle bundle,
+            boolean isDraftOrderRequired) {
         UnaryOperator<DocumentReference> addDocumentType =
             documentReference -> {
                 documentReference.setType(ADDITIONAL_DOCUMENT.getLabel());
