@@ -179,7 +179,7 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
                         "check payment has been taken",
                         "send a message to the judge or legal adviser")
                 .line()
-                .line("This application will need to be considered by the judge within "
+                .line("This application has been requested to be considered by "
                    + formatLocalDateToString(LocalDate.now().plusDays(WITHIN_5_DAYS.getCount()),DATE))
                 .line()
                 .end("To review the application, sign in to " + caseDetailsUrl(CASE_ID, OTHER_APPLICATIONS))

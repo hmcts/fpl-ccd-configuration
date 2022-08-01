@@ -24,7 +24,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiFunction;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.OTHER_APPLICATIONS;
@@ -65,24 +64,17 @@ public class AdditionalApplicationsUploadedEmailContentProvider extends Abstract
     }
 
     private String getUrgencyTimeFrame(UrgencyTimeFrameType urgencyTImeFrameType) {
-        BiFunction<LocalDate, String, String> information = (localDate, by) ->
-                String.join(" ",
-                        "This application will need to be considered by the judge",
-                          by,
-                        formatLocalDateToString(localDate, DATE));
-
-        String details;
+        LocalDate urgencyDate = LocalDate.now();
         if (urgencyTImeFrameType.getCount() == 0) {
-            LocalDate urgencyDate = LocalDate.now();
             if (!calendarService.isWorkingDay(urgencyDate)) {
                 urgencyDate = calendarService.getWorkingDayFrom(urgencyDate, 1);
             }
-            details = information.apply(urgencyDate, "on");
         } else {
-            LocalDate urgencyDate = calendarService.getWorkingDayFrom(LocalDate.now(), urgencyTImeFrameType.getCount());
-            details = information.apply(urgencyDate, "within");
+            urgencyDate = calendarService.getWorkingDayFrom(urgencyDate, urgencyTImeFrameType.getCount());
         }
-        return details;
+        return String.join(" ",
+                "This application has been requested to be considered by",
+                formatLocalDateToString(urgencyDate, DATE));
     }
 
 
