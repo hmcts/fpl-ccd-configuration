@@ -249,12 +249,6 @@ scheduler:
         driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
         dataSource: schedulerDataSource
   schedulerConf:
-    - name: 'Upcoming hearings'
-      enabled: true
-      cronGroup: "NIGHTLY_CRON"
-      description: 'Finds upcoming hearings'
-      jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UpcomingHearingsFinder'
-      cron: ${UPCOMING_HEARINGS_CRON:0 0 2 ? * * *}
     - name: 'Summary tab'
       enabled: true
       cronGroup: "NIGHTLY_CRON"

@@ -2013,5 +2013,23 @@
     "SecurityClassification": "Public",
     "Searchable": "N",
     "Comment": "Temporary field. The ID of the application document to be sealed in submitted stage"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "transformedRespondent",
+    "Label": "Respondent's detail",
+    "FieldType": "RespondentNew",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "othersList",
+    "Label": "Select one of the others to be given notice",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

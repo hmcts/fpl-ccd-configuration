@@ -116,18 +116,22 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        List<Element<HearingOrder>> unsealedCMOs = caseData.getDraftUploadedCMOs();
-        List<Element<DraftOrder>> draftOrders = caseData.getTemporaryC2Document().getDraftOrdersBundle();
-        unsealedCMOs.addAll(draftOrders.stream()
-            .map(Element::getValue)
-            .map(HearingOrder::from)
-            .map(ElementUtils::element)
-            .collect(Collectors.toList()));
-        List<Element<HearingOrdersBundle>> bundles = draftOrderService.migrateCmoDraftToOrdersBundles(caseData);
+        if (!isNull(caseData.getTemporaryC2Document())
+            && !caseData.getTemporaryC2Document().getDraftOrdersBundle().isEmpty()) {
 
-        draftOrderService.additionalApplicationUpdateCase(unsealedCMOs, bundles);
+            List<Element<DraftOrder>> draftOrders = caseData.getTemporaryC2Document().getDraftOrdersBundle();
+            List<Element<HearingOrder>> newDrafts = draftOrders.stream()
+                .map(Element::getValue)
+                .map(HearingOrder::from)
+                .map(ElementUtils::element)
+                .collect(Collectors.toList());
 
-        caseDetails.getData().put("hearingOrdersBundlesDrafts", bundles);
+            List<Element<HearingOrdersBundle>> bundles = draftOrderService.migrateCmoDraftToOrdersBundles(caseData);
+
+            draftOrderService.additionalApplicationUpdateCase(newDrafts, bundles);
+
+            caseDetails.getData().put("hearingOrdersBundlesDrafts", bundles);
+        }
 
         List<Element<AdditionalApplicationsBundle>> additionalApplications = defaultIfNull(
             caseData.getAdditionalApplicationsBundle(), new ArrayList<>()
