@@ -31,7 +31,7 @@ public class DocumentService {
     }
 
     public String getDocumentBinaryUrl(DocumentReference document) {
-        if(featureToggleService.isSecureDocstoreEnabled()) {
+        if (featureToggleService.isSecureDocstoreEnabled()) {
             return document.getBinaryUrl().replace("documents/", "documentsv2/");
         } else {
             return document.getBinaryUrl();
