@@ -12,5 +12,19 @@
     "RoleName": "hmcts-judiciary",
     "ReadOnly": "Y",
     "AccessProfiles": "GS_profile"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "hmcts-legal-operations",
+    "ReadOnly": "Y",
+    "AccessProfiles": "GS_profile"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "hmcts-ctsc",
+    "ReadOnly": "Y",
+    "AccessProfiles": "GS_profile"
   }
 ]
