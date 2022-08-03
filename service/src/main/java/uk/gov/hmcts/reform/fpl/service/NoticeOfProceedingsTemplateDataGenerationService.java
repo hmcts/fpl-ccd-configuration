@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstApplicantName;
@@ -48,7 +49,7 @@ public class NoticeOfProceedingsTemplateDataGenerationService
             .childrenNames(getAllChildrenNames(caseData.getAllChildren()))
             .hearingBooking(getHearingBooking(hearing))
             .crest(getCrestData())
-            .courtseal(getCourtSealData(caseData.getImageLanguage()))
+            .courtseal(courtService.getCourtSeal(caseData, SEALED))
             .build();
     }
 

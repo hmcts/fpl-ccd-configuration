@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
@@ -395,6 +396,9 @@ class ApproveDraftOrdersServiceTest {
 
         ReviewDecision reviewDecision = ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build();
         CaseData caseData = CaseData.builder()
+            .court(Court.builder()
+                .code("999")
+                .build())
             .state(State.CASE_MANAGEMENT)
             .draftUploadedCMOs(newArrayList(agreedCMO))
             .hearingOrdersBundlesDrafts(newArrayList(ordersBundleElement))
@@ -419,7 +423,7 @@ class ApproveDraftOrdersServiceTest {
         given(othersService.getSelectedOthers(any(), any(), any())).willReturn(others);
         given(draftOrderService.migrateCmoDraftToOrdersBundles(any(CaseData.class))).willReturn(emptyList());
         given(hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, agreedCMO, others, othersNotified,
-            SealType.ENGLISH))
+            SealType.ENGLISH, caseData.getCourt()))
             .willReturn(element(agreedCMO.getId(), expectedCmo));
 
         Map<String, Object> actualData = underTest.reviewCMO(caseData, ordersBundleElement);
@@ -499,6 +503,9 @@ class ApproveDraftOrdersServiceTest {
         data.put("reviewDecision1", Map.of("decision", reviewDecision));
 
         CaseData caseData = CaseData.builder()
+            .court(Court.builder()
+                    .code("999")
+                    .build())
             .state(State.CASE_MANAGEMENT)
             .draftUploadedCMOs(newArrayList(draftOrder1))
             .hearingOrdersBundlesDrafts(newArrayList(ordersBundleElement))
@@ -515,7 +522,7 @@ class ApproveDraftOrdersServiceTest {
             GeneratedOrder.builder().type(String.valueOf(C21)).build());
 
         given(hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, draftOrder1, emptyList(), "",
-            SealType.ENGLISH))
+            SealType.ENGLISH, caseData.getCourt()))
             .willReturn(expectedSealedOrder);
         given(blankOrderGenerator.buildBlankOrder(
             caseData, ordersBundleElement, expectedSealedOrder, emptyList(), ""))
@@ -625,6 +632,9 @@ class ApproveDraftOrdersServiceTest {
         Element<HearingOrdersBundle> ordersBundleElement = buildDraftOrdersBundle(hearing2, newArrayList(agreedCMO));
 
         CaseData caseData = CaseData.builder()
+            .court(Court.builder()
+                .code("999")
+                .build())
             .state(State.CASE_MANAGEMENT)
             .draftUploadedCMOs(newArrayList(agreedCMO))
             .hearingOrdersBundlesDrafts(newArrayList(ordersBundleElement))
@@ -633,7 +643,7 @@ class ApproveDraftOrdersServiceTest {
             .build();
 
         given(hearingOrderGenerator.buildSealedHearingOrder(any(), eq(agreedCMO), eq(emptyList()), eq(""),
-            eq(SealType.ENGLISH)))
+            eq(SealType.ENGLISH), eq(caseData.getCourt())))
             .willReturn(element(agreedCMO.getId(), agreedCMO.getValue().toBuilder().status(APPROVED).build()));
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
