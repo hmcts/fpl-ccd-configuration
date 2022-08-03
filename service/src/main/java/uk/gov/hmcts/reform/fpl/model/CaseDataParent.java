@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.List;
 
 @Jacksonized
-@SuperBuilder(toBuilder = true)
+@SuperBuilder
 @Data
 public class CaseDataParent {
 
