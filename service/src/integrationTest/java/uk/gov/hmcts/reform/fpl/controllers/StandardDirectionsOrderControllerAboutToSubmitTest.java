@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -162,7 +163,9 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
 
         givenCurrentUserWithName("adam");
 
-        CaseData data = extractCaseData(postAboutToSubmitEvent(validCaseDetailsForUploadRoute(order, DRAFT)));
+        CaseData data = extractCaseData(postAboutToSubmitEvent(
+                validCaseDetailsForUploadRoute(order, Court.builder().build(), DRAFT))
+        );
 
         StandardDirectionOrder expected = StandardDirectionOrder.builder()
             .dateOfUpload(dateNow())
@@ -196,12 +199,12 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
     void shouldUpdateStateAndOrderDocWhenSDOIsSealedThroughUploadRouteAndRemoveRouterAndSendNoticeOfProceedings() {
         DocumentReference sealedDocument = DocumentReference.builder().filename("sealed.pdf").build();
         DocumentReference document = DocumentReference.builder().filename("final.docx").build();
-
+        Court court = Court.builder().build();
         givenCurrentUserWithName("adam");
-        given(sealingService.sealDocument(document, SealType.ENGLISH)).willReturn(sealedDocument);
+        given(sealingService.sealDocument(document, court, SealType.ENGLISH)).willReturn(sealedDocument);
 
         CaseData responseCaseData = extractCaseData(
-            postAboutToSubmitEvent(validCaseDetailsForUploadRoute(document, SEALED))
+            postAboutToSubmitEvent(validCaseDetailsForUploadRoute(document, court, SEALED))
         );
 
         assertThat(responseCaseData.getStandardDirectionOrder().getLastUploadedOrder()).isEqualTo(document);
@@ -222,8 +225,9 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
             .proposalReason("some reason")
             .allocationProposalPresent("Yes")
             .build();
-
+        Court court = Court.builder().build();
         CaseData caseData = CaseData.builder()
+            .court(court)
             .hearingDetails(wrapElements(HearingBooking.builder()
                 .startDate(now())
                 .endDate(now().plusDays(1))
@@ -241,7 +245,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
             .id(1234123412341234L)
             .build();
 
-        given(sealingService.sealDocument(urgentReference, SealType.ENGLISH)).willReturn(sealedUrgentReference);
+        given(sealingService.sealDocument(urgentReference, court, SealType.ENGLISH)).willReturn(sealedUrgentReference);
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
@@ -266,8 +270,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
         DocumentReference order = DocumentReference.builder().filename("order.pdf").build();
 
         givenCurrentUserWithName("adam");
-
-        CaseDetails caseDetails = asCaseDetails(validCaseDetailsForUploadRoute(order, DRAFT));
+        CaseDetails caseDetails = asCaseDetails(validCaseDetailsForUploadRoute(order, Court.builder().build(), DRAFT));
         Map<String, Object> dataMap = new HashMap<>(caseDetails.getData());
 
         dataMap.putAll(Map.of(
@@ -339,8 +342,9 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
         return builder.build();
     }
 
-    private CaseData validCaseDetailsForUploadRoute(DocumentReference document, OrderStatus status) {
+    private CaseData validCaseDetailsForUploadRoute(DocumentReference document, Court court, OrderStatus status) {
         CaseData.CaseDataBuilder builder = CaseData.builder()
+            .court(court)
             .hearingDetails(wrapElements(HearingBooking.builder()
                 .startDate(now())
                 .endDate(now().plusDays(1))

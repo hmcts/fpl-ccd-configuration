@@ -280,7 +280,7 @@ public class GatekeepingOrderService {
             StandardDirectionOrder sealedOrder = buildBaseGatekeepingOrder(caseData).toBuilder()
                 .dateOfUpload(order.getDateOfUpload())
                 .uploader(order.getUploader())
-                .orderDoc(sealingService.sealDocument(orderDoc, caseData.getSealType()))
+                .orderDoc(sealingService.sealDocument(orderDoc, caseData.getCourt(), caseData.getSealType()))
                 .lastUploadedOrder(orderDoc)
                 .translationRequirements(order.getTranslationRequirements())
                 .build();

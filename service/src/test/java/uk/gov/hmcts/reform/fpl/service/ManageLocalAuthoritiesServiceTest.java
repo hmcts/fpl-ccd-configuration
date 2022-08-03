@@ -36,6 +36,8 @@ import uk.gov.hmcts.reform.fpl.model.event.LocalAuthoritiesEventData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,6 +46,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -56,12 +59,18 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASHARED;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOCIAL_WORKER;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.CourtRegion.LONDON;
+import static uk.gov.hmcts.reform.fpl.enums.CourtRegion.MIDLANDS;
 import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.ADD;
 import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.REMOVE;
 import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.TRANSFER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_NAME;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_REGION;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.caseRoleDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
@@ -84,6 +93,9 @@ class ManageLocalAuthoritiesServiceTest {
 
     @Mock
     private HmctsCourtLookupConfiguration courtLookup;
+
+    @Mock
+    private CourtLookUpService courtLookUpService;
 
     @Mock
     private CourtService courtService;
@@ -907,6 +919,66 @@ class ManageLocalAuthoritiesServiceTest {
     }
 
     @Nested
+    class TransferToAnotherCourt {
+
+        private final Court oldCourt = Court.builder()
+            .code("C1")
+            .name("Court 1")
+            .build();
+
+        private final Court newCourt = Court.builder()
+            .code("C2")
+            .name("Court 2")
+            .build();
+
+        @BeforeEach
+        void init() {
+            when(courtLookUpService.buildRcjHighCourt()).thenReturn(Court.builder().code(RCJ_HIGH_COURT_CODE)
+                .name(RCJ_HIGH_COURT_NAME)
+                .region(RCJ_HIGH_COURT_REGION)
+                .build());
+        }
+
+        @Test
+        void shouldBuildPastCourtsList() {
+            final CaseData caseData = CaseData.builder().build();
+            when(courtService.getCourt(any())).thenReturn(
+                Court.builder().code("344").name("Family Court sitting at Swansea").build()
+            );
+
+            List<Element<Court>> pastCourtList = underTest.buildPastCourtsList(caseData);
+            assertThat(pastCourtList).hasSize(1);
+            assertThat(unwrapElements(pastCourtList).iterator().next().getCode()).isEqualTo("344");
+        }
+
+        @Test
+        void shouldTransferCourtWithoutTransferLA() {
+            final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
+                .courtsToTransferWithoutTransferLA(dynamicList(Map.of(
+                        newCourt.getCode(), newCourt.getName(),
+                        RCJ_HIGH_COURT_CODE, RCJ_HIGH_COURT_NAME),
+                    newCourt.getCode()))
+                .build();
+            final CaseData caseData = CaseData.builder()
+                .court(oldCourt)
+                .localAuthoritiesEventData(eventData)
+                .build();
+
+            when(time.now()).thenReturn(LocalDateTime.of(1997, Month.JULY, 1, 11, 00));
+            when(courtLookUpService.getCourtByCode(newCourt.getCode())).thenReturn(Optional.of(newCourt));
+
+            final Court courtTransferred = underTest.transferCourtWithoutTransferLA(caseData);
+
+            assertThat(courtTransferred.getCode()).isEqualTo(newCourt.getCode());
+            assertThat(courtTransferred.getName()).isEqualTo(newCourt.getName());
+            assertThat(courtTransferred.getDateTransferred()).isEqualTo(
+                LocalDateTime.of(1997, Month.JULY, 1, 11, 00));
+            assertThat(caseData.getPastCourtList()).hasSize(1);
+            assertThat(caseData.getPastCourtList().iterator().next().getValue()).isEqualTo(oldCourt);
+        }
+    }
+
+    @Nested
     class SelectedLocalAuthorityEmail {
 
         @Test
@@ -1040,6 +1112,36 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(actualErrors).containsExactly(solicitorExpectedError);
 
             verify(emailService).validate(solicitorEmail, solicitorExpectedError);
+        }
+
+        @Test
+        void shouldReturnValidateErrorIfTransferCourtWithoutTransferLAIsNotValid() {
+            final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
+                .courtsToTransferWithoutTransferLA(DynamicList.builder()
+                    .value(DynamicListElement.builder().code("").build())
+                    .build())
+                .build();
+            final List<String> actualErrors = underTest.validateTransferCourtWithoutTransferLA(eventData);
+            assertThat(actualErrors).containsExactly("Invalid court selected.");
+        }
+
+        @Test
+        void shouldReturnValidateErrorIfTransferCourtWithoutTransferLAIsNotSet() {
+            final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
+                .build();
+            final List<String> actualErrors = underTest.validateTransferCourtWithoutTransferLA(eventData);
+            assertThat(actualErrors).containsExactly("Invalid court selected.");
+        }
+
+        @Test
+        void shouldNotReturnValidateErrorIfTransferCourtWithoutTransferLAIsValid() {
+            final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
+                .courtsToTransferWithoutTransferLA(DynamicList.builder()
+                    .value(DynamicListElement.builder().code("100").build())
+                    .build())
+                .build();
+            final List<String> actualErrors = underTest.validateTransferCourtWithoutTransferLA(eventData);
+            assertThat(actualErrors).isEmpty();
         }
 
         @Test
@@ -1514,17 +1616,23 @@ class ManageLocalAuthoritiesServiceTest {
     @Nested
     class CourtsToTransfer {
 
-        private final Court court1 = Court.builder().code("C1").name("Court 1").build();
-        private final Court court2 = Court.builder().code("C2").name("Court 2").build();
-        private final Court court3 = Court.builder().code("C3").name("Court 3").build();
-        private final Court court4 = Court.builder().code("C4").name("Court 4").build();
-        private final Court court5 = Court.builder().code("C5").name("Court 5").build();
+        private final Court court1 = Court.builder().code("C1").name("Court 1").region(LONDON.getName()).build();
+        private final Court court2 = Court.builder().code("C2").name("Court 2").region(MIDLANDS.getName()).build();
+        private final Court court3 = Court.builder().code("C3").name("Court 3").region(LONDON.getName()).build();
+        private final Court court4 = Court.builder().code("C4").name("Court 4").region(LONDON.getName()).build();
+        private final Court court5 = Court.builder().code("C5").name("Court 5").region(LONDON.getName()).build();
 
         private final List<Pair<String, String>> expectedCourts = List.of(
             Pair.of("C1", "Court 1"),
             Pair.of("C2", "Court 2"),
             Pair.of("C3", "Court 3"),
             Pair.of("C5", "Court 5"));
+
+        private final List<Pair<String, String>> expectedCourtsGroupedByRegion = List.of(
+            Pair.of("", "--- " + LONDON.getName() + " ---"),
+            Pair.of("C5", "Court 5"),
+            Pair.of("", "--- " + MIDLANDS.getName() + " ---"),
+            Pair.of("C2", "Court 2"));
 
         private final String designatedLACode = "LA1";
         private final String secondaryLACode = "LA2";
@@ -1618,6 +1726,23 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(actualLocalAuthorities).isEqualTo(expectedCourtList);
 
             verify(dynamicListService).asDynamicList(expectedCourts);
+        }
+
+        @Test
+        void shouldReturnFullListOfSortedCourtsWithCourtRegionGrouped() {
+            final CaseData caseData = CaseData.builder().build();
+
+            final DynamicList expectedCourtList = DynamicList.builder().build();
+
+            when(courtLookUpService.getCourtFullListWithRcjHighCourt()).thenReturn(List.of(court2, court5, court1));
+            when(courtService.getCourt(caseData)).thenReturn(court1);
+            when(dynamicListService.asDynamicList(expectedCourtsGroupedByRegion)).thenReturn(expectedCourtList);
+
+            final DynamicList actualLocalAuthorities = underTest.getCourtsToTransferWithHighCourt(caseData, true);
+
+            assertThat(actualLocalAuthorities).isEqualTo(expectedCourtList);
+
+            verify(dynamicListService).asDynamicList(expectedCourtsGroupedByRegion);
         }
     }
 

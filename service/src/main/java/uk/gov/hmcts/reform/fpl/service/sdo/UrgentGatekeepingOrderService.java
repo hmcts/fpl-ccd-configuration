@@ -90,7 +90,7 @@ public class UrgentGatekeepingOrderService {
         }
 
         final UrgentHearingOrder order = UrgentHearingOrder.builder()
-            .order(sealingService.sealDocument(orderDocument, caseData.getSealType()))
+            .order(sealingService.sealDocument(orderDocument, caseData.getCourt(), caseData.getSealType()))
             .unsealedOrder(orderDocument)
             .dateAdded(time.now().toLocalDate())
             .translationRequirements(eventData.getUrgentGatekeepingTranslationRequirements())
@@ -118,7 +118,8 @@ public class UrgentGatekeepingOrderService {
         Map<String, Object> updates = new HashMap<>();
         final UrgentHearingOrder urgentHearingOrder = caseData.getUrgentHearingOrder();
         final UrgentHearingOrder sealedOrder = UrgentHearingOrder.builder()
-            .order(sealingService.sealDocument(urgentHearingOrder.getUnsealedOrder(), caseData.getSealType()))
+            .order(sealingService.sealDocument(urgentHearingOrder.getUnsealedOrder(),
+                caseData.getCourt(), caseData.getSealType()))
             .unsealedOrder(urgentHearingOrder.getUnsealedOrder())
             .dateAdded(urgentHearingOrder.getDateAdded())
             .translationRequirements(urgentHearingOrder.getTranslationRequirements())

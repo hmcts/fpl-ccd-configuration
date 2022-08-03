@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.exceptions.LocalAuthorityNotFound;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.CaseTransferredNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.SharedLocalAuthorityChangedNotifyData;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
@@ -19,6 +20,8 @@ import java.util.Optional;
 public class LocalAuthorityChangedContentProvider extends AbstractEmailContentProvider {
 
     private final EmailNotificationHelper helper;
+
+    private final CourtService courtService;
 
     public SharedLocalAuthorityChangedNotifyData getNotifyDataForAddedLocalAuthority(CaseData caseData) {
 
@@ -78,6 +81,15 @@ public class LocalAuthorityChangedContentProvider extends AbstractEmailContentPr
         return Optional.ofNullable(organisationPolicy)
             .map(OrganisationPolicy::getOrganisation)
             .map(Organisation::getOrganisationName);
+    }
+
+    public SharedLocalAuthorityChangedNotifyData getNotifyDataFoTransferredToAnotherCourt(CaseData caseData) {
+        return SharedLocalAuthorityChangedNotifyData.builder()
+            .caseName(caseData.getCaseName())
+            .ccdNumber(caseData.getId().toString())
+            .previousCourtName(courtService.getPreviousCourtName(caseData))
+            .courtName(courtService.getCourtName(caseData))
+            .build();
     }
 
 }

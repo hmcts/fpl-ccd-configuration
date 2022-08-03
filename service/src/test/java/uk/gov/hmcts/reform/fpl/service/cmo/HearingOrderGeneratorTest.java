@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -54,8 +55,8 @@ class HearingOrderGeneratorTest {
         HearingOrder hearingOrder = HearingOrder.builder().hearing("hearing1").order(order).build();
         String othersNotified = "John Smith";
         List<Element<Other>> selectedOthers = List.of(element(Other.builder().name(othersNotified).build()));
-
-        when(documentSealingService.sealDocument(order, SealType.ENGLISH)).thenReturn(sealedOrder);
+        Court court = Court.builder().build();
+        when(documentSealingService.sealDocument(order, court, SealType.ENGLISH)).thenReturn(sealedOrder);
 
         Element<HearingOrder> expectedOrder = element(ORDER_ID, hearingOrder.toBuilder()
             .dateIssued(time.now().toLocalDate()).status(CMOStatus.APPROVED)
@@ -67,7 +68,9 @@ class HearingOrderGeneratorTest {
             ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build(),
             element(ORDER_ID, hearingOrder),
             selectedOthers,
-            othersNotified, SealType.ENGLISH);
+            othersNotified,
+            SealType.ENGLISH,
+            court);
 
         assertThat(actual).isEqualTo(expectedOrder);
     }
@@ -75,8 +78,8 @@ class HearingOrderGeneratorTest {
     @Test
     void shouldBuildSealedHearingOrderWhenJudgeAmendsTheDocument() {
         HearingOrder hearingOrder = HearingOrder.builder().hearing("hearing1").order(order).build();
-
-        when(documentSealingService.sealDocument(amendedOrder, SealType.ENGLISH)).thenReturn(sealedOrder);
+        Court court = Court.builder().build();
+        when(documentSealingService.sealDocument(amendedOrder, court, SealType.ENGLISH)).thenReturn(sealedOrder);
 
         Element<HearingOrder> expectedOrder = element(ORDER_ID, hearingOrder.toBuilder()
             .dateIssued(time.now().toLocalDate()).status(CMOStatus.APPROVED)
@@ -86,7 +89,9 @@ class HearingOrderGeneratorTest {
         Element<HearingOrder> actual = underTest.buildSealedHearingOrder(
             ReviewDecision.builder().decision(JUDGE_AMENDS_DRAFT).judgeAmendedDocument(amendedOrder).build(),
             element(ORDER_ID, hearingOrder),
-            List.of(), "", SealType.ENGLISH);
+            List.of(), "",
+            SealType.ENGLISH,
+            court);
 
         assertThat(actual).isEqualTo(expectedOrder);
     }

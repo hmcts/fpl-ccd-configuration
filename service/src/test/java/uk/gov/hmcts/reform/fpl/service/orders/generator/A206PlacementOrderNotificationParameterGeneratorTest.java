@@ -9,9 +9,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.A206PlacementOrderNotificationDocmosisParameters;
 
@@ -29,6 +31,8 @@ class A206PlacementOrderNotificationParameterGeneratorTest {
 
     @Mock
     private PlacementService placementService;
+    @Mock
+    private CourtService courtService;
 
     @InjectMocks
     private A206PlacementOrderNotificationParameterGenerator underTest;
@@ -50,6 +54,7 @@ class A206PlacementOrderNotificationParameterGeneratorTest {
             .childId(selectedPlacementChild.getId())
             .build());
         CaseData caseData = CaseData.builder()
+            .court(Court.builder().build())
             .children1(List.of(selectedPlacementChild))
             .manageOrdersEventData(
                 ManageOrdersEventData.builder()
@@ -59,6 +64,7 @@ class A206PlacementOrderNotificationParameterGeneratorTest {
             )
             .build();
         when(placementService.getChildByPlacementId(caseData, placement.getId())).thenReturn(selectedPlacementChild);
+        when(courtService.isHighCourtCase(caseData)).thenReturn(false);
 
         A206PlacementOrderNotificationDocmosisParameters docmosisParameters = underTest.generate(caseData);
 
