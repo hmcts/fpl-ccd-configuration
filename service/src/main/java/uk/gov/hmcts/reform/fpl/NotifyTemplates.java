@@ -89,4 +89,5 @@ public final class NotifyTemplates {
     public static final String PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE = "a79ed53c-336d-4844-b4de-f430ff991b8d";
     public static final String PLACEMENT_NOTICE_UPLOADED_TEMPLATE = "6a0e419a-7b14-4227-9363-6612c3dcafad";
     public static final String PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE = "9d828e63-0b06-40c3-bd20-473ef8f0f2a8";
+    public static final String CASE_TRANSFERRED_TO_ANOTHER_COURT_TEMPLATE = "b845848e-1376-4c9b-bfe3-e48615ab4891";
 }

@@ -17,6 +17,7 @@ public class DocmosisNoticeOfHearing implements DocmosisData {
     private String ccdCaseNumber;
     private String courtName;
     private String postingDate;
+    boolean isHighCourtCase;
     @JsonUnwrapped
     private DocmosisHearingBooking hearingBooking;
     private final String additionalNotes;

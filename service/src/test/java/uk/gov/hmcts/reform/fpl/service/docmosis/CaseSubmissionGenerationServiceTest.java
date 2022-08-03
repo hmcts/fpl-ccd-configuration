@@ -72,10 +72,12 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.DONT_KNOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
+import static uk.gov.hmcts.reform.fpl.model.configuration.Language.ENGLISH;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisCaseSubmission;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -86,7 +88,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class CaseSubmissionGenerationServiceTest {
     private static final LocalDate NOW = now();
-    private static final Language LANGUAGE = Language.ENGLISH;
+    private static final Language LANGUAGE = ENGLISH;
 
     private static final String FORMATTED_DATE = formatLocalDateToString(NOW, DATE);
     private static final DocmosisAnnexDocuments DOCMOSIS_ANNEX_DOCUMENTS = mock(DocmosisAnnexDocuments.class);
@@ -1449,7 +1451,7 @@ class CaseSubmissionGenerationServiceTest {
 
         @Test
         void shouldHaveDocmosisCaseSubmissionWithDraftWatermarkWhenApplicationIsDraft() {
-            underTest.populateDraftWaterOrCourtSeal(caseSubmission, true, Language.ENGLISH);
+            underTest.populateDraftWaterOrCourtSeal(caseSubmission, true, givenCaseData);
 
             assertThat(caseSubmission.getDraftWaterMark()).isEqualTo(DRAFT_WATERMARK.getValue());
             assertThat(caseSubmission.getCourtSeal()).isNull();
@@ -1457,7 +1459,10 @@ class CaseSubmissionGenerationServiceTest {
 
         @Test
         void shouldHaveDocmosisCaseSubmissionWithCourtSealWhenApplicationIsNotDraft() {
-            underTest.populateDraftWaterOrCourtSeal(caseSubmission, false, Language.ENGLISH);
+            when(courtService.getCourtSeal(givenCaseData, SEALED))
+                    .thenReturn(COURT_SEAL.getValue(ENGLISH));
+
+            underTest.populateDraftWaterOrCourtSeal(caseSubmission, false, givenCaseData);
 
             assertThat(caseSubmission.getCourtSeal()).isEqualTo(COURT_SEAL.getValue());
             assertThat(caseSubmission.getDraftWaterMark()).isNull();

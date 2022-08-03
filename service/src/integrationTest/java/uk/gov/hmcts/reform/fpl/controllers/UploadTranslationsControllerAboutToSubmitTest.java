@@ -7,6 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
@@ -56,10 +57,11 @@ class UploadTranslationsControllerAboutToSubmitTest extends AbstractCallbackTest
 
     @Test
     void shouldFinaliseDocumentsAboutToSubmit() {
+        Court court = Court.builder().build();
         when(documentDownloadService.downloadDocument(TEST_DOCUMENT.getBinaryUrl())).thenReturn(TRANSLATED_DOC_BYTES);
         when(documentConversionService.convertToPdf(TRANSLATED_DOC_BYTES, TEST_DOCUMENT.getFilename())).thenReturn(
             CONVERTED_DOC_BYTES);
-        when(documentSealingService.sealDocument(CONVERTED_DOC_BYTES, SealType.BILINGUAL))
+        when(documentSealingService.sealDocument(CONVERTED_DOC_BYTES, court, SealType.BILINGUAL))
             .thenReturn(SEALED_DOC_BYTES);
         when(uploadDocumentService.uploadDocument(SEALED_DOC_BYTES,
             "noticeo_c6-Welsh.pdf",
@@ -68,6 +70,7 @@ class UploadTranslationsControllerAboutToSubmitTest extends AbstractCallbackTest
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
             CASE_DATA_WITH_ALL_ORDERS.toBuilder()
+                .court(court)
                 .uploadTranslationsEventData(UploadTranslationsEventData.builder()
                     .uploadTranslationsRelatedToDocument(RENDERED_DYNAMIC_LIST.toBuilder()
                         .value(dlElement(UUID_3, "Notice of proceedings (C6)"))
@@ -83,6 +86,7 @@ class UploadTranslationsControllerAboutToSubmitTest extends AbstractCallbackTest
         CaseData updatedCaseData = extractCaseData(response);
 
         assertThat(updatedCaseData).isEqualTo(CASE_DATA_WITH_ALL_ORDERS.toBuilder()
+            .court(court)
             .noticeOfProceedingsBundle(List.of(element(UUID_3, DocumentBundle.builder()
                 .document(DocumentReference.builder()
                     .filename("noticeo_c6.pdf")

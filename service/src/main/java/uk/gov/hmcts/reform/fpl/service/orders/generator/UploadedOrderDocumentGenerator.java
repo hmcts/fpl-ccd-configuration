@@ -29,7 +29,7 @@ public class UploadedOrderDocumentGenerator {
             bytes = documentConversionService.convertToPdf(bytes, documentReference.getFilename());
 
             if (needSealing(caseData, status)) {
-                bytes = documentSealingService.sealDocument(bytes, caseData.getSealType());
+                bytes = documentSealingService.sealDocument(bytes, caseData.getCourt(), caseData.getSealType());
             }
 
             return new OrderDocumentGeneratorResult(bytes, RenderFormat.PDF);

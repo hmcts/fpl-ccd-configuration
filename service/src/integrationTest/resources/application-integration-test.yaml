@@ -104,6 +104,7 @@ fpl:
     username: 'fpl-system-update@mailnesia.com'
     password: 'Password12'
   ctsc_inbox: 'FamilyPublicLaw+ctsc@gmail.com'
+  rcj_family_high_court_inbox: 'FamilyPublicLaw+rcjfamilyhighcourt@gmail.com'
 
 robotics:
   notification:
