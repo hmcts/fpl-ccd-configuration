@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -29,7 +30,8 @@ public class HearingOrderGenerator {
                                                          Element<HearingOrder> hearingOrderElement,
                                                          List<Element<Other>> selectedOthers,
                                                          String othersNotified,
-                                                         SealType sealType) {
+                                                         SealType sealType,
+                                                         Court court) {
         DocumentReference order;
 
         if (JUDGE_AMENDS_DRAFT.equals(reviewDecision.getDecision())) {
@@ -41,7 +43,7 @@ public class HearingOrderGenerator {
         return element(hearingOrderElement.getId(), hearingOrderElement.getValue().toBuilder()
             .dateIssued(time.now().toLocalDate())
             .status(CMOStatus.APPROVED)
-            .order(documentSealingService.sealDocument(order, sealType))
+            .order(documentSealingService.sealDocument(order, court, sealType))
             .lastUploadedOrder(order)
             .others(selectedOthers)
             .othersNotified(othersNotified)

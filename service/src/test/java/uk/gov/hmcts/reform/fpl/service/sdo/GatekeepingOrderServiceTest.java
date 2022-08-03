@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -865,13 +866,13 @@ class GatekeepingOrderServiceTest {
 
         final DocumentReference uploadedOrder = TestDataHelper.testDocumentReference();
         final DocumentReference sealedOrder = TestDataHelper.testDocumentReference();
-
+        final Court court = Court.builder().build();
         final String userName = "John Smith";
 
         @BeforeEach
         void init() {
             when(userService.getUserName()).thenReturn(userName);
-            when(sealingService.sealDocument(uploadedOrder, SealType.ENGLISH)).thenReturn(sealedOrder);
+            when(sealingService.sealDocument(uploadedOrder, court, SealType.ENGLISH)).thenReturn(sealedOrder);
         }
 
         @Test
@@ -883,6 +884,7 @@ class GatekeepingOrderServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
+                .court(court)
                 .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                     .gatekeepingOrderSealDecision(sealDecision)
                     .build())
@@ -912,6 +914,7 @@ class GatekeepingOrderServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
+                .court(court)
                 .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                     .gatekeepingOrderSealDecision(sealDecision)
                     .build())
@@ -930,7 +933,7 @@ class GatekeepingOrderServiceTest {
 
             assertThat(actualOrder).isEqualTo(expectedOrder);
 
-            verify(sealingService).sealDocument(uploadedOrder, SealType.ENGLISH);
+            verify(sealingService).sealDocument(uploadedOrder, court, SealType.ENGLISH);
         }
 
         @Test
@@ -942,6 +945,7 @@ class GatekeepingOrderServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
+                .court(court)
                 .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                     .gatekeepingOrderSealDecision(sealDecision)
                     .gatekeepingTranslationRequirements(ENGLISH_TO_WELSH)
@@ -962,7 +966,7 @@ class GatekeepingOrderServiceTest {
 
             assertThat(actualOrder).isEqualTo(expectedOrder);
 
-            verify(sealingService).sealDocument(uploadedOrder, SealType.ENGLISH);
+            verify(sealingService).sealDocument(uploadedOrder, court, SealType.ENGLISH);
         }
     }
 

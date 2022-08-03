@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisBirthCertificate;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.A70PlacementOrderDocmosisParameters;
 
@@ -29,6 +30,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_SHORT;
 public class A70PlacementOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
 
     private final PlacementService placementService;
+    private final CourtService courtService;
 
     @Override
     public Order accept() {
@@ -72,6 +74,7 @@ public class A70PlacementOrderDocumentParameterGenerator implements DocmosisPara
                     .build()
             )
             .applicationDate(applicationDate)
+            .isHighCourtCase(courtService.isHighCourtCase(caseData))
             .build();
     }
 
