@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum ExpertReportList {
+public enum ExpertReportType {
 
     @JsonProperty("pediatric")
     PEDIATRIC("pediatric", "Pediatric"),
@@ -45,7 +45,8 @@ public enum ExpertReportList {
     FUNCTIONING_REPORT_ON_PARENT("functioningReportOnParent", "Physiological Report on Parent(s) - functioning"),
 
     @JsonProperty("physiologicalReportOnParentAndChild")
-    PHYSIOLOGICAL_REPORT_ON_PARENT_AND_CHILD("physiologicalReportOnParentAndChild", "Physiological Report on Parent(s) and child"),
+    PHYSIOLOGICAL_REPORT_ON_PARENT_AND_CHILD("physiologicalReportOnParentAndChild",
+        "Physiological Report on Parent(s) and child"),
 
     @JsonProperty("multiDisciplinaryAssessment")
     MULTI_DISCIPLINARY_ASSESSMENT("multiDisciplinaryAssessment", "Multi Disciplinary Assessment"),
