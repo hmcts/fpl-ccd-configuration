@@ -99,6 +99,7 @@ public class PlacementService {
     private final UploadDocumentService uploadDocumentService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final RespondentService respondentService;
+    private final CourtService courtService;
 
     public PlacementEventData prepareChildren(CaseData caseData) {
 
@@ -268,7 +269,8 @@ public class PlacementService {
                 throw new IllegalStateException("Missing placement application document");
             }
 
-            currentPlacement.setApplication(sealingService.sealDocument(applicationDocument, SealType.ENGLISH));
+            currentPlacement.setApplication(sealingService.sealDocument(applicationDocument,
+                    caseData.getCourt(), SealType.ENGLISH));
 
             currentPlacement.setPlacementUploadDateTime(time.now());
 
@@ -307,7 +309,8 @@ public class PlacementService {
             .postingDate(formatLocalDateToString(time.now().toLocalDate(), DATE))
             .crest(DocmosisImages.CREST.getValue())
             .draftbackground(DRAFT == status ? DocmosisImages.DRAFT_WATERMARK.getValue() : null)
-            .courtseal(SEALED == status ? DocmosisImages.COURT_SEAL.getValue(caseData.getImageLanguage()) : null)
+            .courtseal(courtService.getCourtSeal(caseData, status))
+            .isHighCourtCase(courtService.isHighCourtCase(caseData))
             .build();
 
         DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
