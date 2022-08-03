@@ -13,6 +13,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.CaseLocation;
+import uk.gov.hmcts.reform.ccd.model.HmctsServiceID;
+import uk.gov.hmcts.reform.ccd.model.SupplementaryDataUpdate;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -78,6 +80,9 @@ public class CaseInitiationController extends CallbackController {
             .listItems(List.of(
                 DynamicListElement.builder().code("987").label("Category Label").build()
             ))
+            .build());
+        caseDetails.putIfNotEmpty("supplementary_data_updates", SupplementaryDataUpdate.builder()
+                .hmctsServiceId(HmctsServiceID.builder().hmctsServiceId("Sausage").build())
             .build());
 
         caseDetails.removeAll("outsourcingType", "outsourcingLAs");

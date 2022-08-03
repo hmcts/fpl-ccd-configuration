@@ -2075,5 +2075,14 @@
     "FieldType": "DynamicList",
     "SecurityClassification": "Public",
     "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "supplementary_data_updates",
+    "Label": " ",
+    "FieldType": "SupplementaryDataUpdate",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
   }
 ]
