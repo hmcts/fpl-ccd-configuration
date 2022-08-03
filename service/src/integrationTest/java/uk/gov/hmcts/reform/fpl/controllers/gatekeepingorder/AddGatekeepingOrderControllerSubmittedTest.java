@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -99,6 +100,8 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
 
     private static final String DOC_UPLOADER_NAME = "MOCK";
 
+    private static final Court court = Court.builder().build();
+
     @MockBean
     TranslationRequestFormCreationService translationRequestFormCreationService;
 
@@ -133,8 +136,8 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
             .thenReturn(DOCMOSIS_PDF_DOCUMENT);
         when(documentDownloadService.downloadDocument(any())).thenReturn(APPLICATION_BINARY);
         when(docmosisHelper.extractPdfContent(APPLICATION_BINARY)).thenReturn("Some content");
-        when(sealingService.sealDocument(eq(SDO_DOCUMENT), any())).thenReturn(SEALED_DOCUMENT);
-        when(sealingService.sealDocument(eq(URGENT_HEARING_ORDER_DOCUMENT), any())).thenReturn(SEALED_DOCUMENT);
+        when(sealingService.sealDocument(eq(SDO_DOCUMENT), any(), any())).thenReturn(SEALED_DOCUMENT);
+        when(sealingService.sealDocument(eq(URGENT_HEARING_ORDER_DOCUMENT), any(), any())).thenReturn(SEALED_DOCUMENT);
     }
 
     @Test
@@ -161,7 +164,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
     void shouldTriggerEventWhenUrgentHearingSubmitted() {
         postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrder(), GATEKEEPING_CASE_DATA));
 
-        verify(sealingService).sealDocument(URGENT_HEARING_ORDER_DOCUMENT, SealType.ENGLISH);
+        verify(sealingService).sealDocument(eq(URGENT_HEARING_ORDER_DOCUMENT), any(), eq(SealType.ENGLISH));
         verifyEmails(URGENT_AND_NOP_ISSUED_CAFCASS, URGENT_AND_NOP_ISSUED_CTSC, URGENT_AND_NOP_ISSUED_LA);
         verifyNoMoreNotificationsSent();
     }
@@ -170,7 +173,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
     void shouldTriggerEventWhenUrgentHearingSubmittedAndRequestingTranslation() {
         postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrderToTranslate(), GATEKEEPING_CASE_DATA));
 
-        verify(sealingService).sealDocument(URGENT_HEARING_ORDER_DOCUMENT, SealType.ENGLISH);
+        verify(sealingService).sealDocument(eq(URGENT_HEARING_ORDER_DOCUMENT), any(), eq(SealType.ENGLISH));
         verifyEmails(URGENT_AND_NOP_ISSUED_CAFCASS, URGENT_AND_NOP_ISSUED_CTSC, URGENT_AND_NOP_ISSUED_LA);
         verifyEmailSentToTranslation();
         verifyNoMoreNotificationsSent();
@@ -181,7 +184,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrderToTranslateWithNop(),
             GATEKEEPING_CASE_DATA));
 
-        verify(sealingService).sealDocument(URGENT_HEARING_ORDER_DOCUMENT, SealType.ENGLISH);
+        verify(sealingService).sealDocument(eq(URGENT_HEARING_ORDER_DOCUMENT), any(), eq(SealType.ENGLISH));
         verifyEmails(URGENT_AND_NOP_ISSUED_CAFCASS, URGENT_AND_NOP_ISSUED_CTSC, URGENT_AND_NOP_ISSUED_LA);
         verifyEmailSentToTranslation(3);
         verifyNoMoreNotificationsSent();
@@ -257,7 +260,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
     void shouldTriggerSendDocumentEventForUrgentHearingOrder() {
         postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrder(), GATEKEEPING_CASE_DATA));
 
-        verify(sealingService).sealDocument(URGENT_HEARING_ORDER_DOCUMENT, SealType.ENGLISH);
+        verify(sealingService).sealDocument(eq(URGENT_HEARING_ORDER_DOCUMENT), any(), eq(SealType.ENGLISH));
         verify(coreCaseDataService).triggerEvent(
             JURISDICTION,
             CASE_TYPE,
@@ -274,7 +277,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
             caseData, GATEKEEPING_CASE_DATA
         ));
 
-        verify(sealingService).sealDocument(SDO_DOCUMENT, SealType.ENGLISH);
+        verify(sealingService).sealDocument(eq(SDO_DOCUMENT), any(), eq(SealType.ENGLISH));
         verify(coreCaseDataService).triggerEvent(eq(caseData.getId()),eq("internal-change-add-gatekeeping"), any());
     }
 
