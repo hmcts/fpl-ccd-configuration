@@ -4012,5 +4012,15 @@
       "County": "Kent",
       "PostCode": "ME4 4JZ"
     }
+  },
+  {
+    "hearingVenueId": -1,
+    "venue": "High Court Family Division",
+    "address": {
+      "AddressLine1": "Queen’s Building, 1st Mezzanine Floor",
+      "AddressLine2": "Royal Courts of Justice",
+      "PostTown": "Strand London",
+      "PostCode": "WC2A 2LL"
+    }
   }
 ]
