@@ -1,0 +1,356 @@
+{
+  "court": {
+    "code": "344",
+    "name": "Family Court sitting at Swansea",
+    "email": "FamilyPublicLaw+sa@gmail.com"
+  },
+  "orders": {
+    "orderType": [
+      "CARE_ORDER"
+    ]
+  },
+  "others": {
+    "firstOther": {
+      "DOB": "1980-03-31",
+      "name": "Noah King",
+      "gender": "Male",
+      "address": {
+        "County": "",
+        "Country": "United Kingdom",
+        "PostCode": "SE16 6BA",
+        "PostTown": "London",
+        "AddressLine1": "Flat 20",
+        "AddressLine2": "Heron House 8",
+        "AddressLine3": ""
+      },
+      "telephone": "07000 654321",
+      "birthPlace": "London",
+      "detailsHidden": "No",
+      "representedBy": [],
+      "childInformation": null,
+      "litigationIssues": "NO",
+      "detailsHiddenReason": null,
+      "genderIdentification": null,
+      "litigationIssuesDetails": ""
+    },
+    "additionalOthers": []
+  },
+  "grounds": {
+    "thresholdReason": [
+      "noCare"
+    ],
+    "thresholdDetails": "mock threshold details"
+  },
+  "hearing": {
+    "reason": "test reason",
+    "timeFrame": "Same day"
+  },
+  "caseName": "e2e test case",
+  "taskList": "<div class='width-50'>\n\n<br/>\n\n## Add application details\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/changeCaseName'>Change case name</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/finished.png' title='Finished'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/ordersNeeded'>Orders and directions sought</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/hearingNeeded'>Hearing urgency</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add grounds for the application\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterGrounds'>Grounds for the application</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterRiskHarm'>Risk and harm to children</a>\n\n<span class='govuk-hint govuk-!-font-size-14'>In emergency cases, you can send your application without this information</span>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterParentingFactors'>Factors affecting parenting</a>\n\n<span class='govuk-hint govuk-!-font-size-14'>In emergency cases, you can send your application without this information</span>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add application documents\n\n<span class='govuk-hint govuk-!-font-size-14'>For example, SWET, social work chronology and care plan<br> In emergency cases, you can send your application without this information </span>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/uploadDocuments'>Upload documents</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add information about the parties\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterLocalAuthority'>Local authority's details</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterChildren'>Child's details</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterRespondents'>Respondents' details</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add court requirements\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/otherProposal'>Allocation proposal</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add additional information\n\n<div class='panel panel-border-wide govuk-!-font-size-16'>Only complete if relevant</div>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/otherProceedings'>Other proceedings</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterInternationalElement'>International element</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterOthers'>Other people in the case</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/attendingHearing'>Court services needed</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/languageSelection'>Welsh language requirements</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Send application\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a>Submit application</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/cannot-send-yet.png' title='Cannot send yet'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n</div>\n\n<details class='govuk-details'>\n\n<summary class='govuk-details__summary'>\n\n<span class='govuk-details__summary-text'>\n\nWhy can't I submit my application?\n\n</span>\n\n</summary>\n\n<div class='govuk-details__text'>\n\nAdd the orders and directions sought in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/ordersNeeded'>Orders and directions sought</a>\n\nAdd the hearing urgency details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/hearingNeeded'>Hearing urgency</a>\n\nAdd the grounds for the application in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterGrounds'>Grounds for the application</a>\n\nAdd local authority's details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterLocalAuthority'>Local authority's details</a>\n\nAdd the child's details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterChildren'>Child's details</a>\n\nAdd the respondents' details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterRespondents'>Respondents' details</a>\n\nAdd the allocation proposal in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/otherProposal'>Allocation proposal</a>\n\n</div>\n\n</details>",
+  "children1": [
+    {
+      "id": "5c578fcc-7e41-45b0-82f7-46c38a769cb3",
+      "value": {
+        "party": {
+          "gender": "Boy",
+          "lastName": "Jones",
+          "firstName": "Timothy",
+          "dateOfBirth": "2015-08-01"
+        }
+      }
+    },
+    {
+      "id": "cc792469-47f1-4cc8-8979-6b36bcf6b0a6",
+      "value": {
+        "party": {
+          "gender": "Boy",
+          "lastName": "Black",
+          "firstName": "John",
+          "dateOfBirth": "2016-09-02"
+        }
+      }
+    },
+    {
+      "id": "d56b23ee-ca80-42cc-bf9f-2e65cec00985",
+      "value": {
+        "party": {
+          "gender": "Boy",
+          "lastName": "Black",
+          "firstName": "William",
+          "dateOfBirth": "2017-10-01"
+        }
+      }
+    },
+    {
+      "id": "2135caa3-62d1-4692-99a9-3524397c6b05",
+      "value": {
+        "party": {
+          "gender": "Girl",
+          "lastName": "Black",
+          "firstName": "Sarah",
+          "dateOfBirth": "2010-05-02"
+        }
+      }
+    }
+  ],
+  "solicitor": {
+    "dx": "160010 Kingsway 7",
+    "name": "John Smith",
+    "email": "solicitor@email.com",
+    "mobile": "07000000000",
+    "reference": "reference",
+    "telephone": "00000000000"
+  },
+  "applicants": [
+    {
+      "id": "583fe873-f0f2-4b38-bc8b-825c07ebdd41",
+      "value": {
+        "party": {
+          "email": {
+            "email": "swansea@test.com"
+          },
+          "address": {
+            "County": "United Kingdom",
+            "PostCode": "CR0 2GE",
+            "PostTown": "London",
+            "AddressLine1": "Flat 12, Pinnacle Apartments",
+            "AddressLine2": "Saffron Central Square 11"
+          },
+          "partyId": "a77f0692-60c8-44e1-aae7-f067851bbc89",
+          "jobTitle": "Legal adviser",
+          "partyType": "ORGANISATION",
+          "pbaNumber": "PBA0082848",
+          "clientCode": "8888",
+          "mobileNumber": {
+            "telephoneNumber": "07000000000"
+          },
+          "telephoneNumber": {
+            "telephoneNumber": "00000000000",
+            "contactDirection": "Jonathon Walker"
+          },
+          "organisationName": "Swansea City Council",
+          "customerReference": "Example reference"
+        },
+        "leadApplicantIndicator": "Yes"
+      }
+    }
+  ],
+  "sendToCtsc": "Yes",
+  "respondents1": [
+    {
+      "id": "6e3b4492-3a0d-4eb8-8a18-a4a42a7b158a",
+      "value": {
+        "party": {
+          "gender": "Male",
+          "address": {
+            "County": "",
+            "Country": "United Kingdom",
+            "PostCode": "RG4 7AA",
+            "PostTown": "Reading",
+            "AddressLine1": "Flat 2",
+            "AddressLine2": "Caversham House 15-17",
+            "AddressLine3": "Church Road"
+          },
+          "lastName": "Bloggs",
+          "firstName": "Joe",
+          "dateOfBirth": "1980-01-01",
+          "placeOfBirth": "London",
+          "telephoneNumber": {
+            "telephoneNumber": "00000 000000"
+          },
+          "relationshipToChild": "Father"
+        },
+        "legalRepresentation": "No"
+      }
+    },
+    {
+      "id": "2bfdecbf-26fa-429a-bcf3-0b5cba21a588",
+      "value": {
+        "party": {
+          "gender": "Male",
+          "address": {
+            "County": "",
+            "Country": "United Kingdom",
+            "PostCode": "SE16 6BA",
+            "PostTown": "London",
+            "AddressLine1": "Flat 20",
+            "AddressLine2": "Heron House 8"
+          },
+          "lastName": "Bloggs",
+          "firstName": "Emma",
+          "dateOfBirth": "1990-02-03",
+          "placeOfBirth": "London",
+          "telephoneNumber": {
+            "telephoneNumber": "07000 654321"
+          },
+          "relationshipToChild": "Mother"
+        },
+        "legalRepresentation": "No"
+      }
+    }
+  ],
+  "dateSubmitted": "2022-08-03",
+  "submittedForm": {
+    "document_url": "http://dm-store:8080/documents/a2ac2f53-f07c-4618-8256-995725819029",
+    "document_filename": "c110a.pdf",
+    "document_binary_url": "http://dm-store:8080/documents/a2ac2f53-f07c-4618-8256-995725819029/binary"
+  },
+  "allocatedJudge": {
+    "judgeTitle": "HER_HONOUR_JUDGE",
+    "judgeLastName": "Moley",
+    "judgeEmailAddress": "moley@example.com"
+  },
+  "documentViewLA": "<p><div class='width-50'>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Applicant's statements and application documents</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Threshold</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">solicitor-role-tech.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='http://localhost:3333/documents/a2ac2f53-f07c-4618-8256-995725819029/binary'>solicitor-role-tech.docx</a></dd></div></dl></div></details></div></details></div></details>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Expert reports</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">fesfsfsefsefsf</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">HMCTS</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">2:52pm, 3 August 2022</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='http://localhost:3333/documents/a27f1cf7-8165-4d56-9c4e-8ee8b58d0152/binary'>mockFile.txt</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Email to say evidence will be late</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">solicitor1@solicitors.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">12:27pm, 3 August 2022</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='http://localhost:3333/documents/ffa1a82e-2bfc-463b-8bc6-a3f4b3cf90ea/binary'>mockFile.txt</a></dd></div></dl></div></details></div></details>\n\n</div></p>",
+  "documentViewNC": "<p><div class='width-50'>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Applicant's statements and application documents</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Threshold</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">solicitor-role-tech.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='http://localhost:3333/documents/a2ac2f53-f07c-4618-8256-995725819029/binary'>solicitor-role-tech.docx</a></dd></div></dl></div></details></div></details></div></details>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Expert reports</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">fesfsfsefsefsf</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">HMCTS</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">2:52pm, 3 August 2022</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='http://localhost:3333/documents/a27f1cf7-8165-4d56-9c4e-8ee8b58d0152/binary'>mockFile.txt</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Email to say evidence will be late</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">solicitor1@solicitors.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">12:27pm, 3 August 2022</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='http://localhost:3333/documents/ffa1a82e-2bfc-463b-8bc6-a3f4b3cf90ea/binary'>mockFile.txt</a></dd></div></dl></div></details></div></details>\n\n</div></p>",
+  "localAuthorities": [
+    {
+      "id": "105409c7-9ec5-4c3a-9182-ad05d5290243",
+      "value": {
+        "id": "ORGSA",
+        "name": "Swansea City Council",
+        "email": "swansea@test.com",
+        "phone": "02027725772",
+        "address": {
+          "County": "United Kingdom",
+          "PostCode": "CR0 2GE",
+          "PostTown": "London",
+          "AddressLine1": "Flat 12, Pinnacle Apartments",
+          "AddressLine2": "Saffron Central Square 11"
+        },
+        "pbaNumber": "PBA0082848",
+        "colleagues": [
+          {
+            "id": "1a44928d-6dcd-4943-86c6-5dca0f6ba376",
+            "value": {
+              "role": "SOLICITOR",
+              "email": "alex@test.com",
+              "fullName": "Alex Brown",
+              "mainContact": "Yes",
+              "notificationRecipient": "Yes"
+            }
+          }
+        ],
+        "designated": "Yes"
+      }
+    }
+  ],
+  "documentViewHMCTS": "<p><div class='width-50'>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Applicant's statements and application documents</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Threshold</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">solicitor-role-tech.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='http://localhost:3333/documents/a2ac2f53-f07c-4618-8256-995725819029/binary'>solicitor-role-tech.docx</a></dd></div></dl></div></details></div></details></div></details>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Expert reports</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">fesfsfsefsefsf</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">HMCTS</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">2:52pm, 3 August 2022</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='http://localhost:3333/documents/a27f1cf7-8165-4d56-9c4e-8ee8b58d0152/binary'>mockFile.txt</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Email to say evidence will be late</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">solicitor1@solicitors.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">12:27pm, 3 August 2022</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='http://localhost:3333/documents/ffa1a82e-2bfc-463b-8bc6-a3f4b3cf90ea/binary'>mockFile.txt</a></dd></div></dl></div></details></div></details>\n\n</div></p>",
+  "submissionConsent": [
+    "agree"
+  ],
+  "allocationProposal": {
+    "proposal": "District judge"
+  },
+  "caseLocalAuthority": "SA",
+  "displayAmountToPay": "Yes",
+  "languageRequirement": null,
+  "applicationDocuments": [
+    {
+      "id": "681458fa-9c6b-4c25-a275-77b23a3375aa",
+      "value": {
+        "document": {
+          "document_url": "http://dm-store:8080/documents/a2ac2f53-f07c-4618-8256-995725819029",
+          "document_filename": "solicitor-role-tech.docx",
+          "document_binary_url": "http://dm-store:8080/documents/a2ac2f53-f07c-4618-8256-995725819029/binary"
+        },
+        "uploadedBy": null,
+        "documentName": null,
+        "documentType": "THRESHOLD",
+        "includedInSWET": null,
+        "dateTimeUploaded": null
+      }
+    }
+  ],
+  "dateAndTimeSubmitted": "2022-08-03T11:25:11.125",
+  "localAuthorityPolicy": {
+    "Organisation": {
+      "OrganisationID": "ORGSA",
+      "OrganisationName": "Swansea City Council"
+    },
+    "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+  },
+  "caseLocalAuthorityName": "Swansea City Council",
+  "showFurtherEvidenceTab": "YES",
+  "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
+  "respondentStatementList": null,
+  "furtherEvidenceDocuments": [
+    {
+      "id": "632358aa-5b9d-427c-a6fe-3045cecd210b",
+      "value": {
+        "name": "fesfsfsefsefsf",
+        "type": "EXPERT_REPORTS",
+        "document": {
+          "document_url": "http://dm-store:8080/documents/a27f1cf7-8165-4d56-9c4e-8ee8b58d0152",
+          "document_filename": "mockFile.txt",
+          "document_binary_url": "http://dm-store:8080/documents/a27f1cf7-8165-4d56-9c4e-8ee8b58d0152/binary"
+        },
+        "uploadedBy": "HMCTS",
+        "confidential": [],
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2022-08-03T14:52:04.55223",
+        "hasConfidentialAddress": "No"
+      }
+    }
+  ],
+  "furtherEvidenceDocumentsNC": [
+    {
+      "id": "632358aa-5b9d-427c-a6fe-3045cecd210b",
+      "value": {
+        "name": "fesfsfsefsefsf",
+        "type": "EXPERT_REPORTS",
+        "document": {
+          "document_url": "http://dm-store:8080/documents/a27f1cf7-8165-4d56-9c4e-8ee8b58d0152",
+          "document_filename": "mockFile.txt",
+          "document_binary_url": "http://dm-store:8080/documents/a27f1cf7-8165-4d56-9c4e-8ee8b58d0152/binary"
+        },
+        "uploadedBy": "HMCTS",
+        "confidential": [],
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2022-08-03T14:52:04.55223",
+        "hasConfidentialAddress": "No"
+      }
+    }
+  ],
+  "correspondenceDocumentsSolicitor": [
+    {
+      "id": "8bfd7c5c-cb36-409e-ac1c-b32afe241442",
+      "value": {
+        "name": "Email with evidence attached",
+        "notes": "Case evidence included",
+        "document": {
+          "document_url": "http://dm-store:8080/documents/8ea591c7-b774-4fe5-989a-28ae063b8de4",
+          "document_filename": "mockFile.txt",
+          "document_binary_url": "http://dm-store:8080/documents/8ea591c7-b774-4fe5-989a-28ae063b8de4/binary"
+        },
+        "uploadedBy": "solicitor1@solicitors.uk",
+        "confidential": [],
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2022-08-03T12:27:19.312538",
+        "uploadedBySolicitor": "Yes",
+        "hasConfidentialAddress": "No"
+      }
+    }
+  ],
+  "documentsWithConfidentialAddress": [],
+  "furtherEvidenceDocumentsSolicitor": [
+    {
+      "id": "47d81eb8-b637-4151-887b-ab708ffe4c8d",
+      "value": {
+        "name": "Email to say evidence will be late",
+        "type": "EXPERT_REPORTS",
+        "notes": "Evidence will be late",
+        "document": {
+          "document_url": "http://dm-store:8080/documents/ffa1a82e-2bfc-463b-8bc6-a3f4b3cf90ea",
+          "document_filename": "mockFile.txt",
+          "document_binary_url": "http://dm-store:8080/documents/ffa1a82e-2bfc-463b-8bc6-a3f4b3cf90ea/binary"
+        },
+        "uploadedBy": "solicitor1@solicitors.uk",
+        "confidential": [],
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2022-08-03T12:27:04.886326",
+        "uploadedBySolicitor": "Yes",
+        "hasConfidentialAddress": "No"
+      }
+    }
+  ]
+}

@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 
 import java.util.List;
 import java.util.Map;
@@ -33,13 +34,16 @@ import static java.lang.String.format;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
+    @Autowired
+    private DocumentListService documentListService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-780", this::run780,
         "DFPL-781", this::run781,
         "DFPL-782", this::run782,
         "DFPL-692", this::run692,
-        "DFPL-776", this::run776
+        "DFPL-776", this::run776,
+        "DFPL-796", this::run796
     );
 
     @PostMapping("/about-to-submit")
@@ -176,5 +180,16 @@ public class MigrateCaseController extends CallbackController {
         }
 
         caseDetails.getData().put("judicialMessages", resultJudicialMessages);
+    }
+
+    private void run796(CaseDetails caseDetails) {
+        String migrationId = "DFPL-796";
+
+        CaseData caseData = getCaseData(caseDetails);
+        Long caseId = caseData.getId();
+
+        log.info("Migration {id = {}}, updating case {}", migrationId, caseId);
+
+        caseDetails.getData().putAll(documentListService.getDocumentView(caseData));
     }
 }

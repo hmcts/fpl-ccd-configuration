@@ -1,5 +1,14 @@
 package uk.gov.hmcts.reform.fpl.controllers.support;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -9,6 +18,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
@@ -19,12 +29,16 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.group.C110A;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
+import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -32,11 +46,13 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
+@TestPropertySource(properties = "manage-case.ui.base.url:http://localhost:3333")
 class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     MigrateCaseControllerTest() {
@@ -53,6 +69,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @MockBean
     private CaseSubmissionChecker caseSubmissionChecker;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     @Test
     void shouldThrowExceptionWhenMigrationNotMappedForMigrationID() {
@@ -287,6 +306,87 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .hasMessage(String.format(
                     "Migration {id = %s, case reference = %s}, invalid JudicialMessage ID",
                     migrationId, expectedCaseId));
+        }
+    }
+
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class DFPL796 {
+        final String migrationId = "DFPL-796";
+        final long expectedCaseId = 1646318196381762L;
+
+        private final ObjectMapper mapper = JsonMapper.builder()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .addModule(new ParameterNamesModule())
+            .addModule(new Jdk8Module())
+            .addModule(new JavaTimeModule())
+            .build();
+
+        @BeforeEach
+        void init() {
+            when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(true);
+        }
+
+        @Test
+        void shouldRegenerateDocumentViews() throws JsonProcessingException {
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(expectedCaseId)
+                .data(buildCaseDetailData())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+
+            Map<String, Object> rspData =  response.getData();
+            Map<String, Object> expectedData = buildExpectedCaseDetailData();
+
+            assertThat(rspData).isEqualTo(expectedData);
+        }
+
+        @Test
+        void testPerformance() throws JsonProcessingException {
+            final CaseDetails caseDetails = CaseDetails.builder()
+                .id(expectedCaseId)
+                .data(buildCaseDetailData())
+                .build();
+            final Map<String, Object> expectedData = buildExpectedCaseDetailData();
+
+            final int numOfTest = 10000;
+            long totalTime = 0;
+            long maxTime = 0;
+            long minTime = System.currentTimeMillis();
+            for (int i = numOfTest; i > 0; i--) {
+                long startTime = System.currentTimeMillis();
+
+                AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+                assertThat(response.getData()).isEqualTo(expectedData);
+
+                long endTime = System.currentTimeMillis();
+                long timeDiff = endTime - startTime;
+                totalTime += timeDiff;
+                minTime = Math.min(minTime, timeDiff);
+                maxTime = Math.max(maxTime, timeDiff);
+            }
+
+            System.out.println(String.format("Total Time: %s, averageTime: %s, minTime: %s, maxTime: %s",
+                totalTime, totalTime / numOfTest, minTime, maxTime));
+        }
+
+        private Map<String, Object> buildCaseDetailData() throws JsonProcessingException {
+            String jsonString = ResourceReader.readString("migrateCase/caseData_before.json");
+
+            Map<String, Object> dataMap = mapper.readValue(jsonString, new TypeReference<HashMap<String,Object>>(){});
+            dataMap.put("migrationId", migrationId);
+
+            return dataMap;
+        }
+
+        private Map<String, Object> buildExpectedCaseDetailData() throws JsonProcessingException {
+            String jsonString = ResourceReader.readString("migrateCase/caseData_after.json");
+
+            Map<String, Object> dataMap = mapper.readValue(jsonString, new TypeReference<HashMap<String,Object>>(){});
+
+            return dataMap;
         }
     }
 
