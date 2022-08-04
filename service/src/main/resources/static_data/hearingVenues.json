@@ -3630,6 +3630,16 @@
     }
   },
   {
+    "hearingVenueId": 436,
+    "venue": "Watford County Court and Family Court (New address after 19 Sep 2022)",
+    "address": {
+      "AddressLine1": "Watford County and Family Court, 10 King Street",
+      "AddressLine2": "",
+      "PostTown": "Watford",
+      "PostCode": "WD18 0BW"
+    }
+  },
+  {
     "hearingVenueId": 405,
     "venue": "Watford Tribunal Hearing Centre",
     "address": {
@@ -4001,6 +4011,16 @@
       "PostTown": "Chatham",
       "County": "Kent",
       "PostCode": "ME4 4JZ"
+    }
+  },
+  {
+    "hearingVenueId": -1,
+    "venue": "High Court Family Division",
+    "address": {
+      "AddressLine1": "Queen’s Building, 1st Mezzanine Floor",
+      "AddressLine2": "Royal Courts of Justice",
+      "PostTown": "Strand London",
+      "PostCode": "WC2A 2LL"
     }
   }
 ]

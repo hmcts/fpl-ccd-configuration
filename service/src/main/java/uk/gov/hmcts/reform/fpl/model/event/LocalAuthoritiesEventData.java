@@ -72,4 +72,11 @@ public class LocalAuthoritiesEventData {
     @Temp
     private final Colleague localAuthorityToTransferSolicitor;
 
+    @Temp
+    private final String currentCourtNameWithoutTransferLA;
+
+    @Temp
+    @JsonDeserialize(using = DynamicListDeserializer.class)
+    private final DynamicList courtsToTransferWithoutTransferLA;
+
 }
