@@ -22,5 +22,22 @@
     "FieldType": "Text",
     "ElementLabel": "Code",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "region",
+    "FieldType": "Text",
+    "ElementLabel": "Region",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "dateTransferred",
+    "FieldType": "DateTime",
+    "ElementLabel": "Date Transferred",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
   }
 ]

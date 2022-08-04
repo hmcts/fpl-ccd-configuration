@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,10 +12,12 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityIdLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.CourtRegion;
 import uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.CaseTransferred;
+import uk.gov.hmcts.reform.fpl.events.CaseTransferredToAnotherCourt;
 import uk.gov.hmcts.reform.fpl.events.SecondaryLocalAuthorityAdded;
 import uk.gov.hmcts.reform.fpl.events.SecondaryLocalAuthorityRemoved;
 import uk.gov.hmcts.reform.fpl.exceptions.OrganisationPolicyNotFound;
@@ -29,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.model.event.LocalAuthoritiesEventData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -68,6 +72,7 @@ public class ManageLocalAuthoritiesService {
     private final LocalAuthorityNameLookupConfiguration localAuthorities;
     private final LocalAuthorityEmailLookupConfiguration localAuthorityEmails;
     private final ApplicantLocalAuthorityService applicantLocalAuthorityService;
+    private final CourtLookUpService courtLookUpService;
 
     public String getCurrentCourtName(CaseData caseData) {
         return courtService.getCourtName(caseData);
@@ -90,6 +95,39 @@ public class ManageLocalAuthoritiesService {
             .collect(toList());
 
         return dynamicListService.asDynamicList(courts);
+    }
+
+    public DynamicList getCourtsToTransferWithHighCourt(CaseData caseData, boolean groupedByRegion) {
+        final Court currentCaseCourt = courtService.getCourt(caseData);
+        final List<Court> fullList = courtLookUpService.getCourtFullListWithRcjHighCourt();
+
+        if (groupedByRegion) {
+            final List<Pair<String, String>> courts = new ArrayList<>();
+            Arrays.stream(CourtRegion.values()).sorted(comparing(CourtRegion::getSeq))
+                .forEach(region -> {
+                    Pair<String, String> regionDummyEntry =
+                        Pair.of("", String.format("--- %s ---", region.getName()));
+                    List<Pair<String, String>> groupedCourts =  fullList.stream()
+                        .filter(court -> Objects.equals(court.getRegion(), region.getName()))
+                        .filter(court -> notEqual(court.getCode(), currentCaseCourt.getCode()))
+                        .distinct()
+                        .sorted(comparing(Court::getName))
+                        .map(court -> Pair.of(court.getCode(), court.getName()))
+                        .collect(toList());
+                    if (!groupedCourts.isEmpty()) {
+                        courts.add(regionDummyEntry);
+                    }
+                    courts.addAll(groupedCourts);
+                });
+            return dynamicListService.asDynamicList(courts);
+        } else {
+            return dynamicListService.asDynamicList(
+                fullList.stream().filter(court -> notEqual(court.getCode(), currentCaseCourt.getCode()))
+                    .distinct()
+                    .sorted(comparing(Court::getName))
+                    .map(court -> Pair.of(court.getCode(), court.getName()))
+                    .collect(toList()));
+        }
     }
 
     public LocalAuthorityAction getLocalAuthorityAction(CaseData caseData) {
@@ -142,6 +180,16 @@ public class ManageLocalAuthoritiesService {
                 "Enter local authority solicitor's email address in the correct format, for example name@example.com"))
             .ifPresent(errors::add);
 
+        return errors;
+    }
+
+    public List<String> validateTransferCourtWithoutTransferLA(LocalAuthoritiesEventData eventData) {
+        final String invalidMessage = "Invalid court selected.";
+        final List<String> errors = new ArrayList<>();
+        if (eventData.getCourtsToTransferWithoutTransferLA() == null
+            || StringUtils.isEmpty(eventData.getCourtsToTransferWithoutTransferLA().getValueCode())) {
+            errors.add(invalidMessage);
+        }
         return errors;
     }
 
@@ -248,6 +296,11 @@ public class ManageLocalAuthoritiesService {
     }
 
     public List<Object> getChangeEvent(CaseData caseData, CaseData caseDataBefore) {
+        if (!Objects.equals(caseData.getCourt(), caseDataBefore.getCourt())) {
+            return List.of(
+                new CaseTransferredToAnotherCourt(caseData, caseDataBefore),
+                new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
+        }
 
         if (!Objects.equals(getDesignatedOrganisationId(caseData), getDesignatedOrganisationId(caseDataBefore))) {
             return List.of(
@@ -290,6 +343,32 @@ public class ManageLocalAuthoritiesService {
         localAuthority.setColleagues(wrapElements(solicitor));
 
         return localAuthority;
+    }
+
+    public Court transferCourtWithoutTransferLA(CaseData caseData) {
+        final LocalAuthoritiesEventData eventData = caseData.getLocalAuthoritiesEventData();
+        Optional<Court> chosenCourt = ofNullable(eventData.getCourtsToTransferWithoutTransferLA())
+            .map(DynamicList::getValueCode)
+            .flatMap(courtLookUpService::getCourtByCode);
+        if (chosenCourt.isPresent()) {
+            chosenCourt.get().setDateTransferred(time.now());
+            caseData.setPastCourtList(buildPastCourtsList(caseData));
+            caseData.setCourt(chosenCourt.get());
+            return caseData.getCourt();
+        }
+        return null;
+    }
+
+    public List<Element<Court>> buildPastCourtsList(CaseData caseData) {
+        Court originalCourt = caseData.getCourt();
+        if (originalCourt == null) {
+            originalCourt = courtService.getCourt(caseData);
+        }
+        List<Element<Court>> pastCourtList = caseData.getPastCourtList();
+        if (originalCourt != null) {
+            pastCourtList.add(element(originalCourt));
+        }
+        return pastCourtList;
     }
 
     public Organisation transfer(CaseData caseData) {
