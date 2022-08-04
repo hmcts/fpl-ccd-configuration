@@ -82,7 +82,7 @@ public class CaseInitiationController extends CallbackController {
             ))
             .build());
         caseDetails.putIfNotEmpty("supplementary_data_updates", SupplementaryDataUpdate.builder()
-                .hmctsServiceId(HmctsServiceID.builder().hmctsServiceId("Sausage").build())
+                .hmctsServiceId(HmctsServiceID.builder().hmctsServiceId("ABA3").build())
             .build());
 
         caseDetails.removeAll("outsourcingType", "outsourcingLAs");
