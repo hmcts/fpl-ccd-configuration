@@ -253,9 +253,42 @@
     "TabID": "Summary",
     "TabLabel": "Summary",
     "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryHighCourtCase",
+    "FieldShowCondition": "caseSummaryTabHeading = \"DO_NOT_SHOW\"",
+    "TabFieldDisplayOrder": 81
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "Summary",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryHighCourtCaseFlag",
+    "FieldShowCondition": "caseSummaryHighCourtCase = \"Yes\"",
+    "TabFieldDisplayOrder": 82
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "Summary",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryCourtName",
     "FieldShowCondition": "caseSummaryCourtName = \"*\"",
     "TabFieldDisplayOrder": 85
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "Summary",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryPreviousCourtName",
+    "FieldShowCondition": "caseSummaryPreviousCourtName = \"*\"",
+    "TabFieldDisplayOrder": 86
   },
   {
     "LiveFrom": "01/01/2017",

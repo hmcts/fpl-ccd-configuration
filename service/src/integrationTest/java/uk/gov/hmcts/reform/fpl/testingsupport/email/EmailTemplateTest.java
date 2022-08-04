@@ -38,6 +38,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.PREVIOUS_COURT_NAME;
 
 @SpringBootTest(classes = {ObjectMapper.class, NotificationService.class})
 @ActiveProfiles({"integration-test", "email-template-test"})
@@ -67,7 +68,7 @@ public class EmailTemplateTest {
     private CtscTeamLeadLookupConfiguration ctscTeamLeadLookupConfiguration;
 
     @MockBean
-    private CourtService courtService;
+    protected CourtService courtService;
 
     @MockBean
     private LocalAuthorityRecipientsService localAuthorityRecipients;
@@ -94,10 +95,15 @@ public class EmailTemplateTest {
     void lookupServiceSetUp() {
         when(inbox.getEmailsByPreference(any(), any()))
             .thenReturn(new LinkedHashSet<>(Set.of("representative@example.com")));
+        when(inbox.getRespondentSolicitorEmails(any(), any()))
+            .thenReturn(new LinkedHashSet<>(Set.of("representative@example.com")));
+        when(inbox.getChildrenSolicitorEmails(any(), any()))
+            .thenReturn(new LinkedHashSet<>(Set.of("representative@example.com")));
         when(localAuthorityRecipients.getRecipients(any())).thenReturn(Set.of("test@example.com"));
         when(courtService.getCourtEmail(any())).thenReturn(COURT_EMAIL_ADDRESS);
         when(courtService.getCourtName(any())).thenReturn(COURT_NAME);
         when(courtService.getCourtCode(any())).thenReturn(COURT_CODE);
+        when(courtService.getPreviousCourtName(any())).thenReturn(PREVIOUS_COURT_NAME);
         when(localAuthorityNameLookupConfiguration.getLocalAuthorityName(any())).thenReturn(LOCAL_AUTHORITY_NAME);
         when(cafcassLookupConfiguration.getCafcass(anyString()))
             .thenReturn(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, CAFCASS_EMAIL));

@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.A206PlacementOrderNotificationDocmosisParameters;
 
@@ -23,6 +24,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.A70_PLACEMENT_ORDER;
 public class A206PlacementOrderNotificationParameterGenerator implements DocmosisParameterGenerator {
 
     private final PlacementService placementService;
+    private final CourtService courtService;
 
     @Override
     public Order accept() {
@@ -40,6 +42,7 @@ public class A206PlacementOrderNotificationParameterGenerator implements Docmosi
             .serialNumber(manageOrdersEventData.getManageOrdersSerialNumber())
             .childrenAct("Adoption and Children Act 2002")
             .child(DocmosisChild.builder().name(childInfo.getFullName()).build())
+            .isHighCourtCase(courtService.isHighCourtCase(caseData))
             .build();
     }
 
