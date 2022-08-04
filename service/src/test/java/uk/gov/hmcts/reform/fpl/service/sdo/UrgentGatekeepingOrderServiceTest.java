@@ -168,6 +168,7 @@ class UrgentGatekeepingOrderServiceTest {
             .build();
 
         CaseData caseData = CaseData.builder()
+            .court(court)
             .allocationDecision(mock(Allocation.class))
             .urgentHearingOrder(order)
             .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()

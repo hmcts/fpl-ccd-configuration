@@ -1638,6 +1638,7 @@ class PlacementServiceTest {
                 .build();
 
             CaseData caseData = CaseData.builder()
+                .court(court)
                 .placementEventData(PlacementEventData.builder()
                     .placements(List.of(element(uuid, currentPlacement)))
                     .placement(currentPlacement)
