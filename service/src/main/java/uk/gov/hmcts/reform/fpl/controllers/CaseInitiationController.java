@@ -1,14 +1,20 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
+import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApiV2;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -17,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseInitiationService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
@@ -29,6 +36,12 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 public class CaseInitiationController extends CallbackController {
 
     private final CaseInitiationService caseInitiationService;
+
+    private final CoreCaseDataApi coreCaseDataApi;
+
+    private final RequestData requestData;
+
+    private final AuthTokenGenerator authToken;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -92,5 +105,13 @@ public class CaseInitiationController extends CallbackController {
         caseInitiationService.grantCaseAccess(caseData);
 
         publishEvent(new CaseDataChanged(caseData));
+
+        // update supplementary data
+        String caseId = caseData.getId().toString();
+        Map<String, Map<String, Map<String, Object>>> supplementaryData = new HashMap<>();
+        supplementaryData.put("supplementary_data_updates",
+            Map.of("$set", Map.of("HMCTSServiceId", "ABA3")));
+        coreCaseDataApi.submitSupplementaryData(requestData.authorisation(), authToken.generate(), caseId,
+            supplementaryData);
     }
 }
