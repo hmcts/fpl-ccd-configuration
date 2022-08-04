@@ -1991,6 +1991,50 @@ class ManageDocumentServiceTest {
     }
 
     @Test
+    void shouldAddNewPositionStatementChildToTheListWhenExistingListPresentForSelectedHearing() {
+        UUID selectedHearingId = randomUUID();
+        LocalDateTime today = LocalDateTime.now();
+
+        UUID selectedChildId = randomUUID();
+        UUID childTwoId = randomUUID();
+        DynamicList childrenDynamicList = TestDataHelper.buildDynamicList(0,
+            Pair.of(selectedChildId, "Tom Smith"),
+            Pair.of(childTwoId, "Mary Smith")
+        );
+
+        PositionStatementChild positionStatementChild =
+            PositionStatementChild.builder()
+                .hearing("Test hearing")
+                .childId(selectedChildId)
+                .childName("Tom Smith")
+                .build();
+
+        PositionStatementChild positionStatementChildTwo =
+            PositionStatementChild.builder()
+                .hearing("Test hearing")
+                .childId(childTwoId)
+                .childName("Mary Smith")
+                .build();
+
+        HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
+        List<Element<HearingBooking>> hearingBookings = List.of(element(selectedHearingId, selectedHearingBooking));
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsPositionStatementChild(positionStatementChild)
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .manageDocumentsChildrenList(childrenDynamicList)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.POSITION_STATEMENT_CHILD)
+            .hearingDetails(hearingBookings)
+            .hearingDocuments(HearingDocuments.builder()
+                .positionStatementChildList(List.of(element(selectedHearingId, positionStatementChildTwo))).build())
+            .build();
+
+        assertThat(underTest.buildHearingDocumentList(caseData).get(POSITION_STATEMENT_CHILD_LIST_KEY))
+            .isEqualTo(List.of(element(selectedHearingId, positionStatementChildTwo),
+                element(selectedHearingId, caseData.getManageDocumentsPositionStatementChild())));
+    }
+
+    @Test
     void shouldReturnNewPositionStatementRespondentListWhenNoExistingListPresentForSelectedHearing() {
         UUID selectedHearingId = randomUUID();
         LocalDateTime today = LocalDateTime.now();
@@ -2021,6 +2065,51 @@ class ManageDocumentServiceTest {
 
         assertThat(underTest.buildHearingDocumentList(caseData).get(POSITION_STATEMENT_RESPONDENT_LIST_KEY))
             .isEqualTo(List.of(element(selectedHearingId, caseData.getManageDocumentsPositionStatementRespondent())));
+    }
+
+    @Test
+    void shouldAddNewPositionStatementRespondentToTheListWhenExistingListPresentForSelectedHearing() {
+        UUID selectedHearingId = randomUUID();
+        LocalDateTime today = LocalDateTime.now();
+
+        UUID selectedRespondentId = randomUUID();
+        UUID respondentTwoId = randomUUID();
+        DynamicList respondentDynamicList = TestDataHelper.buildDynamicList(0,
+            Pair.of(selectedRespondentId, "Tom Smith"),
+            Pair.of(respondentTwoId, "Mary Smith")
+        );
+
+        PositionStatementRespondent positionStatementRespondent =
+            PositionStatementRespondent.builder()
+                .hearing("Test hearing")
+                .respondentId(selectedRespondentId)
+                .respondentName("Tom Smith")
+                .build();
+
+        PositionStatementRespondent positionStatementRespondentTwo =
+            PositionStatementRespondent.builder()
+                .hearing("Test hearing")
+                .respondentId(respondentTwoId)
+                .respondentName("Mary Smith")
+                .build();
+
+        HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
+        List<Element<HearingBooking>> hearingBookings = List.of(element(selectedHearingId, selectedHearingBooking));
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsPositionStatementRespondent(positionStatementRespondent)
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .hearingDocumentsRespondentList(respondentDynamicList)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.POSITION_STATEMENT_RESPONDENT)
+            .hearingDetails(hearingBookings)
+            .hearingDocuments(HearingDocuments.builder()
+                .positionStatementRespondentList(List.of(element(selectedHearingId, positionStatementRespondentTwo)))
+                .build())
+            .build();
+
+        assertThat(underTest.buildHearingDocumentList(caseData).get(POSITION_STATEMENT_RESPONDENT_LIST_KEY))
+            .isEqualTo(List.of(element(selectedHearingId, positionStatementRespondentTwo),
+                element(selectedHearingId, caseData.getManageDocumentsPositionStatementRespondent())));
     }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {

@@ -380,7 +380,7 @@ public class ManageDocumentService {
                 break;
             case POSITION_STATEMENT_CHILD :
                 List<Element<PositionStatementChild>> positionStatementChildList =
-                    buildHearingDocumentList(caseData, selectedHearingId,
+                    buildChildPositionStatementList(caseData, selectedHearingId,
                         caseData.getHearingDocuments().getPositionStatementChildList(),
                         caseData.getManageDocumentsPositionStatementChild().toBuilder()
                             .childId(caseData.getManageDocumentsChildrenList().getValueCodeAsUUID())
@@ -393,7 +393,7 @@ public class ManageDocumentService {
                 break;
             case POSITION_STATEMENT_RESPONDENT :
                 List<Element<PositionStatementRespondent>> positionStatementRespondentList =
-                    buildHearingDocumentList(caseData, selectedHearingId,
+                    buildRespondentPositionStatementList(caseData, selectedHearingId,
                         caseData.getHearingDocuments().getPositionStatementRespondentList(),
                         caseData.getManageDocumentsPositionStatementRespondent().toBuilder()
                             .respondentId(caseData.getHearingDocumentsRespondentList().getValueCodeAsUUID())
@@ -413,6 +413,41 @@ public class ManageDocumentService {
                                                           List<Element<T>> hearingDocumentList, T hearingDocument) {
         if (isNotEmpty(caseData.getHearingDetails())) {
             return List.of(element(selectedHearingId, hearingDocument));
+        }
+
+        return hearingDocumentList;
+    }
+
+    private List<Element<PositionStatementRespondent>> buildRespondentPositionStatementList(CaseData caseData,
+                UUID selectedHearingId, List<Element<PositionStatementRespondent>> hearingDocumentList,
+                PositionStatementRespondent respondentStatement) {
+        // remove those position statements which is not belonging to the selected hearing id
+        // and replace the existing uploaded statement of the selected respondent with the new statement.
+        if (isNotEmpty(caseData.getHearingDetails())) {
+            List<Element<PositionStatementRespondent>> resultList = hearingDocumentList.stream()
+                .filter(doc -> doc.getId().equals(selectedHearingId)
+                               && !doc.getValue().getRespondentId().equals(respondentStatement.getRespondentId()))
+                .collect(Collectors.toList());
+            resultList.add(element(selectedHearingId, respondentStatement));
+            return resultList;
+        }
+
+        return hearingDocumentList;
+    }
+
+    private List<Element<PositionStatementChild>> buildChildPositionStatementList(CaseData caseData,
+                UUID selectedHearingId, List<Element<PositionStatementChild>> hearingDocumentList,
+                PositionStatementChild respondentStatement) {
+        // remove those position statements which is not belonging to the selected hearing id
+        // and replace the existing uploaded statement of the selected child with the new statement.
+        if (isNotEmpty(caseData.getHearingDetails())) {
+            List<Element<PositionStatementChild>> resultList = hearingDocumentList.stream()
+                .filter(doc -> doc.getId().equals(selectedHearingId)
+                               && !doc.getValue().getChildId().equals(respondentStatement.getChildId()))
+                .collect(Collectors.toList());
+            resultList.add(element(selectedHearingId, respondentStatement));
+
+            return resultList;
         }
 
         return hearingDocumentList;
