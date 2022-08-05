@@ -50,7 +50,7 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
     @Test
     void shouldNotPublishEventWhenUploadAnyDocumentNotificationFeatureIsDisabled() {
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
-        givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.LASOLICITOR);
+        givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.SOLICITOR);
         postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME_SOLICITOR,
             false));
         verifyNoInteractions(notificationClient);
