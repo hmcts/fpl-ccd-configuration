@@ -7,13 +7,11 @@ import java.util.Map;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApiV2;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
@@ -37,7 +35,7 @@ public class CaseInitiationController extends CallbackController {
 
     private final CaseInitiationService caseInitiationService;
 
-    private final CoreCaseDataApi coreCaseDataApi;
+    private final CoreCaseDataApiV2 coreCaseDataApi;
 
     private final RequestData requestData;
 
