@@ -30,9 +30,23 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "RoleName": "idam:caseworker-publiclaw-solicitor",
+    "RoleName": "idam:caseworker-publiclaw-cafcass",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-solicitor"
+    "AccessProfiles": "caseworker-publiclaw-cafcass"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "idam:caseworker-publiclaw-bulkscan",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-publiclaw-bulkscan"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "idam:caseworker-publiclaw-bulkscansystemupdate",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-publiclaw-bulkscansystemupdate"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -51,13 +65,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "RoleName": "idam:caseworker-publiclaw-systemupdate",
-    "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-systemupdate"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "idam:caseworker-publiclaw-judiciary",
     "ReadOnly": "N",
     "AccessProfiles": "caseworker-publiclaw-judiciary"
@@ -68,6 +75,27 @@
     "RoleName": "idam:caseworker-publiclaw-magistrate",
     "ReadOnly": "N",
     "AccessProfiles": "caseworker-publiclaw-magistrate"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "idam:caseworker-publiclaw-solicitor",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-publiclaw-solicitor"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "idam:caseworker-publiclaw-superuser",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-publiclaw-superuser"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "idam:caseworker-publiclaw-systemupdate",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-publiclaw-systemupdate"
   },
   {
     "LiveFrom": "01/01/2017",
