@@ -356,6 +356,8 @@ module.exports = {
     this.click('Previous');
   },
 
+  uiFormatted(id) { return id.match(/.{1,4}/g).join('-');},
+
   async getActiveElementIndex() {
     return await this.grabNumberOfVisibleElements('//button[text()="Remove"]') - 1;
   },
