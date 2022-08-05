@@ -1,13 +1,18 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
-
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = CaseData.class)
+})
 @Jacksonized
 @SuperBuilder(toBuilder = true)
 @Data

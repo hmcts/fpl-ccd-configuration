@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -160,6 +159,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
     groups = HearingEndDateGroup.class)
 @EPOTimeRange(message = "Date must be within 8 days of the order date", groups = EPOEndDateGroup.class,
     maxDate = @TimeDifference(amount = 8, unit = DAYS))
+//@JsonTypeName("CaseData")
 public class CaseData extends CaseDataParent {
     private final Long id;
     private final State state;
