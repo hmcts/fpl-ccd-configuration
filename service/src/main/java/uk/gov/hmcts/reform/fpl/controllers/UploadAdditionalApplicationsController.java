@@ -16,21 +16,28 @@ import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsPbaPaymentNotTakenEvent;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
+import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersUploaded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicantsListGenerator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationsFeeCalculator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.UploadAdditionalApplicationsService;
+import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -52,6 +59,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
     private static final String TEMPORARY_OTHER_APPLICATIONS_BUNDLE = "temporaryOtherApplicationsBundle";
 
+    private final DraftOrderService draftOrderService;
     private final PaymentService paymentService;
     private final PbaNumberService pbaNumberService;
     private final UploadAdditionalApplicationsService uploadAdditionalApplicationsService;
@@ -108,6 +116,23 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
+        if (!isNull(caseData.getTemporaryC2Document())
+            && !caseData.getTemporaryC2Document().getDraftOrdersBundle().isEmpty()) {
+
+            List<Element<DraftOrder>> draftOrders = caseData.getTemporaryC2Document().getDraftOrdersBundle();
+            List<Element<HearingOrder>> newDrafts = draftOrders.stream()
+                .map(Element::getValue)
+                .map(HearingOrder::from)
+                .map(ElementUtils::element)
+                .collect(Collectors.toList());
+
+            List<Element<HearingOrdersBundle>> bundles = draftOrderService.migrateCmoDraftToOrdersBundles(caseData);
+
+            draftOrderService.additionalApplicationUpdateCase(newDrafts, bundles);
+
+            caseDetails.getData().put("hearingOrdersBundlesDrafts", bundles);
+        }
+
         List<Element<AdditionalApplicationsBundle>> additionalApplications = defaultIfNull(
             caseData.getAdditionalApplicationsBundle(), new ArrayList<>()
         );
@@ -145,6 +170,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         publishEvent(new AdditionalApplicationsUploadedEvent(caseData, getCaseDataBefore(callbackRequest),
             applicantsListGenerator.getApplicant(caseData, lastBundle)));
+
+        publishEvent(new DraftOrdersUploaded(caseData));
 
         if (isNotPaidByPba(pbaPayment)) {
             log.info("Payment for case {} not taken due to user decision", caseDetails.getId());

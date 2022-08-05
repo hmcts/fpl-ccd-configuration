@@ -17,6 +17,7 @@ public class CaseSummaryCourtGenerator implements CaseSummaryFieldsGenerator {
     public SyntheticCaseSummary generate(CaseData caseData) {
         return SyntheticCaseSummary.builder()
             .caseSummaryCourtName(courtService.getCourtName(caseData))
+            .caseSummaryPreviousCourtName(courtService.getPreviousCourtName(caseData))
             .build();
     }
 }

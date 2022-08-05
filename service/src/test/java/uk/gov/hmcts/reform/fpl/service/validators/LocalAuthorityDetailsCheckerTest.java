@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,7 +41,7 @@ class LocalAuthorityDetailsCheckerTest {
             "Enter local authority's pba number",
             "Enter local authority's address",
             "Enter local authority's phone number",
-            "Add a case solicitor"
+            "Add a colleague"
         );
     }
 
@@ -68,7 +69,7 @@ class LocalAuthorityDetailsCheckerTest {
     }
 
     @Test
-    void shouldReturnErrorsWhenNoSolicitorAdded() {
+    void shouldNotReturnErrorsWhenNoSolicitorAdded() {
         final CaseData caseData = CaseData.builder()
             .localAuthorities(wrapElements(getPopulatedLocalAuthority()
                 .toBuilder()
@@ -81,7 +82,19 @@ class LocalAuthorityDetailsCheckerTest {
                 .build()))
             .build();
 
-        assertThat(underTest.validate(caseData)).containsExactly("Add a case solicitor");
+        assertThat(underTest.validate(caseData)).isEmpty();
+    }
+
+    @Test
+    void shouldReturnErrorsWhenNoColleagueAdded() {
+        final CaseData caseData = CaseData.builder()
+                .localAuthorities(wrapElements(getPopulatedLocalAuthority()
+                        .toBuilder()
+                        .colleagues(Collections.emptyList())
+                        .build()))
+                .build();
+        assertThat(underTest.validate(caseData))
+                .containsExactly("Add a colleague");
     }
 
     @Test
@@ -96,7 +109,6 @@ class LocalAuthorityDetailsCheckerTest {
             .build();
 
         assertThat(underTest.validate(caseData)).containsExactly(
-            "Add a case solicitor",
             "Select colleague case role",
             "Enter colleague email",
             "Select send them case update notifications"

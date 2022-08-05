@@ -12,11 +12,13 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.A70PlacementOrderDocmosisParameters;
 
@@ -36,9 +38,12 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 class A70PlacementOrderDocumentParameterGeneratorTest {
 
     private static final String UNKNOWN = "unknown";
+    private static final Court COURT = Court.builder().build();
 
     @Mock
     private PlacementService placementService;
+    @Mock
+    private CourtService courtService;
 
     @InjectMocks
     private A70PlacementOrderDocumentParameterGenerator parameterGenerator;
@@ -62,6 +67,7 @@ class A70PlacementOrderDocumentParameterGeneratorTest {
             .placementUploadDateTime(LocalDateTime.of(2021, MARCH, 15, 13, 30))
             .build());
         CaseData caseData = CaseData.builder()
+            .court(COURT)
             .children1(List.of(
                 placementChild,
                 testChild(),
@@ -89,6 +95,7 @@ class A70PlacementOrderDocumentParameterGeneratorTest {
         when(placementService.getPlacementById(caseData, placementElement.getId()))
             .thenReturn(placementElement.getValue());
         when(placementService.getChildByPlacementId(caseData, placementElement.getId())).thenReturn(placementChild);
+        when(courtService.isHighCourtCase(caseData)).thenReturn(false);
 
         A70PlacementOrderDocmosisParameters docmosisParameters = parameterGenerator.generate(caseData);
 
@@ -120,6 +127,7 @@ class A70PlacementOrderDocumentParameterGeneratorTest {
             .placementUploadDateTime(LocalDateTime.of(2021, MARCH, 15, 13, 30))
             .build());
         CaseData caseData = CaseData.builder()
+            .court(COURT)
             .children1(List.of(placementChild))
             .localAuthorities(List.of(element(
                 LocalAuthority.builder()
@@ -138,6 +146,7 @@ class A70PlacementOrderDocumentParameterGeneratorTest {
         when(placementService.getPlacementById(caseData, placementElement.getId()))
             .thenReturn(placementElement.getValue());
         when(placementService.getChildByPlacementId(caseData, placementElement.getId())).thenReturn(placementChild);
+        when(courtService.isHighCourtCase(caseData)).thenReturn(false);
 
         A70PlacementOrderDocmosisParameters docmosisParameters = parameterGenerator.generate(caseData);
 
