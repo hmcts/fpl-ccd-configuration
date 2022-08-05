@@ -283,8 +283,8 @@ public class ManageDocumentsController extends CallbackController {
         DocumentUploaderType userType = getUploaderType(caseData.getId());
 
         if (!DocumentUploaderType.SOLICITOR.equals(userType)
-            || this.featureToggleService.isNewDocumentUploadNotificationEnabled()
-            || !DocumentUploaderType.BARRISTER.equals(userType)) {
+            && !DocumentUploaderType.BARRISTER.equals(userType)
+            || this.featureToggleService.isNewDocumentUploadNotificationEnabled()) {
             UserDetails userDetails = userService.getUserDetails();
 
             publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request),
