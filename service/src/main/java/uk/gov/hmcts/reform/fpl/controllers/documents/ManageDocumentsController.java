@@ -37,6 +37,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.barristers;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList.RESPONDENT_STATEMENT;
@@ -282,7 +283,8 @@ public class ManageDocumentsController extends CallbackController {
         DocumentUploaderType userType = getUploaderType(caseData.getId());
 
         if (!DocumentUploaderType.SOLICITOR.equals(userType)
-            || this.featureToggleService.isNewDocumentUploadNotificationEnabled()) {
+            || this.featureToggleService.isNewDocumentUploadNotificationEnabled()
+            || !DocumentUploaderType.BARRISTER.equals(userType)) {
             UserDetails userDetails = userService.getUserDetails();
 
             publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request),
@@ -296,6 +298,10 @@ public class ManageDocumentsController extends CallbackController {
 
         if (caseRoles.stream().anyMatch(representativeSolicitors()::contains)) {
             return DocumentUploaderType.SOLICITOR;
+        }
+
+        if (caseRoles.stream().anyMatch(barristers()::contains)) {
+            return DocumentUploaderType.BARRISTER;
         }
 
         return DocumentUploaderType.HMCTS;
