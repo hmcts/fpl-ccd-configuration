@@ -176,11 +176,11 @@ public class FurtherEvidenceUploadedEventHandler {
             caseData.getHearingDocuments().getCaseSummaryList(),
             caseDataBefore.getHearingDocuments().getCaseSummaryList());
         newHearingDocuments.addAll(getNewHearingDocuments(
-            caseData.getHearingDocuments().getPositionStatementChildList(),
-            caseDataBefore.getHearingDocuments().getPositionStatementChildList()));
+            caseData.getHearingDocuments().getPositionStatementChildListV2(),
+            caseDataBefore.getHearingDocuments().getPositionStatementChildListV2()));
         newHearingDocuments.addAll(getNewHearingDocuments(
-            caseData.getHearingDocuments().getPositionStatementRespondentList(),
-            caseDataBefore.getHearingDocuments().getPositionStatementRespondentList()));
+            caseData.getHearingDocuments().getPositionStatementRespondentListV2(),
+            caseDataBefore.getHearingDocuments().getPositionStatementRespondentListV2()));
 
         if (!newHearingDocuments.isEmpty()) {
             final Set<String> recipients = new LinkedHashSet<>();
@@ -212,12 +212,12 @@ public class FurtherEvidenceUploadedEventHandler {
                 caseDataBefore.getHearingDocuments().getCaseSummaryList());
             List<HearingDocument> newPositionStatementChildren =
                 getNewHearingDocuments(
-                    caseData.getHearingDocuments().getPositionStatementChildList(),
-                    caseDataBefore.getHearingDocuments().getPositionStatementChildList());
+                    caseData.getHearingDocuments().getPositionStatementChildListV2(),
+                    caseDataBefore.getHearingDocuments().getPositionStatementChildListV2());
             List<HearingDocument> newPositionStatementRespondents =
                 getNewHearingDocuments(
-                    caseData.getHearingDocuments().getPositionStatementRespondentList(),
-                    caseDataBefore.getHearingDocuments().getPositionStatementRespondentList());
+                    caseData.getHearingDocuments().getPositionStatementRespondentListV2(),
+                    caseDataBefore.getHearingDocuments().getPositionStatementRespondentListV2());
 
             sendHearingDocumentsToCafcass(caseData, newCaseSummaries, CASE_SUMMARY);
             sendHearingDocumentsToCafcass(caseData, newPositionStatementChildren, POSITION_STATEMENT_CHILD);
