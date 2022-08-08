@@ -7,7 +7,7 @@ java:
   livenessDelay: 50
   environment:
     FPL_ENV: preview
-    CORE_CASE_DATA_API_URL: https://${SERVICE_NAME}-ccd-data-store-api
+    CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-ccd-data-store-api
     CASE_ASSIGNMENT_API_URL: https://aac-${SERVICE_FQDN}
     IDAM_CLIENT_REDIRECT_URI: https://fpl-case-service-*.service.core-compute-aat.internal/oauth2/callback
     SPRING_SECURITY_ENABLED: true
@@ -70,7 +70,7 @@ idam-pr:
   enabled: true
   redirect_uris:
     XUI:
-      - https://xui-${SERVICE_FQDN}/oauth2/callback
+      - http://xui-${SERVICE_FQDN}/oauth2/callback
 
 xui-webapp:
   enabled: true
@@ -88,14 +88,14 @@ xui-webapp:
     livenessDelay: 10
     livenessFailureThreshold: 2
     environment:
-      HEALTH_CCD_COMPONENT_API: https://gateway-${SERVICE_FQDN}/health
-      HEALTH_CCD_DATA_API: https://${SERVICE_NAME}-ccd-data-store-api/health
-      HEALTH_TERMS_AND_CONDITIONS_API: https://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal/health
-      SERVICES_CCD_COMPONENT_API: https://gateway-${SERVICE_FQDN}
-      SERVICES_CCD_DATA_STORE_API: https://${SERVICE_NAME}-ccd-data-store-api
-      SERVICES_DOCUMENTS_API_V2: https://ccd-case-document-am-api-${SERVICE_FQDN}
-      SERVICES_CCD_CASE_ASSIGNMENT_API: https://aac-${SERVICE_FQDN}
-      SERVICES_TERMS_AND_CONDITIONS: https://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal
+      HEALTH_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}/health
+      HEALTH_CCD_DATA_API: http://${SERVICE_NAME}-ccd-data-store-api/health
+      HEALTH_TERMS_AND_CONDITIONS_API: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal/health
+      SERVICES_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}
+      SERVICES_CCD_DATA_STORE_API: http://${SERVICE_NAME}-ccd-data-store-api
+      SERVICES_DOCUMENTS_API_V2: http://ccd-case-document-am-api-${SERVICE_FQDN}
+      SERVICES_CCD_CASE_ASSIGNMENT_API: http://aac-${SERVICE_FQDN}
+      SERVICES_TERMS_AND_CONDITIONS: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal
       JURISDICTIONS: PUBLICLAW
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
       FEATURE_REDIS_ENABLED: false
@@ -134,13 +134,13 @@ ccd:
   global:
     ccdApiGatewayIngress: gateway-${SERVICE_FQDN}
     ccdCaseManagementWebIngress: case-management-web-${SERVICE_FQDN}
-    ccdDataStoreUrl: https://${SERVICE_NAME}-ccd-data-store-api
-    ccdDefinitionStoreUrl: https://${SERVICE_NAME}-ccd-definition-store
-    ccdUserProfileUrl: https://${SERVICE_NAME}-ccd-user-profile-api
-    dmStoreUrl: https://dm-store-aat.service.core-compute-aat.internal
+    ccdDataStoreUrl: http://${SERVICE_NAME}-ccd-data-store-api
+    ccdDefinitionStoreUrl: http://${SERVICE_NAME}-ccd-definition-store
+    ccdUserProfileUrl: http://${SERVICE_NAME}-ccd-user-profile-api
+    dmStoreUrl: http://dm-store-aat.service.core-compute-aat.internal
     idamApiUrl: https://idam-api.aat.platform.hmcts.net
     idamWebUrl: https://idam-web-public.aat.platform.hmcts.net
-    s2sUrl: https://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+    s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
 
   ccd-api-gateway-web:
     nodejs:
@@ -149,7 +149,7 @@ ccd:
         ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
         IDAM_SERVICE_KEY: ${CCD_API_GATEWAY_S2S_SECRET}
         IDAM_OAUTH2_CLIENT_SECRET: ${CCD_API_GATEWAY_IDAM_CLIENT_SECRET}
-        PROXY_DOCUMENT_MANAGEMENT: https://dm-store-aat.service.core-compute-aat.internal
+        PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
       ingressHost: gateway-${SERVICE_FQDN}
       ingressIP: ${INGRESS_IP}
       keyVaults: []
@@ -171,14 +171,14 @@ ccd:
         DATA_STORE_CROSS_JURISDICTIONAL_ROLES: caseworker-caa,caseworker-approver
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master:9200
-        ELASTIC_SEARCH_DATA_NODES_HOSTS:  https://${SERVICE_NAME}-es-master:9200
+        ELASTIC_SEARCH_DATA_NODES_HOSTS:  http://${SERVICE_NAME}-es-master:9200
         HTTP_CLIENT_READ_TIMEOUT: '120000'
         HTTP_CLIENT_MAX_TOTAL: '300'
         HTTP_CLIENT_MAX_CLIENT_PER_ROUTE: '30'
         DATA_STORE_DB_MAX_POOL_SIZE: 80
         DATA_STORE_DB_OPTIONS: "?stringtype=unspecified&ssl=disable&gssEncMode=disable"
         CCD_DOCUMENT_URL_PATTERN: ^https?://(((?:dm-store-aat\.service\.core-compute-aat\.internal(?::\d+)?)\/documents\/[A-Za-z0-9-]+(?:\/binary)?))
-        CASE_DOCUMENT_AM_URL: https://ccd-case-document-am-api-${SERVICE_FQDN}
+        CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api-${SERVICE_FQDN}
       keyVaults: []
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
       autoscaling:
@@ -254,7 +254,7 @@ ccd:
       db.url: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
       db.user: hmcts
       db.pwd: hmcts
-      es.data.nodes.url: https://${SERVICE_NAME}-es-master:9200
+      es.data.nodes.url: http://${SERVICE_NAME}-es-master:9200
     livenessProbe:
       initialDelaySeconds: 90
   am-role-assignment-service:
@@ -277,13 +277,13 @@ aac-manage-case-assignment:
       IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
       IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
       OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
-      S2S_URL: https://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       MCA_DS_PROXY_URLS_ALLOWED_LIST: /searchCases.*,/internal/searchCases.*,/internal/cases.*
       MCA_DEF_STORE_PROXY_URLS_ALLOWED_LIST: /api/display/challenge-questions.*
       MANAGE_CASE_S2S_AUTHORISED_SERVICES: xui_webapp,ccd_data,fpl_case_service
-      CCD_DATA_STORE_API_BASE_URL: https://${SERVICE_NAME}-ccd-data-store-api
-      CCD_DEFINITION_STORE_API_BASE_URL: https://${SERVICE_NAME}-ccd-definition-store
-      PRD_HOST: https://rd-professional-api-aat.service.core-compute-aat.internal
+      CCD_DATA_STORE_API_BASE_URL: http://${SERVICE_NAME}-ccd-data-store-api
+      CCD_DEFINITION_STORE_API_BASE_URL: http://${SERVICE_NAME}-ccd-definition-store
+      PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
     autoscaling:
       enabled: false
     keyVaults:
@@ -308,7 +308,7 @@ ccd-case-document-am-api:
       IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
       IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
       OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
-      S2S_URL: https://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-      DM_STORE_BASE_URL: https://dm-store-aat.service.core-compute-aat.internal
-      CCD_DATA_STORE_API_BASE_URL: https://${SERVICE_NAME}-ccd-data-store-api
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      DM_STORE_BASE_URL: http://dm-store-aat.service.core-compute-aat.internal
+      CCD_DATA_STORE_API_BASE_URL: http://${SERVICE_NAME}-ccd-data-store-api
     keyVaults: []
