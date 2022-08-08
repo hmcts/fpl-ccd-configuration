@@ -179,7 +179,6 @@ ccd:
         DATA_STORE_DB_OPTIONS: "?stringtype=unspecified&ssl=disable&gssEncMode=disable"
         CCD_DOCUMENT_URL_PATTERN: ^https?://(((?:dm-store-aat\.service\.core-compute-aat\.internal(?::\d+)?)\/documents\/[A-Za-z0-9-]+(?:\/binary)?))
         CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api-${SERVICE_FQDN}
-        WELSH_TRANSLATION_ENABLED: false
       keyVaults: []
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
       autoscaling:
@@ -197,6 +196,7 @@ ccd:
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOST: ${SERVICE_NAME}-es-master
+        WELSH_TRANSLATION_ENABLED: false
       keyVaults: []
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
   ccd-user-profile-api:
