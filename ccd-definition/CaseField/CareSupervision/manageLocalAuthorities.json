@@ -23,7 +23,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "localAuthorityActionLabel",
-    "Label": "Use this feature to: <ul><li>give case access to another local authority</li><li>remove case access from local authority</li><li>transfer a case to another local authority - they'll become the designated authority</li><ul/><br/>",
+    "Label": "Use this feature to: <ul><li>give case access to another local authority</li><li>remove case access from local authority</li><li>transfer a case to another local authority - they'll become the designated authority</li><li>transfer to another court</li><ul/><br/>",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -197,6 +197,34 @@
     "ID": "localAuthorityToTransferSolicitor",
     "Label": "Local authority solicitor",
     "FieldType": "Colleague",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "currentCourtNameWithoutTransferLA",
+    "Label": "Current court",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "courtsToTransferWithoutTransferLA",
+    "Label": "Select new court",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "pastCourtList",
+    "Label": "Past Court List",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Court",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }

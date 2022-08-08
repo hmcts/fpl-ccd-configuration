@@ -63,6 +63,7 @@ java:
         - ld-sdk-key
         - ctsc-inbox
         - ctsc-team-lead-inbox
+        - rcj-family-high-court-inbox
 
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-xui-idam-pr
@@ -212,6 +213,7 @@ ccd:
       maxConnections: "300"
 
   elasticsearch:
+    nameOverride: ${SERVICE_NAME}-es
     clusterName: "es"
     imageTag: "7.11.1"
     replicas: 1

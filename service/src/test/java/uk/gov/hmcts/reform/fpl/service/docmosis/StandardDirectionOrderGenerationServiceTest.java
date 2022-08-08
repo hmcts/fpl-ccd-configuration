@@ -190,6 +190,7 @@ class StandardDirectionOrderGenerationServiceTest {
             .applicantName("")
             .crest("[userImage:crest.png]")
             .draftbackground("[userImage:draft-watermark.png]")
+            .isHighCourtCase(false)
             .build();
     }
 
