@@ -70,7 +70,7 @@ idam-pr:
   enabled: true
   redirect_uris:
     XUI:
-      - http://xui-${SERVICE_FQDN}/oauth2/callback
+      - https://xui-${SERVICE_FQDN}/oauth2/callback
 
 xui-webapp:
   enabled: true
