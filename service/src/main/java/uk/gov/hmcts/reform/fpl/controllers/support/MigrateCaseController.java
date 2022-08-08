@@ -36,6 +36,8 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-794", this::run794,
+        "DFPL-797", this::run797,
+        "DFPL-798", this::run798,
         "DFPL-692", this::run692,
         "DFPL-776", this::run776
     );
@@ -75,6 +77,23 @@ public class MigrateCaseController extends CallbackController {
 
         removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
     }
+
+    private void run797(CaseDetails caseDetails) {
+        var migrationId = "DFPL-797";
+        var expectedCaseId = 1657816793771026L;
+        var expectedDocId = UUID.fromString("2cfd676a-665b-4d15-ae9e-5ad2930f75cb");
+
+        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
+    }
+
+    private void run798(CaseDetails caseDetails) {
+        var migrationId = "DFPL-798";
+        var expectedCaseId = 1654765774567742L;
+        var expectedDocId = UUID.fromString("1756656b-6931-467e-8dfe-ac9f152351fe");
+
+        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
+    }
+
 
     private void removeC110a(CaseDetails caseDetails, String migrationId, long expectedCaseId, UUID expectedDocId) {
         CaseData caseData = getCaseData(caseDetails);
