@@ -124,6 +124,7 @@ Custom configuration parameters:
 |fpl.system_update.username|SECRET|System user username, used for automated state transitions and data modifications|
 |fpl.system_update.password|SECRET|System user password, used for automated state transitions and data modifications|
 |fpl.ctsc_inbox|SECRET|CTSC mail inbox|
+|fpl.rcj_family_high_court_inbox|SECRET|High Court admin mail inbox|
 |fpl.translation_team_inbox|SECRET|Translation team mail inbox|
 |fpl.translation_team_inbox|SECRET|Translation team mail inbox|
 |translation.notification.sender|SECRET|Translation sender mail inbox|
