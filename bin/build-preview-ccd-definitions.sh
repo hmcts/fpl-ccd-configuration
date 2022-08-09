@@ -9,7 +9,7 @@ build_dir=${root_dir}/build/ccd-release-config
 mkdir -p ${build_dir}
 
 # build the ccd definition file
-export CCD_DEF_CASE_SERVICE_BASE_URL=https://fpl-case-service-pr-${1}.service.core-compute-preview.internal
+export CCD_DEF_CASE_SERVICE_BASE_URL=http://fpl-case-service-pr-${1}-java
 export CCD_DEF_AAC_URL=https://aac-fpl-case-service-pr-${1}.service.core-compute-preview.internal
 
 printf "Generating toggled on definitions\n"
