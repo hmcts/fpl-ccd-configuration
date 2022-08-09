@@ -208,6 +208,10 @@ withPipeline(type, product, component) {
     env.TEST_RETRIES = 3
   }
 
+  after('smoketest:preview') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+  }
+
   after('smoketest:saat') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
