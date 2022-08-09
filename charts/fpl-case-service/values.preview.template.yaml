@@ -8,7 +8,7 @@ java:
   environment:
     FPL_ENV: preview
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-ccd-data-store-api
-    CASE_ASSIGNMENT_API_URL: https://aac-${SERVICE_FQDN}
+    CASE_ASSIGNMENT_API_URL: http://${SERVICE_NAME}-aac
     IDAM_CLIENT_REDIRECT_URI: https://fpl-case-service-*.service.core-compute-aat.internal/oauth2/callback
     SPRING_SECURITY_ENABLED: true
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI: https://idam-api.aat.platform.hmcts.net/o/jwks
@@ -88,14 +88,16 @@ xui-webapp:
     livenessDelay: 10
     livenessFailureThreshold: 2
     environment:
-      HEALTH_CCD_COMPONENT_API: https://gateway-${SERVICE_FQDN}/health
+      HEALTH_CCD_COMPONENT_API: http://${SERVICE_NAME}-ccd-api-gw/health
       HEALTH_CCD_DATA_API: http://${SERVICE_NAME}-ccd-data-store-api/health
-      HEALTH_TERMS_AND_CONDITIONS_API: https://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal/health
-      SERVICES_CCD_COMPONENT_API: https://gateway-${SERVICE_FQDN}
+      HEALTH_TERMS_AND_CONDITIONS_API: https://xui-terms-and-conditions-${SERVICE_FQDN}
+      SERVICES_CCD_COMPONENT_API: http://${SERVICE_NAME}-ccd-api-gw
       SERVICES_CCD_DATA_STORE_API: http://${SERVICE_NAME}-ccd-data-store-api
-      SERVICES_DOCUMENTS_API_V2: https://ccd-case-document-am-api-${SERVICE_FQDN}
-      SERVICES_CCD_CASE_ASSIGNMENT_API: https://aac-${SERVICE_FQDN}
-      SERVICES_TERMS_AND_CONDITIONS: https://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal
+      SERVICES_DOCUMENTS_API_V2: http://${SERVICE_NAME}-cdam
+#      SERVICES_DOCUMENTS_API_V2: https://ccd-case-document-am-api-${SERVICE_FQDN}
+      SERVICES_CCD_CASE_ASSIGNMENT_API: http://${SERVICE_NAME}-aac
+#      SERVICES_CCD_CASE_ASSIGNMENT_API: https://aac-${SERVICE_FQDN}
+      SERVICES_TERMS_AND_CONDITIONS: https://xui-terms-and-conditions-${SERVICE_FQDN}
       JURISDICTIONS: PUBLICLAW
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
       FEATURE_REDIS_ENABLED: false
@@ -132,7 +134,7 @@ ccd:
       enabled: true
 
   global:
-    ccdApiGatewayIngress: gateway-${SERVICE_FQDN}
+    ccdApiGatewayIngress: http://${SERVICE_NAME}-ccd-api-gw
     ccdCaseManagementWebIngress: case-management-web-${SERVICE_FQDN}
     ccdDataStoreUrl: http://${SERVICE_NAME}-ccd-data-store-api
     ccdDefinitionStoreUrl: http://${SERVICE_NAME}-ccd-definition-store
@@ -144,6 +146,7 @@ ccd:
 
   ccd-api-gateway-web:
     nodejs:
+      releaseNameOverride: ${SERVICE_NAME}-ccd-api-gw
       imagePullPolicy: Always
       environment:
         ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
@@ -271,7 +274,7 @@ aac-manage-case-assignment:
   enabled: true
   java:
     imagePullPolicy: Always
-    releaseNameOverride: ${SERVICE_NAME}-aac-manage-case-assignment
+    releaseNameOverride: ${SERVICE_NAME}-aac
     image: hmctspublic.azurecr.io/aac/manage-case-assignment:latest
     ingressHost: aac-${SERVICE_FQDN}
     environment:
