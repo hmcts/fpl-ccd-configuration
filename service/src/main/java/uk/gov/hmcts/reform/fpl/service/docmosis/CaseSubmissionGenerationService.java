@@ -72,6 +72,7 @@ import static org.apache.commons.lang3.StringUtils.endsWith;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.fromString;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.DONT_KNOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -177,11 +178,11 @@ public class CaseSubmissionGenerationService
     }
 
     public void populateDraftWaterOrCourtSeal(final DocmosisCaseSubmission caseSubmission, final boolean isDraft,
-                                              Language imageLanguage) {
+                                              final CaseData caseData) {
         if (isDraft) {
             caseSubmission.setDraftWaterMark(getDraftWaterMarkData());
         } else {
-            caseSubmission.setCourtSeal(getCourtSealData(imageLanguage));
+            caseSubmission.setCourtSeal(courtService.getCourtSeal(caseData, SEALED));
         }
     }
 

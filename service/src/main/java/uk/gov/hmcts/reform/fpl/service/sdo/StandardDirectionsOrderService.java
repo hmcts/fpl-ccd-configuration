@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -71,14 +72,16 @@ public class StandardDirectionsOrderService {
         return builder.build();
     }
 
-    public StandardDirectionOrder buildOrderFromUpload(StandardDirectionOrder currentOrder, SealType sealType) {
+    public StandardDirectionOrder buildOrderFromUpload(StandardDirectionOrder currentOrder,
+                                                       Court court,
+                                                       SealType sealType) {
         UserInfo userInfo = idamClient.getUserInfo(requestData.authorisation());
 
         return StandardDirectionOrder.builder()
             .orderStatus(currentOrder.getOrderStatus())
             .dateOfUpload(time.now().toLocalDate())
             .uploader(userInfo.getName())
-            .orderDoc(prepareOrderDocument(currentOrder.getOrderDoc(), currentOrder.getOrderStatus(), sealType))
+            .orderDoc(prepareOrderDocument(currentOrder.getOrderDoc(), currentOrder.getOrderStatus(), sealType, court))
             .lastUploadedOrder(currentOrder.isSealed() ? currentOrder.getOrderDoc() : null)
             .judgeAndLegalAdvisor(currentOrder.getJudgeAndLegalAdvisor()).build();
     }
@@ -113,10 +116,13 @@ public class StandardDirectionsOrderService {
         return judgeAndLegalAdvisor;
     }
 
-    private DocumentReference prepareOrderDocument(DocumentReference document, OrderStatus status, SealType sealType) {
+    private DocumentReference prepareOrderDocument(DocumentReference document,
+                                                   OrderStatus status,
+                                                   SealType sealType,
+                                                   Court court) {
         if (status != OrderStatus.SEALED) {
             return document;
         }
-        return sealingService.sealDocument(document, sealType);
+        return sealingService.sealDocument(document, court, sealType);
     }
 }

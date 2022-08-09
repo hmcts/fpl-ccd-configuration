@@ -41,7 +41,7 @@ public class CaseSubmissionService {
         DocmosisCaseSubmission submittedCase = documentGenerationService.getTemplateData(caseData);
 
         documentGenerationService.populateCaseNumber(submittedCase, caseData.getId());
-        documentGenerationService.populateDraftWaterOrCourtSeal(submittedCase, isDraft,caseData.getImageLanguage());
+        documentGenerationService.populateDraftWaterOrCourtSeal(submittedCase, isDraft, caseData);
         Language applicationLanguage = Optional.ofNullable(caseData.getC110A().getLanguageRequirementApplication())
             .orElse(Language.ENGLISH);
 

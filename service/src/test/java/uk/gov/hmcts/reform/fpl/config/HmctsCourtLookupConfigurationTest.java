@@ -59,7 +59,7 @@ class HmctsCourtLookupConfigurationTest {
     void shouldReturnCourtInformationWhenLocalAuthorityCodeExists() {
         List<Court> court = configuration.getCourts(LOCAL_AUTHORITY_CODE);
 
-        assertThat(court).containsExactly(new Court(COURT_NAME, COURT_EMAIL, COURT_CODE));
+        assertThat(court).containsExactly(new Court(COURT_NAME, COURT_EMAIL, COURT_CODE, null, null));
     }
 
     @Test
