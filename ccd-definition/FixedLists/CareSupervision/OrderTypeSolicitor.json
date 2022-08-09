@@ -5,5 +5,12 @@
       "ListElementCode": "OTHER",
       "ListElement": "Variation or discharge of care or supervision order",
       "DisplayOrder": 1
+    },
+    {
+      "LiveFrom": "01/01/2017",
+      "ID": "OrderTypeSolicitor",
+      "ListElementCode": "CONTACT_WITH_CHILD_IN_CARE",
+      "ListElement": "Contact with child in care",
+      "DisplayOrder": 2
     }
 ]
