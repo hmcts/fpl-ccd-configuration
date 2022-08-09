@@ -38,6 +38,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-794", this::run794,
         "DFPL-797", this::run797,
         "DFPL-798", this::run798,
+        "DFPL-802", this::run802,
         "DFPL-692", this::run692,
         "DFPL-776", this::run776
     );
@@ -94,6 +95,13 @@ public class MigrateCaseController extends CallbackController {
         removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
     }
 
+    private void run802(CaseDetails caseDetails) {
+        var migrationId = "DFPL-802";
+        var expectedCaseId = 1659528630126722L;
+        var expectedDocId = UUID.fromString("dcd016c6-a0de-4ed2-91ce-5582a6acaf25");
+
+        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
+    }
 
     private void removeC110a(CaseDetails caseDetails, String migrationId, long expectedCaseId, UUID expectedDocId) {
         CaseData caseData = getCaseData(caseDetails);
