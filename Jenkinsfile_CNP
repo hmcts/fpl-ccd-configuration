@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure@fpl-long-ft-timeout")
+@Library("Infrastructure")
 import uk.gov.hmcts.contino.AppPipelineConfig
 import uk.gov.hmcts.contino.AppPipelineDsl
 
@@ -200,12 +200,17 @@ withPipeline(type, product, component) {
     uploadCoreCaseDataDefinitions('preview', '0')
 
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
-    env.CASE_SERVICE_URL = "http://fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
-    env.URL = "http://xui-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
+    env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
+    env.URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
     env.SWANSEA_ORG_ID = "62LYJRF"
     env.MOCKED_PAYMENTS = false
     env.PARALLEL_CHUNKS = 12
     env.TEST_RETRIES = 3
+  }
+
+  after('smoketest:preview') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/smokeTest/**/*'
   }
 
   after('smoketest:saat') {
@@ -214,6 +219,7 @@ withPipeline(type, product, component) {
 
   after('smoketest:aat') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/smokeTest/**/*'
   }
 
   after('smoketest:demo-staging') {
@@ -235,6 +241,7 @@ withPipeline(type, product, component) {
 
   after('functionalTest:aat') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
     env.ENV = 'prod'
     // all the AAT tasks in the master pipeline finished, so we update the env variable to promote to prod tasks
   }
@@ -248,6 +255,7 @@ withPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
   }
 
   after('highleveldatasetup') {
