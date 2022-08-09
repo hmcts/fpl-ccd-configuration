@@ -5,13 +5,9 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -37,10 +33,10 @@ public class HearingDocuments {
 
     public static class HearingDocumentsBuilder {
         @Deprecated
-         // for old case data without data migration
+        // for old case data without data migration
         public HearingDocumentsBuilder positionStatementChildList(
                 List<Element<PositionStatementChild>> positionStatementChildList) {
-            if(isEmpty(this.positionStatementChildListV2)) {
+            if (isEmpty(this.positionStatementChildListV2)) {
                 this.positionStatementChildListV2 = positionStatementChildList.stream()
                     .map(doc -> element(doc.getValue().toBuilder().hearingId(doc.getId()).build()))
                     .collect(Collectors.toList());
@@ -52,7 +48,7 @@ public class HearingDocuments {
         // for old case data without data migration
         public HearingDocumentsBuilder positionStatementRespondentList(
             List<Element<PositionStatementRespondent>> positionStatementChildList) {
-            if(isEmpty(this.positionStatementRespondentListV2)) {
+            if (isEmpty(this.positionStatementRespondentListV2)) {
                 this.positionStatementRespondentListV2 = positionStatementChildList.stream()
                     .map(doc -> element(doc.getValue().toBuilder().hearingId(doc.getId()).build()))
                     .collect(Collectors.toList());
