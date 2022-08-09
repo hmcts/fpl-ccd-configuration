@@ -13,4 +13,4 @@ echo "export CCD_IDAM_REDIRECT_URL=https://ccd-case-management-web-aat.service.c
 echo "export CCD_DEFINITION_STORE_API_BASE_URL=https://ccd-definition-store-fpl-case-service-pr-${pr}.service.core-compute-preview.internal"
 
 # definition placeholders
-echo "export CCD_DEF_CASE_SERVICE_BASE_URL=http://fpl-case-service-pr-${pr}.service.core-compute-preview.internal"
+echo "export CCD_DEF_CASE_SERVICE_BASE_URL=https://fpl-case-service-pr-${pr}.service.core-compute-preview.internal"
