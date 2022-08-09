@@ -39,6 +39,16 @@
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
+    "CaseFieldID": "ordersSolicitor",
+    "TabFieldDisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View application",
+    "TabDisplayOrder": 1,
     "CaseFieldID": "ordersAndDirectionsLink",
     "FieldShowCondition": "orders!=\"\"",
     "TabFieldDisplayOrder": 4

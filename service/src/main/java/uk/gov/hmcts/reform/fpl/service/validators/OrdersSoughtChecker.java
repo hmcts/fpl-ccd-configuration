@@ -22,12 +22,12 @@ public class OrdersSoughtChecker extends PropertiesChecker {
 
     @Override
     public List<String> validate(CaseData caseData) {
-        return super.validate(caseData, List.of("orders"));
+        return super.validate(caseData, List.of("orders", "ordersSolicitor"));
     }
 
     @Override
     public boolean isStarted(CaseData caseData) {
-        final Orders orders = caseData.getOrders();
+        final Orders orders = caseData.getOrders() != null ? caseData.getOrders() : caseData.getOrdersSolicitor();
 
         if (isEmpty(orders)) {
             return false;
@@ -38,7 +38,7 @@ public class OrdersSoughtChecker extends PropertiesChecker {
 
     @Override
     public boolean isCompleted(CaseData caseData) {
-        final Orders orders = caseData.getOrders();
+        final Orders orders = caseData.getOrders() != null ? caseData.getOrders() : caseData.getOrdersSolicitor();
 
         if (orders == null || anyEmpty(orders.getOrderType(), orders.getDirections())) {
             return false;

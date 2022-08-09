@@ -92,7 +92,7 @@ public class TaskListService {
             events.add(SELECT_COURT);
         }
 
-        if (!caseData.isDischargeOfCareApplication()) {
+        if (!caseData.isDischargeOfCareApplication() && !caseData.isContactWithChildInCareApplication()) {
             events.add(GROUNDS);
             events.add(RISK_AND_HARM);
             events.add(FACTORS_AFFECTING_PARENTING);

@@ -94,7 +94,7 @@ public class OrdersNeededController extends CallbackController {
         }
 
         if (ordersFieldName.equals("ordersSolicitor")) {
-            data.put("orders", data.get("ordersSolicitor"));
+            data.remove("orders");
         }
 
         return respond(caseDetails);
