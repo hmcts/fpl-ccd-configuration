@@ -1956,7 +1956,7 @@ class ManageDocumentServiceTest {
             .manageDocumentsHearingDocumentType(HearingDocumentType.CASE_SUMMARY)
             .hearingDetails(hearingBookings)
             .build();
-        solicitor
+
         assertThat(underTest.buildHearingDocumentList(caseData).get(CASE_SUMMARY_LIST_KEY))
             .isEqualTo(List.of(element(selectedHearingId, caseData.getManageDocumentsCaseSummary())));
     }
