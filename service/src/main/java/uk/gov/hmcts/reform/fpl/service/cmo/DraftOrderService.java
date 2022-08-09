@@ -195,6 +195,13 @@ public class DraftOrderService {
         addOrdersToBundle(bundles, draftOrders, null, C21);
     }
 
+    private boolean isInCmoDrafts(Element<HearingOrder> draft, List<Element<HearingOrder>> cmoDrafts) {
+        return cmoDrafts.stream()
+            .map(Element::getId)
+            .collect(Collectors.toList())
+            .contains(draft.getId());
+    }
+
     public List<Element<HearingOrdersBundle>> migrateCmoDraftToOrdersBundles(CaseData caseData) {
 
         List<Element<HearingOrder>> cmoDrafts = caseData.getDraftUploadedCMOs();
@@ -202,7 +209,8 @@ public class DraftOrderService {
         List<Element<HearingOrdersBundle>> bundles = defaultIfNull(caseData.getHearingOrdersBundlesDrafts(),
             new ArrayList<>());
 
-        bundles.forEach(bundle -> bundle.getValue().getOrders().removeIf(draft -> draft.getValue().getType().isCmo()));
+        bundles.forEach(bundle -> bundle.getValue().getOrders().removeIf(draft -> draft.getValue().getType().isCmo()
+            || isInCmoDrafts(draft, cmoDrafts)));
 
         unwrapElements(cmoDrafts).forEach(draft -> {
             HearingOrderType type = draft.getStatus() == DRAFT ? DRAFT_CMO : AGREED_CMO;
