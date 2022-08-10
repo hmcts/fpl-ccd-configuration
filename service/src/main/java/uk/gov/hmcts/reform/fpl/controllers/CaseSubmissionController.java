@@ -38,6 +38,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing.CHILD;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing.RESPONDENT;
@@ -130,7 +131,8 @@ public class CaseSubmissionController extends CallbackController {
             Map<String, Object> data = caseDetails.getData();
             data.put("dateAndTimeSubmitted", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(zonedDateTime));
             data.put("dateSubmitted", DateTimeFormatter.ISO_LOCAL_DATE.format(zonedDateTime));
-            data.put("sendToCtsc", setSendToCtsc(data.get("caseLocalAuthority").toString()).getValue());
+            data.put("sendToCtsc", setSendToCtsc(data.get("caseLocalAuthority") != null
+                ? data.get("caseLocalAuthority").toString() : null).getValue());
 
             if (caseData.isC1Application()) {
                 // C1
@@ -180,6 +182,10 @@ public class CaseSubmissionController extends CallbackController {
     }
 
     private YesNo setSendToCtsc(String caseLocalAuthority) {
+        if (Objects.equals(caseLocalAuthority, null)) {
+            return NO;
+        }
+
         String localAuthorityName = localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseLocalAuthority);
 
         return YesNo.from(featureToggleService.isCtscEnabled(localAuthorityName));
