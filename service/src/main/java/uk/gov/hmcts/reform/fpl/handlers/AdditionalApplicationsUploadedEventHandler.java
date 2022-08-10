@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
-import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
@@ -59,7 +58,6 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ADDITIONAL_DOCUMENT;
-import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Component
@@ -83,7 +81,7 @@ public class AdditionalApplicationsUploadedEventHandler {
     public void sendAdditionalApplicationsByPost(final AdditionalApplicationsUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
         AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
-        final List<DocumentReference> documents = getApplicationDocuments(uploadedBundle, false);
+        final List<DocumentReference> documents = getApplicationDocuments(uploadedBundle);
 
         Set<Recipient> recipientsToNotify = getRecipientsToNotifyByPost(caseData, uploadedBundle);
         sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(recipientsToNotify));
@@ -111,8 +109,7 @@ public class AdditionalApplicationsUploadedEventHandler {
                         .map(docType -> String.join(" ", LIST, docType))
                         .collect(Collectors.joining("\n"));
 
-                final Set<DocumentReference> documentReferences = Set.copyOf(getApplicationDocuments(uploadedBundle,
-                        true));
+                final Set<DocumentReference> documentReferences = Set.copyOf(getApplicationDocuments(uploadedBundle));
 
                 cafcassNotificationService.sendEmail(
                         caseData,
@@ -261,8 +258,7 @@ public class AdditionalApplicationsUploadedEventHandler {
     }
 
     private List<DocumentReference> getApplicationDocuments(
-            AdditionalApplicationsBundle bundle,
-            boolean isDraftOrderRequired) {
+            AdditionalApplicationsBundle bundle) {
         UnaryOperator<DocumentReference> addDocumentType =
             documentReference -> {
                 documentReference.setType(ADDITIONAL_DOCUMENT.getLabel());
@@ -288,18 +284,6 @@ public class AdditionalApplicationsUploadedEventHandler {
                         .map(SupportingEvidenceBundle::getDocument)
                         .map(addDocumentType)
                         .collect(Collectors.toList()));
-
-            if (isDraftOrderRequired) {
-                documents.addAll(
-                        unwrapElements(bundle.getC2DocumentBundle().getDraftOrdersBundle())
-                                .stream()
-                                .map(DraftOrder::getDocument)
-                                .map(documentReference -> {
-                                    documentReference.setType(ORDER.getLabel());
-                                    return documentReference;
-                                })
-                                .collect(Collectors.toList()));
-            }
         }
 
         if (bundle.getOtherApplicationsBundle() != null) {

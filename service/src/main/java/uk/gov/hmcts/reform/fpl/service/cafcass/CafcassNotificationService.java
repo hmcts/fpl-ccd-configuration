@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 
 import java.net.URLConnection;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Optional;
@@ -175,30 +176,7 @@ public class CafcassNotificationService {
                 && provider.isGenericSubject()
                 && docReference.isPresent()) {
             DocumentReference documentReference = docReference.get();
-            String additionalInfo = null;
-
-            if (provider == ORDER) {
-                String hearingDate = Optional.ofNullable(cafcassData.getHearingDate())
-                        .map(localDateTime -> localDateTime.format(DATE_TIME_FORMATTER))
-                        .orElse(null);
-
-                additionalInfo = String.join(SUBJECT_DELIMITER,
-                        hearingDate,
-                        Optional.ofNullable(cafcassData.getOrderApprovalDate())
-                        .map(localDateTime -> localDateTime.format(DATE_FORMATTER))
-                        .orElse("NotSet")
-                );
-
-                documentReference.setType(ORDER.getLabel());
-            } else if (provider == NOTICE_OF_HEARING) {
-                additionalInfo = Optional.ofNullable(cafcassData.getHearingDate())
-                        .map(localDateTime -> localDateTime.format(DATE_TIME_FORMATTER))
-                        .orElse("NotSet");
-                documentReference.setType(NOTICE_OF_HEARING.getLabel());
-            } else if (provider == COURT_BUNDLE || provider == CASE_SUMMARY || provider == POSITION_STATEMENT_CHILD
-                       || provider == POSITION_STATEMENT_RESPONDENT) {
-                documentReference.setType(provider.getLabel());
-            }
+            String additionalInfo = getAdditionalInfo(provider, cafcassData, documentReference);
 
             String lookupKey = Optional.ofNullable(
                             CaseUtils.toCamelCase(documentReference.getType(), false, ' ')
@@ -228,6 +206,36 @@ public class CafcassNotificationService {
         } else {
             return provider.getType().apply(caseData, cafcassData);
         }
+    }
+
+    private String getAdditionalInfo(CafcassRequestEmailContentProvider provider,
+                                     CafcassData cafcassData,
+                                     DocumentReference documentReference) {
+        String additionalInfo = null;
+        if (provider == ORDER) {
+            String hearingDate = Optional.ofNullable(cafcassData.getHearingDate())
+                    .map(localDateTime -> localDateTime.format(DATE_TIME_FORMATTER))
+                    .orElse(null);
+
+            additionalInfo = String.join(SUBJECT_DELIMITER,
+                    hearingDate,
+                    Optional.ofNullable(cafcassData.getOrderApprovalDate())
+                    .map(localDateTime -> localDateTime.format(DATE_FORMATTER))
+                    .orElse(LocalDate.now().format(DATE_FORMATTER))
+            );
+
+            documentReference.setType(ORDER.getLabel());
+        } else if (provider == NOTICE_OF_HEARING) {
+            additionalInfo = Optional.ofNullable(cafcassData.getHearingDate())
+                    .map(localDateTime -> localDateTime.format(DATE_TIME_FORMATTER))
+                    .orElse("NotSet");
+            documentReference.setType(NOTICE_OF_HEARING.getLabel());
+        } else if (provider == COURT_BUNDLE || provider == CASE_SUMMARY || provider == POSITION_STATEMENT_CHILD
+                   || provider == POSITION_STATEMENT_RESPONDENT) {
+            documentReference.setType(provider.getLabel());
+        }
+
+        return additionalInfo;
     }
 
     private void evaluateAndSend(final CaseData caseData,

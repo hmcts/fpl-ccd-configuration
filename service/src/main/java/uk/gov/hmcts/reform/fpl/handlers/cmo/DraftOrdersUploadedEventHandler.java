@@ -97,9 +97,7 @@ public class DraftOrdersUploadedEventHandler {
                     OrderCafcassData.builder()
                         .documentName("draft order")
                         .hearingDate(hearingStartDate)
-                        .orderApprovalDate(LocalDate.now())
                         .build()
-
                 );
             }
         }

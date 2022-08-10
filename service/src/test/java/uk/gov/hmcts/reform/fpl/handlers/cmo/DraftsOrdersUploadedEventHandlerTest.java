@@ -128,7 +128,6 @@ class DraftsOrdersUploadedEventHandlerTest {
             OrderCafcassData.builder()
                 .documentName("draft order")
                 .hearingDate(selectedHearing.getValue().getStartDate())
-                .orderApprovalDate(LocalDate.now())
                 .build()
         );
     }

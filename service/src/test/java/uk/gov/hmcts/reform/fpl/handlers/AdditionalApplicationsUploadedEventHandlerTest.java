@@ -34,7 +34,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded.AdditionalApplicationsUploadedTemplate;
-import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
@@ -107,7 +106,6 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     private static final DocumentReference SUPPLEMENT_2 = testDocumentReference();
     private static final DocumentReference SUPPORTING_DOCUMENT_1 = testDocumentReference();
     private static final DocumentReference SUPPORTING_DOCUMENT_2 = testDocumentReference();
-    private static final DocumentReference DRAFT_ORDER = testDocumentReference();
     private static final OrderApplicant ORDER_APPLICANT_LA = OrderApplicant.builder()
         .type(LOCAL_AUTHORITY)
         .name(LOCAL_AUTHORITY_NAME)
@@ -386,7 +384,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("applicationDataParamsPost")
+    @MethodSource("applicationDataParams")
     void shouldSendUploadedAdditionalApplicationsByPost(AdditionalApplicationsBundle additionalApplicationsBundle,
                                                         List<DocumentReference> documents) {
         final Representative representative1 = mock(Representative.class);
@@ -559,51 +557,6 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             .supportingEvidenceBundle(wrapElements(
                 SupportingEvidenceBundle.builder().document(SUPPORTING_DOCUMENT_1).build()
             ))
-            .draftOrdersBundle(wrapElements(DraftOrder.builder().document(DRAFT_ORDER).build()))
-            .others(SELECTED_OTHERS)
-            .respondents(SELECTED_RESPONDENTS)
-            .build();
-
-        OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
-            .document(OTHER_APPLICATION_DOCUMENT)
-            .supplementsBundle(wrapElements(Supplement.builder().document(SUPPLEMENT_2).build()))
-            .supportingEvidenceBundle(wrapElements(
-                SupportingEvidenceBundle.builder().document(SUPPORTING_DOCUMENT_2).build()
-            ))
-            .others(SELECTED_OTHERS)
-            .respondents(SELECTED_RESPONDENTS)
-            .build();
-
-        return Stream.of(
-            Arguments.of(
-                AdditionalApplicationsBundle.builder()
-                    .c2DocumentBundle(c2DocumentBundle)
-                    .otherApplicationsBundle(otherApplicationsBundle)
-                    .build(),
-                List.of(
-                    C2_DOCUMENT, SUPPLEMENT_1, SUPPORTING_DOCUMENT_1, OTHER_APPLICATION_DOCUMENT, SUPPLEMENT_2,
-                    SUPPORTING_DOCUMENT_2, DRAFT_ORDER
-                )
-            ),
-            Arguments.of(
-                AdditionalApplicationsBundle.builder().c2DocumentBundle(c2DocumentBundle).build(),
-                List.of(C2_DOCUMENT, SUPPLEMENT_1, SUPPORTING_DOCUMENT_1, DRAFT_ORDER)
-            ),
-            Arguments.of(
-                AdditionalApplicationsBundle.builder().otherApplicationsBundle(otherApplicationsBundle).build(),
-                List.of(OTHER_APPLICATION_DOCUMENT, SUPPLEMENT_2, SUPPORTING_DOCUMENT_2)
-            )
-        );
-    }
-
-    private static Stream<Arguments> applicationDataParamsPost() {
-        C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder()
-            .document(C2_DOCUMENT)
-            .supplementsBundle(wrapElements(Supplement.builder().document(SUPPLEMENT_1).build()))
-            .supportingEvidenceBundle(wrapElements(
-                SupportingEvidenceBundle.builder().document(SUPPORTING_DOCUMENT_1).build()
-            ))
-            .draftOrdersBundle(wrapElements(DraftOrder.builder().document(DRAFT_ORDER).build()))
             .others(SELECTED_OTHERS)
             .respondents(SELECTED_RESPONDENTS)
             .build();
