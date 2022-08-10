@@ -65,12 +65,12 @@ Scenario('local authority changes case name @create-case-with-mandatory-sections
   await caseViewPage.goToNewActions(config.applicationActions.changeCaseName);
   await changeCaseNameEventPage.changeCaseName('New case name');
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
-
   await I.seeEventSubmissionConfirmation(config.applicationActions.changeCaseName);
   caseViewPage.seeInCaseTitle('New case name');
-  caseViewPage.seeInCaseTitle(caseId);
+  caseViewPage.seeCCDCaseNumber('CCD ID: #',caseId);
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
+  I.wait(1);
   await caseViewPage.checkTaskIsFinished(config.applicationActions.changeCaseName);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.changeCaseName);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
@@ -86,12 +86,13 @@ Scenario('Local authority request discharge of order @cross-browser', async ({I,
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOrdersAndDirectionsNeeded);
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
-
+  I.wait(1);
   caseViewPage.checkTaskIsFinished(config.applicationActions.enterOrdersAndDirectionsNeeded);
 
   await caseViewPage.checkTaskIsNoPresent(config.applicationActions.enterGrounds);
   await caseViewPage.checkTaskIsNoPresent(config.applicationActions.enterRiskAndHarmToChildren);
   await caseViewPage.checkTaskIsNoPresent(config.applicationActions.enterFactorsAffectingParenting);
+  I.wait(1);
   await caseViewPage.checkTasksHaveErrors([
     'Add the hearing urgency details in the Hearing urgency',
     'Add local authority\'s details in the Local authority\'s details',
@@ -145,9 +146,11 @@ Scenario('local authority enters orders and directions @create-case-with-mandato
   I.seeInTab(['Orders and directions needed', 'Which court are you issuing for?'], 'Barnet');
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
+  I.wait(1);
   caseViewPage.checkTaskIsFinished(config.applicationActions.enterOrdersAndDirectionsNeeded);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterOrdersAndDirectionsNeeded);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
+  I.wait(1);
   await caseViewPage.checkTasksHaveErrors([
     'Add the hearing urgency details in the Hearing urgency',
     'Add the grounds for the application in the Grounds for the application',
@@ -177,9 +180,11 @@ Scenario('local authority enters hearing @create-case-with-mandatory-sections-on
   I.seeInTab(['Hearing needed', 'Are respondents aware of proceedings?'], 'No');
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
+  I.wait(1);
   caseViewPage.checkTaskIsFinished(config.applicationActions.enterHearingNeeded);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterHearingNeeded);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
+  I.wait(1);
   await caseViewPage.checkTasksHaveErrors([
     'Add the grounds for the application in the Grounds for the application',
     'Add local authority\'s details in the Local authority\'s details',
@@ -272,9 +277,11 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
   I.seeInTab(['Child 1', 'Current address', 'Country'], 'United Kingdom');
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
+  I.wait(2);
   caseViewPage.checkTaskIsCompleted(config.applicationActions.enterChildren);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterChildren);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
+  I.wait(1);
   await caseViewPage.checkTasksHaveErrors([
     'Add the grounds for the application in the Grounds for the application',
     'Add local authority\'s details in the Local authority\'s details',
@@ -373,9 +380,11 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   I.seeInTab(['Respondents 1', 'Current address', 'Country'], respondents[1].address.country);
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
+  I.wait(2);
   caseViewPage.checkTaskIsCompleted(config.applicationActions.enterRespondents);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterRespondents);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
+  I.wait(1);
   await caseViewPage.checkTasksHaveErrors([
     'Add the grounds for the application in the Grounds for the application',
     'Add local authority\'s details in the Local authority\'s details',
@@ -431,9 +440,11 @@ Scenario('local authority enters its details @create-case-with-mandatory-section
   I.dontSeeTagInTab(['Local authority 1', 'Colleague 2', 'Main contact']);
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
+  I.wait(2);
   caseViewPage.checkTaskIsCompleted(config.applicationActions.enterLocalAuthority);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterLocalAuthority);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
+  I.wait(1);
   await caseViewPage.checkTasksHaveErrors([
     'Add the grounds for the application in the Grounds for the application',
     'Add the allocation proposal in the Allocation proposal']);
@@ -492,6 +503,7 @@ Scenario('local authority enters others to be given notice', async ({I, caseView
   I.seeInTab(['Others 1', 'Telephone number'], '07888288288');
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
+  I.wait(2);
   caseViewPage.checkTaskIsInProgress(config.applicationActions.enterOthers);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterOthers);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
@@ -510,10 +522,11 @@ Scenario('local authority enters grounds for application @create-case-with-manda
   I.seeInTab(['How are there grounds for an emergency protection order?', ''], [enterGroundsForApplicationEventPage.fields.groundsForApplication.harmIfNotMoved, enterGroundsForApplicationEventPage.fields.groundsForApplication.harmIfMoved, enterGroundsForApplicationEventPage.fields.groundsForApplication.urgentAccessRequired]);
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
+  I.wait(1);
   caseViewPage.checkTaskIsFinished(config.applicationActions.enterGrounds);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterGrounds);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
-
+  I.wait(2);
   await caseViewPage.checkTasksHaveErrors(['Add the allocation proposal in the Allocation proposal']);
 });
 
