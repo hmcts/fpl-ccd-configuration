@@ -292,7 +292,6 @@ public class CaseData {
     @JsonProperty("documents_socialWorkEvidenceTemplate_document")
     @Valid
     public final Document socialWorkEvidenceTemplateDocument;
-    public final CourtBundle courtBundle;
     @NotEmpty(message = "Add the child's details")
     @Valid
     private final List<@NotNull(message = "Add the child's details") Element<Child>> children1;
@@ -1187,7 +1186,7 @@ public class CaseData {
             .map(Orders::isC1Order)
             .orElse(false);
     }
-    
+
     private List<Element<DocumentWithConfidentialAddress>> documentsWithConfidentialAddress;
 
     @JsonUnwrapped

@@ -128,7 +128,7 @@ public class CaseSubmissionGenerationService
         if (isDraft) {
             supplement.setDraftWaterMark(getDraftWaterMarkData());
         } else {
-            supplement.setCourtSeal(getCourtSealData(caseData.getImageLanguage()));
+            supplement.setCourtSeal(courtService.getCourtSeal(caseData, SEALED));
         }
         return supplement;
     }
