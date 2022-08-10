@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.APPOINTMENT_OF_GUARDIAN;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.C2_WITH_NOTICE;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.CHANGE_SURNAME;
-import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.CHILD_ASSESSMENT;
+import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.CHILD_ASSESSMENT_ORDER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.PARENTAL_RESPONSIBILITY_FATHER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.PARENTAL_RESPONSIBILITY_FEMALE_PARENT;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.SECURE_ACCOMMODATION_WALES;
@@ -59,7 +59,7 @@ class ApplicationsFeeCalculatorTest {
     private ApplicationsFeeCalculator feeCalculator;
 
     private final List<FeeType> c2OrderFeeTypes = List.of(
-        C2_WITH_NOTICE, APPOINTMENT_OF_GUARDIAN, CHANGE_SURNAME, CHILD_ASSESSMENT);
+        C2_WITH_NOTICE, APPOINTMENT_OF_GUARDIAN, CHANGE_SURNAME, CHILD_ASSESSMENT_ORDER);
 
     private final List<FeeType> otherOrderFeeTypes = List.of(APPOINTMENT_OF_GUARDIAN, SPECIAL_GUARDIANSHIP);
 
@@ -172,7 +172,8 @@ class ApplicationsFeeCalculatorTest {
             .temporaryOtherApplicationsBundle(otherApplicationsBundle).build();
 
         List<FeeType> feeTypeList = List.of(C2_WITH_NOTICE, APPOINTMENT_OF_GUARDIAN, CHANGE_SURNAME,
-            CHILD_ASSESSMENT, PARENTAL_RESPONSIBILITY_FATHER, SPECIAL_GUARDIANSHIP, SECURE_ACCOMMODATION_WALES);
+            CHILD_ASSESSMENT_ORDER, PARENTAL_RESPONSIBILITY_FATHER, SPECIAL_GUARDIANSHIP,
+            SECURE_ACCOMMODATION_WALES);
 
         when(feeService.getFeesDataForAdditionalApplications(feeTypeList))
             .thenReturn(FeesData.builder().totalAmount(BigDecimal.valueOf(50)).build());
@@ -232,7 +233,7 @@ class ApplicationsFeeCalculatorTest {
             .build();
 
         List<FeeType> feeTypes = List.of(C2_WITH_NOTICE, APPOINTMENT_OF_GUARDIAN, CHANGE_SURNAME,
-            CHILD_ASSESSMENT, APPOINTMENT_OF_GUARDIAN, SPECIAL_GUARDIANSHIP);
+                CHILD_ASSESSMENT_ORDER, APPOINTMENT_OF_GUARDIAN, SPECIAL_GUARDIANSHIP);
 
         when(feeService.getFeesDataForAdditionalApplications(feeTypes))
             .thenReturn(FeesData.builder().totalAmount(BigDecimal.TEN).build());
