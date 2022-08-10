@@ -147,7 +147,7 @@ class FeeTypeTest {
             Arguments.of(
                 SupplementType.C14_AUTHORITY_TO_REFUSE_CONTACT_WITH_CHILD, FeeType.CONTACT_WITH_CHILD_IN_CARE),
             Arguments.of(SupplementType.C15_CONTACT_WITH_CHILD_IN_CARE, FeeType.CONTACT_WITH_CHILD_IN_CARE),
-            Arguments.of(SupplementType.C16_CHILD_ASSESSMENT, FeeType.CHILD_ASSESSMENT),
+            Arguments.of(SupplementType.C16_CHILD_ASSESSMENT, FeeType.CHILD_ASSESSMENT_ORDER),
             Arguments.of(SupplementType.C18_RECOVERY_ORDER, FeeType.RECOVERY_ORDER)
         );
     }
