@@ -15,6 +15,7 @@ import org.mockito.quality.Strictness;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
@@ -61,6 +62,7 @@ import static java.time.LocalDate.now;
 import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -120,6 +122,8 @@ class CaseSubmissionGenerationServiceTest {
         given(time.now()).willReturn(LocalDateTime.of(NOW, LocalTime.NOON));
         given(userService.getUserName()).willReturn("Professor");
         given(courtService.getCourtName(any())).willReturn(COURT_NAME);
+        given(courtService.getCourtSeal(any(), eq(OrderStatus.SEALED)))
+            .willReturn(COURT_SEAL.getValue(ENGLISH));
     }
 
     @Test
