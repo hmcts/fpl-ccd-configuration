@@ -10,7 +10,9 @@ public enum OrderType {
     EDUCATION_SUPERVISION_ORDER("Education supervision order", "Gorchymyn goruchwylio addysg"),
     EMERGENCY_PROTECTION_ORDER("Emergency protection order", "Gorchymyn Diogelu Brys"),
     OTHER("Variation or discharge of care or supervision order",
-        "Amrywio neu ddiddymu gorchymyn gofal neu oruchwyliaeth");
+        "Amrywio neu ddiddymu gorchymyn gofal neu oruchwyliaeth"),
+    //todo - welsh translation
+    CHILD_ASSESSMENT_ORDER("Child Assessment Order", "Child Assessment Order");
 
     private final String label;
     private final String welshLabel;
