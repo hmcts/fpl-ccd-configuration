@@ -24,9 +24,9 @@
     "lint": "eslint e2e",
     "typings": "codeceptjs def && mv steps.d.ts typings/codeceptjs.d.ts",
     "test": "codeceptjs run-multiple parallel",
-    "test:functional": "MOCHAWESOME_REPORTFILENAME=functional codeceptjs run-multiple parallel --grep \"${TESTS_SELECTOR:=(?=.*)^(?!.*@smoke-tests)}\" --reporter mocha-multi",
-    "test:smoke": "MOCHAWESOME_REPORTFILENAME=smoke codeceptjs run --grep \"${SMOKE_TESTS_SELECTOR:=@smoke-tests}\" --reporter mocha-multi",
-    "test:crossbrowser-e2e": "MOCHAWESOME_REPORTFILENAME=crossbrowser codeceptjs run-multiple --grep \"@cross-browser\" ${BROWSER_GROUP:-'--all'} -c saucelabs.conf.js --reporter mocha-multi",
+    "test:functional": "NODE_TLS_REJECT_UNAUTHORIZED=0 MOCHAWESOME_REPORTFILENAME=functional codeceptjs run-multiple parallel --grep \"${TESTS_SELECTOR:=(?=.*)^(?!.*@smoke-tests)}\" --reporter mocha-multi --verbose",
+    "test:smoke": "MOCHAWESOME_REPORTFILENAME=smoke REPORT_DIR=test-results/smokeTest REPORT_FILE=test-results/smokeTest/results.xml codeceptjs run --grep \"${SMOKE_TESTS_SELECTOR:=@smoke-tests}\" --reporter mocha-multi --verbose",
+    "test:crossbrowser-e2e": "NODE_TLS_REJECT_UNAUTHORIZED=0 MOCHAWESOME_REPORTFILENAME=crossbrowser codeceptjs run-multiple --grep \"@cross-browser\" ${BROWSER_GROUP:-'--all'} -c saucelabs.conf.js --reporter mocha-multi --verbose",
     "test:crossbrowser": "./bin/run-crossbrowser-tests.sh",
     "prepare": "husky install"
   },
