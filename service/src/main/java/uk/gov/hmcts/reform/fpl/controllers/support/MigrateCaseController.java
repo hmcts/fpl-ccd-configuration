@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -40,7 +41,10 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-798", this::run798,
         "DFPL-802", this::run802,
         "DFPL-692", this::run692,
-        "DFPL-776", this::run776
+        "DFPL-776", this::run776,
+        "DFPL-812", this::run812,
+        "DFPL-815", this::run815,
+        "DFPL-817", this::run817
     );
 
     @PostMapping("/about-to-submit")
@@ -99,6 +103,30 @@ public class MigrateCaseController extends CallbackController {
         var migrationId = "DFPL-802";
         var expectedCaseId = 1659528630126722L;
         var expectedDocId = UUID.fromString("dcd016c6-a0de-4ed2-91ce-5582a6acaf25");
+
+        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
+    }
+
+    private void run812(CaseDetails caseDetails) {
+        var migrationId = "DFPL-812";
+        var expectedCaseId = 1659443354639951L;
+        var expectedDocId = UUID.fromString("94765768-f635-407b-ad7a-0f285b8e7e8");
+
+        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
+    }
+
+    private void run815(CaseDetails caseDetails) {
+        var migrationId = "DFPL-815";
+        var expectedCaseId = 1659097273811933L;
+        var expectedDocId = UUID.fromString("6157d680-5f23-4b2d-afe6-f3e5abfebad9");
+
+        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
+    }
+
+    private void run817(CaseDetails caseDetails) {
+        var migrationId = "DFPL-817";
+        var expectedCaseId = 1660050012305169L;
+        var expectedDocId = UUID.fromString("b0f69651-9bc6-4e18-af8f-7c636efe60fd");
 
         removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
     }
