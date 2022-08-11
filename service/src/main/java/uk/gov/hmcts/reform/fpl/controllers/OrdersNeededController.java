@@ -48,10 +48,11 @@ public class OrdersNeededController extends CallbackController {
     @PostMapping("/mid-event")
     @SuppressWarnings("unchecked")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        final CaseData caseData = getCaseData(callbackrequest);
         final String representativeType = Objects.nonNull(caseData.getRepresentativeType())
             ? caseData.getRepresentativeType().toString() : "LOCAL_AUTHORITY";
         final String ordersFieldName = representativeType.equals("LOCAL_AUTHORITY") ? "orders" : "ordersSolicitor";
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
 
         Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get(ordersFieldName))
