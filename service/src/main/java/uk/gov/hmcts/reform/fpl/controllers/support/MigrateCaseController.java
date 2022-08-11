@@ -39,7 +39,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-797", this::run797,
         "DFPL-798", this::run798,
         "DFPL-802", this::run802,
-        "DFPL-692", this::run692,
+        "DFPL-810", this::run810,
         "DFPL-776", this::run776
     );
 
@@ -125,10 +125,16 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put("submittedForm", null);
     }
 
-    private void run692(CaseDetails caseDetails) {
-        var migrationId = "DFPL-692";
-        var expectedCaseId = 1641905747009846L;
+    private void run810(CaseDetails caseDetails) {
+        var migrationId = "DFPL-810";
+        var expectedCaseId = 1639481593478877L;
+        var expectedCaseNotesId = List.of("2824e43b-3250-485a-b069-6fd06390ce83");
 
+        removeCaseNote(caseDetails, migrationId, expectedCaseId, expectedCaseNotesId);
+    }
+
+    private void removeCaseNote(CaseDetails caseDetails, String migrationId, long expectedCaseId,
+                                List<String> expectedCaseNotesId){
         CaseData caseData = getCaseData(caseDetails);
         Long caseId = caseData.getId();
 
@@ -139,11 +145,10 @@ public class MigrateCaseController extends CallbackController {
             ));
         }
 
-        List<UUID> expectedNotesId = List.of(UUID.fromString("7dd3c2ac-d49f-4119-8299-a19a62f1d6db"),
-            UUID.fromString("66fb7c25-7860-4a5c-98d4-dd2ff575eb28"));
+        List<UUID> caseNotesId = expectedCaseNotesId.stream().map(UUID::fromString).collect(Collectors.toList());
 
         List<Element<CaseNote>> resultCaseNotes = caseData.getCaseNotes().stream()
-            .filter(caseNoteElement -> !expectedNotesId.contains(caseNoteElement.getId()))
+            .filter(caseNoteElement -> !caseNotesId.contains(caseNoteElement.getId()))
             .collect(Collectors.toList());
 
         if (caseData.getCaseNotes().size() - resultCaseNotes.size() != 2) {
