@@ -1172,14 +1172,6 @@ public class CaseData extends CaseDataParent {
             .orElse(false);
     }
 
-    @JsonIgnore
-    public boolean isContactWithChildInCareApplication() {
-
-        return ofNullable(getOrders())
-            .map(Orders::isContactWithChildInCareOrder)
-            .orElse(false);
-    }
-
     private List<Element<DocumentWithConfidentialAddress>> documentsWithConfidentialAddress;
 
     @JsonUnwrapped
