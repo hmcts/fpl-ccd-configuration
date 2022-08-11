@@ -229,5 +229,32 @@
     "FieldType": "Text",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "removeApplicationFormLabel",
+    "Label": "<div class='panel panel-border-wide'><h2>You are about to remove the generated application form for this case (C110a or C1).</h2><p>This should only be performed if the document needs to be hidden from all parties as confidential information has been disclosed. You will not be able to reinstate it after it’s removed.</p></div>",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "reasonToRemoveApplicationForm",
+    "Label": "Why is the application form being removed?",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hiddenApplicationForm",
+    "Label": "Removed Application Form",
+    "FieldType": "Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
