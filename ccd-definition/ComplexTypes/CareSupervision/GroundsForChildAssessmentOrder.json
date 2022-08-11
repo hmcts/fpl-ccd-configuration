@@ -1,0 +1,34 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GroundsForChildAssessmentOrder",
+    "ListElementCode": "thresholdReason",
+    "FieldType": "Label",
+    "ElementLabel": "The grounds are that there is reasonable cause to suspect that the child[ren] [is] [are] suffering, or [is] [are] likely to suffer, significant harm",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GroundsForChildAssessmentOrder",
+    "ListElementCode": "thresholdReason1",
+    "FieldType": "Label",
+    "ElementLabel": "**and** \n an assessment of the child[ren]'s health or development or of the way in which the child[ren] [has][have] been treated, is required to determine whether or not the child[ren] [is][are] suffering, or [is][are] likely to suffer, significant harm ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GroundsForChildAssessmentOrder",
+    "ListElementCode": "thresholdReason2",
+    "FieldType": "Label",
+    "ElementLabel": "**and** \n it is unlikely that such an assessment will be made, or be satisfactory, in the absence of an order under this section.",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GroundsForChildAssessmentOrder",
+    "ListElementCode": "thresholdDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "State your reason(s) for believing the grounds exist. \n If you are relying on a report or other documentary evidence, state the date(s) and author(s) and attach a copy in the \"Upload documents\" section.",
+    "SecurityClassification": "Public"
+  }
+]

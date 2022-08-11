@@ -40,4 +40,13 @@ class OrdersNeededAboutToSubmitCallbackControllerTest extends AbstractCallbackTe
         assertThat(response.getData().get("otherOrderType")).isEqualTo("YES");
         assertThat(response.getData().get("EPO_REASONING_SHOW")).isEqualTo(null);
     }
+
+    @Test
+    void shouldRaiseErrorWhenStandaloneAndCareOrderSelected() {
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(
+            "fixtures/caseCareAndStandaloneOrderType.json");
+
+        assertThat(response.getErrors()).contains("You have selected a standalone order, "
+            + "this cannot be applied for alongside other orders.");
+    }
 }
