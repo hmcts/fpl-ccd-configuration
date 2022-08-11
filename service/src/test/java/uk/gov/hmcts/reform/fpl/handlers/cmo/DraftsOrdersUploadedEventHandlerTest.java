@@ -184,6 +184,28 @@ class DraftsOrdersUploadedEventHandlerTest {
     }
 
     @Test
+    void shouldNotNotifyCafcassWhenLAisNonEnglish() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+            .thenReturn(
+                    Optional.empty()
+            );
+
+        final CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .build();
+
+        underTest.sendNotificationToCafcass(new DraftOrdersUploaded(caseData));
+
+        verify(cafcassNotificationService, never()).sendEmail(
+                same(caseData),
+                any(),
+                same(ORDER),
+                any()
+        );
+    }
+
+
+    @Test
     void shouldSendNotificationToHearingJudge() {
         final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
         final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");

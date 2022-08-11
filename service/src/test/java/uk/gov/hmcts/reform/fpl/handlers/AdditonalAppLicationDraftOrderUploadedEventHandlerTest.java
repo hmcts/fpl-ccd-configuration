@@ -31,7 +31,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(MockitoExtension.class)
-public class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
+class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
 
     private static final Long CASE_ID = 12345L;
     private static final DocumentReference DRAFT_ORDER = testDocumentReference();
@@ -59,15 +59,15 @@ public class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
             .build();
 
         CaseData caseData = CaseData.builder()
-                .id(CASE_ID)
-                .additionalApplicationsBundle(
-                    wrapElements(
-                        AdditionalApplicationsBundle.builder()
-                            .c2DocumentBundle(c2DocumentBundle)
-                            .build()
-                    )
+            .id(CASE_ID)
+            .additionalApplicationsBundle(
+                wrapElements(
+                    AdditionalApplicationsBundle.builder()
+                        .c2DocumentBundle(c2DocumentBundle)
+                        .build()
                 )
-                .build();
+            )
+            .build();
 
 
         CaseData caseDataBefore = CaseData.builder()
@@ -75,9 +75,9 @@ public class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
                 .build();
 
         underTest.sendDocumentsToCafcass(new AdditonalAppLicationDraftOrderUploadedEvent(
-                caseData,
-                caseDataBefore
-                )
+            caseData,
+            caseDataBefore
+            )
         );
 
         verify(cafcassNotificationService).sendEmail(
@@ -87,6 +87,56 @@ public class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
             OrderCafcassData.builder()
                 .documentName("draft order")
                 .build()
+        );
+    }
+
+    @Test
+    void shouldSendNotificationToCafcassWhenNoNewApplicationUploaded() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+            .thenReturn(
+                Optional.of(
+                        new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                )
+            );
+
+        C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder()
+            .draftOrdersBundle(wrapElements(DraftOrder.builder().document(DRAFT_ORDER).build()))
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .additionalApplicationsBundle(
+                wrapElements(
+                    AdditionalApplicationsBundle.builder()
+                            .c2DocumentBundle(c2DocumentBundle)
+                            .build()
+                )
+            )
+            .build();
+
+
+        CaseData caseDataBefore = CaseData.builder()
+            .id(RandomUtils.nextLong())
+            .additionalApplicationsBundle(
+                wrapElements(
+                    AdditionalApplicationsBundle.builder()
+                        .c2DocumentBundle(c2DocumentBundle)
+                        .build()
+            )
+            )
+            .build();
+
+        underTest.sendDocumentsToCafcass(new AdditonalAppLicationDraftOrderUploadedEvent(
+                caseData,
+                caseDataBefore
+            )
+        );
+
+        verify(cafcassNotificationService, never()).sendEmail(
+            any(),
+            any(),
+            any(),
+            any()
         );
     }
 
@@ -158,6 +208,45 @@ public class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
         CaseData caseDataBefore = CaseData.builder()
                 .id(RandomUtils.nextLong())
                 .build();
+
+        underTest.sendDocumentsToCafcass(new AdditonalAppLicationDraftOrderUploadedEvent(
+                        caseData,
+                        caseDataBefore
+                )
+        );
+
+        verify(cafcassNotificationService, never()).sendEmail(
+                any(),
+                any(),
+                any(),
+                any()
+        );
+    }
+
+    @Test
+    void shouldNotSendNotificationToCafcassWhenNonEnglishLA() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+            .thenReturn(
+                Optional.empty()
+            );
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .additionalApplicationsBundle(
+                wrapElements(
+                    AdditionalApplicationsBundle.builder()
+                        .otherApplicationsBundle(
+                                OtherApplicationsBundle.builder().build()
+                        )
+                        .build()
+                )
+            )
+            .build();
+
+
+        CaseData caseDataBefore = CaseData.builder()
+            .id(RandomUtils.nextLong())
+            .build();
 
         underTest.sendDocumentsToCafcass(new AdditonalAppLicationDraftOrderUploadedEvent(
                         caseData,
