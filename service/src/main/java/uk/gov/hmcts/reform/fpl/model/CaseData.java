@@ -1175,6 +1175,14 @@ public class CaseData extends CaseDataParent {
     }
 
     @JsonIgnore
+    public boolean isContactWithChildInCareApplication() {
+
+        return ofNullable(getOrders())
+            .map(Orders::isContactWithChildInCareOrder)
+            .orElse(false);
+    }
+
+    @JsonIgnore
     public boolean isC1Application() {
         return ofNullable(getOrders())
             .map(Orders::isC1Order)

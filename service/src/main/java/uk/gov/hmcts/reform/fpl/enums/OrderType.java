@@ -12,7 +12,8 @@ public enum OrderType {
     OTHER("Variation or discharge of care or supervision order",
         "Amrywio neu ddiddymu gorchymyn gofal neu oruchwyliaeth"),
     //todo - welsh translation
-    CHILD_ASSESSMENT_ORDER("Child Assessment Order", "Child Assessment Order");
+    CHILD_ASSESSMENT_ORDER("Child Assessment Order", "Child Assessment Order"),
+    CONTACT_WITH_CHILD_IN_CARE("Contact with child in care", "Cyswllt â phlentyn mewn gofal");
 
     private final String label;
     private final String welshLabel;

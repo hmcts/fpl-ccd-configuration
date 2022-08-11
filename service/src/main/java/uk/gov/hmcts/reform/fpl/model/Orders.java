@@ -17,6 +17,7 @@ import javax.validation.constraints.Size;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CHILD_ASSESSMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.CONTACT_WITH_CHILD_IN_CARE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.OTHER;
 
@@ -54,5 +55,9 @@ public class Orders {
 
     public boolean isDischargeOfCareOrder() {
         return isNotEmpty(orderType) && orderType.size() == 1 && orderType.contains(OTHER);
+    }
+
+    public boolean isContactWithChildInCareOrder() {
+        return isNotEmpty(orderType) && orderType.size() == 1 && orderType.contains(CONTACT_WITH_CHILD_IN_CARE);
     }
 }

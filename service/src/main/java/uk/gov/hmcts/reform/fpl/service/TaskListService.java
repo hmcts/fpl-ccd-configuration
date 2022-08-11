@@ -91,7 +91,7 @@ public class TaskListService {
         }
 
         // C1s and C110a's (except DoC)
-        if (!caseData.isDischargeOfCareApplication()) {
+        if (!caseData.isDischargeOfCareApplication() && !caseData.isContactWithChildInCareApplication()) {
             events.add(GROUNDS);
             events.add(RISK_AND_HARM);
             events.add(FACTORS_AFFECTING_PARENTING);
