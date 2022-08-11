@@ -31,7 +31,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseName",
     "Label": "Case name",
-    "HintText": "Include the applicant name and respondent's last name. For example, Endley Council v Smith/Tate/Jones",
+    "HintText": "Include the applicant's name and respondent's last name. For example, Endley Council v Smith/Tate/Jones",
     "FieldType": "Text",
     "SecurityClassification": "Public",
     "Searchable": "Y"

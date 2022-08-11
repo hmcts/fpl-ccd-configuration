@@ -38,8 +38,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing.CHILD;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
@@ -131,7 +132,7 @@ public class CaseSubmissionController extends CallbackController {
             Map<String, Object> data = caseDetails.getData();
             data.put("dateAndTimeSubmitted", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(zonedDateTime));
             data.put("dateSubmitted", DateTimeFormatter.ISO_LOCAL_DATE.format(zonedDateTime));
-            data.put("sendToCtsc", setSendToCtsc(data.get("caseLocalAuthority") != null
+            data.put("sendToCtsc", setSendToCtsc(isNotEmpty(data.get("caseLocalAuthority"))
                 ? data.get("caseLocalAuthority").toString() : null).getValue());
 
             if (caseData.isC1Application()) {
@@ -182,7 +183,7 @@ public class CaseSubmissionController extends CallbackController {
     }
 
     private YesNo setSendToCtsc(String caseLocalAuthority) {
-        if (Objects.equals(caseLocalAuthority, null)) {
+        if (isEmpty(caseLocalAuthority)) {
             return NO;
         }
 
