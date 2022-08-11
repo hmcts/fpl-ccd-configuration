@@ -28,7 +28,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import static uk.gov.hmcts.reform.fpl.enums.RemovableType.APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.RemovableType.ADDITIONAL_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.RemovableType.ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
@@ -64,7 +65,7 @@ public class RemovalToolController extends CallbackController {
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
         CaseData caseData = getCaseData(caseDetails);
 
-        if (caseData.getRemovableType() == APPLICATION) {
+        if (caseData.getRemovableType() == ADDITIONAL_APPLICATION) {
             UUID removedApplicationId = getDynamicListSelectedValue(caseData.getRemovableApplicationList(), mapper);
             AdditionalApplicationsBundle application = applicationService.getRemovedApplicationById(
                 caseData, removedApplicationId).getValue();
@@ -74,7 +75,7 @@ public class RemovalToolController extends CallbackController {
             // Can be removed once dynamic lists are fixed
             caseDetailsMap.put(REMOVABLE_APPLICATION_LIST_KEY,
                 applicationService.buildDynamicList(caseData, removedApplicationId));
-        } else {
+        } else if (caseData.getRemovableType() == ORDER) {
             // When dynamic lists are fixed this can be moved into the below method
             UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
             RemovableOrder removableOrder = orderService.getRemovedOrderByUUID(caseData, removedOrderId);
@@ -94,15 +95,17 @@ public class RemovalToolController extends CallbackController {
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
         CaseData caseData = getCaseData(caseDetails);
 
-        if (caseData.getRemovableType() == APPLICATION) {
+        if (caseData.getRemovableType() == ADDITIONAL_APPLICATION) {
             UUID removedApplicationId = getDynamicListSelectedValue(caseData.getRemovableApplicationList(), mapper);
             applicationService.removeApplicationFromCase(caseData, caseDetailsMap, removedApplicationId);
-        } else {
+        } else if (caseData.getRemovableType() == ORDER) {
             UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
             RemovableOrder removableOrder = orderService.getRemovedOrderByUUID(caseData, removedOrderId);
 
             orderService.removeOrderFromCase(caseData, caseDetailsMap, removedOrderId, removableOrder);
-
+        } else {
+            caseDetailsMap.put("submittedForm", null);
+            caseDetailsMap.put("hiddenApplicationForm", caseData.getC110A().getDocument());
         }
         removeTemporaryFields(
             caseDetailsMap,
