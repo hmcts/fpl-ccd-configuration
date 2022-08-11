@@ -103,7 +103,7 @@ public class DocumentViewTestHelper {
             .translatedDocument(translatedDocument)
             .translationRequirements(translationRequirements)
             .confidential(isConfidential ? List.of("CONFIDENTIAL") : List.of())
-            .expertReportType(type.equals(EXPERT_REPORTS) ? ExpertReportType.OTHER_EXPERT_REPORT : null)
+            .expertReportType(EXPERT_REPORTS.equals(type) ? ExpertReportType.OTHER_EXPERT_REPORT : null)
             .build());
     }
 }
