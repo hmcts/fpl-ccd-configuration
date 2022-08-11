@@ -45,15 +45,39 @@ public class OrdersNeededController extends CallbackController {
         return respond(caseDetails);
     }
 
+    @PostMapping("/mid-event")
+    @SuppressWarnings("unchecked")
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
+        final CaseData caseData = getCaseData(callbackrequest);
+        final RepresentativeType representativeType = Objects.nonNull(caseData.getRepresentativeType())
+            ? caseData.getRepresentativeType() : RepresentativeType.LOCAL_AUTHORITY;
+        final String ordersFieldName = representativeType.equals(RepresentativeType.LOCAL_AUTHORITY)
+            ? "orders" : "ordersSolicitor";
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        Map<String, Object> data = caseDetails.getData();
+
+        Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get(ordersFieldName))
+            .map(orders -> (List<String>) orders.get("orderType"));
+
+        if (orderType.isPresent()
+            && orderType.get().contains(OrderType.CHILD_ASSESSMENT_ORDER.name()) && orderType.get().size() > 1) {
+            return respond(caseDetails, List.of("You have selected a standalone order, "
+                + "this cannot be applied for alongside other orders."));
+        }
+
+        return respond(caseDetails);
+    }
+
     @PostMapping("/about-to-submit")
     @SuppressWarnings("unchecked")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(
         @RequestBody CallbackRequest callbackrequest) {
         final String showEpoFieldId = "EPO_REASONING_SHOW";
         final CaseData caseData = getCaseData(callbackrequest);
-        final String representativeType = Objects.nonNull(caseData.getRepresentativeType())
-            ? caseData.getRepresentativeType().toString() : "LOCAL_AUTHORITY";
-        final String ordersFieldName = representativeType.equals("LOCAL_AUTHORITY") ? "orders" : "ordersSolicitor";
+        final RepresentativeType representativeType = Objects.nonNull(caseData.getRepresentativeType())
+            ? caseData.getRepresentativeType() : RepresentativeType.LOCAL_AUTHORITY;
+        final String ordersFieldName = representativeType.equals(RepresentativeType.LOCAL_AUTHORITY)
+            ? "orders" : "ordersSolicitor";
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
 

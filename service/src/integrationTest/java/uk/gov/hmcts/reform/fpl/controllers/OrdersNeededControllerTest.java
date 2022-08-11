@@ -42,6 +42,15 @@ class OrdersNeededControllerTest extends AbstractCallbackTest {
     }
 
     @Test
+    void shouldRaiseErrorWhenStandaloneAndCareOrderSelected() {
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(
+            "fixtures/caseCareAndStandaloneOrderType.json");
+
+        assertThat(response.getErrors()).contains("You have selected a standalone order, "
+            + "this cannot be applied for alongside other orders.");
+    }
+
+    @Test
     void shouldSetCourtWhenCourtIsSelected() {
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent("fixtures/caseOtherOrderType.json");
 

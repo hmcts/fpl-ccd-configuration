@@ -8,12 +8,17 @@ module.exports = {
     caseType: '#cc-case-type',
     event: '#cc-event',
     outsourcingLAs: '#outsourcingLAs',
+    representativeType: '#representativeType',
+    isOutsourcingLA: '#isOutsourcingLA',
   },
   enterCaseNamePage: {
     caseName: '#caseName',
   },
   startButton: 'Start',
   continueButton: 'Continue',
+  localAuthorityRadioButton: '#representativeType-LOCAL_AUTHORITY',
+  isOutsourcingRadioButton: '#isOutsourcingLA_Yes',
+  notOutsourcingRadioButton: '#isOutsourcingLA_No',
 
   populateForm(caseName, outsourcingLA) {
     // wait until the dropdown is populated
@@ -29,13 +34,22 @@ module.exports = {
     I.grabCurrentUrl();
     if(outsourcingLA) {
       I.click(this.startButton);
+      I.waitForSelector(this.fields.representativeType);
+      I.click(this.localAuthorityRadioButton);
+      I.waitForSelector(this.fields.isOutsourcingLA);
+      I.click(this.notOutsourcingRadioButton);
       I.waitForSelector(this.fields.outsourcingLAs);
       I.selectOption(this.fields.outsourcingLAs, outsourcingLA);
-      I.click('Continue');
+      I.click(this.continueButton);
       I.grabCurrentUrl();
       I.waitForSelector(this.enterCaseNamePage.caseName);
     } else {
       I.click(this.startButton);
+      I.waitForSelector(this.fields.representativeType);
+      I.click(this.localAuthorityRadioButton);
+      I.waitForSelector(this.fields.isOutsourcingLA);
+      I.click(this.notOutsourcingRadioButton);
+      I.click(this.continueButton);
       I.grabCurrentUrl();
       I.waitForSelector(this.enterCaseNamePage.caseName);
     }

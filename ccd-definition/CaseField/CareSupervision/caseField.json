@@ -31,7 +31,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseName",
     "Label": "Case name",
-    "HintText": "Include the applicant name and respondent's last name. For example, Endley Council v Smith/Tate/Jones",
+    "HintText": "Include the applicant's name and respondent's last name. For example, Endley Council v Smith/Tate/Jones",
     "FieldType": "Text",
     "SecurityClassification": "Public",
     "Searchable": "Y"
@@ -72,6 +72,15 @@
     "ID": "groundsForEPO",
     "Label": "How are there grounds for an emergency protection order?",
     "FieldType": "GroundsForEPO",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "groundsForChildAssessmentOrder",
+    "Label": "How are there grounds for a child assessment order?",
+    "FieldType": "GroundsForChildAssessmentOrder",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -430,7 +439,16 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "submittedForm",
-    "Label": "C110a Application",
+    "Label": "Application Form",
+    "FieldType": "Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "supplementDocument",
+    "Label": "Application Supplement",
     "FieldType": "Document",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -549,6 +567,15 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "draftApplicationDocument",
+    "FieldType": "Document",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "draftSupplement",
     "FieldType": "Document",
     "Label": " ",
     "SecurityClassification": "Public",
