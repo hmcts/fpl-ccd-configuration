@@ -25,5 +25,6 @@ public class DocumentView {
     private LocalDateTime uploadedDateTime;
     private boolean sentForTranslation;
     private DocumentReference translatedDocument;
+    private String expertReportType;
 
 }
