@@ -46,7 +46,7 @@ public enum FeeType {
     WARRANT_OF_ASSISTANCE,
     RECOVERY_ORDER,
     WARRANT_TO_ASSIST_PERSON,
-    CHILD_ASSESSMENT,
+    CHILD_ASSESSMENT_ORDER,
     CONTACT_WITH_CHILD_IN_CARE,
     CHANGE_SURNAME,
     SECURE_ACCOMMODATION_ENGLAND,
@@ -64,13 +64,14 @@ public enum FeeType {
         OrderType.INTERIM_CARE_ORDER, INTERIM_CARE_ORDER,
         OrderType.INTERIM_SUPERVISION_ORDER, INTERIM_SUPERVISION_ORDER,
         OrderType.SUPERVISION_ORDER, SUPERVISION_ORDER,
-        OrderType.OTHER, OTHER);
+        OrderType.OTHER, OTHER,
+        OrderType.CHILD_ASSESSMENT_ORDER, CHILD_ASSESSMENT_ORDER);
 
     private static final Map<SupplementType, FeeType> supplementToFeeMap = Map.of(
         SupplementType.C13A_SPECIAL_GUARDIANSHIP, SPECIAL_GUARDIANSHIP,
         SupplementType.C14_AUTHORITY_TO_REFUSE_CONTACT_WITH_CHILD, CONTACT_WITH_CHILD_IN_CARE,
         SupplementType.C15_CONTACT_WITH_CHILD_IN_CARE, CONTACT_WITH_CHILD_IN_CARE,
-        SupplementType.C16_CHILD_ASSESSMENT, CHILD_ASSESSMENT,
+        SupplementType.C16_CHILD_ASSESSMENT, CHILD_ASSESSMENT_ORDER,
         SupplementType.C18_RECOVERY_ORDER, RECOVERY_ORDER);
 
     private static final Map<OtherApplicationType, FeeType> applicationToFeeMap = Map.of(

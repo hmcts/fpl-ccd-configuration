@@ -1,0 +1,17 @@
+[
+    {
+      "LiveFrom": "01/01/2017",
+      "ID": "ChildArrangementsOrderType",
+      "ListElementCode": "CHILD_LIVE",
+      "ListElement": "Child to live with",
+      "DisplayOrder": 1
+    },
+    {
+      "LiveFrom": "01/01/2017",
+      "ID": "ChildArrangementsOrderType",
+      "ListElementCode": "CHILD_CONTACT",
+      "ListElement": "Child to have contact with",
+      "DisplayOrder": 2
+    }
+]
+  
