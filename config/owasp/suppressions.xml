@@ -204,4 +204,11 @@
     <notes><![CDATA[Suppressed as known false positive]]></notes>
     <vulnerabilityName>CVE-2022-31569</vulnerabilityName>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: postgresql-42.2.24.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.postgresql/postgresql@.*$</packageUrl>
+    <cve>CVE-2022-31197</cve>
+  </suppress>
 </suppressions>
