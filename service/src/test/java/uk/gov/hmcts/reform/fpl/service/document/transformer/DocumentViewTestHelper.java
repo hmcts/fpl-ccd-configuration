@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.document.transformer;
 
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ExpertReportType;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -102,6 +103,7 @@ public class DocumentViewTestHelper {
             .translatedDocument(translatedDocument)
             .translationRequirements(translationRequirements)
             .confidential(isConfidential ? List.of("CONFIDENTIAL") : List.of())
+            .expertReportType(type.equals(EXPERT_REPORTS) ? ExpertReportType.OTHER_EXPERT_REPORT : null)
             .build());
     }
 }
