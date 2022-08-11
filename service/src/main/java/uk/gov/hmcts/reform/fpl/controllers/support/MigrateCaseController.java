@@ -134,7 +134,7 @@ public class MigrateCaseController extends CallbackController {
     }
 
     private void removeCaseNote(CaseDetails caseDetails, String migrationId, long expectedCaseId,
-                                List<String> expectedCaseNotesId){
+                                List<String> expectedCaseNotesId) {
         CaseData caseData = getCaseData(caseDetails);
         Long caseId = caseData.getId();
 
