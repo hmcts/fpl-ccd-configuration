@@ -72,7 +72,7 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
             .builder()
             .orderTitle(c43TitleGenerator.getOrderTitle(eventData))
             .orderByConsent(orderMessageGenerator.getOrderByConsentMessage(eventData))
-            .orderDetails(getOrderRecitalsAndPreambles(eventData))
+            .orderDetails(buildOrderDetails(eventData))
             .furtherDirections(getOrderDirections(eventData))
             .localAuthorityName(localAuthorityName)
             .noticeHeader("Notice")
@@ -88,6 +88,27 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
     @Override
     public DocmosisTemplates template() {
         return DocmosisTemplates.ORDER_V2;
+    }
+
+    private String buildOrderDetails(ManageOrdersEventData eventData) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (isChildArrangementOrderSelected(eventData)) {
+            switch (eventData.getManageOrdersChildArrangementsOrderType()) {
+                case CHILD_LIVE:
+                    stringBuilder
+                        .append("The Child Arrangement Order is for the child to live with")
+                        .append(".\n\n");
+                    break;
+                case CHILD_CONTACT:
+                    stringBuilder
+                        .append("The Child Arrangement Order is for the child to have contact with")
+                        .append(".\n\n");
+                    break;
+            }
+        }
+
+        return stringBuilder.toString() + getOrderRecitalsAndPreambles(eventData);
     }
 
     private String getOrderRecitalsAndPreambles(ManageOrdersEventData eventData) {
