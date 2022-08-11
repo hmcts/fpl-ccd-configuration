@@ -14,15 +14,18 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.RemovalToolData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.group.C110A;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
@@ -50,7 +53,9 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_WITH_SUPPLEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.RemovableType.ADDITIONAL_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.RemovableType.APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.RemovableType.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -89,7 +94,7 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
         selectedOrder.getValue().setRemovalReason(REASON);
 
         assertThat(responseData.getOrderCollection()).isEmpty();
-        assertThat(responseData.getHiddenOrders()).hasSize(1).containsOnly(selectedOrder);
+        assertThat(responseData.getRemovalToolData().getHiddenOrders()).hasSize(1).containsOnly(selectedOrder);
     }
 
     @Test
@@ -162,8 +167,11 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
         CaseData caseData = CaseData.builder()
             .children1(childrenList)
             .orderCollection(List.of(order1))
-            .removableOrderList(DynamicList.builder()
-                .value(buildListElement(order1.getId(), "order 1 - 15 June 2020"))
+            .removalToolData(RemovalToolData.builder()
+                .removableType(ORDER)
+                .removableOrderList(DynamicList.builder()
+                    .value(buildListElement(order1.getId(), "order 1 - 15 June 2020"))
+                    .build())
                 .build())
             .build();
 
@@ -204,8 +212,10 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
         CaseData caseData = CaseData.builder()
             .children1(childrenList)
             .orderCollection(List.of(order1))
-            .removableOrderList(DynamicList.builder()
-                .value(buildListElement(order1.getId(), "order 1 - 15 June 2020"))
+            .removalToolData(RemovalToolData.builder()
+                .removableOrderList(DynamicList.builder()
+                    .value(buildListElement(order1.getId(), "order 1 - 15 June 2020"))
+                    .build())
                 .build())
             .build();
 
@@ -236,15 +246,18 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
         CaseData caseData = CaseData.builder()
             .sealedCMOs(caseManagementOrders)
             .hearingDetails(hearingBookings)
-            .removableOrderList(DynamicList.builder()
-                .value(buildListElement(REMOVED_ORDER_ID, "Sealed case management order issued on 15 June 2020"))
+            .removalToolData(RemovalToolData.builder()
+                .removableType(ORDER)
+                .removableOrderList(DynamicList.builder()
+                    .value(buildListElement(REMOVED_ORDER_ID, "Sealed case management order issued on 15 June 2020"))
+                    .build())
                 .build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
 
         CaseData responseData = extractCaseData(response);
-        List<Element<HearingOrder>> hiddenCMOs = responseData.getHiddenCMOs();
+        List<Element<HearingOrder>> hiddenCMOs = responseData.getRemovalToolData().getHiddenCMOs();
         HearingBooking unlinkedHearing = responseData.getHearingDetails().get(0).getValue();
 
         assertThat(hiddenCMOs).hasSize(1).first().isEqualTo(caseManagementOrder1);
@@ -269,8 +282,11 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
         CaseData caseData = CaseData.builder()
             .hearingDetails(List.of(element(HearingBooking.builder().build())))
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
-            .removableOrderList(DynamicList.builder()
-                .value(buildListElement(REMOVED_ORDER_ID, "Draft order sent on 15 June 2020"))
+            .removalToolData(RemovalToolData.builder()
+                .removableType(ORDER)
+                .removableOrderList(DynamicList.builder()
+                    .value(buildListElement(REMOVED_ORDER_ID, "Draft order sent on 15 June 2020"))
+                    .build())
                 .build())
             .build();
 
@@ -298,12 +314,15 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         CaseData caseData = CaseData.builder()
             .state(CASE_MANAGEMENT)
-            .reasonToRemoveOrder(REASON)
+            .removalToolData(RemovalToolData.builder()
+                .removableType(ORDER)
+                .reasonToRemoveOrder(REASON)
+                .removableOrderList(DynamicList.builder()
+                    .value(buildListElement(SDO_ID, "Gatekeeping order - 15 June 2020"))
+                    .build())
+                .build())
             .standardDirectionOrder(standardDirectionOrder)
             .noticeOfProceedingsBundle(List.of(element(DocumentBundle.builder().build())))
-            .removableOrderList(DynamicList.builder()
-                .value(buildListElement(SDO_ID, "Gatekeeping order - 15 June 2020"))
-                .build())
             .build();
 
         StandardDirectionOrder expectedSDO = StandardDirectionOrder.builder()
@@ -316,7 +335,8 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
         CaseData responseData = extractCaseData(response);
 
-        assertThat(responseData.getHiddenStandardDirectionOrders()).isEqualTo(List.of(element(newSDOId, expectedSDO)));
+        assertThat(responseData.getRemovalToolData().getHiddenStandardDirectionOrders())
+            .isEqualTo(List.of(element(newSDOId, expectedSDO)));
         assertThat(responseData.getState()).isEqualTo(GATEKEEPING);
         assertNull(responseData.getNoticeOfProceedingsBundle());
     }
@@ -346,8 +366,11 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
                 element(hearingOrderBundleId, HearingOrdersBundle.builder().orders(caseManagementOrders).build())
             ))
             .hearingDetails(hearingBookings)
-            .removableOrderList(DynamicList.builder()
-                .value(buildListElement(removedOrderId, "Draft case management order - 15 June 2020"))
+            .removalToolData(RemovalToolData.builder()
+                .removableType(ORDER)
+                .removableOrderList(DynamicList.builder()
+                    .value(buildListElement(removedOrderId, "Draft case management order - 15 June 2020"))
+                    .build())
                 .build())
             .build();
 
@@ -387,8 +410,11 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
         CaseData caseData = CaseData.builder()
             .draftUploadedCMOs(caseManagementOrders)
             .hearingDetails(hearingBookings)
-            .removableOrderList(DynamicList.builder()
-                .value(buildListElement(removedOrderId, "Draft case management order - 15 June 2020"))
+            .removalToolData(RemovalToolData.builder()
+                .removableType(ORDER)
+                .removableOrderList(DynamicList.builder()
+                    .value(buildListElement(removedOrderId, "Draft case management order - 15 June 2020"))
+                    .build())
                 .build())
             .build();
 
@@ -420,10 +446,12 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
             .build();
 
         CaseData caseData = CaseData.builder()
-            .removableType(APPLICATION)
+            .removalToolData(RemovalToolData.builder()
+                .removableType(ADDITIONAL_APPLICATION)
+                .removableApplicationList(dynamicList)
+                .reasonToRemoveApplication(DUPLICATE)
+                .build())
             .additionalApplicationsBundle(List.of(element(applicationId, application)))
-            .removableApplicationList(dynamicList)
-            .reasonToRemoveApplication(DUPLICATE)
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
@@ -431,11 +459,32 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(responseData.getAdditionalApplicationsBundle()).isNull();
     }
 
+    @Test
+    void shouldRemoveApplicationForm() {
+        DocumentReference c110a = testDocumentReference();
+        CaseData caseData = CaseData.builder()
+            .removalToolData(RemovalToolData.builder()
+                .removableType(APPLICATION)
+                .build())
+            .c110A(C110A.builder()
+                .submittedForm(c110a)
+                .build())
+            .build();
+
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        assertThat(responseData.getC110A().getDocument()).isNull();
+        assertThat(responseData.getRemovalToolData().getHiddenApplicationForm()).isEqualTo(c110a);
+    }
+
     private CaseData buildCaseData(Element<GeneratedOrder> order) {
         return CaseData.builder()
             .orderCollection(List.of(order))
-            .removableOrderList(buildRemovableOrderList(order.getId()))
-            .reasonToRemoveOrder(REASON)
+            .removalToolData(RemovalToolData.builder()
+                .removableType(ORDER)
+                .removableOrderList(buildRemovableOrderList(order.getId()))
+                .reasonToRemoveOrder(REASON)
+                .build())
             .build();
     }
 

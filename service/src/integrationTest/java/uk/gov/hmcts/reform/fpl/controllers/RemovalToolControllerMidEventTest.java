@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.RemovalToolData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -35,7 +36,8 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_WITH_SUPPLEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.RemovableType.APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.RemovableType.ADDITIONAL_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.RemovableType.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -104,7 +106,10 @@ class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
         CaseData caseData = CaseData.builder()
             .sealedCMOs(List.of(element(REMOVE_ORDER_ID, caseManagementOrder)))
             .hearingDetails(List.of(element(hearingBooking)))
-            .removableOrderList(dynamicList)
+            .removalToolData(RemovalToolData.builder()
+                .removableType(ORDER)
+                .removableOrderList(dynamicList)
+                .build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
@@ -152,7 +157,10 @@ class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
                     .orders(newArrayList(element(REMOVE_ORDER_ID, caseManagementOrder)))
                     .build())))
             .hearingDetails(List.of(element(hearingBooking)))
-            .removableOrderList(dynamicList)
+            .removalToolData(RemovalToolData.builder()
+                .removableType(ORDER)
+                .removableOrderList(dynamicList)
+                .build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
@@ -194,7 +202,10 @@ class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
                 element(HearingOrdersBundle.builder()
                     .orders(newArrayList(element(REMOVE_ORDER_ID, draftOrder)))
                     .build())))
-            .removableOrderList(dynamicList)
+            .removalToolData(RemovalToolData.builder()
+                .removableType(ORDER)
+                .removableOrderList(dynamicList)
+                .build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
@@ -229,7 +240,10 @@ class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData caseData = CaseData.builder()
             .standardDirectionOrder(standardDirectionOrder)
-            .removableOrderList(dynamicList)
+            .removalToolData(RemovalToolData.builder()
+                .removableType(ORDER)
+                .removableOrderList(dynamicList)
+                .build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
@@ -273,7 +287,10 @@ class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
         CaseData caseData = CaseData.builder()
             .sealedCMOs(List.of(element(REMOVE_ORDER_ID, caseManagementOrder)))
             .hearingDetails(List.of(element(hearingBooking)))
-            .removableOrderList(dynamicList)
+            .removalToolData(RemovalToolData.builder()
+                .removableType(ORDER)
+                .removableOrderList(dynamicList)
+                .build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
@@ -288,7 +305,8 @@ class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
         );
 
         CaseData responseData = mapper.convertValue(response.getData(), CaseData.class);
-        DynamicList removableOrderList = mapper.convertValue(responseData.getRemovableOrderList(), DynamicList.class);
+        DynamicList removableOrderList = mapper.convertValue(responseData.getRemovalToolData().getRemovableOrderList(),
+            DynamicList.class);
 
         assertThat(removableOrderList).isEqualTo(buildRemovableOrderList(selectedOrder.getId()));
     }
@@ -303,9 +321,11 @@ class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
             .build();
 
         CaseData caseData = CaseData.builder()
-            .removableType(APPLICATION)
+            .removalToolData(RemovalToolData.builder()
+                .removableType(ADDITIONAL_APPLICATION)
+                .removableApplicationList(dynamicList)
+                .build())
             .additionalApplicationsBundle(List.of(element(applicationId, application)))
-            .removableApplicationList(dynamicList)
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData);
@@ -337,7 +357,10 @@ class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
     private CaseData buildCaseData(Element<GeneratedOrder> order) {
         return CaseData.builder()
             .orderCollection(List.of(order))
-            .removableOrderList(buildRemovableOrderList(order.getId()))
+            .removalToolData(RemovalToolData.builder()
+                .removableType(ORDER)
+                .removableOrderList(buildRemovableOrderList(order.getId()))
+                .build())
             .build();
     }
 

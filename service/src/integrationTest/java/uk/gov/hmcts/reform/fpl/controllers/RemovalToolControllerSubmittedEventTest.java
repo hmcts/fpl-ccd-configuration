@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.RemovalToolData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
@@ -356,10 +357,12 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
                                                        List<Element<AdditionalApplicationsBundle>> hiddenApplications) {
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
-            .hiddenOrders(hiddenOrders)
-            .hiddenStandardDirectionOrders(hiddenSDOs)
-            .hiddenCaseManagementOrders(hiddenCMOs)
-            .hiddenApplicationsBundle(hiddenApplications)
+            .removalToolData(RemovalToolData.builder()
+                .hiddenOrders(hiddenOrders)
+                .hiddenStandardDirectionOrders(hiddenSDOs)
+                .hiddenCaseManagementOrders(hiddenCMOs)
+                .hiddenApplicationsBundle(hiddenApplications)
+                .build())
             .respondents1(wrapElements(RESPONDENT))
             .children1(wrapElements(CHILD))
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)

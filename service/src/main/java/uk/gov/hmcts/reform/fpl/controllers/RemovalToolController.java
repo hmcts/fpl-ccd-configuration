@@ -65,8 +65,9 @@ public class RemovalToolController extends CallbackController {
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
         CaseData caseData = getCaseData(caseDetails);
 
-        if (caseData.getRemovableType() == ADDITIONAL_APPLICATION) {
-            UUID removedApplicationId = getDynamicListSelectedValue(caseData.getRemovableApplicationList(), mapper);
+        if (caseData.getRemovalToolData().getRemovableType() == ADDITIONAL_APPLICATION) {
+            UUID removedApplicationId = getDynamicListSelectedValue(
+                caseData.getRemovalToolData().getRemovableApplicationList(), mapper);
             AdditionalApplicationsBundle application = applicationService.getRemovedApplicationById(
                 caseData, removedApplicationId).getValue();
 
@@ -75,9 +76,10 @@ public class RemovalToolController extends CallbackController {
             // Can be removed once dynamic lists are fixed
             caseDetailsMap.put(REMOVABLE_APPLICATION_LIST_KEY,
                 applicationService.buildDynamicList(caseData, removedApplicationId));
-        } else if (caseData.getRemovableType() == ORDER) {
+        } else if (caseData.getRemovalToolData().getRemovableType() == ORDER) {
             // When dynamic lists are fixed this can be moved into the below method
-            UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
+            UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovalToolData().getRemovableOrderList(),
+                mapper);
             RemovableOrder removableOrder = orderService.getRemovedOrderByUUID(caseData, removedOrderId);
 
             orderService.populateSelectedOrderFields(caseData, caseDetailsMap, removedOrderId, removableOrder);
@@ -95,11 +97,13 @@ public class RemovalToolController extends CallbackController {
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
         CaseData caseData = getCaseData(caseDetails);
 
-        if (caseData.getRemovableType() == ADDITIONAL_APPLICATION) {
-            UUID removedApplicationId = getDynamicListSelectedValue(caseData.getRemovableApplicationList(), mapper);
+        if (caseData.getRemovalToolData().getRemovableType() == ADDITIONAL_APPLICATION) {
+            UUID removedApplicationId = getDynamicListSelectedValue(
+                caseData.getRemovalToolData().getRemovableApplicationList(), mapper);
             applicationService.removeApplicationFromCase(caseData, caseDetailsMap, removedApplicationId);
-        } else if (caseData.getRemovableType() == ORDER) {
-            UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
+        } else if (caseData.getRemovalToolData().getRemovableType() == ORDER) {
+            UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovalToolData().getRemovableOrderList(),
+                mapper);
             RemovableOrder removableOrder = orderService.getRemovedOrderByUUID(caseData, removedOrderId);
 
             orderService.removeOrderFromCase(caseData, caseDetailsMap, removedOrderId, removableOrder);
@@ -137,14 +141,15 @@ public class RemovalToolController extends CallbackController {
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         Optional<StandardDirectionOrder> removedSDO = orderService.getRemovedSDO(
-            caseData.getHiddenStandardDirectionOrders(), caseDataBefore.getHiddenStandardDirectionOrders()
+            caseData.getRemovalToolData().getHiddenStandardDirectionOrders(),
+            caseDataBefore.getRemovalToolData().getHiddenStandardDirectionOrders()
         );
         Optional<HearingOrder> removedCMO = orderService.getRemovedCMO(
-            caseData.getHiddenCMOs(), caseDataBefore.getHiddenCMOs()
+            caseData.getRemovalToolData().getHiddenCMOs(), caseDataBefore.getRemovalToolData().getHiddenCMOs()
         );
         Optional<AdditionalApplicationsBundle> removedApplication = applicationService.getRemovedApplications(caseData
-                .getHiddenApplicationsBundle(),
-            caseDataBefore.getHiddenApplicationsBundle());
+            .getRemovalToolData().getHiddenApplicationsBundle(),
+            caseDataBefore.getRemovalToolData().getHiddenApplicationsBundle());
 
         if (removedSDO.isPresent()) {
             publishEvent(new PopulateStandardDirectionsEvent(callbackRequest));
