@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -37,7 +38,7 @@ public class CaseEventHandler {
 
             final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
             final List<EventValidationErrors> eventErrors = caseSubmissionChecker.validateAsGroups(caseData);
-            final String taskList = taskListRenderer.render(tasks, eventErrors);
+            final String taskList = taskListRenderer.render(tasks, eventErrors, getApplicationType(caseData));
 
             coreCaseDataService.triggerEvent(
                 JURISDICTION,
@@ -46,5 +47,12 @@ public class CaseEventHandler {
                 "internal-update-task-list",
                 Map.of("taskList", taskList));
         }
+    }
+
+    public Optional<String> getApplicationType(CaseData caseData) {
+        if (caseData.getOrders() != null) {
+            return Optional.of(caseData.getOrders().isC1Order() ? "C1" : "C110a");
+        }
+        return Optional.empty();
     }
 }

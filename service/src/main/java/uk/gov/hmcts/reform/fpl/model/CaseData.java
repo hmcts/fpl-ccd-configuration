@@ -187,6 +187,9 @@ public class CaseData {
     @NotNull(message = "Add the grounds for the application")
     @Valid
     private final Grounds grounds;
+    @NotNull(message = "Add the grounds for the application")
+    @Valid
+    private final GroundsForChildAssessmentOrder groundsForChildAssessmentOrder;
     @NotNull(message = "Add the grounds for the application", groups = EPOGroup.class)
     @Valid
     private final GroundsForEPO groundsForEPO;
@@ -289,7 +292,6 @@ public class CaseData {
     @JsonProperty("documents_socialWorkEvidenceTemplate_document")
     @Valid
     public final Document socialWorkEvidenceTemplateDocument;
-    public final CourtBundle courtBundle;
     @NotEmpty(message = "Add the child's details")
     @Valid
     private final List<@NotNull(message = "Add the child's details") Element<Child>> children1;
@@ -1175,6 +1177,13 @@ public class CaseData {
 
         return ofNullable(getOrders())
             .map(Orders::isDischargeOfCareOrder)
+            .orElse(false);
+    }
+
+    @JsonIgnore
+    public boolean isC1Application() {
+        return ofNullable(getOrders())
+            .map(Orders::isC1Order)
             .orElse(false);
     }
 
