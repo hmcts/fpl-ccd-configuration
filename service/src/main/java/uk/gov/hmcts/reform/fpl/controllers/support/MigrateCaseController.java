@@ -151,7 +151,7 @@ public class MigrateCaseController extends CallbackController {
             .filter(caseNoteElement -> !caseNotesId.contains(caseNoteElement.getId()))
             .collect(Collectors.toList());
 
-        if (caseData.getCaseNotes().size() - resultCaseNotes.size() != 2) {
+        if (caseData.getCaseNotes().size() - resultCaseNotes.size() != expectedCaseNotesId.size()) {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, expected caseNotes id not found",
                 migrationId, caseId
