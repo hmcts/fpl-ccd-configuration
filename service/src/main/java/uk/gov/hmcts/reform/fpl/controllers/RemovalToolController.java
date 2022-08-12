@@ -24,11 +24,14 @@ import uk.gov.hmcts.reform.fpl.service.removeorder.RemoveApplicationService;
 import uk.gov.hmcts.reform.fpl.service.removeorder.RemoveOrderService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.RemovableType.ADDITIONAL_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.RemovableType.APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.RemovableType.ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
@@ -47,6 +50,8 @@ public class RemovalToolController extends CallbackController {
 
     public static final String CMO_ERROR_MESSAGE = "Email the help desk at dcd-familypubliclawservicedesk@hmcts.net to"
         + " remove this order. Quoting CMO %s, and the hearing it was added for.";
+    public static final String APPLICATION_FORM_ALREADY_REMOVED_ERROR_MESSAGE = "The application form for this case has"
+        + " already been removed.";
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
@@ -87,6 +92,9 @@ public class RemovalToolController extends CallbackController {
             // Can be removed once dynamic lists are fixed
             caseDetailsMap.put(REMOVABLE_ORDER_LIST_KEY,
                 orderService.buildDynamicListOfOrders(caseData, removedOrderId));
+        } else if (caseData.getRemovalToolData().getRemovableType() == APPLICATION
+            && isEmpty(caseData.getC110A().getDocument())) {
+            return respond(caseDetailsMap, List.of(APPLICATION_FORM_ALREADY_REMOVED_ERROR_MESSAGE));
         }
         return respond(caseDetailsMap);
     }
@@ -108,6 +116,9 @@ public class RemovalToolController extends CallbackController {
 
             orderService.removeOrderFromCase(caseData, caseDetailsMap, removedOrderId, removableOrder);
         } else {
+            if (isEmpty(caseData.getC110A().getDocument())) {
+                return respond(caseDetailsMap, List.of(APPLICATION_FORM_ALREADY_REMOVED_ERROR_MESSAGE));
+            }
             caseDetailsMap.put("submittedForm", null);
             caseDetailsMap.put("hiddenApplicationForm", caseData.getC110A().getDocument());
         }

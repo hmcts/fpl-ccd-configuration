@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.group.C110A;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
@@ -30,6 +31,7 @@ import java.util.UUID;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.controllers.RemovalToolController.APPLICATION_FORM_ALREADY_REMOVED_ERROR_MESSAGE;
 import static uk.gov.hmcts.reform.fpl.controllers.RemovalToolController.CMO_ERROR_MESSAGE;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
@@ -37,6 +39,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_WITH_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.RemovableType.ADDITIONAL_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.RemovableType.APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.RemovableType.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -352,6 +355,38 @@ class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(removableApplicationList).isEqualTo(expectedList);
         assertThat(responseData).containsAllEntriesOf(extractedFields);
+    }
+
+    @Test
+    void shouldErrorIfApplicationFormHasAlreadyBeenRemoved() {
+        CaseData caseData = CaseData.builder()
+            .c110A(C110A.builder()
+                .submittedForm(null)
+                .build())
+            .removalToolData(RemovalToolData.builder()
+                .removableType(APPLICATION)
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData);
+
+        assertThat(response.getErrors()).containsExactly(APPLICATION_FORM_ALREADY_REMOVED_ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldNotErrorIfThereIsAnApplicationFormToBeRemoved() {
+        CaseData caseData = CaseData.builder()
+            .c110A(C110A.builder()
+                .submittedForm(testDocumentReference())
+                .build())
+            .removalToolData(RemovalToolData.builder()
+                .removableType(APPLICATION)
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData);
+
+        assertThat(response.getErrors()).isNullOrEmpty();
     }
 
     private CaseData buildCaseData(Element<GeneratedOrder> order) {
