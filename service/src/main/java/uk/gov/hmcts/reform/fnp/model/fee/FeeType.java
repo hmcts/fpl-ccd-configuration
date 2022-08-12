@@ -65,7 +65,8 @@ public enum FeeType {
         OrderType.INTERIM_SUPERVISION_ORDER, INTERIM_SUPERVISION_ORDER,
         OrderType.SUPERVISION_ORDER, SUPERVISION_ORDER,
         OrderType.OTHER, OTHER,
-        OrderType.CHILD_ASSESSMENT_ORDER, CHILD_ASSESSMENT_ORDER);
+        OrderType.CHILD_ASSESSMENT_ORDER, CHILD_ASSESSMENT_ORDER,
+        OrderType.CONTACT_WITH_CHILD_IN_CARE, CONTACT_WITH_CHILD_IN_CARE);
 
     private static final Map<SupplementType, FeeType> supplementToFeeMap = Map.of(
         SupplementType.C13A_SPECIAL_GUARDIANSHIP, SPECIAL_GUARDIANSHIP,
