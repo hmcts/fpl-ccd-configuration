@@ -14,18 +14,15 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
-import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -232,7 +229,8 @@ public class MigrateCaseController extends CallbackController {
                             .documentsSentToParty(documentsSentToParty.getValue().getDocumentsSentToParty().stream()
                                 .filter(documentSent -> !expectedDocId.equals(documentSent.getId()))
                                 .collect(Collectors.toList())).build());
-                }}).collect(Collectors.toList());
+                }
+            }).collect(Collectors.toList());
 
         caseDetails.getData().put("documentsSentToParties", resultDocumentsSentToParties);
     }
