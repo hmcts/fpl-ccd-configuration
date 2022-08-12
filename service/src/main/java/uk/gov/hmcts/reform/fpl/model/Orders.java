@@ -45,11 +45,11 @@ public class Orders {
     private final String childAssessmentOrderContactDirections;
 
     public boolean orderContainsEPO() {
-        return this.getOrderType().contains(EMERGENCY_PROTECTION_ORDER);
+        return isNotEmpty(orderType) && this.getOrderType().contains(EMERGENCY_PROTECTION_ORDER);
     }
 
     public boolean isC1Order() {
-        return this.getOrderType().contains(CHILD_ASSESSMENT_ORDER);
+        return isNotEmpty(orderType) && this.getOrderType().contains(CHILD_ASSESSMENT_ORDER);
     }
 
     public boolean isDischargeOfCareOrder() {

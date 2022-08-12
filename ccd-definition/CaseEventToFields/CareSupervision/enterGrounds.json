@@ -61,7 +61,7 @@
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "orders.orderType CONTAINS \"CARE_ORDER\" OR orders.orderType CONTAINS \"INTERIM_CARE_ORDER\" OR orders.orderType CONTAINS \"SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"INTERIM_SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"EDUCATION_SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\" OR orders.orderType CONTAINS \"OTHER\""
+    "FieldShowCondition": "orders.orderType CONTAINS \"CARE_ORDER\" OR orders.orderType CONTAINS \"INTERIM_CARE_ORDER\" OR orders.orderType CONTAINS \"SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"INTERIM_SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"EDUCATION_SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\" OR orders.orderType CONTAINS \"OTHER\" OR orders.orderType!=\"*\""
   },
   {
     "LiveFrom": "01/01/2017",
