@@ -62,5 +62,17 @@
     "PageDisplayOrder": 1,
     "ShowSummaryChangeOption": "No",
     "FieldShowCondition" : "londonDFJ = \"CENTRAL_LONDON\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "cmsReport",
+    "CaseFieldID": "cmsReportDetails",
+    "DisplayContext": "READONLY",
+    "PageID": "2",
+    "PageDisplayOrder": 2,
+    "PageFieldDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   }
 ]
