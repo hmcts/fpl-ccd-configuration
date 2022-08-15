@@ -459,7 +459,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "positionStatementRespondentList",
     "UserRole": "caseworker-publiclaw-cafcass",
-    "CRUD": "R"
+    "CRUD": "RD"
   },
   {
     "LiveFrom": "01/01/2017",
