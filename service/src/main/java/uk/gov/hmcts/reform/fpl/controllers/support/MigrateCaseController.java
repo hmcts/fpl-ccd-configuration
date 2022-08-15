@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApiV2;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -15,8 +17,12 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -33,6 +39,12 @@ import static java.lang.String.format;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
+
+    private final CoreCaseDataApiV2 coreCaseDataApi;
+
+    private final RequestData requestData;
+
+    private final AuthTokenGenerator authToken;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-794", this::run794,
@@ -60,8 +72,27 @@ public class MigrateCaseController extends CallbackController {
 
         log.info("Migration {id = {}, case reference = {}} finished", migrationId, id);
 
-        caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
+        final CaseData caseData = getCaseData(callbackRequest);
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
+        String migrationId = (String) caseDetails.getData().get(MIGRATION_ID_KEY);
+        Long id = caseDetails.getId();
+
+        if ("DFPL-702".equals(migrationId)) {
+            // update supplementary data
+            String caseId = caseData.getId().toString();
+            Map<String, Map<String, Map<String, Object>>> supplementaryData = new HashMap<>();
+            supplementaryData.put("supplementary_data_updates",
+                Map.of("$set", Map.of("HMCTSServiceId", "ABA3")));
+            coreCaseDataApi.submitSupplementaryData(requestData.authorisation(), authToken.generate(), caseId,
+                supplementaryData);
+        }
+        caseDetails.getData().remove(MIGRATION_ID_KEY);
     }
 
     /**
@@ -119,6 +150,14 @@ public class MigrateCaseController extends CallbackController {
                 DynamicListElement.builder().code("FPL").label("Family Public Law").build()
             ))
             .build());
+
+//        // update supplementary data TODO not working
+//        String caseId = caseData.getId().toString();
+//        Map<String, Map<String, Map<String, Object>>> supplementaryData = new HashMap<>();
+//        supplementaryData.put("supplementary_data_updates",
+//            Map.of("$set", Map.of("HMCTSServiceId", "ABA3")));
+//        coreCaseDataApi.submitSupplementaryData(requestData.authorisation(), authToken.generate(), caseId,
+//            supplementaryData);
     }
 
     private void removeC110a(CaseDetails caseDetails, String migrationId, long expectedCaseId, UUID expectedDocId) {
