@@ -7,8 +7,60 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
     "PageID": 1,
-    "PageLabel": "",
+    "PageLabel": "Select following to generate report",
     "PageDisplayOrder": 1,
     "ShowSummaryChangeOption": "No"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "cmsReport",
+    "CaseFieldID": "londonDFJ",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageLabel": "",
+    "PageDisplayOrder": 1,
+    "ShowSummaryChangeOption": "No",
+    "FieldShowCondition" : "nationalArea = \"LONDON\""
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "cmsReport",
+    "CaseFieldID": "northWestDJF",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageLabel": "",
+    "PageDisplayOrder": 1,
+    "ShowSummaryChangeOption": "No",
+    "FieldShowCondition" : "nationalArea = \"NORTH_WEST\""
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "cmsReport",
+    "CaseFieldID": "carlisleDFJCourts",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageLabel": "",
+    "PageDisplayOrder": 1,
+    "ShowSummaryChangeOption": "No",
+    "FieldShowCondition" : "northWestDJF = \"CARLISLE\""
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "cmsReport",
+    "CaseFieldID": "centralLondonDFJCourts",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageLabel": "",
+    "PageDisplayOrder": 1,
+    "ShowSummaryChangeOption": "No",
+    "FieldShowCondition" : "londonDFJ = \"CENTRAL_LONDON\""
   }
 ]

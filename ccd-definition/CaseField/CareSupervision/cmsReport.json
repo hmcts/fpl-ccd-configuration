@@ -8,5 +8,45 @@
     "FieldTypeParameter": "NationalArea",
     "SecurityClassification": "Public",
     "Searchable": "N"
- }
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "londonDFJ",
+    "Label": "Select DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "LondonDJF",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "northWestDJF",
+    "Label": "Select DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "NorthWestDJF",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "carlisleDFJCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "CarlisleDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "centralLondonDFJCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "CentralLondonDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  }
 ]
