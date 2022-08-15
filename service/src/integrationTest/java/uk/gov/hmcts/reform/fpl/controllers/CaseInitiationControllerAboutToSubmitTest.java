@@ -7,9 +7,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.apache.http.HttpStatus.SC_FORBIDDEN;
@@ -166,10 +171,21 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         Map<String, Object> caseDetails = postAboutToSubmitEvent(caseData).getData();
 
-        // TODO Test caseManagementLocation and caseManagementCategory as well
-        assertThat(caseDetails.get("caseNameHmctsRestricted")).isEqualTo("GlobalSearchTest CaseName");
-        assertThat(caseDetails.get("caseNameHmctsInternal")).isEqualTo("GlobalSearchTest CaseName");
-        assertThat(caseDetails.get("caseNamePublic")).isEqualTo("GlobalSearchTest CaseName");
+        // TODO Test caseManagementLocation as well
+
+        @SuppressWarnings("unchecked")
+        Map<String, Map<String, String>> caseManagementCategory = (Map<String, Map<String, String>>)
+            caseDetails.get("caseManagementCategory");
+
+        assertThat(caseManagementCategory).containsKey("value");
+        Map<String, String> caseManagementCategoryValue =  caseManagementCategory.get("value");
+        assertThat(caseManagementCategoryValue).containsEntry("code", "FPL");
+        assertThat(caseManagementCategoryValue).containsEntry("label", "Family Public Law");
+
+        assertThat(caseManagementCategory).containsKey("list_items");
+        @SuppressWarnings("unchecked")
+        List<Map<String, String>> listItems = (List<Map<String, String>>) caseManagementCategory.get("list_items");
+        assertThat(listItems).contains(Map.of("code", "FPL", "label", "Family Public Law"));
     }
 
 }

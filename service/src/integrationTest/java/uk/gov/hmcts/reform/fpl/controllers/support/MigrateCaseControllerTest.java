@@ -329,9 +329,21 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             );
             Map<String, Object> caseDetails = response.getData();
 
-            assertThat(caseDetails.get("caseNameHmctsRestricted")).isEqualTo("I AM CASE NAME");
             assertThat(caseDetails.get("caseNameHmctsInternal")).isEqualTo("I AM CASE NAME");
-            assertThat(caseDetails.get("caseNamePublic")).isEqualTo("I AM CASE NAME");
+
+            @SuppressWarnings("unchecked")
+            Map<String, Map<String, String>> caseManagementCategory = (Map<String, Map<String, String>>)
+                caseDetails.get("caseManagementCategory");
+
+            assertThat(caseManagementCategory).containsKey("value");
+            Map<String, String> caseManagementCategoryValue =  caseManagementCategory.get("value");
+            assertThat(caseManagementCategoryValue).containsEntry("code", "FPL");
+            assertThat(caseManagementCategoryValue).containsEntry("label", "Family Public Law");
+
+            assertThat(caseManagementCategory).containsKey("list_items");
+            @SuppressWarnings("unchecked")
+            List<Map<String, String>> listItems = (List<Map<String, String>>) caseManagementCategory.get("list_items");
+            assertThat(listItems).contains(Map.of("code", "FPL", "label", "Family Public Law"));
             // TODO test SearchCriteria
         }
     }

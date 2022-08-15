@@ -111,11 +111,14 @@ public class MigrateCaseController extends CallbackController {
         String caseName = caseData.getCaseName();
 
         // migrating top level fields: case names
-        caseDetails.getData().put("caseNameHmctsRestricted", caseName);
         caseDetails.getData().put("caseNameHmctsInternal", caseName);
-        caseDetails.getData().put("caseNamePublic", caseName);
         // migrating caseManagementLocation TODO
-        // migrating caseManagementCategory TODO
+        caseDetails.getData().put("caseManagementCategory", DynamicList.builder()
+            .value(DynamicListElement.builder().code("FPL").label("Family Public Law").build())
+            .listItems(List.of(
+                DynamicListElement.builder().code("FPL").label("Family Public Law").build()
+            ))
+            .build());
     }
 
     private void removeC110a(CaseDetails caseDetails, String migrationId, long expectedCaseId, UUID expectedDocId) {

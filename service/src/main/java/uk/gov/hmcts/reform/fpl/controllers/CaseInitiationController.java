@@ -76,18 +76,15 @@ public class CaseInitiationController extends CallbackController {
         caseDetails.putIfNotEmpty("outsourcingPolicy", updatedCaseData.getOutsourcingPolicy());
         caseDetails.putIfNotEmpty("court", updatedCaseData.getCourt());
         caseDetails.putIfNotEmpty("multiCourts", updatedCaseData.getMultiCourts());
-        caseDetails.putIfNotEmpty("caseNameHmctsRestricted", updatedCaseData.getCaseName());
         caseDetails.putIfNotEmpty("caseNameHmctsInternal", updatedCaseData.getCaseName());
-        caseDetails.putIfNotEmpty("caseNamePublic", updatedCaseData.getCaseName());
         // TODO filling in caseManagementLocation with anything for testing
         caseDetails.putIfNotEmpty("caseManagementLocation", CaseLocation.builder()
             .baseLocation("1")
             .region("3").build());
-        // TODO filling in caseManagementCategory
         caseDetails.putIfNotEmpty("caseManagementCategory", DynamicList.builder()
-            .value(DynamicListElement.builder().code("987").label("Category Label").build())
+            .value(DynamicListElement.builder().code("FPL").label("Family Public Law").build())
             .listItems(List.of(
-                DynamicListElement.builder().code("987").label("Category Label").build()
+                DynamicListElement.builder().code("FPL").label("Family Public Law").build()
             ))
             .build());
 
