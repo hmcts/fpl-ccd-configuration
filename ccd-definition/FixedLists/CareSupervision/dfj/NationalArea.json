@@ -1,0 +1,51 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NationalArea",
+    "ListElementCode": "LONDON",
+    "ListElement": "London",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NationalArea",
+    "ListElementCode": "MIDLANDS",
+    "ListElement": "Midlands",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NationalArea",
+    "ListElementCode": "NORTH_EAST",
+    "ListElement": "North East",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NationalArea",
+    "ListElementCode": "NORTH_WEST",
+    "ListElement": "North West",
+    "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NationalArea",
+    "ListElementCode": "SOUTH_EAST",
+    "ListElement": "South East",
+    "DisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NationalArea",
+    "ListElementCode": "SOUTH_WEST",
+    "ListElement": "South West",
+    "DisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NationalArea",
+    "ListElementCode": "WALES",
+    "ListElement": "Wales",
+    "DisplayOrder": 7
+  }
+]

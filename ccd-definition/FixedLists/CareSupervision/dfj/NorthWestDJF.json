@@ -1,0 +1,36 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NorthWestDJF",
+    "ListElementCode": "BLACKBURN_LANCASTER",
+    "ListElement": "Blackburn/Lancaster",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NorthWestDJF",
+    "ListElementCode": "CARLISLE",
+    "ListElement": "Carlisle",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NorthWestDJF",
+    "ListElementCode": "LIVERPOOL",
+    "ListElement": "Liverpool",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NorthWestDJF",
+    "ListElementCode": "MANCHESTER",
+    "ListElement": "Manchester",
+    "DisplayOrder": 1
+  }
+]
+
+
+
+
+
+
