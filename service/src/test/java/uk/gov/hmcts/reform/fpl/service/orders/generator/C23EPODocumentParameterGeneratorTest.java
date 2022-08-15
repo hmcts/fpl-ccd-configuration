@@ -50,7 +50,7 @@ class C23EPODocumentParameterGeneratorTest {
     public static final String CHILDREN_DESCRIPTION = "Children description";
     public static final LocalDateTime APPROVAL_DATE_TIME = LocalDateTime.of(2021, 4, 20, 10, 0, 0);
     public static final LocalDateTime END_DATE_TIME = LocalDateTime.of(2021, 4, 25, 10, 0, 0);
-    public static final String EXPECTED_APPROVAL_DATE_TIME = "20 April 2021, 10:00am";
+    public static final String EXPECTED_APPROVAL_DATE = "20 April 2021";
     public static final LocalDate EXCLUSION_DATE = LocalDate.now().plusDays(2);
     public static final String EXCLUDE_PERSON = "Test user1";
     public static final Address REMOVAL_ADDRESS = Address.builder()
@@ -126,7 +126,7 @@ class C23EPODocumentParameterGeneratorTest {
         return C23EPODocmosisParameters.builder()
             .orderType(EMERGENCY_PROTECTION_ORDER)
             .orderTitle("Emergency protection order")
-            .dateOfIssue(EXPECTED_APPROVAL_DATE_TIME)
+            .dateOfIssue(EXPECTED_APPROVAL_DATE)
             .furtherDirections(FURTHER_DIRECTIONS)
             .orderDetails(format("It is ordered that the child is placed in the care of %s.", LA_NAME))
             .localAuthorityName(LA_NAME)

@@ -44,8 +44,35 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudgeOrMagistrateTitle",
+    "ListElementCode": "LEGAL_ADVISOR",
+    "ListElement": "Legal Advisor",
+    "DisplayOrder": 7
+  },{
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeOrMagistrateTitle",
+    "ListElementCode": "MS_JUSTICE",
+    "ListElement": "Ms Justice",
+    "DisplayOrder": 8
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeOrMagistrateTitle",
+    "ListElementCode": "MRS_JUSTICE",
+    "ListElement": "Mrs Justice",
+    "DisplayOrder": 9
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeOrMagistrateTitle",
+    "ListElementCode": "MR_JUSTICE",
+    "ListElement": "Mr Justice",
+    "DisplayOrder": 10
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeOrMagistrateTitle",
     "ListElementCode": "OTHER",
     "ListElement": "Other",
-    "DisplayOrder": 7
+    "DisplayOrder": 11
   }
 ]

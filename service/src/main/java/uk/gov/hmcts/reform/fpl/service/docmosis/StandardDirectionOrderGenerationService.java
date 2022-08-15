@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 
 import java.util.ArrayList;
@@ -30,6 +32,7 @@ public class StandardDirectionOrderGenerationService extends
     DocmosisTemplateDataGeneration<DocmosisStandardDirectionOrder> {
     private final OrdersLookupService ordersLookupService;
     private final CaseDataExtractionService dataService;
+    private final CourtService courtService;
 
     private static final int SDO_DIRECTION_INDEX_START = 2;
 
@@ -53,10 +56,11 @@ public class StandardDirectionOrderGenerationService extends
                 .applicantName(dataService.getApplicantName(caseData))
                 .directions(buildDirections(standardDirectionOrder.getDirections()))
                 .hearingBooking(dataService.getHearingBookingData(firstHearing))
-                .crest(getCrestData());
+                .crest(getCrestData())
+                .isHighCourtCase(courtService.isHighCourtCase(caseData));
 
         if (standardDirectionOrder.isSealed()) {
-            orderBuilder.courtseal(getCourtSealData(caseData.getImageLanguage()));
+            orderBuilder.courtseal(courtService.getCourtSeal(caseData, OrderStatus.SEALED));
         } else {
             orderBuilder.draftbackground(getDraftWaterMarkData());
         }

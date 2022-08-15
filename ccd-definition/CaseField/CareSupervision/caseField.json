@@ -78,6 +78,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "groundsForChildAssessmentOrder",
+    "Label": "How are there grounds for a child assessment order?",
+    "FieldType": "GroundsForChildAssessmentOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "grounds",
     "Label": "How does this case meet the threshold criteria?",
     "FieldType": "Grounds",
@@ -420,7 +429,16 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "submittedForm",
-    "Label": "C110a Application",
+    "Label": "Application Form",
+    "FieldType": "Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "supplementDocument",
+    "Label": "Application Supplement",
     "FieldType": "Document",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -539,6 +557,15 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "draftApplicationDocument",
+    "FieldType": "Document",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "draftSupplement",
     "FieldType": "Document",
     "Label": " ",
     "SecurityClassification": "Public",
