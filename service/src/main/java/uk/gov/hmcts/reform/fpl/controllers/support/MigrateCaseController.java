@@ -150,14 +150,6 @@ public class MigrateCaseController extends CallbackController {
                 DynamicListElement.builder().code("FPL").label("Family Public Law").build()
             ))
             .build());
-
-//        // update supplementary data TODO not working
-//        String caseId = caseData.getId().toString();
-//        Map<String, Map<String, Map<String, Object>>> supplementaryData = new HashMap<>();
-//        supplementaryData.put("supplementary_data_updates",
-//            Map.of("$set", Map.of("HMCTSServiceId", "ABA3")));
-//        coreCaseDataApi.submitSupplementaryData(requestData.authorisation(), authToken.generate(), caseId,
-//            supplementaryData);
     }
 
     private void removeC110a(CaseDetails caseDetails, String migrationId, long expectedCaseId, UUID expectedDocId) {
