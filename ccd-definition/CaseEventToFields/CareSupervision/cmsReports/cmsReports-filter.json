@@ -9,7 +9,21 @@
     "PageID": 1,
     "PageLabel": "Select following to generate report",
     "PageDisplayOrder": 1,
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/cms-report/fetch-data/mid-event",
     "ShowSummaryChangeOption": "No"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "cmsReport",
+    "CaseFieldID": "cmsReportDetails",
+    "DisplayContext": "READONLY",
+    "PageID": "1",
+    "PageDisplayOrder": 1,
+    "PageFieldDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N",
+    "FieldShowCondition" : "nationalArea = \"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2018",
@@ -67,12 +81,12 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "cmsReport",
-    "CaseFieldID": "cmsReportDetails",
+    "CaseFieldID": "cmsReportView",
     "DisplayContext": "READONLY",
     "PageID": "2",
     "PageDisplayOrder": 2,
     "PageFieldDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "Y"
+    "ShowSummaryChangeOption": "No"
   }
 ]
