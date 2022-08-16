@@ -40,7 +40,7 @@ exports.config = {
   },
   helpers: {
     Puppeteer: {
-      show: process.env.SHOW_BROWSER_WINDOW || false,
+      show: process.env.SHOW_BROWSER_WINDOW || true,
       restart: false,
       keepCookies: true,
       keepBrowserState: true,
@@ -136,6 +136,10 @@ exports.config = {
     manageOrdersEventPage: './e2e/pages/events/manageOrders.page.js',
     uploadWelshTranslationsPage: './e2e/pages/events/uploadWelshTranslation.page.js',
     manageLocalAuthoritiesEventPage: './e2e/pages/events/manageLocalAuthorities.page.js',
+    caseViewOtherPage : './e2e/tests/other/caseViewOther.js',
+    changeCaseViewOtherPage : './e2e/tests/other/otherpages/changeCaseViewOther.js',
+    ordersAndDirectionsOtherPage : './e2e/tests/other/otherpages/ordersAndDirectionsOther.js',
+    hearingUrgencyOtherPage : './e2e/tests/other/otherpages/hearingUrgencyOther.js',
   },
   plugins: {
     retryFailedStep: {
@@ -146,7 +150,7 @@ exports.config = {
       fullPageScreenshots: true,
     },
   },
-  tests: './e2e/tests/*_test.js',
+  tests: './e2e/tests/**/*_test.js',
   teardownAll: require('./e2e/hooks/aggregate-metrics'),
   mocha: {
     reporterOptions: {

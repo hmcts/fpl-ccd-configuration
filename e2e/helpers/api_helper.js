@@ -154,4 +154,5 @@ module.exports = {
   grantCaseAccess,
   getUser,
   pollLastEvent,
+  getAuthToken,
 };

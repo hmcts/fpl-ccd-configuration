@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service;
+xpackage uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
