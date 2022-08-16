@@ -11,13 +11,17 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.ApplicationFormRemovedEvent;
 import uk.gov.hmcts.reform.fpl.events.ApplicationRemovedEvent;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderRemovedEvent;
 import uk.gov.hmcts.reform.fpl.events.cmo.CMORemovedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.RemovalToolData;
+import uk.gov.hmcts.reform.fpl.model.RemovedApplicationForm;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.removeorder.RemoveApplicationService;
@@ -120,28 +124,15 @@ public class RemovalToolController extends CallbackController {
                 return respond(caseDetailsMap, List.of(APPLICATION_FORM_ALREADY_REMOVED_ERROR_MESSAGE));
             }
             caseDetailsMap.put("submittedForm", null);
-            caseDetailsMap.put("hiddenApplicationForm", caseData.getC110A().getDocument());
+            caseDetailsMap.put("supplementDocument", null);
+            caseDetailsMap.put("hiddenApplicationForm", RemovedApplicationForm.builder()
+                    .submittedForm(caseData.getC110A().getDocument())
+                    .submittedSupplement(!isEmpty(caseData.getC110A().getSupplementDocument())
+                        ? caseData.getC110A().getSupplementDocument() : null)
+                    .removalReason(caseData.getRemovalToolData().getReasonToRemoveApplicationForm())
+                .build());
         }
-        removeTemporaryFields(
-            caseDetailsMap,
-            REMOVABLE_ORDER_LIST_KEY,
-            REMOVABLE_APPLICATION_LIST_KEY,
-            "removableType",
-            "orderTitleToBeRemoved",
-            "applicationTypeToBeRemoved",
-            "orderToBeRemoved",
-            "c2ApplicationToBeRemoved",
-            "otherApplicationToBeRemoved",
-            "orderIssuedDateToBeRemoved",
-            "orderDateToBeRemoved",
-            "reasonToRemoveOrder",
-            "reasonToRemoveApplication",
-            "applicationRemovalDetails",
-            "hearingToUnlink",
-            "showRemoveCMOFieldsFlag",
-            "showRemoveSDOWarningFlag",
-            "showReasonFieldFlag"
-        );
+        removeTemporaryFields(caseDetailsMap, RemovalToolData.temporaryFields());
 
         return respond(caseDetailsMap);
     }
@@ -162,6 +153,10 @@ public class RemovalToolController extends CallbackController {
             .getRemovalToolData().getHiddenApplicationsBundle(),
             caseDataBefore.getRemovalToolData().getHiddenApplicationsBundle());
 
+        Optional<DocumentReference> removedApplicationForm =
+            (caseData.getC110A().getSubmittedForm() != caseDataBefore.getC110A().getSubmittedForm())
+            ? Optional.of(caseDataBefore.getC110A().getSubmittedForm()) : Optional.empty();
+
         if (removedSDO.isPresent()) {
             publishEvent(new PopulateStandardDirectionsEvent(callbackRequest));
             publishEvent(new StandardDirectionsOrderRemovedEvent(
@@ -171,6 +166,8 @@ public class RemovalToolController extends CallbackController {
                 new CMORemovedEvent(caseData, removedCMO.map(HearingOrder::getRemovalReason).orElse("")));
         } else if (removedApplication.isPresent()) {
             publishEvent(new ApplicationRemovedEvent(caseData, removedApplication.get()));
+        } else if (removedApplicationForm.isPresent()) {
+            publishEvent(new ApplicationFormRemovedEvent(caseData, removedApplicationForm.get()));
         }
     }
 }

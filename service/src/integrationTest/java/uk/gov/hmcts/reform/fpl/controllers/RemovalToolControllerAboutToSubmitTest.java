@@ -41,6 +41,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.controllers.RemovalToolController.APPLICATION_FORM_ALREADY_REMOVED_ERROR_MESSAGE;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationRemovalReason.DUPLICATE;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
@@ -68,6 +69,7 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
     private static final String REASON = "The order was removed because the order was removed";
     private static final UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
     public static final UUID REMOVED_ORDER_ID = UUID.randomUUID();
+    public static final String DUMMY_DATA = "dummy data";
 
     @MockBean
     private IdentityService identityService;
@@ -101,21 +103,22 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
     void shouldRemoveTemporaryFields() {
         Map<String, Object> fields = new HashMap<>();
 
-        fields.put("removableType", "ORDER");
+        fields.put("removableType", ORDER);
         fields.put("removableApplicationList", DynamicList.builder().build());
-        fields.put("orderTitleToBeRemoved", "dummy data");
-        fields.put("applicationTypeToBeRemoved", "dummy data");
-        fields.put("orderToBeRemoved", "dummy data");
-        fields.put("c2ApplicationToBeRemoved", "dummy data");
-        fields.put("otherApplicationToBeRemoved", "dummy data");
-        fields.put("orderIssuedDateToBeRemoved", "dummy data");
-        fields.put("orderDateToBeRemoved", "dummy data");
-        fields.put("reasonToRemoveApplication", "DUPLICATE");
-        fields.put("applicationRemovalDetails", "dummy data");
-        fields.put("hearingToUnlink", "dummy data");
-        fields.put("showRemoveCMOFieldsFlag", "dummy data");
-        fields.put("showRemoveSDOWarningFlag", "dummy data");
-        fields.put("showReasonFieldFlag", "dummy data");
+        fields.put("orderTitleToBeRemoved", DUMMY_DATA);
+        fields.put("applicationTypeToBeRemoved", DUMMY_DATA);
+        fields.put("orderToBeRemoved", DUMMY_DATA);
+        fields.put("c2ApplicationToBeRemoved", DUMMY_DATA);
+        fields.put("otherApplicationToBeRemoved", DUMMY_DATA);
+        fields.put("orderIssuedDateToBeRemoved", DUMMY_DATA);
+        fields.put("orderDateToBeRemoved", DUMMY_DATA);
+        fields.put("reasonToRemoveApplication", DUPLICATE);
+        fields.put("applicationRemovalDetails", DUMMY_DATA);
+        fields.put("hearingToUnlink", DUMMY_DATA);
+        fields.put("showRemoveCMOFieldsFlag", DUMMY_DATA);
+        fields.put("showRemoveSDOWarningFlag", DUMMY_DATA);
+        fields.put("showReasonFieldFlag", DUMMY_DATA);
+        fields.put("reasonToRemoveApplicationForm", DUMMY_DATA);
 
         CaseDetails caseDetails = asCaseDetails(buildCaseData(selectedOrder));
 
@@ -140,7 +143,8 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
             "hearingToUnlink",
             "showRemoveCMOFieldsFlag",
             "showRemoveSDOWarningFlag",
-            "showReasonFieldFlag"
+            "showReasonFieldFlag",
+            "reasonToRemoveApplicationForm"
         );
     }
 
@@ -462,9 +466,11 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
     @Test
     void shouldRemoveApplicationForm() {
         DocumentReference c110a = testDocumentReference();
+        String reasonToRemoveApplicationForm = "Confidential information disclosed.";
         CaseData caseData = CaseData.builder()
             .removalToolData(RemovalToolData.builder()
                 .removableType(APPLICATION)
+                .reasonToRemoveApplicationForm(reasonToRemoveApplicationForm)
                 .build())
             .c110A(C110A.builder()
                 .submittedForm(c110a)
@@ -474,7 +480,25 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
         assertThat(responseData.getC110A().getDocument()).isNull();
-        assertThat(responseData.getRemovalToolData().getHiddenApplicationForm()).isEqualTo(c110a);
+        assertThat(responseData.getRemovalToolData().getHiddenApplicationForm().getSubmittedForm()).isEqualTo(c110a);
+        assertThat(responseData.getRemovalToolData().getHiddenApplicationForm().getRemovalReason())
+            .isEqualTo(reasonToRemoveApplicationForm);
+    }
+
+    @Test
+    void shouldErrorIfApplicationFormHasAlreadyBeenRemoved() {
+        CaseData caseData = CaseData.builder()
+            .c110A(C110A.builder()
+                .submittedForm(null)
+                .build())
+            .removalToolData(RemovalToolData.builder()
+                .removableType(APPLICATION)
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
+
+        assertThat(response.getErrors()).containsExactly(APPLICATION_FORM_ALREADY_REMOVED_ERROR_MESSAGE);
     }
 
     private CaseData buildCaseData(Element<GeneratedOrder> order) {

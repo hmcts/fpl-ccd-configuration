@@ -253,7 +253,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hiddenApplicationForm",
     "Label": "Removed Application Form",
-    "FieldType": "Document",
+    "FieldType": "RemovedApplicationForm",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }

@@ -7,15 +7,17 @@ import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationRemovalReason;
 import uk.gov.hmcts.reform.fpl.enums.RemovableType;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.reflect.FieldUtils.getFieldsListWithAnnotation;
 
 @Value
 @Builder(toBuilder = true)
@@ -23,18 +25,45 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RemovalToolData {
 
-    Object removableOrderList;
-    Object removableApplicationList;
-    String reasonToRemoveOrder;
-    List<Element<GeneratedOrder>> hiddenOrders;
-    RemovableType removableType;
-    ApplicationRemovalReason reasonToRemoveApplication;
-    String applicationRemovalDetails;
-    String reasonToRemoveApplicationForm;
-    DocumentReference hiddenApplicationForm;
+    RemovedApplicationForm hiddenApplicationForm;
     List<Element<HearingOrder>> hiddenCaseManagementOrders;
+    List<Element<GeneratedOrder>> hiddenOrders;
     List<Element<StandardDirectionOrder>> hiddenStandardDirectionOrders;
     List<Element<AdditionalApplicationsBundle>> hiddenApplicationsBundle;
+
+    @Temp
+    Object removableOrderList;
+
+    @Temp
+    Object removableApplicationList;
+
+    @Temp
+    RemovableType removableType;
+
+    @Temp
+    String applicationRemovalDetails;
+
+    @Temp
+    String reasonToRemoveApplicationForm;
+
+    @Temp
+    String reasonToRemoveOrder;
+
+    @Temp
+    ApplicationRemovalReason reasonToRemoveApplication;
+
+    static List<String> otherTemporaryFields = List.of("orderTitleToBeRemoved", "applicationTypeToBeRemoved",
+        "orderToBeRemoved", "c2ApplicationToBeRemoved", "otherApplicationToBeRemoved", "orderIssuedDateToBeRemoved",
+        "orderDateToBeRemoved", "hearingToUnlink", "showRemoveCMOFieldsFlag", "showRemoveSDOWarningFlag",
+        "showReasonFieldFlag");
+
+    public static List<String> temporaryFields() {
+        List<String> tempFields = getFieldsListWithAnnotation(RemovalToolData.class, Temp.class).stream()
+            .map(Field::getName)
+            .collect(toList());
+        tempFields.addAll(otherTemporaryFields);
+        return tempFields;
+    }
 
     public List<Element<AdditionalApplicationsBundle>> getHiddenApplicationsBundle() {
         return defaultIfNull(hiddenApplicationsBundle, new ArrayList<>());
