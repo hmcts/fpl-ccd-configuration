@@ -28,6 +28,7 @@ public class DocmosisCaseSubmission implements DocmosisData {
     private final String userFullName;
     private final String submittedDate;
     private final String groundsForEPOReason;
+    private final String groundsForChildAssessmentOrderReason;
     private final String groundsThresholdReason;
     private final String thresholdDetails;
     private final DocmosisRisks risks;
