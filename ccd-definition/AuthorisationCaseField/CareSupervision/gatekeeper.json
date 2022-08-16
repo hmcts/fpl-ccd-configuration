@@ -786,7 +786,28 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "courtBundleTabHeading",
+    "CaseFieldID": "hearingDocumentsTabHeading",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "caseSummaryList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "positionStatementChildList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "positionStatementRespondentList",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "R"
   },
@@ -2886,6 +2907,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersChildArrangementsOrderType",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "manageOrdersRecitalsAndPreambles",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRU"
@@ -3715,5 +3743,110 @@
     "CaseFieldID": "manageOrdersC35aOrderDoesntExistMessage",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersChildAssessmentType",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersAssessmentStartDate",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersDurationOfAssessment",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersPlaceOfAssessment",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersAssessingBody",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersChildKeepAwayFromHome",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersFullAddressToStayIfKeepAwayFromHome",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersStartDateOfStayIfKeepAwayFromHome",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersEndDateOfStayIfKeepAwayFromHome",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersChildFirstContactIfKeepAwayFromHome",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersChildSecondContactIfKeepAwayFromHome",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersChildThirdContactIfKeepAwayFromHome",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersDoesCostOrderExist",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersCostOrderDetails",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "othersList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "R"
   }
 ]

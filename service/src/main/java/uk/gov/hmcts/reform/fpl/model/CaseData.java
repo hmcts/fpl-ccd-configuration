@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
+import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
@@ -55,6 +56,7 @@ import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageLegalCounselEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
+import uk.gov.hmcts.reform.fpl.model.event.OtherToRespondentEventData;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.event.RecordChildrenFinalDecisionsEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
@@ -166,6 +168,16 @@ public class CaseData {
     private OutsourcingType outsourcingType;
     private Object outsourcingLAs;
     private Court court;
+    private List<Element<Court>> pastCourtList;
+
+    public List<Element<Court>> getPastCourtList() {
+        return defaultIfNull(pastCourtList, new ArrayList<>());
+    }
+
+    public void setPastCourtList(List<Element<Court>> pastCourtList) {
+        this.pastCourtList = pastCourtList;
+    }
+
     private YesNo multiCourts;
 
     private final Risks risks;
@@ -175,6 +187,9 @@ public class CaseData {
     @NotNull(message = "Add the grounds for the application")
     @Valid
     private final Grounds grounds;
+    @NotNull(message = "Add the grounds for the application")
+    @Valid
+    private final GroundsForChildAssessmentOrder groundsForChildAssessmentOrder;
     @NotNull(message = "Add the grounds for the application", groups = EPOGroup.class)
     @Valid
     private final GroundsForEPO groundsForEPO;
@@ -277,7 +292,6 @@ public class CaseData {
     @JsonProperty("documents_socialWorkEvidenceTemplate_document")
     @Valid
     public final Document socialWorkEvidenceTemplateDocument;
-    public final CourtBundle courtBundle;
     @NotEmpty(message = "Add the child's details")
     @Valid
     private final List<@NotNull(message = "Add the child's details") Element<Child>> children1;
@@ -688,12 +702,32 @@ public class CaseData {
     private final List<Element<RespondentStatement>> respondentStatements;
     private final Object manageDocumentsHearingList;
     private final Object manageDocumentsSupportingC2List;
-    private final Object courtBundleHearingList;
+    private final Object hearingDocumentsHearingList;
     private final Object respondentStatementList;
 
+    private final HearingDocumentType manageDocumentsHearingDocumentType;
     private final List<Element<CourtBundle>> manageDocumentsCourtBundle;
-    private final List<Element<HearingCourtBundle>> courtBundleListV2;
-    private final List<Element<CourtBundle>> courtBundleList;
+    private final CaseSummary manageDocumentsCaseSummary;
+    private final PositionStatementChild manageDocumentsPositionStatementChild;
+    private final PositionStatementRespondent manageDocumentsPositionStatementRespondent;
+    private final DynamicList manageDocumentsChildrenList;
+    private final DynamicList hearingDocumentsRespondentList;
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final HearingDocuments hearingDocuments = HearingDocuments.builder().build();
+
+    public DynamicList buildDynamicChildrenList() {
+        return buildDynamicChildrenList(null);
+    }
+
+    public DynamicList buildDynamicChildrenList(UUID selected) {
+        return buildDynamicChildrenList(getAllChildren(), selected);
+    }
+
+    public DynamicList buildDynamicChildrenList(List<Element<Child>> children, UUID selected) {
+        return asDynamicList(children, selected, child -> child.getParty().getFullName());
+    }
 
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceDocumentsTemp() {
         return defaultIfNull(supportingEvidenceDocumentsTemp, new ArrayList<>());
@@ -701,10 +735,6 @@ public class CaseData {
 
     public List<Element<CourtBundle>> getManageDocumentsCourtBundle() {
         return defaultIfNull(manageDocumentsCourtBundle, new ArrayList<>());
-    }
-
-    public List<Element<HearingCourtBundle>> getCourtBundleListV2() {
-        return defaultIfNull(courtBundleListV2, new ArrayList<>());
     }
 
     public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocuments() {
@@ -1150,5 +1180,16 @@ public class CaseData {
             .orElse(false);
     }
 
+    @JsonIgnore
+    public boolean isC1Application() {
+        return ofNullable(getOrders())
+            .map(Orders::isC1Order)
+            .orElse(false);
+    }
+
     private List<Element<DocumentWithConfidentialAddress>> documentsWithConfidentialAddress;
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final OtherToRespondentEventData otherToRespondentEventData = OtherToRespondentEventData.builder().build();
 }

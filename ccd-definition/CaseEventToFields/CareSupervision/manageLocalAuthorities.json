@@ -277,5 +277,30 @@
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
     "FieldShowCondition": "transferToCourt=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageLocalAuthorities",
+    "CaseFieldID": "currentCourtNameWithoutTransferLA",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "SelectCourtWithRcjHighCourt",
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-local-authorities/transfer-court/court-selection/mid-event",
+    "PageShowCondition": "localAuthorityAction=\"TRANSFER_COURT\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageLocalAuthorities",
+    "CaseFieldID": "courtsToTransferWithoutTransferLA",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY",
+    "PageID": "SelectCourtWithRcjHighCourt",
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   }
 ]

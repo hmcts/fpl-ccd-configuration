@@ -394,9 +394,46 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentsCourtBundleNoHearingsLabel",
+    "FieldType": "Label",
+    "Label": "There are no hearings to associate a bundle with",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "courtBundleHearingList",
+    "FieldType": "DynamicList",
+    "Label": "Which hearing?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "courtBundleTabHeading",
+    "FieldType": "Label",
+    "Label": "## Court bundle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "reviewCMOShowOthers",
     "Label": " ",
     "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "cmoSupportingDocs",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "Label": "Case summary or supporting documents",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }

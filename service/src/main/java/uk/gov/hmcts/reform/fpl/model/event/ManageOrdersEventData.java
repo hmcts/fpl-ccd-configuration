@@ -7,6 +7,7 @@ import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.C29ActionsPermitted;
 import uk.gov.hmcts.reform.fpl.enums.C36OrderType;
 import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
+import uk.gov.hmcts.reform.fpl.enums.ChildArrangementsOrderType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.EnglandOffices;
 import uk.gov.hmcts.reform.fpl.enums.Jurisdiction;
@@ -16,7 +17,9 @@ import uk.gov.hmcts.reform.fpl.enums.ReasonForSecureAccommodation;
 import uk.gov.hmcts.reform.fpl.enums.RelationshipWithChild;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.WalesOffices;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrderEndDateOption;
+import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersChildAssessmentType;
 import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -101,10 +104,25 @@ public class ManageOrdersEventData {
     Address manageOrdersActionsPermittedAddress;
     String manageOrdersOfficerName;
     LocalDate manageOrdersOrderCreatedDate;
+    LocalDate manageOrdersAssessmentStartDate;
+    ManageOrdersChildAssessmentType manageOrdersChildAssessmentType;
+    Integer manageOrdersDurationOfAssessment;
+    String manageOrdersPlaceOfAssessment;
+    String manageOrdersAssessingBody;
+    YesNo manageOrdersChildKeepAwayFromHome;
+    Address manageOrdersFullAddressToStayIfKeepAwayFromHome;
+    LocalDate manageOrdersStartDateOfStayIfKeepAwayFromHome;
+    LocalDate manageOrdersEndDateOfStayIfKeepAwayFromHome;
+    String manageOrdersChildFirstContactIfKeepAwayFromHome;
+    String manageOrdersChildSecondContactIfKeepAwayFromHome;
+    String manageOrdersChildThirdContactIfKeepAwayFromHome;
+    YesNo manageOrdersDoesCostOrderExist;
+    String manageOrdersCostOrderDetails;
     C36OrderType manageOrdersSupervisionOrderType;
     String manageOrdersSupervisionOrderCourtDirection;
     LocalDate manageOrdersSupervisionOrderApprovalDate;
     LocalDate manageOrdersSupervisionOrderEndDate;
+    ChildArrangementsOrderType manageOrdersChildArrangementsOrderType;
 
     @JsonIgnore
     public LocalDateTime getManageOrdersApprovalDateOrDateTime() {

@@ -296,7 +296,7 @@ class FeeServiceTest {
         @Test
         void shouldReturnFeesDataWithMaximumAmountForOtherApplicationTypeAndSupplementType() {
             FeesData feesData = feeService.getFeesDataForAdditionalApplications(
-                List.of(FeeType.C2_WITH_NOTICE, FeeType.CHILD_ASSESSMENT, FeeType.RECOVERY_ORDER));
+                List.of(FeeType.C2_WITH_NOTICE, FeeType.CHILD_ASSESSMENT_ORDER, FeeType.RECOVERY_ORDER));
 
             assertThat(feesData.getTotalAmount()).isEqualTo(BigDecimal.valueOf(60));
             assertThat(getFirstFeeCode(feesData)).isEqualTo(CHILD_ASSESSMENT);
@@ -305,7 +305,7 @@ class FeeServiceTest {
         @Test
         void shouldReturnFeesDataWithMaximumAmountForSupplementTypeWithSecureAccommodation() {
             FeesData feesData = feeService.getFeesDataForAdditionalApplications(List.of(
-                FeeType.CHANGE_SURNAME, FeeType.CHILD_ASSESSMENT, FeeType.SECURE_ACCOMMODATION_WALES));
+                FeeType.CHANGE_SURNAME, FeeType.CHILD_ASSESSMENT_ORDER, FeeType.SECURE_ACCOMMODATION_WALES));
 
             assertThat(feesData.getTotalAmount()).isEqualTo(BigDecimal.valueOf(75));
             assertThat(getFirstFeeCode(feesData)).isEqualTo(SECURE_ACCOMMODATION_WALES);
