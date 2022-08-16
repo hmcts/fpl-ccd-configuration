@@ -14,4 +14,7 @@ public final class SharedLocalAuthorityChangedNotifyData implements NotifyData {
     private String childLastName;
     private String secondaryLocalAuthority;
     private String designatedLocalAuthority;
+    private String previousCourtName;
+    private String courtName;
+
 }

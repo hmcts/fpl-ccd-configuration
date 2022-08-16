@@ -5,6 +5,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 import java.util.UUID;
 
@@ -169,5 +171,11 @@ class OthersTest {
     void shouldReturnFalseWhenFirstOtherAndAdditionalOthersDoNotExist(List<Element<Other>> additionalOthers) {
         Others others = Others.builder().additionalOthers(additionalOthers).build();
         assertFalse(others.hasOthers());
+    }
+
+    @Test
+    void shouldReturnPartyWithDob() {
+        Other testingOther = Other.builder().dateOfBirth("1989-06-04").build();
+        assertThat(testingOther.toParty().getDateOfBirth()).isEqualTo(LocalDate.of(1989, Month.JUNE, 4));
     }
 }
