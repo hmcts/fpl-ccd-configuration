@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 
@@ -22,9 +23,9 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 
 @Api
 @RestController
@@ -40,7 +41,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-798", this::run798,
         "DFPL-802", this::run802,
         "DFPL-692", this::run692,
-        "DFPL-776", this::run776
+        "DFPL-776", this::run776,
+        "DFPL-826", this::run826
     );
 
     @PostMapping("/about-to-submit")
@@ -144,7 +146,7 @@ public class MigrateCaseController extends CallbackController {
 
         List<Element<CaseNote>> resultCaseNotes = caseData.getCaseNotes().stream()
             .filter(caseNoteElement -> !expectedNotesId.contains(caseNoteElement.getId()))
-            .collect(Collectors.toList());
+            .collect(toList());
 
         if (caseData.getCaseNotes().size() - resultCaseNotes.size() != 2) {
             throw new AssertionError(format(
@@ -174,7 +176,7 @@ public class MigrateCaseController extends CallbackController {
 
         List<Element<JudicialMessage>> resultJudicialMessages = caseData.getJudicialMessages().stream()
             .filter(msgElement -> !expectedMsgId.equals(msgElement.getId()))
-            .collect(Collectors.toList());
+            .collect(toList());
 
         // only one message should be removed
         if (resultJudicialMessages.size() != caseData.getJudicialMessages().size() - 1) {
@@ -185,5 +187,52 @@ public class MigrateCaseController extends CallbackController {
         }
 
         caseDetails.getData().put("judicialMessages", resultJudicialMessages);
+    }
+
+    private void run826(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-826";
+        CaseData caseData = getCaseData(caseDetails);
+        final Long caseId = caseData.getId();
+        final Long expectedCaseId = 1660300177298257L;
+        final UUID expectedHearingId = UUID.fromString("d76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0");
+
+        if (!expectedCaseId.equals(caseId)) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId
+            ));
+        }
+
+        List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
+        if (hearingDetails != null) {
+            // get the hearing with the expected UUID
+            List<Element<HearingBooking>> hearingBookingsToBeRemoved =
+                hearingDetails.stream().filter(hearingBooking -> expectedHearingId.equals(hearingBooking.getId()))
+                    .collect(toList());
+
+            if (hearingBookingsToBeRemoved.size() == 0) {
+                throw new AssertionError(format(
+                    "Migration {id = %s, case reference = %s}, hearing booking %s not found",
+                    migrationId, caseId, expectedHearingId
+                ));
+            }
+
+            if (hearingBookingsToBeRemoved.size() > 1) {
+                throw new AssertionError(format(
+                    "Migration {id = %s, case reference = %s}, more than one hearing booking %s found",
+                    migrationId, caseId, expectedHearingId
+                ));
+            }
+
+            // remove the hearing from the hearing list
+            hearingDetails.removeAll(hearingBookingsToBeRemoved);
+            caseDetails.getData().put("hearingDetails", hearingDetails);
+            caseDetails.getData().put("selectedHearingId", hearingDetails.get(hearingDetails.size() - 1).getId());
+        } else {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, hearing details not found",
+                migrationId, caseId
+            ));
+        }
     }
 }
