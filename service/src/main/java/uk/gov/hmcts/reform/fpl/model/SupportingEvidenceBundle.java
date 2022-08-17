@@ -110,7 +110,6 @@ public class SupportingEvidenceBundle implements TranslatableItem, FurtherDocume
         return translationUploadDateTime;
     }
 
-    @JsonIgnore
     public ExpertReportType getExpertReportType() {
         if (!isNull(expertReportType)) {
             // if we have an expert report type set use that
