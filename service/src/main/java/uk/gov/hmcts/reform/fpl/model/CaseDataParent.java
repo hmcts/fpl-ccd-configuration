@@ -5,8 +5,11 @@ import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.validation.groups.SecureAccommodationGroup;
 
 import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 @JsonSubTypes({
     @JsonSubTypes.Type(value = CaseData.class)
@@ -28,4 +31,8 @@ public class CaseDataParent {
     protected final List<Element<Direction>> otherPartiesDirectionsCustom;
     protected final List<Element<Direction>> respondentDirections;
     protected final List<Element<Direction>> respondentDirectionsCustom;
+
+    @NotNull(message = "Add the grounds for the application", groups = SecureAccommodationGroup.class)
+    @Valid
+    protected final GroundsForSecureAccommodationOrder groundsForSecureAccommodationOrder;
 }
