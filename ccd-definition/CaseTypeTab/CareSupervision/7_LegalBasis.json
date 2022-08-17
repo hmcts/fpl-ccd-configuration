@@ -28,7 +28,7 @@
     "TabDisplayOrder": 7,
     "CaseFieldID": "grounds",
     "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
-    "FieldShowCondition": "orders.orderType CONTAINS \"CARE_ORDER\" OR orders.orderType CONTAINS \"INTERIM_CARE_ORDER\" OR orders.orderType CONTAINS \"SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"INTERIM_SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"EDUCATION_SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\" OR orders.orderType CONTAINS \"OTHER\" OR secureAccommodationOrderType!=\"YES\"",
+    "FieldShowCondition": "orders.orderType CONTAINS \"CARE_ORDER\" OR orders.orderType CONTAINS \"INTERIM_CARE_ORDER\" OR orders.orderType CONTAINS \"SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"INTERIM_SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"EDUCATION_SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\" OR orders.orderType CONTAINS \"OTHER\"",
     "TabFieldDisplayOrder": 3
   },
   {
