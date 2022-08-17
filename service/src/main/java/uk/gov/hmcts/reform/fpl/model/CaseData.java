@@ -89,7 +89,6 @@ import uk.gov.hmcts.reform.fpl.validation.groups.HearingEndDateGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.MigrateStateGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.SealedSDOGroup;
-import uk.gov.hmcts.reform.fpl.validation.groups.SecureAccommodationGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOEndDateGroup;
@@ -197,9 +196,6 @@ public class CaseData extends CaseDataParent {
     @NotNull(message = "Add the grounds for the application", groups = EPOGroup.class)
     @Valid
     private final GroundsForEPO groundsForEPO;
-    @NotNull(message = "Add the grounds for the application", groups = SecureAccommodationGroup.class)
-    @Valid
-    private final GroundsForSecureAccommodationOrder groundsForSecureAccommodationOrder;
     @NotEmpty(message = "Add applicant's details")
     @Valid
     @Deprecated
