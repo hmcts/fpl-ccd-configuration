@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC16Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -41,7 +42,7 @@ public class CaseSubmissionService {
         DocmosisCaseSubmission submittedCase = documentGenerationService.getTemplateData(caseData);
 
         documentGenerationService.populateCaseNumber(submittedCase, caseData.getId());
-        documentGenerationService.populateDraftWaterOrCourtSeal(submittedCase, isDraft,caseData.getImageLanguage());
+        documentGenerationService.populateDraftWaterOrCourtSeal(submittedCase, isDraft, caseData);
         Language applicationLanguage = Optional.ofNullable(caseData.getC110A().getLanguageRequirementApplication())
             .orElse(Language.ENGLISH);
 

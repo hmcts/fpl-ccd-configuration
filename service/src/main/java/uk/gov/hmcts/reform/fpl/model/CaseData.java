@@ -56,6 +56,7 @@ import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageLegalCounselEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
+import uk.gov.hmcts.reform.fpl.model.event.OtherToRespondentEventData;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.event.RecordChildrenFinalDecisionsEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
@@ -168,6 +169,16 @@ public class CaseData {
     private OutsourcingType outsourcingType;
     private Object outsourcingLAs;
     private Court court;
+    private List<Element<Court>> pastCourtList;
+
+    public List<Element<Court>> getPastCourtList() {
+        return defaultIfNull(pastCourtList, new ArrayList<>());
+    }
+
+    public void setPastCourtList(List<Element<Court>> pastCourtList) {
+        this.pastCourtList = pastCourtList;
+    }
+
     private YesNo multiCourts;
 
     private final Risks risks;
@@ -285,7 +296,6 @@ public class CaseData {
     @JsonProperty("documents_socialWorkEvidenceTemplate_document")
     @Valid
     public final Document socialWorkEvidenceTemplateDocument;
-    public final CourtBundle courtBundle;
     @NotEmpty(message = "Add the child's details")
     @Valid
     private final List<@NotNull(message = "Add the child's details") Element<Child>> children1;
@@ -1180,8 +1190,6 @@ public class CaseData {
             .map(Orders::isC1Order)
             .orElse(false);
     }
-    
-    private List<Element<DocumentWithConfidentialAddress>> documentsWithConfidentialAddress;
 
     @JsonIgnore
     public boolean isSecureAccommodationOrderType() {
@@ -1189,4 +1197,10 @@ public class CaseData {
             .map(Orders::isSecureAccommodationOrder)
             .orElse(false);
     }
+
+    private List<Element<DocumentWithConfidentialAddress>> documentsWithConfidentialAddress;
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final OtherToRespondentEventData otherToRespondentEventData = OtherToRespondentEventData.builder().build();
 }

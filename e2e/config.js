@@ -168,7 +168,7 @@ module.exports = {
     manageOrders: 'Manage orders',
     uploadWelshTranslations: 'Upload translated documents',
     languageRequirement: 'Welsh language requirements',
-    manageLocalAuthorities: 'Manage local authorities',
+    manageLocalAuthorities: 'Manage LAs / Transfer to court',
   },
   superUserActions: {
     removeOrdersAndApplications: 'Remove orders and applications',

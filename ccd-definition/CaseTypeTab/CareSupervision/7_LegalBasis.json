@@ -26,7 +26,9 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "groundsForSecureAccommodationOrder",
+    "CaseFieldID": "grounds",
+    "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
+    "FieldShowCondition": "orders.orderType CONTAINS \"CARE_ORDER\" OR orders.orderType CONTAINS \"INTERIM_CARE_ORDER\" OR orders.orderType CONTAINS \"SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"INTERIM_SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"EDUCATION_SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\" OR orders.orderType CONTAINS \"OTHER\" OR secureAccommodationOrderType!=\"YES\"",
     "TabFieldDisplayOrder": 3
   },
   {
@@ -36,9 +38,20 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "grounds",
-    "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
-    "TabFieldDisplayOrder": 4
+    "CaseFieldID": "groundsForChildAssessmentOrder",
+    "FieldShowCondition": "orders.orderType CONTAINS \"CHILD_ASSESSMENT_ORDER\"",
+    "TabFieldDisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "LegalBasisTab",
+    "TabLabel": "Legal basis",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "groundsForSecureAccommodationOrder",
+    "TabFieldDisplayOrder": 3,
+    "FieldShowCondition": "secureAccommodationOrderType=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -48,7 +61,7 @@
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 7,
     "CaseFieldID": "risks",
-    "TabFieldDisplayOrder": 5
+    "TabFieldDisplayOrder": 4
   },
   {
     "LiveFrom": "01/01/2017",
@@ -58,7 +71,7 @@
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 7,
     "CaseFieldID": "factorsParenting",
-    "TabFieldDisplayOrder": 6
+    "TabFieldDisplayOrder": 5
   },
   {
     "LiveFrom": "01/01/2017",
@@ -68,7 +81,7 @@
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 7,
     "CaseFieldID": "internationalElement",
-    "TabFieldDisplayOrder": 7
+    "TabFieldDisplayOrder": 6
   },
   {
     "LiveFrom": "01/01/2017",
@@ -78,7 +91,7 @@
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 7,
     "CaseFieldID": "proceeding",
-    "TabFieldDisplayOrder": 8
+    "TabFieldDisplayOrder": 7
   },
   {
     "LiveFrom": "01/01/2017",
@@ -88,7 +101,7 @@
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 7,
     "CaseFieldID": "allocationDecision",
-    "TabFieldDisplayOrder": 9
+    "TabFieldDisplayOrder": 8
   },
   {
     "LiveFrom": "01/01/2017",
@@ -98,7 +111,7 @@
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 7,
     "CaseFieldID": "allocationProposal",
-    "TabFieldDisplayOrder": 10
+    "TabFieldDisplayOrder": 9
   },
   {
     "LiveFrom": "01/01/2017",
@@ -108,6 +121,6 @@
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 7,
     "CaseFieldID": "hearingPreferences",
-    "TabFieldDisplayOrder": 11
+    "TabFieldDisplayOrder": 10
   }
 ]

@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.AmendedReturnedCaseEvent;
@@ -44,7 +45,6 @@ import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
-import static uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator.NoticeOfChangeAnswersPopulationStrategy.BLANK;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInOpenState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInReturnedState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
@@ -82,6 +82,7 @@ public class CaseSubmissionController extends CallbackController {
             data.put(DRAFT_APPLICATION_DOCUMENT, buildFromDocument(document));
 
             Document supplement = caseSubmissionService.generateC1SupplementPDF(caseData, true);
+
             data.put("draftSupplement", buildFromDocument(supplement));
         } else {
             // C110a
@@ -137,6 +138,7 @@ public class CaseSubmissionController extends CallbackController {
                 data.put("submittedForm", buildFromDocument(document));
 
                 Document supplement = caseSubmissionService.generateC1SupplementPDF(caseData, false);
+
                 data.put("supplementDocument", buildFromDocument(supplement));
             } else {
                 // C110A
@@ -145,7 +147,7 @@ public class CaseSubmissionController extends CallbackController {
             }
 
             data.putAll(nocFieldPopulator.generate(caseData, RESPONDENT));
-            data.putAll(nocFieldPopulator.generate(caseData, CHILD, BLANK));
+            data.putAll(nocFieldPopulator.generate(caseData, CHILD));
         }
 
         removeTemporaryFields(caseDetails, DRAFT_APPLICATION_DOCUMENT, "submissionConsentLabel");

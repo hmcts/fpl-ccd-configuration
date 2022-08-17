@@ -82,6 +82,20 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
             .build();
     }
 
+    public static HearingOrder from(DraftOrder draftOrder) {
+        return HearingOrder.builder()
+            .type(C21)
+            .title(draftOrder.getTitle())
+            .order(draftOrder.getDocument())
+            .hearing("No hearing")
+            .dateSent(draftOrder.getDateUploaded())
+            .status(SEND_TO_JUDGE)
+            .judgeTitleAndName("")
+            .supportingDocs(null)
+            .translationRequirements(NO)
+            .build();
+    }
+
     @JsonIgnore
     public boolean isRemovable() {
         return true;

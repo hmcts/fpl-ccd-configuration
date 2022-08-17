@@ -26,6 +26,7 @@ spring:
         ld-sdk-key: ld.sdk_key
         ctsc-inbox: fpl.ctsc_inbox
         ctsc-team-lead-inbox: fpl.ctsc_team_lead_inbox
+        rcj-family-high-court-inbox: fpl.rcj_family_high_court_inbox
         translation-notification-sender: translation.notification.sender
         translation-notification-recipient: translation.notification.recipient
         cafcass-notification-sender: cafcass.notification.sender

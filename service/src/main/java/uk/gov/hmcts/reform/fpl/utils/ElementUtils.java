@@ -119,7 +119,7 @@ public class ElementUtils {
         return asDynamicList(elements, null, labelProducer);
     }
 
-    private static <T> Collection<T> nullSafeCollection(Collection<T> collection) {
+    public static <T> Collection<T> nullSafeCollection(Collection<T> collection) {
         return defaultIfNull(collection, emptyList());
     }
 
@@ -143,5 +143,20 @@ public class ElementUtils {
             .forEach(element -> element.setId(UUID.randomUUID()));
 
         return elements;
+    }
+
+    @SafeVarargs
+    public static <T> List<Element<T>> wrapElementsWithRandomUUID(T... elements) {
+        return Stream.of(elements)
+            .filter(Objects::nonNull)
+            .map(ElementUtils::element)
+            .collect(toList());
+    }
+
+    public static <T> List<Element<T>> wrapElementsWithRandomUUID(List<T> elements) {
+        return nullSafeCollection(elements).stream()
+            .filter(Objects::nonNull)
+            .map(ElementUtils::element)
+            .collect(toList());
     }
 }

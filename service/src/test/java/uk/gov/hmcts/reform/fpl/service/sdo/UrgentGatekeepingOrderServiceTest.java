@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -33,6 +34,7 @@ class UrgentGatekeepingOrderServiceTest {
     private final Time time = new FixedTime();
     private final DocumentSealingService sealingService = mock(DocumentSealingService.class);
     private final CourtLevelAllocationService allocationService = mock(CourtLevelAllocationService.class);
+    private static final Court court = Court.builder().build();
 
     private UrgentGatekeepingOrderService underTest;
 
@@ -67,6 +69,7 @@ class UrgentGatekeepingOrderServiceTest {
     @Test
     void finaliseWithPrePreparedAllocationDecision() {
         CaseData caseData = CaseData.builder()
+            .court(court)
             .allocationDecision(mock(Allocation.class))
             .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                 .urgentHearingOrderDocument(UPLOADED_ORDER)
@@ -74,7 +77,7 @@ class UrgentGatekeepingOrderServiceTest {
                 .build())
             .build();
 
-        when(sealingService.sealDocument(UPLOADED_ORDER, SealType.ENGLISH)).thenReturn(SEALED_ORDER);
+        when(sealingService.sealDocument(UPLOADED_ORDER, court, SealType.ENGLISH)).thenReturn(SEALED_ORDER);
 
         UrgentHearingOrder expectedOrder = UrgentHearingOrder.builder()
             .order(SEALED_ORDER)
@@ -90,6 +93,7 @@ class UrgentGatekeepingOrderServiceTest {
     @Test
     void finaliseWithPrePreparedAllocationDecisionAndTranslation() {
         CaseData caseData = CaseData.builder()
+            .court(court)
             .allocationDecision(mock(Allocation.class))
             .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                 .urgentHearingOrderDocument(UPLOADED_ORDER)
@@ -98,7 +102,7 @@ class UrgentGatekeepingOrderServiceTest {
                 .build())
             .build();
 
-        when(sealingService.sealDocument(UPLOADED_ORDER, SealType.ENGLISH)).thenReturn(SEALED_ORDER);
+        when(sealingService.sealDocument(UPLOADED_ORDER, court, SealType.ENGLISH)).thenReturn(SEALED_ORDER);
 
         UrgentHearingOrder expectedOrder = UrgentHearingOrder.builder()
             .order(SEALED_ORDER)
@@ -118,6 +122,7 @@ class UrgentGatekeepingOrderServiceTest {
         Allocation updatedAllocation = mock(Allocation.class);
 
         CaseData caseData = CaseData.builder()
+            .court(court)
             .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                 .urgentHearingAllocation(enteredAllocation)
                 .urgentHearingOrderDocument(UPLOADED_ORDER)
@@ -125,7 +130,7 @@ class UrgentGatekeepingOrderServiceTest {
                 .build())
             .build();
 
-        when(sealingService.sealDocument(UPLOADED_ORDER, SealType.ENGLISH)).thenReturn(SEALED_ORDER);
+        when(sealingService.sealDocument(UPLOADED_ORDER, court, SealType.ENGLISH)).thenReturn(SEALED_ORDER);
         when(allocationService.setAllocationDecisionIfNull(caseData, enteredAllocation)).thenReturn(updatedAllocation);
         when(updatedAllocation.getProposal()).thenReturn("some allocation level");
 
