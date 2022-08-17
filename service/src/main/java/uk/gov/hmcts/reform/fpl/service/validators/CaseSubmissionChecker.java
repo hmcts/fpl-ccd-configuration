@@ -63,7 +63,7 @@ public class CaseSubmissionChecker extends CompoundEventChecker {
             events.add(HEARING_URGENCY); // present but optional for C1s
         }
 
-        if (!caseData.isDischargeOfCareApplication()) {
+        if (!caseData.isDischargeOfCareApplication() && !caseData.isContactWithChildInCareApplication()) {
             events.add(GROUNDS);
         }
 
