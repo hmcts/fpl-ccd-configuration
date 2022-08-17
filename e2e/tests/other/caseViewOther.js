@@ -69,6 +69,7 @@ module.exports = {
     why_cant_i_submit_my_application: {xpath: '//p[.="Why can\'t I submit my application?"]'},
     change_case_name : {xpath: '//a[.=\'Change case name\']'},
     orders_and_directions_sought: {xpath : '//div[@class=\'width-50\']//a[.=\'Orders and directions sought\']'},
+    grounds_for_application: {xpath: '//div[@class=\'width-50\']//a[.=\'Grounds for the application\']'},
     hearing_urgency_link : {xpath : '//div[@class=\'width-50\']//a[.=\'Hearing urgency\']'},
     cancel_link : {xpath: '//a[.=\'Cancel\']'},
   },
@@ -105,6 +106,10 @@ module.exports = {
 
   clickHearingsUrgencyLink()  {
     I.click(this.locators.hearing_urgency_link);
+  },
+
+  clickGroundsForApplicationLink()  {
+    I.click(this.locators.grounds_for_application);
   },
 
   verifyAddApplicationDetailsSection() {
