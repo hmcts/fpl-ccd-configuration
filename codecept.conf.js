@@ -140,6 +140,7 @@ exports.config = {
     changeCaseViewOtherPage : './e2e/tests/other/otherpages/changeCaseViewOther.js',
     ordersAndDirectionsOtherPage : './e2e/tests/other/otherpages/ordersAndDirectionsOther.js',
     hearingUrgencyOtherPage : './e2e/tests/other/otherpages/hearingUrgencyOther.js',
+    groundsForApplicationOtherPage : './e2e/tests/other/otherpages/groundsForApplicationOther.js',
   },
   plugins: {
     retryFailedStep: {

@@ -79,7 +79,7 @@ xScenario('Local authority verifies case created for a Case But Application not 
     'Add the allocation proposal in the Allocation proposal']);
 }).tag('@pipeline @nightly @crossbrowser');
 
-Scenario('Local authority Changes the Case Name of Case.', async ({I,caseViewOtherPage, changeCaseViewOtherPage, ordersAndDirectionsOtherPage, hearingUrgencyOtherPage}) => {
+Scenario('Local authority Changes the Case Name of Case.', async ({I,caseViewOtherPage, changeCaseViewOtherPage, ordersAndDirectionsOtherPage, hearingUrgencyOtherPage, groundsForApplicationOtherPage}) => {
   await setupScenario(I,true);
   caseViewOtherPage.clickChangeCaseName();
   I.wait(FPLConstants.defaultPageClickWaitTime);
@@ -132,6 +132,16 @@ Scenario('Local authority Changes the Case Name of Case.', async ({I,caseViewOth
   hearingUrgencyOtherPage.clickSaveAndContinue();
   I.wait(FPLConstants.defaultPageClickWaitTime);
   caseViewOtherPage.verifyStartApplicationTabDetails('has been updated with event: Hearing urgency');
+
+  caseViewOtherPage.clickGroundsForApplicationLink();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  groundsForApplicationOtherPage.verifyGroundsForApplicationPage();
+  groundsForApplicationOtherPage.inputValuesGroundsForApplication();
+  groundsForApplicationOtherPage.clickContinueButton();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  groundsForApplicationOtherPage.verifyGroundsForApplicationCheckYourAnswers();
+  groundsForApplicationOtherPage.clickSaveAndContinue();
+  caseViewOtherPage.verifyStartApplicationTabDetails('has been updated with event: Grounds for the application');
   pause();
 
 
