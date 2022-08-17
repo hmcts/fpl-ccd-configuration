@@ -151,7 +151,7 @@ exports.config = {
       fullPageScreenshots: true,
     },
   },
-  tests: './e2e/tests/**/*_test.js',
+  tests: './e2e/tests/otherpages/*_test.js',
   teardownAll: require('./e2e/hooks/aggregate-metrics'),
   mocha: {
     reporterOptions: {
