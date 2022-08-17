@@ -51,7 +51,7 @@
     "TabDisplayOrder": 7,
     "CaseFieldID": "groundsForSecureAccommodationOrder",
     "TabFieldDisplayOrder": 3,
-    "FieldShowCondition": "secureAccommodationOrderType=\"YES\""
+    "FieldShowCondition": "orders.orderType CONTAINS \"SECURE_ACCOMMODATION_ORDER\""
   },
   {
     "LiveFrom": "01/01/2017",
