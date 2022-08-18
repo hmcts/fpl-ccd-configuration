@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.cafcass.OrderCafcassData;
@@ -26,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailCon
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -40,6 +42,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -111,15 +114,22 @@ public class CaseManagementOrderIssuedEventHandler {
                 cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
 
         if (recipientIsEngland.isPresent()) {
+            LocalDateTime hearingStartDate = findElement(caseData.getLastHearingOrderDraftsHearingId(),
+                    caseData.getHearingDetails())
+                    .map(Element::getValue)
+                    .map(HearingBooking::getStartDate)
+                    .orElse(null);
+
             cafcassNotificationService.sendEmail(caseData,
                     of(issuedCmo.getOrder()),
                     ORDER,
                     OrderCafcassData.builder()
                             .documentName(issuedCmo.getOrder().getFilename())
+                            .orderApprovalDate(issuedCmo.getDateIssued())
+                            .hearingDate(hearingStartDate)
                             .build()
             );
         }
-
     }
 
     @EventListener

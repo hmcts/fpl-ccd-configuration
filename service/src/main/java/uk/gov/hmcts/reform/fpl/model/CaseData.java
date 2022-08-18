@@ -1180,6 +1180,13 @@ public class CaseData extends CaseDataParent {
             .orElse(false);
     }
 
+    @JsonIgnore
+    public boolean isSecureAccommodationOrderType() {
+        return ofNullable(getOrders())
+            .map(Orders::isSecureAccommodationOrder)
+            .orElse(false);
+    }
+
     private List<Element<DocumentWithConfidentialAddress>> documentsWithConfidentialAddress;
 
     @JsonUnwrapped
