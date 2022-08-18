@@ -332,7 +332,7 @@ public class FurtherEvidenceUploadedEventTestData {
             .build());
     }
 
-    public static CaseData.CaseDataBuilder commonCaseBuilder() {
+    public static CaseData.CaseDataBuilder<?,?> commonCaseBuilder() {
         return CaseData.builder()
             .id(CASE_ID)
             .familyManCaseNumber(CASE_ID.toString())

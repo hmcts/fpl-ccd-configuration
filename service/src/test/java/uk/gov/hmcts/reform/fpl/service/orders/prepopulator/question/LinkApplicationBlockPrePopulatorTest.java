@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class LinkApplicationBlockPrePopulatorTest {
 
-    private CaseData.CaseDataBuilder caseDataBuilder;
+    private CaseData.CaseDataBuilder<?,?> caseDataBuilder;
 
     LinkApplicationBlockPrePopulator classUnderTest = new LinkApplicationBlockPrePopulator();
 

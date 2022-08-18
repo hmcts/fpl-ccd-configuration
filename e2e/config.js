@@ -100,7 +100,7 @@ module.exports = {
     jurisdiction: 'PUBLICLAW',
     jurisdictionFullDesc: 'Public Law',
     caseType: 'CARE_SUPERVISION_EPO',
-    caseTypeFullDesc: 'Care, supervision and EPOs',
+    caseTypeFullDesc: 'Public Law Applications',
   },
   // actions
   applicationActions: {
