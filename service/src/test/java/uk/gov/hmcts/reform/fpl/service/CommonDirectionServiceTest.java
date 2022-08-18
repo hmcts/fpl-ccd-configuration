@@ -136,7 +136,7 @@ class CommonDirectionServiceTest {
         }
     }
 
-    private CaseData.CaseDataBuilder populateCaseDataWithFixedDirections() {
+    private CaseData.CaseDataBuilder<?,?>  populateCaseDataWithFixedDirections() {
         return CaseData.builder()
             .allParties(buildDirections(ALL_PARTIES))
             .localAuthorityDirections(buildDirections(LOCAL_AUTHORITY))
