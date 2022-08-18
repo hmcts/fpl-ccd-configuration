@@ -48,6 +48,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NEW_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.utils.assertions.AnnotationAssertion.assertClass;
 
 @ExtendWith(MockitoExtension.class)
@@ -128,7 +129,9 @@ class SubmittedCaseEventHandlerTest {
     void shouldSendEmailToCafcassFromSendGrid() {
         final CaseData caseData = mock(CaseData.class);
         final CaseData caseDataBefore = mock(CaseData.class);
-        final DocumentReference documentReference = mock(DocumentReference.class);
+        final DocumentReference documentReference = DocumentReference.builder()
+                .type(NEW_APPLICATION.getLabel())
+                .build();
         C110A c110A = C110A.builder()
             .submittedForm(documentReference)
             .build();
