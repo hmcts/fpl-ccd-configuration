@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 
@@ -22,9 +23,9 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 
 @Api
 @RestController
@@ -35,11 +36,13 @@ public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-780", this::run780,
-        "DFPL-781", this::run781,
-        "DFPL-782", this::run782,
+        "DFPL-794", this::run794,
+        "DFPL-797", this::run797,
+        "DFPL-798", this::run798,
+        "DFPL-802", this::run802,
         "DFPL-692", this::run692,
-        "DFPL-776", this::run776
+        "DFPL-776", this::run776,
+        "DFPL-826", this::run826
     );
 
     @PostMapping("/about-to-submit")
@@ -70,26 +73,34 @@ public class MigrateCaseController extends CallbackController {
      *  - migrationId
      * @param caseDetails - the caseDetails to update
      */
-    private void run780(CaseDetails caseDetails) {
-        var migrationId = "DFPL-780";
-        var expectedCaseId = 1652257632609744L;
-        var expectedDocId = UUID.fromString("e3f909a2-e7be-445b-b388-5b99bd26f935");
+    private void run794(CaseDetails caseDetails) {
+        var migrationId = "DFPL-794";
+        var expectedCaseId = 1657104996768754L;
+        var expectedDocId = UUID.fromString("5da7ae0a-0d53-427f-a538-2cb8c9ea82b6");
 
         removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
     }
 
-    private void run781(CaseDetails caseDetails) {
-        var migrationId = "DFPL-781";
-        var expectedCaseId = 1651850415891595L;
-        var expectedDocId = UUID.fromString("3c9e395e-3911-4c0b-9394-b581338c21c9");
+    private void run797(CaseDetails caseDetails) {
+        var migrationId = "DFPL-797";
+        var expectedCaseId = 1657816793771026L;
+        var expectedDocId = UUID.fromString("2cfd676a-665b-4d15-ae9e-5ad2930f75cb");
 
         removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
     }
 
-    private void run782(CaseDetails caseDetails) {
-        var migrationId = "DFPL-782";
-        var expectedCaseId = 1646999222148273L;
-        var expectedDocId = UUID.fromString("26e14f46-271e-4bcd-9fee-7f70bffa6d2f");
+    private void run798(CaseDetails caseDetails) {
+        var migrationId = "DFPL-798";
+        var expectedCaseId = 1654765774567742L;
+        var expectedDocId = UUID.fromString("1756656b-6931-467e-8dfe-ac9f152351fe");
+
+        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
+    }
+
+    private void run802(CaseDetails caseDetails) {
+        var migrationId = "DFPL-802";
+        var expectedCaseId = 1659528630126722L;
+        var expectedDocId = UUID.fromString("dcd016c6-a0de-4ed2-91ce-5582a6acaf25");
 
         removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
     }
@@ -135,7 +146,7 @@ public class MigrateCaseController extends CallbackController {
 
         List<Element<CaseNote>> resultCaseNotes = caseData.getCaseNotes().stream()
             .filter(caseNoteElement -> !expectedNotesId.contains(caseNoteElement.getId()))
-            .collect(Collectors.toList());
+            .collect(toList());
 
         if (caseData.getCaseNotes().size() - resultCaseNotes.size() != 2) {
             throw new AssertionError(format(
@@ -165,7 +176,7 @@ public class MigrateCaseController extends CallbackController {
 
         List<Element<JudicialMessage>> resultJudicialMessages = caseData.getJudicialMessages().stream()
             .filter(msgElement -> !expectedMsgId.equals(msgElement.getId()))
-            .collect(Collectors.toList());
+            .collect(toList());
 
         // only one message should be removed
         if (resultJudicialMessages.size() != caseData.getJudicialMessages().size() - 1) {
@@ -176,5 +187,52 @@ public class MigrateCaseController extends CallbackController {
         }
 
         caseDetails.getData().put("judicialMessages", resultJudicialMessages);
+    }
+
+    private void run826(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-826";
+        CaseData caseData = getCaseData(caseDetails);
+        final Long caseId = caseData.getId();
+        final Long expectedCaseId = 1660300177298257L;
+        final UUID expectedHearingId = UUID.fromString("d76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0");
+
+        if (!expectedCaseId.equals(caseId)) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId
+            ));
+        }
+
+        List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
+        if (hearingDetails != null) {
+            // get the hearing with the expected UUID
+            List<Element<HearingBooking>> hearingBookingsToBeRemoved =
+                hearingDetails.stream().filter(hearingBooking -> expectedHearingId.equals(hearingBooking.getId()))
+                    .collect(toList());
+
+            if (hearingBookingsToBeRemoved.size() == 0) {
+                throw new AssertionError(format(
+                    "Migration {id = %s, case reference = %s}, hearing booking %s not found",
+                    migrationId, caseId, expectedHearingId
+                ));
+            }
+
+            if (hearingBookingsToBeRemoved.size() > 1) {
+                throw new AssertionError(format(
+                    "Migration {id = %s, case reference = %s}, more than one hearing booking %s found",
+                    migrationId, caseId, expectedHearingId
+                ));
+            }
+
+            // remove the hearing from the hearing list
+            hearingDetails.removeAll(hearingBookingsToBeRemoved);
+            caseDetails.getData().put("hearingDetails", hearingDetails);
+            caseDetails.getData().put("selectedHearingId", hearingDetails.get(hearingDetails.size() - 1).getId());
+        } else {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, hearing details not found",
+                migrationId, caseId
+            ));
+        }
     }
 }
