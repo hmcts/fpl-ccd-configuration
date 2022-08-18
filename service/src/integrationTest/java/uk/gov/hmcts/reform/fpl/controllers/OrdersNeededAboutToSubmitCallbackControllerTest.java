@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,5 +49,25 @@ class OrdersNeededAboutToSubmitCallbackControllerTest extends AbstractCallbackTe
 
         assertThat(response.getErrors()).contains("You have selected a standalone order, "
             + "this cannot be applied for alongside other orders.");
+    }
+
+    @Test
+    void shouldShowSecureAccommodationOrderFieldWhenSecureAccommodationOrderIsSelected() {
+        AboutToStartOrSubmitCallbackResponse response =
+            postAboutToSubmitEvent("fixtures/caseSecureAccommodationOrder.json");
+
+        assertThat(response.getData().get("secureAccommodationOrderType")).isEqualTo("YES");
+        assertThat(response.getData().get("otherOrderType")).isEqualTo("NO");
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldRemoveSecureAccommodationOrderDataWhenSecureAccommodationOrderIsUnselected() {
+        AboutToStartOrSubmitCallbackResponse response =
+            postAboutToSubmitEvent("fixtures/caseWithSecureAccommodationOrderRemoved.json");
+
+        assertThat(response.getData().get("secureAccommodationOrderType")).isEqualTo("NO");
+        assertThat(((Map<String, Object>) response.getData().get("orders")).get("secureAccommodationOrderSection"))
+            .isEqualTo(null);
     }
 }
