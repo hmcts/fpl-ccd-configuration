@@ -26,8 +26,11 @@ import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
@@ -46,6 +49,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static java.time.LocalDateTime.now;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -73,7 +77,9 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.NON_CONFIDENTIAL_1;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.NON_CONFIDENTIAL_2;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.PDF_DOCUMENT_1;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithAdditionalApplicationBundle;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithApplicationDocuments;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithC2AdditionalApplicationBundle;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithConfidentialLADocuments;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithCorrespondencesByHmtcs;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithCorrespondencesByLA;
@@ -120,7 +126,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
     private static final String REP_SOLICITOR_2_EMAIL = "rep_solicitor2@example.com";
     private static final String REP_SOLICITOR_3_EMAIL = "rep_solicitor3@example.com";
     private static final String REP_SOLICITOR_4_EMAIL = "rep_solicitor4@example.com";
-    private static final LocalDateTime HEARING_DATE = LocalDateTime.now().plusMonths(3);
+    private static final LocalDateTime HEARING_DATE = now().plusMonths(3);
     private static final CaseData CASE_DATA = mock(CaseData.class);
     private static final CaseData CASE_DATA_BEFORE = mock(CaseData.class);
     private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENTS =
@@ -788,6 +794,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 .contains("• non-confidential-1");
         assertThat(newDocumentData.getDocumentTypes())
                 .contains("• non-confidential-2");
+
         assertThat(newDocumentData.getEmailSubjectInfo())
                 .isEqualTo("Further documents for main application");
     }
@@ -857,6 +864,98 @@ class FurtherEvidenceUploadedEventHandlerTest {
             any(),
             any(),
             any());
+    }
+    
+    @Test
+    void shouldEmailCafcassWhenAdditionalBundleIsUploadedByLA() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.of(
+                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                        )
+            );
+
+
+        CaseData caseData = buildCaseDataWithAdditionalApplicationBundle();
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+                new FurtherEvidenceUploadedEvent(
+                        caseData,
+                        buildCaseDataWithConfidentialLADocuments(),
+                        DESIGNATED_LOCAL_AUTHORITY,
+                        userDetailsLA());
+
+        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+
+        Set<DocumentReference> documentReferences = unwrapElements(caseData.getAdditionalApplicationsBundle())
+                .stream()
+                .map(AdditionalApplicationsBundle::getOtherApplicationsBundle)
+                .map(OtherApplicationsBundle::getAllDocumentReferences)
+                .flatMap(List::stream)
+                .map(Element::getValue)
+                .collect(toSet());
+
+
+        verify(cafcassNotificationService).sendEmail(
+                eq(caseData),
+                eq(documentReferences),
+                eq(NEW_DOCUMENT),
+                newDocumentDataCaptor.capture());
+
+        NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
+        assertThat(newDocumentData.getDocumentTypes())
+                .contains("• additional applications");
+        assertThat(newDocumentData.getDocumentTypes())
+                .contains("• additional applications");
+
+        assertThat(newDocumentData.getEmailSubjectInfo())
+                .isEqualTo("additional applications");
+    }
+
+    @Test
+    void shouldEmailCafcassWhenC2AdditionalBundleIsUploadedByLA() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.of(
+                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                        )
+            );
+
+
+        CaseData caseData = buildCaseDataWithC2AdditionalApplicationBundle();
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+                new FurtherEvidenceUploadedEvent(
+                        caseData,
+                        buildCaseDataWithConfidentialLADocuments(),
+                        DESIGNATED_LOCAL_AUTHORITY,
+                        userDetailsLA());
+
+        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+
+        Set<DocumentReference> documentReferences = unwrapElements(caseData.getAdditionalApplicationsBundle())
+                .stream()
+                .map(AdditionalApplicationsBundle::getC2DocumentBundle)
+                .map(C2DocumentBundle::getAllC2DocumentReferences)
+                .flatMap(List::stream)
+                .map(Element::getValue)
+                .collect(toSet());
+
+
+        verify(cafcassNotificationService).sendEmail(
+                eq(caseData),
+                eq(documentReferences),
+                eq(NEW_DOCUMENT),
+                newDocumentDataCaptor.capture());
+
+        NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
+        assertThat(newDocumentData.getDocumentTypes())
+                .contains("• additional applications");
+        assertThat(newDocumentData.getDocumentTypes())
+                .contains("• additional applications");
+
+        assertThat(newDocumentData.getEmailSubjectInfo())
+                .isEqualTo("additional applications");
     }
 
     @Test
@@ -1215,10 +1314,10 @@ class FurtherEvidenceUploadedEventHandlerTest {
             CaseSummary.builder().document(TestDataHelper.testDocumentReference("CaseSummary 2.pdf")).build());
         final List<Element<PositionStatementChild>> positionStatementChildList = wrapElements(
             PositionStatementChild.builder()
-                .document(TestDataHelper.testDocumentReference("PositionStatementChild.pdf")).build());;
+                .document(TestDataHelper.testDocumentReference("PositionStatementChild.pdf")).build());
         final List<Element<PositionStatementRespondent>> positionStatementRespondentList = wrapElements(
             PositionStatementRespondent.builder()
-                .document(TestDataHelper.testDocumentReference("PositionStatementRespondent.pdf")).build());;
+                .document(TestDataHelper.testDocumentReference("PositionStatementRespondent.pdf")).build());
 
         CaseData caseDataBefore = buildSubmittedCaseData();
         CaseData caseData = buildSubmittedCaseData().toBuilder()
@@ -1278,9 +1377,9 @@ class FurtherEvidenceUploadedEventHandlerTest {
             CaseSummary.builder().hearing(hearing).document(caseSummaryDoc1).build(),
             CaseSummary.builder().hearing(hearing).document(caseSummaryDoc2).build());
         final List<Element<PositionStatementChild>> positionStatementChildList = wrapElements(
-            PositionStatementChild.builder().hearing(hearing).document(positionStatementChildDoc).build());;
+            PositionStatementChild.builder().hearing(hearing).document(positionStatementChildDoc).build());
         final List<Element<PositionStatementRespondent>> positionStatementRespondentList = wrapElements(
-            PositionStatementRespondent.builder().hearing(hearing).document(positionStatementRespondentDoc).build());;
+            PositionStatementRespondent.builder().hearing(hearing).document(positionStatementRespondentDoc).build());
 
         CaseData caseDataBefore = buildSubmittedCaseData();
         CaseData caseData = buildSubmittedCaseData().toBuilder()
@@ -1330,9 +1429,9 @@ class FurtherEvidenceUploadedEventHandlerTest {
             CaseSummary.builder().hearing(hearing).document(caseSummaryDoc1).build(),
             CaseSummary.builder().hearing(hearing).document(caseSummaryDoc2).build());
         final List<Element<PositionStatementChild>> positionStatementChildList = wrapElements(
-            PositionStatementChild.builder().hearing(hearing).document(positionStatementChildDoc).build());;
+            PositionStatementChild.builder().hearing(hearing).document(positionStatementChildDoc).build());
         final List<Element<PositionStatementRespondent>> positionStatementRespondentList = wrapElements(
-            PositionStatementRespondent.builder().hearing(hearing).document(positionStatementRespondentDoc).build());;
+            PositionStatementRespondent.builder().hearing(hearing).document(positionStatementRespondentDoc).build());
 
         CaseData caseDataBefore = buildSubmittedCaseData().toBuilder()
             .hearingDocuments(HearingDocuments.builder()
