@@ -370,7 +370,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
             .build();
     }
 
-    private CaseData.CaseDataBuilder baseCaseData() {
+    private CaseData.CaseDataBuilder<?,?> baseCaseData() {
         return CaseData.builder()
             .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
