@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
 
@@ -98,11 +99,18 @@ public class OrdersNeededController extends CallbackController {
                     data.remove("groundsForEPO");
                     data.remove(showEpoFieldId);
                 }
+
+                if (!orderTypes.contains(OrderType.SECURE_ACCOMMODATION_ORDER.name())) {
+                    removeSecureAccommodationOrderFields(data, ordersFieldName);
+                } else {
+                    data.put("secureAccommodationOrderType", YesNo.YES);
+                }
             });
 
         } else {
             data.remove("groundsForEPO");
             data.remove(showEpoFieldId);
+            removeSecureAccommodationOrderFields(data, ordersFieldName);
         }
 
         if (caseData.isDischargeOfCareApplication()) {
@@ -122,6 +130,16 @@ public class OrdersNeededController extends CallbackController {
         }
 
         return respond(caseDetails);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void removeSecureAccommodationOrderFields(Map<String, Object> data, String ordersFieldName) {
+        data.remove("groundsForSecureAccommodationOrder");
+        // remove the secureAccommodationOrderSection field
+        ((Map<String, Object>) data.get(ordersFieldName)).remove("secureAccommodationOrderSection");
+
+        // set this control flag to NO
+        data.put("secureAccommodationOrderType", YesNo.NO);
     }
 
     private Court getCourtSelection(String courtID) {
