@@ -444,7 +444,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             @SuppressWarnings("unchecked")
             List<Map<String, String>> listItems = (List<Map<String, String>>) caseManagementCategory.get("list_items");
             assertThat(listItems).contains(Map.of("code", "FPL", "label", "Family Public Law"));
-            // TODO test SearchCriteria
         }
     }
 }

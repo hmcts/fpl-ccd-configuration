@@ -13,20 +13,24 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApiV2;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.CourtLookUpService;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -46,6 +50,8 @@ public class MigrateCaseController extends CallbackController {
     private final RequestData requestData;
 
     private final AuthTokenGenerator authToken;
+
+    private final CourtLookUpService courtLookUpService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-794", this::run794,
@@ -97,6 +103,44 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove(MIGRATION_ID_KEY);
     }
 
+    private void run702(CaseDetails caseDetails) {
+        var migrationId = "DFPL-702";
+
+        CaseData caseData = getCaseData(caseDetails);
+        var caseId = caseData.getId();
+        String caseName = caseData.getCaseName();
+
+        if (caseData.getCourt() == null) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected null court",
+                migrationId, caseId
+            ));
+        }
+
+        // migrating top level fields: case names
+        caseDetails.getData().put("caseNameHmctsInternal", caseName);
+        String courtCode = caseData.getCourt().getCode();
+        Optional<Court> lookedUpCourt = courtLookUpService.getCourtByCode(courtCode);
+        if (lookedUpCourt.isPresent()) {
+            caseDetails.getData().put("caseManagementLocation", CaseLocation.builder()
+                .baseLocation(lookedUpCourt.get().getEpimmsId())
+                .region(lookedUpCourt.get().getRegionId())
+                .build());
+        } else {
+            log.error("Fail to lookup ePIMMS ID for code: " + courtCode);
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, fail to lookup ePIMMS ID for court (%s)",
+                migrationId, caseId, courtCode
+            ));
+        }
+        caseDetails.getData().put("caseManagementCategory", DynamicList.builder()
+            .value(DynamicListElement.builder().code("FPL").label("Family Public Law").build())
+            .listItems(List.of(
+                DynamicListElement.builder().code("FPL").label("Family Public Law").build()
+            ))
+            .build());
+    }
+
     /**
      * Removes a C110A Generated PDF document from the case.
      * Make sure to update:
@@ -135,23 +179,6 @@ public class MigrateCaseController extends CallbackController {
         var expectedDocId = UUID.fromString("dcd016c6-a0de-4ed2-91ce-5582a6acaf25");
 
         removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
-    }
-
-    private void run702(CaseDetails caseDetails) {
-        var migrationId = "DFPL-702";
-
-        CaseData caseData = getCaseData(caseDetails);
-        String caseName = caseData.getCaseName();
-
-        // migrating top level fields: case names
-        caseDetails.getData().put("caseNameHmctsInternal", caseName);
-        // migrating caseManagementLocation TODO
-        caseDetails.getData().put("caseManagementCategory", DynamicList.builder()
-            .value(DynamicListElement.builder().code("FPL").label("Family Public Law").build())
-            .listItems(List.of(
-                DynamicListElement.builder().code("FPL").label("Family Public Law").build()
-            ))
-            .build());
     }
 
     private void removeC110a(CaseDetails caseDetails, String migrationId, long expectedCaseId, UUID expectedDocId) {

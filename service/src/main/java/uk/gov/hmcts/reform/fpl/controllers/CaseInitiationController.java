@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,19 +16,23 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseInitiationService;
+import uk.gov.hmcts.reform.fpl.service.CourtLookUpService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 
 @Api
+@Slf4j
 @RestController
 @RequestMapping("/callback/case-initiation")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -40,6 +45,8 @@ public class CaseInitiationController extends CallbackController {
     private final RequestData requestData;
 
     private final AuthTokenGenerator authToken;
+
+    private final CourtLookUpService courtLookUpService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -77,10 +84,17 @@ public class CaseInitiationController extends CallbackController {
         caseDetails.putIfNotEmpty("court", updatedCaseData.getCourt());
         caseDetails.putIfNotEmpty("multiCourts", updatedCaseData.getMultiCourts());
         caseDetails.putIfNotEmpty("caseNameHmctsInternal", updatedCaseData.getCaseName());
-        // TODO filling in caseManagementLocation with anything for testing
-        caseDetails.putIfNotEmpty("caseManagementLocation", CaseLocation.builder()
-            .baseLocation("1")
-            .region("3").build());
+
+        String courtCode = updatedCaseData.getCourt().getCode();
+        Optional<Court> lookedUpCourt = courtLookUpService.getCourtByCode(courtCode);
+        if (lookedUpCourt.isPresent()) {
+            caseDetails.putIfNotEmpty("caseManagementLocation", CaseLocation.builder()
+                .baseLocation(lookedUpCourt.get().getEpimmsId())
+                .region(lookedUpCourt.get().getRegionId())
+                .build());
+        } else {
+            log.error("Fail to lookup ePIMMS ID for code: " + courtCode);
+        }
         caseDetails.putIfNotEmpty("caseManagementCategory", DynamicList.builder()
             .value(DynamicListElement.builder().code("FPL").label("Family Public Law").build())
             .listItems(List.of(
@@ -102,11 +116,10 @@ public class CaseInitiationController extends CallbackController {
         publishEvent(new CaseDataChanged(caseData));
 
         // update supplementary data
-        String caseId = caseData.getId().toString();
         Map<String, Map<String, Map<String, Object>>> supplementaryData = new HashMap<>();
         supplementaryData.put("supplementary_data_updates",
             Map.of("$set", Map.of("HMCTSServiceId", "ABA3")));
-        coreCaseDataApi.submitSupplementaryData(requestData.authorisation(), authToken.generate(), caseId,
-            supplementaryData);
+        coreCaseDataApi.submitSupplementaryData(requestData.authorisation(), authToken.generate(),
+            caseData.getId().toString(), supplementaryData);
     }
 }

@@ -18,7 +18,11 @@ import java.util.Optional;
 @Service
 public class CourtLookUpService {
 
+    public static final String RCJ_HIGH_COURT_EPIMMS_ID = "20262";
+
     public static final String RCJ_HIGH_COURT_CODE = "100";
+
+    public static final String RCJ_HIGH_COURT_REGION_ID = "1";
 
     public static final String RCJ_HIGH_COURT_REGION = "London";
 
@@ -47,6 +51,8 @@ public class CourtLookUpService {
         return Court.builder().code(RCJ_HIGH_COURT_CODE)
             .name(RCJ_HIGH_COURT_NAME)
             .region(RCJ_HIGH_COURT_REGION)
+            .epimmsId(RCJ_HIGH_COURT_EPIMMS_ID)
+            .regionId(RCJ_HIGH_COURT_REGION_ID)
             .build();
     }
 

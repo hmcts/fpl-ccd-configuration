@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.fpl.config.utils.LookupConfigParser;
 import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.service.CourtLookUpService;
 
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,8 @@ public class HmctsCourtLookupConfiguration {
             checkNotNull(emptyToNull(entrySplit[0]), "Court name cannot be empty"),
             checkNotNull(emptyToNull(entrySplit[1]), "Court email cannot be empty"),
             checkNotNull(emptyToNull(entrySplit[2]), "Court code cannot be empty"),
+            null,
+            null,
             null,
             null
         );

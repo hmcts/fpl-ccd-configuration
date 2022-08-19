@@ -18,6 +18,7 @@ public interface Constants {
     String LOCAL_AUTHORITY_1_USER_EMAIL = "test@test1.org.uk";
     String LOCAL_AUTHORITY_2_USER_EMAIL = "test@test2.org.uk";
     String LOCAL_AUTHORITY_3_USER_EMAIL = "test@test3.org.uk";
+    String LOCAL_AUTHORITY_4_USER_EMAIL = "test@test4.org.uk";
     String PRIVATE_SOLICITOR_USER_EMAIL = "test@private.solicitors.uk";
     String PRIVATE_ORG_ID = "ORG-EXT";
     String DEFAULT_LA_COURT = "Family Court";
