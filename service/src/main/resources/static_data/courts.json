@@ -98,6 +98,13 @@
       "regionId": "5"
     },
     {
+      "code": "164",
+      "name": "Cardiff",
+      "region": "Wales",
+      "epimmsId": "234850",
+      "regionId": "7"
+    },
+    {
       "code": "165",
       "name": "Carlisle",
       "region": "North West",
