@@ -31,7 +31,7 @@ public class CMSReportService {
         String courtId = getCourt(cmsReportEventData);
         ESQuery esQuery = buildQuery(courtId);
         log.info("query {}", esQuery.toMap());
-        List<CaseDetails> search = searchService.search(esQuery, 10, 1);
+        List<CaseDetails> search = searchService.search(esQuery, 20, 0);
 
 
         String result = search.stream()
