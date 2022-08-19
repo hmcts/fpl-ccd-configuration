@@ -167,7 +167,7 @@ public class RemovalToolController extends CallbackController {
         } else if (removedApplication.isPresent()) {
             publishEvent(new ApplicationRemovedEvent(caseData, removedApplication.get()));
         } else if (removedApplicationForm.isPresent()) {
-            publishEvent(new ApplicationFormRemovedEvent(caseData, removedApplicationForm.get()));
+            publishEvent(new ApplicationFormRemovedEvent(caseData));
         }
     }
 }

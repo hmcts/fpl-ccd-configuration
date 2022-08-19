@@ -4,11 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CtscTeamLeadLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.ApplicationFormRemovedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.ApplicationFormRemovedEmailContentProvider;
@@ -23,10 +23,10 @@ public class ApplicationFormRemovedEventHandler {
     private final NotificationService notificationService;
     private final CtscTeamLeadLookupConfiguration ctscTeamLeadLookupConfiguration;
 
+    @Async
     @EventListener
     public void notifyTeamLead(ApplicationFormRemovedEvent event) {
         final CaseData caseData = event.getCaseData();
-        final DocumentReference removedApplicationForm = event.getRemovedApplicationForm();
 
         String recipient = ctscTeamLeadLookupConfiguration.getEmail();
         final NotifyData notifyData = contentProvider.getNotifyData(caseData);

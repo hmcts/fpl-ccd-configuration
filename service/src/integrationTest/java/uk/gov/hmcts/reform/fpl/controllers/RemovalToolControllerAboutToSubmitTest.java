@@ -464,7 +464,7 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldRemoveApplicationForm() {
+    void shouldRemoveC110AApplicationForm() {
         DocumentReference c110a = testDocumentReference();
         String reasonToRemoveApplicationForm = "Confidential information disclosed.";
         CaseData caseData = CaseData.builder()
@@ -481,6 +481,32 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         assertThat(responseData.getC110A().getDocument()).isNull();
         assertThat(responseData.getRemovalToolData().getHiddenApplicationForm().getSubmittedForm()).isEqualTo(c110a);
+        assertThat(responseData.getRemovalToolData().getHiddenApplicationForm().getRemovalReason())
+            .isEqualTo(reasonToRemoveApplicationForm);
+    }
+
+    @Test
+    void shouldRemoveC1ApplicationFormAndSupplement() {
+        DocumentReference c1 = testDocumentReference();
+        DocumentReference supplement = testDocumentReference();
+        String reasonToRemoveApplicationForm = "Confidential information disclosed.";
+        CaseData caseData = CaseData.builder()
+            .removalToolData(RemovalToolData.builder()
+                .removableType(APPLICATION)
+                .reasonToRemoveApplicationForm(reasonToRemoveApplicationForm)
+                .build())
+            .c110A(C110A.builder()
+                .submittedForm(c1)
+                .supplementDocument(supplement)
+                .build())
+            .build();
+
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        assertThat(responseData.getC110A().getDocument()).isNull();
+        assertThat(responseData.getRemovalToolData().getHiddenApplicationForm().getSubmittedForm()).isEqualTo(c1);
+        assertThat(responseData.getRemovalToolData().getHiddenApplicationForm().getSubmittedSupplement())
+            .isEqualTo(supplement);
         assertThat(responseData.getRemovalToolData().getHiddenApplicationForm().getRemovalReason())
             .isEqualTo(reasonToRemoveApplicationForm);
     }
