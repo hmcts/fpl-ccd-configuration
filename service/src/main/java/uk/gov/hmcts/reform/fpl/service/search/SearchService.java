@@ -44,7 +44,7 @@ public class SearchService {
     }
 
     private SearchResult search(String query) {
-        log.debug("Searching CCD with query: {}", query);
+        log.info("Searching CCD with query: {}", query);
         return coreCaseDataService.searchCases(CASE_TYPE, query);
     }
 
