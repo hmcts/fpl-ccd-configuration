@@ -11,6 +11,7 @@ import java.util.UUID;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class PositionStatementChild extends HearingDocument {
+    private final UUID hearingId;
     private final String childName;
     private final UUID childId;
 
@@ -18,6 +19,7 @@ public class PositionStatementChild extends HearingDocument {
     public PositionStatementChild(DocumentReference document,
                                   LocalDateTime dateTimeUploaded,
                                   String uploadedBy,
+                                  UUID hearingId,
                                   String hearing,
                                   String childName,
                                   UUID childId,
@@ -29,5 +31,6 @@ public class PositionStatementChild extends HearingDocument {
         super.hasConfidentialAddress = hasConfidentialAddress;
         this.childName = childName;
         this.childId = childId;
+        this.hearingId = hearingId;
     }
 }

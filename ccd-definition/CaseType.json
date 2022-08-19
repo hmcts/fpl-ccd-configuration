@@ -2,8 +2,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CARE_SUPERVISION_EPO",
-    "Name": "Care, supervision and EPOs",
-    "Description": "Care, supervision and emergency protection orders",
+    "Name": "Public Law Applications",
+    "Description": "Public Law Applications",
     "JurisdictionID": "PUBLICLAW",
     "SecurityClassification": "Public"
   },

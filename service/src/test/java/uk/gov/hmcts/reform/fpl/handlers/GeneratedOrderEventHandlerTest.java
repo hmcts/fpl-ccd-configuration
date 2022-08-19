@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -37,12 +38,16 @@ import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -83,7 +88,7 @@ class GeneratedOrderEventHandlerTest {
     private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENT = LanguageTranslationRequirement.NO;
     private static final String ORDER_TITLE = "orderTitle";
     private static final GeneratedOrderEvent EVENT = new GeneratedOrderEvent(CASE_DATA, TEST_DOCUMENT,
-        TRANSLATION_REQUIREMENT, ORDER_TITLE);
+        TRANSLATION_REQUIREMENT, ORDER_TITLE, LocalDate.now());
     private static final OrderIssuedNotifyData NOTIFY_DATA_WITH_CASE_URL = mock(OrderIssuedNotifyData.class);
     private static final OrderIssuedNotifyData NOTIFY_DATA_WITHOUT_CASE_URL = mock(OrderIssuedNotifyData.class);
     private static final List<Element<Other>> NO_RECIPIENTS = Collections.emptyList();
@@ -305,6 +310,35 @@ class GeneratedOrderEventHandlerTest {
 
     @Test
     void shouldSendNotificationToCafcass() {
+        UUID selectedHearingId = UUID.randomUUID();
+        LocalDateTime hearingDateTime = LocalDateTime.of(
+                LocalDate.of(2022, 5, 18),
+                LocalTime.of(10, 30)
+        );
+
+
+        Element<HearingBooking> hearingBookingElementOne = Element.<HearingBooking>builder()
+                .id(selectedHearingId)
+                .value(HearingBooking.builder()
+                        .startDate(hearingDateTime)
+                        .build())
+                .build();
+
+        Element<HearingBooking> hearingBookingElementTwo = Element.<HearingBooking>builder()
+                .id(selectedHearingId)
+                .value(HearingBooking.builder()
+                        .startDate(hearingDateTime.minusDays(10))
+                        .build())
+                .build();
+
+        CaseData caseData = CaseData.builder()
+                .selectedHearingId(selectedHearingId)
+                .hearingDetails(List.of(
+                        hearingBookingElementOne,
+                        hearingBookingElementTwo
+                ))
+                .build();
+
         String fileName = "dummyFile.doc";
         when(TEST_DOCUMENT.getFilename()).thenReturn(fileName);
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
@@ -313,14 +347,21 @@ class GeneratedOrderEventHandlerTest {
                                 new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
                         )
             );
-        underTest.notifyCafcass(EVENT);
+
+        var orderApprovalDate = LocalDate.now();
+        GeneratedOrderEvent event = new GeneratedOrderEvent(caseData, TEST_DOCUMENT,
+                TRANSLATION_REQUIREMENT, ORDER_TITLE, orderApprovalDate);
+        underTest.notifyCafcass(event);
         verify(cafcassNotificationService).sendEmail(
-            eq(CASE_DATA),
+            eq(caseData),
             eq(Set.of(TEST_DOCUMENT)),
             eq(ORDER),
             orderCaptor.capture());
+
         OrderCafcassData orderCafcassData = orderCaptor.getValue();
         assertThat(orderCafcassData.getDocumentName()).isEqualTo(fileName);
+        assertThat(orderCafcassData.getHearingDate()).isEqualTo(hearingDateTime);
+        assertThat(orderCafcassData.getOrderApprovalDate()).isEqualTo(orderApprovalDate);
     }
 
     @Test
