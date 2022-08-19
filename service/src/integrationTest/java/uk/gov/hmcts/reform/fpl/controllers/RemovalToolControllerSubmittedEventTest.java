@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.group.C110A;
@@ -62,6 +63,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REMOVAL_NOTIFICATION_T
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_REMOVAL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.ASYNC_MAX_TIMEOUT;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
@@ -321,40 +323,31 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
         given(ctscTeamLeadLookupConfiguration.getEmail())
             .willReturn(CTSC_TEAM_LEAD_EMAIL);
 
-        CaseData caseData = CaseData.builder()
-            .respondents1(wrapElements(RESPONDENT))
-            .id(CASE_ID)
-            .familyManCaseNumber(CASE_ID.toString())
-            .c110A(C110A.builder().submittedForm(null).build())
-            .removalToolData(RemovalToolData.builder()
-                .hiddenApplicationForm(RemovedApplicationForm.builder()
-                    .removalReason(CONFIDENTIAL_INFORMATION_WAS_DISCLOSED)
-                    .build())
-                .build())
-            .build();
+        DocumentReference c110a = testDocumentReference();
 
         CaseData caseDataBefore = CaseData.builder()
             .respondents1(wrapElements(RESPONDENT))
             .id(CASE_ID)
             .familyManCaseNumber(CASE_ID.toString())
             .c110A(C110A.builder()
-                .submittedForm(testDocumentReference())
+                .submittedForm(c110a)
                 .build())
             .build();
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .jurisdiction(JURISDICTION)
-            .caseTypeId(CASE_TYPE)
-            .id(caseData.getId())
-            .data(caseConverter.toMap(caseData))
+        CaseData caseData = caseDataBefore.toBuilder()
+            .removalToolData(RemovalToolData.builder()
+                .hiddenApplicationForm(RemovedApplicationForm.builder()
+                    .removalReason(CONFIDENTIAL_INFORMATION_WAS_DISCLOSED)
+                    .submittedForm(c110a)
+                    .build())
+                .build())
+            .c110A(C110A.builder()
+                .submittedForm(null)
+                .build())
             .build();
 
-        CaseDetails caseDetailsBefore = CaseDetails.builder()
-            .jurisdiction(JURISDICTION)
-            .caseTypeId(CASE_TYPE)
-            .id(caseData.getId())
-            .data(caseConverter.toMap(caseDataBefore))
-            .build();
+        CaseDetails caseDetailsBefore = convertDataToDetails(caseDataBefore);
+        CaseDetails caseDetails = convertDataToDetails(caseData);
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(caseDetails)
@@ -363,13 +356,22 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
 
         postSubmittedEvent(callbackRequest);
 
-        verify(notificationClient).sendEmail(
-            APPLICATION_FORM_REMOVED_CTSC_LEAD_TEMPLATE,
-            CTSC_TEAM_LEAD_EMAIL,
-            expectedApplicationFormRemovalTemplateParameters(),
-            notificationReference(CASE_ID)
-        );
+        checkUntil(() -> verify(notificationClient).sendEmail(
+            eq(APPLICATION_FORM_REMOVED_CTSC_LEAD_TEMPLATE),
+            eq(CTSC_TEAM_LEAD_EMAIL),
+            eq(expectedApplicationFormRemovalTemplateParameters()),
+            eq(notificationReference(CASE_ID))
+        ));
 
+    }
+
+    private CaseDetails convertDataToDetails(CaseData caseData) {
+        return CaseDetails.builder()
+            .jurisdiction(JURISDICTION)
+            .caseTypeId(CASE_TYPE)
+            .id(caseData.getId())
+            .data(caseConverter.toMap(caseData))
+            .build();
     }
 
     private Map<String, Object> expectedOrderRemovalTemplateParameters() {
