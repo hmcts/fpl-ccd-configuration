@@ -63,6 +63,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.ALL_LAS;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.CHILD_SOLICITOR;
@@ -433,6 +434,7 @@ public class FurtherEvidenceUploadedEventHandler {
                 .flatMap(List::stream)
                 .filter(not(oldSupportingEvidenceBundle::contains))
                 .map(Element::getValue)
+                .filter(bundle -> !NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(bundle.getType()))
                 .map(supportingEvidenceBundle -> {
                     DocumentReference document = supportingEvidenceBundle.getDocument();
                     document.setType(Optional.ofNullable(supportingEvidenceBundle.getType())
@@ -511,6 +513,7 @@ public class FurtherEvidenceUploadedEventHandler {
 
 
         return supportingEvidenceBundles.stream()
+                .filter(bundle -> !NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(bundle.getType()))
                 .map(bundle -> {
                     DocumentReference document = bundle.getDocument();
                     document.setType(Optional.ofNullable(bundle.getType())
@@ -643,11 +646,11 @@ public class FurtherEvidenceUploadedEventHandler {
                 getEvidenceBundleFromRespondentStatements(beforeCaseData));
         unwrapElements(respondentStatements).forEach(respondentStatement -> {
             if (!respondentStatement.isConfidentialDocument()) {
+                ret.get(CAFCASS).add(respondentStatement);
                 ret.get(CHILD_SOLICITOR).add(respondentStatement);
                 ret.get(RESPONDENT_SOLICITOR).add(respondentStatement);
             }
             if (!(respondentStatement.isUploadedByHMCTS() && respondentStatement.isConfidentialDocument())) {
-                ret.get(CAFCASS).add(respondentStatement);
                 ret.get(ALL_LAS).add(respondentStatement);
             }
         });
@@ -662,8 +665,10 @@ public class FurtherEvidenceUploadedEventHandler {
             if (!doc.isConfidentialDocument()) {
                 ret.get(CHILD_SOLICITOR).add(doc);
                 ret.get(RESPONDENT_SOLICITOR).add(doc);
+                if (!NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(doc.getType())) {
+                    ret.get(CAFCASS).add(doc);
+                }
             }
-            ret.get(CAFCASS).add(doc);
             ret.get(ALL_LAS).add(doc);
         });
         // Uploaded by HMCTS Admin
@@ -675,7 +680,9 @@ public class FurtherEvidenceUploadedEventHandler {
             if (!doc.isConfidentialDocument()) {
                 ret.get(CHILD_SOLICITOR).add(doc);
                 ret.get(RESPONDENT_SOLICITOR).add(doc);
-                ret.get(CAFCASS).add(doc);
+                if (!NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(doc.getType())) {
+                    ret.get(CAFCASS).add(doc);
+                }
                 ret.get(ALL_LAS).add(doc);
             }
         });
@@ -688,7 +695,9 @@ public class FurtherEvidenceUploadedEventHandler {
             // no confidential document by solicitors
             ret.get(CHILD_SOLICITOR).add(doc);
             ret.get(RESPONDENT_SOLICITOR).add(doc);
-            ret.get(CAFCASS).add(doc);
+            if (!NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(doc.getType())) {
+                ret.get(CAFCASS).add(doc);
+            }
             ret.get(ALL_LAS).add(doc);
         });
 
@@ -700,9 +709,11 @@ public class FurtherEvidenceUploadedEventHandler {
             if (!doc.isConfidentialDocument()) {
                 ret.get(CHILD_SOLICITOR).add(doc);
                 ret.get(RESPONDENT_SOLICITOR).add(doc);
+                if (!NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(doc.getType())) {
+                    ret.get(CAFCASS).add(doc);
+                }
             }
             if (!(doc.isUploadedByHMCTS() && doc.isConfidentialDocument())) {
-                ret.get(CAFCASS).add(doc);
                 ret.get(ALL_LAS).add(doc);
             }
         });
