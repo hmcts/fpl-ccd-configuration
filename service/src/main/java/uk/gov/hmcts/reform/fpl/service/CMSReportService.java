@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MustNot;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,11 +30,23 @@ public class CMSReportService {
         CMSReportEventData cmsReportEventData = caseData.getCmsReportEventData();
         String courtId = getCourt(cmsReportEventData);
         ESQuery esQuery = buildQuery(courtId);
-        log.info("query ", esQuery);
-        log.info("query {}", esQuery.toString());
-        List<CaseDetails> search = searchService.search(esQuery, 0, 4);
+        log.info("query {}", esQuery.toMap());
+        List<CaseDetails> search = searchService.search(esQuery, 10, 1);
+
+
+        String result = search.stream()
+                .map(caseDetails -> String.join("",
+                        "<div class='panel panel-border-wide'>",
+                        String.valueOf(caseDetails.getData().get("familyManCaseNumber")),
+                        " - ",
+                        String.valueOf(caseDetails.getData().get("caseLocalAuthority")),
+                        "</div>")
+                )
+                .collect(Collectors.collectingAndThen(Collectors.toSet(),
+                        Object::toString));
+
         log.info("response from ES {} ", search);
-        return "court selected " +courtId;
+        return result;
     }
 
     private String getCourt(CMSReportEventData cmsReportEventData) {
