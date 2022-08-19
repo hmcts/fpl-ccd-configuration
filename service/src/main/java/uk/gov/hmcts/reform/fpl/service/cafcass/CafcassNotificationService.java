@@ -334,15 +334,15 @@ public class CafcassNotificationService {
 
     private Set<EmailAttachment> getEmailAttachments(Set<DocumentReference> documentReferences) {
         return documentReferences.stream()
-                .map(documentReference -> {
-                    byte[] documentContent = documentDownloadService.downloadDocument(documentReference.getBinaryUrl());
+            .map(documentReference -> {
+                byte[] documentContent = documentDownloadService.downloadDocument(documentReference.getBinaryUrl());
 
-                    return document(
-                            defaultIfNull(URLConnection.guessContentTypeFromName(documentReference.getFilename()),
-                                    "application/octet-stream"),
-                            documentContent,
-                            documentReference.getFilename());
-                })
-                .collect(toSet());
+                return document(
+                        defaultIfNull(URLConnection.guessContentTypeFromName(documentReference.getFilename()),
+                                "application/octet-stream"),
+                        documentContent,
+                        documentReference.getFilename());
+            })
+            .collect(toSet());
     }
 }
