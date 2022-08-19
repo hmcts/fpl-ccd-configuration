@@ -71,6 +71,12 @@ module.exports = {
     orders_and_directions_sought: {xpath : '//div[@class=\'width-50\']//a[.=\'Orders and directions sought\']'},
     grounds_for_application: {xpath: '//div[@class=\'width-50\']//a[.=\'Grounds for the application\']'},
     hearing_urgency_link : {xpath : '//div[@class=\'width-50\']//a[.=\'Hearing urgency\']'},
+    local_authority_page_link : {xpath : '//p[11]/a[.="Local authority\'s details"]'},
+    childs_details_link : {xpath : '//p[12]/a[.="Child\'s details"]'},
+    respondents_details_link : {xpath : '//p[13]/a[.="Respondents\' details"]'},
+    allocation_proposal_link: {xpath : '//p[14]/a[.=\'Allocation proposal\']'},
+    view_application_tab: {xpath : '//div[contains(text(),\'View application\')]'},
+    submit_application_link : {xpath: '//a[contains(text(),\'Submit application\')]'},
     cancel_link : {xpath: '//a[.=\'Cancel\']'},
   },
 
@@ -110,6 +116,30 @@ module.exports = {
 
   clickGroundsForApplicationLink()  {
     I.click(this.locators.grounds_for_application);
+  },
+
+  clickLocalAuthorityLink()  {
+    I.click(this.locators.local_authority_page_link);
+  },
+
+  clickChildsDetailsLink()  {
+    I.click(this.locators.childs_details_link);
+  },
+
+  clickRespondentsDetailsLink()  {
+    I.click(this.locators.respondents_details_link);
+  },
+
+  clickAllocationDetailsLink()  {
+    I.click(this.locators.allocation_proposal_link);
+  },
+
+  clickApplicationViewTab()  {
+    I.click(this.locators.view_application_tab);
+  },
+
+  clickSubmitApplicationLink()  {
+    I.click(this.locators.submit_application_link);
   },
 
   verifyAddApplicationDetailsSection() {
@@ -178,5 +208,100 @@ module.exports = {
     for (const error of errors) {
       I.see(error);
     }
+  },
+
+  verifyViewApplicationScreen() {
+
+    I.see('Application details');
+    I.see('Orders and directions sought');
+    I.see('Orders and directions needed');
+    I.see('Which orders do you need?');
+    I.see('Care order');
+    I.see('Directions');
+    I.see('Do you need any other directions?');
+    I.see('No');
+    I.see('Which court are you issuing for?');
+    I.see('Swansea');
+    I.see('Make changes to orders and directions sought');
+    I.see('Hearing urgency');
+    I.see('Hearing needed');
+    I.see('When do you need a hearing?');
+    I.see('Same day');
+    I.see('What type of hearing do you need?');
+    I.see('Give reason');
+    I.see('When do you need a Hearing - Test Reason');
+    I.see('What type of hearing do you need?');
+    I.see('Standard case management hearing');
+    I.see('Give reason');
+    I.see('Type of hearing that you need - Test Reason');
+    I.see('Do you need a without notice hearing?');
+    I.see('No');
+    I.see('Do you need a hearing with reduced notice?');
+    I.see('No');
+    I.see('Are respondents aware of proceedings?');
+    I.see('No');
+    I.see('Make changes to hearing urgency');
+    I.see('Grounds for the application');
+    I.see('Threshold criteria');
+    I.see('How does this case meet the threshold criteria?');
+    I.see('The child concerned is suffering or is likely to suffer significant harm because they are:');
+    I.see('Beyond parental control');
+    I.see('Give details of how this case meets the threshold criteria');
+    I.see('Grounds For An Application - Test Reason');
+    I.see('Make changes to threshold criteria');
+    I.see('Information about the parties');
+    I.see('Your organisation details');
+    I.see('Local authority');
+    I.see('Local authority 1');
+    I.see('Name');
+    I.see('fpla_test_friday27');
+    I.see('PBA number');
+    I.see('PBA0082848');
+    I.see('Address');
+    I.see('Building and Street');
+    I.see('Flat 1, Swansea Apartments');
+    I.see('Address Line 2');
+    I.see('Swansea Central Square 11');
+    I.see('Address Line 3');
+    I.see('40 Fleet street');
+    I.see('Town or City');
+    I.see('Swansea');
+    I.see('County');
+    I.see('Swansea');
+    I.see('Postcode/Zipcode');
+    I.see('CR0 2GE');
+    I.see('Country');
+    I.see('United Kingdom');
+    I.see('Make changes to local authority details');
+    I.see('The child\'s details');
+    I.see('Child');
+    I.see('Child 1');
+    I.see('Party');
+    I.see('First name');
+    I.see('Test First Name');
+    I.see('Last name');
+    I.see('Test Last Name');
+    I.see('Date of birth');
+    I.see('9 Jun 1910');
+    I.see('Gender');
+    I.see('Boy');
+    I.see('Make changes to the child\'s details');
+    I.see('Respondents\' details');
+    I.see('Respondents');
+    I.see('Respondents 1');
+    I.see('Party');
+    I.see('First name');
+    I.see('Test First Name');
+    I.see('Last name');
+    I.see('Test Last Name');
+    I.see('Date of birth');
+    I.see('9 Jun 1910');
+    I.see('*Current address known?');
+    I.see('No');
+    I.see('*Reason the address is not known');
+    I.see('No fixed abode');
+    I.see('Do they have legal representation?');
+    I.see('No');
+    I.see('Make changes to the respondents\' details');
   },
 };
