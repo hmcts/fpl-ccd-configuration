@@ -28,7 +28,7 @@ public class CMSReportService {
         CMSReportEventData cmsReportEventData = caseData.getCmsReportEventData();
         String courtId = getCourt(cmsReportEventData);
         ESQuery esQuery = buildQuery(courtId);
-        log.info("query {}", esQuery);
+        log.info("query {}", esQuery.toString());
         List<CaseDetails> search = searchService.search(esQuery, 0, 4);
         log.info("response from ES {} ", search);
         return "court selected " +courtId;
