@@ -141,6 +141,10 @@ exports.config = {
     ordersAndDirectionsOtherPage : './e2e/tests/other/otherpages/ordersAndDirectionsOther.js',
     hearingUrgencyOtherPage : './e2e/tests/other/otherpages/hearingUrgencyOther.js',
     groundsForApplicationOtherPage : './e2e/tests/other/otherpages/groundsForApplicationOther.js',
+    localAuthorityDetailsOtherPage : './e2e/tests/other/otherpages/localAuthorityDetailsOther.js',
+    childDetailsOtherPage : './e2e/tests/other/otherpages/childsDetailsOther.js',
+    respondentsDetailsOtherPage : './e2e/tests/other/otherpages/respondentsDetailsOther.js',
+    allocationProposalOtherPage : './e2e/tests/other/otherpages/allocationProposalOther.js',
   },
   plugins: {
     retryFailedStep: {
@@ -151,7 +155,7 @@ exports.config = {
       fullPageScreenshots: true,
     },
   },
-  tests: './e2e/tests/otherpages/*_test.js',
+  tests: './e2e/tests/**/*_test.js',
   teardownAll: require('./e2e/hooks/aggregate-metrics'),
   mocha: {
     reporterOptions: {

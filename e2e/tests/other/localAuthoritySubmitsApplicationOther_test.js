@@ -79,10 +79,11 @@ xScenario('Local authority verifies case created for a Case But Application not 
     'Add the allocation proposal in the Allocation proposal']);
 }).tag('@pipeline @nightly @crossbrowser');
 
-Scenario('Local authority Changes the Case Name of Case.', async ({I,caseViewOtherPage, changeCaseViewOtherPage, ordersAndDirectionsOtherPage, hearingUrgencyOtherPage, groundsForApplicationOtherPage}) => {
+Scenario('Local authority Changes the Case Name of Case.', async ({I,caseViewOtherPage, changeCaseViewOtherPage, ordersAndDirectionsOtherPage, hearingUrgencyOtherPage, groundsForApplicationOtherPage,localAuthorityDetailsOtherPage,childDetailsOtherPage,respondentsDetailsOtherPage, allocationProposalOtherPage}) => {
   await setupScenario(I,true);
   caseViewOtherPage.clickChangeCaseName();
   I.wait(FPLConstants.defaultPageClickWaitTime);
+
   /*//Testing the cancel Link on the Change Case Name Page...
   caseViewOtherPage.clickCancelLink();
   I.wait(FPLConstants.defaultPageClickWaitTime);
@@ -110,6 +111,7 @@ Scenario('Local authority Changes the Case Name of Case.', async ({I,caseViewOth
   caseViewOtherPage.verifyStartApplicationTabDetails('has been updated with event: Change case name');
   caseViewOtherPage.clickOrdersAndDirectionsLink();
 
+  //Steps for the Verification and Processing  for the Orders and Directions
   I.wait(FPLConstants.defaultPageClickWaitTime);
   ordersAndDirectionsOtherPage.verifyOrdersAndDirectionsPage(caseId);
   ordersAndDirectionsOtherPage.inputValuesForOrdersSought('orders_orderType-CARE_ORDER');
@@ -117,11 +119,10 @@ Scenario('Local authority Changes the Case Name of Case.', async ({I,caseViewOth
   I.wait(FPLConstants.defaultPageClickWaitTime);
   ordersAndDirectionsOtherPage.verifyOrdersAndDirections(caseId);
   ordersAndDirectionsOtherPage.clickSaveAndContinue();
-
-
   I.wait(FPLConstants.defaultPageClickWaitTime);
   caseViewOtherPage.verifyStartApplicationTabDetails('has been updated with event: Orders and directions sought');
-  I.wait(FPLConstants.defaultPageClickWaitTime);
+
+  //Steps for the Verification and Processing  for Hearing Urgency
   caseViewOtherPage.clickHearingsUrgencyLink();
   I.wait(FPLConstants.defaultPageClickWaitTime);
   hearingUrgencyOtherPage.verifyHearingUrgencyPage();
@@ -133,6 +134,7 @@ Scenario('Local authority Changes the Case Name of Case.', async ({I,caseViewOth
   I.wait(FPLConstants.defaultPageClickWaitTime);
   caseViewOtherPage.verifyStartApplicationTabDetails('has been updated with event: Hearing urgency');
 
+  //Steps for the Verification and Processing for the Grounds For Application
   caseViewOtherPage.clickGroundsForApplicationLink();
   I.wait(FPLConstants.defaultPageClickWaitTime);
   groundsForApplicationOtherPage.verifyGroundsForApplicationPage();
@@ -141,10 +143,74 @@ Scenario('Local authority Changes the Case Name of Case.', async ({I,caseViewOth
   I.wait(FPLConstants.defaultPageClickWaitTime);
   groundsForApplicationOtherPage.verifyGroundsForApplicationCheckYourAnswers();
   groundsForApplicationOtherPage.clickSaveAndContinue();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
   caseViewOtherPage.verifyStartApplicationTabDetails('has been updated with event: Grounds for the application');
+
+  //Steps for the Verification and Processing for the Local Authority
+  caseViewOtherPage.clickLocalAuthorityLink();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  localAuthorityDetailsOtherPage.verifyLocalAuthorityDetails();
+  localAuthorityDetailsOtherPage.inputValuesForLocalAuthorityDetails();
+  localAuthorityDetailsOtherPage.clickContinueButton();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  localAuthorityDetailsOtherPage.verifyLocalAuthorityDetailsColleagueScreen();
+  localAuthorityDetailsOtherPage.clickAddNewColleague();
+  I.wait(FPLConstants.twoSecondWaitTime);
+  localAuthorityDetailsOtherPage.verifyLocalAuthorityDetailsAddColleagueScreen();
+  localAuthorityDetailsOtherPage.inputValuesForLocalAuthorityDetailsAddColleagueScreen();
+  localAuthorityDetailsOtherPage.clickContinueButton(); //After Adding the Colleague
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  localAuthorityDetailsOtherPage.verifyLocalAuthorityCheckYourAnswersPage();
+  localAuthorityDetailsOtherPage.clickSaveAndContinue();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  caseViewOtherPage.verifyStartApplicationTabDetails('has been updated with event: Local authority\'s details');
+
+  //Steps for the Verification and Processing for the Child's Details
+  caseViewOtherPage.clickChildsDetailsLink();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  childDetailsOtherPage.verifyChildDetails();
+  childDetailsOtherPage.inputValuesForChildDetails();
+  childDetailsOtherPage.clickContinueButton();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  childDetailsOtherPage.verifyChildDetailsCheckYourAnswersPage(caseId);
+  childDetailsOtherPage.clickSaveAndContinue();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  caseViewOtherPage.verifyStartApplicationTabDetails('has been updated with event: Child\'s details');
+  caseViewOtherPage.clickRespondentsDetailsLink();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+
+  //Steps for the Verification and Processing for the Respondent's Details
+  respondentsDetailsOtherPage.verifyRespondentsDetails();
+  respondentsDetailsOtherPage.inputValuesFoRespondentsDetails();
+  respondentsDetailsOtherPage.clickContinueButton();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  respondentsDetailsOtherPage.verifyRespondentsDetailsCheckYourAnswersPage(caseId);
+  respondentsDetailsOtherPage.clickSaveAndContinue();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  caseViewOtherPage.verifyStartApplicationTabDetails('has been updated with event: Respondents\' details');
+  caseViewOtherPage.clickAllocationDetailsLink();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+
+  //Steps for the Verification and Processing for the Allocation Proposal
+  allocationProposalOtherPage.verifyAllocationProposalPage();
+  allocationProposalOtherPage.inputValuesAllocationProposal();
+  allocationProposalOtherPage.clickContinueButton();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  allocationProposalOtherPage.verifyProposalReasonCheckYourAnswers();
+  allocationProposalOtherPage.clickSaveAndContinue();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  caseViewOtherPage.verifyStartApplicationTabDetails('has been updated with event: Allocation proposal');
+
+  //Steps for the Verification of the Application View
+  caseViewOtherPage.clickApplicationViewTab();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  caseViewOtherPage.verifyViewApplicationScreen();
+
+  //Submission of the Application
+  caseViewOtherPage.clickStartApplicationTab();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
   pause();
-
-
+  caseViewOtherPage.clickSubmitApplicationLink();
 }).tag('@nightly @crossbrowser');
 
 xScenario('Local authority Adds an Order to an Application', async ({I}) => {
