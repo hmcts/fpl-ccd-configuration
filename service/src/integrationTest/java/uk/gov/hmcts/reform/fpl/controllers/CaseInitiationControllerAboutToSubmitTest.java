@@ -170,9 +170,9 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         Map<String, Object> caseDetails = postAboutToSubmitEvent(caseData).getData();
 
-        @SuppressWarnings("unchecked")
         // court code (344) is defined by application-integration-test.yaml (by LOCAL_AUTHORITY_4_USER_EMAIL)
         // epimms id is defined in courts.json by looking up court code 344
+        @SuppressWarnings("unchecked")
         Map<String,  String> caseManagementLocation = (Map<String, String>)
             caseDetails.get("caseManagementLocation");
         assertThat(caseManagementLocation).containsEntry("baseLocation", "234946");

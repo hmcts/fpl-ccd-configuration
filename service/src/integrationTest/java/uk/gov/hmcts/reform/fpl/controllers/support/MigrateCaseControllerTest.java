@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -422,6 +423,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                     .lastName("Clark")
                         .dateOfBirth(LocalDate.of(1997, 9, 7))
                     .build()).build())))
+                .court(Court.builder().code("344").build())
                 .build();
 
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
@@ -431,10 +433,16 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             assertThat(caseDetails.get("caseNameHmctsInternal")).isEqualTo("I AM CASE NAME");
 
+            // court code (344) is defined by application-integration-test.yaml (by LOCAL_AUTHORITY_4_USER_EMAIL)
+            // epimms id is defined in courts.json by looking up court code 344
+            @SuppressWarnings("unchecked")
+            Map<String,  String> caseManagementLocation = (Map<String, String>)
+                caseDetails.get("caseManagementLocation");
+            assertThat(caseManagementLocation).containsEntry("baseLocation", "234946");
+            assertThat(caseManagementLocation).containsEntry("region", "7");
             @SuppressWarnings("unchecked")
             Map<String, Map<String, String>> caseManagementCategory = (Map<String, Map<String, String>>)
                 caseDetails.get("caseManagementCategory");
-
             assertThat(caseManagementCategory).containsKey("value");
             Map<String, String> caseManagementCategoryValue =  caseManagementCategory.get("value");
             assertThat(caseManagementCategoryValue).containsEntry("code", "FPL");
