@@ -2,6 +2,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "courtCode",
+    "Label": "COURT",
+    "FieldType": "Text",
+    "FieldTypeParameter": "Court.code",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "nationalArea",
     "Label": "Which national area?",
     "FieldType": "FixedList",
@@ -32,6 +42,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "WalesDJF",
+    "Label": "Select DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "WalesDJF",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "carlisleDFJCourts",
     "Label": "Select court under DFJ area",
     "FieldType": "FixedList",
@@ -46,6 +66,16 @@
     "Label": "Select court under DFJ area",
     "FieldType": "FixedList",
     "FieldTypeParameter": "CentralLondonDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "swanseaDFJCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "SwanseaDFJCourts",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

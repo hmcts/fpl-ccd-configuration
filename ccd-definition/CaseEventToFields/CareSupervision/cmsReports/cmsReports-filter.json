@@ -36,7 +36,7 @@
     "PageLabel": "",
     "PageDisplayOrder": 1,
     "ShowSummaryChangeOption": "No",
-    "FieldShowCondition" : "nationalArea = \"LONDON\""
+    "FieldShowCondition" : "nationalArea = \"0\""
   },
   {
     "LiveFrom": "01/01/2018",
@@ -49,7 +49,20 @@
     "PageLabel": "",
     "PageDisplayOrder": 1,
     "ShowSummaryChangeOption": "No",
-    "FieldShowCondition" : "nationalArea = \"NORTH_WEST\""
+    "FieldShowCondition" : "nationalArea = \"30\""
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "cmsReport",
+    "CaseFieldID": "WalesDJF",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageLabel": "",
+    "PageDisplayOrder": 1,
+    "ShowSummaryChangeOption": "No",
+    "FieldShowCondition" : "nationalArea = \"60\""
   },
   {
     "LiveFrom": "01/01/2018",
@@ -76,6 +89,19 @@
     "PageDisplayOrder": 1,
     "ShowSummaryChangeOption": "No",
     "FieldShowCondition" : "londonDFJ = \"CENTRAL_LONDON\""
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "cmsReport",
+    "CaseFieldID": "swanseaDFJCourts",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageLabel": "",
+    "PageDisplayOrder": 1,
+    "ShowSummaryChangeOption": "No",
+    "FieldShowCondition" : "WalesDJF = \"SWANSEA\""
   },
   {
     "LiveFrom": "01/01/2017",

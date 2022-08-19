@@ -6,7 +6,7 @@
     "Label": "Court to issue",
     "FieldType": "Court",
     "SecurityClassification": "Public",
-    "Searchable": "N",
+    "Searchable": "Y",
     "Comment": "Designated court used in case orders"
   },
   {
