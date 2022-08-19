@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
@@ -28,6 +29,7 @@ import java.util.stream.IntStream;
 import static java.time.LocalDateTime.now;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.BIRTH_CERTIFICATE;
+import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -187,6 +189,25 @@ public class FurtherEvidenceUploadedEventTestData {
                 .build();
     }
 
+    public static CaseData buildCaseDataWithC2AdditionalApplicationBundle() {
+        C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder()
+                .id(UUID.randomUUID())
+                .type(WITH_NOTICE)
+                .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(now().plusDays(1), DATE_TIME))
+                .supportingEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER))
+                .build();
+
+
+        AdditionalApplicationsBundle additionalApplicationsBundle = AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(c2DocumentBundle)
+                .build();
+
+
+        return commonCaseBuilder()
+                .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle))
+                .build();
+    }
+
     public static CaseData buildCaseDataWithNonConfidentialNonPDFRespondentStatementsSolicitor() {
         return commonCaseBuilder()
             .respondentStatements(buildRespondentStatementsList(
@@ -311,7 +332,7 @@ public class FurtherEvidenceUploadedEventTestData {
             .build());
     }
 
-    public static CaseData.CaseDataBuilder commonCaseBuilder() {
+    public static CaseData.CaseDataBuilder<?,?> commonCaseBuilder() {
         return CaseData.builder()
             .id(CASE_ID)
             .familyManCaseNumber(CASE_ID.toString())

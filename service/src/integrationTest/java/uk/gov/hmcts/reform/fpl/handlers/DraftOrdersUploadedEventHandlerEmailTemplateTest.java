@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersUploaded;
@@ -18,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.AgreedCMOUploadedContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.DraftOrdersUploadedContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
@@ -39,12 +42,16 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 
 @ContextConfiguration(classes = {
     DraftOrdersUploadedEventHandler.class, DraftOrdersUploadedContentProvider.class,
-    AgreedCMOUploadedContentProvider.class, CaseUrlService.class, EmailNotificationHelper.class
+    AgreedCMOUploadedContentProvider.class, CaseUrlService.class, EmailNotificationHelper.class,
+    CafcassLookupConfiguration.class
 })
 class DraftOrdersUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     private static final String RESPONDENT_LAST_NAME = "Smithson";
     private static final String CHILD_LAST_NAME = "Jones";
+
+    @MockBean
+    private CafcassNotificationService cafcassNotificationService;
 
     @Autowired
     private DraftOrdersUploadedEventHandler underTest;
