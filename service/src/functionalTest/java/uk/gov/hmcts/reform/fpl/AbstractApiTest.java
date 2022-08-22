@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CallbackResponse;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Scenario;
@@ -76,16 +77,20 @@ public abstract class AbstractApiTest {
         return caseService.createCase(caseData, user);
     }
 
-    CallbackResponse callback(CaseData caseDetails, User user, String callback) {
-        return caseService.callback(caseDetails, user, "/callback/" + callback);
+    CallbackResponse callback(CaseData caseData, User user, String callback) {
+        return caseService.callback(caseData, user, "/callback/" + callback);
     }
 
-    void submittedCallback(CaseData caseDetails, User user, String callback) {
-        submittedCallback(caseDetails, caseDetails, user, callback);
+    CallbackResponse callback(CaseData caseData, CaseDetails caseDetails, User user, String callback) {
+        return caseService.callback(caseData, caseDetails, user, "/callback/" + callback);
     }
 
-    void submittedCallback(CaseData caseDetails, CaseData caseDetailsBefore, User user, String callback) {
-        caseService.submittedCallback(caseDetails, caseDetailsBefore, user, "/callback/" + callback);
+    void submittedCallback(CaseData caseData, User user, String callback) {
+        submittedCallback(caseData, caseData, user, callback);
+    }
+
+    void submittedCallback(CaseData caseData, CaseData caseDataBefore, User user, String callback) {
+        caseService.submittedCallback(caseData, caseDataBefore, user, "/callback/" + callback);
     }
 
     private CaseData readCase(String path) {

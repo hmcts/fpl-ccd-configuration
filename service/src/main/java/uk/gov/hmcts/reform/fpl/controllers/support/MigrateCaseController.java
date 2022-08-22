@@ -43,7 +43,7 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Slf4j
 public class MigrateCaseController extends CallbackController {
-    private static final String MIGRATION_ID_KEY = "migrationId";
+    public static final String MIGRATION_ID_KEY = "migrationId";
 
     private final CoreCaseDataApiV2 coreCaseDataApi;
 
