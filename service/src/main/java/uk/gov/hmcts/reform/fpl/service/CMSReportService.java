@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.service.search.SearchService;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.BooleanQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Must;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MustNot;
 
 import java.util.List;
@@ -58,20 +59,23 @@ public class CMSReportService {
 
     private ESQuery buildQuery(String courtId) {
         final String field = "state";
-        final MatchQuery openCases = MatchQuery.of(field, State.OPEN.getValue());
+        //final MatchQuery openCases = MatchQuery.of(field, State.OPEN.getValue());
         final MatchQuery deletedCases = MatchQuery.of(field, State.DELETED.getValue());
         final MatchQuery returnedCases = MatchQuery.of(field, State.RETURNED.getValue());
         final MatchQuery closedCases = MatchQuery.of(field, State.CLOSED.getValue());
 
-        MustNot mustNot = MustNot.builder()
+        /*MustNot mustNot = MustNot.builder()
                 .clauses(List.of(openCases, deletedCases, returnedCases, closedCases))
+                .build();*/
+        MustNot mustNot = MustNot.builder()
+                .clauses(List.of(deletedCases, returnedCases, closedCases))
                 .build();
 
-        return BooleanQuery.builder()
+       /* return BooleanQuery.builder()
                 .mustNot(mustNot)
-                .build();
+                .build();*/
 
-       /* Must must = Must.builder()
+       Must must = Must.builder()
                     .clauses(List.of(
                         MatchQuery.of(MATCH_FIELD, courtId)
                     ))
@@ -81,6 +85,6 @@ public class CMSReportService {
         return BooleanQuery.builder()
                 .must(must)
                 .mustNot(mustNot)
-                .build();*/
+                .build();
     }
 }
