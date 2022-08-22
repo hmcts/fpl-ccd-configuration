@@ -38,6 +38,10 @@ public class CMSReportService {
         String result = search.stream()
                 .map(caseDetails -> String.join("",
                         "<div class='panel panel-border-wide'>",
+                        String.valueOf(caseDetails.getData().get("id")),
+                        " - ",
+                        String.valueOf(caseDetails.getData().get("state")),
+                        " - ",
                         String.valueOf(caseDetails.getData().get("familyManCaseNumber")),
                         " - ",
                         String.valueOf(caseDetails.getData().get("caseLocalAuthority")),
@@ -59,21 +63,16 @@ public class CMSReportService {
 
     private ESQuery buildQuery(String courtId) {
         final String field = "state";
-        //final MatchQuery openCases = MatchQuery.of(field, State.OPEN.getValue());
+        final MatchQuery openCases = MatchQuery.of(field, State.OPEN.getValue());
         final MatchQuery deletedCases = MatchQuery.of(field, State.DELETED.getValue());
         final MatchQuery returnedCases = MatchQuery.of(field, State.RETURNED.getValue());
         final MatchQuery closedCases = MatchQuery.of(field, State.CLOSED.getValue());
 
-        /*MustNot mustNot = MustNot.builder()
-                .clauses(List.of(openCases, deletedCases, returnedCases, closedCases))
-                .build();*/
+
         MustNot mustNot = MustNot.builder()
-                .clauses(List.of(deletedCases, returnedCases, closedCases))
+                .clauses(List.of(openCases, deletedCases, returnedCases, closedCases))
                 .build();
 
-       /* return BooleanQuery.builder()
-                .mustNot(mustNot)
-                .build();*/
 
        Must must = Must.builder()
                     .clauses(List.of(
