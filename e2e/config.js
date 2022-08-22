@@ -100,7 +100,7 @@ module.exports = {
     jurisdiction: 'PUBLICLAW',
     jurisdictionFullDesc: 'Public Law',
     caseType: 'CARE_SUPERVISION_EPO',
-    caseTypeFullDesc: 'Care, supervision and EPOs',
+    caseTypeFullDesc: 'Public Law Applications',
   },
   // actions
   applicationActions: {
@@ -168,7 +168,7 @@ module.exports = {
     manageOrders: 'Manage orders',
     uploadWelshTranslations: 'Upload translated documents',
     languageRequirement: 'Welsh language requirements',
-    manageLocalAuthorities: 'Manage local authorities',
+    manageLocalAuthorities: 'Manage LAs / Transfer to court',
   },
   superUserActions: {
     removeOrdersAndApplications: 'Remove orders and applications',

@@ -88,7 +88,7 @@ public class GatekeepingOrderService {
 
         DocumentReference draftDocument = decision.getDraftDocument();
         DocumentReference document = decision.isSealed()
-            ? sealingService.sealDocument(draftDocument, caseData.getSealType()) : draftDocument;
+            ? sealingService.sealDocument(draftDocument, caseData.getCourt(), caseData.getSealType()) : draftDocument;
 
         LanguageTranslationRequirement translationRequirements =
             gatekeepingOrderEventData.getGatekeepingTranslationRequirements();

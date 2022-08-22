@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthoritiesEventData;
@@ -31,12 +32,17 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.ADD;
 import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.REMOVE;
 import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.TRANSFER;
+import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.TRANSFER_COURT;
 
 @Api
 @RestController
 @RequestMapping("/callback/manage-local-authorities")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ManageLocalAuthoritiesController extends CallbackController {
+
+    public static final String PAST_COURT_LIST_KEY = "pastCourtList";
+
+    public static final String COURT_KEY = "court";
 
     private final ManageLocalAuthoritiesService service;
     private final CaseAssignmentService assignmentService;
@@ -85,6 +91,12 @@ public class ManageLocalAuthoritiesController extends CallbackController {
             final DynamicList localAuthoritiesToTransfer = service.getLocalAuthoritiesToTransfer(caseData);
             caseDetails.getData().put("localAuthoritiesToTransfer", localAuthoritiesToTransfer);
             caseDetails.getData().put("localAuthoritiesToTransferWithoutShared", localAuthoritiesToTransfer);
+        }
+
+        if (TRANSFER_COURT == action) {
+            caseDetails.getData().put("currentCourtNameWithoutTransferLA", service.getCurrentCourtName(caseData));
+            caseDetails.getData().put("courtsToTransferWithoutTransferLA",
+                service.getCourtsToTransferWithHighCourt(caseData, true));
         }
 
         return respond(caseDetails);
@@ -161,7 +173,7 @@ public class ManageLocalAuthoritiesController extends CallbackController {
 
             final Organisation newDesignatedOrg = service.transfer(caseData);
 
-            caseDetails.getData().put("court", caseData.getCourt());
+            caseDetails.getData().put(COURT_KEY, caseData.getCourt());
             caseDetails.getData().put("caseLocalAuthority", caseData.getCaseLocalAuthority());
             caseDetails.getData().put("caseLocalAuthorityName", caseData.getCaseLocalAuthorityName());
             caseDetails.getData().put("localAuthorities", caseData.getLocalAuthorities());
@@ -185,6 +197,12 @@ public class ManageLocalAuthoritiesController extends CallbackController {
             }
         }
 
+        if (TRANSFER_COURT == action) {
+            Court courtTransferred = service.transferCourtWithoutTransferLA(caseData);
+            caseDetails.getData().put(PAST_COURT_LIST_KEY, caseData.getPastCourtList());
+            caseDetails.getData().put(COURT_KEY, courtTransferred);
+        }
+
         return respond(removeTemporaryFields(caseDetails));
     }
 
@@ -202,4 +220,13 @@ public class ManageLocalAuthoritiesController extends CallbackController {
         return CaseDetailsHelper.removeTemporaryFields(caseDetails, LocalAuthoritiesEventData.class);
     }
 
+    @PostMapping("transfer-court/court-selection/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleTransferCourtWithoutTransferLA(
+        @RequestBody CallbackRequest request) {
+        final CaseDetails caseDetails = request.getCaseDetails();
+        final CaseData caseData = getCaseData(caseDetails);
+        final List<String> errors = service.validateTransferCourtWithoutTransferLA(
+            caseData.getLocalAuthoritiesEventData());
+        return respond(caseDetails, errors);
+    }
 }

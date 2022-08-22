@@ -21,6 +21,7 @@ public abstract class DocmosisParameters {
     DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor;
     String courtName;
     List<DocmosisChild> children;
+    boolean isHighCourtCase;
 
     // images
     String draftbackground;

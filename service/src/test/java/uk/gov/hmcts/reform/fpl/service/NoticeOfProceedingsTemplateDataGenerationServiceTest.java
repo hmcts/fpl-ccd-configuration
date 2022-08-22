@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -24,8 +25,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
+import static uk.gov.hmcts.reform.fpl.model.configuration.Language.ENGLISH;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class NoticeOfProceedingsTemplateDataGenerationServiceTest {
@@ -98,6 +101,9 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
         CaseData caseData = getCaseData(
             buildChild("Bran", "Stark"), buildChild("Sansa", "Stark"), buildChild("Jon", "Snow")
         );
+
+        when(courtService.getCourtSeal(caseData, OrderStatus.SEALED))
+                .thenReturn(COURT_SEAL.getValue(ENGLISH));
 
         DocmosisNoticeOfProceeding templateData = underTest.getTemplateData(caseData);
 
