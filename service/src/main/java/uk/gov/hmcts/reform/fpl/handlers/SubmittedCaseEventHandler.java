@@ -100,6 +100,11 @@ public class SubmittedCaseEventHandler {
 
         if (recipientIsEngland.isPresent()) {
             Set<DocumentReference> documentReferences = Optional.ofNullable(caseData.getC110A().getSubmittedForm())
+                    .map(documentReference ->
+                        documentReference.toBuilder()
+                            .type(NEW_APPLICATION.getLabel())
+                            .build()
+                    )
                     .map(Set::of)
                     .orElse(of());
 

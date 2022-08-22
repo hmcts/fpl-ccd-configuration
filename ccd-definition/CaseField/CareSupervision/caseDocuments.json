@@ -151,12 +151,34 @@
     "FieldTypeParameter": "PositionStatementChild",
     "Label": "Position statement child",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "Deprecated. To be removed once all case migrated"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "positionStatementRespondentList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatementRespondent",
+    "Label": "Position statement respondent",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Deprecated. To be removed once all case migrated"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "positionStatementChildListV2",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatementChild",
+    "Label": "Position statement child",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "positionStatementRespondentListV2",
     "FieldType": "Collection",
     "FieldTypeParameter": "PositionStatementRespondent",
     "Label": "Position statement respondent",

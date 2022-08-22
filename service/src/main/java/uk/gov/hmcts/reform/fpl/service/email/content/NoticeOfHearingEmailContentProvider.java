@@ -62,7 +62,7 @@ public class NoticeOfHearingEmailContentProvider extends AbstractEmailContentPro
                 .hearingType(getHearingType(hearingBooking))
                 .eldestChildLastName(helper.getEldestChildLastName(caseData.getAllChildren()))
                 .firstRespondentName(getFirstRespondentLastName(caseData))
-                .hearingDate(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG))
+                .hearingDate(hearingBooking.getStartDate())
                 .hearingVenue(hearingVenueLookUpService.buildHearingVenue(venue))
                 .preHearingTime(hearingBooking.getPreAttendanceDetails())
                 .hearingTime(caseDataExtractionService.getHearingTime(hearingBooking))
