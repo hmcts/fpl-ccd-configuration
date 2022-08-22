@@ -39,5 +39,21 @@
     "ElementLabel": "Date Transferred",
     "SecurityClassification": "Public",
     "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "regionId",
+    "FieldType": "Text",
+    "ElementLabel": "Region ID",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "epimmsId",
+    "FieldType": "Text",
+    "ElementLabel": "ePIMMS ID",
+    "SecurityClassification": "Public"
   }
 ]
