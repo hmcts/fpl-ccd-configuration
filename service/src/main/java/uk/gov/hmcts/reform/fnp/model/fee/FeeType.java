@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
+import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderSection;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 
@@ -139,6 +140,13 @@ public enum FeeType {
 
     public static FeeType fromSecureAccommodationTypes(SecureAccommodationType secureAccommodationType) {
         if (SecureAccommodationType.ENGLAND == secureAccommodationType) {
+            return SECURE_ACCOMMODATION_ENGLAND;
+        }
+        return SECURE_ACCOMMODATION_WALES;
+    }
+
+    public static FeeType fromSecureAccommodationOrder(SecureAccommodationOrderSection saoSection) {
+        if (SecureAccommodationOrderSection.ENGLAND.equals(saoSection)) {
             return SECURE_ACCOMMODATION_ENGLAND;
         }
         return SECURE_ACCOMMODATION_WALES;

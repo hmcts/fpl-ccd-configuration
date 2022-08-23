@@ -2,6 +2,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "PositionStatementChild",
+    "ListElementCode": "hearingId",
+    "FieldType": "Text",
+    "ElementLabel": "Hearing Id",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "hearingId=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PositionStatementChild",
     "ListElementCode": "hearing",
     "FieldType": "Text",
     "ElementLabel": "Position statement child for",

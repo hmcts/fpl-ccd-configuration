@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsTy
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderSection;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEPOAddress;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEPOType;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEnteredEPOExcluded;
@@ -42,6 +43,7 @@ public class Orders {
     private final EPOType epoType;
     private final String excluded;
     private final Address address;
+    private final SecureAccommodationOrderSection secureAccommodationOrderSection;
     private final String court;
     private final String childAssessmentOrderAssessmentDirections;
     private final String childAssessmentOrderContactDirections;
@@ -51,7 +53,8 @@ public class Orders {
     }
 
     public boolean isC1Order() {
-        return this.getOrderType().contains(CHILD_ASSESSMENT_ORDER);
+        return this.getOrderType().contains(CHILD_ASSESSMENT_ORDER)
+               || isSecureAccommodationOrder();
     }
 
     public boolean isDischargeOfCareOrder() {
