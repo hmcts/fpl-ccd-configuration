@@ -32,15 +32,17 @@ public class CMSReportService {
         String courtId = getCourt(cmsReportEventData);
         ESQuery esQuery = buildQuery(courtId);
         log.info("query {}", esQuery.toMap());
+        log.info("record count {}", searchService.searchResultsSize(esQuery));
+
         List<CaseDetails> search = searchService.search(esQuery, 10, 1);
 
 
         String result = search.stream()
                 .map(caseDetails -> String.join("",
                         "<div class='panel panel-border-wide'>",
-                        String.valueOf(caseDetails.getData().get("id")),
+                        String.valueOf(caseDetails.getId()),
                         " - ",
-                        String.valueOf(caseDetails.getData().get("state")),
+                        String.valueOf(caseDetails.getState()),
                         " - ",
                         String.valueOf(caseDetails.getData().get("familyManCaseNumber")),
                         " - ",
