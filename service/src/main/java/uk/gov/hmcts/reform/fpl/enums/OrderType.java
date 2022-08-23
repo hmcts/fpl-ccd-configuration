@@ -13,6 +13,7 @@ public enum OrderType {
         "Amrywio neu ddiddymu gorchymyn gofal neu oruchwyliaeth"),
     //todo - welsh translation
     CHILD_ASSESSMENT_ORDER("Child Assessment Order", "Child Assessment Order"),
+    SECURE_ACCOMMODATION_ORDER("Secure Accommodation order", "");
     CONTACT_WITH_CHILD_IN_CARE("Contact with child in care", "Cyswllt â phlentyn mewn gofal");
 
     private final String label;

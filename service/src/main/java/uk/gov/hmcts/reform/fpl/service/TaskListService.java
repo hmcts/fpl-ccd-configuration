@@ -90,8 +90,8 @@ public class TaskListService {
             events.add(SELECT_COURT);
         }
 
-        // C1s and C110a's (except DoC)
-        if (!caseData.isDischargeOfCareApplication() && !caseData.isContactWithChildInCareApplication()) {
+        // C1s and C110a's (except SAO and DoC)
+        if (!caseData.isSecureAccommodationOrderType() && !caseData.isDischargeOfCareApplication()) {
             events.add(GROUNDS);
             events.add(RISK_AND_HARM);
             events.add(FACTORS_AFFECTING_PARENTING);

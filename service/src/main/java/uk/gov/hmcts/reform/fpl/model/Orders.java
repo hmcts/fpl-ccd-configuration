@@ -20,6 +20,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.CHILD_ASSESSMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CONTACT_WITH_CHILD_IN_CARE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.SECURE_ACCOMMODATION_ORDER;
 
 @Data
 @Builder(toBuilder = true)
@@ -55,6 +56,10 @@ public class Orders {
 
     public boolean isDischargeOfCareOrder() {
         return isNotEmpty(orderType) && orderType.size() == 1 && orderType.contains(OTHER);
+    }
+
+    public boolean isSecureAccommodationOrder() {
+        return this.getOrderType().contains(SECURE_ACCOMMODATION_ORDER);
     }
 
     public boolean isContactWithChildInCareOrder() {
