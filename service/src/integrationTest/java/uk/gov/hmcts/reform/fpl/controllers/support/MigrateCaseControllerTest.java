@@ -409,7 +409,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         final String migrationId = "DFPL-702";
 
         @Test
-        void shouldPopulateCaseName() {
+        void shouldMigrateGlobalSearchRequiredFields() {
             CaseData caseData = CaseData.builder()
                 .id(1L)
                 .caseName("I AM CASE NAME")
