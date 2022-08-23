@@ -35,10 +35,43 @@ public class CMSReportService {
         int count = searchService.searchResultsSize(esQuery);
         log.info("record count {}", count);
 
-        List<CaseDetails> search = searchService.search(esQuery, 50, 1);
+        List<CaseDetails> searchResult = searchService.search(esQuery, 50, 1);
 
         int[] counter = new int[]{1};
-        String result = search.stream()
+
+        StringBuilder result = new StringBuilder();
+
+        for(CaseDetails caseDetails : searchResult) {
+            result.append(
+                    String.join("",
+                            "<div class='panel panel-border-wide'>",
+                            String.valueOf(counter[0]++),
+                            ".  ",
+                            String.valueOf(caseDetails.getId()),
+                            " - ",
+                            String.valueOf(caseDetails.getState()),
+                            " - ",
+                            String.valueOf(caseDetails.getData().get("familyManCaseNumber")),
+                            " - ",
+                            String.valueOf(caseDetails.getData().get("caseLocalAuthority")),
+                            "</div>")
+            );
+        }
+      /*  search.stream()
+                .forEach(caseDetails -> String.join("",
+                        "<div class='panel panel-border-wide'>",
+                        String.valueOf(counter[0]++),
+                        ".  ",
+                        String.valueOf(caseDetails.getId()),
+                        " - ",
+                        String.valueOf(caseDetails.getState()),
+                        " - ",
+                        String.valueOf(caseDetails.getData().get("familyManCaseNumber")),
+                        " - ",
+                        String.valueOf(caseDetails.getData().get("caseLocalAuthority")),
+                        "</div>"));*/
+
+/*        String result = search.stream()
                 .map(caseDetails -> String.join("",
                         "<div class='panel panel-border-wide'>",
                         String.valueOf(counter[0]++),
@@ -53,7 +86,8 @@ public class CMSReportService {
                         "</div>")
                 )
                 .collect(Collectors.collectingAndThen(Collectors.toSet(),
-                        Object::toString));
+
+                        Object::toString));*/
 
         return String.join("",
                 "Total record count : ",
