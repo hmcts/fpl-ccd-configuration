@@ -37,10 +37,12 @@ public class CMSReportService {
 
         List<CaseDetails> search = searchService.search(esQuery, 50, 1);
 
-
+        int[] counter = new int[]{1};
         String result = search.stream()
                 .map(caseDetails -> String.join("",
                         "<div class='panel panel-border-wide'>",
+                        String.valueOf(counter[0]++),
+                        ".  ",
                         String.valueOf(caseDetails.getId()),
                         " - ",
                         String.valueOf(caseDetails.getState()),
