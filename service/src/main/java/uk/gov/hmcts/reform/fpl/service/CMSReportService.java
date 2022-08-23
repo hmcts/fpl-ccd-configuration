@@ -32,9 +32,10 @@ public class CMSReportService {
         String courtId = getCourt(cmsReportEventData);
         ESQuery esQuery = buildQuery(courtId);
         log.info("query {}", esQuery.toMap());
-        log.info("record count {}", searchService.searchResultsSize(esQuery));
+        int count = searchService.searchResultsSize(esQuery);
+        log.info("record count {}", count);
 
-        List<CaseDetails> search = searchService.search(esQuery, 10, 1);
+        List<CaseDetails> search = searchService.search(esQuery, 50, 1);
 
 
         String result = search.stream()
@@ -52,8 +53,11 @@ public class CMSReportService {
                 .collect(Collectors.collectingAndThen(Collectors.toSet(),
                         Object::toString));
 
-        log.info("response from ES {} ", search);
-        return result;
+        return String.join("",
+                "Total record count : ",
+                String.valueOf(count),
+                System.lineSeparator(),
+                result);
     }
 
     private String getCourt(CMSReportEventData cmsReportEventData) {
