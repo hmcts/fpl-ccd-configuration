@@ -117,29 +117,6 @@ public class CaseService {
             .errors(response.getErrors())
             .build();
     }
-
-    public CallbackResponse callback(CaseData caseData, CaseDetails caseDetails, User user, String callback) {
-        AboutToStartOrSubmitCallbackResponse response = SerenityRest
-            .given()
-            .headers(authenticationService.getAuthorizationHeaders(user))
-            .contentType(APPLICATION_JSON)
-            .body(toCallbackRequest(caseDetails))
-            .post(callback)
-            .then()
-            .statusCode(HTTP_OK)
-            .extract()
-            .as(AboutToStartOrSubmitCallbackResponse.class);
-
-        CaseData updatedCase = objectMapper.convertValue(response.getData(), CaseData.class).toBuilder()
-            .id(caseData.getId())
-            .build();
-
-        return CallbackResponse.builder()
-            .caseData(updatedCase)
-            .errors(response.getErrors())
-            .build();
-    }
-
     public void submittedCallback(CaseData caseData, CaseData caseDataBefore, User user, String callback) {
         SerenityRest
             .given()
@@ -176,11 +153,7 @@ public class CaseService {
     private CallbackRequest toCallbackRequest(CaseData caseData) {
         return toCallbackRequest(caseData, caseData);
     }
-
-    private CallbackRequest toCallbackRequest(CaseDetails caseDetails) {
-        return toCallbackRequest(caseDetails, caseDetails);
-    }
-
+    
     private CallbackRequest toCallbackRequest(CaseData caseData, CaseData caseDataBefore) {
         CaseDetails caseDetails = toCaseDetails(caseData);
         CaseDetails caseDetailsBefore = toCaseDetails(caseDataBefore);
