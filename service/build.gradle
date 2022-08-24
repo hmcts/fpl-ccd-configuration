@@ -171,6 +171,12 @@ def static inStrictOrder(Task... tasks) {
   return tasks
 }
 
+task smoke(type: Test) {
+  description = "Runs Smoke Tests"
+  setClasspath(sourceSets.functionalTest.runtimeClasspath)
+  include "uk/gov/hmcts/reform/fpl/smoke/**"
+}
+
 task smoke(description: 'Runs the smoke tests.') {
   dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runSmokeTests))
 }
