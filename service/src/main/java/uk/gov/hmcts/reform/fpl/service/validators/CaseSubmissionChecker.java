@@ -76,7 +76,8 @@ public class CaseSubmissionChecker extends CompoundEventChecker {
         events.add(CHILDREN);
         events.add(RESPONDENTS);
 
-        if (!caseData.isC1Application() || caseData.isSecureAccommodationOrderType()) {
+        if (!caseData.isC1Application() || caseData.isSecureAccommodationOrderType()
+                || caseData.isRefuseContactWithChildApplication()) {
             events.add(ALLOCATION_PROPOSAL);
         }
 

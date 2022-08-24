@@ -1,0 +1,65 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GroundsForRefuseContactWithChild",
+    "CaseEventID": "enterGrounds",
+    "CaseFieldID": "groundsForRefuseContactWithChild",
+    "ListElementCode": "currentArrangementHeader",
+    "EventElementLabel": "<h2>Current arrangement for contact</h2>",
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GroundsForRefuseContactWithChild",
+    "CaseEventID": "enterGrounds",
+    "CaseFieldID": "groundsForRefuseContactWithChild",
+    "ListElementCode": "personHasContactAndCurrentArrangement",
+    "EventElementLabel": "*State the full names(s) of each person who has contact with each child and the current arrangements for contact",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GroundsForRefuseContactWithChild",
+    "CaseEventID": "enterGrounds",
+    "CaseFieldID": "groundsForRefuseContactWithChild",
+    "ListElementCode": "laHasRefusedContact",
+    "EventElementLabel": "*State whether the local authority has refused contact for 7 days or less",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GroundsForRefuseContactWithChild",
+    "CaseEventID": "enterGrounds",
+    "CaseFieldID": "groundsForRefuseContactWithChild",
+    "ListElementCode": "orderAppliedForHeader",
+    "EventElementLabel": "<h2>The order applied for</h2>",
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GroundsForRefuseContactWithChild",
+    "CaseEventID": "enterGrounds",
+    "CaseFieldID": "groundsForRefuseContactWithChild",
+    "ListElementCode": "personsBeingRefusedContactWithChild",
+    "EventElementLabel": "*State the full name and relationship of any person in respect of whom authority to refuse contact with each child is sought",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GroundsForRefuseContactWithChild",
+    "CaseEventID": "enterGrounds",
+    "CaseFieldID": "groundsForRefuseContactWithChild",
+    "ListElementCode": "reasonsOfApplicationHeader",
+    "EventElementLabel": "<h2>Reasons for application</h2>",
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GroundsForRefuseContactWithChild",
+    "CaseEventID": "enterGrounds",
+    "CaseFieldID": "groundsForRefuseContactWithChild",
+    "ListElementCode": "reasonsOfApplication",
+    "EventElementLabel": "*If you are relying on a report or other documentary evidence state the date(s) and author(s) and enclose a copy in the upload documents section",
+    "DisplayContext": "OPTIONAL"
+  }
+]

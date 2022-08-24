@@ -76,6 +76,13 @@ public class OrdersNeededAboutToSubmitCallbackController extends CallbackControl
             removeSecureAccommodationOrderFields(data);
         }
 
+        if (caseData.isRefuseContactWithChildApplication()) {
+            data.put("refuseContactWithChildOrderType", YesNo.YES);
+        } else {
+            data.remove("groundsForRefuseContactWithChild");
+            data.remove("refuseContactWithChildOrderType");
+        }
+
         if (caseData.isDischargeOfCareApplication()) {
             data.put("otherOrderType", "YES");
         } else {

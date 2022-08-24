@@ -1189,4 +1189,11 @@ public class CaseData extends CaseDataParent {
     @JsonUnwrapped
     @Builder.Default
     private final OtherToRespondentEventData otherToRespondentEventData = OtherToRespondentEventData.builder().build();
+
+    @JsonIgnore
+    public boolean isRefuseContactWithChildApplication() {
+        return ofNullable(getOrders())
+            .map(Orders::isRefuseContactWithChildApplication)
+            .orElse(false);
+    }
 }

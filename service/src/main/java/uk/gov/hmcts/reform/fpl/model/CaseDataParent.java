@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
@@ -35,4 +36,8 @@ public class CaseDataParent {
     @NotNull(message = "Add the grounds for the application", groups = SecureAccommodationGroup.class)
     @Valid
     protected final GroundsForSecureAccommodationOrder groundsForSecureAccommodationOrder;
+
+    @NotNull(message = "Add the grounds for the application")
+    @Valid
+    protected final GroundsForRefuseContactWithChild groundsForRefuseContactWithChild;
 }
