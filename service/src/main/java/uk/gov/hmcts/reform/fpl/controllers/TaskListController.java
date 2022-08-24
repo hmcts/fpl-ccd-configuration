@@ -26,9 +26,7 @@ public class TaskListController extends CallbackController {
         final CaseData caseData = getCaseData(callbackrequest);
         final CaseDetailsMap caseDetails = caseDetailsMap(callbackrequest.getCaseDetails());
 
-        caseDetails.putIfNotEmpty("caseNameHmctsRestricted", caseData.getCaseName());
         caseDetails.putIfNotEmpty("caseNameHmctsInternal", caseData.getCaseName());
-        caseDetails.putIfNotEmpty("caseNamePublic", caseData.getCaseName());
 
         return respond(caseDetails);
     }

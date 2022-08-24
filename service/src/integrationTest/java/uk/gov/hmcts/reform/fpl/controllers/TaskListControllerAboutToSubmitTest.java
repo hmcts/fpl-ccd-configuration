@@ -39,9 +39,7 @@ class TaskListControllerAboutToSubmitTest extends AbstractCallbackTest {
             .caseName("Updated CaseName")
             .build()).getData();
 
-        Assertions.assertThat(caseDetails.get("caseNameHmctsRestricted")).isEqualTo("Updated CaseName");
         Assertions.assertThat(caseDetails.get("caseNameHmctsInternal")).isEqualTo("Updated CaseName");
-        Assertions.assertThat(caseDetails.get("caseNamePublic")).isEqualTo("Updated CaseName");
 
     }
 }
