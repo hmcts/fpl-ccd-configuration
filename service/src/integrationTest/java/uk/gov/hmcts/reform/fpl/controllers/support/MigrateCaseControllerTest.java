@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
+import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -419,7 +421,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         final String migrationId = "DFPL-702";
 
         @Test
-        void shouldMigrateGlobalSearchRequiredFields() {
+        void shouldMigrateGlobalSearchRequiredFieldsWithOnboardingCourtInfoOnly() {
             CaseData caseData = CaseData.builder()
                 .id(1L)
                 .caseName("I AM CASE NAME")
@@ -434,6 +436,53 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                         .dateOfBirth(LocalDate.of(1997, 9, 7))
                     .build()).build())))
                 .court(Court.builder().code("344").build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+            Map<String, Object> caseDetails = response.getData();
+
+            assertThat(caseDetails.get("caseNameHmctsInternal")).isEqualTo("I AM CASE NAME");
+
+            // court code (344) is defined by application-integration-test.yaml (by LOCAL_AUTHORITY_4_USER_EMAIL)
+            // epimms id is defined in courts.json by looking up court code 344
+            @SuppressWarnings("unchecked")
+            Map<String,  String> caseManagementLocation = (Map<String, String>)
+                caseDetails.get("caseManagementLocation");
+            assertThat(caseManagementLocation).containsEntry("baseLocation", "234946");
+            assertThat(caseManagementLocation).containsEntry("region", "7");
+            @SuppressWarnings("unchecked")
+            Map<String, Map<String, String>> caseManagementCategory = (Map<String, Map<String, String>>)
+                caseDetails.get("caseManagementCategory");
+            assertThat(caseManagementCategory).containsKey("value");
+            Map<String, String> caseManagementCategoryValue =  caseManagementCategory.get("value");
+            assertThat(caseManagementCategoryValue).containsEntry("code", "FPL");
+            assertThat(caseManagementCategoryValue).containsEntry("label", "Family Public Law");
+
+            assertThat(caseManagementCategory).containsKey("list_items");
+            @SuppressWarnings("unchecked")
+            List<Map<String, String>> listItems = (List<Map<String, String>>) caseManagementCategory.get("list_items");
+            assertThat(listItems).contains(Map.of("code", "FPL", "label", "Family Public Law"));
+        }
+
+        @Test
+        void shouldMigrateGlobalSearchRequiredFieldsWithOrdersCourt() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .caseName("I AM CASE NAME")
+                .children1(List.of(element(Child.builder().party(ChildParty.builder()
+                    .firstName("Kate")
+                    .lastName("Clark")
+                    .dateOfBirth(LocalDate.of(2012, 7, 31))
+                    .build()).build())))
+                .respondents1(List.of(element(Respondent.builder().party(RespondentParty.builder()
+                    .firstName("Ronnie")
+                    .lastName("Clark")
+                    .dateOfBirth(LocalDate.of(1997, 9, 7))
+                    .build()).build())))
+                .orders(Orders.builder().orderType(List.of(OrderType.CHILD_ASSESSMENT_ORDER)).court("344").build())
+                .court(Court.builder().code("117").build())
                 .build();
 
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(

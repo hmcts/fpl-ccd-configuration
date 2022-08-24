@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers.support;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -107,12 +108,19 @@ public class MigrateCaseController extends CallbackController {
         var caseId = caseData.getId();
         String caseName = caseData.getCaseName();
 
-        if (caseData.getCourt() == null) {
-            log.warn("Migration {id = DFPL-702, case reference = {}, case state = {}} doesn't have court.",
+        String courtCode = null;
+        if (caseData.getOrders() != null && StringUtils.isNotEmpty(caseData.getOrders().getCourt())) {
+            courtCode = caseData.getOrders().getCourt();
+        } else if (caseData.getCourt() != null) {
+            courtCode = caseData.getCourt().getCode();
+        }
+        if (courtCode == null) {
+            log.warn("Migration {id = DFPL-702, case reference = {}, case state = {}} doesn't have court info "
+                    + "therefore unable to set caseManagementLocation which is mandatory in global search.",
                 caseId, caseData.getState().getValue());
             return;
         }
-        String courtCode = caseData.getCourt().getCode();
+
         // migrating top level fields: case names
         Optional<Court> lookedUpCourt = courtLookUpService.getCourtByCode(courtCode);
         if (lookedUpCourt.isPresent()) {
