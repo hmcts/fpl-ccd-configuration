@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
+import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -44,6 +45,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 })
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
+@Slf4j
 public abstract class AbstractApiTest {
 
     static final User LA_SWANSEA_USER_1 = user("james@swansea.gov.uk");
@@ -69,6 +71,7 @@ public abstract class AbstractApiTest {
     @Before
     public void setUp() {
         RestAssured.baseURI = testConfiguration.getFplUrl();
+        log.info("api test url: " + testConfiguration.getFplUrl());
         RestAssured.useRelaxedHTTPSValidation();
     }
 
