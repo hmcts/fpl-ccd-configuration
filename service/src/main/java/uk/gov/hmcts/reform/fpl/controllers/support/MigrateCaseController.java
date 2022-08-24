@@ -129,8 +129,8 @@ public class MigrateCaseController extends CallbackController {
                 ))
                 .build());
         } else {
-            log.warn("Migration {id = DFPL-702, case reference = {}, case state = {}} fail to lookup ePIMMS ID " +
-                    "for court {}", caseId, caseData.getState().getValue(), courtCode);
+            log.warn("Migration {id = DFPL-702, case reference = {}, case state = {}} fail to lookup ePIMMS ID "
+                + "for court {}", caseId, caseData.getState().getValue(), courtCode);
         }
     }
 

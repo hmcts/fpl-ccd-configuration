@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.fpl.config.utils.LookupConfigParser;
 import uk.gov.hmcts.reform.fpl.model.Court;
-import uk.gov.hmcts.reform.fpl.service.CourtLookUpService;
 
 import java.util.List;
 import java.util.Map;
