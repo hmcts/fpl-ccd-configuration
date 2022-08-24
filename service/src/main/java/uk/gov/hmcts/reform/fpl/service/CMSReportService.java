@@ -14,16 +14,18 @@ import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Must;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MustNot;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class CMSReportService {
     private final SearchService searchService;
+    private final AuditEventService auditEventService;
     private static final String MATCH_FIELD = "data.court.code";
     //private static final String MATCH_FIELD = "data.court";
 
@@ -42,6 +44,12 @@ public class CMSReportService {
         StringBuilder result = new StringBuilder();
 
         for(CaseDetails caseDetails : searchResult) {
+            LocalDate submitApplication = auditEventService.getLatestAuditEventByName(
+                            String.valueOf(caseDetails.getId()),
+                            "submitApplication")
+                    .map(auditEvent -> auditEvent.getCreatedDate().toLocalDate())
+                    .orElseGet(LocalDate::now);
+
             result.append(
                     String.join("",
                             "<div class='panel panel-border-wide'>",
@@ -54,6 +62,9 @@ public class CMSReportService {
                             String.valueOf(caseDetails.getData().get("familyManCaseNumber")),
                             " - ",
                             String.valueOf(caseDetails.getData().get("caseLocalAuthority")),
+                            " - ",
+                            "Submitted on :",
+                            formatLocalDateToString(submitApplication, "dd-MM-yyyy"),
                             "</div>")
             );
         }
