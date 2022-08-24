@@ -127,8 +127,7 @@ public class RemovalToolController extends CallbackController {
             caseDetailsMap.put("supplementDocument", null);
             caseDetailsMap.put("hiddenApplicationForm", RemovedApplicationForm.builder()
                     .submittedForm(caseData.getC110A().getDocument())
-                    .submittedSupplement(!isEmpty(caseData.getC110A().getSupplementDocument())
-                        ? caseData.getC110A().getSupplementDocument() : null)
+                    .submittedSupplement(caseData.getC110A().getSupplementDocument())
                     .removalReason(caseData.getRemovalToolData().getReasonToRemoveApplicationForm())
                 .build());
         }
