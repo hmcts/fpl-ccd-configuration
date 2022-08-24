@@ -160,6 +160,18 @@ class FeatureToggleServiceTest {
             eq(false));
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForisCafcassSubjectCategorised(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isCafcassSubjectCategorised()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("cafcass-subject-category"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
     private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
             Arguments.of(

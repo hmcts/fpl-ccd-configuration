@@ -82,7 +82,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
 
     @Test
     void shouldSendDocumentByPostWhenPDFUploadedByRespSolicitor() {
-        final CaseData caseData = buildCaseDataWithNonConfidentialPDFDocumentsSolicitor(REP_USER);
+        final CaseData caseData = buildCaseDataWithNonConfidentialPDFDocumentsSolicitor(REP_USER, null);
 
         when(sendDocumentService.getStandardRecipients(caseData)).thenReturn(RECIPIENTS_LIST);
 
