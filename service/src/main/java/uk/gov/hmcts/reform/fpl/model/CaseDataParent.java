@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
