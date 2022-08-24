@@ -117,6 +117,7 @@ public class CaseService {
             .errors(response.getErrors())
             .build();
     }
+
     public void submittedCallback(CaseData caseData, CaseData caseDataBefore, User user, String callback) {
         SerenityRest
             .given()
@@ -153,7 +154,7 @@ public class CaseService {
     private CallbackRequest toCallbackRequest(CaseData caseData) {
         return toCallbackRequest(caseData, caseData);
     }
-    
+
     private CallbackRequest toCallbackRequest(CaseData caseData, CaseData caseDataBefore) {
         CaseDetails caseDetails = toCaseDetails(caseData);
         CaseDetails caseDetailsBefore = toCaseDetails(caseDataBefore);
