@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers.support;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -28,8 +29,10 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
+import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -37,11 +40,18 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOrganisation;
 
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -453,5 +463,34 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             List<Map<String, String>> listItems = (List<Map<String, String>>) caseManagementCategory.get("list_items");
             assertThat(listItems).contains(Map.of("code", "FPL", "label", "Family Public Law"));
         }
+
+        @Test
+        void shouldInvokeSubmitSupplementaryData() {
+            final Organisation organisation = testOrganisation();
+
+            final CaseData caseData = CaseData.builder()
+                .id(nextLong())
+                .state(OPEN)
+                .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+                .outsourcingPolicy(organisationPolicy(
+                    organisation.getOrganisationIdentifier(), organisation.getName(), LASOLICITOR))
+                .build();
+
+            postSubmittedEvent(
+                buildCaseDetails(caseData, migrationId));
+
+            Map<String, Map<String, Map<String, Object>>> supplementaryData = new HashMap<>();
+            supplementaryData.put("supplementary_data_updates",
+                Map.of("$set", Map.of("HMCTSServiceId", "ABA3")));
+
+            verify(coreCaseDataApi).submitSupplementaryData(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN,
+                caseData.getId().toString(), supplementaryData);
+        }
+    }
+
+    @BeforeEach
+    void setup() {
+        givenSystemUser();
+        givenFplService();
     }
 }

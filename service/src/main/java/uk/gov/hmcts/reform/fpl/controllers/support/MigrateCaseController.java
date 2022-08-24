@@ -38,10 +38,10 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 
 @Api
+@Slf4j
 @RestController
 @RequestMapping("/callback/migrate-case")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@Slf4j
 public class MigrateCaseController extends CallbackController {
     public static final String MIGRATION_ID_KEY = "migrationId";
 
@@ -89,7 +89,6 @@ public class MigrateCaseController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         String migrationId = (String) caseDetails.getData().get(MIGRATION_ID_KEY);
-        Long id = caseDetails.getId();
 
         if ("DFPL-702".equals(migrationId)) {
             // update supplementary data
@@ -97,48 +96,42 @@ public class MigrateCaseController extends CallbackController {
             Map<String, Map<String, Map<String, Object>>> supplementaryData = new HashMap<>();
             supplementaryData.put("supplementary_data_updates",
                 Map.of("$set", Map.of("HMCTSServiceId", "ABA3")));
-            coreCaseDataApi.submitSupplementaryData(requestData.authorisation(), authToken.generate(), caseId,
-                supplementaryData);
+            coreCaseDataApi.submitSupplementaryData(requestData.authorisation(),
+                authToken.generate(), caseId, supplementaryData);
         }
         caseDetails.getData().remove(MIGRATION_ID_KEY);
     }
 
     private void run702(CaseDetails caseDetails) {
-        var migrationId = "DFPL-702";
-
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();
         String caseName = caseData.getCaseName();
 
         if (caseData.getCourt() == null) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, expected null court",
-                migrationId, caseId
-            ));
+            log.warn("Migration {id = DFPL-702, case reference = {}, case state = {}} doesn't have court.",
+                caseId, caseData.getState().getValue());
+            return;
         }
-
-        // migrating top level fields: case names
-        caseDetails.getData().put("caseNameHmctsInternal", caseName);
         String courtCode = caseData.getCourt().getCode();
+        // migrating top level fields: case names
         Optional<Court> lookedUpCourt = courtLookUpService.getCourtByCode(courtCode);
         if (lookedUpCourt.isPresent()) {
             caseDetails.getData().put("caseManagementLocation", CaseLocation.builder()
                 .baseLocation(lookedUpCourt.get().getEpimmsId())
                 .region(lookedUpCourt.get().getRegionId())
                 .build());
+
+            caseDetails.getData().put("caseNameHmctsInternal", caseName);
+            caseDetails.getData().put("caseManagementCategory", DynamicList.builder()
+                .value(DynamicListElement.builder().code("FPL").label("Family Public Law").build())
+                .listItems(List.of(
+                    DynamicListElement.builder().code("FPL").label("Family Public Law").build()
+                ))
+                .build());
         } else {
-            log.error("Fail to lookup ePIMMS ID for code: " + courtCode);
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, fail to lookup ePIMMS ID for court (%s)",
-                migrationId, caseId, courtCode
-            ));
+            log.warn("Migration {id = DFPL-702, case reference = {}, case state = {}} fail to lookup ePIMMS ID " +
+                    "for court {}", caseId, caseData.getState().getValue(), courtCode);
         }
-        caseDetails.getData().put("caseManagementCategory", DynamicList.builder()
-            .value(DynamicListElement.builder().code("FPL").label("Family Public Law").build())
-            .listItems(List.of(
-                DynamicListElement.builder().code("FPL").label("Family Public Law").build()
-            ))
-            .build());
     }
 
     /**
