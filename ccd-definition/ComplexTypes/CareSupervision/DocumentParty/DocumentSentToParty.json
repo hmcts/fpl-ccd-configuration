@@ -38,6 +38,7 @@
     "ListElementCode": "letterId",
     "FieldType": "Text",
     "ElementLabel": "ID from Send Letter Service",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "document=\"DO NOT SHOW\""
   }
 ]
