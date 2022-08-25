@@ -56,6 +56,8 @@ import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.MANY;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.ONE;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.ZERO;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.Type.ANNEX_B;
@@ -114,6 +116,9 @@ class PlacementServiceTest {
 
     @Mock
     private RespondentService respondentService;
+
+    @Mock
+    private CourtService courtService;
 
     @InjectMocks
     private PlacementService underTest;
@@ -299,8 +304,6 @@ class PlacementServiceTest {
                 .thenReturn(docmosisDocument);
             when(uploadDocumentService.uploadDocument(any(), any(), any())).thenReturn(testDocument());
 
-
-
             final DynamicList childrenList = childrenDynamicList(1, child1, child2, child3);
 
             final Element<Placement> placement = element(Placement.builder()
@@ -328,6 +331,9 @@ class PlacementServiceTest {
                 .placementList(
                     asDynamicList(placementEventData.getPlacements(), placement.getId(), Placement::getChildName))
                 .build();
+
+            when(courtService.getCourtSeal(caseData, SEALED))
+                    .thenReturn(COURT_SEAL.getValue(caseData.getImageLanguage()));
 
             final PlacementEventData actualPlacementData = underTest.generateDraftA92(caseData);
 
@@ -796,10 +802,11 @@ class PlacementServiceTest {
 
         private final DocumentReference application = testDocumentReference();
         private final DocumentReference sealedApplication = testDocumentReference();
+        private final Court court = Court.builder().build();
 
         @BeforeEach
         void init() {
-            when(sealingService.sealDocument(application, SealType.ENGLISH)).thenReturn(sealedApplication);
+            when(sealingService.sealDocument(application, court, SealType.ENGLISH)).thenReturn(sealedApplication);
         }
 
         @Test
@@ -821,6 +828,7 @@ class PlacementServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
+                .court(Court.builder().build())
                 .placementEventData(placementEventData)
                 .build();
 
@@ -923,6 +931,7 @@ class PlacementServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
+                .court(court)
                 .placementEventData(placementEventData)
                 .placementNoticeResponses(wrapElements(localAuthorityResponse))
                 .build();
@@ -967,6 +976,7 @@ class PlacementServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
+                .court(court)
                 .placementEventData(placementEventData)
                 .placementNoticeResponses(wrapElements(cafcassNoticeResponse))
                 .build();
@@ -1009,6 +1019,7 @@ class PlacementServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
+                .court(court)
                 .placementEventData(placementEventData)
                 .placementNoticeResponses(wrapElements(respondentResponse))
                 .build();
@@ -1065,6 +1076,7 @@ class PlacementServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
+                .court(court)
                 .placementEventData(placementEventData)
                 .placementNoticeResponses(wrapElements(laResponse, cafcassResponse, firstParentResponse))
                 .build();

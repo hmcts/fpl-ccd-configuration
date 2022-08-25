@@ -528,14 +528,16 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
                 .manageDocumentsHearingDocumentType(HearingDocumentType.POSITION_STATEMENT_CHILD).build(),
             "initialise-manage-document-collections", USER_ROLES))
             .getManageDocumentsPositionStatementChild())
-            .isEqualTo(PositionStatementChild.builder().hearing(selectedHearingBooking.toLabel()).build());
+            .isEqualTo(PositionStatementChild.builder().hearing(selectedHearingBooking.toLabel())
+                .hearingId(selectedHearingId).build());
 
         assertThat(extractCaseData(postMidEvent(
             caseData.toBuilder()
                 .manageDocumentsHearingDocumentType(HearingDocumentType.POSITION_STATEMENT_RESPONDENT).build(),
             "initialise-manage-document-collections", USER_ROLES))
             .getManageDocumentsPositionStatementRespondent())
-            .isEqualTo(PositionStatementRespondent.builder().hearing(selectedHearingBooking.toLabel()).build());
+            .isEqualTo(PositionStatementRespondent.builder().hearing(selectedHearingBooking.toLabel())
+                .hearingId(selectedHearingId).build());
     }
 
     @Test

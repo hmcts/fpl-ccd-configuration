@@ -6,5 +6,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum LocalAuthorityAction {
-    ADD, REMOVE, TRANSFER;
+    ADD, REMOVE, TRANSFER, TRANSFER_COURT;
 }

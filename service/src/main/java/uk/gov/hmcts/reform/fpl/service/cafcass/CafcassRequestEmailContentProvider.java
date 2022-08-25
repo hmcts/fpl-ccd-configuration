@@ -7,10 +7,12 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.ChangeOfAddressData;
 
+import java.time.format.FormatStyle;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData.SAME_DAY;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Getter
 @RequiredArgsConstructor
@@ -22,7 +24,8 @@ public enum CafcassRequestEmailContentProvider {
         (caseData, cafcassData) ->
             String.format("A new order for this case was uploaded to the Public Law Portal entitled %s",
                 cafcassData.getDocumentName()),
-        CafcassEmailConfiguration::getRecipientForOrder),
+        CafcassEmailConfiguration::getRecipientForOrder,
+            true),
 
     CHANGE_OF_ADDRESS("Change of address",
         (caseData, cafcassData) -> String.format(getSubject(),
@@ -34,7 +37,8 @@ public enum CafcassRequestEmailContentProvider {
                 String.format("A change of address has been added to this case "
                                 + "which was uploaded to the Public Law Portal entitled [%s].",
                         caseData.getCaseName()),
-        CafcassEmailConfiguration::getRecipientForChangeOfAddress),
+        CafcassEmailConfiguration::getRecipientForChangeOfAddress,
+            false),
 
 
     COURT_BUNDLE("Court bundle",
@@ -44,7 +48,8 @@ public enum CafcassRequestEmailContentProvider {
         (caseData, cafcassData) ->
             String.format("A new court bundle for this case was uploaded to the Public Law Portal entitled %s",
                 cafcassData.getHearingDetails()),
-        CafcassEmailConfiguration::getRecipientForCourtBundle),
+        CafcassEmailConfiguration::getRecipientForCourtBundle,
+            true),
 
     CASE_SUMMARY("Case summary",
         (caseData, cafcassData) -> String.format(getSubject(),
@@ -53,7 +58,8 @@ public enum CafcassRequestEmailContentProvider {
         (caseData, cafcassData) ->
             String.format("A new case summary for this case was uploaded to the Public Law Portal entitled %s",
                 cafcassData.getHearingDetails()),
-        CafcassEmailConfiguration::getRecipientForCourtBundle),
+        CafcassEmailConfiguration::getRecipientForCourtBundle,
+        true),
 
     POSITION_STATEMENT_CHILD("Position statement child",
         (caseData, cafcassData) -> String.format(getSubject(),
@@ -63,7 +69,8 @@ public enum CafcassRequestEmailContentProvider {
             String.format("A new position statement (child) for this case was uploaded to the "
                           + "Public Law Portal entitled %s",
                 cafcassData.getHearingDetails()),
-        CafcassEmailConfiguration::getRecipientForCourtBundle),
+        CafcassEmailConfiguration::getRecipientForCourtBundle,
+        true),
 
     POSITION_STATEMENT_RESPONDENT("Position statement respondent",
         (caseData, cafcassData) -> String.format(getSubject(),
@@ -73,12 +80,14 @@ public enum CafcassRequestEmailContentProvider {
             String.format("A new position statement (respondent) for this case was uploaded to the "
                           + "Public Law Portal entitled %s",
                 cafcassData.getHearingDetails()),
-        CafcassEmailConfiguration::getRecipientForCourtBundle),
+        CafcassEmailConfiguration::getRecipientForCourtBundle,
+        true),
 
     NEW_APPLICATION("New application",
         CafcassRequestEmailContentProvider::getNewApplicationSubject,
         CafcassRequestEmailContentProvider::getNewApplicationMessage,
-        CafcassEmailConfiguration::getRecipientForNewApplication),
+        CafcassEmailConfiguration::getRecipientForNewApplication,
+            true),
 
     NEW_DOCUMENT("New document",
         (caseData, cafcassData) -> String.format(getSubject(),
@@ -88,7 +97,8 @@ public enum CafcassRequestEmailContentProvider {
             String.join("\n\n",
                 "Types of documents attached:",
                 cafcassData.getDocumentTypes()),
-        CafcassEmailConfiguration::getRecipientForNewDocument),
+        CafcassEmailConfiguration::getRecipientForNewDocument,
+            true),
 
     ADDITIONAL_DOCUMENT("Additional document",
         (caseData, cafcassData) -> String.format(getSubject(),
@@ -98,7 +108,8 @@ public enum CafcassRequestEmailContentProvider {
             String.join("\n\n",
                 "Types of documents attached:",
                 cafcassData.getDocumentTypes()),
-        CafcassEmailConfiguration::getRecipientForAdditionlDocument),
+        CafcassEmailConfiguration::getRecipientForAdditionlDocument,
+            true),
 
     LARGE_ATTACHEMENTS("Large document",
         (caseData, cafcassData) -> String.format(getSubject(),
@@ -107,14 +118,16 @@ public enum CafcassRequestEmailContentProvider {
                     "new large document added",
                     cafcassData.getNotificationType())),
         CafcassRequestEmailContentProvider::getLargeApplicationMessage,
-        CafcassEmailConfiguration::getRecipientForLargeAttachements),
+        CafcassEmailConfiguration::getRecipientForLargeAttachements,
+            false),
 
     NOTICE_OF_HEARING("Notice of hearing",
         (caseData, cafcassData) ->  String.format(getSubject(),
         caseData.getFamilyManCaseNumber(),
         getHearingDetails(caseData, cafcassData)),
         CafcassRequestEmailContentProvider::getNoticeOfHearingMessage,
-        CafcassEmailConfiguration::getRecipientForNoticeOfHearing),
+        CafcassEmailConfiguration::getRecipientForNoticeOfHearing,
+            true),
 
     PLACEMENT_APPLICATION("Placement Application",
         (caseData, cafcassData) ->  String.format(getSubject(),
@@ -128,13 +141,15 @@ public enum CafcassRequestEmailContentProvider {
             caseData.getFamilyManCaseNumber(),
             "Notice of Placement"),
         CafcassRequestEmailContentProvider::getPlacementNoticeMessage,
-        CafcassEmailConfiguration::getRecipientForNoticeOfHearing);
+        CafcassEmailConfiguration::getRecipientForNoticeOfHearing,
+            true);
 
 
     private final String label;
     private final BiFunction<CaseData, CafcassData, String> type;
     private final BiFunction<CaseData, CafcassData, String> content;
     private final Function<CafcassEmailConfiguration, String> recipient;
+    private final boolean isGenericSubject;
 
     private static String getNewApplicationSubject(CaseData caseData, CafcassData cafcassData) {
         String timeFrame = "Urgent application – same day hearing";
@@ -197,7 +212,7 @@ public enum CafcassRequestEmailContentProvider {
                 System.lineSeparator(), System.lineSeparator(),
                 "Hearing details",
                 System.lineSeparator(),
-                "Date:", cafcassData.getHearingDate(),
+                "Date:", formatLocalDateToString(cafcassData.getHearingDate().toLocalDate(), FormatStyle.LONG),
                 System.lineSeparator(),
                 "Venue:", cafcassData.getHearingVenue(),
                 System.lineSeparator(),

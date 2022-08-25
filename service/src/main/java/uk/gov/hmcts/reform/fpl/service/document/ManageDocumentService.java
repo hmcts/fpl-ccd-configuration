@@ -100,8 +100,10 @@ public class ManageDocumentService {
     public static final String POSITION_STATEMENT_RESPONDENT_KEY = "manageDocumentsPositionStatementRespondent";
     public static final String COURT_BUNDLE_LIST_KEY = "courtBundleListV2";
     public static final String CASE_SUMMARY_LIST_KEY = "caseSummaryList";
-    public static final String POSITION_STATEMENT_CHILD_LIST_KEY = "positionStatementChildList";
-    public static final String POSITION_STATEMENT_RESPONDENT_LIST_KEY = "positionStatementRespondentList";
+    public static final String POSITION_STATEMENT_CHILD_LIST_KEY = "positionStatementChildListV2";
+    public static final String POSITION_STATEMENT_CHILD_LIST_KEY_DEPRECATED = "positionStatementChildList";
+    public static final String POSITION_STATEMENT_RESPONDENT_LIST_KEY = "positionStatementRespondentListV2";
+    public static final String POSITION_STATEMENT_RESPONDENT_LIST_KEY_DEPRECATED = "positionStatementRespondentList";
     public static final String DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY = "documentsWithConfidentialAddress";
     public static final String PLACEMENT_LIST_KEY = "manageDocumentsPlacementList";
 
@@ -397,29 +399,32 @@ public class ManageDocumentService {
                 break;
             case POSITION_STATEMENT_CHILD :
                 List<Element<PositionStatementChild>> positionStatementChildList =
-                    buildHearingDocumentList(caseData, selectedHearingId,
-                        caseData.getHearingDocuments().getPositionStatementChildList(),
+                    buildChildPositionStatementList(caseData, selectedHearingId,
+                        caseData.getHearingDocuments().getPositionStatementChildListV2(),
                         caseData.getManageDocumentsPositionStatementChild().toBuilder()
                             .childId(caseData.getManageDocumentsChildrenList().getValueCodeAsUUID())
                             .childName(caseData.getManageDocumentsChildrenList().getValueLabel())
                             .build());
                 map.put(POSITION_STATEMENT_CHILD_LIST_KEY, positionStatementChildList);
+                map.put(POSITION_STATEMENT_CHILD_LIST_KEY_DEPRECATED, null);
                 map.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
                     getDocumentsWithConfidentialAddressFromHearingDocuments(caseData,
-                        caseData.getHearingDocuments().getPositionStatementChildList(), positionStatementChildList));
+                        caseData.getHearingDocuments().getPositionStatementChildListV2(),
+                        positionStatementChildList));
                 break;
             case POSITION_STATEMENT_RESPONDENT :
                 List<Element<PositionStatementRespondent>> positionStatementRespondentList =
-                    buildHearingDocumentList(caseData, selectedHearingId,
-                        caseData.getHearingDocuments().getPositionStatementRespondentList(),
+                    buildRespondentPositionStatementList(caseData, selectedHearingId,
+                        caseData.getHearingDocuments().getPositionStatementRespondentListV2(),
                         caseData.getManageDocumentsPositionStatementRespondent().toBuilder()
                             .respondentId(caseData.getHearingDocumentsRespondentList().getValueCodeAsUUID())
                             .respondentName(caseData.getHearingDocumentsRespondentList().getValueLabel())
                             .build());
                 map.put(POSITION_STATEMENT_RESPONDENT_LIST_KEY, positionStatementRespondentList);
+                map.put(POSITION_STATEMENT_RESPONDENT_LIST_KEY_DEPRECATED, null);
                 map.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
                     getDocumentsWithConfidentialAddressFromHearingDocuments(caseData,
-                        caseData.getHearingDocuments().getPositionStatementRespondentList(),
+                        caseData.getHearingDocuments().getPositionStatementRespondentListV2(),
                         positionStatementRespondentList));
         }
 
@@ -430,6 +435,41 @@ public class ManageDocumentService {
                                                           List<Element<T>> hearingDocumentList, T hearingDocument) {
         if (isNotEmpty(caseData.getHearingDetails())) {
             return List.of(element(selectedHearingId, hearingDocument));
+        }
+
+        return hearingDocumentList;
+    }
+
+    private List<Element<PositionStatementRespondent>> buildRespondentPositionStatementList(CaseData caseData,
+                UUID selectedHearingId, List<Element<PositionStatementRespondent>> hearingDocumentList,
+                PositionStatementRespondent respondentStatement) {
+        // remove those position statements which is not belonging to the selected hearing id
+        // and replace the existing uploaded statement of the selected respondent with the new statement.
+        if (isNotEmpty(caseData.getHearingDetails())) {
+            List<Element<PositionStatementRespondent>> resultList = hearingDocumentList.stream()
+                .filter(doc -> doc.getValue().getHearingId().equals(selectedHearingId)
+                               && !doc.getValue().getRespondentId().equals(respondentStatement.getRespondentId()))
+                .collect(Collectors.toList());
+            resultList.add(element(respondentStatement));
+            return resultList;
+        }
+
+        return hearingDocumentList;
+    }
+
+    private List<Element<PositionStatementChild>> buildChildPositionStatementList(CaseData caseData,
+                UUID selectedHearingId, List<Element<PositionStatementChild>> hearingDocumentList,
+                PositionStatementChild respondentStatement) {
+        // remove those position statements which is not belonging to the selected hearing id
+        // and replace the existing uploaded statement of the selected child with the new statement.
+        if (isNotEmpty(caseData.getHearingDetails())) {
+            List<Element<PositionStatementChild>> resultList = hearingDocumentList.stream()
+                .filter(doc -> doc.getValue().getHearingId().equals(selectedHearingId)
+                               && !doc.getValue().getChildId().equals(respondentStatement.getChildId()))
+                .collect(Collectors.toList());
+
+            resultList.add(element(respondentStatement));
+            return resultList;
         }
 
         return hearingDocumentList;
@@ -501,26 +541,16 @@ public class ManageDocumentService {
     }
 
     private PositionStatementChild getPositionStatementChildForHearing(CaseData caseData, UUID selectedHearingId) {
-        PositionStatementChild positionStatementChild = getHearingDocumentForSelectedHearing(
-            caseData.getHearingDocuments().getPositionStatementChildList(),
-            selectedHearingId);
-        if (positionStatementChild == null) {
-            positionStatementChild = PositionStatementChild.builder()
-                .hearing(getHearingBooking(caseData, selectedHearingId).toLabel()).build();
-        }
-        return positionStatementChild;
+        return PositionStatementChild.builder()
+            .hearing(getHearingBooking(caseData, selectedHearingId).toLabel())
+            .hearingId(selectedHearingId).build();
     }
 
     private PositionStatementRespondent getPositionStatementRespondentForHearing(CaseData caseData,
                                                                                  UUID selectedHearingId) {
-        PositionStatementRespondent positionStatementRespondent = getHearingDocumentForSelectedHearing(
-            caseData.getHearingDocuments().getPositionStatementRespondentList(),
-            selectedHearingId);
-        if (positionStatementRespondent == null) {
-            positionStatementRespondent = PositionStatementRespondent.builder()
-                .hearing(getHearingBooking(caseData, selectedHearingId).toLabel()).build();
-        }
-        return positionStatementRespondent;
+        return PositionStatementRespondent.builder()
+            .hearing(getHearingBooking(caseData, selectedHearingId).toLabel())
+            .hearingId(selectedHearingId).build();
     }
 
     private List<Element<AdditionalApplicationsBundle>> updateAdditionalDocumentsBundle(

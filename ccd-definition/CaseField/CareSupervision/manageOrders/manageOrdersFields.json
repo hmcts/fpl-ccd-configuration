@@ -178,6 +178,16 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersChildArrangementsOrderType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ChildArrangementsOrderType",
+    "Label": "What is the order for?",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "manageOrdersRecitalsAndPreambles",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "TextArea",
