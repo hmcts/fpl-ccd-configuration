@@ -91,6 +91,8 @@ module.exports = {
   baseUrl: process.env.URL || 'http://localhost:3333',
   fplServiceUrl: process.env.CASE_SERVICE_URL || 'http://localhost:4000',
   idamApiUrl: process.env.IDAM_API_URL || 'http://localhost:5000',
+  ccdDataStoreApiUrl: process.env.CCD_DATASTORE_API_URL || 'http://ccd-data-store-api-aat.service.core-compute-aat.internal',
+  s2sBaseURL : process.env.S2S_BASE_URL || 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal',
   swanseaOrgId: process.env.SWANSEA_ORG_ID || 'ORGSA',
   mockedPayment: (process.env.MOCKED_PAYMENTS || 'true').toLowerCase() === 'true',
   ctscEmail: process.env.CTSC_EMAIL || 'FamilyPublicLaw+ctsc@gmail.com',

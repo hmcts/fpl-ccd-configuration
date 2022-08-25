@@ -29,7 +29,7 @@ module.exports = {
     add_application_documents: {
       text: 'Add application documents',
       guidance_text_1: 'For example, SWET, social work chronology and care plan',
-      guidance_text_2:  'In emergency cases, you can send your application without this information',
+      guidance_text_2: 'In emergency cases, you can send your application without this information',
       upload_documents_text: 'Upload documents',
     },
 
@@ -48,17 +48,38 @@ module.exports = {
     add_additional_information: {
       text: 'Add additional information',
       guidance_text: 'Only complete if relevant',
-      other_proceedings_text : 'Other proceedings',
-      international_element_text : 'International element',
-      other_people_in_the_case_text : 'Other people in the case',
-      court_services_needed_text : 'Court services needed',
+      other_proceedings_text: 'Other proceedings',
+      international_element_text: 'International element',
+      other_people_in_the_case_text: 'Other people in the case',
+      court_services_needed_text: 'Court services needed',
       welsh_language_requirements_text: 'Welsh language requirements',
     },
 
     send_application: {
       text: 'Send application',
-      submit_application_text : 'Submit application',
-      why_cant_i_submit_my_application_text : 'Why can\'t I submit my application?',
+      submit_application_text: 'Submit application',
+      why_cant_i_submit_my_application_text: 'Why can\'t I submit my application?',
+    },
+
+    submit_application: {
+      text: 'Submit application',
+      declaration_text: 'Declaration',
+      declaration_undertaking_text: 'I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.',
+      application_fee_to_pay: 'Application fee to pay',
+      fee_to_pay  : '£2,215.00',
+    },
+
+    application_sent: {
+      text: 'Application sent',
+      declaration_text: 'Declaration',
+      what_happens_next_text: 'What happens next',
+      we_will_check_your_application_text_1: 'We’ll check your application – we might need to ask you more questions,',
+      we_will_check_your_application_text_2: 'or send it back to you to amend.',
+      if_we_have_no_questions_text_1 : 'If we have no questions, we’ll send your application to the local court',
+      if_we_have_no_questions_text_2  : 'gatekeeper.',
+      you_can_contact_us : 'You can contact us at contactFPL@justice.gov.uk.',
+      help_us_improve_this_service : 'Help us improve this service',
+      tell_us_how_this_service : 'Tell us how this service was today on our feedback form.',
     },
   },
 
@@ -67,17 +88,20 @@ module.exports = {
     ccd_id: {xpath: '//strong[.=\'CCD ID:\']'},
     start_application_tab: {xpath: '//div[contains(text(),\'Start application\')]'},
     why_cant_i_submit_my_application: {xpath: '//p[.="Why can\'t I submit my application?"]'},
-    change_case_name : {xpath: '//a[.=\'Change case name\']'},
-    orders_and_directions_sought: {xpath : '//div[@class=\'width-50\']//a[.=\'Orders and directions sought\']'},
+    change_case_name: {xpath: '//a[.=\'Change case name\']'},
+    orders_and_directions_sought: {xpath: '//div[@class=\'width-50\']//a[.=\'Orders and directions sought\']'},
     grounds_for_application: {xpath: '//div[@class=\'width-50\']//a[.=\'Grounds for the application\']'},
-    hearing_urgency_link : {xpath : '//div[@class=\'width-50\']//a[.=\'Hearing urgency\']'},
-    local_authority_page_link : {xpath : '//p[11]/a[.="Local authority\'s details"]'},
-    childs_details_link : {xpath : '//p[12]/a[.="Child\'s details"]'},
-    respondents_details_link : {xpath : '//p[13]/a[.="Respondents\' details"]'},
-    allocation_proposal_link: {xpath : '//p[14]/a[.=\'Allocation proposal\']'},
-    view_application_tab: {xpath : '//div[contains(text(),\'View application\')]'},
-    submit_application_link : {xpath: '//a[contains(text(),\'Submit application\')]'},
-    cancel_link : {xpath: '//a[.=\'Cancel\']'},
+    hearing_urgency_link: {xpath: '//div[@class=\'width-50\']//a[.=\'Hearing urgency\']'},
+    local_authority_page_link: {xpath: '//p[11]/a[.="Local authority\'s details"]'},
+    childs_details_link: {xpath: '//p[12]/a[.="Child\'s details"]'},
+    respondents_details_link: {xpath: '//p[13]/a[.="Respondents\' details"]'},
+    allocation_proposal_link: {xpath: '//p[14]/a[.=\'Allocation proposal\']'},
+    risks_and_harm_to_children_link : {xpath: '//a[.=\'Risk and harm to children\']'},
+    view_application_tab: {xpath: '//div[contains(text(),\'View application\')]'},
+    submit_application_link: {xpath: '//a[contains(text(),\'Submit application\')]'},
+    submission_consent : {xpath: '//input[@id=\'submissionConsent-agree\']'},
+    close_and_return_to_case_details : {xpath : '//button[contains(text(),\'Close and Return to case details\')]'},
+    cancel_link: {xpath: '//a[.=\'Cancel\']'},
   },
 
   seeCCDCaseNumber(ccdCaseNumberPrefix, ccdCaseNumber) {
@@ -90,11 +114,11 @@ module.exports = {
     this.seeCCDCaseNumber('CCD ID: #', caseId);
   },
 
-  clickCancelLink()  {
+  clickCancelLink() {
     I.click(this.locators.cancel_link);
   },
 
-  clickStartApplicationTab()  {
+  clickStartApplicationTab() {
     I.click(this.locators.start_application_tab);
   },
 
@@ -106,40 +130,60 @@ module.exports = {
     I.click(this.locators.change_case_name);
   },
 
-  clickOrdersAndDirectionsLink()  {
+  clickOrdersAndDirectionsLink() {
     I.click(this.locators.orders_and_directions_sought);
   },
 
-  clickHearingsUrgencyLink()  {
+  clickHearingsUrgencyLink() {
     I.click(this.locators.hearing_urgency_link);
   },
 
-  clickGroundsForApplicationLink()  {
+  clickGroundsForApplicationLink() {
     I.click(this.locators.grounds_for_application);
   },
 
-  clickLocalAuthorityLink()  {
+  clickLocalAuthorityLink() {
     I.click(this.locators.local_authority_page_link);
   },
 
-  clickChildsDetailsLink()  {
+  clickChildsDetailsLink() {
     I.click(this.locators.childs_details_link);
   },
 
-  clickRespondentsDetailsLink()  {
+  clickRespondentsDetailsLink() {
     I.click(this.locators.respondents_details_link);
   },
 
-  clickAllocationDetailsLink()  {
+  clickAllocationDetailsLink() {
     I.click(this.locators.allocation_proposal_link);
   },
 
-  clickApplicationViewTab()  {
+  clickApplicationViewTab() {
     I.click(this.locators.view_application_tab);
   },
 
-  clickSubmitApplicationLink()  {
+  clickSubmitApplicationLink() {
     I.click(this.locators.submit_application_link);
+  },
+
+  checkSubmissionConfirmation() {
+    I.checkOption(this.locators.submission_consent);
+  },
+
+  clickCloseAndReturnToCaseDetails() {
+    I.click(this.locators.close_and_return_to_case_details);
+  },
+
+  clickRisksAndHarmToChildren() {
+    I.click(this.locators.risks_and_harm_to_children_link);
+  },
+
+  clickContinueButton() {
+    I.click('Continue');
+  },
+
+  clickSubmitButton() {
+    I.click('Submit');
   },
 
   verifyAddApplicationDetailsSection() {
@@ -185,13 +229,15 @@ module.exports = {
     I.see(this.sections.add_additional_information.welsh_language_requirements_text);
   },
 
-  verifySendApplicationSection() {
+  verifySendApplicationSection(checkWhyCantISubmitMyApplication = true) {
     I.see(this.sections.send_application.text);
     I.see(this.sections.send_application.submit_application_text);
-    I.see(this.sections.send_application.why_cant_i_submit_my_application_text);
+    if (checkWhyCantISubmitMyApplication) {
+      I.see(this.sections.send_application.why_cant_i_submit_my_application_text);
+    }
   },
 
-  verifyStartApplicationTabDetails(bannerText) {
+  verifyStartApplicationTabDetails(bannerText,whyCantISubmitMyApplication = true) {
     if (bannerText !== '') {
       I.see(bannerText);
     }
@@ -201,7 +247,7 @@ module.exports = {
     this.verifyInformationAboutPartiesSection();
     this.verifyAddCourtRequirementsSection();
     this.verifyAddAdditionalInformationSection();
-    this.verifySendApplicationSection();
+    this.verifySendApplicationSection(whyCantISubmitMyApplication);
   },
 
   verifyMandatoryRequiredErrorMessages(errors) {
@@ -303,5 +349,27 @@ module.exports = {
     I.see('Do they have legal representation?');
     I.see('No');
     I.see('Make changes to the respondents\' details');
+  },
+
+  verifySubmitApplicationScreen() {
+    I.see(this.sections.submit_application.text);
+    I.see(this.sections.submit_application.declaration_text);
+    I.see(this.sections.submit_application.declaration_undertaking_text);
+    I.see(this.sections.submit_application.application_fee_to_pay);
+    I.see(this.sections.submit_application.fee_to_pay);
+  },
+
+  verifyApplicationSentScreen() {
+    I.see(this.sections.submit_application.text);
+    I.see(this.sections.application_sent.text);
+    //I.see(caseName);
+    I.see(this.sections.application_sent.what_happens_next_text);
+    I.see(this.sections.application_sent.we_will_check_your_application_text_1);
+    I.see(this.sections.application_sent.we_will_check_your_application_text_2);
+    I.see(this.sections.application_sent.if_we_have_no_questions_text_1);
+    I.see(this.sections.application_sent.if_we_have_no_questions_text_2);
+    I.see(this.sections.application_sent.you_can_contact_us);
+    I.see(this.sections.application_sent.help_us_improve_this_service);
+    I.see(this.sections.application_sent.tell_us_how_this_service);
   },
 };

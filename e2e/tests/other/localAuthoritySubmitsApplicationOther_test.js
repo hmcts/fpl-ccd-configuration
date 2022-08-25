@@ -50,21 +50,18 @@ function login(email, password) {
 
 
 async function setupScenario(I, reuse = true) {
-  let navigateCaseId;
   if (reuse == false) {
-    navigateCaseId = await I.submitNewCase(config.swanseaLocalAuthorityUserOne);
+    caseId = await I.submitNewCase(config.swanseaLocalAuthorityUserOne);
   } else {
     if (!caseId) {
       caseId = await I.submitNewCase(config.swanseaLocalAuthorityUserOne);
     }
-    navigateCaseId = caseId;
   }
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, navigateCaseId);
 }
 
-xScenario('Local authority verifies case created for a Case But Application not Completed', async ({I, caseViewOtherPage}) => {
+Scenario('Local authority verifies case created for a Case But Application not Completed', async ({I, caseViewOtherPage}) => {
   await setupScenario(I);
-  I.dontSeeEvent(config.applicationActions.selectCourt);
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   caseViewOtherPage.verifyCaseViewHeaderSection(caseId);
   caseViewOtherPage.clickStartApplicationTab();
   caseViewOtherPage.verifyStartApplicationTabDetails('');
@@ -79,8 +76,9 @@ xScenario('Local authority verifies case created for a Case But Application not 
     'Add the allocation proposal in the Allocation proposal']);
 }).tag('@pipeline @nightly @crossbrowser');
 
-Scenario('Local authority Changes the Case Name of Case.', async ({I,caseViewOtherPage, changeCaseViewOtherPage, ordersAndDirectionsOtherPage, hearingUrgencyOtherPage, groundsForApplicationOtherPage,localAuthorityDetailsOtherPage,childDetailsOtherPage,respondentsDetailsOtherPage, allocationProposalOtherPage}) => {
-  await setupScenario(I,true);
+Scenario('Local authority Screen input for a submit application', async ({I, caseViewOtherPage, changeCaseViewOtherPage, ordersAndDirectionsOtherPage, hearingUrgencyOtherPage, groundsForApplicationOtherPage, localAuthorityDetailsOtherPage, childDetailsOtherPage, respondentsDetailsOtherPage, allocationProposalOtherPage}) => {
+  await setupScenario(I, true);
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   caseViewOtherPage.clickChangeCaseName();
   I.wait(FPLConstants.defaultPageClickWaitTime);
 
@@ -199,7 +197,7 @@ Scenario('Local authority Changes the Case Name of Case.', async ({I,caseViewOth
   allocationProposalOtherPage.verifyProposalReasonCheckYourAnswers();
   allocationProposalOtherPage.clickSaveAndContinue();
   I.wait(FPLConstants.defaultPageClickWaitTime);
-  caseViewOtherPage.verifyStartApplicationTabDetails('has been updated with event: Allocation proposal');
+  caseViewOtherPage.verifyStartApplicationTabDetails('has been updated with event: Allocation proposal', false);
 
   //Steps for the Verification of the Application View
   caseViewOtherPage.clickApplicationViewTab();
@@ -209,14 +207,52 @@ Scenario('Local authority Changes the Case Name of Case.', async ({I,caseViewOth
   //Submission of the Application
   caseViewOtherPage.clickStartApplicationTab();
   I.wait(FPLConstants.defaultPageClickWaitTime);
-  pause();
   caseViewOtherPage.clickSubmitApplicationLink();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  caseViewOtherPage.verifySubmitApplicationScreen();
+  caseViewOtherPage.checkSubmissionConfirmation();
+  caseViewOtherPage.clickContinueButton();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  caseViewOtherPage.clickSubmitButton();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+
+  //Verificaiton Submission of the Application or Application Sent.
+  caseViewOtherPage.verifyApplicationSentScreen();
+  caseViewOtherPage.clickCloseAndReturnToCaseDetails();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  I.see('has been updated with event: Submit application');
+
 }).tag('@nightly @crossbrowser');
 
-xScenario('Local authority Adds an Order to an Application', async ({I}) => {
+Scenario('Local authority Optional screens', async ({I, caseViewOtherPage,riskAndHarmToChildrenOtherPage}) => {
+  await setupScenario(I,false);
   const authToken = await apiHelper.getAuthToken(config.swanseaLocalAuthorityUserOne);
-  console.log('Auth Token : '+authToken);
-  I.wait(1);
-
+  console.log('Auth Token : ' + authToken);
+  const userID = await apiHelper.getUserId(authToken);
+  console.log('User Id : ' + userID);
+  const serviceToken = await apiHelper.getServiceTokenForSecret('fpl_case_service');
+  console.log('Service Token : ' + serviceToken);
+  //apiHelper.getCCDCaseData(authToken, serviceToken, userID, caseId);
+  await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'changeCaseName','/Users/johnp/Reform/fpl-ccd-configuration/e2e/tests/other/data/changeCaseName.json');
+  await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'ordersNeeded','/Users/johnp/Reform/fpl-ccd-configuration/e2e/tests/other/data/ordersNeeded.json');
+  await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'hearingNeeded','/Users/johnp/Reform/fpl-ccd-configuration/e2e/tests/other/data/hearingNeeded.json');
+  await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'enterGrounds','/Users/johnp/Reform/fpl-ccd-configuration/e2e/tests/other/data/enterGrounds.json');
+  // await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'enterLocalAuthority','/Users/johnp/Reform/fpl-ccd-configuration/e2e/tests/other/data/enterLocalAuthority.json');
+  //await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'enterLocalAuthorityAfterSubmission','/Users/johnp/Reform/fpl-ccd-configuration/e2e/tests/other/data/enterLocalAuthorityAfterSubmission.json');
+  await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'enterChildren','/Users/johnp/Reform/fpl-ccd-configuration/e2e/tests/other/data/enterChildren.json');
+  await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'enterRespondents','/Users/johnp/Reform/fpl-ccd-configuration/e2e/tests/other/data/enterRespondents.json');
+  await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'otherProposal','/Users/johnp/Reform/fpl-ccd-configuration/e2e/tests/other/data/allocationProposal.json');
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  caseViewOtherPage.clickRisksAndHarmToChildren();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  riskAndHarmToChildrenOtherPage.verifyRiskAndHarmToChildrenPage();
+  riskAndHarmToChildrenOtherPage.inputValuesRiskAndHarmToChildren();
+  riskAndHarmToChildrenOtherPage.clickContinueButton();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  riskAndHarmToChildrenOtherPage.verifyRiskAndharmToChildrenCheckYourAnswers();
+  riskAndHarmToChildrenOtherPage.clickSaveAndContinue();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  caseViewOtherPage.verifyStartApplicationTabDetails('has been updated with event: Risk and harm to children');
 }).tag('@nightly @crossbrowser');
 

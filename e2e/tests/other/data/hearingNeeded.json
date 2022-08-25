@@ -1,0 +1,11 @@
+{
+  "hearing": {
+    "timeFrame": "Within 18 days",
+    "type" : "Standard case management hearing",
+    "type_GiveReason" : "Type of hearing that you need - Test Reason",
+    "reason" : "Type of hearing that you need - Test Reason",
+    "withoutNotice": "No",
+    "reducedNotice": "No",
+    "respondentsAware" : "No"
+  }
+}

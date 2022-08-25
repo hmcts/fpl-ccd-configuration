@@ -20,6 +20,10 @@
     "puppeteer": "12.0.1",
     "webdriverio": "^7.12.5"
   },
+  "dependencies": {
+    "request": "^2.88.2",
+    "request-promise-native": "^1.0.9"
+  },
   "scripts": {
     "lint": "eslint e2e",
     "typings": "codeceptjs def && mv steps.d.ts typings/codeceptjs.d.ts",
