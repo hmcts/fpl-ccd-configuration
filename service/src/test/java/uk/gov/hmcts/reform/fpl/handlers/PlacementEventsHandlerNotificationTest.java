@@ -14,6 +14,8 @@ import uk.gov.hmcts.reform.fpl.events.PlacementApplicationChanged;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationSubmitted;
 import uk.gov.hmcts.reform.fpl.events.PlacementNoticeAdded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -29,13 +31,17 @@ import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementContentProvider;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.google.common.collect.Sets.newHashSet;
 import static java.util.UUID.randomUUID;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -47,6 +53,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.PLACEMENT_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.PLACEMENT_NOTICE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(MockitoExtension.class)
@@ -75,6 +82,9 @@ class PlacementEventsHandlerNotificationTest {
 
     @Mock
     CafcassNotificationService cafcassNotificationService;
+
+    @Mock
+    RepresentativesInbox representativesInbox;
 
     @InjectMocks
     private PlacementEventsHandler underTest;
@@ -355,6 +365,59 @@ class PlacementEventsHandlerNotificationTest {
             underTest.notifyRespondentsOfNewNotice(event);
 
             verifyNoInteractions(sendDocumentService);
+        }
+    }
+
+
+    @Nested
+    class ChildSolicitorNotification {
+
+        private final String CHILD_SOLICITOR_EMAIL = "jack@test.com";
+
+        private Child child = Child.builder()
+            .party(ChildParty.builder()
+                .firstName("John")
+                .lastName("Smith")
+                .build())
+            .solicitor(RespondentSolicitor.builder()
+                .firstName("Jack")
+                .lastName("Jackson")
+                .email(CHILD_SOLICITOR_EMAIL)
+                .build())
+            .build();
+
+        @Test
+        void shouldSendNotificationToChildRepresentative() {
+            Element<Respondent> respondent = element(Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Alex")
+                    .lastName("Smith")
+                    .build())
+                .build());
+
+            final CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .respondents1(List.of(respondent))
+                .children1(wrapElements(child))
+                .caseLocalAuthorityName(LOCAL_AUTHORITY_NAME)
+                .placementEventData(placementEventData)
+                .build();
+
+            Placement placementNotifyParent = placement.toBuilder()
+                .placementRespondentsToNotify(List.of(respondent))
+                .build();
+
+            when(contentProvider.getNoticeChangedData(caseData, placementNotifyParent)).thenReturn(notifyData);
+            when(representativesInbox.getChildrenSolicitorEmails(eq(caseData), any()))
+                .thenReturn(newHashSet(CHILD_SOLICITOR_EMAIL));
+
+            final PlacementNoticeAdded event = new PlacementNoticeAdded(caseData, placementNotifyParent);
+
+            underTest.notifyChildSolicitorsOfNewNotice(event);
+
+            verify(notificationService)
+                .sendEmail(PLACEMENT_NOTICE_UPLOADED_TEMPLATE, Set.of(CHILD_SOLICITOR_EMAIL), notifyData, CASE_ID);
+
         }
     }
 }
