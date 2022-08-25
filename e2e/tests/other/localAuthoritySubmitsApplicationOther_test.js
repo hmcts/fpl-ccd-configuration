@@ -59,7 +59,7 @@ async function setupScenario(I, reuse = true) {
   }
 }
 
-xScenario('Local authority verifies case created for a Case But Application not Completed', async ({I, caseViewOtherPage}) => {
+Scenario('Local authority verifies case created for a Case But Application not Completed', async ({I, caseViewOtherPage}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   caseViewOtherPage.verifyCaseViewHeaderSection(caseId);
@@ -76,7 +76,7 @@ xScenario('Local authority verifies case created for a Case But Application not 
     'Add the allocation proposal in the Allocation proposal']);
 }).tag('@pipeline @nightly @crossbrowser');
 
-xScenario('Local authority Screen input for a submit application', async ({I, caseViewOtherPage, changeCaseViewOtherPage, ordersAndDirectionsOtherPage, hearingUrgencyOtherPage, groundsForApplicationOtherPage, localAuthorityDetailsOtherPage, childDetailsOtherPage, respondentsDetailsOtherPage, allocationProposalOtherPage}) => {
+Scenario('Local authority Screen input for a submit application', async ({I, caseViewOtherPage, changeCaseViewOtherPage, ordersAndDirectionsOtherPage, hearingUrgencyOtherPage, groundsForApplicationOtherPage, localAuthorityDetailsOtherPage, childDetailsOtherPage, respondentsDetailsOtherPage, allocationProposalOtherPage}) => {
   await setupScenario(I, true);
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   caseViewOtherPage.clickChangeCaseName();
