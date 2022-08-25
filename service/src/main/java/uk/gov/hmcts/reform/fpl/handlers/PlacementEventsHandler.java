@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementContentProvider;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -38,15 +39,18 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static java.util.Objects.nonNull;
 import static java.util.Set.of;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CASE_TRANSFERRED_TO_ANOTHER_COURT_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_NOTICE_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.HMCTS;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.A50_PLACEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.PLACEMENT_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.PLACEMENT_NOTICE;
@@ -69,6 +73,7 @@ public class PlacementEventsHandler {
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final CafcassNotificationService cafcassNotificationService;
+    private final RepresentativesInbox representativesInbox;
 
 
     @EventListener
@@ -211,6 +216,21 @@ public class PlacementEventsHandler {
                 resp.ifPresent(respondentElement -> notifyRespondent(
                     caseData, placement, respondentElement.getValue()));
             }
+        }
+    }
+
+    @Async
+    @EventListener
+    public void notifyChildSolicitorsOfNewNotice(PlacementNoticeAdded event) {
+        final CaseData caseData = event.getCaseData();
+        final Placement placement = event.getPlacement();
+
+        final Set<String> recipients = representativesInbox.getChildrenSolicitorEmails(caseData, DIGITAL_SERVICE);
+        if (!recipients.isEmpty()) {
+            final NotifyData notifyData = contentProvider.getNoticeChangedData(caseData, placement);
+
+            notificationService.sendEmail(PLACEMENT_NOTICE_UPLOADED_TEMPLATE, recipients, notifyData,
+                caseData.getId());
         }
     }
 
