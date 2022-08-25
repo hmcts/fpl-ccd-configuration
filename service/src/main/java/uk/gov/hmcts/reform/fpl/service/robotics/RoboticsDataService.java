@@ -278,7 +278,12 @@ public class RoboticsDataService {
             case OTHER:
                 return "Discharge of a Care Order";
             default:
-                throw new RoboticsDataException("unable to derive an appropriate Application Type from " + orderType);
+                if (isNotEmpty(orderType.getLabel())) {
+                    return orderType.getLabel();
+                } else {
+                    throw new RoboticsDataException("unable to derive an appropriate Application Type from "
+                                                    + orderType);
+                }
         }
     }
 
