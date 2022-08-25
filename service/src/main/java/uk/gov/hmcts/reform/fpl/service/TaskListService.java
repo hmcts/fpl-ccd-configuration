@@ -108,7 +108,8 @@ public class TaskListService {
             events.add(LANGUAGE_REQUIREMENTS);
         }
 
-        if (!caseData.isC1Application() || caseData.isSecureAccommodationOrderType()) {
+        if (!caseData.isC1Application() || caseData.isSecureAccommodationOrderType()
+                || caseData.isRefuseContactWithChildApplication()) {
             events.add(ALLOCATION_PROPOSAL);
         }
 
