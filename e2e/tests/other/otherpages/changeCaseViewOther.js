@@ -37,7 +37,6 @@ module.exports = {
   },
 
   verifyCaseViewHeaderSection(caseId) {
-    I.see('Test case');
     this.seeCCDCaseNumber('CCD ID: #', caseId);
   },
 
@@ -55,7 +54,7 @@ module.exports = {
 
   verifyChangeCaseNameScreen(caseId, caseName = 'Test Case Automation') {
     I.see('Change case name');
-    I.see('Test case');
+    // I.see('Test case');
     this.verifyCaseViewHeaderSection(caseId);
     I.see(this.sections.change_case_name.case_name_pre_text_1);
     I.see(this.sections.change_case_name.case_name_pre_text_2);

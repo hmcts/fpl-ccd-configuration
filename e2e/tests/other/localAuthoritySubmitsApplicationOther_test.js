@@ -76,6 +76,40 @@ Scenario('Local authority verifies case created for a Case But Application not C
     'Add the allocation proposal in the Allocation proposal']);
 }).tag('@pipeline @nightly @crossbrowser');
 
+Scenario('Local authority Screen Change Case name alternative buttons', async ({I, caseViewOtherPage, changeCaseViewOtherPage}) => {
+
+  await setupScenario(I);
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  caseViewOtherPage.clickChangeCaseName();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+
+  //Testing the cancel Link on the Change Case Name Page...
+  caseViewOtherPage.clickCancelLink();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  caseViewOtherPage.verifyStartApplicationTabDetails('');
+  caseViewOtherPage.clickChangeCaseName();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  changeCaseViewOtherPage.verifyChangeCaseNameScreen(caseId);
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+
+  //Testing the cancel Link on the Change Case Name Check Your Answers Page...
+  changeCaseViewOtherPage.clickCancelLink();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  caseViewOtherPage.verifyStartApplicationTabDetails('');
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  caseViewOtherPage.clickChangeCaseName();
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  changeCaseViewOtherPage.verifyChangeCaseNameScreen(caseId);
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  changeCaseViewOtherPage.verifyChangeYourCaseNameCheckYourAnswersPage(caseId,'Test Case Automation',true);
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  changeCaseViewOtherPage.verifyChangeCaseNameScreen(caseId,'Test Case Automation - Changed');
+  I.wait(FPLConstants.defaultPageClickWaitTime);
+  changeCaseViewOtherPage.verifyChangeYourCaseNameCheckYourAnswersPage(caseId,'Test Case Automation - Changed');
+
+}).tag('@nightly @crossbrowser');
+
+
 Scenario('Local authority Screen input for a submit application', async ({I, caseViewOtherPage, changeCaseViewOtherPage, ordersAndDirectionsOtherPage, hearingUrgencyOtherPage, groundsForApplicationOtherPage, localAuthorityDetailsOtherPage, childDetailsOtherPage, respondentsDetailsOtherPage, allocationProposalOtherPage}) => {
   await setupScenario(I, true);
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
@@ -222,9 +256,9 @@ Scenario('Local authority Screen input for a submit application', async ({I, cas
   I.wait(FPLConstants.defaultPageClickWaitTime);
   I.see('has been updated with event: Submit application');
 
-}).tag('@nightly @crossbrowser');
+}).tag('@pipeline @nightly @crossbrowser');
 
-Scenario('Local authority Optional screens', async ({I, caseViewOtherPage,riskAndHarmToChildrenOtherPage}) => {
+xScenario('Local authority Optional screens', async ({I, caseViewOtherPage,riskAndHarmToChildrenOtherPage}) => {
   await setupScenario(I,false);
   const authToken = await apiHelper.getAuthToken(config.swanseaLocalAuthorityUserOne);
   console.log('Auth Token : ' + authToken);
@@ -254,5 +288,5 @@ Scenario('Local authority Optional screens', async ({I, caseViewOtherPage,riskAn
   riskAndHarmToChildrenOtherPage.clickSaveAndContinue();
   I.wait(FPLConstants.defaultPageClickWaitTime);
   caseViewOtherPage.verifyStartApplicationTabDetails('has been updated with event: Risk and harm to children');
-}).tag('@nightly @crossbrowser');
+}).tag('@pipeline @nightly @crossbrowser');
 
