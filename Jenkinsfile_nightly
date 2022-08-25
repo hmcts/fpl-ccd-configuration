@@ -7,6 +7,12 @@ properties([
       description: 'The URL you want to run the full functional tests against'),
     string(name: 'CASE_SERVICE_URL', defaultValue: 'http://fpl-case-service-aat.service.core-compute-aat.internal',
       description: 'The URL of case service callbacks'),
+    string(name: 'CCD_DATASTORE_API_URL',
+          defaultValue: 'http://ccd-data-store-api-aat.service.core-compute-aat.internal',
+          description: 'The URL for the CCD Data Store API - required for API Interaction while testing'),
+    string(name: 'S2S_BASE_URL',
+              defaultValue: 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal',
+              description: 'The S2S Token Endpoint'),
     string(name: 'IDAM_API_URL', defaultValue: 'https://idam-api.aat.platform.hmcts.net',
       description: 'The URL of idam api'),
     string(name: 'SWANSEA_ORG_ID', defaultValue: '62LYJRF',
@@ -73,6 +79,8 @@ withNightlyPipeline(type, product, component) {
   env.URL = params.FRONTEND_URL
   env.URL_FOR_SECURITY_SCAN = params.CASE_SERVICE_URL
   env.IDAM_API_URL=params.IDAM_API_URL
+  env.CCD_DATASTORE_API_URL=params.CCD_DATASTORE_API_URL
+  env.S2S_BASE_URL=params.S2S_BASE_URL
   env.CASE_SERVICE_URL=params.CASE_SERVICE_URL
   env.SECURITY_RULES = params.SECURITY_RULES
   env.ORG_ID = params.ORG_ID

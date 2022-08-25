@@ -1,0 +1,12 @@
+{
+  "children1": [{
+    "value" : {
+      "party": {
+        "firstName": "Joe",
+        "lastName": "Bloggs",
+        "dateOfBirth": "1935-07-20",
+        "gender": "Boy"
+      }
+    }
+  }]
+}

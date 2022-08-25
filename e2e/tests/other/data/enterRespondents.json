@@ -1,0 +1,15 @@
+{
+  "respondents1": [
+    {
+      "value": {
+        "party": {
+          "firstName": "Joe",
+          "lastName": "Bloggs",
+          "addressKnow": "No",
+          "relationshipToChild": "parent"
+        },
+        "legalRepresentation": "No"
+      }
+    }
+  ]
+}

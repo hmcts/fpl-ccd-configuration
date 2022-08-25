@@ -1,0 +1,36 @@
+{
+  "localAuthorities": {
+    "value": [
+      {
+        "value": {
+          "name": "fpla_test_friday27",
+          "pbaNumber": "PBA0082848",
+          "phone": "+44 711784134154",
+          "address": {
+            "addressLine1": "Flat 1, Swansea Apartments",
+            "addressLine2": "Swansea Central Square 11",
+            "addressLine3": "40 Fleet street",
+            "postTown": "Swansea",
+            "county": "Swansea",
+            "postcode": "CR0 2GE",
+            "country": "United Kingdom"
+          },
+          "colleagues": {
+            "value": [
+              {
+                "id": "7dada06f-9e88-4367-a97f-f8a3c2ad2f78",
+                "value": {
+                  "role": "PUBLIC",
+                  "fullName" : "Test Automation Local Authority",
+                  "email" : "zzzz@hmcts.net",
+                  "notificationRecipient" : "No"
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
+

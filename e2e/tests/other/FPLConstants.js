@@ -12,7 +12,7 @@ module.exports = {
   twentySecondWaitTime: 20,
   thirtySecondWaitTime: 30,
   fortySecondWaitTime: 40,
-  defaultPageClickWaitTime : 19,
+  defaultPageClickWaitTime : 20,
   retryCountForStep: 4,
   CCDCaseNumber: 16,
   minTimeout: 1000,
