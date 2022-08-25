@@ -372,7 +372,7 @@ class PlacementEventsHandlerNotificationTest {
     @Nested
     class ChildSolicitorNotification {
 
-        private final String CHILD_SOLICITOR_EMAIL = "jack@test.com";
+        private final String childSolicitorEmail = "jack@test.com";
 
         private Child child = Child.builder()
             .party(ChildParty.builder()
@@ -382,7 +382,7 @@ class PlacementEventsHandlerNotificationTest {
             .solicitor(RespondentSolicitor.builder()
                 .firstName("Jack")
                 .lastName("Jackson")
-                .email(CHILD_SOLICITOR_EMAIL)
+                .email(childSolicitorEmail)
                 .build())
             .build();
 
@@ -409,14 +409,14 @@ class PlacementEventsHandlerNotificationTest {
 
             when(contentProvider.getNoticeChangedData(caseData, placementNotifyParent)).thenReturn(notifyData);
             when(representativesInbox.getChildrenSolicitorEmails(eq(caseData), any()))
-                .thenReturn(newHashSet(CHILD_SOLICITOR_EMAIL));
+                .thenReturn(newHashSet(childSolicitorEmail));
 
             final PlacementNoticeAdded event = new PlacementNoticeAdded(caseData, placementNotifyParent);
 
             underTest.notifyChildSolicitorsOfNewNotice(event);
 
             verify(notificationService)
-                .sendEmail(PLACEMENT_NOTICE_UPLOADED_TEMPLATE, Set.of(CHILD_SOLICITOR_EMAIL), notifyData, CASE_ID);
+                .sendEmail(PLACEMENT_NOTICE_UPLOADED_TEMPLATE, Set.of(childSolicitorEmail), notifyData, CASE_ID);
 
         }
     }
