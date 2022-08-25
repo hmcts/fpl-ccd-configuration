@@ -44,10 +44,13 @@ public class CMSReportService {
         StringBuilder result = new StringBuilder();
 
         for(CaseDetails caseDetails : searchResult) {
-            LocalDate submitApplication = auditEventService.getLatestAuditEventByName(
+            LocalDate submitApplication = auditEventService.getOldestAuditEventByName(
                             String.valueOf(caseDetails.getId()),
                             "submitApplication")
-                    .map(auditEvent -> auditEvent.getCreatedDate().toLocalDate())
+                    .map(auditEvent -> {
+                        log.info("Created datetime: {}", auditEvent.getCreatedDate());
+                        return auditEvent.getCreatedDate().toLocalDate();
+                    })
                     .orElseGet(LocalDate::now);
 
             result.append(
