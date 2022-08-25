@@ -223,6 +223,7 @@ async function updateCaseForEvent(authToken, serviceToken, userId, caseId, event
   // 2nd Call
   console.log(`Directory name is ${__dirname}`);
   console.log('The value of the Dir : '+fs.__dirname);
+  dataLocation = `${__dirname}/../tests/other/${dataLocation}`;
   var data = fs.readFileSync(dataLocation);
   console.log('The value of the data : ' + data);
   var saveBody = {

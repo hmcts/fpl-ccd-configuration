@@ -59,7 +59,7 @@ async function setupScenario(I, reuse = true) {
   }
 }
 
-Scenario('Local authority verifies case created for a Case But Application not Completed', async ({I, caseViewOtherPage}) => {
+xScenario('Local authority verifies case created for a Case But Application not Completed', async ({I, caseViewOtherPage}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   caseViewOtherPage.verifyCaseViewHeaderSection(caseId);
@@ -76,7 +76,7 @@ Scenario('Local authority verifies case created for a Case But Application not C
     'Add the allocation proposal in the Allocation proposal']);
 }).tag('@pipeline @nightly @crossbrowser');
 
-Scenario('Local authority Screen input for a submit application', async ({I, caseViewOtherPage, changeCaseViewOtherPage, ordersAndDirectionsOtherPage, hearingUrgencyOtherPage, groundsForApplicationOtherPage, localAuthorityDetailsOtherPage, childDetailsOtherPage, respondentsDetailsOtherPage, allocationProposalOtherPage}) => {
+xScenario('Local authority Screen input for a submit application', async ({I, caseViewOtherPage, changeCaseViewOtherPage, ordersAndDirectionsOtherPage, hearingUrgencyOtherPage, groundsForApplicationOtherPage, localAuthorityDetailsOtherPage, childDetailsOtherPage, respondentsDetailsOtherPage, allocationProposalOtherPage}) => {
   await setupScenario(I, true);
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   caseViewOtherPage.clickChangeCaseName();
@@ -233,15 +233,15 @@ Scenario('Local authority Optional screens', async ({I, caseViewOtherPage,riskAn
   const serviceToken = await apiHelper.getServiceTokenForSecret('fpl_case_service');
   console.log('Service Token : ' + serviceToken);
   //apiHelper.getCCDCaseData(authToken, serviceToken, userID, caseId);
-  await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'changeCaseName','/Users/johnp/Reform/fpl-ccd-configuration/e2e/tests/other/data/changeCaseName.json');
-  await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'ordersNeeded','/Users/johnp/Reform/fpl-ccd-configuration/e2e/tests/other/data/ordersNeeded.json');
-  await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'hearingNeeded','/Users/johnp/Reform/fpl-ccd-configuration/e2e/tests/other/data/hearingNeeded.json');
-  await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'enterGrounds','/Users/johnp/Reform/fpl-ccd-configuration/e2e/tests/other/data/enterGrounds.json');
+  await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'changeCaseName','data/changeCaseName.json');
+  await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'ordersNeeded','data/ordersNeeded.json');
+  await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'hearingNeeded','data/hearingNeeded.json');
+  await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'enterGrounds','data/enterGrounds.json');
   // await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'enterLocalAuthority','/Users/johnp/Reform/fpl-ccd-configuration/e2e/tests/other/data/enterLocalAuthority.json');
   //await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'enterLocalAuthorityAfterSubmission','/Users/johnp/Reform/fpl-ccd-configuration/e2e/tests/other/data/enterLocalAuthorityAfterSubmission.json');
-  await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'enterChildren','/Users/johnp/Reform/fpl-ccd-configuration/e2e/tests/other/data/enterChildren.json');
-  await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'enterRespondents','/Users/johnp/Reform/fpl-ccd-configuration/e2e/tests/other/data/enterRespondents.json');
-  await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'otherProposal','/Users/johnp/Reform/fpl-ccd-configuration/e2e/tests/other/data/allocationProposal.json');
+  await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'enterChildren','data/enterChildren.json');
+  await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'enterRespondents','data/enterRespondents.json');
+  await apiHelper.updateCaseForEvent(authToken, serviceToken, userID, caseId, 'otherProposal','data/allocationProposal.json');
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   I.wait(FPLConstants.defaultPageClickWaitTime);
   caseViewOtherPage.clickRisksAndHarmToChildren();
