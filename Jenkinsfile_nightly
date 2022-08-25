@@ -87,12 +87,12 @@ withNightlyPipeline(type, product, component) {
 
   loadVaultSecrets(integrationTestSecrets)
 
-  enableSecurityScan()
+  //enableSecurityScan()
   //enableMutationTest()
   enableFullFunctionalTest(240)
   // 'microsoft' and 'safari' to be returned to crossbrowser tests once FPLA-3172 improvements are complete
-  enableCrossBrowserTest(['chrome', 'firefox'])
-  enableFortifyScan()
+  //enableCrossBrowserTest(['chrome', 'firefox'])
+  //enableFortifyScan()
 
 
   //before('mutationTest') {
