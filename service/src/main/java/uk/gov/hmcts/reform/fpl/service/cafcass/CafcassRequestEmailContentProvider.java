@@ -134,7 +134,8 @@ public enum CafcassRequestEmailContentProvider {
             caseData.getFamilyManCaseNumber(),
             "Placement Application"),
         CafcassRequestEmailContentProvider::getPlacementApplicationMessage,
-        CafcassEmailConfiguration::getRecipientForNewApplication),
+        CafcassEmailConfiguration::getRecipientForNewApplication,
+            true),
 
     PLACEMENT_NOTICE("Notice of Placement",
         (caseData, cafcassData) ->  String.format(getSubject(),
