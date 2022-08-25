@@ -221,7 +221,7 @@ class GroundsCheckerTest {
         final boolean isCompleted = groundsChecker.isCompleted(caseData);
 
         assertThat(errors).containsExactlyInAnyOrder(
-            "Please state the full names(s) of each person who has contact with each child "
+            "Please state the full name(s) of each person who has contact with each child "
                 + "and the current arrangements for contact",
             "Please state whether the local authority has refused contact for 7 days or less",
             "Please state the full name and relationship of any person in respect of whom authority to "

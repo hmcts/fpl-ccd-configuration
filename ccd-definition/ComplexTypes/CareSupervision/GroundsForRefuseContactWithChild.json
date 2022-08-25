@@ -12,7 +12,7 @@
     "ID": "GroundsForRefuseContactWithChild",
     "ListElementCode": "personHasContactAndCurrentArrangement",
     "FieldType": "TextArea",
-    "ElementLabel": "State the full names(s) of each person who has contact with each child and the current arrangements for contact",
+    "ElementLabel": "State the full name(s) of each person who has contact with each child and the current arrangements for contact",
     "SecurityClassification": "Public"
   },
   {
@@ -20,7 +20,7 @@
     "ID": "GroundsForRefuseContactWithChild",
     "ListElementCode": "laHasRefusedContact",
     "FieldType": "TextArea",
-    "ElementLabel": "State whether the local authority has refused contact for 7 days or less",
+    "ElementLabel": "State whether the local authority has refused contact for 7 days or less (Section 34(6) Children Act 1989)",
     "SecurityClassification": "Public"
   },
   {

@@ -14,7 +14,7 @@
     "CaseEventID": "enterGrounds",
     "CaseFieldID": "groundsForRefuseContactWithChild",
     "ListElementCode": "personHasContactAndCurrentArrangement",
-    "EventElementLabel": "*State the full names(s) of each person who has contact with each child and the current arrangements for contact",
+    "EventElementLabel": "*State the full name(s) of each person who has contact with each child and the current arrangements for contact",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -23,7 +23,7 @@
     "CaseEventID": "enterGrounds",
     "CaseFieldID": "groundsForRefuseContactWithChild",
     "ListElementCode": "laHasRefusedContact",
-    "EventElementLabel": "*State whether the local authority has refused contact for 7 days or less",
+    "EventElementLabel": "*State whether the local authority has refused contact for 7 days or less (Section 34(6) Children Act 1989)",
     "DisplayContext": "OPTIONAL"
   },
   {

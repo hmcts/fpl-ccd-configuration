@@ -11,7 +11,7 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @AllArgsConstructor(onConstructor_ = {@JsonCreator})
 public class GroundsForRefuseContactWithChild {
-    @NotBlank(message = "Please state the full names(s) of each person who has contact with each child "
+    @NotBlank(message = "Please state the full name(s) of each person who has contact with each child "
                         + "and the current arrangements for contact")
     private String personHasContactAndCurrentArrangement;
 
