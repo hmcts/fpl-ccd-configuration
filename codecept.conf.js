@@ -40,7 +40,7 @@ exports.config = {
   },
   helpers: {
     Puppeteer: {
-      show: process.env.SHOW_BROWSER_WINDOW || true,
+      show: process.env.SHOW_BROWSER_WINDOW || false,
       restart: false,
       keepCookies: true,
       keepBrowserState: true,
