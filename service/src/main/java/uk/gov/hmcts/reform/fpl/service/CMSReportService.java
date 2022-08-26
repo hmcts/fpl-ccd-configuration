@@ -43,7 +43,7 @@ public class CMSReportService {
 
         List<CaseDetails> searchResult = searchService.search(esQuery,
                 50,
-                1,
+                0,
                 buildSortClause());
 
         int[] counter = new int[]{1};
