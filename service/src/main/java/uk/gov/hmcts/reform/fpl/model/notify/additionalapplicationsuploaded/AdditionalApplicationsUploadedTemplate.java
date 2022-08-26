@@ -19,4 +19,5 @@ public final class AdditionalApplicationsUploadedTemplate extends SharedNotifyTe
     private final String lastName;
     private final String documentUrl;
     private final List<String> applicationTypes;
+    private final String urgencyDetails;
 }
