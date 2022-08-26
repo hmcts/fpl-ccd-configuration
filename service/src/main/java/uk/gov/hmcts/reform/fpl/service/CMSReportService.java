@@ -13,6 +13,9 @@ import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Must;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MustNot;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Sort;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.SortOrder;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.SortQuery;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,7 +30,8 @@ public class CMSReportService {
     private final SearchService searchService;
     private final AuditEventService auditEventService;
     private static final String MATCH_FIELD = "data.court.code";
-    //private static final String MATCH_FIELD = "data.court";
+    private static final String SORT_FIELD = "created_date";
+
 
     public String getReport(CaseData caseData) {
         CMSReportEventData cmsReportEventData = caseData.getCmsReportEventData();
@@ -37,7 +41,10 @@ public class CMSReportService {
         int count = searchService.searchResultsSize(esQuery);
         log.info("record count {}", count);
 
-        List<CaseDetails> searchResult = searchService.search(esQuery, 50, 1);
+        List<CaseDetails> searchResult = searchService.search(esQuery,
+                50,
+                1,
+                buildSortClause());
 
         int[] counter = new int[]{1};
 
@@ -140,6 +147,14 @@ public class CMSReportService {
         return BooleanQuery.builder()
                 .must(must)
                 .mustNot(mustNot)
+                .build();
+    }
+
+    private Sort buildSortClause() {
+        return Sort.builder()
+                .clauses(List.of(
+                    SortQuery.of(SORT_FIELD, SortOrder.DESC)
+                ))
                 .build();
     }
 }

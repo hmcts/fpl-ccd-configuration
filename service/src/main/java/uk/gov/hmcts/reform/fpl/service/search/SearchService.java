@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESQuery;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Sort;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -35,6 +36,12 @@ public class SearchService {
     public List<CaseDetails> search(ESQuery query, int size, int from) {
         requireNonNull(query);
         return search(query.toQueryContext(size, from).toString()).getCases();
+    }
+
+    public List<CaseDetails> search(ESQuery query, int size, int from, Sort sort) {
+        requireNonNull(query);
+        log.info("sort query {} ", query.toQueryContext(size, from, sort).toString());
+        return search(query.toQueryContext(size, from, sort).toString()).getCases();
     }
 
     public List<CaseDetails> search(String property, LocalDate day) {
