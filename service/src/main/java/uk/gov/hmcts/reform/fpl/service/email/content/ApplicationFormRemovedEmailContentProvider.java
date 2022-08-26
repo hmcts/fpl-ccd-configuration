@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.ApplicationFormRemovedNotifyData;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Slf4j
@@ -19,7 +20,7 @@ public class ApplicationFormRemovedEmailContentProvider extends AbstractEmailCon
         return ApplicationFormRemovedNotifyData.builder()
             .caseName(caseData.getCaseName())
             .removalReason(caseData.getRemovalToolData().getHiddenApplicationForm().getRemovalReason())
-            .familyManCaseNumber(caseData.getFamilyManCaseNumber())
+            .familyManCaseNumber(!isEmpty(caseData.getFamilyManCaseNumber()) ? caseData.getFamilyManCaseNumber() : "")
             .caseUrl(getCaseUrl(caseData.getId()))
             .lastName(getFirstRespondentLastName(caseData))
             .build();
