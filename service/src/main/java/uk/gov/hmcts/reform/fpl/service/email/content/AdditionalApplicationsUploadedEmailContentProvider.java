@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
+import uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
@@ -14,15 +15,20 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded.AdditionalApplicationsUploadedTemplate;
+import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.OTHER_APPLICATIONS;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildUnformattedCalloutWithNextHearing;
 
 @Component
@@ -31,6 +37,7 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildUnforma
 public class AdditionalApplicationsUploadedEmailContentProvider extends AbstractEmailContentProvider {
     private final Time time;
     private final EmailNotificationHelper helper;
+    private final CalendarService calendarService;
 
     public AdditionalApplicationsUploadedTemplate getNotifyData(final CaseData caseData) {
         String lastName = helper.getEldestChildLastName(caseData.getAllChildren());
@@ -40,8 +47,36 @@ public class AdditionalApplicationsUploadedEmailContentProvider extends Abstract
             .childLastName(lastName)
             .caseUrl(getCaseUrl(caseData.getId(), OTHER_APPLICATIONS))
             .applicationTypes(getApplicationTypes(caseData.getAdditionalApplicationsBundle().get(0).getValue()))
+            .urgencyDetails(getUrgencyDetails(caseData.getAdditionalApplicationsBundle().get(0).getValue()))
             .build();
     }
+
+    private String getUrgencyDetails(AdditionalApplicationsBundle additionalApplicationsBundle) {
+        Optional<String> other = Optional.ofNullable(additionalApplicationsBundle.getOtherApplicationsBundle())
+                .map(OtherApplicationsBundle::getUrgencyTimeFrameType)
+                .map(this::getUrgencyTimeFrame);
+
+        Optional<String> c2 = Optional.ofNullable(additionalApplicationsBundle.getC2DocumentBundle())
+                .map(C2DocumentBundle::getUrgencyTimeFrameType)
+                .map(this::getUrgencyTimeFrame);
+
+        return other.orElse(c2.orElse(""));
+    }
+
+    private String getUrgencyTimeFrame(UrgencyTimeFrameType urgencyTImeFrameType) {
+        LocalDate urgencyDate = LocalDate.now();
+        if (urgencyTImeFrameType.getCount() == 0) {
+            if (!calendarService.isWorkingDay(urgencyDate)) {
+                urgencyDate = calendarService.getWorkingDayFrom(urgencyDate, 1);
+            }
+        } else {
+            urgencyDate = calendarService.getWorkingDayFrom(urgencyDate, urgencyTImeFrameType.getCount());
+        }
+        return String.join(" ",
+                "This application has been requested to be considered by",
+                formatLocalDateToString(urgencyDate, DATE));
+    }
+
 
     public BaseCaseNotifyData getPbaPaymentNotTakenNotifyData(final CaseData caseData) {
         return BaseCaseNotifyData.builder()

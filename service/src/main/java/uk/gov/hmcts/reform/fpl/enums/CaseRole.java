@@ -61,6 +61,10 @@ public enum CaseRole {
             CHILDSOLICITORM, CHILDSOLICITORN, CHILDSOLICITORO);
     }
 
+    public static List<CaseRole> barristers() {
+        return List.of(LABARRISTER, BARRISTER);
+    }
+
     private static String formatName(String name) {
         return String.format("[%s]", name);
     }
