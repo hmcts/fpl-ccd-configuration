@@ -27,6 +27,16 @@
     "TabID": "FurtherEvidenceDocuments",
     "TabLabel": "Documents",
     "TabDisplayOrder": 0,
+    "CaseFieldID": "supplementDocument",
+    "TabFieldDisplayOrder": 21
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "FurtherEvidenceDocuments",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 0,
     "CaseFieldID": "submittedFormNeedTranslation",
     "FieldShowCondition": "submittedForm=\"DO_NOT_SHOW\"",
     "TabFieldDisplayOrder": 30

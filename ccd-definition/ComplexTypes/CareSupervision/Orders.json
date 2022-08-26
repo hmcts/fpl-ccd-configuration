@@ -104,6 +104,33 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Orders",
+    "ListElementCode": "childAssessmentOrderLabel",
+    "FieldType": "Label",
+    "ElementLabel": "## Child Assessment Order",
+    "FieldShowCondition": "orderType CONTAINS \"CHILD_ASSESSMENT_ORDER\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "childAssessmentOrderAssessmentDirections",
+    "FieldType": "TextArea",
+    "ElementLabel": "The direction(s) sought in respect of the assessment",
+    "FieldShowCondition": "orderType CONTAINS \"CHILD_ASSESSMENT_ORDER\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "childAssessmentOrderContactDirections",
+    "FieldType": "TextArea",
+    "ElementLabel": "The direction(s) sought in respect of contact",
+    "FieldShowCondition": "orderType CONTAINS \"CHILD_ASSESSMENT_ORDER\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
     "ListElementCode": "directionLabel",
     "FieldType": "Label",
     "ElementLabel": "## Directions",
@@ -124,6 +151,25 @@
     "FieldType": "TextArea",
     "ElementLabel": "Give details",
     "FieldShowCondition": "directions=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "secureAccommodationOrderLabel",
+    "FieldType": "Label",
+    "ElementLabel": "## Secure accommodation order",
+    "FieldShowCondition": "orderType CONTAINS \"SECURE_ACCOMMODATION_ORDER\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "secureAccommodationOrderSection",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "SecureAccommodationOrderSections",
+    "ElementLabel": "Under which section are you applying?",
+    "FieldShowCondition": "orderType CONTAINS \"SECURE_ACCOMMODATION_ORDER\"",
     "SecurityClassification": "Public"
   },
   {

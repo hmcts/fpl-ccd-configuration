@@ -3,9 +3,11 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
@@ -146,8 +148,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
-@Builder(toBuilder = true)
-@AllArgsConstructor
+@SuperBuilder(toBuilder = true)
+@Jacksonized
+@EqualsAndHashCode(callSuper = true)
 @HasDocumentsIncludedInSwet(groups = UploadDocumentsGroup.class)
 @IsStateMigratable(groups = MigrateStateGroup.class)
 @IsValidHearingEdit(groups = HearingBookingGroup.class)
@@ -155,7 +158,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
     groups = HearingEndDateGroup.class)
 @EPOTimeRange(message = "Date must be within 8 days of the order date", groups = EPOEndDateGroup.class,
     maxDate = @TimeDifference(amount = 8, unit = DAYS))
-public class CaseData {
+public class CaseData extends CaseDataParent {
     private final Long id;
     private final State state;
     @NotBlank(message = "Enter a case name")
@@ -187,6 +190,9 @@ public class CaseData {
     @NotNull(message = "Add the grounds for the application")
     @Valid
     private final Grounds grounds;
+    @NotNull(message = "Add the grounds for the application")
+    @Valid
+    private final GroundsForChildAssessmentOrder groundsForChildAssessmentOrder;
     @NotNull(message = "Add the grounds for the application", groups = EPOGroup.class)
     @Valid
     private final GroundsForEPO groundsForEPO;
@@ -222,19 +228,6 @@ public class CaseData {
     @Valid
     private final Allocation allocationProposal;
     private final Allocation allocationDecision;
-
-    private final List<Element<Direction>> allParties;
-    private final List<Element<Direction>> allPartiesCustom;
-    private final List<Element<Direction>> localAuthorityDirections;
-    private final List<Element<Direction>> localAuthorityDirectionsCustom;
-    private final List<Element<Direction>> courtDirections;
-    private final List<Element<Direction>> courtDirectionsCustom;
-    private final List<Element<Direction>> cafcassDirections;
-    private final List<Element<Direction>> cafcassDirectionsCustom;
-    private final List<Element<Direction>> otherPartiesDirections;
-    private final List<Element<Direction>> otherPartiesDirectionsCustom;
-    private final List<Element<Direction>> respondentDirections;
-    private final List<Element<Direction>> respondentDirectionsCustom;
 
     private final StandardDirectionOrder standardDirectionOrder;
     private final UrgentHearingOrder urgentHearingOrder;
@@ -289,7 +282,6 @@ public class CaseData {
     @JsonProperty("documents_socialWorkEvidenceTemplate_document")
     @Valid
     public final Document socialWorkEvidenceTemplateDocument;
-    public final CourtBundle courtBundle;
     @NotEmpty(message = "Add the child's details")
     @Valid
     private final List<@NotNull(message = "Add the child's details") Element<Child>> children1;
@@ -1175,6 +1167,20 @@ public class CaseData {
 
         return ofNullable(getOrders())
             .map(Orders::isDischargeOfCareOrder)
+            .orElse(false);
+    }
+
+    @JsonIgnore
+    public boolean isC1Application() {
+        return ofNullable(getOrders())
+            .map(Orders::isC1Order)
+            .orElse(false);
+    }
+
+    @JsonIgnore
+    public boolean isSecureAccommodationOrderType() {
+        return ofNullable(getOrders())
+            .map(Orders::isSecureAccommodationOrder)
             .orElse(false);
     }
 

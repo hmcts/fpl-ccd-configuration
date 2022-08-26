@@ -87,7 +87,7 @@ class CaseSubmissionServiceDocmosisTest extends AbstractDocmosisTest {
 
         doAnswer(resultsCaptor).when(generatorService).generateDocmosisDocument(anyMap(), any(), any(), any());
 
-        underTest.generateSubmittedFormPDF(caseData, false);
+        underTest.generateC110aSubmittedFormPDF(caseData, false);
 
         String c110aContent = getPdfContent("c110a.pdf");
 
@@ -107,7 +107,7 @@ class CaseSubmissionServiceDocmosisTest extends AbstractDocmosisTest {
 
         doAnswer(resultsCaptor).when(generatorService).generateDocmosisDocument(anyMap(), any(), any(), any());
 
-        underTest.generateSubmittedFormPDF(caseData, false);
+        underTest.generateC110aSubmittedFormPDF(caseData, false);
 
         String c110aContent = getPdfContent("c110a.pdf");
 
@@ -130,7 +130,7 @@ class CaseSubmissionServiceDocmosisTest extends AbstractDocmosisTest {
 
         doAnswer(resultsCaptor).when(generatorService).generateDocmosisDocument(anyMap(), any(), any(), any());
 
-        underTest.generateSubmittedFormPDF(caseData, false);
+        underTest.generateC110aSubmittedFormPDF(caseData, false);
 
         String c110aContent = getPdfContent("c110a-Welsh.pdf");
 
