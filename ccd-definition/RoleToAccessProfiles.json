@@ -107,6 +107,27 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[EPSMANAGING]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[EPSMANAGING]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[LAMANAGING]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[LAMANAGING]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[LASHARED]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[LASHARED]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "[SOLICITOR]",
     "ReadOnly": "N",
     "AccessProfiles": "[SOLICITOR]"
@@ -180,6 +201,27 @@
     "RoleName": "[SOLICITORJ]",
     "ReadOnly": "N",
     "AccessProfiles": "[SOLICITORJ]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[LABARRISTER]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[LABARRISTER]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[BARRISTER]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[BARRISTER]"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "[CAFCASSSOLICITOR]",
+    "ReadOnly": "N",
+    "AccessProfiles": "[CAFCASSSOLICITOR]"
   },
   {
     "LiveFrom": "01/01/2017",
