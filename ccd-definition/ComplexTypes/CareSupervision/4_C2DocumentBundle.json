@@ -170,6 +170,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
+    "ListElementCode": "urgencyTimeFrameType",
+    "ElementLabel": "Please state how soon you want the judge to consider your application?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "UrgencyTimeFrameType",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
     "ListElementCode": "id",
     "FieldType": "Text",
     "ElementLabel": " ",
