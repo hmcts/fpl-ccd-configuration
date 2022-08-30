@@ -23,6 +23,7 @@ plugins {
   id 'project-report'
   id "idea"
   id "info.solidsoft.pitest" version '1.5.2'
+  id 'com.github.hmcts.rse-cft-lib' version '0.16.140'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -260,6 +261,9 @@ repositories {
   maven {
     url mirrorUrl
   }
+  maven {
+    url 'https://jitpack.io'
+  }
 }
 
 // it is important to specify logback classic and core packages explicitly as libraries like spring boot
@@ -308,7 +312,7 @@ dependencies {
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.2'
 
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.24'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.4.0'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.2.0'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
@@ -391,6 +395,9 @@ dependencies {
   contractTestCompile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
   contractTestImplementation group: 'com.google.guava', name: 'guava', version: '30.1-jre'
 
+
+  cftlibImplementation group: 'com.github.tomakehurst', name: 'wiremock-jre8', version: '2.32.0'
+  cftlibImplementation 'com.github.masonm:wiremock-jwt-extension:0.9'
 }
 
 mainClassName = 'uk.gov.hmcts.reform.fpl.Application'
@@ -440,4 +447,54 @@ dependencyManagement {
   imports {
     mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.2'
   }
+}
+
+task loadEnvSecrets() {
+  doLast {
+    if (!project.file('./.aat-env').exists()) {
+      new ByteArrayOutputStream().withStream { os ->
+        exec {
+          commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'nfdiv-aat', '-o', 'tsv', '--query', 'value', '--name', 'nfdiv-case-api-dot-env'
+          standardOutput = os
+        }
+        project.file('./.aat-env').write(new String(os.toString().replace('\n', '').decodeBase64(), java.nio.charset.StandardCharsets.UTF_8))
+      }
+    }
+  }
+}
+
+task generateXls(type: Exec) {
+  def definitionDir = rootProject.file('ccd-definition')
+  def xls = layout.buildDirectory.file('fpl.xlsx').get().asFile
+  commandLine rootProject.file('fpla-docker/bin/utils/fpl-process-definition.sh')
+  args definitionDir, xls, '-e *-prod.json,*-shuttered.json'
+  inputs.dir definitionDir
+  outputs.file xls
+  environment "CCD_DEF_CASE_SERVICE_BASE_URL", "http://localhost:4013"
+}
+
+bootWithCCD {
+  dependsOn tasks.generateXls, tasks.loadEnvSecrets
+  environment "FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING", "EX=>cafcass:cafcass@cafcass.com"
+  environment "FPL_LOCAL_AUTHORITY_USER_MAPPING", "EX=>1,2,3"
+  environment "spring.profiles.active", "feature-toggle,local,user-mappings"
+  environment 'rse.lib.stub.s2s', 'true'
+  environment 'DOCUMENT_MANAGEMENT_URL', 'http://dm-store-aat.service.core-compute-aat.internal'
+  environment 'SEND_LETTER_URL', 'http://dm-store-aat.service.core-compute-aat.internal'
+
+
+  doFirst() {
+    if (project.file('./.aat-env').exists()) {
+      project.file('./.aat-env').readLines().each() {
+        def index = it.indexOf("=")
+        def key = it.substring(0, index)
+        def value = it.substring(index + 1)
+      }
+    }
+  }
+
+}
+
+processCftlibResources {
+  from rootProject.fileTree('fpla-docker/mocks')
 }
