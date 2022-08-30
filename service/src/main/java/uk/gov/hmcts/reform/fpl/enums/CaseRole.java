@@ -61,15 +61,8 @@ public enum CaseRole {
             CHILDSOLICITORM, CHILDSOLICITORN, CHILDSOLICITORO);
     }
 
-    public static List<CaseRole> respondentSolicitors() {
-        return List.of(SOLICITORA, SOLICITORB, SOLICITORC, SOLICITORD, SOLICITORE, SOLICITORF, SOLICITORG, SOLICITORH,
-            SOLICITORI, SOLICITORJ);
-    }
-
-    public static List<CaseRole> childSolicitors() {
-        return List.of(CHILDSOLICITORA, CHILDSOLICITORB, CHILDSOLICITORC, CHILDSOLICITORD, CHILDSOLICITORE,
-            CHILDSOLICITORF, CHILDSOLICITORG, CHILDSOLICITORH, CHILDSOLICITORI, CHILDSOLICITORJ, CHILDSOLICITORK,
-            CHILDSOLICITORL, CHILDSOLICITORM, CHILDSOLICITORN, CHILDSOLICITORO);
+    public static List<CaseRole> barristers() {
+        return List.of(LABARRISTER, BARRISTER);
     }
 
     private static String formatName(String name) {
