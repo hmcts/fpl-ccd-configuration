@@ -54,11 +54,16 @@ public class CMSReportService {
             "submitted","gatekeeping","prepare_for_hearing","final_hearing"
     );
 
-    public String getReport(CaseData caseData) throws JsonProcessingException {
-        return getReportCasesAtRisk(caseData, (complianceDeadline) ->  RangeQuery.builder()
-                .field(RANGE_FIELD)
-                .greaterThanOrEqual(complianceDeadline)
-                .build());
+    public String getReport(CaseData caseData)  {
+        try {
+            return getReportCasesAtRisk(caseData, (complianceDeadline) ->  RangeQuery.builder()
+                    .field(RANGE_FIELD)
+                    .greaterThanOrEqual(complianceDeadline)
+                    .build());
+        } catch (JsonProcessingException e) {
+            log.error("Exception e", e);
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     private String getReportCasesAtRisk(CaseData caseData, Function<LocalDate, RangeQuery> rangeQueryFunction) throws JsonProcessingException {
