@@ -23,7 +23,7 @@ plugins {
   id 'project-report'
   id "idea"
   id "info.solidsoft.pitest" version '1.5.2'
-  id 'com.github.hmcts.rse-cft-lib' version '0.16.140'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.327'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -261,9 +261,6 @@ repositories {
   maven {
     url mirrorUrl
   }
-  maven {
-    url 'https://jitpack.io'
-  }
 }
 
 // it is important to specify logback classic and core packages explicitly as libraries like spring boot
@@ -449,20 +446,6 @@ dependencyManagement {
   }
 }
 
-task loadEnvSecrets() {
-  doLast {
-    if (!project.file('./.aat-env').exists()) {
-      new ByteArrayOutputStream().withStream { os ->
-        exec {
-          commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'nfdiv-aat', '-o', 'tsv', '--query', 'value', '--name', 'nfdiv-case-api-dot-env'
-          standardOutput = os
-        }
-        project.file('./.aat-env').write(new String(os.toString().replace('\n', '').decodeBase64(), java.nio.charset.StandardCharsets.UTF_8))
-      }
-    }
-  }
-}
-
 task generateXls(type: Exec) {
   def definitionDir = rootProject.file('ccd-definition')
   def xls = layout.buildDirectory.file('fpl.xlsx').get().asFile
@@ -474,25 +457,13 @@ task generateXls(type: Exec) {
 }
 
 bootWithCCD {
-  dependsOn tasks.generateXls, tasks.loadEnvSecrets
+  dependsOn tasks.generateXls
   environment "FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING", "EX=>cafcass:cafcass@cafcass.com"
   environment "FPL_LOCAL_AUTHORITY_USER_MAPPING", "EX=>1,2,3"
   environment "spring.profiles.active", "feature-toggle,local,user-mappings"
   environment 'rse.lib.stub.s2s', 'true'
   environment 'DOCUMENT_MANAGEMENT_URL', 'http://dm-store-aat.service.core-compute-aat.internal'
   environment 'SEND_LETTER_URL', 'http://dm-store-aat.service.core-compute-aat.internal'
-
-
-  doFirst() {
-    if (project.file('./.aat-env').exists()) {
-      project.file('./.aat-env').readLines().each() {
-        def index = it.indexOf("=")
-        def key = it.substring(0, index)
-        def value = it.substring(index + 1)
-      }
-    }
-  }
-
 }
 
 processCftlibResources {
