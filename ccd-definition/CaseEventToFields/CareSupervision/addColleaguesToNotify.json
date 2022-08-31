@@ -1,0 +1,28 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addColleaguesToNotify",
+    "CaseFieldID": "respondentName",
+    "DisplayContext": "OPTIONAL",
+    "PageID": "colleagueDetails",
+    "FieldShowCondition": "colleaguesToNotify = \"DO_NOT_SHOW\"",
+    "PageDisplayOrder": 1,
+    "PageFieldDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addColleaguesToNotify",
+    "CaseFieldID": "colleaguesToNotify",
+    "DisplayContext": "COMPLEX",
+    "PageID": "colleagueDetails",
+    "Label": "Colleagues for ${respondentName}'s solicitor",
+    "PageDisplayOrder": 1,
+    "PageFieldDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
+  }
+]

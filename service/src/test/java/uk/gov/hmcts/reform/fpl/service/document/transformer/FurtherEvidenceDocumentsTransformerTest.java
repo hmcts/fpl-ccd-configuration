@@ -88,6 +88,8 @@ class FurtherEvidenceDocumentsTransformerTest {
             .sentForTranslation(document.sentForTranslation())
             .confidential(document.isConfidentialDocument())
             .title(document.getName())
+            .expertReportType(EXPERT_REPORTS.equals(document.getType())
+                ? document.getExpertReportType().getLabel() : null)
             .build();
     }
 }

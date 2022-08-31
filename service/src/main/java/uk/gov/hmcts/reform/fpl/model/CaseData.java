@@ -1189,4 +1189,10 @@ public class CaseData extends CaseDataParent {
     @JsonUnwrapped
     @Builder.Default
     private final OtherToRespondentEventData otherToRespondentEventData = OtherToRespondentEventData.builder().build();
+
+    private List<Element<Colleague>> colleaguesToNotify;
+
+    public List<Element<Colleague>> getColleaguesToNotify() {
+        return colleaguesToNotify != null ? colleaguesToNotify : new ArrayList<>();
+    }
 }
