@@ -112,6 +112,18 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "SupportingEvidenceBundle",
+    "ListElementCode": "expertReportType",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "ExpertReportList",
+    "ElementLabel": "Choose an expert report type",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"EXPERT_REPORTS\"",
+    "Searchable": "N",
+    "Comment": "Only shown + populated if this is an expert report"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupportingEvidenceBundle",
     "ListElementCode": "uploadedBySolicitor",
     "FieldType": "YesOrNo",
     "ElementLabel": " ",

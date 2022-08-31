@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.removaltool.RemovableOrderOrApplicationNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.RemovalToolData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -81,7 +82,9 @@ class GeneratedOrderRemovalActionTest {
             GeneratedOrder order = generatedOrder.toBuilder().judgeAndLegalAdvisor(emptyJudge).build();
 
             CaseData caseData = CaseData.builder()
-                .reasonToRemoveOrder(REASON)
+                .removalToolData(RemovalToolData.builder()
+                    .reasonToRemoveOrder(REASON)
+                    .build())
                 .children1(List.of(
                     element(CHILD_ONE_ID, Child.builder()
                         .finalOrderIssued("Yes")
@@ -153,7 +156,9 @@ class GeneratedOrderRemovalActionTest {
             );
 
             CaseData caseData = CaseData.builder()
-                .reasonToRemoveOrder(REASON)
+                .removalToolData(RemovalToolData.builder()
+                    .reasonToRemoveOrder(REASON)
+                    .build())
                 .orderCollection(newArrayList(element(TO_REMOVE_ORDER_ID, generatedOrder)))
                 .build();
 
@@ -186,7 +191,20 @@ class GeneratedOrderRemovalActionTest {
             );
 
             CaseData caseData = CaseData.builder()
-                .reasonToRemoveOrder(REASON)
+                .removalToolData(RemovalToolData.builder()
+                    .reasonToRemoveOrder(REASON)
+                    .hiddenOrders(newArrayList(element(ALREADY_REMOVED_ORDER_ID, buildOrder(
+                        NON_FINAL_ORDER_NEW,
+                        "order 1 deleted",
+                        DATE_OF_ISSUE,
+                        newArrayList(
+                            element(CHILD_ONE_ID, Child.builder()
+                                .finalOrderIssued("No")
+                                .finalOrderIssuedType("Some type")
+                                .build())
+                        ), YesNo.NO.getValue()
+                    ))))
+                    .build())
                 .children1(List.of(
                     element(CHILD_ONE_ID, Child.builder()
                         .finalOrderIssued("Yes")
@@ -198,17 +216,6 @@ class GeneratedOrderRemovalActionTest {
                         .build())
                 ))
                 .orderCollection(newArrayList(element(TO_REMOVE_ORDER_ID, generatedOrder)))
-                .hiddenOrders(newArrayList(element(ALREADY_REMOVED_ORDER_ID, buildOrder(
-                    NON_FINAL_ORDER_NEW,
-                    "order 1 deleted",
-                    DATE_OF_ISSUE,
-                    newArrayList(
-                        element(CHILD_ONE_ID, Child.builder()
-                            .finalOrderIssued("No")
-                            .finalOrderIssuedType("Some type")
-                            .build())
-                    ), YesNo.NO.getValue()
-                ))))
                 .build();
 
             CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
@@ -280,7 +287,9 @@ class GeneratedOrderRemovalActionTest {
             );
 
             CaseData caseData = CaseData.builder()
-                .reasonToRemoveOrder(REASON)
+                .removalToolData(RemovalToolData.builder()
+                    .reasonToRemoveOrder(REASON)
+                    .build())
                 .children1(List.of(
                     element(CHILD_ONE_ID, Child.builder()
                         .finalOrderIssued("Yes")
@@ -349,7 +358,9 @@ class GeneratedOrderRemovalActionTest {
             );
 
             CaseData caseData = CaseData.builder()
-                .reasonToRemoveOrder(REASON)
+                .removalToolData(RemovalToolData.builder()
+                    .reasonToRemoveOrder(REASON)
+                    .build())
                 .children1(List.of(
                     element(CHILD_ONE_ID, Child.builder()
                         .finalOrderIssued("Yes")
@@ -410,7 +421,9 @@ class GeneratedOrderRemovalActionTest {
             generatedOrder = generatedOrder.toBuilder().document(document).build();
 
             CaseData caseData = CaseData.builder()
-                .reasonToRemoveOrder(REASON)
+                .removalToolData(RemovalToolData.builder()
+                    .reasonToRemoveOrder(REASON)
+                    .build())
                 .orderCollection(newArrayList(element(TO_REMOVE_ORDER_ID, generatedOrder)))
                 .build();
 
@@ -446,7 +459,9 @@ class GeneratedOrderRemovalActionTest {
             generatedOrder = generatedOrder.toBuilder().document(document).build();
 
             CaseData caseData = CaseData.builder()
-                .reasonToRemoveOrder(REASON)
+                .removalToolData(RemovalToolData.builder()
+                    .reasonToRemoveOrder(REASON)
+                    .build())
                 .orderCollection(newArrayList(element(TO_REMOVE_ORDER_ID, generatedOrder)))
                 .build();
 
@@ -518,7 +533,9 @@ class GeneratedOrderRemovalActionTest {
             GeneratedOrder order = generatedOrder.toBuilder().judgeAndLegalAdvisor(emptyJudge).build();
 
             CaseData caseData = CaseData.builder()
-                .reasonToRemoveOrder(REASON)
+                .removalToolData(RemovalToolData.builder()
+                    .reasonToRemoveOrder(REASON)
+                    .build())
                 .children1(List.of(
                     element(CHILD_ONE_ID, Child.builder()
                         .finalOrderIssued("Yes")
@@ -590,7 +607,9 @@ class GeneratedOrderRemovalActionTest {
             );
 
             CaseData caseData = CaseData.builder()
-                .reasonToRemoveOrder(REASON)
+                .removalToolData(RemovalToolData.builder()
+                    .reasonToRemoveOrder(REASON)
+                    .build())
                 .orderCollection(newArrayList(element(TO_REMOVE_ORDER_ID, generatedOrder)))
                 .build();
 
@@ -623,7 +642,20 @@ class GeneratedOrderRemovalActionTest {
             );
 
             CaseData caseData = CaseData.builder()
-                .reasonToRemoveOrder(REASON)
+                .removalToolData(RemovalToolData.builder()
+                    .reasonToRemoveOrder(REASON)
+                    .hiddenOrders(newArrayList(element(ALREADY_REMOVED_ORDER_ID, buildOrder(
+                        NON_FINAL_ORDER,
+                        "order 1 deleted",
+                        "15 June 2020",
+                        newArrayList(
+                            element(CHILD_ONE_ID, Child.builder()
+                                .finalOrderIssued("No")
+                                .finalOrderIssuedType("Some type")
+                                .build())
+                        )
+                    ))))
+                    .build())
                 .children1(List.of(
                     element(CHILD_ONE_ID, Child.builder()
                         .finalOrderIssued("Yes")
@@ -635,17 +667,7 @@ class GeneratedOrderRemovalActionTest {
                         .build())
                 ))
                 .orderCollection(newArrayList(element(TO_REMOVE_ORDER_ID, generatedOrder)))
-                .hiddenOrders(newArrayList(element(ALREADY_REMOVED_ORDER_ID, buildOrder(
-                    NON_FINAL_ORDER,
-                    "order 1 deleted",
-                    "15 June 2020",
-                    newArrayList(
-                        element(CHILD_ONE_ID, Child.builder()
-                            .finalOrderIssued("No")
-                            .finalOrderIssuedType("Some type")
-                            .build())
-                    )
-                ))))
+
                 .build();
 
             CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
@@ -717,7 +739,9 @@ class GeneratedOrderRemovalActionTest {
             );
 
             CaseData caseData = CaseData.builder()
-                .reasonToRemoveOrder(REASON)
+                .removalToolData(RemovalToolData.builder()
+                    .reasonToRemoveOrder(REASON)
+                    .build())
                 .children1(List.of(
                     element(CHILD_ONE_ID, Child.builder()
                         .finalOrderIssued("Yes")
@@ -786,7 +810,9 @@ class GeneratedOrderRemovalActionTest {
             );
 
             CaseData caseData = CaseData.builder()
-                .reasonToRemoveOrder(REASON)
+                .removalToolData(RemovalToolData.builder()
+                    .reasonToRemoveOrder(REASON)
+                    .build())
                 .children1(List.of(
                     element(CHILD_ONE_ID, Child.builder()
                         .finalOrderIssued("Yes")
@@ -846,7 +872,9 @@ class GeneratedOrderRemovalActionTest {
             generatedOrder = generatedOrder.toBuilder().document(document).build();
 
             CaseData caseData = CaseData.builder()
-                .reasonToRemoveOrder(REASON)
+                .removalToolData(RemovalToolData.builder()
+                    .reasonToRemoveOrder(REASON)
+                    .build())
                 .orderCollection(newArrayList(element(TO_REMOVE_ORDER_ID, generatedOrder)))
                 .build();
 
@@ -881,7 +909,9 @@ class GeneratedOrderRemovalActionTest {
             generatedOrder = generatedOrder.toBuilder().document(document).build();
 
             CaseData caseData = CaseData.builder()
-                .reasonToRemoveOrder(REASON)
+                .removalToolData(RemovalToolData.builder()
+                    .reasonToRemoveOrder(REASON)
+                    .build())
                 .orderCollection(newArrayList(element(TO_REMOVE_ORDER_ID, generatedOrder)))
                 .build();
 
