@@ -1,118 +1,126 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.jackson.Jacksonized;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.CMSReportEventData;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.BooleanQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESQuery;
-import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
-import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Must;
-import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MustNot;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Filter;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.RangeQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Sort;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.SortOrder;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.SortQuery;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.TermQuery;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.TermsQuery;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class CMSReportService {
+    private static final String MATCH_FIELD = "data.court.code";
+    private static final String SORT_FIELD = "dateSubmitted";
+    private static final String RANGE_FIELD = "dateSubmitted";
+
     private final SearchService searchService;
     private final AuditEventService auditEventService;
-    private static final String MATCH_FIELD = "data.court.code";
-    private static final String SORT_FIELD = "created_date";
+    private final static List<HearingType> REQUIRED_HEARING_TYPE = List.of(
+            CASE_MANAGEMENT, ISSUE_RESOLUTION, FINAL
+    );
+    private final static List<String> REQUIRED_STATES = List.of (
+            "submitted","gatekeeping","prepare_for_hearing","final_hearing"
+    );
 
+    public String getReport(CaseData caseData) throws JsonProcessingException {
+        return getReportCasesAtRisk(caseData, (complianceDeadline) ->  RangeQuery.builder()
+                .field(RANGE_FIELD)
+                .greaterThanOrEqual(complianceDeadline)
+                .build());
+    }
 
-    public String getReport(CaseData caseData) {
+    private String getReportCasesAtRisk(CaseData caseData, Function<LocalDate, RangeQuery> rangeQueryFunction) throws JsonProcessingException {
         CMSReportEventData cmsReportEventData = caseData.getCmsReportEventData();
         String courtId = getCourt(cmsReportEventData);
-        ESQuery esQuery = buildQuery(courtId);
-        log.info("query {}", esQuery.toMap());
-        int count = searchService.searchResultsSize(esQuery);
-        log.info("record count {}", count);
+        LocalDate complianceDeadline = LocalDate.now().minusWeeks(26);
 
-        List<CaseDetails> searchResult = searchService.search(esQuery,
+
+        ESQuery esQuery = buildQuery(courtId, rangeQueryFunction.apply(complianceDeadline));
+        log.info("query {}", esQuery.toMap());
+
+        SearchResult searchResult = searchService.search(esQuery,
                 50,
                 0,
                 buildSortClause());
+        log.info("record count {}", searchResult.getTotal());
 
         int[] counter = new int[]{1};
-
+        ObjectMapper objectMapper = new ObjectMapper();
         StringBuilder result = new StringBuilder();
 
-        for(CaseDetails caseDetails : searchResult) {
-            LocalDate submitApplication = auditEventService.getOldestAuditEventByName(
-                            String.valueOf(caseDetails.getId()),
-                            "submitApplication")
-                    .map(auditEvent -> {
-                        log.info("Created datetime: {}", auditEvent.getCreatedDate());
-                        return auditEvent.getCreatedDate().toLocalDate();
-                    })
-                    .orElseGet(LocalDate::now);
+        LocalDate currentDate = LocalDate.now();
+        for (CaseDetails caseDetails : searchResult.getCases()) {
 
-            result.append(
-                    String.join("",
-                            "<div class='panel panel-border-wide'>",
-                            String.valueOf(counter[0]++),
-                            ".  ",
-                            String.valueOf(caseDetails.getId()),
-                            " - ",
-                            String.valueOf(caseDetails.getState()),
-                            " - ",
-                            String.valueOf(caseDetails.getData().get("familyManCaseNumber")),
-                            " - ",
-                            String.valueOf(caseDetails.getData().get("caseLocalAuthority")),
-                            " - ",
-                            "Submitted on :",
-                            formatLocalDateToString(submitApplication, "dd-MM-yyyy"),
-                            "</div>")
-            );
+            LocalDate dateSubmitted = LocalDate.parse((String) caseDetails.getData().get("dateSubmitted"));
+            log.info("hearing details {}", caseDetails.getData().get("hearingDetails"));
+            Hearings hearing = objectMapper.readValue((String) caseDetails.getData().get("hearingDetails"), Hearings.class);
+
+            Optional<HearingBooking> lastKnowHearing = hearing.hearingDetails.stream()
+                    .filter(hearingDetail -> REQUIRED_HEARING_TYPE.contains(hearingDetail.getValue().getType()))
+                    .map(Element::getValue)
+                    .max(Comparator.comparing(HearingBooking::getStartDate));
+
+            if (lastKnowHearing.isPresent()) {
+                HearingBooking hearingBooking = lastKnowHearing.get();
+                result.append(
+                        String.join("",
+                                "<div class='panel panel-border-wide'>",
+                                String.valueOf(counter[0]++),
+                                ".  ",
+                                String.valueOf(caseDetails.getData().get("familyManCaseNumber")),
+                                " - ",
+                                String.valueOf(caseDetails.getData().get("caseLocalAuthority")),
+                                " - ",
+                                "Last hearing",
+                                "-",
+                                formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), "dd-MM-yyyy"),
+                                "-",
+                                hearingBooking.getType().getLabel(),
+                                "Age of case in weeks",
+                                String.valueOf(ChronoUnit.WEEKS.between(dateSubmitted, currentDate)),
+                                "Expected FH date",
+                                formatLocalDateToString(dateSubmitted.plusWeeks(26),"dd-MM-yyyy"),
+                                "</div>")
+                );
+
+            }
         }
-      /*  search.stream()
-                .forEach(caseDetails -> String.join("",
-                        "<div class='panel panel-border-wide'>",
-                        String.valueOf(counter[0]++),
-                        ".  ",
-                        String.valueOf(caseDetails.getId()),
-                        " - ",
-                        String.valueOf(caseDetails.getState()),
-                        " - ",
-                        String.valueOf(caseDetails.getData().get("familyManCaseNumber")),
-                        " - ",
-                        String.valueOf(caseDetails.getData().get("caseLocalAuthority")),
-                        "</div>"));*/
 
-/*        String result = search.stream()
-                .map(caseDetails -> String.join("",
-                        "<div class='panel panel-border-wide'>",
-                        String.valueOf(counter[0]++),
-                        ".  ",
-                        String.valueOf(caseDetails.getId()),
-                        " - ",
-                        String.valueOf(caseDetails.getState()),
-                        " - ",
-                        String.valueOf(caseDetails.getData().get("familyManCaseNumber")),
-                        " - ",
-                        String.valueOf(caseDetails.getData().get("caseLocalAuthority")),
-                        "</div>")
-                )
-                .collect(Collectors.collectingAndThen(Collectors.toSet(),
-
-                        Object::toString));*/
 
         return String.join("",
                 "Total record count : ",
-                String.valueOf(count),
+                String.valueOf(searchResult.getTotal()),
                 System.lineSeparator(),
                 result);
     }
@@ -124,37 +132,32 @@ public class CMSReportService {
 
     }
 
-    private ESQuery buildQuery(String courtId) {
-        final String field = "state";
-        final MatchQuery openCases = MatchQuery.of(field, State.OPEN.getValue());
-        final MatchQuery deletedCases = MatchQuery.of(field, State.DELETED.getValue());
-        final MatchQuery returnedCases = MatchQuery.of(field, State.RETURNED.getValue());
-        final MatchQuery closedCases = MatchQuery.of(field, State.CLOSED.getValue());
+    private ESQuery buildQuery(String courtId, RangeQuery rangeQuery) {
+        TermQuery termQuery = TermQuery.of(MATCH_FIELD, courtId);
+        TermsQuery termsQuery = TermsQuery.of("state", REQUIRED_STATES);
 
 
-        MustNot mustNot = MustNot.builder()
-                .clauses(List.of(openCases, deletedCases, returnedCases, closedCases))
+        Filter filter = Filter.builder()
+                .termQuery(termQuery)
+                .termsQuery(termsQuery)
+                .rangeQuery(rangeQuery)
                 .build();
 
-
-       Must must = Must.builder()
-                    .clauses(List.of(
-                        MatchQuery.of(MATCH_FIELD, courtId)
-                    ))
-                    .build();
-
-
         return BooleanQuery.builder()
-                .must(must)
-                .mustNot(mustNot)
+                .filter(filter)
                 .build();
     }
 
     private Sort buildSortClause() {
         return Sort.builder()
                 .clauses(List.of(
-                    SortQuery.of(SORT_FIELD, SortOrder.DESC)
+                        SortQuery.of(SORT_FIELD, SortOrder.DESC)
                 ))
                 .build();
     }
+}
+
+@Jacksonized
+class Hearings {
+    List<Element<HearingBooking>> hearingDetails;
 }

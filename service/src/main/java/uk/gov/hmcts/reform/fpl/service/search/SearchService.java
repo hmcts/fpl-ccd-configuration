@@ -38,10 +38,10 @@ public class SearchService {
         return search(query.toQueryContext(size, from).toString()).getCases();
     }
 
-    public List<CaseDetails> search(ESQuery query, int size, int from, Sort sort) {
+    public SearchResult search(ESQuery query, int size, int from, Sort sort) {
         requireNonNull(query);
         log.info("sort query {} ", query.toQueryContext(size, from, sort).toString());
-        return search(query.toQueryContext(size, from, sort).toString()).getCases();
+        return search(query.toQueryContext(size, from, sort).toString());
     }
 
     public List<CaseDetails> search(String property, LocalDate day) {
