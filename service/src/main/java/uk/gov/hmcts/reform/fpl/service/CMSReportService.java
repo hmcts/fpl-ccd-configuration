@@ -42,8 +42,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @Slf4j
 public class CMSReportService {
     private static final String MATCH_FIELD = "data.court.code";
-    private static final String SORT_FIELD = "dateSubmitted";
-    private static final String RANGE_FIELD = "dateSubmitted";
+    private static final String SORT_FIELD = "data.dateSubmitted";
+    private static final String RANGE_FIELD = "data.dateSubmitted";
 
     private final SearchService searchService;
     private final AuditEventService auditEventService;
@@ -143,10 +143,8 @@ public class CMSReportService {
         TermsQuery termsQuery = TermsQuery.of("state", REQUIRED_STATES);
 
 
-        Filter filter = Filter.builder()
-                .termQuery(termQuery)
-                .termsQuery(termsQuery)
-                .rangeQuery(rangeQuery)
+        Filter filter = Filter.builder().
+                clauses(List.of(termQuery, termsQuery, rangeQuery))
                 .build();
 
         return BooleanQuery.builder()
