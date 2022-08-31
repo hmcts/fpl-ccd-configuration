@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Hearings;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.CMSReportEventData;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
@@ -86,7 +87,7 @@ public class CMSReportService {
             log.info("hearing details {}", caseDetails.getData().get("hearingDetails"));
             Hearings hearing = objectMapper.readValue((String) caseDetails.getData().get("hearingDetails"), Hearings.class);
 
-            Optional<HearingBooking> lastKnowHearing = hearing.hearingDetails.stream()
+            Optional<HearingBooking> lastKnowHearing = hearing.getHearingDetails().stream()
                     .filter(hearingDetail -> REQUIRED_HEARING_TYPE.contains(hearingDetail.getValue().getType()))
                     .map(Element::getValue)
                     .max(Comparator.comparing(HearingBooking::getStartDate));
@@ -155,9 +156,4 @@ public class CMSReportService {
                 ))
                 .build();
     }
-}
-
-@Jacksonized
-class Hearings {
-    List<Element<HearingBooking>> hearingDetails;
 }
