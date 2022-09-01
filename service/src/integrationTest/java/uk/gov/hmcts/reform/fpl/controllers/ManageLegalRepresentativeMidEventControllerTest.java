@@ -64,7 +64,7 @@ class ManageLegalRepresentativeMidEventControllerTest extends AbstractCallbackTe
         AboutToStartOrSubmitCallbackResponse actual = postMidEvent(callbackRequest);
 
         assertThat(actual.getErrors()).containsOnly(
-            "Email address for Legal representative is not registered on the system. "
+            "Email address for LA counsel/External solicitor is not registered on the system. "
                 + "They can register at "
                 + "https://manage-org.platform.hmcts.net/register-org/register"
         );

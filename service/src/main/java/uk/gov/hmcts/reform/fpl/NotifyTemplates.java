@@ -15,7 +15,7 @@ public final class NotifyTemplates {
     public static final String INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS
         = "62791aee-6caf-4a22-a599-fcfc4381ba20";
     public static final String INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC
-        = "d5f41125-76d0-43f9-971b-fe1ff6a26acf";
+        = "ec65728e-39da-4a04-b1df-66363f4d858d";
     public static final String INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE
         = "3284c63a-b88f-4a20-979a-ea7d017b45aa";
     public static final String ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES =
@@ -90,4 +90,5 @@ public final class NotifyTemplates {
     public static final String PLACEMENT_NOTICE_UPLOADED_TEMPLATE = "6a0e419a-7b14-4227-9363-6612c3dcafad";
     public static final String PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE = "9d828e63-0b06-40c3-bd20-473ef8f0f2a8";
     public static final String CASE_TRANSFERRED_TO_ANOTHER_COURT_TEMPLATE = "b845848e-1376-4c9b-bfe3-e48615ab4891";
+    public static final String APPLICATION_FORM_REMOVED_CTSC_LEAD_TEMPLATE = "6aafe553-a493-477a-8599-4321506bc217";
 }

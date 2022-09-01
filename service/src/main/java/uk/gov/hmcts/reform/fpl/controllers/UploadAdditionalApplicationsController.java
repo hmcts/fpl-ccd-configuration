@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsPbaPaymentNotTakenEvent;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
-import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersUploaded;
+import uk.gov.hmcts.reform.fpl.events.order.AdditonalAppLicationDraftOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
@@ -163,15 +163,16 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         final AdditionalApplicationsBundle lastBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
 
         final PBAPayment pbaPayment = lastBundle.getPbaPayment();
 
-        publishEvent(new AdditionalApplicationsUploadedEvent(caseData, getCaseDataBefore(callbackRequest),
+        publishEvent(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore,
             applicantsListGenerator.getApplicant(caseData, lastBundle)));
 
-        publishEvent(new DraftOrdersUploaded(caseData));
+        publishEvent(new AdditonalAppLicationDraftOrderUploadedEvent(caseData, caseDataBefore));
 
         if (isNotPaidByPba(pbaPayment)) {
             log.info("Payment for case {} not taken due to user decision", caseDetails.getId());

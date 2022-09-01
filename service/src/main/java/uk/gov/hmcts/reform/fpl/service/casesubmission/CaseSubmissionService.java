@@ -9,8 +9,8 @@ import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC16Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.CaseSubmissionGenerationService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
@@ -53,8 +53,18 @@ public class CaseSubmissionService {
         return uploadDocumentService.uploadPDF(document.getBytes(), buildFileName(caseData, isDraft, template));
     }
 
-    public Document generateSupplementPDF(final CaseData caseData, final boolean isDraft, DocmosisTemplates template) {
-        DocmosisC16Supplement supplementData = documentGenerationService.getC16SupplementData(caseData, isDraft);
+    public Document generateC1SupplementPDF(final CaseData caseData, final boolean isDraft) {
+        if (caseData.isSecureAccommodationOrderType()) {
+            return generateSupplementPDF(caseData, isDraft, DocmosisTemplates.C20_SUPPLEMENT,
+                documentGenerationService.getC20SupplementData(caseData, isDraft));
+        } else {
+            return generateSupplementPDF(caseData, isDraft, DocmosisTemplates.C16_SUPPLEMENT,
+                documentGenerationService.getC16SupplementData(caseData, isDraft));
+        }
+    }
+
+    public Document generateSupplementPDF(final CaseData caseData, final boolean isDraft, DocmosisTemplates template,
+                                          DocmosisData supplementData) {
         Language applicationLanguage = Optional.ofNullable(caseData.getC110A().getLanguageRequirementApplication())
             .orElse(Language.ENGLISH);
 
