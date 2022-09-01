@@ -36,7 +36,7 @@
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "removableType=\"APPLICATION\""
+    "FieldShowCondition": "removableType=\"ADDITIONAL_APPLICATION\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -49,7 +49,8 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "orderTitleToBeRemoved=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "orderTitleToBeRemoved=\"DO_NOT_SHOW\"",
+    "PageShowCondition": "removableType=\"ORDER\" OR removableType=\"ADDITIONAL_APPLICATION\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -88,7 +89,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "removableType=\"APPLICATION\""
+    "FieldShowCondition": "removableType=\"ADDITIONAL_APPLICATION\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -127,7 +128,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "removableType=\"APPLICATION\""
+    "FieldShowCondition": "removableType=\"ADDITIONAL_APPLICATION\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -166,7 +167,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "removableType=\"APPLICATION\""
+    "FieldShowCondition": "removableType=\"ADDITIONAL_APPLICATION\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -179,7 +180,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "removableType=\"APPLICATION\""
+    "FieldShowCondition": "removableType=\"ADDITIONAL_APPLICATION\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -192,7 +193,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "removableType=\"APPLICATION\""
+    "FieldShowCondition": "removableType=\"ADDITIONAL_APPLICATION\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -257,7 +258,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "removableType=\"APPLICATION\""
+    "FieldShowCondition": "removableType=\"ADDITIONAL_APPLICATION\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -271,5 +272,30 @@
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
     "FieldShowCondition": "reasonToRemoveApplication=\"OTHER\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "removeOrder",
+    "CaseFieldID": "removeApplicationFormLabel",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "RemoveApplicationForm",
+    "PageDisplayOrder": 3,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
+    "PageShowCondition": "removableType=\"APPLICATION\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "removeOrder",
+    "CaseFieldID": "reasonToRemoveApplicationForm",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY",
+    "PageID": "RemoveApplicationForm",
+    "PageDisplayOrder": 3,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   }
 ]

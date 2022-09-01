@@ -22,8 +22,5 @@ public class CaseRoleLookupService {
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(Collectors.toList());
-
-
     }
-
 }
