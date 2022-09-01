@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.jackson.Jacksonized;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -11,7 +9,6 @@ import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Hearings;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.CMSReportEventData;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
@@ -47,6 +44,7 @@ public class CMSReportService {
 
     private final SearchService searchService;
     private final AuditEventService auditEventService;
+    private final CaseConverter converter;
     private final static List<HearingType> REQUIRED_HEARING_TYPE = List.of(
             CASE_MANAGEMENT, ISSUE_RESOLUTION, FINAL
     );
@@ -66,8 +64,8 @@ public class CMSReportService {
         }
     }
 
-    private String getReportCasesAtRisk(CaseData caseData, Function<LocalDate, RangeQuery> rangeQueryFunction) throws JsonProcessingException {
-        CMSReportEventData cmsReportEventData = caseData.getCmsReportEventData();
+    private String getReportCasesAtRisk(CaseData caseDataSelected, Function<LocalDate, RangeQuery> rangeQueryFunction) throws JsonProcessingException {
+        CMSReportEventData cmsReportEventData = caseDataSelected.getCmsReportEventData();
         String courtId = getCourt(cmsReportEventData);
         LocalDate complianceDeadline = LocalDate.now().minusWeeks(26);
 
@@ -82,17 +80,18 @@ public class CMSReportService {
         log.info("record count {}", searchResult.getTotal());
 
         int[] counter = new int[]{1};
-        ObjectMapper objectMapper = new ObjectMapper();
-        StringBuilder result = new StringBuilder();
 
+        StringBuilder result = new StringBuilder();
         LocalDate currentDate = LocalDate.now();
         for (CaseDetails caseDetails : searchResult.getCases()) {
+            CaseData caseData = converter.convert(caseDetails);
 
-            LocalDate dateSubmitted = LocalDate.parse((String) caseDetails.getData().get("dateSubmitted"));
-            log.info("hearing details {}", caseDetails.getData().get("hearingDetails"));
-            Hearings hearing = objectMapper.readValue((String) caseDetails.getData().get("hearingDetails"), Hearings.class);
+            LocalDate dateSubmitted = caseData.getDateSubmitted();
 
-            Optional<HearingBooking> lastKnowHearing = hearing.getHearingDetails().stream()
+            List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
+
+
+            Optional<HearingBooking> lastKnowHearing = hearingDetails.stream()
                     .filter(hearingDetail -> REQUIRED_HEARING_TYPE.contains(hearingDetail.getValue().getType()))
                     .map(Element::getValue)
                     .max(Comparator.comparing(HearingBooking::getStartDate));
