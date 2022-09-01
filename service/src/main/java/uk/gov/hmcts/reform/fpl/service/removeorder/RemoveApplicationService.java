@@ -79,7 +79,8 @@ public class RemoveApplicationService {
         caseData.getAdditionalApplicationsBundle().remove(bundleElement);
         caseDetailsMap.putIfNotEmpty("additionalApplicationsBundle", caseData.getAdditionalApplicationsBundle());
 
-        List<Element<AdditionalApplicationsBundle>> hiddenApplications = caseData.getHiddenApplicationsBundle();
+        List<Element<AdditionalApplicationsBundle>> hiddenApplications = caseData.getRemovalToolData()
+            .getHiddenApplicationsBundle();
         bundleElement.getValue().setRemovalReason(getReasonToRemove(caseData));
         hiddenApplications.add(bundleElement);
         caseDetailsMap.put("hiddenApplicationsBundle", hiddenApplications);
@@ -142,10 +143,10 @@ public class RemoveApplicationService {
     }
 
     private String getReasonToRemove(CaseData caseData) {
-        if (caseData.getReasonToRemoveApplication() == OTHER) {
-            return caseData.getApplicationRemovalDetails();
+        if (caseData.getRemovalToolData().getReasonToRemoveApplication() == OTHER) {
+            return caseData.getRemovalToolData().getApplicationRemovalDetails();
         } else {
-            return caseData.getReasonToRemoveApplication().toString();
+            return caseData.getRemovalToolData().getReasonToRemoveApplication().toString();
         }
     }
 

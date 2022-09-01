@@ -36,6 +36,7 @@ public class C110A implements TranslatableItem {
     String languageRequirementApplicationNeedEnglish;
     DocumentReference submittedForm;
     DocumentReference translatedSubmittedForm;
+    DocumentReference supplementDocument;
     LocalDateTime submittedFormTranslationUploadDateTime;
     LanguageTranslationRequirement submittedFormTranslationRequirements;
 
