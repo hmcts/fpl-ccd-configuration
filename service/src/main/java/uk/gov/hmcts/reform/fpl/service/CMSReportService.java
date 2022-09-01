@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.CMSReportEventData;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.BooleanQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Filter;
@@ -90,36 +91,40 @@ public class CMSReportService {
 
             List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
 
-
-            Optional<HearingBooking> lastKnowHearing = hearingDetails.stream()
+            Optional<HearingBooking> lastKnowHearing = ElementUtils.nullSafeCollection(hearingDetails).stream()
                     .filter(hearingDetail -> REQUIRED_HEARING_TYPE.contains(hearingDetail.getValue().getType()))
                     .map(Element::getValue)
                     .max(Comparator.comparing(HearingBooking::getStartDate));
 
+            String lastHearingDate = "";
+            String hearingType = "";
             if (lastKnowHearing.isPresent()) {
                 HearingBooking hearingBooking = lastKnowHearing.get();
-                result.append(
-                        String.join("",
-                                "<div class='panel panel-border-wide'>",
-                                String.valueOf(counter[0]++),
-                                ".  ",
-                                String.valueOf(caseDetails.getData().get("familyManCaseNumber")),
-                                " - ",
-                                String.valueOf(caseDetails.getData().get("caseLocalAuthority")),
-                                " - ",
-                                "Last hearing",
-                                "-",
-                                formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), "dd-MM-yyyy"),
-                                "-",
-                                hearingBooking.getType().getLabel(),
-                                "Age of case in weeks",
-                                String.valueOf(ChronoUnit.WEEKS.between(dateSubmitted, currentDate)),
-                                "Expected FH date",
-                                formatLocalDateToString(dateSubmitted.plusWeeks(26),"dd-MM-yyyy"),
-                                "</div>")
-                );
-
+                lastHearingDate = formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), "dd-MM-yyyy");
+                hearingType = hearingBooking.getType().getLabel();
             }
+
+
+            result.append(
+                String.join("",
+                    "<div class='panel panel-border-wide'>",
+                    String.valueOf(counter[0]++),
+                    ".  ",
+                    String.valueOf(caseDetails.getData().get("familyManCaseNumber")),
+                    " - ",
+                    String.valueOf(caseDetails.getData().get("caseLocalAuthority")),
+                    " - ",
+                    "Last hearing",
+                    "-",
+                    lastHearingDate,
+                    "-",
+                    hearingType,
+                    "Age of case in weeks",
+                    String.valueOf(ChronoUnit.WEEKS.between(dateSubmitted, currentDate)),
+                    "Expected FH date",
+                    formatLocalDateToString(dateSubmitted.plusWeeks(26),"dd-MM-yyyy"),
+                    "</div>")
+            );
         }
 
 
