@@ -109,8 +109,8 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
         assertThat(String.valueOf(response.getData().get("hasRespondentsOrOthers"))).isEqualTo("Yes");
         assertThat(String.valueOf(response.getData().get("people_label"))).contains(
-            "Person 1: Respondent 1 - John Smith\nPerson 2: Other 1 - test1\nPerson 3: Other 2 - test2\n");
-        assertThat(extractCaseData(response).getPersonSelector()).isEqualTo(Selector.newSelector(3));
+            "Person 1: Respondent 1 - John Smith");
+        assertThat(extractCaseData(response).getPersonSelector()).isEqualTo(Selector.newSelector(1));
     }
 
     @Test
