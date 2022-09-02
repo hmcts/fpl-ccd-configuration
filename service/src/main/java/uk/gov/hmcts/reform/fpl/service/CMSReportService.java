@@ -83,6 +83,30 @@ public class CMSReportService {
         int[] counter = new int[]{1};
 
         StringBuilder result = new StringBuilder();
+        if (searchResult.getTotal() > 0) {
+            result.append("<table>")
+                    .append("<tr>")
+                    .append("<th class='search-result-column-label'>")
+                    .append("Case Number")
+                    .append("</th>")
+                    .append("<th class='search-result-column-label'>")
+                    .append("Receipt date")
+                    .append("</th>")
+                    .append("<th class='search-result-column-label'>")
+                    .append("Last hearing")
+                    .append("</th>")
+                    .append("<th class='search-result-column-label'>")
+                    .append("Age of </br>case</br>(weeks)")
+                    .append("</th>")
+                    .append("<th class='search-result-column-label'>")
+                    .append("PLO stage")
+                    .append("</th>")
+                    .append("<th class='search-result-column-label'>")
+                    .append("Expected FH date")
+                    .append("</th>")
+                    .append("</tr>");
+        }
+
         LocalDate currentDate = LocalDate.now();
         for (CaseDetails caseDetails : searchResult.getCases()) {
             CaseData caseData = converter.convert(caseDetails);
@@ -106,25 +130,20 @@ public class CMSReportService {
 
 
             result.append(
-                String.join("",
-                    "<div class='panel panel-border-wide'>",
-                    String.valueOf(counter[0]++),
-                    ".  ",
-                    String.valueOf(caseDetails.getData().get("familyManCaseNumber")),
-                    " - ",
-                    String.valueOf(caseDetails.getData().get("caseLocalAuthority")),
-                    " - ",
-                    "Last hearing",
-                    "-",
+                String.join("</td><td class='search-result-column-cell'>",
+                    "<tr><td class='search-result-column-cell'>",
+                    String.valueOf(caseData.getFamilyManCaseNumber()),
+                    formatLocalDateToString(dateSubmitted,"dd-MM-yyyy"),
                     lastHearingDate,
-                    "-",
-                    hearingType,
-                    "Age of case in weeks",
                     String.valueOf(ChronoUnit.WEEKS.between(dateSubmitted, currentDate)),
-                    "Expected FH date",
+                    hearingType,
                     formatLocalDateToString(dateSubmitted.plusWeeks(26),"dd-MM-yyyy"),
-                    "</div>")
+                    "</td></tr>")
             );
+        }
+
+        if (searchResult.getTotal() > 0) {
+            result.append("</table>");
         }
 
 
