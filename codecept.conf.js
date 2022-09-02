@@ -159,13 +159,13 @@ exports.config = {
       'mocha-junit-reporter': {
         stdout: '-',
         options: {
-          mochaFile: 'test-results/result.xml',
+          mochaFile: process.env.REPORT_FILE || 'test-results/functional/result.xml',
         },
       },
       'mochawesome': {
         stdout: '-',
         options: {
-          reportDir: './output',
+          reportDir: process.env.REPORT_DIR || 'test-results/functional',
           inlineAssets: true,
           json: false,
         },
