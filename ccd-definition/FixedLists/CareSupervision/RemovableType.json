@@ -9,8 +9,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "RemovableType",
-    "ListElementCode": "APPLICATION",
-    "ListElement": "Application",
+    "ListElementCode": "ADDITIONAL_APPLICATION",
+    "ListElement": "Additional Application",
     "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RemovableType",
+    "ListElementCode": "APPLICATION",
+    "ListElement": "Main Application Form",
+    "DisplayOrder": 3
   }
 ]

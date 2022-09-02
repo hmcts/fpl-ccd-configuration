@@ -44,14 +44,15 @@ public class SDORemovalAction implements OrderRemovalAction {
         StandardDirectionOrder standardDirectionOrder = (StandardDirectionOrder) removableOrder;
 
         standardDirectionOrder = standardDirectionOrder.toBuilder()
-            .removalReason(caseData.getReasonToRemoveOrder())
+            .removalReason(caseData.getRemovalToolData().getReasonToRemoveOrder())
             .judgeAndLegalAdvisor(null)
             .build();
 
         data.remove("standardDirectionOrder");
         data.remove("noticeOfProceedingsBundle");
 
-        List<Element<StandardDirectionOrder>> hiddenSDOs = caseData.getHiddenStandardDirectionOrders();
+        List<Element<StandardDirectionOrder>> hiddenSDOs = caseData.getRemovalToolData()
+            .getHiddenStandardDirectionOrders();
 
         hiddenSDOs.add(element(identityService.generateId(), standardDirectionOrder));
 
