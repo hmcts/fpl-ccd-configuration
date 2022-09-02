@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
@@ -102,15 +103,24 @@ public class CaseInitiationService {
         Optional<String> outsourcingLA = dynamicLists.getSelectedValue(caseData.getOutsourcingLAs());
         Optional<String> userLA = localAuthorities.getLocalAuthorityCode();
         Optional<String> caseLA = outsourcingLA.isPresent() ? outsourcingLA : userLA;
+        RepresentativeType representativeType = caseData.getRepresentativeType();
 
         boolean userInMO = userOrg.isPresent();
         boolean userInLA = userLA.isPresent();
         boolean caseOutsourced = outsourcingLA.isPresent() && !outsourcingLA.equals(userLA);
+        boolean isLocalAuthority = representativeType.equals(RepresentativeType.LOCAL_AUTHORITY);
 
         log.info("userOrg: {}, userLA: {} and outsourcingLA: {}",
             userOrg.map(Organisation::getOrganisationIdentifier).orElse(NOT_PRESENT),
             userLA.orElse(NOT_PRESENT),
             outsourcingLA.orElse(NOT_PRESENT));
+
+        if (userInMO && !userInLA && !caseOutsourced && isLocalAuthority) {
+            return List.of(
+                "Email not recognised.",
+                "Your email is not associated with a local authority.",
+                "Email MyHMCTSsupport@justice.gov.uk for further guidance.");
+        }
 
         if (!userInMO) {
             if (!userInLA && !caseOutsourced) {
