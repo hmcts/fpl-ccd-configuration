@@ -121,6 +121,8 @@ class CaseSubmissionCheckerTest {
                 "In the orders and directions sought section:",
                 "• Orders needed error 1",
                 "• Orders needed error 2",
+                "In the hearing urgency section:",
+                "• Hearing needed error",
                 "In the grounds for the application section:",
                 "• Grounds for application error",
                 "In the applicant's details section:",
