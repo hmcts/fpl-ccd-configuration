@@ -75,10 +75,9 @@ public class UploadAdditionalApplicationsService {
         final String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
         final LocalDateTime now = time.now();
 
-        List<Element<Other>> selectedOthers = peopleInCaseService.getSelectedOthers(caseData);
         List<Element<Respondent>> selectedRespondents = peopleInCaseService.getSelectedRespondents(caseData);
         String othersNotified = peopleInCaseService.getPeopleNotified(
-            caseData.getRepresentatives(), selectedRespondents, selectedOthers
+            caseData.getRepresentatives(), selectedRespondents, null
         );
 
         AdditionalApplicationsBundleBuilder additionalApplicationsBundleBuilder = AdditionalApplicationsBundle.builder()
@@ -90,13 +89,13 @@ public class UploadAdditionalApplicationsService {
         List<AdditionalApplicationType> additionalApplicationTypeList = caseData.getAdditionalApplicationType();
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.C2_ORDER)) {
             additionalApplicationsBundleBuilder.c2DocumentBundle(buildC2DocumentBundle(
-                caseData, applicantName, selectedOthers, selectedRespondents, othersNotified, uploadedBy, now
+                caseData, applicantName, null, selectedRespondents, othersNotified, uploadedBy, now
             ));
         }
 
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.OTHER_ORDER)) {
             additionalApplicationsBundleBuilder.otherApplicationsBundle(buildOtherApplicationsBundle(
-                caseData, applicantName, selectedOthers, selectedRespondents, othersNotified, uploadedBy, now
+                caseData, applicantName, null, selectedRespondents, othersNotified, uploadedBy, now
             ));
         }
 

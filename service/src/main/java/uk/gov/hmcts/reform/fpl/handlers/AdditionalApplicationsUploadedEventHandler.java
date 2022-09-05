@@ -127,17 +127,12 @@ public class AdditionalApplicationsUploadedEventHandler {
     private Set<Recipient> getRecipientsToNotifyByPost(CaseData caseData, AdditionalApplicationsBundle uploadedBundle) {
         Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
 
-        List<Element<Other>> selectedOthers = getOthersSelected(uploadedBundle);
         List<Element<Respondent>> selectedRespondents = getRespondentsSelected(uploadedBundle);
 
-        allRecipients.removeAll(otherRecipientsInbox.getNonSelectedRecipients(
-            POST, caseData, selectedOthers, Element::getValue
-        ));
         allRecipients.removeAll(representativesInbox.getNonSelectedRespondentRecipientsByPost(
             caseData, selectedRespondents
         ));
 
-        allRecipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(selectedOthers));
         allRecipients.addAll(representativesInbox.getSelectedRecipientsWithNoRepresentation(selectedRespondents));
 
         return allRecipients;
