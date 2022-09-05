@@ -10,7 +10,9 @@ import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
 import uk.gov.hmcts.reform.fpl.service.validators.EventsChecker;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
@@ -114,5 +116,13 @@ public class TaskListService {
         }
 
         return events;
+    }
+
+    public Map<Event, String> getTaskHints(CaseData caseData) {
+        Map<Event, String> taskHintsMap = new HashMap<>();
+        if (caseData.isC1Application() && !caseData.isRefuseContactWithChildApplication()) {
+            taskHintsMap.put(HEARING_URGENCY, "Optional for C1 applications");
+        }
+        return taskHintsMap;
     }
 }

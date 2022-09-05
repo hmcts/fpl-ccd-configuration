@@ -70,13 +70,14 @@ class CaseEventHandlerTest {
 
         when(caseSubmissionChecker.validateAsGroups(caseData)).thenReturn(eventsErrors);
         when(taskListService.getTasksForOpenCase(caseData)).thenReturn(tasks);
-        when(taskListRenderer.render(tasks, eventsErrors, Optional.empty())).thenReturn(renderedTaskLists);
+        when(taskListRenderer.render(tasks, eventsErrors, Optional.empty(), Optional.empty()))
+            .thenReturn(renderedTaskLists);
 
         caseEventHandler.handleCaseDataChange(caseDataChanged);
 
         verify(taskListService).getTasksForOpenCase(caseData);
         verify(caseSubmissionChecker).validateAsGroups(caseData);
-        verify(taskListRenderer).render(tasks, eventsErrors, Optional.empty());
+        verify(taskListRenderer).render(tasks, eventsErrors, Optional.empty(), Optional.empty());
 
         verify(coreCaseDataService).triggerEvent(
             JURISDICTION,

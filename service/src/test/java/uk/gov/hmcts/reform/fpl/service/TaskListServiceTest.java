@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -16,7 +17,9 @@ import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
 import uk.gov.hmcts.reform.fpl.service.validators.EventsChecker;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -367,6 +370,36 @@ class TaskListServiceTest {
             assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
 
             verify(eventsChecker, never()).completedState(any(Event.class));
+        }
+    }
+
+    @Nested
+    class TaskHints {
+        @Test
+        void shouldNotReturnTaskHIntsIfNotC1() {
+            when(caseData.isC1Application())
+                .thenReturn(false);
+
+            final Map<Event, String> actualTaskHints = taskListService.getTaskHints(caseData);
+            assertThat(actualTaskHints).isNullOrEmpty();
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldReturnTaskHintsIfC1ButNotAuthorityRefuseContactWithChildApplication(
+            boolean isAuthorityRefuseContactWithChildApplication) {
+            when(caseData.isC1Application())
+                .thenReturn(true);
+            when(caseData.isRefuseContactWithChildApplication())
+                .thenReturn(isAuthorityRefuseContactWithChildApplication);
+
+            final Map<Event, String> actualTaskHints = taskListService.getTaskHints(caseData);
+            final Map<Event, String> expectedTaskHints = new HashMap<>();
+            if (!isAuthorityRefuseContactWithChildApplication) {
+                expectedTaskHints.put(HEARING_URGENCY, "Optional for C1 applications");
+            }
+
+            assertThat(actualTaskHints).containsAllEntriesOf(expectedTaskHints);
         }
     }
 
