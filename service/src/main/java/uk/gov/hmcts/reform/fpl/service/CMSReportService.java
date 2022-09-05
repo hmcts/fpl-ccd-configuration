@@ -44,7 +44,6 @@ public class CMSReportService {
     private static final String RANGE_FIELD = "data.dateSubmitted";
 
     private final SearchService searchService;
-    private final AuditEventService auditEventService;
     private final CaseConverter converter;
     private final static List<HearingType> REQUIRED_HEARING_TYPE = List.of(
             CASE_MANAGEMENT, ISSUE_RESOLUTION, FINAL
@@ -52,6 +51,16 @@ public class CMSReportService {
     private final static List<String> REQUIRED_STATES = List.of (
             "submitted","gatekeeping","prepare_for_hearing","final_hearing"
     );
+
+    Function<String, String> headerField = fieldName ->  String.join("",
+            "<th class='search-result-column-label'>",
+            fieldName,
+            "</th>");
+
+    Function<String, String> cellField = fieldName ->  String.join("",
+            "<td class='search-result-column-cell'>",
+            fieldName,
+            "</td>");
 
     public String getReport(CaseData caseData)  {
         try {
@@ -84,26 +93,15 @@ public class CMSReportService {
 
         StringBuilder result = new StringBuilder();
         if (searchResult.getTotal() > 0) {
-            result.append("<table>")
+            result.append("<html><table>")
                     .append("<tr>")
-                    .append("<th class='search-result-column-label'>")
-                    .append("Case Number")
-                    .append("</th>")
-                    .append("<th class='search-result-column-label'>")
-                    .append("Receipt date")
-                    .append("</th>")
-                    .append("<th class='search-result-column-label'>")
-                    .append("Last hearing")
-                    .append("</th>")
-                    .append("<th class='search-result-column-label'>")
-                    .append("Age of </br>case</br>(weeks)")
-                    .append("</th>")
-                    .append("<th class='search-result-column-label'>")
-                    .append("PLO stage")
-                    .append("</th>")
-                    .append("<th class='search-result-column-label'>")
-                    .append("Expected FH date")
-                    .append("</th>")
+                    .append(headerField.apply("Sr no."))
+                    .append(headerField.apply("Case Number"))
+                    .append(headerField.apply("Receipt date"))
+                    .append(headerField.apply("Last hearing"))
+                    .append(headerField.apply("Age of </br>case</br>(weeks)"))
+                    .append(headerField.apply("PLO stage"))
+                    .append(headerField.apply("Expected FH date"))
                     .append("</tr>");
         }
 
@@ -128,22 +126,22 @@ public class CMSReportService {
                 hearingType = hearingBooking.getType().getLabel();
             }
 
-
             result.append(
-                String.join("</td><td class='search-result-column-cell'>",
-                    "<tr><td class='search-result-column-cell'>",
-                    String.valueOf(caseData.getFamilyManCaseNumber()),
-                    formatLocalDateToString(dateSubmitted,"dd-MM-yyyy"),
-                    lastHearingDate,
-                    String.valueOf(ChronoUnit.WEEKS.between(dateSubmitted, currentDate)),
-                    hearingType,
-                    formatLocalDateToString(dateSubmitted.plusWeeks(26),"dd-MM-yyyy"),
-                    "</td></tr>")
+                String.join("",
+                    "<tr>",
+                    cellField.apply(String.valueOf(counter[0]++)),
+                    cellField.apply(String.valueOf(caseData.getFamilyManCaseNumber())),
+                    cellField.apply(formatLocalDateToString(dateSubmitted,"dd-MM-yyyy")),
+                    cellField.apply(lastHearingDate),
+                    cellField.apply(String.valueOf(ChronoUnit.WEEKS.between(dateSubmitted, currentDate))),
+                    cellField.apply(hearingType),
+                    cellField.apply(formatLocalDateToString(dateSubmitted.plusWeeks(26),"dd-MM-yyyy")),
+                    "</tr>")
             );
         }
 
         if (searchResult.getTotal() > 0) {
-            result.append("</table>");
+            result.append("</table></html>");
         }
 
 
@@ -178,7 +176,7 @@ public class CMSReportService {
     private Sort buildSortClause() {
         return Sort.builder()
                 .clauses(List.of(
-                        SortQuery.of(SORT_FIELD, SortOrder.DESC)
+                    SortQuery.of(SORT_FIELD, SortOrder.DESC)
                 ))
                 .build();
     }
