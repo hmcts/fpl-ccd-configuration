@@ -183,7 +183,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageLegalRepresentativesLink",
     "FieldType": "Label",
-    "Label": "[Add Counsel/external solicitor](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/manageLegalRepresentatives)",
+    "Label": "[Add counsel/external solicitor](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/manageLegalRepresentatives)",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

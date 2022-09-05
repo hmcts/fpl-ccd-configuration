@@ -127,7 +127,7 @@ module.exports = {
     approveOrders: 'Approve orders',
     allocatedJudge: 'Allocated Judge',
     extend26WeekTimeline: 'Extend 26-week timeline',
-    manageLegalRepresentatives: 'Add Counsel/external solicitor',
+    manageLegalRepresentatives: 'Add counsel/external solicitor',
     addApplicationDocuments: 'Application documents',
     manageDocumentsLA: 'Manage documents',
     messageJudge: 'Send and reply to messages',
