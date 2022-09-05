@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
+import uk.gov.hmcts.reform.fpl.model.RemovalToolData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -89,7 +90,9 @@ class SDORemovalActionTest {
         NoticeOfProceedings noticeOfProceedings = NoticeOfProceedings.builder().build();
 
         CaseData caseData = CaseData.builder()
-            .reasonToRemoveOrder(REASON)
+            .removalToolData(RemovalToolData.builder()
+                .reasonToRemoveOrder(REASON)
+                .build())
             .standardDirectionOrder(standardDirectionOrder)
             .noticeOfProceedings(noticeOfProceedings)
             .build();
@@ -130,7 +133,9 @@ class SDORemovalActionTest {
         NoticeOfProceedings noticeOfProceedings = NoticeOfProceedings.builder().build();
 
         CaseData caseData = CaseData.builder()
-            .reasonToRemoveOrder(REASON)
+            .removalToolData(RemovalToolData.builder()
+                .reasonToRemoveOrder(REASON)
+                .build())
             .standardDirectionOrder(standardDirectionOrder)
             .noticeOfProceedings(noticeOfProceedings)
             .build();
@@ -185,9 +190,11 @@ class SDORemovalActionTest {
         hiddenSDOs.add(element(SDO_ID, previouslyRemovedSDO));
 
         CaseData caseData = CaseData.builder()
-            .reasonToRemoveOrder(REASON)
+            .removalToolData(RemovalToolData.builder()
+                .reasonToRemoveOrder(REASON)
+                .hiddenStandardDirectionOrders(hiddenSDOs)
+                .build())
             .standardDirectionOrder(standardDirectionOrder)
-            .hiddenStandardDirectionOrders(hiddenSDOs)
             .noticeOfProceedings(noticeOfProceedings)
             .build();
 

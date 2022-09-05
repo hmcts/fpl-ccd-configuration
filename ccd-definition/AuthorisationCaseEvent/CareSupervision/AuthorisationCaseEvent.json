@@ -1579,5 +1579,23 @@
         "CRUD": "R"
       }
     ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addColleaguesToNotify",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]", "[SOLICITORE]",
+          "[SOLICITORF]","[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]",
+          "[CHILDSOLICITORA]", "[CHILDSOLICITORB]", "[CHILDSOLICITORC]", "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]", "[CHILDSOLICITORF]", "[CHILDSOLICITORG]", "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]", "[CHILDSOLICITORJ]", "[CHILDSOLICITORK]", "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]", "[CHILDSOLICITORN]", "[CHILDSOLICITORO]"
+        ],
+        "CRUD": "CR"
+      }
+    ]
   }
 ]

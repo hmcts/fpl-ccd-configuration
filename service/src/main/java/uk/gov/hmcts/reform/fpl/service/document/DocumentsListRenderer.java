@@ -87,6 +87,10 @@ class DocumentsListRenderer {
             documentFields.add(Pair.of("Included in SWET", documentView.getIncludedInSWET()));
         }
 
+        if (isNotEmpty(documentView.getExpertReportType())) {
+            documentFields.add(Pair.of("Expert report type", documentView.getExpertReportType()));
+        }
+
         if (documentView.isIncludeDocumentName() && isNotEmpty(documentView.getDocumentName())) {
             documentFields.add(Pair.of("Document name", documentView.getDocumentName()));
         }
