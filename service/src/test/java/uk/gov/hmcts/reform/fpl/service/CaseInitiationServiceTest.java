@@ -657,12 +657,14 @@ class CaseInitiationServiceTest {
         return CaseData.builder()
             .outsourcingLAs(localAuthority.code)
             .outsourcingType(outsourcingType)
+            .representativeType(RepresentativeType.LOCAL_AUTHORITY)
             .build();
     }
 
     private CaseData givenCaseNotOutsourced() {
         return CaseData.builder()
             .outsourcingLAs(null)
+            .representativeType(RepresentativeType.LOCAL_AUTHORITY)
             .build();
     }
 
