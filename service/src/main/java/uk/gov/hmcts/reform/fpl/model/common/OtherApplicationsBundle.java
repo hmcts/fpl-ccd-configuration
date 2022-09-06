@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType;
-import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;

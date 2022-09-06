@@ -22,16 +22,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static java.util.function.Predicate.not;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))

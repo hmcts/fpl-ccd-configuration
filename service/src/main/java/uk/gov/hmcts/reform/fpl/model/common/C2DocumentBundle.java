@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType;
-import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;

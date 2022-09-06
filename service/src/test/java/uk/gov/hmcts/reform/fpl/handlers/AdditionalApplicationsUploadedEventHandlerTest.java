@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.enums.ApplicantType;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
-import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -42,11 +41,9 @@ import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.AdditionalApplicationsUploadedEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -73,7 +70,6 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
@@ -377,7 +373,8 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA)
         );
 
-        verify(sendDocumentService).sendDocuments(caseData, documents, List.of(representative1, representative2, representative3));
+        verify(sendDocumentService).sendDocuments(caseData, documents,
+            List.of(representative1, representative2, representative3));
         verifyNoInteractions(notificationService);
     }
 
