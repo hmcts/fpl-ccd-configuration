@@ -115,14 +115,6 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                 .party(RespondentParty.builder().firstName("Margaret").lastName("Jones").build())
                 .build()
             ))
-            .others(Others.builder()
-                .firstOther(
-                    Other.builder().name("Tim Jones").address(Address.builder().postcode("SE1").build()).build()
-                )
-                .additionalOthers(wrapElements(
-                    Other.builder().name("Stephen Jones").address(Address.builder().postcode("SW2").build()).build()
-                ))
-                .build())
             .personSelector(Selector.newSelector(3))
             .notifyApplicationsToAllOthers(YesNo.YES.getValue()).build();
 
@@ -136,12 +128,6 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertC2DocumentBundle(uploadedC2DocumentBundle);
         assertThat(uploadedC2DocumentBundle.getApplicantName()).isEqualTo(LOCAL_AUTHORITY_NAME);
         assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(temporaryPbaPayment);
-
-        assertThat(uploadedC2DocumentBundle.getOthersNotified()).contains("Margaret Jones, Tim Jones, Stephen Jones");
-        assertThat(unwrapElements(uploadedC2DocumentBundle.getOthers())).contains(
-            updatedCaseData.getOthers().getFirstOther(),
-            updatedCaseData.getOthers().getAdditionalOthers().get(0).getValue()
-        );
 
         assertTemporaryFieldsAreRemoved(updatedCaseData);
     }
@@ -170,14 +156,6 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .otherApplicant(OTHER_APPLICANT_NAME)
             .representatives(List.of(representative))
             .respondents1(List.of(respondentElement))
-            .others(Others.builder()
-                .firstOther(
-                    Other.builder().name("Stephen Miller").address(Address.builder().postcode("SE1").build()).build()
-                )
-                .additionalOthers(wrapElements(
-                    Other.builder().name("Alex Smith").address(Address.builder().postcode("SE2").build()).build()
-                ))
-                .build())
             .personSelector(personSelector)
             .notifyApplicationsToAllOthers("No")
             .build();
@@ -191,10 +169,6 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getApplicantName())
             .isEqualTo(OTHER_APPLICANT_NAME);
 
-        assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthersNotified())
-            .isEqualTo("Margaret Jones, Alex Smith");
-        assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthers())
-            .isEqualTo(List.of(updatedCaseData.getOthers().getAdditionalOthers().get(0)));
         assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getRespondents())
             .hasSize(1)
             .containsExactly(respondentElement);
@@ -214,12 +188,6 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .temporaryOtherApplicationsBundle(createTemporaryOtherApplicationDocument())
             .temporaryPbaPayment(temporaryPbaPayment)
             .applicantsList(createApplicantsDynamicList(APPLICANT))
-            .others(Others.builder()
-                .firstOther(
-                    Other.builder().name("Stephen Miller").address(Address.builder().postcode("SE1").build()).build()
-                )
-                .build()
-            )
             .personSelector(Selector.newSelector(1))
             .notifyApplicationsToAllOthers("No").build();
 
@@ -231,9 +199,6 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertC2DocumentBundle(additionalApplicationsBundle.getC2DocumentBundle());
         assertOtherApplicationsBundle(additionalApplicationsBundle.getOtherApplicationsBundle());
         assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(temporaryPbaPayment);
-
-        assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthersNotified()).isEmpty();
-        assertThat(additionalApplicationsBundle.getC2DocumentBundle().getOthersNotified()).isEmpty();
 
         assertThat(additionalApplicationsBundle.getC2DocumentBundle().getApplicantName())
             .isEqualTo(LOCAL_AUTHORITY_NAME);
