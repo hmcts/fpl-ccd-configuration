@@ -124,16 +124,13 @@ public class AdditionalApplicationsUploadedEventHandler {
         }
     }
 
+    //DOUBLE CHECK NO OTHERS ARE INCLUDED IN THIS LIST
     private Set<Recipient> getRecipientsToNotifyByPost(CaseData caseData, AdditionalApplicationsBundle uploadedBundle) {
         Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
 
-        List<Element<Respondent>> selectedRespondents = getRespondentsSelected(uploadedBundle);
+        List<Element<Respondent>> respondentsInCase = getRespondents(uploadedBundle);
 
-        allRecipients.removeAll(representativesInbox.getNonSelectedRespondentRecipientsByPost(
-            caseData, selectedRespondents
-        ));
-
-        allRecipients.addAll(representativesInbox.getSelectedRecipientsWithNoRepresentation(selectedRespondents));
+        allRecipients.addAll(representativesInbox.getSelectedRecipientsWithNoRepresentation(respondentsInCase));
 
         return allRecipients;
     }
@@ -214,22 +211,7 @@ public class AdditionalApplicationsUploadedEventHandler {
 
     private Set<String> getRepresentativesEmails(CaseData caseData,
                                                  RepresentativeServingPreferences servingPreference) {
-        AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
-
-        List<Element<Other>> othersSelected = getOthersSelected(uploadedBundle);
-        List<Element<Respondent>> respondentsSelected = getRespondentsSelected(uploadedBundle);
-
         Set<String> digitalRepresentatives = representativesInbox.getEmailsByPreference(caseData, servingPreference);
-
-        Set<String> nonSelectedOthers = otherRecipientsInbox.getNonSelectedRecipients(
-            servingPreference, caseData, othersSelected, element -> element.getValue().getEmail()
-        );
-        digitalRepresentatives.removeAll(nonSelectedOthers);
-
-        Set<String> nonSelectedRespondentsRepresentatives = representativesInbox.getNonSelectedRespondentRecipients(
-            servingPreference, caseData, respondentsSelected, element -> element.getValue().getEmail()
-        );
-        digitalRepresentatives.removeAll(nonSelectedRespondentsRepresentatives);
 
         return digitalRepresentatives;
     }
@@ -303,15 +285,7 @@ public class AdditionalApplicationsUploadedEventHandler {
         return documents;
     }
 
-    private List<Element<Other>> getOthersSelected(final AdditionalApplicationsBundle lastBundle) {
-        if (lastBundle.getC2DocumentBundle() != null) {
-            return defaultIfNull(lastBundle.getC2DocumentBundle().getOthers(), List.of());
-        }
-
-        return defaultIfNull(lastBundle.getOtherApplicationsBundle().getOthers(), List.of());
-    }
-
-    private List<Element<Respondent>> getRespondentsSelected(final AdditionalApplicationsBundle lastBundle) {
+    private List<Element<Respondent>> getRespondents(final AdditionalApplicationsBundle lastBundle) {
         if (lastBundle.getC2DocumentBundle() != null) {
             return defaultIfNull(lastBundle.getC2DocumentBundle().getRespondents(), List.of());
         }
