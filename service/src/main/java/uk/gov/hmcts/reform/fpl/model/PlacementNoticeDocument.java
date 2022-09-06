@@ -18,8 +18,6 @@ import static java.util.Arrays.asList;
 public class PlacementNoticeDocument {
 
     private RecipientType type;
-    private DocumentReference notice;
-    private String noticeDescription;
     private DocumentReference response;
     private String responseDescription;
     private String recipientName;
@@ -31,7 +29,8 @@ public class PlacementNoticeDocument {
         LOCAL_AUTHORITY("Local authority"),
         CAFCASS("Cafcass"),
         PARENT_FIRST("First parent"),
-        PARENT_SECOND("Second parent");
+        PARENT_SECOND("Second parent"),
+        RESPONDENT("Respondent");
 
         private final String name;
 

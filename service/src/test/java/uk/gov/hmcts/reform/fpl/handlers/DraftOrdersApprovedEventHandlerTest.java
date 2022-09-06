@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -39,22 +41,26 @@ import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
-import static java.lang.System.lineSeparator;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
+import static java.util.stream.Collectors.toSet;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -109,6 +115,10 @@ class DraftOrdersApprovedEventHandlerTest {
     private TranslationRequestService translationRequestService;
     @Mock
     private CafcassNotificationService cafcassNotificationService;
+    @Captor
+    private ArgumentCaptor<OrderCafcassData> orderCafcassDataArgumentCaptor;
+    @Captor
+    private ArgumentCaptor<Set<DocumentReference>> documentRefArgumentCaptor;
 
     @InjectMocks
     private DraftOrdersApprovedEventHandler underTest;
@@ -198,22 +208,51 @@ class DraftOrdersApprovedEventHandlerTest {
 
     @Test
     void shouldSendGridNotifyToCafcassEngland() {
+        UUID selectedHearingId = UUID.randomUUID();
+        LocalDateTime hearingDateTime = LocalDateTime.of(
+                LocalDate.of(2022, 5, 18),
+                LocalTime.of(10, 30)
+        );
+
+
+        Element<HearingBooking> hearingBookingElementOne = Element.<HearingBooking>builder()
+                .id(selectedHearingId)
+                .value(HearingBooking.builder()
+                        .startDate(hearingDateTime)
+                        .build())
+                .build();
+
+        Element<HearingBooking> hearingBookingElementTwo = Element.<HearingBooking>builder()
+                .id(UUID.randomUUID())
+                .value(HearingBooking.builder()
+                        .startDate(hearingDateTime.minusDays(10))
+                        .build())
+                .build();
+
         CaseData caseData = CaseData.builder()
                 .id(CASE_ID)
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .hearingDetails(List.of(HEARING))
-                .lastHearingOrderDraftsHearingId(HEARING_ID)
+                .lastHearingOrderDraftsHearingId(selectedHearingId)
+                .hearingDetails(List.of(
+                        hearingBookingElementOne,
+                        hearingBookingElementTwo
+                ))
                 .build();
 
+
+        LocalDate now = LocalDate.now();
         List<HearingOrder> orders = List.of(
                 HearingOrder.builder()
                     .order(TestDataHelper.testDocumentReference())
                     .title("Test 1")
+                    .dateIssued(now)
                     .build(),
                 HearingOrder.builder()
                     .order(TestDataHelper.testDocumentReference())
                     .title("Test 2")
+                    .dateIssued(now)
                     .build());
+
         CafcassLookupConfiguration.Cafcass cafcass =
                 new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS);
 
@@ -223,19 +262,32 @@ class DraftOrdersApprovedEventHandlerTest {
 
         underTest.sendNotificationToCafcassViaSendGrid(new DraftOrdersApproved(caseData, orders));
 
-        String content = String.join(lineSeparator(),
-                "",
-                    "Test 1",
-                    "Test 2"
-                );
+        verify(cafcassNotificationService, times(2)).sendEmail(
+                eq(caseData),
+                documentRefArgumentCaptor.capture(),
+                eq(CafcassRequestEmailContentProvider.ORDER),
+                orderCafcassDataArgumentCaptor.capture()
+        );
 
-        verify(cafcassNotificationService).sendEmail(
-                caseData,
-                orders.stream().map(HearingOrder::getDocument).collect(Collectors.toSet()),
-                CafcassRequestEmailContentProvider.ORDER,
-                OrderCafcassData.builder()
-                    .documentName(content)
-                    .build());
+        Set<DocumentReference> documentReferences = documentRefArgumentCaptor.getAllValues().stream()
+            .flatMap(Set::stream)
+            .collect(toSet());
+
+        assertThat(documentReferences)
+            .containsAll(
+                Set.of(
+                    orders.get(0).getOrder(),
+                    orders.get(1).getOrder()
+                ));
+
+        List<OrderCafcassData> allCafCassOrders = orderCafcassDataArgumentCaptor.getAllValues();
+
+        assertThat(allCafCassOrders)
+            .extracting("documentName", "orderApprovalDate", "hearingDate")
+            .contains(
+                tuple(orders.get(0).getTitle(), now, hearingDateTime),
+                tuple(orders.get(1).getTitle(), now, hearingDateTime)
+            );
     }
 
     @Test

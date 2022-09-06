@@ -7,15 +7,20 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
+import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CHILDREN_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_DOCUMENT_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_DOCUMENT_RESPONDENT_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.PLACEMENT_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -34,11 +39,15 @@ public class ManageDocumentLAService {
         Map<String, Object> listAndLabel = new HashMap<>();
         final YesNo hasConfidentialAddress = YesNo.from(caseData.hasConfidentialParty());
 
+        final YesNo hasPlacementNotices = YesNo.from(caseData.getPlacementEventData().getPlacements().stream()
+            .anyMatch(el -> el.getValue().getPlacementNotice() != null));
+
         ManageDocumentLA manageDocument = defaultIfNull(caseData.getManageDocumentLA(),
             ManageDocumentLA.builder().build())
             .toBuilder()
             .hasHearings(YesNo.from(isNotEmpty(caseData.getHearingDetails())).getValue())
             .hasC2s(YesNo.from(caseData.hasApplicationBundles()).getValue())
+            .hasPlacementNotices(hasPlacementNotices.getValue())
             .hasConfidentialAddress(hasConfidentialAddress.getValue())
             .build();
 
@@ -59,6 +68,12 @@ public class ManageDocumentLAService {
 
         if (isNotEmpty(caseData.getAllChildren())) {
             listAndLabel.put(CHILDREN_LIST_KEY, caseData.buildDynamicChildrenList());
+        }
+
+        if (hasPlacementNotices == YES) {
+            DynamicList list = asDynamicList(
+                caseData.getPlacementEventData().getPlacements(), null, Placement::getChildName);
+            listAndLabel.put(PLACEMENT_LIST_KEY, list);
         }
 
         return listAndLabel;
