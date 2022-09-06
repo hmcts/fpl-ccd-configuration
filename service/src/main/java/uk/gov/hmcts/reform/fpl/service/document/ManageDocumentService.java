@@ -16,6 +16,8 @@ import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
+import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -27,7 +29,9 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ConfidentialBundleHelper;
@@ -55,6 +59,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
@@ -67,6 +72,7 @@ public class ManageDocumentService {
     private final Time time;
     private final DocumentUploadHelper documentUploadHelper;
     private final UserService user;
+    private final PlacementService placementService;
 
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_KEY = "correspondenceDocuments";
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_SOLICITOR_KEY = "correspondenceDocumentsSolicitor";
@@ -99,6 +105,8 @@ public class ManageDocumentService {
     public static final String POSITION_STATEMENT_RESPONDENT_LIST_KEY = "positionStatementRespondentListV2";
     public static final String POSITION_STATEMENT_RESPONDENT_LIST_KEY_DEPRECATED = "positionStatementRespondentList";
     public static final String DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY = "documentsWithConfidentialAddress";
+    public static final String PLACEMENT_LIST_KEY = "manageDocumentsPlacementList";
+
     private static final Predicate<Element<SupportingEvidenceBundle>> HMCTS_FILTER =
         bundle -> bundle.getValue().isUploadedByHMCTS();
     private static final Predicate<Element<SupportingEvidenceBundle>> SOLICITOR_FILTER =
@@ -111,12 +119,15 @@ public class ManageDocumentService {
         final YesNo hasC2s = YesNo.from(caseData.hasApplicationBundles());
         final YesNo hasRespondents = YesNo.from(isNotEmpty(caseData.getAllRespondents()));
         final YesNo hasConfidentialAddress = YesNo.from(caseData.hasConfidentialParty());
+        final YesNo hasPlacementNotices = YesNo.from(caseData.getPlacementEventData().getPlacements().stream()
+            .anyMatch(el -> el.getValue().getPlacementNotice() != null));
 
         ManageDocument manageDocument = defaultIfNull(caseData.getManageDocument(), ManageDocument.builder().build())
             .toBuilder()
             .hasHearings(hasHearings.getValue())
             .hasC2s(hasC2s.getValue())
             .hasConfidentialAddress(hasConfidentialAddress.getValue())
+            .hasPlacementNotices(hasPlacementNotices.getValue())
             .build();
 
         eventData.put(MANAGE_DOCUMENT_KEY, manageDocument);
@@ -137,6 +148,12 @@ public class ManageDocumentService {
 
         if (isNotEmpty(caseData.getAllChildren())) {
             eventData.put(CHILDREN_LIST_KEY, caseData.buildDynamicChildrenList());
+        }
+
+        if (hasPlacementNotices == YES) {
+            DynamicList list = asDynamicList(
+                caseData.getPlacementEventData().getPlacements(), null, Placement::getChildName);
+            eventData.put(PLACEMENT_LIST_KEY, list);
         }
 
         return eventData;
@@ -839,4 +856,38 @@ public class ManageDocumentService {
             .map(RespondentParty::getFullName)
             .orElseThrow(() -> new RespondentNotFoundException(respondentId));
     }
+
+    public Map<String, Object> initialisePlacementHearingResponseFields(CaseData caseData,
+                                                                        PlacementNoticeDocument.RecipientType type) {
+        Map<String, Object> map = new HashMap<>();
+        PlacementEventData data = placementService.preparePlacementFromExisting(caseData);
+        map.put("placement", data.getPlacement());
+        map.put("placementNoticeResponses", data.getPlacement().getNoticeDocuments().stream().filter(
+            doc -> doc.getValue().getType() == type
+        ));
+        return map;
+    }
+
+    public Map<String, Object> initialisePlacementHearingResponseFields(CaseData caseData) {
+        Map<String, Object> map = new HashMap<>();
+        PlacementEventData data = placementService.preparePlacementFromExisting(caseData);
+        map.put("placement", data.getPlacement());
+        map.put("placementNoticeResponses", data.getPlacement().getNoticeDocuments());
+        return map;
+    }
+
+    public PlacementEventData updatePlacementNoticesLA(CaseData caseData) {
+        return placementService.savePlacementNoticeResponses(
+            caseData, PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY);
+    }
+
+    public PlacementEventData updatePlacementNoticesSolicitor(CaseData caseData) {
+        return placementService.savePlacementNoticeResponses(
+            caseData, PlacementNoticeDocument.RecipientType.RESPONDENT);
+    }
+
+    public PlacementEventData updatePlacementNoticesAdmin(CaseData caseData) {
+        return placementService.savePlacementNoticeResponsesAdmin(caseData);
+    }
+
 }

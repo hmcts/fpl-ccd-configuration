@@ -1141,6 +1141,8 @@ public class CaseData extends CaseDataParent {
 
     private final DynamicList placementList;
 
+    private final List<Element<PlacementNoticeDocument>> placementNoticeResponses;
+
     @JsonIgnore
     public boolean isDischargeOfCareApplication() {
 
