@@ -117,9 +117,8 @@ public class CaseInitiationService {
 
         if (userInMO && !userInLA && !caseOutsourced && isLocalAuthority) {
             return List.of(
-                "Email not recognised.",
-                "Your email is not associated with a local authority.",
-                "Email MyHMCTSsupport@justice.gov.uk for further guidance.");
+                "You do not have permission to proceed as a local authority.",
+                "Email FamilyPublicLawServiceTeam@justice.gov.uk for further guidance.");
         }
 
         if (!userInMO) {
