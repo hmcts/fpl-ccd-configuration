@@ -44,19 +44,6 @@ class RepresentativesInboxTest {
     private static final UUID EMAIL_REP_UUID = UUID.randomUUID();
     private static final UUID EMAIL_REP2_UUID = UUID.randomUUID();
     private static final UUID DIGITAL_REP_UUID = UUID.randomUUID();
-    private static final Element<Respondent> RESPONDENT_WITH_EMAIL_REP = element(Respondent.builder()
-        .representedBy(wrapElements(EMAIL_REP_UUID))
-        .build());
-    private static final Element<Respondent> RESPONDENT_WITH_DIGITAL_REP = element(Respondent.builder()
-        .representedBy(wrapElements(DIGITAL_REP_UUID))
-        .build());
-    private static final Element<Respondent> RESPONDENT_UNREPRESENTED = element(Respondent.builder()
-        .party(RespondentParty.builder().firstName("John").lastName("Smith").address(testAddress()).build())
-        .representedBy(List.of())
-        .build());
-    private static final List<Element<Respondent>> RESPONDENTS = List.of(
-        RESPONDENT_WITH_EMAIL_REP, RESPONDENT_WITH_DIGITAL_REP, RESPONDENT_UNREPRESENTED
-    );
     private static final String ORGANISATION_ID = "ORGANISATION_ID";
     private static final String EMAIL_1 = "email1";
     private static final String EMAIL_2 = "email2";
@@ -132,12 +119,6 @@ class RepresentativesInboxTest {
             .colleaguesToBeNotified(List.of(SOLICITOR_COLLEAGUE))
             .build())
         .build();
-    private static final Element<Representative> EMAIL_REP_ELEMENT = element(EMAIL_REP_UUID, EMAIL_REP);
-    private static final Element<Representative> EMAIL_REP_2_ELEMENT = element(EMAIL_REP2_UUID, EMAIL_REP2);
-    private static final Element<Representative> DIGITAL_REP_ELEMENT = element(DIGITAL_REP_UUID, DIGITAL_REP);
-    private static final List<Element<Representative>> REPRESENTATIVES = List.of(
-        EMAIL_REP_ELEMENT, EMAIL_REP_2_ELEMENT, DIGITAL_REP_ELEMENT
-    );
 
     private static final Representative CARCASS_REP = Representative.builder()
         .email(EMAIL_1)
@@ -454,122 +435,5 @@ class RepresentativesInboxTest {
         HashSet<String> emails = underTest.getChildrenSolicitorEmails(caseData, DIGITAL_SERVICE);
 
         assertThat(emails).containsExactlyInAnyOrder(EMAIL_6, EMAIL_8);
-    }
-
-    @ParameterizedTest
-    @MethodSource("nonPostalRepresentativesData")
-    void shouldReturnNonSelectedRepresentativesByServingPreference(CaseData caseData,
-                                                                   List<Element<Respondent>> selectedRespondents,
-                                                                   RepresentativeServingPreferences servingPreferences,
-                                                                   Set<Element<Representative>> expectedRecipients) {
-        Set<Element<Representative>> unselectedRecipients = underTest.getNonSelectedRespondentRecipients(
-            servingPreferences, caseData, selectedRespondents, Function.identity()
-        );
-
-        assertThat(unselectedRecipients).isEqualTo(expectedRecipients);
-    }
-
-    @ParameterizedTest
-    @MethodSource("postalRepresentativesData")
-    void shouldReturnNonSelectedRepresentativesByPost(CaseData caseData,
-                                                      List<Element<Respondent>> selectedRespondents,
-                                                      Set<Recipient> expectedRepresentatives) {
-
-        Set<Recipient> unselectedRecipients = underTest.getNonSelectedRespondentRecipientsByPost(
-            caseData, selectedRespondents
-        );
-
-        assertThat(unselectedRecipients).isEqualTo(expectedRepresentatives);
-    }
-
-    @ParameterizedTest
-    @MethodSource("unrepresentedRepresentativesData")
-    void shouldReturnUnrepresentedRepresentatives(List<Element<Respondent>> selectedRespondents,
-                                                  Set<Recipient> expectedRecipients) {
-        Set<Recipient> unselectedRecipients = underTest.getSelectedRecipientsWithNoRepresentation(selectedRespondents);
-
-        assertThat(unselectedRecipients).isEqualTo(expectedRecipients);
-    }
-
-    private static Stream<Arguments> unrepresentedRepresentativesData() {
-        Element<Respondent> respondentWithIncompleteAddress = element(
-            Respondent.builder()
-                .party(RespondentParty.builder().address(Address.builder().build()).build())
-                .representedBy(List.of())
-                .build()
-        );
-        Element<Respondent> respondentWithoutAddress = element(
-            Respondent.builder()
-                .party(RespondentParty.builder().build())
-                .build()
-        );
-
-        Element<Respondent> respondentWithSolicitor = element(
-            Respondent.builder()
-                .party(RespondentParty.builder().address(Address.builder().build()).build())
-                .solicitor(RespondentSolicitor.builder()
-                    .email(testEmail().getEmail())
-                    .build())
-                .build()
-        );
-
-        return Stream.of(
-            Arguments.of(
-                List.of(RESPONDENT_WITH_EMAIL_REP, RESPONDENT_UNREPRESENTED),
-                Set.of(RESPONDENT_UNREPRESENTED.getValue().getParty())
-            ),
-            Arguments.of(
-                List.of(RESPONDENT_UNREPRESENTED, respondentWithIncompleteAddress, respondentWithoutAddress),
-                Set.of(RESPONDENT_UNREPRESENTED.getValue().getParty())
-            ),
-            Arguments.of(List.of(RESPONDENT_WITH_EMAIL_REP, RESPONDENT_WITH_DIGITAL_REP), Set.of()),
-            Arguments.of(List.of(respondentWithIncompleteAddress, respondentWithoutAddress), Set.of()),
-            Arguments.of(List.of(respondentWithSolicitor), Set.of()),
-            Arguments.of(
-                List.of(respondentWithSolicitor, RESPONDENT_UNREPRESENTED),
-                Set.of(RESPONDENT_UNREPRESENTED.getValue().getParty())
-            )
-        );
-    }
-
-    private static Stream<Arguments> nonPostalRepresentativesData() {
-        CaseData caseData = CaseData.builder()
-            .respondents1(RESPONDENTS)
-            .representatives(REPRESENTATIVES)
-            .build();
-
-        return Stream.of(
-            Arguments.of(
-                caseData, List.of(RESPONDENT_WITH_EMAIL_REP, RESPONDENT_UNREPRESENTED), EMAIL, Set.of()
-            ),
-            Arguments.of(caseData, List.of(RESPONDENT_WITH_DIGITAL_REP), EMAIL, Set.of(EMAIL_REP_ELEMENT)),
-            Arguments.of(
-                caseData, List.of(RESPONDENT_UNREPRESENTED), EMAIL, Set.of(EMAIL_REP_ELEMENT)
-            ),
-            Arguments.of(caseData, RESPONDENTS, EMAIL, Set.of()),
-            Arguments.of(caseData, RESPONDENTS, DIGITAL_SERVICE, Set.of()),
-            Arguments.of(
-                caseData, List.of(RESPONDENT_WITH_DIGITAL_REP, RESPONDENT_UNREPRESENTED), DIGITAL_SERVICE, Set.of()
-            ),
-            Arguments.of(
-                caseData, List.of(), DIGITAL_SERVICE, Set.of(DIGITAL_REP_ELEMENT)
-            )
-        );
-    }
-
-    private static Stream<Arguments> postalRepresentativesData() {
-        CaseData caseData = CaseData.builder()
-            .respondents1(RESPONDENTS)
-            .build();
-
-        return Stream.of(
-            Arguments.of(
-                caseData, List.of(RESPONDENT_WITH_EMAIL_REP),
-                Set.of(RESPONDENT_UNREPRESENTED.getValue().getParty())
-            ),
-            Arguments.of(
-                caseData, List.of(RESPONDENT_WITH_EMAIL_REP, RESPONDENT_UNREPRESENTED), Set.of()
-            )
-        );
     }
 }

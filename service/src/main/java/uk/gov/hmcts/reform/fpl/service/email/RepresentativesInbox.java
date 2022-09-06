@@ -91,39 +91,7 @@ public class RepresentativesInbox {
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    public Set<Recipient> getNonSelectedRespondentRecipientsByPost(CaseData caseData,
-                                                                   List<Element<Respondent>> respondentsSelected) {
-        Set<Recipient> nonSelectedRespondentsRecipients = getNonSelectedRespondentRecipients(
-            POST, caseData, respondentsSelected, Element::getValue
-        );
-
-        nonSelectedRespondentsRecipients.addAll(getNotSelectedUnrepresentedRespondents(caseData, respondentsSelected));
-
-        return nonSelectedRespondentsRecipients;
-    }
-
-    public <R> Set<R> getNonSelectedRespondentRecipients(RepresentativeServingPreferences servingPreferences,
-                                                         CaseData caseData,
-                                                         List<Element<Respondent>> respondentsSelected,
-                                                         Function<Element<Representative>, R> mapperFunction) {
-        Set<UUID> allRepresentativeIds = unwrapElements(caseData.getAllRespondents())
-            .stream()
-            .flatMap(respondent -> respondent.getRepresentedBy().stream().map(Element::getValue))
-            .collect(Collectors.toSet());
-
-        Set<UUID> selectedRepresentativeIds = unwrapElements(respondentsSelected).stream()
-            .flatMap(respondent -> respondent.getRepresentedBy().stream().map(Element::getValue))
-            .collect(Collectors.toSet());
-
-        return caseData.getRepresentativesElementsByServedPreference(servingPreferences)
-            .stream()
-            .filter(representativeElement -> allRepresentativeIds.contains(representativeElement.getId()))
-            .filter(not(representativeElement -> selectedRepresentativeIds.contains(representativeElement.getId())))
-            .map(mapperFunction)
-            .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    public Set<Recipient> getSelectedRecipientsWithNoRepresentation(List<Element<Respondent>> selectedRespondents) {
+    public Set<Recipient> getRecipientsWithNoRepresentation(List<Element<Respondent>> selectedRespondents) {
         return selectedRespondents.stream()
             .map(Element::getValue)
             .filter(respondent -> isEmpty(respondent.getRepresentedBy())
@@ -134,20 +102,6 @@ public class RepresentativesInbox {
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    private Set<Recipient> getNotSelectedUnrepresentedRespondents(CaseData caseData,
-                                                                  List<Element<Respondent>> selectedRespondents) {
-        List<Element<Respondent>> unrepresentedRespondents = caseData.getAllRespondents().stream()
-            .filter(respondent -> isEmpty(respondent.getValue().getRepresentedBy())
-                                  && !YES.getValue().equals(respondent.getValue().getLegalRepresentation()))
-            .collect(toList());
-
-        List<UUID> selectedRespondentsIds = selectedRespondents.stream().map(Element::getId).collect(toList());
-        return unrepresentedRespondents.stream()
-            .filter(respondentElement -> !selectedRespondentsIds.contains(respondentElement.getId()))
-            .map(resp -> resp.getValue().getParty())
-            .collect(Collectors.toSet());
-    }
-
     private boolean shouldSend(RepresentativeServingPreferences preference,
                                Element<? extends WithSolicitor> element) {
         if (RepresentativeServingPreferences.DIGITAL_SERVICE == preference) {
@@ -155,12 +109,6 @@ public class RepresentativesInbox {
         }
 
         return !element.getValue().hasRegisteredOrganisation();
-    }
-
-    private String extractEmail(Element<? extends WithSolicitor> element) {
-        return Optional.ofNullable(element.getValue().getSolicitor())
-            .map(RespondentSolicitor::getEmail)
-            .orElse(null);
     }
 
     private List<String> extractEmailsForSolicitorAndColleagues(Element<? extends WithSolicitor> element) {

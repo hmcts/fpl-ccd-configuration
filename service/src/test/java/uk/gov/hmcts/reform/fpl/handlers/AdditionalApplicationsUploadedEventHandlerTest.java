@@ -97,9 +97,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     private static final String DIGITAL_REP_1 = "digital-rep1@test.com";
     private static final String DIGITAL_REP_2 = "digital-rep2@test.com";
     private static final Set<String> DIGITAL_REPS = new HashSet<>(Set.of(DIGITAL_REP_1, DIGITAL_REP_2));
-    private static final List<Element<Other>> NO_RECIPIENTS = Collections.emptyList();
-    private static final List<Element<Other>> SELECTED_OTHERS = List.of(element(mock(Other.class)));
-    private static final List<Element<Respondent>> SELECTED_RESPONDENTS = List.of(element(mock(Respondent.class)));
+    private static final List<Element<Respondent>> RESPONDENTS = List.of(element(mock(Respondent.class)));
     private static final DocumentReference C2_DOCUMENT = testDocumentReference();
     private static final DocumentReference OTHER_APPLICATION_DOCUMENT = testDocumentReference();
     private static final DocumentReference SUPPLEMENT_1 = testDocumentReference();
@@ -123,8 +121,6 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     private LocalAuthorityRecipientsService localAuthorityRecipients;
     @Mock
     private RepresentativesInbox representativesInbox;
-    @Mock
-    private OtherRecipientsInbox otherRecipientsInbox;
     @Mock
     private RepresentativeNotificationService representativeNotificationService;
     @Mock
@@ -158,18 +154,11 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .c2DocumentBundle(C2DocumentBundle.builder()
                     .document(TEST_DOCUMENT)
                     .respondents(emptyList())
-                    .others(emptyList())
                     .build())
                 .build()
         ));
 
         given(representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE)).willReturn(DIGITAL_REPS);
-        given(otherRecipientsInbox.getNonSelectedRecipients(
-            eq(DIGITAL_SERVICE), eq(caseData), eq(NO_RECIPIENTS), any()
-        )).willReturn(Collections.emptySet());
-        given(representativesInbox.getNonSelectedRespondentRecipients(
-            eq(DIGITAL_SERVICE), eq(caseData), eq(emptyList()), any()
-        )).willReturn(Collections.emptySet());
 
         underTest.notifyDigitalRepresentatives(
             new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA)
@@ -187,16 +176,11 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .c2DocumentBundle(C2DocumentBundle.builder()
                     .document(TEST_DOCUMENT)
                     .respondents(emptyList())
-                    .others(emptyList())
                     .build())
                 .build()
         ));
 
         given(representativesInbox.getEmailsByPreference(caseData, EMAIL)).willReturn(EMAIL_REPS);
-        given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL), eq(caseData), eq(NO_RECIPIENTS), any()))
-            .willReturn(Collections.emptySet());
-        given(representativesInbox.getNonSelectedRespondentRecipients(eq(EMAIL), eq(caseData), eq(emptyList()), any()))
-            .willReturn(Collections.emptySet());
 
         underTest.notifyEmailServedRepresentatives(
             new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA)
@@ -268,7 +252,6 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .c2DocumentBundle(C2DocumentBundle.builder()
                     .document(TEST_DOCUMENT)
                     .applicantName(respondent1FullName)
-                    .others(emptyList())
                     .build())
                 .build()
         ));
@@ -291,7 +274,6 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .c2DocumentBundle(C2DocumentBundle.builder()
                     .document(TEST_DOCUMENT)
                     .applicantName(applicantName)
-                    .others(emptyList())
                     .build())
                 .build()
         ));
@@ -311,7 +293,6 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .c2DocumentBundle(C2DocumentBundle.builder()
                     .document(TEST_DOCUMENT)
                     .applicantName(applicantName)
-                    .others(emptyList())
                     .build())
                 .build()
         ));
@@ -349,7 +330,6 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .c2DocumentBundle(C2DocumentBundle.builder()
                     .document(TEST_DOCUMENT)
                     .applicantName("John Smith")
-                    .others(emptyList())
                     .build())
                 .build()
         ));
@@ -368,13 +348,11 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(caseData.getAdditionalApplicationsBundle()).willReturn(wrapElements(
             AdditionalApplicationsBundle.builder()
                 .otherApplicationsBundle(
-                    OtherApplicationsBundle.builder().document(TEST_DOCUMENT).others(SELECTED_OTHERS).build())
+                    OtherApplicationsBundle.builder().document(TEST_DOCUMENT).build())
                 .build()
         ));
 
         given(representativesInbox.getEmailsByPreference(caseData, EMAIL)).willReturn(emptySet());
-        given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL), eq(caseData), eq(SELECTED_OTHERS), any()))
-            .willReturn(Collections.emptySet());
 
         underTest.notifyEmailServedRepresentatives(
             new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA)
@@ -390,25 +368,16 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         final Representative representative1 = mock(Representative.class);
         final Representative representative2 = mock(Representative.class);
         final Representative representative3 = mock(Representative.class);
-        final RespondentParty otherRespondent = mock(RespondentParty.class);
 
         given(caseData.getAdditionalApplicationsBundle()).willReturn(wrapElements(additionalApplicationsBundle));
         given(sendDocumentService.getStandardRecipients(caseData))
             .willReturn(List.of(representative1, representative2, representative3));
-        given(otherRecipientsInbox.getNonSelectedRecipients(eq(POST), eq(caseData), eq(SELECTED_OTHERS), any()))
-            .willReturn(Set.of(representative1));
-        given(representativesInbox.getNonSelectedRespondentRecipientsByPost(eq(caseData), eq(SELECTED_RESPONDENTS)))
-            .willReturn(Set.of(representative3));
-        given(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(SELECTED_OTHERS))
-            .willReturn(Set.of(otherRespondent));
-        given(representativesInbox.getSelectedRecipientsWithNoRepresentation(SELECTED_RESPONDENTS))
-            .willReturn(Set.of(representative2));
 
         underTest.sendAdditionalApplicationsByPost(
             new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA)
         );
 
-        verify(sendDocumentService).sendDocuments(caseData, documents, List.of(representative2, otherRespondent));
+        verify(sendDocumentService).sendDocuments(caseData, documents, List.of(representative1, representative2, representative3));
         verifyNoInteractions(notificationService);
     }
 
@@ -557,8 +526,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             .supportingEvidenceBundle(wrapElements(
                 SupportingEvidenceBundle.builder().document(SUPPORTING_DOCUMENT_1).build()
             ))
-            .others(SELECTED_OTHERS)
-            .respondents(SELECTED_RESPONDENTS)
+            .respondents(RESPONDENTS)
             .build();
 
         OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
@@ -567,8 +535,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             .supportingEvidenceBundle(wrapElements(
                 SupportingEvidenceBundle.builder().document(SUPPORTING_DOCUMENT_2).build()
             ))
-            .others(SELECTED_OTHERS)
-            .respondents(SELECTED_RESPONDENTS)
+            .respondents(RESPONDENTS)
             .build();
 
         return Stream.of(

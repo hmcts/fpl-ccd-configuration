@@ -50,8 +50,6 @@ public class C2DocumentBundle implements ApplicationsBundle {
     private final List<C2AdditionalOrdersRequested> c2AdditionalOrdersRequested;
     private final ParentalResponsibilityType parentalResponsibilityType;
     private final String applicantName;
-    private final String othersNotified;
-    private final List<Element<Other>> others;
     private final List<Element<Respondent>> respondents;
 
     public String toLabel(int index) {

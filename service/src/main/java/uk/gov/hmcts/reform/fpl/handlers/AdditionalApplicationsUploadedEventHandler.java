@@ -130,7 +130,7 @@ public class AdditionalApplicationsUploadedEventHandler {
 
         List<Element<Respondent>> respondentsInCase = getRespondents(uploadedBundle);
 
-        allRecipients.addAll(representativesInbox.getSelectedRecipientsWithNoRepresentation(respondentsInCase));
+        allRecipients.addAll(representativesInbox.getRecipientsWithNoRepresentation(respondentsInCase));
 
         return allRecipients;
     }
