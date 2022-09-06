@@ -9,7 +9,8 @@ public enum ManageDocumentType {
     FURTHER_EVIDENCE_DOCUMENTS("Further evidence documents for main application"),
     CORRESPONDENCE("Correspondence"),
     ADDITIONAL_APPLICATIONS_DOCUMENTS("Documents for additional applications"),
-    HEARING_DOCUMENTS("Hearing document");
+    HEARING_DOCUMENTS("Hearing document"),
+    PLACEMENT_NOTICE_RESPONSE("Placement responses");
 
     private final String label;
 }

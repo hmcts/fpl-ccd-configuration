@@ -21,7 +21,6 @@ import java.util.List;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.ZERO;
-import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.NOTICE_GROUP;
 import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.PLACEMENT_GROUP;
 import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.putFields;
@@ -54,7 +53,7 @@ public class PlacementController extends CallbackController {
         caseProperties.put("placementChildrenCardinality", childrenCardinality);
         caseProperties.putIfNotEmpty("placementChildrenList", eventData.getPlacementChildrenList());
 
-        putFields(caseProperties, eventData, PLACEMENT_GROUP, NOTICE_GROUP);
+        putFields(caseProperties, eventData, PLACEMENT_GROUP);
 
         if (isNotEmpty(caseData.getAllRespondents())) {
             caseProperties.put("hasRespondents", "Yes");
@@ -75,7 +74,7 @@ public class PlacementController extends CallbackController {
 
         final PlacementEventData eventData = placementService.preparePlacement(caseData);
 
-        putFields(caseProperties, eventData, PLACEMENT_GROUP, NOTICE_GROUP);
+        putFields(caseProperties, eventData, PLACEMENT_GROUP);
 
         return respond(caseProperties);
     }

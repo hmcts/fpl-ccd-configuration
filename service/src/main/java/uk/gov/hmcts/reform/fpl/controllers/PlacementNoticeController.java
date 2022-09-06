@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.HEARING_GROUP;
-import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.NOTICE_GROUP;
 import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.PLACEMENT_GROUP;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.putFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
@@ -65,7 +64,7 @@ public class PlacementNoticeController extends CallbackController {
         final CaseDetailsMap caseProperties = CaseDetailsMap.caseDetailsMap(caseDetails);
 
         final PlacementEventData eventData = placementService.preparePlacementFromExisting(caseData);
-        putFields(caseProperties, eventData, PLACEMENT_GROUP, NOTICE_GROUP);
+        putFields(caseProperties, eventData, PLACEMENT_GROUP);
 
         return respond(caseProperties);
     }
@@ -89,6 +88,7 @@ public class PlacementNoticeController extends CallbackController {
 
         final PlacementEventData eventData = placementService.savePlacementNotice(caseData);
 
+        caseDetails.getData().put("placement", eventData.getPlacement());
         caseDetails.getData().put("placements", eventData.getPlacements());
         caseDetails.getData().put("placementsNonConfidential", eventData.getPlacementsNonConfidential(false));
         caseDetails.getData().put("placementsNonConfidentialNotices", eventData.getPlacementsNonConfidential(true));
