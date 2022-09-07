@@ -161,7 +161,7 @@ public class CMSReportService {
                 hearingBooking.getStartDate().toLocalDate().isBefore(dateSubmitted.plusDays(noOfDays))).isPresent();
 
         BiFunction<Optional<HearingBooking>, Integer, Optional<HearingBooking>> getHearingBooking = (optionalHearingBooking, noOfDays) -> optionalHearingBooking.filter(hearingBooking ->
-                hearingBooking.getStartDate().toLocalDate().isAfter(dateSubmitted.plusDays(FINAL_CUTOFF_DAYS)));
+                hearingBooking.getStartDate().toLocalDate().isAfter(dateSubmitted.plusDays(noOfDays)));
 
         List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
 
