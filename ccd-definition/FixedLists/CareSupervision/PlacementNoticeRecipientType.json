@@ -16,15 +16,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "PlacementNoticeRecipientType",
-    "ListElementCode": "PARENT_FIRST",
-    "ListElement": "Parent",
+    "ListElementCode": "RESPONDENT",
+    "ListElement": "Respondent",
     "DisplayOrder": 3
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "PlacementNoticeRecipientType",
-    "ListElementCode": "PARENT_SECOND",
-    "ListElement": "Parent",
-    "DisplayOrder": 4
   }
 ]

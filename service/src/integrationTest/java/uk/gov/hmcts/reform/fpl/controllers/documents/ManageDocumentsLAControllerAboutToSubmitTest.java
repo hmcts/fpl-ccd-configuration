@@ -20,6 +20,8 @@ import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
+import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
@@ -31,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -51,6 +54,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.ADDITIONAL_
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.HEARING_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.PLACEMENT_NOTICE_RESPONSE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C17A_EXTENSION_OF_ESO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -437,6 +441,72 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
     }
 
     @Test
+    void shouldUpdatePlacements() {
+        Placement placement = Placement.builder()
+            .placementNotice(testDocumentReference())
+            .build();
+        PlacementEventData eventData = PlacementEventData.builder()
+            .placements(wrapElements(placement))
+            .placement(placement)
+            .build();
+        CaseData caseData = CaseData.builder()
+            .manageDocumentLA(buildManagementDocument(PLACEMENT_NOTICE_RESPONSE))
+            .placementEventData(eventData)
+            .placementNoticeResponses(wrapElements(PlacementNoticeDocument.builder()
+                .responseDescription("LA response")
+                .response(testDocumentReference())
+                .build()))
+            .build();
+
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
+        assertThat(responseData.getPlacementEventData().getPlacements().get(0).getValue().getNoticeDocuments())
+            .hasSize(1);
+
+        assertExpectedFieldsAreRemoved(responseData);
+    }
+
+    @Test
+    void shouldNotOverrideExistingCafcassRespondentNotices() {
+        PlacementNoticeDocument laResponseNew = PlacementNoticeDocument.builder()
+            .type(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
+            .build();
+        PlacementNoticeDocument cafcassResponseExisting = PlacementNoticeDocument.builder()
+            .type(PlacementNoticeDocument.RecipientType.CAFCASS)
+            .build();
+        PlacementNoticeDocument respondentResponseExisting = PlacementNoticeDocument.builder()
+            .type(PlacementNoticeDocument.RecipientType.RESPONDENT)
+            .build();
+
+        Placement placement = Placement.builder()
+            .placementNotice(testDocumentReference())
+            .noticeDocuments(wrapElements(cafcassResponseExisting, respondentResponseExisting))
+            .build();
+
+        PlacementEventData eventData = PlacementEventData.builder()
+            .placements(wrapElements(placement))
+            .placement(placement)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(TEST_CASE_ID)
+            .placementEventData(eventData)
+            .manageDocumentLA(buildManagementDocument(ManageDocumentTypeListLA.PLACEMENT_NOTICE_RESPONSE))
+            .placementNoticeResponses(wrapElements(laResponseNew))
+            .build();
+
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        Placement after = responseData.getPlacementEventData().getPlacements().get(0).getValue();
+
+        assertThat(after.getNoticeDocuments()).hasSize(3);
+        assertThat(after.getNoticeDocuments())
+            .extracting(Element::getValue)
+            .containsAll(newArrayList(laResponseNew, cafcassResponseExisting, respondentResponseExisting));
+
+        assertExpectedFieldsAreRemoved(responseData);
+    }
+
+    @Test
     void shouldThrowIllegalStateExceptionIfManageDocumentLAIsNullWhenTryingToGetManageDocumentsType() {
         CaseData caseData = CaseData.builder()
             .manageDocumentLA(null)
@@ -459,6 +529,8 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         assertThat(caseData.getManageDocumentsHearingList()).isNull();
         assertThat(caseData.getManageDocumentsSupportingC2List()).isNull();
         assertThat(caseData.getRespondentStatementList()).isNull();
+        assertThat(caseData.getPlacementNoticeResponses()).isNull();
+        assertThat(caseData.getPlacementList()).isNull();
     }
 
     private HearingBooking buildFinalHearingBooking() {

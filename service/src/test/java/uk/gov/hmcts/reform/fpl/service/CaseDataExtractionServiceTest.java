@@ -109,6 +109,15 @@ class CaseDataExtractionServiceTest {
     }
 
     @Test
+    void shouldReturnTheFormattedDateRangeWhenDurationTypeIsDays() {
+        hearingBooking = createHearingBookingWithTimesOnDifferentDays().toBuilder().hearingDuration("2 days").build();
+
+        final String hearingTime = service.getHearingTime(hearingBooking);
+
+        assertThat(hearingTime).isEqualTo("11 December - 12 December");
+    }
+
+    @Test
     void shouldReturnCourtNameWhenValidLocalAuthority() {
         final CaseData caseData = CaseData.builder().build();
 
