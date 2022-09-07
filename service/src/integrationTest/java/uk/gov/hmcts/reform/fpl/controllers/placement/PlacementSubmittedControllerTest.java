@@ -20,8 +20,6 @@ import uk.gov.hmcts.reform.fpl.controllers.PlacementController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -135,42 +133,9 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
     @Test
     void shouldMakePaymentAndSendNotificationToPartiesAboutSubmittedPlacementApplication() {
 
-        final PlacementNoticeDocument localAuthorityNotice = PlacementNoticeDocument.builder()
-            .type(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
-            .notice(testDocumentReference())
-            .build();
-
-        final PlacementNoticeDocument cafcassNotice = PlacementNoticeDocument.builder()
-            .type(PlacementNoticeDocument.RecipientType.CAFCASS)
-            .notice(DocumentReference.builder()
-                .filename("cafcassNotice")
-                .url("http://cafcassNotice")
-                .binaryUrl("http://cafcassNotice/binary")
-                .build())
-            .build();
-
-        final PlacementNoticeDocument firstParentNotice = PlacementNoticeDocument.builder()
-            .type(PlacementNoticeDocument.RecipientType.PARENT_FIRST)
-            .respondentId(mother.getId())
-            .recipientName("Adam Green - father")
-            .notice(DocumentReference.builder()
-                .filename("fatherNotice")
-                .url("http://fatherNotice")
-                .binaryUrl("http://fatherNotice/binary")
-                .build())
-            .build();
-
-        final PlacementNoticeDocument secondParentNotice = PlacementNoticeDocument.builder()
-            .type(PlacementNoticeDocument.RecipientType.PARENT_SECOND)
-            .respondentId(father.getId())
-            .recipientName("Adam Green - father")
-            .notice(testDocumentReference())
-            .build();
-
         final Placement placement = Placement.builder()
             .childId(child1.getId())
             .application(testDocumentReference())
-            .noticeDocuments(wrapElements(localAuthorityNotice, cafcassNotice, firstParentNotice, secondParentNotice))
             .build();
 
         final PlacementEventData placementEventData = PlacementEventData.builder()
@@ -202,10 +167,6 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
             .thenReturn(FIRST_PARENT_NOTICE_DOCUMENT);
         when(sendLetterApi.sendLetter(anyString(), any(LetterWithPdfsRequest.class)))
             .thenReturn(new SendLetterResponse(LETTER_ID));
-        when(documentDownloadService.downloadDocument(cafcassNotice.getNotice().getBinaryUrl()))
-            .thenReturn(CAFCASS_NOTICE_BINARIES);
-        when(documentDownloadService.downloadDocument(firstParentNotice.getNotice().getBinaryUrl()))
-            .thenReturn(FIRST_PARENT_NOTICE_BINARIES);
 
         postSubmittedEvent(caseData);
 

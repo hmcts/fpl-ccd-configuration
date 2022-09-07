@@ -6,10 +6,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.RemovableType;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.exceptions.removaltool.UnexpectedNumberOfCMOsRemovedException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.RemovalToolData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
@@ -490,7 +492,10 @@ class DraftCMORemovalActionTest {
         Element<HearingOrder> removedOrder = element(alreadyRemovedOrderId, cmo());
 
         CaseData caseData = CaseData.builder()
-            .reasonToRemoveOrder("reason for order removal")
+            .removalToolData(RemovalToolData.builder()
+                .removableType(RemovableType.ORDER)
+                .reasonToRemoveOrder("reason for order removal")
+                .build())
             .draftUploadedCMOs(newArrayList(element(TO_REMOVE_ORDER_ID, cmo())))
             .build();
 
