@@ -81,6 +81,30 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
             TEST_CASE_ID);
     }
 
+    // Same behaviour as solicitior for any document but with LA barrister user
+    @Test
+    void shouldSendEmailsWhenAnyOtherDocumentUploadedByLaBarrister() throws NotificationClientException {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
+        when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.LABARRISTER);
+        postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME_SOLICITOR,
+            false));
+        verifySendingNotificationToAllParties(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
+            TEST_CASE_ID);
+    }
+
+    // Same behaviour as solicitior for any document but with barrister user
+    @Test
+    void shouldSendEmailsWhenAnyOtherDocumentUploadedByBarrister() throws NotificationClientException {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
+        when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.BARRISTER);
+        postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME_SOLICITOR,
+            false));
+        verifySendingNotificationToAllParties(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
+            TEST_CASE_ID);
+    }
+
     // Any other document (document relate to a hearing)
     @Test
     void shouldSendEmailsWhenAnyOtherDocumentFromHearingsUploadedBySolicitor()
@@ -88,6 +112,30 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.SOLICITORA);
+        postSubmittedEvent(buildCallbackRequestForAddingHearingFurtherEvidenceBundle(false));
+        verifySendingNotificationToAllParties(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
+            TEST_CASE_ID);
+    }
+
+    // Check above test with la barrister as behaviour will be identical
+    @Test
+    void shouldSendEmailsWhenAnyOtherDocumentFromHearingsUploadedByLaBarrister()
+        throws NotificationClientException {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
+        given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.LABARRISTER);
+        postSubmittedEvent(buildCallbackRequestForAddingHearingFurtherEvidenceBundle(false));
+        verifySendingNotificationToAllParties(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
+            TEST_CASE_ID);
+    }
+
+    // Same as above but for barrister as behaviour will be identical
+    @Test
+    void shouldSendEmailsWhenAnyOtherDocumentFromHearingsUploadedByBarrister()
+        throws NotificationClientException {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
+        given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
+        givenCaseRoles(TEST_CASE_ID, USER_ID, CaseRole.BARRISTER);
         postSubmittedEvent(buildCallbackRequestForAddingHearingFurtherEvidenceBundle(false));
         verifySendingNotificationToAllParties(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
             TEST_CASE_ID);
