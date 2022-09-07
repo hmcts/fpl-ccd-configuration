@@ -34,7 +34,6 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
@@ -94,7 +93,7 @@ public class CMSReportService {
         log.info("query {}", esQuery.toMap());
 
         SearchResult searchResult = searchService.search(esQuery,
-                50,
+                100,
                 0,
                 buildSortClause());
         log.info("record count {}", searchResult.getTotal());
