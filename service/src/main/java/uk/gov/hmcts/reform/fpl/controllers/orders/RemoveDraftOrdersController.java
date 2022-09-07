@@ -57,7 +57,8 @@ public class RemoveDraftOrdersController extends CallbackController {
         CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
 
         // When dynamic lists are fixed this can be moved into the below method
-        UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
+        UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovalToolData().getRemovableOrderList(),
+            mapper);
         RemovableOrder removableOrder = removeOrderService.getRemovedOrderByUUID(caseData, removedOrderId);
 
         removeOrderService.populateSelectedOrderFields(caseData, caseDetailsMap, removedOrderId, removableOrder);
@@ -71,7 +72,8 @@ public class RemoveDraftOrdersController extends CallbackController {
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
         CaseData caseData = getCaseData(caseDetails);
 
-        UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
+        UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovalToolData().getRemovableOrderList(),
+            mapper);
         RemovableOrder removableOrder = removeOrderService.getRemovedOrderByUUID(caseData, removedOrderId);
 
         removeOrderService.removeOrderFromCase(caseData, caseDetailsMap, removedOrderId, removableOrder);

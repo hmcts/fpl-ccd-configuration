@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.RemovalToolData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -123,7 +124,7 @@ public class RemoveDraftOrdersControllerTest extends AbstractCallbackTest {
                     element(HearingOrdersBundle.builder()
                         .orders(newArrayList(element(selectedRemoveOrderId, draftOrder)))
                         .build())))
-                .removableOrderList(dynamicList)
+                .removalToolData(RemovalToolData.builder().removableOrderList(dynamicList).build())
                 .build();
 
             AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
@@ -176,9 +177,9 @@ public class RemoveDraftOrdersControllerTest extends AbstractCallbackTest {
                     element(hearingOrderBundleId, HearingOrdersBundle.builder().orders(caseManagementOrders).build())
                 ))
                 .hearingDetails(hearingBookings)
-                .removableOrderList(DynamicList.builder()
+                .removalToolData(RemovalToolData.builder().removableOrderList(DynamicList.builder()
                     .value(buildListElement(removedOrderId, "Draft case management order - 15 June 2020"))
-                    .build())
+                    .build()).build())
                 .build();
 
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
