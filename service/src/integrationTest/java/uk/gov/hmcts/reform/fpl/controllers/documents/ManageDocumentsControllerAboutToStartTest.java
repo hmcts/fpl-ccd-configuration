@@ -102,6 +102,7 @@ class ManageDocumentsControllerAboutToStartTest extends AbstractCallbackTest {
             .hasHearings(YES.getValue())
             .hasC2s(YES.getValue())
             .hasConfidentialAddress(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
             .build();
 
         assertThat(hearingDynamicList).isEqualTo(expectedHearingDynamicList);
