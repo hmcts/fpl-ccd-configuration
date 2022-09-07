@@ -106,11 +106,6 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             .containsKeys("temporaryC2Document", "personSelector")
             .containsEntry("amountToPay", "1000")
             .containsEntry("displayAmountToPay", YES.getValue());
-
-        assertThat(String.valueOf(response.getData().get("hasRespondentsOrOthers"))).isEqualTo("Yes");
-        assertThat(String.valueOf(response.getData().get("people_label"))).contains(
-            "Person 1: Respondent 1 - John Smith");
-        assertThat(extractCaseData(response).getPersonSelector()).isEqualTo(Selector.newSelector(1));
     }
 
     @Test

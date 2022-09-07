@@ -112,8 +112,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                 .party(RespondentParty.builder().firstName("Margaret").lastName("Jones").build())
                 .build()
             ))
-            .personSelector(Selector.newSelector(3))
-            .notifyApplicationsToAllOthers(YesNo.YES.getValue()).build();
+            .build();
 
         CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, ADMIN_ROLE));
 
@@ -153,8 +152,6 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .otherApplicant(OTHER_APPLICANT_NAME)
             .representatives(List.of(representative))
             .respondents1(List.of(respondentElement))
-            .personSelector(personSelector)
-            .notifyApplicationsToAllOthers("No")
             .build();
 
         CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, ADMIN_ROLE));
@@ -185,8 +182,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .temporaryOtherApplicationsBundle(createTemporaryOtherApplicationDocument())
             .temporaryPbaPayment(temporaryPbaPayment)
             .applicantsList(createApplicantsDynamicList(APPLICANT))
-            .personSelector(Selector.newSelector(1))
-            .notifyApplicationsToAllOthers("No").build();
+            .build();
 
         CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, ADMIN_ROLE));
 
@@ -239,15 +235,12 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                 "additionalApplicationType", List.of("C2_ORDER"),
                 "temporaryPbaPayment", createPbaPayment(),
                 "amountToPay", "Yes",
-                "temporaryOtherApplicationsBundle", createTemporaryOtherApplicationDocument(),
-                "hasRespondentsOrOthers", "Yes",
-                "people_label", "Other 1: Alex",
-                "notifyApplicationsToAllOthers", "Yes"))
+                "temporaryOtherApplicationsBundle", createTemporaryOtherApplicationDocument()))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails, ADMIN_ROLE);
 
-        assertThat(callbackResponse.getData()).doesNotContainKeys("c2Type", "people_label", "hasRespondentsOrOthers");
+        assertThat(callbackResponse.getData()).doesNotContainKey("c2Type");
 
         CaseData caseData = extractCaseData(callbackResponse);
         assertTemporaryFieldsAreRemoved(caseData);
