@@ -410,10 +410,9 @@ public class MessageJudgeService {
             .map(PlacementConfidentialDocument::getDocument)
             .collect(toCollection(() -> relatedDocuments));
 
-        unwrapElements(placement.getNoticeDocuments()).stream()
-            .map(PlacementNoticeDocument::getNotice)
-            .filter(Objects::nonNull)
-            .collect(toCollection(() -> relatedDocuments));
+        if (placement.getPlacementNotice() != null) {
+            relatedDocuments.add(placement.getPlacementNotice());
+        }
 
         unwrapElements(placement.getNoticeDocuments()).stream()
             .map(PlacementNoticeDocument::getResponse)
@@ -450,12 +449,6 @@ public class MessageJudgeService {
             .map(DocumentReference::getFilename)
             .collect(toList());
 
-        final List<String> notices = unwrapElements(placement.getNoticeDocuments()).stream()
-            .map(PlacementNoticeDocument::getNotice)
-            .filter(Objects::nonNull)
-            .map(DocumentReference::getFilename)
-            .collect(toList());
-
         final List<String> noticesResponses = unwrapElements(placement.getNoticeDocuments()).stream()
             .map(PlacementNoticeDocument::getResponse)
             .filter(Objects::nonNull)
@@ -474,12 +467,12 @@ public class MessageJudgeService {
             fileNamesBuilder.append("\nConfidential documents: " + join(", ", confidentialDocuments));
         }
 
-        if (ObjectUtils.isNotEmpty(notices)) {
-            fileNamesBuilder.append("\nNotices: " + join(", ", notices));
+        if (placement.getPlacementNotice() != null) {
+            fileNamesBuilder.append("\nNotice: " + placement.getPlacementNotice().getFilename());
         }
 
         if (ObjectUtils.isNotEmpty(noticesResponses)) {
-            fileNamesBuilder.append("\nNotices responses: " + join(", ", noticesResponses));
+            fileNamesBuilder.append("\nNotice responses: " + join(", ", noticesResponses));
         }
 
         return fileNamesBuilder.toString();
