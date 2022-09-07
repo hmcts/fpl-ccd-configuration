@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers.orders;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,16 +17,16 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.service.CaseConverter;
-import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
-import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.removeorder.RemoveOrderService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
+import java.util.UUID;
 
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
 
 @Api
 @RestController
@@ -33,10 +34,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class RemoveDraftOrdersController extends CallbackController {
 
-    private final DraftOrderService service;
-    private final CaseConverter caseConverter;
-    private final DocumentListService documentListService;
     private final RemoveOrderService removeOrderService;
+    private final ObjectMapper mapper;
 
     @PostMapping("/about-to-start")
     public CallbackResponse handlePopulateInitialData(@RequestBody CallbackRequest request) {
@@ -57,20 +56,35 @@ public class RemoveDraftOrdersController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
 
+        // When dynamic lists are fixed this can be moved into the below method
+        UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
+        RemovableOrder removableOrder = removeOrderService.getRemovedOrderByUUID(caseData, removedOrderId);
+
+        removeOrderService.populateSelectedOrderFields(caseData, caseDetailsMap, removedOrderId, removableOrder);
+
         return respond(caseDetailsMap);
     }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
         CaseData caseData = getCaseData(caseDetails);
 
-        return respond(caseDetails);
-    }
+        UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
+        RemovableOrder removableOrder = removeOrderService.getRemovedOrderByUUID(caseData, removedOrderId);
 
-    @PostMapping("/submitted")
-    public void handleSubmitted(@RequestBody CallbackRequest request) {
-        CaseData caseDataBefore = getCaseDataBefore(request);
-        CaseData caseData = getCaseData(request);
+        removeOrderService.removeOrderFromCase(caseData, caseDetailsMap, removedOrderId, removableOrder);
+
+        removeTemporaryFields(
+            caseDetailsMap,
+            "removableOrderList",
+            "orderToBeRemoved",
+            "orderTitleToBeRemoved",
+            "showRemoveCMOFieldsFlag",
+            "showReasonFieldFlag"
+        );
+
+        return respond(caseDetailsMap);
     }
 }
