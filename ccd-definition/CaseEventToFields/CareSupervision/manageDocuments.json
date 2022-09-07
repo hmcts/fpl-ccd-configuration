@@ -42,6 +42,32 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsPlacementList",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY",
+    "PageID": "ManageDocumentType",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "manageDocument.type=\"PLACEMENT_NOTICE_RESPONSE\" AND manageDocument.hasPlacementNotices=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsNoPlacementNoticesLabel",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": "ManageDocumentType",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "manageDocument.type=\"PLACEMENT_NOTICE_RESPONSE\" AND manageDocument.hasPlacementNotices=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageDocuments",
     "CaseFieldID": "languageRequirement",
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "READONLY",
@@ -155,7 +181,7 @@
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
     "FieldShowCondition": "manageDocument.type=\"FURTHER_EVIDENCE_DOCUMENTS\" AND manageDocumentSubtypeList!=\"RESPONDENT_STATEMENT\"",
-    "PageShowCondition": "manageDocument.type!=\"HEARING_DOCUMENTS\"",
+    "PageShowCondition": "manageDocument.type!=\"HEARING_DOCUMENTS\" AND manageDocument.type!=\"PLACEMENT_NOTICE_RESPONSE\"",
     "Comment": "PageShowCondition condition added to force redirect to first page when page refreshed",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents/validate-supporting-evidence/mid-event"
   },
@@ -311,5 +337,31 @@
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "placementNoticeResponses",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "COMPLEX",
+    "PageID": "PlacementNoticeResponses",
+    "PageDisplayOrder": 5,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
+    "PageShowCondition": "manageDocument.type=\"PLACEMENT_NOTICE_RESPONSE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "placement",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": "PlacementNoticeResponses",
+    "PageDisplayOrder": 5,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "manageDocument.type=\"DO_NOT_SHOW\""
   }
 ]
