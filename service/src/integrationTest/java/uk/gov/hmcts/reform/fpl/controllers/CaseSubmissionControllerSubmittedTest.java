@@ -620,7 +620,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     void shouldPopulateResponseWithMarkdown() {
         String caseName = "Names are hard";
 
-        CaseDetails caseDetails = populatedCaseDetails( Map.of("caseName", caseName));
+        CaseDetails caseDetails = populatedCaseDetails(Map.of("caseName", caseName));
         caseDetails.getData().put("representativeType", RepresentativeType.LOCAL_AUTHORITY);
 
         CallbackRequest request = buildCallbackRequest(caseDetails, OPEN);
