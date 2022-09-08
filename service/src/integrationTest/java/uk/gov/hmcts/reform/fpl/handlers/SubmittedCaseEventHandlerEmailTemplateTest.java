@@ -8,6 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -64,6 +65,7 @@ class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final CaseData CASE_DATA = CaseData.builder()
         .id(123L)
         .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+        .representativeType(RepresentativeType.LOCAL_AUTHORITY)
         .respondents1(wrapElements(Respondent.builder()
             .party(RespondentParty.builder().lastName(RESPONDENT_LAST_NAME).build())
             .build()))
