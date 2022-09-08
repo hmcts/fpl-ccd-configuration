@@ -145,7 +145,6 @@ public class CMSReportService {
             result.append("</table>");
         }
 
-
         return String.join("",
                 "Total record count : ",
                 String.valueOf(searchResult.getTotal()),
@@ -153,23 +152,28 @@ public class CMSReportService {
                 result);
     }
 
-    private Optional<HearingInfo> getHearingInfo(CaseData caseData) {
-
+    public Optional<HearingInfo> getHearingInfo(CaseData caseData) {
         LocalDate dateSubmitted = caseData.getDateSubmitted();
 
-        BiPredicate<Optional<HearingBooking>, Integer> withinCutOff = (optionalHearingBooking, noOfDays) ->  optionalHearingBooking.filter(hearingBooking ->
-                hearingBooking.getStartDate().toLocalDate().isBefore(dateSubmitted.plusDays(noOfDays))).isPresent();
+        BiPredicate<Optional<HearingBooking>, Integer> withinCutOff = (optionalHearingBooking, noOfDays) ->
+            Optional.ofNullable(optionalHearingBooking)
+                    .map(Optional::get)
+                    .filter(hearingBooking ->
+                        hearingBooking.getStartDate().toLocalDate().isBefore(dateSubmitted.plusDays(noOfDays)))
+                    .isPresent();
 
-        BiFunction<Optional<HearingBooking>, Integer, Optional<HearingBooking>> getHearingBooking = (optionalHearingBooking, noOfDays) -> optionalHearingBooking.filter(hearingBooking ->
-                hearingBooking.getStartDate().toLocalDate().isAfter(dateSubmitted.plusDays(noOfDays)));
+        BiFunction<Optional<HearingBooking>, Integer, Optional<HearingBooking>> getHearingBooking = (optionalHearingBooking, noOfDays) ->
+            Optional.ofNullable(optionalHearingBooking).map(Optional::get)
+                    .filter(hearingBooking ->
+                        hearingBooking.getStartDate().toLocalDate().isAfter(dateSubmitted.plusDays(noOfDays)));
 
         List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
 
         Map<HearingType, Optional<HearingBooking>> hearingByType = ElementUtils.nullSafeCollection(hearingDetails).stream()
-                .filter(hearingDetail -> REQUIRED_HEARING_TYPE.contains(hearingDetail.getValue().getType()))
-                .map(Element::getValue)
-                .collect(Collectors.groupingBy(HearingBooking::getType,
-                        Collectors.maxBy(Comparator.comparing(HearingBooking::getStartDate))));
+            .filter(hearingDetail -> REQUIRED_HEARING_TYPE.contains(hearingDetail.getValue().getType()))
+            .map(Element::getValue)
+            .collect(Collectors.groupingBy(HearingBooking::getType,
+                    Collectors.maxBy(Comparator.comparing(HearingBooking::getStartDate))));
 
         if (withinCutOff.test(hearingByType.get(FINAL), FINAL_CUTOFF_DAYS)) {
             return Optional.empty();
@@ -191,8 +195,8 @@ public class CMSReportService {
                 (currentHearing, previousHearing) -> currentHearing.map(hearingBooking -> HearingInfo.builder()
                 .nextHearing(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), "dd-MM-yyyy"))
                 .lastHearing(
-                        previousHearing.map(issueBooking ->
-                                formatLocalDateToString(issueBooking.getStartDate().toLocalDate(), "dd-MM-yyyy")).orElse("-"))
+                    previousHearing.map(issueBooking ->
+                        formatLocalDateToString(issueBooking.getStartDate().toLocalDate(), "dd-MM-yyyy")).orElse("-"))
                 .ploStage(hearingBooking.getType().getLabel())
                 .build());
 
@@ -223,10 +227,9 @@ public class CMSReportService {
         TermQuery termQuery = TermQuery.of(MATCH_FIELD, courtId);
         TermsQuery termsQuery = TermsQuery.of("state", REQUIRED_STATES);
 
-
         Filter filter = Filter.builder().
-                clauses(List.of(termQuery, termsQuery, rangeQuery))
-                .build();
+            clauses(List.of(termQuery, termsQuery, rangeQuery))
+            .build();
 
         return BooleanQuery.builder()
                 .filter(filter)
