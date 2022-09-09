@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +19,7 @@ public class HearingDocument extends DocumentMetaData {
     protected String hearing;
     protected DocumentReference document;
     protected String hasConfidentialAddress;
+    protected List<String> documentAcknowledge;
 
     public String getHasConfidentialAddress() {
         return (document != null && (!YesNo.isYesOrNo(hasConfidentialAddress)))
