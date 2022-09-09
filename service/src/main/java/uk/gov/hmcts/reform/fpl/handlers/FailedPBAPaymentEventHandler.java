@@ -44,11 +44,7 @@ public class FailedPBAPaymentEventHandler {
     public void notifyApplicant(FailedPBAPaymentEvent event) {
         CaseData caseData = event.getCaseData();
         if (event.getApplicationTypes().contains(ApplicationType.C110A_APPLICATION)) {
-            if (caseData.getRepresentativeType().equals(RepresentativeType.LOCAL_AUTHORITY)) {
-                notifyDesignatedLocalAuthority(event, APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA);
-            } else {
-                notifyApplicant(caseData, event);
-            }
+            notifyApplicant(caseData, event, APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA);
         } else {
             OrderApplicant applicant = event.getApplicant();
             if (applicant.getType() == ApplicantType.LOCAL_AUTHORITY) {
@@ -61,6 +57,14 @@ public class FailedPBAPaymentEventHandler {
                     notifyRespondent(event, emails.get(applicant.getName()));
                 }
             }
+        }
+    }
+
+    private void notifyApplicant(CaseData caseData, FailedPBAPaymentEvent event, String template) {
+        if (caseData.getRepresentativeType().equals(RepresentativeType.LOCAL_AUTHORITY)) {
+            notifyDesignatedLocalAuthority(event, template);
+        } else {
+            notifySolicitor(caseData, event, template);
         }
     }
 
@@ -103,7 +107,7 @@ public class FailedPBAPaymentEventHandler {
             email, parameters, event.getCaseData().getId().toString());
     }
 
-    private void notifyApplicant(CaseData caseData, FailedPBAPaymentEvent event) {
+    private void notifySolicitor(CaseData caseData, FailedPBAPaymentEvent event, String template) {
         String email = nonNull(getApplicant(caseData)) ? getApplicant(caseData).getEmail() : null;
 
         if (isNull(email)) {
@@ -113,8 +117,7 @@ public class FailedPBAPaymentEventHandler {
         FailedPBANotificationData parameters = notificationContent
             .getApplicantNotifyData(event.getApplicationTypes(), event.getCaseData());
 
-        notificationService.sendEmail(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
-            email, parameters, caseData.getId().toString());
+        notificationService.sendEmail(template, email, parameters, caseData.getId().toString());
     }
 
     private Map<String, String> getRespondentsEmails(CaseData caseData) {
