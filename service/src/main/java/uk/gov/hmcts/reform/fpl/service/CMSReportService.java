@@ -72,11 +72,20 @@ public class CMSReportService {
             "</td>");
 
     public String getReport(CaseData caseData)  {
+        CMSReportEventData cmsReportEventData = caseData.getCmsReportEventData();
         try {
-            return getReportCasesAtRisk(caseData, (complianceDeadline) ->  RangeQuery.builder()
-                    .field(RANGE_FIELD)
-                    .greaterThanOrEqual(complianceDeadline)
-                    .build());
+            if ("AT_RISK".equals(cmsReportEventData.getReportType())) {
+                return getReportCasesAtRisk(caseData, (complianceDeadline) -> RangeQuery.builder()
+                        .field(RANGE_FIELD)
+                        .greaterThanOrEqual(complianceDeadline)
+                        .build());
+            } else if ("MISSING_TIMETABLE".equals(cmsReportEventData.getReportType())) {
+                return getReportCasesAtRisk(caseData, (complianceDeadline) -> RangeQuery.builder()
+                        .field(RANGE_FIELD)
+                        .lessThan(complianceDeadline)
+                        .build());
+            }
+            throw new IllegalArgumentException("Requested unknown report type:" + cmsReportEventData.getReportType());
         } catch (JsonProcessingException e) {
             log.error("Exception e", e);
             throw new RuntimeException(e.getMessage());

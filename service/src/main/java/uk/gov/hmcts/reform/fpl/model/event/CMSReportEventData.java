@@ -17,4 +17,6 @@ public class CMSReportEventData {
     private String swanseaDFJCourts;
     @Temp
     private String centralLondonDFJCourts;
+    @Temp
+    private String reportType;
 }

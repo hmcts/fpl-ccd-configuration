@@ -104,6 +104,18 @@
     "FieldShowCondition" : "WalesDJF = \"SWANSEA\""
   },
   {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "cmsReport",
+    "CaseFieldID": "reportType",
+    "PageFieldDisplayOrder": 4,
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageLabel": "",
+    "PageDisplayOrder": 1,
+    "ShowSummaryChangeOption": "No"
+  },
+  {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "cmsReport",

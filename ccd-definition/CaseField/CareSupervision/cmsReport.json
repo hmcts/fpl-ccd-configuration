@@ -82,6 +82,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "reportType",
+    "Label": "Select report type",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "ReportType",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "cmsReportDetails",
     "Label": "CMS report",
     "FieldType": "Text",

@@ -53,6 +53,7 @@ class CMSReportServiceTest {
         LocalDate submittedDate = LocalDate.now().minusWeeks(24);
         CMSReportEventData cmsReportEventData = CMSReportEventData.builder()
                 .swanseaDFJCourts("344")
+                .reportType("MISSING_TIMETABLE")
                 .build();
 
         CaseData caseDataSelected = CaseData.builder()
