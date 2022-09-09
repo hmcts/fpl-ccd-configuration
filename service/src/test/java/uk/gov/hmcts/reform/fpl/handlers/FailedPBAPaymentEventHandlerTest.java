@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
@@ -86,6 +87,7 @@ class FailedPBAPaymentEventHandlerTest {
             .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .caseLocalAuthorityName(LOCAL_AUTHORITY_NAME)
+            .representativeType(RepresentativeType.LOCAL_AUTHORITY)
             .respondents1(wrapElements(
                 Respondent.builder().party(RespondentParty.builder().firstName("John").lastName("Smith").build())
                     .solicitor(RespondentSolicitor.builder().email(RESPONDENT_EMAIL).build()).build(),
