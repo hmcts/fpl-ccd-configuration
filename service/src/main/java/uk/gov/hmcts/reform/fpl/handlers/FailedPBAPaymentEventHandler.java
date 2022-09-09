@@ -44,7 +44,7 @@ public class FailedPBAPaymentEventHandler {
     public void notifyApplicant(FailedPBAPaymentEvent event) {
         CaseData caseData = event.getCaseData();
         if (event.getApplicationTypes().contains(ApplicationType.C110A_APPLICATION)) {
-            notifyApplicant(caseData, event, APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA);
+            notifyApplicants(caseData, event, APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA);
         } else {
             OrderApplicant applicant = event.getApplicant();
             if (applicant.getType() == ApplicantType.LOCAL_AUTHORITY) {
@@ -60,7 +60,7 @@ public class FailedPBAPaymentEventHandler {
         }
     }
 
-    private void notifyApplicant(CaseData caseData, FailedPBAPaymentEvent event, String template) {
+    private void notifyApplicants(CaseData caseData, FailedPBAPaymentEvent event, String template) {
         if (caseData.getRepresentativeType().equals(RepresentativeType.LOCAL_AUTHORITY)) {
             notifyDesignatedLocalAuthority(event, template);
         } else {
