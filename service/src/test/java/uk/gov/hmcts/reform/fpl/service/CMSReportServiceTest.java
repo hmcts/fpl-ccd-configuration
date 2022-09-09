@@ -33,6 +33,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @ExtendWith(MockitoExtension.class)
 class CMSReportServiceTest {
@@ -180,10 +181,10 @@ class CMSReportServiceTest {
 
 
     @Test
-    void shouldReturnHearingWithCaseManagementHearingHearingDetail() {
+    void shouldReturnHearingWithCaseManagementHearingDetailLastHearingDate() {
         LocalDate submittedDate = LocalDate.parse("04-05-2022" , DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         LocalDateTime firstCaseManagementHearing = LocalDateTime.of(
-                LocalDate.parse("22-09-2022" , DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+                LocalDate.parse("22-08-2022" , DateTimeFormatter.ofPattern("dd-MM-yyyy")),
                 LocalTime.now());
         LocalDateTime secondCaseManagementHearing = LocalDateTime.of(
                 LocalDate.parse("18-06-2022" , DateTimeFormatter.ofPattern("dd-MM-yyyy")),
@@ -197,11 +198,28 @@ class CMSReportServiceTest {
         Optional<HearingInfo> hearingInfo = service.getHearingInfo(caseData);
         assertTrue(hearingInfo.isPresent());
         assertThat(hearingInfo.get().getPloStage()).isEqualTo(CASE_MANAGEMENT.getLabel());
-        assertThat(hearingInfo.get().getLastHearing()).isEqualTo("22-09-2022");
+        assertThat(hearingInfo.get().getLastHearing()).isEqualTo("22-08-2022");
     }
 
     @Test
-    void shouldReturnHearingWithEmptyCaseManagementHearingHearingDetail() {
+    void shouldReturnHearingWithCaseManagementHearingDetailNextHearingDate() {
+        LocalDate submittedDate = LocalDate.now().minusWeeks(24);
+
+        LocalDateTime firstCaseManagementHearing = LocalDateTime.now().plusDays(30);
+
+        List<Element<HearingBooking>> hearingBooking = ElementUtils.wrapElements(
+                List.of(createHearingBooking(CASE_MANAGEMENT, firstCaseManagementHearing)));
+        CaseData caseData = getCaseData(hearingBooking, submittedDate);
+
+        Optional<HearingInfo> hearingInfo = service.getHearingInfo(caseData);
+        assertTrue(hearingInfo.isPresent());
+        assertThat(hearingInfo.get().getPloStage()).isEqualTo(CASE_MANAGEMENT.getLabel());
+        assertThat(hearingInfo.get().getNextHearing())
+                .isEqualTo(formatLocalDateToString(firstCaseManagementHearing.toLocalDate(), "dd-MM-yyyy"));
+    }
+
+    @Test
+    void shouldReturnHearingWithEmptyCaseManagementHearingDetail() {
         LocalDate submittedDate = LocalDate.parse("04-05-2022" , DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         LocalDateTime firstCaseManagementHearing = LocalDateTime.of(
                 LocalDate.parse("26-05-2022" , DateTimeFormatter.ofPattern("dd-MM-yyyy")),

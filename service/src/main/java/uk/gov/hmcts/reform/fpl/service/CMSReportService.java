@@ -206,10 +206,21 @@ public class CMSReportService {
             hearingInfo = getHearingInfo.apply(issueResolutionBooking, caseManagementBooking);
 
             if (hearingInfo.isEmpty()) {
-                hearingInfo = caseManagementBooking.map(hearingBooking -> HearingInfo.builder()
-                    .lastHearing(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), "dd-MM-yyyy"))
-                    .ploStage(hearingBooking.getType().getLabel())
-                    .build());
+                Optional<HearingInfo.HearingInfoBuilder> hearingInfoBuilderOptional = caseManagementBooking.map(hearingBooking -> HearingInfo.builder()
+                        .ploStage(hearingBooking.getType().getLabel()));
+
+                boolean isFutureDate = caseManagementBooking.filter(
+                        hearingBooking -> hearingBooking.getStartDate().toLocalDate().isAfter(LocalDate.now())).isPresent();
+
+                if (hearingInfoBuilderOptional.isPresent() && isFutureDate) {
+                    hearingInfo = caseManagementBooking.map(hearingBooking ->
+                            hearingInfoBuilderOptional.get().nextHearing(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), "dd-MM-yyyy"))
+                                    .build());
+                } else {
+                    hearingInfo = caseManagementBooking.map(hearingBooking ->
+                            hearingInfoBuilderOptional.get().lastHearing(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), "dd-MM-yyyy"))
+                                    .build());
+                }
             }
         }
 
