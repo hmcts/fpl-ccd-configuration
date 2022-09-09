@@ -47,7 +47,7 @@ public class FailedPBAPaymentEventHandler {
             if (caseData.getRepresentativeType().equals(RepresentativeType.LOCAL_AUTHORITY)) {
                 notifyDesignatedLocalAuthority(event, APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA);
             } else {
-                notifyApplicant(caseData, event, APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA);
+                notifyApplicant(caseData, event);
             }
         } else {
             OrderApplicant applicant = event.getApplicant();
@@ -103,7 +103,7 @@ public class FailedPBAPaymentEventHandler {
             email, parameters, event.getCaseData().getId().toString());
     }
 
-    private void notifyApplicant(CaseData caseData, FailedPBAPaymentEvent event, String template) {
+    private void notifyApplicant(CaseData caseData, FailedPBAPaymentEvent event) {
         String email = nonNull(getApplicant(caseData)) ? getApplicant(caseData).getEmail() : null;
 
         if (isNull(email)) {
@@ -113,7 +113,8 @@ public class FailedPBAPaymentEventHandler {
         FailedPBANotificationData parameters = notificationContent
             .getApplicantNotifyData(event.getApplicationTypes(), event.getCaseData());
 
-        notificationService.sendEmail(template, email, parameters, caseData.getId().toString());
+        notificationService.sendEmail(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
+            email, parameters, caseData.getId().toString());
     }
 
     private Map<String, String> getRespondentsEmails(CaseData caseData) {
