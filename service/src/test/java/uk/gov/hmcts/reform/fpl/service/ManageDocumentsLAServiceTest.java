@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -45,6 +46,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class ManageDocumentsLAServiceTest {
+
+    @Mock
+    private PlacementService placementService;
 
     private final ManageDocumentLAService manageDocumentLAService = new ManageDocumentLAService(new ObjectMapper());
 
@@ -106,6 +110,7 @@ class ManageDocumentsLAServiceTest {
             .hasHearings(YES.getValue())
             .hasC2s(YES.getValue())
             .hasConfidentialAddress(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
             .build();
 
         Map<String, Object> listAndLabel = manageDocumentLAService.baseEventData(caseData);
@@ -123,6 +128,7 @@ class ManageDocumentsLAServiceTest {
         ManageDocumentLA expectedManageDocument = ManageDocumentLA.builder()
             .hasHearings(NO.getValue())
             .hasC2s(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
             .hasConfidentialAddress(NO.getValue())
             .build();
 
@@ -139,6 +145,7 @@ class ManageDocumentsLAServiceTest {
         ManageDocumentLA expectedManageDocument = ManageDocumentLA.builder()
             .hasHearings(NO.getValue())
             .hasC2s(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
             .hasConfidentialAddress(NO.getValue())
             .build();
 
