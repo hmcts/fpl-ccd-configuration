@@ -1039,5 +1039,31 @@
     "PageColumnNumber": 1,
     "FieldShowCondition": "orderTempQuestions.manageOrdersChildAssessment=\"YES\" AND manageOrdersDoesCostOrderExist=\"Yes\"",
     "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersPartyGrantedLeave",
+    "PageFieldDisplayOrder": 73,
+    "DisplayContext": "MANDATORY",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "orderTempQuestions.leaveToChangeChildSurname=\"YES\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersChildNewSurname",
+    "PageFieldDisplayOrder": 74,
+    "DisplayContext": "MANDATORY",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "orderTempQuestions.leaveToChangeChildSurname=\"YES\"",
+    "ShowSummaryChangeOption": "Y"
   }
 ]
