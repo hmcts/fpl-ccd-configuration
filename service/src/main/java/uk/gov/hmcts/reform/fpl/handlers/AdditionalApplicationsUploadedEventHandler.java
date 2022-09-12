@@ -81,7 +81,7 @@ public class AdditionalApplicationsUploadedEventHandler {
         AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
         final List<DocumentReference> documents = getApplicationDocuments(uploadedBundle);
 
-        Set<Recipient> recipientsToNotify = getRecipientsToNotifyByPost(caseData, uploadedBundle);
+        Set<Recipient> recipientsToNotify = getRecipientsToNotifyByPost(caseData);
         sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(recipientsToNotify));
     }
 
@@ -122,15 +122,8 @@ public class AdditionalApplicationsUploadedEventHandler {
         }
     }
 
-    //DOUBLE CHECK NO OTHERS ARE INCLUDED IN THIS LIST
-    private Set<Recipient> getRecipientsToNotifyByPost(CaseData caseData, AdditionalApplicationsBundle uploadedBundle) {
-        Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
-
-        List<Element<Respondent>> respondentsInCase = getRespondents(uploadedBundle);
-
-        allRecipients.addAll(representativesInbox.getRecipientsWithNoRepresentation(respondentsInCase));
-
-        return allRecipients;
+    private Set<Recipient> getRecipientsToNotifyByPost(CaseData caseData) {
+        return new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
     }
 
     @EventListener
@@ -210,6 +203,13 @@ public class AdditionalApplicationsUploadedEventHandler {
     private Set<String> getRepresentativesEmails(CaseData caseData,
                                                  RepresentativeServingPreferences servingPreference) {
         Set<String> digitalRepresentatives = representativesInbox.getEmailsByPreference(caseData, servingPreference);
+
+        // Using this to ensure all others are removed, this will be deprecated once other flows
+        // are updated to not notify others.
+        Set<String> nonSelectedOthers = otherRecipientsInbox.getNonSelectedRecipients(
+            servingPreference, caseData, new ArrayList<>(), element -> element.getValue().getEmail()
+        );
+        digitalRepresentatives.removeAll(nonSelectedOthers);
 
         return digitalRepresentatives;
     }
