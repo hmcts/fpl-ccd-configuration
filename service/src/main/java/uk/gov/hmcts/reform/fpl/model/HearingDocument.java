@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,6 +8,8 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentMetaData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
