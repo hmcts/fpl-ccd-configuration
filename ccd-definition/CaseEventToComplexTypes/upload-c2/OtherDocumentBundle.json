@@ -35,6 +35,27 @@
     "ID": "OtherDocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "ListElementCode": "documentAcknowledgeLabel",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "ListElementCode": "documentAcknowledge",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD",
+    "FieldShowCondition": "name!=\"SHOW_IN_EVENT_ONLY\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
     "ListElementCode": "urgencyTimeFrameType",
     "EventElementLabel": "Please state how soon you want the judge to consider your application?",
     "FieldDisplayOrder": "4",

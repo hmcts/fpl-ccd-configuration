@@ -44,6 +44,7 @@ public class OtherApplicationsBundle implements ApplicationsBundle {
     private final String othersNotified;
     private final List<Element<Other>> others;
     private final List<Element<Respondent>> respondents;
+    private final List<String> documentAcknowledge;
 
     public String toLabel() {
         return format("%s, %s",
