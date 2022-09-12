@@ -1,3 +1,6 @@
+server:
+  port: 4013
+
 spring:
   security:
     enabled: true
@@ -20,24 +23,24 @@ logging:
 
 idam:
   api:
-    url: http://localhost:5000
+    url: ${IDAM_API_BASE_URL:http://localhost:5000}
   s2s-auth:
-    url: http://localhost:4502
-    totp_secret: AABBCCDDEEFFGGHH
+    microservice: fpl_case_service
+    url: ${IDAM_S2S_URL:http://localhost:4502}
+    totp_secret: ${S2S_KEY:AABBCCDDEEFFGGHH}
   client:
-    id: fpl
-    redirect_uri: https://localhost:9000/oauth2/callback
-    secret: OOOOOOOOOOOOOOOO
+    id: fpl_case_service
+    redirect_uri: ${IDAM_S2S_URL_REDIRECT:https://localhost:9000/oauth2/callback}
+    secret: ${IDAM_CLIENT_SECRET_FPL:AAAAAAAAAAAAAAAA}
 
 auth:
   idam:
     client:
-      baseUrl: http://localhost:5000
+      baseUrl: ${IDAM_API_BASE_URL:http://localhost:5000}
   provider:
     service:
       client:
-        baseUrl: http://localhost:4502
-
+        baseUrl: ${IDAM_S2S_URL:http://localhost:4502}
 
 core_case_data:
   api:
@@ -53,7 +56,7 @@ docmosis:
     key: ACCESS_KEY
 
 document_management:
-  url: http://localhost:3453
+  url: ${DOCUMENT_MANAGEMENT_URL:http://localhost:3453}
 
 gateway:
   url: http://localhost:3453
@@ -63,7 +66,7 @@ notify:
 
 rd_professional:
   api:
-    url: http://localhost:8765
+    url: ${RD_PROFESSIONAL_API_URL:http://localhost:8765}
 
 fees-register:
   api:

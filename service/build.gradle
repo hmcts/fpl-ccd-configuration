@@ -34,7 +34,7 @@ apply plugin: 'au.com.dius.pact'
 group = 'uk.gov.hmcts.reform'
 version = '1.0.0'
 
-def mirrorHost = System.env.NONPROD_SUBSCRIPTION_NAME == "sandbox" ? "artifactory.sandbox" : "artifactory";
+def mirrorHost = System.env.NONPROD_SUBSCRIPTION_NAME == "sandbox" ? "artifactory.sandbox" : "artifactory"
 def mirrorUrl = "https://${mirrorHost}.platform.hmcts.net/artifactory/maven-remotes"
 
 sourceSets {
@@ -453,17 +453,42 @@ task generateXls(type: Exec) {
   args definitionDir, xls, '-e *-prod.json,*-shuttered.json'
   inputs.dir definitionDir
   outputs.file xls
-  environment "CCD_DEF_CASE_SERVICE_BASE_URL", "http://localhost:4013"
+}
+
+task loadEnvSecrets() {
+  doLast {
+    if (!project.file('../build/cftlib/.aat-env').exists()) {
+      new ByteArrayOutputStream().withStream { os ->
+        exec {
+          commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'fpl-aat', '-o', 'tsv', '--query', 'value', '--name', 'fpl-cftlib-aat-env'
+          standardOutput = os
+        }
+        project.file('../build/cftlib/.aat-env').write(new String(os.toString().replace('\n', '').decodeBase64(), java.nio.charset.StandardCharsets.UTF_8))
+      }
+    }
+  }
 }
 
 bootWithCCD {
-  dependsOn tasks.generateXls
-  environment "FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING", "EX=>cafcass:cafcass@cafcass.com"
-  environment "FPL_LOCAL_AUTHORITY_USER_MAPPING", "EX=>1,2,3"
-  environment "spring.profiles.active", "feature-toggle,local,user-mappings"
-  environment 'rse.lib.stub.s2s', 'true'
-  environment 'DOCUMENT_MANAGEMENT_URL', 'http://dm-store-aat.service.core-compute-aat.internal'
-  environment 'SEND_LETTER_URL', 'http://dm-store-aat.service.core-compute-aat.internal'
+  group = 'ccd tasks'
+  dependsOn(tasks.loadEnvSecrets, tasks.generateXls)
+
+  doFirst() {
+    project.file('../build/cftlib/.aat-env').readLines().each() {
+      if (it.contains("=")){
+        def index = it.indexOf("=")
+        def key = it.substring(0, index)
+        def value = it.substring(index + 1)
+        environment key, value
+      }
+    }
+    environment "FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING", "EX=>cafcass:cafcass@cafcass.com"
+    environment "FPL_LOCAL_AUTHORITY_USER_MAPPING", "EX=>1,2,3"
+    environment "spring.profiles.active", "feature-toggle,local,user-mappings"
+    environment 'rse.lib.stub.s2s', 'true'
+    environment 'DOCUMENT_MANAGEMENT_URL', 'http://dm-store-aat.service.core-compute-aat.internal'
+    environment 'SEND_LETTER_URL', 'http://dm-store-aat.service.core-compute-aat.internal'
+  }
 }
 
 processCftlibResources {
