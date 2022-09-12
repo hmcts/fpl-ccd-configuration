@@ -224,10 +224,12 @@ public class CMSReportService {
                 if (hearingInfoBuilderOptional.isPresent() && isFutureDate) {
                     hearingInfo = caseManagementBooking.map(hearingBooking ->
                             hearingInfoBuilderOptional.get().nextHearing(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), "dd-MM-yyyy"))
+                                    .lastHearing("-")
                                     .build());
                 } else {
                     hearingInfo = caseManagementBooking.map(hearingBooking ->
                             hearingInfoBuilderOptional.get().lastHearing(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), "dd-MM-yyyy"))
+                                    .nextHearing("-")
                                     .build());
                 }
             }
