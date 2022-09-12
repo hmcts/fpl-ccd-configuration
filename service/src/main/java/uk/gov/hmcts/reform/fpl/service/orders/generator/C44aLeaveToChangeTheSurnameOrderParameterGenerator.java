@@ -34,7 +34,7 @@ public class C44aLeaveToChangeTheSurnameOrderParameterGenerator implements Docmo
         ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
 
         return C44aLeaveToChangeTheSurnameOrderDocmosisParameters.builder()
-            .orderTitle(Order.C43A_SPECIAL_GUARDIANSHIP_ORDER.getTitle())
+            .orderTitle(Order.C44A_LEAVE_TO_CHANGE_A_SURNAME.getTitle())
             .orderByConsent(orderMessageGenerator.getOrderByConsentMessage(eventData))
             .orderDetails(orderMessageGenerator.formatOrderMessage(caseData,
                 format("The Court grants leave to %s to change the ${childOrChildren} surname to %s",
