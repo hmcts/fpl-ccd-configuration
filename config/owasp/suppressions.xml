@@ -211,4 +211,11 @@
    <packageUrl regex="true">^pkg:maven/org\.postgresql/postgresql@.*$</packageUrl>
    <vulnerabilityName>CVE-2022-31197</vulnerabilityName>
 </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: launchdarkly-java-server-sdk-5.6.2.jar (shaded: org.yaml:snakeyaml:1.26)
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
+    <cpe>cpe:/a:snakeyaml_project:snakeyaml</cpe>
+  </suppress>
 </suppressions>
