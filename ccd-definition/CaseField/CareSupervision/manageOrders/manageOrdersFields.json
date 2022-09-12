@@ -159,25 +159,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "manageOrdersDocumentAckLabel",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "FieldType": "Label",
-    "Label": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "manageOrdersDocumentAck",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "FieldType": "MultiSelectList",
-    "Label": "Tick to confirm this document is related o Familyman Case number/Names/CCD",
-    "FieldTypeParameter": "DocumentAcknowledge",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
     "ID": "orderPreview",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "Document",
