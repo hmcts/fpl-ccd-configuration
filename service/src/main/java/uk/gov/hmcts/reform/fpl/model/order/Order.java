@@ -246,7 +246,6 @@ public enum Order {
         List.of(
             APPROVER,
             APPROVAL_DATE,
-            LINKED_TO_HEARING,
             WHICH_CHILDREN,
             LEAVE_TO_CHANGE_CHILD_SURNAME,
             ORDER_BY_CONSENT,
