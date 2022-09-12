@@ -997,7 +997,7 @@ class ManageHearingsServiceTest {
                 "hearingStartDateLabel", "16 April 2011, 8:20pm",
                 "endDateFlag", "Yes",
                 "hearingDurationLabel", "3 days",
-                "hearingEndDate", LocalDateTime.parse("2011-04-19T20:20:00"));
+                "hearingEndDate", LocalDateTime.parse("2011-04-18T20:20:00"));
 
 
             assertThat(hearingDateFields).isEqualTo(extractedFields);

@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderSection;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 
@@ -28,6 +29,7 @@ import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromC2ApplicationType;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromC2OrdersRequestedType;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromOrderType;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromParentalResponsibilityTypes;
+import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromSecureAccommodationOrder;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromSecureAccommodationTypes;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromSupplementTypes;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.APPOINTMENT_OF_GUARDIAN;
@@ -51,6 +53,7 @@ class FeeTypeTest {
     private static Stream<Arguments> orderToFeeTypeSource() {
         // Will throw an IllegalArgumentException if there is no corresponding FeeType
         return Arrays.stream(OrderType.values())
+            .filter(orderType -> !OrderType.SECURE_ACCOMMODATION_ORDER.equals(orderType))
             .map(orderType -> Arguments.of(List.of(orderType), List.of(FeeType.valueOf(orderType.name()))));
     }
 
@@ -117,6 +120,14 @@ class FeeTypeTest {
         assertThat(fromSecureAccommodationTypes(SecureAccommodationType.ENGLAND))
             .isEqualTo(SECURE_ACCOMMODATION_ENGLAND);
         assertThat(fromSecureAccommodationTypes(SecureAccommodationType.WALES)).isEqualTo(SECURE_ACCOMMODATION_WALES);
+    }
+
+    @Test
+    void shouldReturnCorrespondingFeeTypeForSecureAccommodationOrder() {
+        assertThat(fromSecureAccommodationOrder(SecureAccommodationOrderSection.ENGLAND))
+            .isEqualTo(SECURE_ACCOMMODATION_ENGLAND);
+        assertThat(fromSecureAccommodationOrder(SecureAccommodationOrderSection.WALES))
+            .isEqualTo(SECURE_ACCOMMODATION_WALES);
     }
 
     private static Stream<Arguments> c2RequestedOrderToFeeTypeSource() {

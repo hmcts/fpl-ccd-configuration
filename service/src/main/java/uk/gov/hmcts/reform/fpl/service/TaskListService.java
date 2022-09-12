@@ -90,18 +90,25 @@ public class TaskListService {
             events.add(SELECT_COURT);
         }
 
-        // C1s and C110a's (except DoC)
-        if (!caseData.isDischargeOfCareApplication()) {
-            events.add(GROUNDS);
+        // C1s and C110a's (except SAO and DoC)
+        if (!caseData.isSecureAccommodationOrderType() && !caseData.isDischargeOfCareApplication()) {
             events.add(RISK_AND_HARM);
             events.add(FACTORS_AFFECTING_PARENTING);
         }
 
+        // C1s and C110a's (except DoC)
+        if (!caseData.isDischargeOfCareApplication()) {
+            events.add(GROUNDS);
+        }
+
         // C110a's only
         if (!caseData.isC1Application()) {
-            events.add(ALLOCATION_PROPOSAL);
             events.add(INTERNATIONAL_ELEMENT);
             events.add(LANGUAGE_REQUIREMENTS);
+        }
+
+        if (!caseData.isC1Application() || caseData.isSecureAccommodationOrderType()) {
+            events.add(ALLOCATION_PROPOSAL);
         }
 
         return events;

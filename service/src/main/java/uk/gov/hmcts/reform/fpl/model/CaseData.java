@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
-import uk.gov.hmcts.reform.fpl.enums.ApplicationRemovalReason;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
@@ -28,7 +27,6 @@ import uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
-import uk.gov.hmcts.reform.fpl.enums.RemovableType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -231,11 +229,6 @@ public class CaseData extends CaseDataParent {
 
     private final StandardDirectionOrder standardDirectionOrder;
     private final UrgentHearingOrder urgentHearingOrder;
-    private final List<Element<StandardDirectionOrder>> hiddenStandardDirectionOrders;
-
-    public List<Element<StandardDirectionOrder>> getHiddenStandardDirectionOrders() {
-        return defaultIfNull(hiddenStandardDirectionOrders, new ArrayList<>());
-    }
 
     private GatekeepingOrderRoute sdoRouter;
     private GatekeepingOrderRoute gatekeepingOrderRouter;
@@ -338,7 +331,6 @@ public class CaseData extends CaseDataParent {
     private final PBAPayment temporaryPbaPayment;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
     private final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle;
-    private final List<Element<AdditionalApplicationsBundle>> hiddenApplicationsBundle;
     private final DynamicList applicantsList;
     private final String otherApplicant;
 
@@ -348,9 +340,7 @@ public class CaseData extends CaseDataParent {
     // Transient field
     private YesNo caseFlagValueUpdated;
 
-    public List<Element<AdditionalApplicationsBundle>> getHiddenApplicationsBundle() {
-        return defaultIfNull(hiddenApplicationsBundle, new ArrayList<>());
-    }
+
 
     @JsonIgnore
     public boolean hasC2DocumentBundle() {
@@ -483,17 +473,9 @@ public class CaseData extends CaseDataParent {
         return orderCollection != null ? orderCollection : new ArrayList<>();
     }
 
-    private final Object removableOrderList;
-    private final Object removableApplicationList;
-    private final String reasonToRemoveOrder;
-    private final List<Element<GeneratedOrder>> hiddenOrders;
-    private final RemovableType removableType;
-    private final ApplicationRemovalReason reasonToRemoveApplication;
-    private final String applicationRemovalDetails;
-
-    public List<Element<GeneratedOrder>> getHiddenOrders() {
-        return defaultIfNull(hiddenOrders, new ArrayList<>());
-    }
+    @JsonUnwrapped
+    @Builder.Default
+    private final RemovalToolData removalToolData = RemovalToolData.builder().build();
 
     private final Others others;
 
@@ -963,12 +945,6 @@ public class CaseData extends CaseDataParent {
             .min(comparing(HearingBooking::getStartDate));
     }
 
-    private final List<Element<HearingOrder>> hiddenCaseManagementOrders;
-
-    @JsonIgnore
-    public List<Element<HearingOrder>> getHiddenCMOs() {
-        return defaultIfNull(hiddenCaseManagementOrders, new ArrayList<>());
-    }
 
     private String sendToCtsc;
     private String displayAmountToPay;
@@ -1162,6 +1138,8 @@ public class CaseData extends CaseDataParent {
 
     private final DynamicList placementList;
 
+    private final List<Element<PlacementNoticeDocument>> placementNoticeResponses;
+
     @JsonIgnore
     public boolean isDischargeOfCareApplication() {
 
@@ -1177,9 +1155,22 @@ public class CaseData extends CaseDataParent {
             .orElse(false);
     }
 
+    @JsonIgnore
+    public boolean isSecureAccommodationOrderType() {
+        return ofNullable(getOrders())
+            .map(Orders::isSecureAccommodationOrder)
+            .orElse(false);
+    }
+
     private List<Element<DocumentWithConfidentialAddress>> documentsWithConfidentialAddress;
 
     @JsonUnwrapped
     @Builder.Default
     private final OtherToRespondentEventData otherToRespondentEventData = OtherToRespondentEventData.builder().build();
+
+    private List<Element<Colleague>> colleaguesToNotify;
+
+    public List<Element<Colleague>> getColleaguesToNotify() {
+        return colleaguesToNotify != null ? colleaguesToNotify : new ArrayList<>();
+    }
 }
