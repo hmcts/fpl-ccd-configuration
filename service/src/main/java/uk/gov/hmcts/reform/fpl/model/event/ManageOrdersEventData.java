@@ -66,7 +66,7 @@ public class ManageOrdersEventData {
     String manageOrdersWhoIsExcluded;
     String manageOrdersNeedSealing;
     DocumentReference manageOrdersUploadOrderFile;
-    List<String> documentAcknowledge;
+    List<String> manageOrdersDocumentAck;
     DocumentReference manageOrdersPowerOfArrest;
     Address manageOrdersEpoRemovalAddress;
     LocalDate manageOrdersExclusionStartDate;
