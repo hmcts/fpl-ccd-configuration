@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.validators;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -9,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
+import uk.gov.hmcts.reform.fpl.model.GroundsForSecureAccommodationOrder;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -49,6 +51,16 @@ class GroundsCheckerIsStartedTest {
         final CaseData caseData = CaseData.builder()
                 .groundsForEPO(groundsForEPO)
                 .build();
+
+        assertThat(groundsChecker.isStarted(caseData)).isTrue();
+    }
+
+    @Test
+    void shouldReturnTrueWhenGroundsForEPOProvided() {
+        final CaseData caseData = CaseData.builder()
+            .groundsForSecureAccommodationOrder(GroundsForSecureAccommodationOrder.builder()
+                .reasonAndLength("some reason").build())
+            .build();
 
         assertThat(groundsChecker.isStarted(caseData)).isTrue();
     }

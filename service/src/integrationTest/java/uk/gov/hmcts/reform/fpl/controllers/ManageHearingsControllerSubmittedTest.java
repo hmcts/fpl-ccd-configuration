@@ -422,9 +422,11 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             throws NotificationClientException {
         final DocumentReference noticeOfHearing = testDocumentReference();
 
+        LocalDateTime startDate = LocalDateTime.of(2050, 5, 20, 13, 0);
+
         final Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
                 .type(CASE_MANAGEMENT)
-                .startDate(LocalDateTime.of(2050, 5, 20, 13, 0))
+                .startDate(startDate)
                 .endDate(LocalDateTime.of(2050, 5, 20, 14, 0))
                 .noticeOfHearing(noticeOfHearing)
                 .venue("96")
@@ -484,6 +486,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         );
 
         NoticeOfHearingCafcassData noticeOfHearingCafcassData = noticeOfHearingCafcassDataCaptor.getValue();
+
         assertThat(noticeOfHearingCafcassData.getFirstRespondentName())
                 .isEqualTo("Jones");
         assertThat(noticeOfHearingCafcassData.getEldestChildLastName())
@@ -491,7 +494,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         assertThat(noticeOfHearingCafcassData.getHearingType())
                 .isEqualTo("case management");
         assertThat(noticeOfHearingCafcassData.getHearingDate())
-                .isEqualTo("20 May 2050");
+                .isEqualTo(startDate);
         assertThat(noticeOfHearingCafcassData.getHearingVenue())
                 .isEqualTo("Aberdeen Tribunal Hearing Centre, 48 Huntly Street, AB1, Aberdeen, AB10 1SH");
         assertThat(noticeOfHearingCafcassData.getPreHearingTime())

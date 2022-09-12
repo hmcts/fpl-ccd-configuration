@@ -73,6 +73,10 @@ public class FeatureToggleService {
         return ldClient.boolVariation("language-requirements", createLDUser(), false);
     }
 
+    public boolean isCafcassSubjectCategorised() {
+        return ldClient.boolVariation("cafcass-subject-category", createLDUser(), false);
+    }
+
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }
