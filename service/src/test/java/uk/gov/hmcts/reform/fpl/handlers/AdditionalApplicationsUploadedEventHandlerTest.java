@@ -39,6 +39,7 @@ import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.AdditionalApplicationsUploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
@@ -117,6 +118,8 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     private LocalAuthorityRecipientsService localAuthorityRecipients;
     @Mock
     private RepresentativesInbox representativesInbox;
+    @Mock
+    private OtherRecipientsInbox otherRecipientsInbox;
     @Mock
     private RepresentativeNotificationService representativeNotificationService;
     @Mock
