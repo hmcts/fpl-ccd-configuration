@@ -96,5 +96,7 @@ public class CourtService {
         return courtLookup.getCourts(caseData.getCaseLocalAuthority()).get(0);
     }
 
-
+    public Optional<Court> getCourt(String code) {
+        return courtLookup.getCourtByCode(code);
+    }
 }

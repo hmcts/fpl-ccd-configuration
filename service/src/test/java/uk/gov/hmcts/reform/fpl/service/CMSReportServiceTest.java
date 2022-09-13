@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingInfo;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.CMSReportEventData;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
@@ -72,7 +73,7 @@ class CMSReportServiceTest {
 
         when(searchService.search(any(), eq(100), eq(0), isA(Sort.class))).thenReturn(searchResult);
         when(converter.convert(isA(CaseDetails.class))).thenReturn(getCaseData(hearingDetails, submittedDate));
-        String report = service.getReport(caseDataSelected);
+        String report = service.getHtmlReport(caseDataSelected);
         System.out.println(report);
     }
 

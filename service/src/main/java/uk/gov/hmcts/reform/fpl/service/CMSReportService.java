@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import lombok.Builder;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -11,9 +9,11 @@ import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingInfo;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.CMSReportEventData;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
+import uk.gov.hmcts.reform.fpl.utils.CsvWriter;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.BooleanQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESQuery;
@@ -25,8 +25,11 @@ import uk.gov.hmcts.reform.fpl.utils.elasticsearch.SortQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.TermQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.TermsQuery;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +37,7 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
@@ -71,16 +75,18 @@ public class CMSReportService {
             fieldName,
             "</td>");
 
-    public String getReport(CaseData caseData)  {
+    Supplier<LocalDate> getComplianceDeadline = () -> LocalDate.now().minusWeeks(26);
+
+    public String getHtmlReport(CaseData caseData)  {
         CMSReportEventData cmsReportEventData = caseData.getCmsReportEventData();
         try {
             if ("AT_RISK".equals(cmsReportEventData.getReportType())) {
-                return getReportCasesAtRisk(caseData, (complianceDeadline) -> RangeQuery.builder()
+                return getHtmlReport(caseData, (complianceDeadline) -> RangeQuery.builder()
                         .field(RANGE_FIELD)
                         .greaterThanOrEqual(complianceDeadline)
                         .build());
             } else if ("MISSING_TIMETABLE".equals(cmsReportEventData.getReportType())) {
-                return getReportCasesAtRisk(caseData, (complianceDeadline) -> RangeQuery.builder()
+                return getHtmlReport(caseData, (complianceDeadline) -> RangeQuery.builder()
                         .field(RANGE_FIELD)
                         .lessThan(complianceDeadline)
                         .build());
@@ -92,13 +98,57 @@ public class CMSReportService {
         }
     }
 
-    private String getReportCasesAtRisk(CaseData caseDataSelected, Function<LocalDate, RangeQuery> rangeQueryFunction) throws JsonProcessingException {
+    public File getFileReport(CaseData caseData)  {
+        CMSReportEventData cmsReportEventData = caseData.getCmsReportEventData();
+        try {
+            if ("AT_RISK".equals(cmsReportEventData.getReportType())) {
+                return getFileReport(caseData, (complianceDeadline) -> RangeQuery.builder()
+                        .field(RANGE_FIELD)
+                        .greaterThanOrEqual(complianceDeadline)
+                        .build());
+            } else if ("MISSING_TIMETABLE".equals(cmsReportEventData.getReportType())) {
+                return getFileReport(caseData, (complianceDeadline) -> RangeQuery.builder()
+                        .field(RANGE_FIELD)
+                        .lessThan(complianceDeadline)
+                        .build());
+            }
+            throw new IllegalArgumentException("Requested unknown report type:" + cmsReportEventData.getReportType());
+        } catch (Exception e) {
+            log.error("Exception e", e);
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    private File getFileReport(CaseData caseDataSelected, Function<LocalDate, RangeQuery> rangeQueryFunction)
+            throws IOException {
+        String courtId = getCourt(caseDataSelected.getCmsReportEventData());
+
+
+        ESQuery esQuery = buildQuery(courtId, rangeQueryFunction.apply(getComplianceDeadline.get()));
+        log.info("query {}", esQuery.toMap());
+
+        SearchResult searchResult = searchService.search(esQuery,
+                100,
+                0,
+                buildSortClause());
+
+        log.info("record count {}", searchResult.getTotal());
+        List<HearingInfo> hearingInfoList = new ArrayList<>();
+        for (CaseDetails caseDetails : searchResult.getCases()) {
+            CaseData caseData = converter.convert(caseDetails);
+
+            Optional<HearingInfo> optionalHearingInfo = getHearingInfo(caseData);
+            optionalHearingInfo.ifPresent(hearingInfoList::add);
+        }
+
+        return CsvWriter.writeHearingInfoToCsv(hearingInfoList);
+    }
+
+    private String getHtmlReport(CaseData caseDataSelected, Function<LocalDate, RangeQuery> rangeQueryFunction) throws JsonProcessingException {
         CMSReportEventData cmsReportEventData = caseDataSelected.getCmsReportEventData();
         String courtId = getCourt(cmsReportEventData);
-        LocalDate complianceDeadline = LocalDate.now().minusWeeks(26);
 
-
-        ESQuery esQuery = buildQuery(courtId, rangeQueryFunction.apply(complianceDeadline));
+        ESQuery esQuery = buildQuery(courtId, rangeQueryFunction.apply(getComplianceDeadline.get()));
         log.info("query {}", esQuery.toMap());
 
         SearchResult searchResult = searchService.search(esQuery,
@@ -112,42 +162,39 @@ public class CMSReportService {
         StringBuilder result = new StringBuilder();
         if (searchResult.getTotal() > 0) {
             result.append("<table>")
-                    .append("<tr>")
-                    .append(headerField.apply("Sr no."))
-                    .append(headerField.apply("Case Number"))
-                    .append(headerField.apply("Receipt date"))
-                    .append(headerField.apply("Last hearing"))
+                .append("<tr>")
+                .append(headerField.apply("Sr no."))
+                .append(headerField.apply("Case Number"))
+                .append(headerField.apply("Receipt date"))
+                .append(headerField.apply("Last hearing"))
                 .append(headerField.apply("Next hearing"))
-                    .append(headerField.apply("Age of </br>case</br>(weeks)"))
-                    .append(headerField.apply("PLO stage"))
-                    .append(headerField.apply("Expected FH date"))
-                    .append("</tr>");
+                .append(headerField.apply("Age of </br>case</br>(weeks)"))
+                .append(headerField.apply("PLO stage"))
+                .append(headerField.apply("Expected FH date"))
+                .append("</tr>");
         }
 
-        LocalDate currentDate = LocalDate.now();
         for (CaseDetails caseDetails : searchResult.getCases()) {
             CaseData caseData = converter.convert(caseDetails);
-
-            LocalDate dateSubmitted = caseData.getDateSubmitted();
 
             Optional<HearingInfo> optionalHearingInfo = getHearingInfo(caseData);
 
             if (optionalHearingInfo.isPresent()) {
                 HearingInfo hearingInfo = optionalHearingInfo.get();
-            result.append(
-                String.join("",
-                    "<tr>",
-                    cellField.apply(String.valueOf(counter[0]++)),
-                    cellField.apply(String.valueOf(caseData.getFamilyManCaseNumber())),
-                    cellField.apply(formatLocalDateToString(dateSubmitted,"dd-MM-yyyy")),
+                result.append(
+                    String.join("",
+                        "<tr>",
+                        cellField.apply(String.valueOf(counter[0]++)),
+                        cellField.apply(hearingInfo.getFamilyManCaseNumber()),
+                        cellField.apply(hearingInfo.getDateSubmitted()),
                         cellField.apply(hearingInfo.getLastHearing()),
                         cellField.apply(hearingInfo.getNextHearing()),
-                    cellField.apply(String.valueOf(ChronoUnit.WEEKS.between(dateSubmitted, currentDate))),
+                        cellField.apply(hearingInfo.getAgeInWeeks()),
                         cellField.apply(hearingInfo.getPloStage()),
-                    cellField.apply(formatLocalDateToString(dateSubmitted.plusWeeks(26),"dd-MM-yyyy")),
-                    "</tr>")
-            );
-        }
+                        cellField.apply(hearingInfo.getExpectedFinalHearing()),
+                        "</tr>")
+                );
+            }
         }
 
         if (searchResult.getTotal() > 0) {
@@ -200,45 +247,49 @@ public class CMSReportService {
         Optional<HearingBooking> issueResolutionBooking = getHearingBooking.apply(hearingByType.get(ISSUE_RESOLUTION), ISSUE_RESOLUTION_CUTOFF_DAYS);
         Optional<HearingBooking> caseManagementBooking = getHearingBooking.apply(hearingByType.get(CASE_MANAGEMENT), CASE_MANAGEMENT_CUTOFF_DAYS);
 
-        BiFunction<Optional<HearingBooking>,  Optional<HearingBooking>, Optional<HearingInfo>> getHearingInfo =
+        BiFunction<Optional<HearingBooking>,  Optional<HearingBooking>, Optional<HearingInfo.HearingInfoBuilder>> getHearingInfo =
                 (currentHearing, previousHearing) -> currentHearing.map(hearingBooking -> HearingInfo.builder()
                 .nextHearing(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), "dd-MM-yyyy"))
                 .lastHearing(
                     previousHearing.map(issueBooking ->
                         formatLocalDateToString(issueBooking.getStartDate().toLocalDate(), "dd-MM-yyyy")).orElse("-"))
-                .ploStage(hearingBooking.getType().getLabel())
-                .build());
+                .ploStage(hearingBooking.getType().getLabel()));
 
-        Optional<HearingInfo> hearingInfo = getHearingInfo.apply(finalCutoffBooking, issueResolutionBooking);
+        Optional<HearingInfo.HearingInfoBuilder> optionalHearingInfoBuilder = getHearingInfo.apply(finalCutoffBooking, issueResolutionBooking);
 
-        if (hearingInfo.isEmpty()) {
-            hearingInfo = getHearingInfo.apply(issueResolutionBooking, caseManagementBooking);
+        if (optionalHearingInfoBuilder.isEmpty()) {
+            optionalHearingInfoBuilder = getHearingInfo.apply(issueResolutionBooking, caseManagementBooking);
 
-            if (hearingInfo.isEmpty()) {
+            if (optionalHearingInfoBuilder.isEmpty()) {
                 Optional<HearingInfo.HearingInfoBuilder> hearingInfoBuilderOptional = caseManagementBooking.map(hearingBooking -> HearingInfo.builder()
                         .ploStage(hearingBooking.getType().getLabel()));
 
                 boolean isFutureDate = caseManagementBooking.filter(
                         hearingBooking -> hearingBooking.getStartDate().toLocalDate().isAfter(LocalDate.now())).isPresent();
 
-                if (hearingInfoBuilderOptional.isPresent() && isFutureDate) {
-                    hearingInfo = caseManagementBooking.map(hearingBooking ->
-                            hearingInfoBuilderOptional.get().nextHearing(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), "dd-MM-yyyy"))
-                                    .lastHearing("-")
-                                    .build());
-                } else {
-                    hearingInfo = caseManagementBooking.map(hearingBooking ->
-                            hearingInfoBuilderOptional.get().lastHearing(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), "dd-MM-yyyy"))
-                                    .nextHearing("-")
-                                    .build());
+                if (hearingInfoBuilderOptional.isPresent()) {
+                    if (isFutureDate) {
+                        optionalHearingInfoBuilder = caseManagementBooking.map(hearingBooking ->
+                                hearingInfoBuilderOptional.get().nextHearing(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), "dd-MM-yyyy"))
+                                        .lastHearing("-"));
+                    } else {
+                        optionalHearingInfoBuilder = caseManagementBooking.map(hearingBooking ->
+                                hearingInfoBuilderOptional.get().lastHearing(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), "dd-MM-yyyy"))
+                                        .nextHearing("-"));
+                    }
                 }
             }
         }
+        optionalHearingInfoBuilder.ifPresent(hearingInfoBuilder -> hearingInfoBuilder
+                .familyManCaseNumber(String.valueOf(caseData.getFamilyManCaseNumber()))
+                .dateSubmitted(formatLocalDateToString(dateSubmitted, "dd-MM-yyyy"))
+                .ageInWeeks(String.valueOf(ChronoUnit.WEEKS.between(dateSubmitted, LocalDate.now())))
+                .expectedFinalHearing(formatLocalDateToString(dateSubmitted.plusWeeks(26), "dd-MM-yyyy")));
 
-        return hearingInfo;
+        return optionalHearingInfoBuilder.map(HearingInfo.HearingInfoBuilder::build);
     }
 
-    private String getCourt(CMSReportEventData cmsReportEventData) {
+    public String getCourt(CMSReportEventData cmsReportEventData) {
         return Optional.ofNullable(cmsReportEventData.getCarlisleDFJCourts())
                 .orElseGet(() -> Optional.ofNullable(cmsReportEventData.getCentralLondonDFJCourts())
                         .orElseGet(cmsReportEventData::getSwanseaDFJCourts));
@@ -265,11 +316,4 @@ public class CMSReportService {
                 ))
                 .build();
     }
-}
-@Getter
-@Builder(toBuilder = true)
-class HearingInfo {
-    private final String lastHearing;
-    private final String nextHearing;
-    private final String ploStage;
 }
