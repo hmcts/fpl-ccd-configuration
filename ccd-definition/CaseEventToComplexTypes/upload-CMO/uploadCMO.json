@@ -24,9 +24,30 @@
     "ID": "UploadedCaseManagementOrder",
     "CaseEventID": "uploadCMO",
     "CaseFieldID": "currentHearingOrderDrafts",
+    "ListElementCode": "documentAcknowledgeLabel",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
+    "CaseEventID": "uploadCMO",
+    "CaseFieldID": "currentHearingOrderDrafts",
+    "ListElementCode": "documentAcknowledge",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD",
+    "FieldShowCondition": "name!=\"SHOW_IN_EVENT_ONLY\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
+    "CaseEventID": "uploadCMO",
+    "CaseFieldID": "currentHearingOrderDrafts",
     "ListElementCode": "status",
     "EventElementLabel": "Status",
-    "FieldDisplayOrder": 2,
+    "FieldDisplayOrder": 5,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "currentHearingOrderDrafts=\"DO_NOT_SHOW\""
   },
@@ -37,7 +58,7 @@
     "CaseFieldID": "currentHearingOrderDrafts",
     "ListElementCode": "dateSent",
     "EventElementLabel": "Date sent",
-    "FieldDisplayOrder": 2,
+    "FieldDisplayOrder": 5,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "currentHearingOrderDrafts=\"DO_NOT_SHOW\""
   }
