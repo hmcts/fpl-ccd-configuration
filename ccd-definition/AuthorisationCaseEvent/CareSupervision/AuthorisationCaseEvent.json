@@ -284,7 +284,9 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
+          "[LAMANAGING]",
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       },
