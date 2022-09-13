@@ -126,10 +126,14 @@ public class CafcassNotificationService {
                                   final CafcassRequestEmailContentProvider provider,
                                   final CafcassData cafcassData,
                                   final BiFunction<CaseData, CafcassData, String> content) {
+        String subject = provider.getType().apply(caseData, cafcassData);
+        log.info("For case id: {} notification subject:{}",
+                caseData.getId(),
+                subject);
         emailService.sendEmail(configuration.getSender(),
                 EmailData.builder()
                         .recipient(provider.getRecipient().apply(configuration))
-                        .subject(provider.getType().apply(caseData, cafcassData))
+                        .subject(subject)
                         .attachments(getEmailAttachments(documentReferences))
                         .message(content.apply(caseData, cafcassData))
                         .build()
