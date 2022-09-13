@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.utils.elasticsearch.TermsQuery;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -40,9 +41,11 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static java.math.RoundingMode.UP;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
+import static uk.gov.hmcts.reform.fpl.service.search.SearchService.ES_DEFAULT_SIZE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Service
@@ -98,7 +101,7 @@ public class CMSReportService {
         }
     }
 
-    public File getFileReport(CaseData caseData)  {
+    public Optional<File> getFileReport(CaseData caseData)  {
         CMSReportEventData cmsReportEventData = caseData.getCmsReportEventData();
         try {
             if ("AT_RISK".equals(cmsReportEventData.getReportType())) {
@@ -119,7 +122,7 @@ public class CMSReportService {
         }
     }
 
-    private File getFileReport(CaseData caseDataSelected, Function<LocalDate, RangeQuery> rangeQueryFunction)
+    private Optional<File> getFileReport(CaseData caseDataSelected, Function<LocalDate, RangeQuery> rangeQueryFunction)
             throws IOException {
         String courtId = getCourt(caseDataSelected.getCmsReportEventData());
 
@@ -128,20 +131,38 @@ public class CMSReportService {
         log.info("query {}", esQuery.toMap());
 
         SearchResult searchResult = searchService.search(esQuery,
-                100,
+                ES_DEFAULT_SIZE,
                 0,
                 buildSortClause());
 
-        log.info("record count {}", searchResult.getTotal());
-        List<HearingInfo> hearingInfoList = new ArrayList<>();
-        for (CaseDetails caseDetails : searchResult.getCases()) {
-            CaseData caseData = converter.convert(caseDetails);
+        int total = searchResult.getTotal();
+        log.info("record count {}", total);
+        if (total > 0) {
+            int pages = paginate(searchResult.getTotal());
 
-            Optional<HearingInfo> optionalHearingInfo = getHearingInfo(caseData);
-            optionalHearingInfo.ifPresent(hearingInfoList::add);
+            List<HearingInfo> hearingInfoList = new ArrayList<>();
+            int counter = 0;
+            do {
+                for (CaseDetails caseDetails : searchResult.getCases()) {
+                    CaseData caseData = converter.convert(caseDetails);
+
+                    Optional<HearingInfo> optionalHearingInfo = getHearingInfo(caseData);
+                    optionalHearingInfo.ifPresent(hearingInfoList::add);
+                }
+                searchResult = searchService.search(esQuery,
+                        ES_DEFAULT_SIZE,
+                        ++counter * ES_DEFAULT_SIZE,
+                        buildSortClause());
+            } while (counter < pages);
+
+            return Optional.of(CsvWriter.writeHearingInfoToCsv(hearingInfoList));
+        } else {
+            return Optional.empty();
         }
+    }
 
-        return CsvWriter.writeHearingInfoToCsv(hearingInfoList);
+    private int paginate(int total) {
+        return new BigDecimal(total).divide(new BigDecimal(ES_DEFAULT_SIZE), UP).intValue();
     }
 
     private String getHtmlReport(CaseData caseDataSelected, Function<LocalDate, RangeQuery> rangeQueryFunction) throws JsonProcessingException {

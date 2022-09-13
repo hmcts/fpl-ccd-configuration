@@ -44,27 +44,32 @@ public class CMSReportEventHandler {
                 "for court: ",
                 court.map(Court::getName).orElse("Court not found")
         );
-        log.info("TO notify subject {}" , subject);
-        //TODO: remove
-        log.info("Notifying user {}", event.getUserDetails().getEmail());
-        try {
-            File fileReport = cmsReportService.getFileReport(caseData);
-            EmailAttachment attachment = EmailAttachment.document(defaultIfNull(URLConnection.guessContentTypeFromName(fileReport.getName()),
-                        "application/octet-stream"),
-                Files.readAllBytes(fileReport.toPath()),
-                fileReport.getName());
 
-            emailService.sendEmail("noreply@reform.hmcts.net",
-                EmailData.builder()
-                    .recipient(event.getUserDetails().getEmail())
-                    .subject(subject)
-                    .attachments(Set.of(attachment))
-                    .build()
-            );
-            log.info("Notified cases with subject {}" , subject);
+        try {
+            Optional<File> fileReport = cmsReportService.getFileReport(caseData);
+            if (fileReport.isPresent()) {
+                log.info("TO notify subject {}" , subject);
+                //TODO: remove
+                log.info("Notifying user {}", event.getUserDetails().getEmail());
+                File file = fileReport.get();
+                EmailAttachment attachment = EmailAttachment.document(defaultIfNull(URLConnection.guessContentTypeFromName(file.getName()),
+                                "application/octet-stream"),
+                        Files.readAllBytes(file.toPath()),
+                        file.getName());
+
+                emailService.sendEmail("noreply@reform.hmcts.net",
+                        EmailData.builder()
+                                .recipient(event.getUserDetails().getEmail())
+                                .subject(subject)
+                                .attachments(Set.of(attachment))
+                                .build()
+                );
+                log.info("Notified cases with subject {}", subject);
+            } else {
+                log.info("No records found for  subject {}" , subject);
+            }
         } catch (Exception e) {
             log.error("Notification exception for subject "+ subject, e);
         }
-
     }
 }
