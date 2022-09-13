@@ -16,7 +16,6 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class CourtBundle extends HearingDocument {
     private List<String> confidential;
-    private List<String> documentAcknowledge;
 
     @Builder(toBuilder = true)
     public CourtBundle(DocumentReference document,

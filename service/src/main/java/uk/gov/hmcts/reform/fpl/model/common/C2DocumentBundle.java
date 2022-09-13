@@ -53,7 +53,6 @@ public class C2DocumentBundle implements ApplicationsBundle {
     private final String othersNotified;
     private final List<Element<Other>> others;
     private final List<Element<Respondent>> respondents;
-    private final List<String> documentAcknowledge;
 
     public String toLabel(int index) {
         return format("Application %d: %s", index, uploadedDateTime);

@@ -41,7 +41,6 @@ public class SupportingEvidenceBundle implements TranslatableItem, FurtherDocume
     private final DocumentReference document;
     private String uploadedBy;
     private List<String> confidential;
-    private List<String> documentAcknowledge;
     private FurtherEvidenceType type;
     private String uploadedBySolicitor;
     private final DocumentReference translatedDocument;
