@@ -1,15 +1,16 @@
 package uk.gov.hmcts.reform.fpl;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
+import org.springframework.stereotype.Component;
+
 import javax.annotation.PostConstruct;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-import org.springframework.stereotype.Component;
-
 @Component
 public class Wiremock {
     WireMockServer server;
+
     @PostConstruct
     void init() {
         server = new WireMockServer(options()
