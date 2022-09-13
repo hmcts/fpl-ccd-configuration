@@ -116,9 +116,29 @@
     "ID": "C2DocumentBundle",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "supplementsBundle.documentAcknowledgeLabel",
+    "FieldDisplayOrder": "12",
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "supplementsBundle.documentAcknowledge",
+    "FieldDisplayOrder": "13",
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "Draft Orders",
     "ListElementCode": "draftOrdersBundle",
-    "FieldDisplayOrder": "12",
+    "FieldDisplayOrder": "14",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -128,7 +148,7 @@
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "File name",
     "ListElementCode": "draftOrdersBundle.title",
-    "FieldDisplayOrder": "13",
+    "FieldDisplayOrder": "15",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -137,7 +157,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "draftOrdersBundle.notes",
-    "FieldDisplayOrder": "14",
+    "FieldDisplayOrder": "16",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -147,7 +167,7 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "draftOrdersBundle.document",
     "EventElementLabel": "Upload document",
-    "FieldDisplayOrder": "15",
+    "FieldDisplayOrder": "17",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -157,7 +177,7 @@
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "Supporting Documents",
     "ListElementCode": "supportingEvidenceBundle",
-    "FieldDisplayOrder": "16",
+    "FieldDisplayOrder": "18",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -167,7 +187,7 @@
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "File name",
     "ListElementCode": "supportingEvidenceBundle.name",
-    "FieldDisplayOrder": "17",
+    "FieldDisplayOrder": "19",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -176,7 +196,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supportingEvidenceBundle.notes",
-    "FieldDisplayOrder": "18",
+    "FieldDisplayOrder": "20",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -195,7 +215,7 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supportingEvidenceBundle.document",
     "EventElementLabel": "Upload document",
-    "FieldDisplayOrder": "19",
+    "FieldDisplayOrder": "21",
     "DisplayContext": "MANDATORY"
   }
 ]
