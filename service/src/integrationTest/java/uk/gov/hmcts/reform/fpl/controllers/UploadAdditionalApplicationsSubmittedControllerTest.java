@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -35,6 +36,7 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
+import uk.gov.hmcts.reform.sendletter.api.Letter;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
@@ -68,6 +70,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FA
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.OTHER_ORDER;
@@ -118,8 +121,6 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private UploadDocumentService uploadDocumentService;
     @MockBean
     private DocmosisCoverDocumentsService documentService;
-    @Captor
-    private ArgumentCaptor<LetterWithPdfsRequest> printRequest;
     @Captor
     private ArgumentCaptor<Map<String, Object>> caseDetails;
     @MockBean
@@ -187,6 +188,67 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             .willAnswer(returnsFirstArg());
         given(sendLetterApi.sendLetter(any(), any(LetterWithPdfsRequest.class)))
             .willReturn(new SendLetterResponse(LETTER_1_ID));
+    }
+
+
+    @Test
+    void submittedEventShouldNotifyHmctsAdminAndRepresentativesWhenCtscToggleIsDisabled() {
+        List<Element<Respondent>> respondents = List.of(RESPONDENT_WITH_DIGITAL_REP, RESPONDENT_WITH_EMAIL_REP,
+            RESPONDENT_WITH_POST_REP, UNREPRESENTED_RESPONDENT);
+        CaseData caseData = CaseData.builder().id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .caseLocalAuthorityName(LOCAL_AUTHORITY_1_NAME)
+            .familyManCaseNumber(String.valueOf(CASE_ID))
+            .respondents1(respondents)
+            .representatives(List.of(REPRESENTATIVE_WITH_DIGITAL_PREFERENCE, REPRESENTATIVE_WITH_EMAIL_PREFERENCE,
+                REPRESENTATIVE_WITH_POST_PREFERENCE))
+            .others(Others.builder().firstOther(other).build())
+            .additionalApplicationType(List.of(C2_ORDER))
+            .sendToCtsc("No")
+            .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
+                .pbaPayment(PBAPayment.builder().usePbaPayment("Yes").build())
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .type(WITH_NOTICE)
+                    .document(ORDER)
+                    .supplementsBundle(new ArrayList<>())
+                    .respondents(List.of(
+                        RESPONDENT_WITH_DIGITAL_REP, RESPONDENT_WITH_EMAIL_REP, UNREPRESENTED_RESPONDENT))
+                    .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant").build())
+                .build())).build();
+
+        postSubmittedEvent(caseData);
+        checkUntil(() -> verify(notificationClient).sendEmail(
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
+            eq(COURT_1.getEmail()),
+            anyMap(),
+            eq(notificationReference(CASE_ID))
+        ));
+
+        checkUntil(() -> verify(notificationClient).sendEmail(
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS),
+            eq(LOCAL_AUTHORITY_1_INBOX),
+            anyMap(),
+            eq(notificationReference(CASE_ID))));
+
+        checkUntil(() -> verify(notificationClient, never()).sendEmail(
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
+            eq("FamilyPublicLaw+ctsc@gmail.com"),
+            anyMap(),
+            eq(notificationReference(CASE_ID))));
+
+        checkUntil(() -> verify(notificationClient).sendEmail(
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS),
+            eq("digital-rep@test.com"),
+            anyMap(),
+            eq(notificationReference(CASE_ID))));
+
+        checkUntil(() -> verify(notificationClient).sendEmail(
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS),
+            eq("email-rep@test.com"),
+            anyMap(),
+            eq(notificationReference(CASE_ID))));
+
+        verify(sendLetterApi, never()).sendLetter(any(), any(Letter.class));
     }
 
     @Test
