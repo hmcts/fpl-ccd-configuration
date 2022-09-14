@@ -114,7 +114,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             C2DocumentBundle temporaryC2Document = caseData.getTemporaryC2Document();
             temporaryC2Document.setType(caseData.getC2Type());
 
-            if (temporaryC2Document.getC2AdditionalOrdersRequested().contains(REQUESTING_ADJOURNMENT)) {
+            if (!isNull(temporaryC2Document.getC2AdditionalOrdersRequested())
+                && temporaryC2Document.getC2AdditionalOrdersRequested().contains(REQUESTING_ADJOURNMENT)) {
                 // Get the selected hearing from the dynamic list + populate the 'selected hearing' field
                 UUID selectedHearingCode = getDynamicListSelectedValue(temporaryC2Document.getHearingList(), mapper);
                 HearingBooking hearing = findElement(selectedHearingCode,
