@@ -12,13 +12,14 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentType;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
+import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -29,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.testingsupport.DynamicListHelper;
@@ -39,9 +41,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import static com.google.common.collect.Sets.newHashSet;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
@@ -50,14 +54,18 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList.RESPONDENT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.ADDITIONAL_APPLICATIONS_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.CORRESPONDENCE;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.PLACEMENT_NOTICE_RESPONSE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C12_WARRANT_TO_ASSIST_PERSON;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRespondent;
 
 @WebMvcTest(ManageDocumentsController.class)
@@ -65,6 +73,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRespondent;
 class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
 
     private static final String USER_ROLES = "caseworker-publiclaw-courtadmin";
+    private static final String SOLICITOR_USER_ROLES = "SOLICITORA";
     private static final long CASE_ID = 12345L;
 
     @Autowired
@@ -102,9 +111,10 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(extractedCaseData.getManageDocument()).isEqualTo(ManageDocument.builder()
             .type(CORRESPONDENCE)
-            .hasHearings(YesNo.NO.getValue())
-            .hasC2s(YesNo.NO.getValue())
-            .hasConfidentialAddress(YesNo.NO.getValue())
+            .hasHearings(NO.getValue())
+            .hasC2s(NO.getValue())
+            .hasConfidentialAddress(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
             .build());
     }
 
@@ -126,9 +136,92 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(extractedCaseData.getManageDocument()).isEqualTo(ManageDocument.builder()
             .type(CORRESPONDENCE)
-            .hasHearings(YesNo.NO.getValue())
-            .hasC2s(YesNo.NO.getValue())
-            .hasConfidentialAddress(YesNo.NO.getValue())
+            .hasHearings(NO.getValue())
+            .hasC2s(NO.getValue())
+            .hasConfidentialAddress(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
+            .build());
+    }
+
+    @Test
+    void shouldInitialisePlacementNoticeResponsesForHMCTS() {
+
+        PlacementNoticeDocument laResponse = PlacementNoticeDocument.builder().build();
+        PlacementNoticeDocument cafcassResponse = PlacementNoticeDocument.builder().build();
+        PlacementNoticeDocument respondentResponse = PlacementNoticeDocument.builder().build();
+
+        Placement placement = Placement.builder()
+            .childName("Test Child")
+            .placementNotice(testDocumentReference())
+            .noticeDocuments(wrapElements(laResponse, cafcassResponse, respondentResponse))
+            .build();
+
+        PlacementEventData eventData = PlacementEventData.builder()
+            .placements(wrapElements(placement))
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .placementEventData(eventData)
+            .placementList(asDynamicList(eventData.getPlacements(), null, Placement::getChildName))
+            .manageDocument(buildManagementDocument(PLACEMENT_NOTICE_RESPONSE))
+            .build();
+
+        CaseData after = extractCaseData(postMidEvent(caseData, "initialise-manage-document-collections", USER_ROLES));
+
+        assertThat(after.getPlacementNoticeResponses()).hasSize(3);
+        assertThat(after.getManageDocument()).isEqualTo(ManageDocument.builder()
+            .type(ManageDocumentType.PLACEMENT_NOTICE_RESPONSE)
+            .hasHearings(NO.getValue())
+            .hasC2s(NO.getValue())
+            .hasPlacementNotices(YES.getValue())
+            .hasConfidentialAddress(NO.getValue())
+            .build());
+    }
+
+    @Test
+    void shouldInitialisePlacementNoticeResponsesForSolicitor() {
+        given(userService.hasAnyCaseRoleFrom(representativeSolicitors(), CASE_ID)).willReturn(true);
+        given(userService.isHmctsUser()).willReturn(false);
+        given(userService.getCaseRoles(eq(CASE_ID))).willReturn(newHashSet(SOLICITORA));
+
+        PlacementNoticeDocument laResponse = PlacementNoticeDocument.builder()
+            .type(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
+            .build();
+        PlacementNoticeDocument cafcassResponse = PlacementNoticeDocument.builder()
+            .type(PlacementNoticeDocument.RecipientType.CAFCASS)
+            .build();
+        PlacementNoticeDocument respondentResponse = PlacementNoticeDocument.builder()
+            .type(PlacementNoticeDocument.RecipientType.RESPONDENT)
+            .build();
+
+        Placement placement = Placement.builder()
+            .childName("Test Child")
+            .placementNotice(testDocumentReference())
+            .noticeDocuments(wrapElements(laResponse, cafcassResponse, respondentResponse))
+            .build();
+
+        PlacementEventData eventData = PlacementEventData.builder()
+            .placements(wrapElements(placement))
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .placementEventData(eventData)
+            .placementList(asDynamicList(eventData.getPlacements(), null, Placement::getChildName))
+            .manageDocument(buildManagementDocument(PLACEMENT_NOTICE_RESPONSE))
+            .build();
+
+        CaseData after = extractCaseData(postMidEvent(caseData, "initialise-manage-document-collections",
+            SOLICITOR_USER_ROLES));
+
+        assertThat(after.getPlacementNoticeResponses()).hasSize(1);
+        assertThat(after.getManageDocument()).isEqualTo(ManageDocument.builder()
+            .type(ManageDocumentType.PLACEMENT_NOTICE_RESPONSE)
+            .hasHearings(NO.getValue())
+            .hasC2s(NO.getValue())
+            .hasPlacementNotices(YES.getValue())
+            .hasConfidentialAddress(NO.getValue())
             .build());
     }
 
@@ -159,9 +252,10 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(extractedCaseData.getManageDocument()).isEqualTo(ManageDocument.builder()
             .type(ADDITIONAL_APPLICATIONS_DOCUMENTS)
-            .hasHearings(YesNo.NO.getValue())
-            .hasC2s(YesNo.YES.getValue())
-            .hasConfidentialAddress(YesNo.NO.getValue())
+            .hasHearings(NO.getValue())
+            .hasC2s(YES.getValue())
+            .hasConfidentialAddress(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
             .build());
     }
 
@@ -434,14 +528,16 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
                 .manageDocumentsHearingDocumentType(HearingDocumentType.POSITION_STATEMENT_CHILD).build(),
             "initialise-manage-document-collections", USER_ROLES))
             .getManageDocumentsPositionStatementChild())
-            .isEqualTo(PositionStatementChild.builder().hearing(selectedHearingBooking.toLabel()).build());
+            .isEqualTo(PositionStatementChild.builder().hearing(selectedHearingBooking.toLabel())
+                .hearingId(selectedHearingId).build());
 
         assertThat(extractCaseData(postMidEvent(
             caseData.toBuilder()
                 .manageDocumentsHearingDocumentType(HearingDocumentType.POSITION_STATEMENT_RESPONDENT).build(),
             "initialise-manage-document-collections", USER_ROLES))
             .getManageDocumentsPositionStatementRespondent())
-            .isEqualTo(PositionStatementRespondent.builder().hearing(selectedHearingBooking.toLabel()).build());
+            .isEqualTo(PositionStatementRespondent.builder().hearing(selectedHearingBooking.toLabel())
+                .hearingId(selectedHearingId).build());
     }
 
     @Test

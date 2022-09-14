@@ -24,8 +24,11 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.DocumentInfo;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.FurtherDocument;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
@@ -42,6 +45,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiPredicate;
@@ -59,6 +63,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.ALL_LAS;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.CHILD_SOLICITOR;
@@ -80,6 +85,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 public class FurtherEvidenceUploadedEventHandler {
     public static final String FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION = "Further documents for main application";
     public static final String CORRESPONDENCE = "Correspondence";
+    public static final String ADDITIONAL_APPLICATIONS = "additional applications";
     private final FurtherEvidenceNotificationService furtherEvidenceNotificationService;
     private final FurtherEvidenceUploadDifferenceCalculator furtherEvidenceDifferenceCalculator;
     private final TranslationRequestService translationRequestService;
@@ -176,11 +182,11 @@ public class FurtherEvidenceUploadedEventHandler {
             caseData.getHearingDocuments().getCaseSummaryList(),
             caseDataBefore.getHearingDocuments().getCaseSummaryList());
         newHearingDocuments.addAll(getNewHearingDocuments(
-            caseData.getHearingDocuments().getPositionStatementChildList(),
-            caseDataBefore.getHearingDocuments().getPositionStatementChildList()));
+            caseData.getHearingDocuments().getPositionStatementChildListV2(),
+            caseDataBefore.getHearingDocuments().getPositionStatementChildListV2()));
         newHearingDocuments.addAll(getNewHearingDocuments(
-            caseData.getHearingDocuments().getPositionStatementRespondentList(),
-            caseDataBefore.getHearingDocuments().getPositionStatementRespondentList()));
+            caseData.getHearingDocuments().getPositionStatementRespondentListV2(),
+            caseDataBefore.getHearingDocuments().getPositionStatementRespondentListV2()));
 
         if (!newHearingDocuments.isEmpty()) {
             final Set<String> recipients = new LinkedHashSet<>();
@@ -212,12 +218,12 @@ public class FurtherEvidenceUploadedEventHandler {
                 caseDataBefore.getHearingDocuments().getCaseSummaryList());
             List<HearingDocument> newPositionStatementChildren =
                 getNewHearingDocuments(
-                    caseData.getHearingDocuments().getPositionStatementChildList(),
-                    caseDataBefore.getHearingDocuments().getPositionStatementChildList());
+                    caseData.getHearingDocuments().getPositionStatementChildListV2(),
+                    caseDataBefore.getHearingDocuments().getPositionStatementChildListV2());
             List<HearingDocument> newPositionStatementRespondents =
                 getNewHearingDocuments(
-                    caseData.getHearingDocuments().getPositionStatementRespondentList(),
-                    caseDataBefore.getHearingDocuments().getPositionStatementRespondentList());
+                    caseData.getHearingDocuments().getPositionStatementRespondentListV2(),
+                    caseDataBefore.getHearingDocuments().getPositionStatementRespondentListV2());
 
             sendHearingDocumentsToCafcass(caseData, newCaseSummaries, CASE_SUMMARY);
             sendHearingDocumentsToCafcass(caseData, newPositionStatementChildren, POSITION_STATEMENT_CHILD);
@@ -307,6 +313,12 @@ public class FurtherEvidenceUploadedEventHandler {
             documentInfoConsumer.accept(getHearingFurtherEvidenceDocuments(caseData,
                     caseDataBefore));
 
+            documentInfoConsumer.accept(getOtherApplicationBundle(caseData,
+                    caseDataBefore));
+
+            documentInfoConsumer.accept(getC2DocumentBundle(caseData,
+                    caseDataBefore));
+
             if (!documentReferences.isEmpty()) {
                 String documentTypes = documentInfos.stream()
                         .filter(documentInfo ->
@@ -335,6 +347,76 @@ public class FurtherEvidenceUploadedEventHandler {
         }
     }
 
+    private DocumentInfo getOtherApplicationBundle(CaseData caseData, CaseData caseDataBefore) {
+        Set<DocumentReference> oldDocumentReferences = unwrapElements(
+                    caseDataBefore.getAdditionalApplicationsBundle()
+                ).stream()
+                .map(AdditionalApplicationsBundle::getOtherApplicationsBundle)
+                .filter(Objects::nonNull)
+                .map(OtherApplicationsBundle::getAllDocumentReferences)
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .map(Element::getValue)
+                .collect(toSet());
+
+        return unwrapElements(caseData.getAdditionalApplicationsBundle()).stream()
+                .map(AdditionalApplicationsBundle::getOtherApplicationsBundle)
+                .filter(Objects::nonNull)
+                .map(OtherApplicationsBundle::getAllDocumentReferences)
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .map(Element::getValue)
+                .filter(not(oldDocumentReferences::contains))
+                .map(documentRef -> {
+                    documentRef.setType(ADDITIONAL_APPLICATIONS);
+                    return documentRef;
+                })
+                .collect(collectingAndThen(toSet(),
+                    data -> DocumentInfo.builder()
+                        .documentReferences(data)
+                        .documentTypes(data.stream()
+                                .map(DocumentReference::getType)
+                                .collect(toList()))
+                        .documentType(ADDITIONAL_APPLICATIONS)
+                        .build())
+                );
+    }
+
+    private DocumentInfo getC2DocumentBundle(CaseData caseData, CaseData caseDataBefore) {
+        Set<DocumentReference> oldDocumentReferences = unwrapElements(
+                    caseDataBefore.getAdditionalApplicationsBundle()
+                ).stream()
+                .map(AdditionalApplicationsBundle::getC2DocumentBundle)
+                .filter(Objects::nonNull)
+                .map(C2DocumentBundle::getAllC2DocumentReferences)
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .map(Element::getValue)
+                .collect(toSet());
+
+        return unwrapElements(caseData.getAdditionalApplicationsBundle()).stream()
+                .map(AdditionalApplicationsBundle::getC2DocumentBundle)
+                .filter(Objects::nonNull)
+                .map(C2DocumentBundle::getAllC2DocumentReferences)
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .map(Element::getValue)
+                .filter(not(oldDocumentReferences::contains))
+                .map(documentRef -> {
+                    documentRef.setType(ADDITIONAL_APPLICATIONS);
+                    return documentRef;
+                })
+                .collect(collectingAndThen(toSet(),
+                    data -> DocumentInfo.builder()
+                        .documentReferences(data)
+                        .documentTypes(data.stream()
+                                .map(DocumentReference::getType)
+                                .collect(toList()))
+                        .documentType(ADDITIONAL_APPLICATIONS)
+                        .build())
+                );
+    }
+
     private DocumentInfo getHearingFurtherEvidenceDocuments(CaseData caseData, CaseData caseDataBefore) {
         List<HearingFurtherEvidenceBundle> newHearingFurtherEvidenceDocuments = unwrapElements(
                 caseData.getHearingFurtherEvidenceDocuments());
@@ -352,6 +434,7 @@ public class FurtherEvidenceUploadedEventHandler {
                 .flatMap(List::stream)
                 .filter(not(oldSupportingEvidenceBundle::contains))
                 .map(Element::getValue)
+                .filter(bundle -> !NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(bundle.getType()))
                 .map(supportingEvidenceBundle -> {
                     DocumentReference document = supportingEvidenceBundle.getDocument();
                     document.setType(Optional.ofNullable(supportingEvidenceBundle.getType())
@@ -430,6 +513,7 @@ public class FurtherEvidenceUploadedEventHandler {
 
 
         return supportingEvidenceBundles.stream()
+                .filter(bundle -> !NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(bundle.getType()))
                 .map(bundle -> {
                     DocumentReference document = bundle.getDocument();
                     document.setType(Optional.ofNullable(bundle.getType())
@@ -442,10 +526,12 @@ public class FurtherEvidenceUploadedEventHandler {
                         DocumentInfo.builder()
                             .documentReferences(data)
                             .documentTypes(data.stream()
-                                .map(DocumentReference::getType)
-                                .collect(toList()))
+                                    .map(DocumentReference::getType)
+                                    .collect(toList()))
                             .documentType(FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
-                            .build()));
+                            .build()
+                        )
+                );
     }
 
     private <T extends HearingDocument> List<HearingDocument> getNewHearingDocuments(List<Element<T>> documents,
@@ -560,11 +646,11 @@ public class FurtherEvidenceUploadedEventHandler {
                 getEvidenceBundleFromRespondentStatements(beforeCaseData));
         unwrapElements(respondentStatements).forEach(respondentStatement -> {
             if (!respondentStatement.isConfidentialDocument()) {
+                ret.get(CAFCASS).add(respondentStatement);
                 ret.get(CHILD_SOLICITOR).add(respondentStatement);
                 ret.get(RESPONDENT_SOLICITOR).add(respondentStatement);
             }
             if (!(respondentStatement.isUploadedByHMCTS() && respondentStatement.isConfidentialDocument())) {
-                ret.get(CAFCASS).add(respondentStatement);
                 ret.get(ALL_LAS).add(respondentStatement);
             }
         });
@@ -579,8 +665,10 @@ public class FurtherEvidenceUploadedEventHandler {
             if (!doc.isConfidentialDocument()) {
                 ret.get(CHILD_SOLICITOR).add(doc);
                 ret.get(RESPONDENT_SOLICITOR).add(doc);
+                if (!NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(doc.getType())) {
+                    ret.get(CAFCASS).add(doc);
+                }
             }
-            ret.get(CAFCASS).add(doc);
             ret.get(ALL_LAS).add(doc);
         });
         // Uploaded by HMCTS Admin
@@ -592,7 +680,9 @@ public class FurtherEvidenceUploadedEventHandler {
             if (!doc.isConfidentialDocument()) {
                 ret.get(CHILD_SOLICITOR).add(doc);
                 ret.get(RESPONDENT_SOLICITOR).add(doc);
-                ret.get(CAFCASS).add(doc);
+                if (!NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(doc.getType())) {
+                    ret.get(CAFCASS).add(doc);
+                }
                 ret.get(ALL_LAS).add(doc);
             }
         });
@@ -605,7 +695,9 @@ public class FurtherEvidenceUploadedEventHandler {
             // no confidential document by solicitors
             ret.get(CHILD_SOLICITOR).add(doc);
             ret.get(RESPONDENT_SOLICITOR).add(doc);
-            ret.get(CAFCASS).add(doc);
+            if (!NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(doc.getType())) {
+                ret.get(CAFCASS).add(doc);
+            }
             ret.get(ALL_LAS).add(doc);
         });
 
@@ -617,9 +709,11 @@ public class FurtherEvidenceUploadedEventHandler {
             if (!doc.isConfidentialDocument()) {
                 ret.get(CHILD_SOLICITOR).add(doc);
                 ret.get(RESPONDENT_SOLICITOR).add(doc);
+                if (!NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(doc.getType())) {
+                    ret.get(CAFCASS).add(doc);
+                }
             }
             if (!(doc.isUploadedByHMCTS() && doc.isConfidentialDocument())) {
-                ret.get(CAFCASS).add(doc);
                 ret.get(ALL_LAS).add(doc);
             }
         });
@@ -691,10 +785,10 @@ public class FurtherEvidenceUploadedEventHandler {
                 })
                 .collect(collectingAndThen(toSet(),
                     data -> DocumentInfo.builder()
-                        .documentReferences(data)
-                        .documentTypes(List.of(documentType))
-                        .documentType(type)
-                    .build())
+                            .documentReferences(data)
+                            .documentTypes(List.of(documentType))
+                            .documentType(type)
+                            .build())
                 );
     }
 

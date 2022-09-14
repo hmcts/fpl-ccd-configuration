@@ -38,7 +38,9 @@ import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.trim;
+import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DAYS;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
 import static uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService.HEARING_VENUE_ID_OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
@@ -66,7 +68,14 @@ public class CaseDataExtractionService {
         final LocalDateTime startDate = hearingBooking.getStartDate();
         final LocalDateTime endDate = hearingBooking.getEndDate();
 
-        if (hearingBooking.hasDatesOnSameDay()) {
+        // if the duration type is "days", display start/end date as date instead of date-time
+        boolean isDayDurationType = isNotEmpty(hearingBooking.getHearingDuration())
+                                    && hearingBooking.getHearingDuration().toLowerCase()
+                                        .contains(DAYS.getType().toLowerCase());
+
+        if (isDayDurationType) {
+            hearingTime = String.format("%s - %s", formatDate(startDate), formatDate(endDate));
+        } else if (hearingBooking.hasDatesOnSameDay()) {
             // Example 3:30pm - 5:30pm
             hearingTime = String.format("%s - %s", formatTime(startDate), formatTime(endDate));
         } else {
@@ -263,5 +272,9 @@ public class CaseDataExtractionService {
 
     private String formatTime(LocalDateTime dateTime) {
         return formatLocalDateTimeBaseUsingFormat(dateTime, "h:mma");
+    }
+
+    private String formatDate(LocalDateTime dateTime) {
+        return formatLocalDateTimeBaseUsingFormat(dateTime, "d MMMM");
     }
 }

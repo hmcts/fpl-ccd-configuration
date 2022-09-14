@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.group.C110A;
@@ -33,6 +34,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -279,6 +281,104 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .hasMessage(String.format(
                     "Migration {id = %s, case reference = %s}, invalid JudicialMessage ID",
                     migrationId, expectedCaseId));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl826 {
+        final String migrationId = "DFPL-826";
+        final Long caseId = 1660300177298257L;
+        final UUID hearingId = UUID.fromString("d76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0");
+
+        final Element<HearingBooking> hearingToBeRemoved = element(hearingId, HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(now().minusDays(3))
+            .endDate(now().minusDays(2))
+            .build());
+        final Element<HearingBooking> hearingBooking1 = element(HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(now().minusDays(3))
+            .endDate(now().minusDays(2))
+            .build());
+        final Element<HearingBooking> hearingBooking2 = element(HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(now().minusDays(3))
+            .endDate(now().minusDays(2))
+            .build());
+
+        @Test
+        void shouldPerformMigrationWhenHearingIdMatches() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .hearingDetails(List.of(hearingToBeRemoved, hearingBooking1, hearingBooking2))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+
+            List<Element<HearingBooking>> expectedHearingDetails = List.of(hearingBooking1, hearingBooking2);
+
+            assertThat(responseData.getHearingDetails()).isEqualTo(expectedHearingDetails);
+            assertThat(responseData.getSelectedHearingId()).isIn(hearingBooking1.getId(), hearingBooking2.getId());
+        }
+
+        @Test
+        void shouldThrowAssertionErrorWhenHearingDetailsIsNull() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-826, case reference = 1660300177298257},"
+                    + " hearing details not found");
+        }
+
+        @Test
+        void shouldThrowAssertionErrorWhenCaseIdIsInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(1111111111111111L)
+                .hearingDetails(List.of(hearingToBeRemoved, hearingBooking1, hearingBooking2))
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-826, case reference = 1111111111111111},"
+                    + " expected case id 1660300177298257");
+        }
+
+        @Test
+        void shouldThrowAssertionErrorWhenHearingBookingIdIsInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .hearingDetails(List.of(hearingBooking1, hearingBooking2))
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-826, case reference = 1660300177298257},"
+                    + " hearing booking d76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0 not found");
+        }
+
+        @Test
+        void shouldThrowAssertionErrorWhenMoreThanOneHearingBookingWithSameIdFound() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .hearingDetails(List.of(hearingToBeRemoved, hearingToBeRemoved))
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-826, case reference = 1660300177298257},"
+                    + " more than one hearing booking d76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0 found");
         }
     }
 
