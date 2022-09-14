@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -36,6 +38,7 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -52,6 +55,8 @@ import static uk.gov.hmcts.reform.fpl.Constants.USER_ID;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.OTHER_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.CHANGE_SURNAME_OR_REMOVE_JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_PARENTAL_RESPONSIBILITY;
@@ -358,6 +363,79 @@ class UploadAdditionalApplicationsServiceTest {
                 List.of(C2_APPLICATION, ApplicationType.C1_PARENTAL_RESPONSIBILITY))
         );
     }
+
+    @Nested
+    class SkipPayments {
+
+        @Test
+        void shouldSkipPaymentsWhenAllConditionsValid() {
+            HearingBooking booking = HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(15))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationType(List.of(C2_ORDER))
+                .temporaryC2Document(C2DocumentBundle.builder()
+                    .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                    .build())
+                .build();
+
+            boolean result = underTest.shouldSkipPayments(caseData, booking, caseData.getTemporaryC2Document());
+            assertThat(result).isTrue();
+        }
+
+        @Test
+        void shouldNotSkipPaymentsWhenLessThan14DaysBeforeHearing() {
+            HearingBooking booking = HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(13))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationType(List.of(C2_ORDER))
+                .temporaryC2Document(C2DocumentBundle.builder()
+                    .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                    .build())
+                .build();
+
+            boolean result = underTest.shouldSkipPayments(caseData, booking, caseData.getTemporaryC2Document());
+            assertThat(result).isFalse();
+        }
+
+        @Test
+        void shouldNotSkipPaymentsWhenOtherOrderAppliedFor() {
+            HearingBooking booking = HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(15))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
+                .temporaryC2Document(C2DocumentBundle.builder()
+                    .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                    .build())
+                .build();
+
+            boolean result = underTest.shouldSkipPayments(caseData, booking, caseData.getTemporaryC2Document());
+            assertThat(result).isFalse();
+        }
+
+        @Test
+        void shouldNotSkipPaymentsWhenAnotherC2AdditionalOrderRequested() {
+            HearingBooking booking = HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(15))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationType(List.of(C2_ORDER))
+                .temporaryC2Document(C2DocumentBundle.builder()
+                    .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT, CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
+                    .build())
+                .build();
+
+            boolean result = underTest.shouldSkipPayments(caseData, booking, caseData.getTemporaryC2Document());
+            assertThat(result).isFalse();
+        }
+    }
+
 
     private void assertC2DocumentBundle(C2DocumentBundle actualC2Bundle, Supplement expectedSupplement,
                                         SupportingEvidenceBundle expectedSupportingEvidence) {
