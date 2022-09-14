@@ -101,28 +101,8 @@
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocuments",
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
-    "ListElementCode": "type",
-    "FieldDisplayOrder": 5,
-    "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "manageDocument.type=\"FURTHER_EVIDENCE_DOCUMENTS\" AND manageDocumentSubtypeList!=\"RESPONDENT_STATEMENT\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
-    "CaseFieldID": "supportingEvidenceDocumentsTemp",
-    "ListElementCode": "expertReportType",
-    "FieldDisplayOrder": 6,
-    "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "manageDocument.type=\"FURTHER_EVIDENCE_DOCUMENTS\" AND manageDocumentSubtypeList!=\"RESPONDENT_STATEMENT\" AND supportingEvidenceDocumentsTemp.type=\"EXPERT_REPORTS\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
-    "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "documentAcknowledgeLabel",
-    "FieldDisplayOrder": 7,
+    "FieldDisplayOrder": 5,
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
   },
@@ -132,10 +112,29 @@
     "CaseEventID": "manageDocuments",
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "documentAcknowledge",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "supportingEvidenceDocumentsTemp",
+    "ListElementCode": "type",
+    "FieldDisplayOrder": 7,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "manageDocument.type=\"FURTHER_EVIDENCE_DOCUMENTS\" AND manageDocumentSubtypeList!=\"RESPONDENT_STATEMENT\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "supportingEvidenceDocumentsTemp",
+    "ListElementCode": "expertReportType",
     "FieldDisplayOrder": 8,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD",
-    "FieldShowCondition": "name!=\"SHOW_IN_EVENT_ONLY\""
+    "FieldShowCondition": "manageDocument.type=\"FURTHER_EVIDENCE_DOCUMENTS\" AND manageDocumentSubtypeList!=\"RESPONDENT_STATEMENT\" AND supportingEvidenceDocumentsTemp.type=\"EXPERT_REPORTS\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -327,8 +326,28 @@
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocuments",
     "CaseFieldID": "manageDocumentsCaseSummary",
-    "ListElementCode": "hasConfidentialAddressLabel",
+    "ListElementCode": "documentAcknowledgeLabel",
     "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsCaseSummary",
+    "ListElementCode": "documentAcknowledge",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsCaseSummary",
+    "ListElementCode": "hasConfidentialAddressLabel",
+    "FieldDisplayOrder": 5,
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>There is a confidential address on this case. Please check and confirm your document doesn't contain a confidential address before proceeding</strong></div>",
     "FieldShowCondition": "manageDocument.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
@@ -339,30 +358,9 @@
     "CaseEventID": "manageDocuments",
     "CaseFieldID": "manageDocumentsCaseSummary",
     "ListElementCode": "hasConfidentialAddress",
-    "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "manageDocument.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
-    "CaseFieldID": "manageDocumentsCaseSummary",
-    "ListElementCode": "documentAcknowledgeLabel",
-    "FieldDisplayOrder": 5,
-    "DisplayContext": "READONLY",
-    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
-    "CaseFieldID": "manageDocumentsCaseSummary",
-    "ListElementCode": "documentAcknowledge",
     "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD",
-    "FieldShowCondition": "name!=\"SHOW_IN_EVENT_ONLY\""
+    "FieldShowCondition": "manageDocument.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -388,8 +386,29 @@
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocuments",
     "CaseFieldID": "manageDocumentsPositionStatementChild",
-    "ListElementCode": "hasConfidentialAddressLabel",
+    "ListElementCode": "documentAcknowledgeLabel",
     "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsPositionStatementChild",
+    "ListElementCode": "documentAcknowledge",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD",
+    "FieldShowCondition": "name!=\"SHOW_IN_EVENT_ONLY\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsPositionStatementChild",
+    "ListElementCode": "hasConfidentialAddressLabel",
+    "FieldDisplayOrder": 5,
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>There is a confidential address on this case. Please check and confirm your document doesn't contain a confidential address before proceeding</strong></div>",
     "FieldShowCondition": "manageDocument.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
@@ -400,30 +419,9 @@
     "CaseEventID": "manageDocuments",
     "CaseFieldID": "manageDocumentsPositionStatementChild",
     "ListElementCode": "hasConfidentialAddress",
-    "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "manageDocument.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
-    "CaseFieldID": "manageDocumentsPositionStatementChild",
-    "ListElementCode": "documentAcknowledgeLabel",
-    "FieldDisplayOrder": 5,
-    "DisplayContext": "READONLY",
-    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
-    "CaseFieldID": "manageDocumentsPositionStatementChild",
-    "ListElementCode": "documentAcknowledge",
     "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD",
-    "FieldShowCondition": "name!=\"SHOW_IN_EVENT_ONLY\""
+    "FieldShowCondition": "manageDocument.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -449,8 +447,28 @@
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocuments",
     "CaseFieldID": "manageDocumentsPositionStatementRespondent",
-    "ListElementCode": "hasConfidentialAddressLabel",
+    "ListElementCode": "documentAcknowledgeLabel",
     "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsPositionStatementRespondent",
+    "ListElementCode": "documentAcknowledge",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsPositionStatementRespondent",
+    "ListElementCode": "hasConfidentialAddressLabel",
+    "FieldDisplayOrder": 5,
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>There is a confidential address on this case. Please check and confirm your document doesn't contain a confidential address before proceeding</strong></div>",
     "FieldShowCondition": "manageDocument.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
@@ -461,28 +479,8 @@
     "CaseEventID": "manageDocuments",
     "CaseFieldID": "manageDocumentsPositionStatementRespondent",
     "ListElementCode": "hasConfidentialAddress",
-    "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "manageDocument.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
-    "CaseFieldID": "manageDocumentsPositionStatementRespondent",
-    "ListElementCode": "documentAcknowledgeLabel",
-    "FieldDisplayOrder": 5,
-    "DisplayContext": "READONLY",
-    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
-    "CaseFieldID": "manageDocumentsPositionStatementRespondent",
-    "ListElementCode": "documentAcknowledge",
     "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD"
+    "FieldShowCondition": "manageDocument.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
   }
 ]

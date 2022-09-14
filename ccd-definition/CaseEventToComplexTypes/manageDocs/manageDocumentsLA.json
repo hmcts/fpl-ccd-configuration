@@ -305,8 +305,28 @@
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "manageDocumentsCaseSummary",
-    "ListElementCode": "hasConfidentialAddressLabel",
+    "ListElementCode": "documentAcknowledgeLabel",
     "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "manageDocumentsCaseSummary",
+    "ListElementCode": "documentAcknowledge",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "manageDocumentsCaseSummary",
+    "ListElementCode": "hasConfidentialAddressLabel",
+    "FieldDisplayOrder": 5,
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>There is a confidential address on this case. Please check and confirm your document doesn't contain a confidential address before proceeding</strong></div>",
     "FieldShowCondition": "manageDocumentLA.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
@@ -317,7 +337,7 @@
     "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "manageDocumentsCaseSummary",
     "ListElementCode": "hasConfidentialAddress",
-    "FieldDisplayOrder": 4,
+    "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "manageDocumentLA.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
   },
@@ -345,8 +365,28 @@
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "manageDocumentsPositionStatementChild",
-    "ListElementCode": "hasConfidentialAddressLabel",
+    "ListElementCode": "documentAcknowledgeLabel",
     "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "manageDocumentsPositionStatementChild",
+    "ListElementCode": "documentAcknowledge",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "manageDocumentsPositionStatementChild",
+    "ListElementCode": "hasConfidentialAddressLabel",
+    "FieldDisplayOrder": 5,
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>There is a confidential address on this case. Please check and confirm your document doesn't contain a confidential address before proceeding</strong></div>",
     "FieldShowCondition": "manageDocumentLA.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
@@ -357,7 +397,7 @@
     "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "manageDocumentsPositionStatementChild",
     "ListElementCode": "hasConfidentialAddress",
-    "FieldDisplayOrder": 4,
+    "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "manageDocumentLA.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
   },
@@ -385,8 +425,28 @@
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "manageDocumentsPositionStatementRespondent",
-    "ListElementCode": "hasConfidentialAddressLabel",
+    "ListElementCode": "documentAcknowledgeLabel",
     "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "manageDocumentsPositionStatementRespondent",
+    "ListElementCode": "documentAcknowledge",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "manageDocumentsPositionStatementRespondent",
+    "ListElementCode": "hasConfidentialAddressLabel",
+    "FieldDisplayOrder": 5,
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>There is a confidential address on this case. Please check and confirm your document doesn't contain a confidential address before proceeding</strong></div>",
     "FieldShowCondition": "manageDocumentLA.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
@@ -397,7 +457,7 @@
     "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "manageDocumentsPositionStatementRespondent",
     "ListElementCode": "hasConfidentialAddress",
-    "FieldDisplayOrder": 4,
+    "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "manageDocumentLA.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
   },
