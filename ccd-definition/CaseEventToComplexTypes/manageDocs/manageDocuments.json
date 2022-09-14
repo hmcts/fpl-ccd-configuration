@@ -483,7 +483,6 @@
     "ListElementCode": "documentAcknowledge",
     "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD",
-    "FieldShowCondition": "name!=\"SHOW_IN_EVENT_ONLY\""
+    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD"
   }
 ]

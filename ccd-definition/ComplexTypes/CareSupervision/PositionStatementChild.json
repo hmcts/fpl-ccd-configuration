@@ -94,7 +94,6 @@
     "FieldTypeParameter": "DocumentAcknowledge",
     "ElementLabel": " ",
     "SecurityClassification": "Public",
-    "Searchable": "N",
-    "FieldShowCondition": "documentAcknowledgeLabel=\"DO_NOT_SHOW\""
+    "Searchable": "N"
   }
 ]

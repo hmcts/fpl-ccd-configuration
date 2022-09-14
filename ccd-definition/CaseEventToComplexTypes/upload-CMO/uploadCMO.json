@@ -37,8 +37,7 @@
     "ListElementCode": "documentAcknowledge",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD",
-    "FieldShowCondition": "name!=\"SHOW_IN_EVENT_ONLY\""
+    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD"
   },
   {
     "LiveFrom": "01/01/2017",

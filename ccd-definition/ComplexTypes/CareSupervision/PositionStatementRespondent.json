@@ -58,8 +58,7 @@
     "FieldTypeParameter": "DocumentAcknowledge",
     "ElementLabel": " ",
     "SecurityClassification": "Public",
-    "Searchable": "N",
-    "FieldShowCondition": "documentAcknowledgeLabel=\"DO_NOT_SHOW\""
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
