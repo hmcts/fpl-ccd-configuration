@@ -116,7 +116,7 @@ public enum FeeType {
         }
 
         return c2OrdersRequestedList.stream()
-            .filter(el -> !el.equals(REQUESTING_ADJOURNMENT))
+            .filter(el -> !el.equals(REQUESTING_ADJOURNMENT)) // no fee code - it removes the fees entirely
             .map(c2AdditionalOrdersToFeesMap::get)
             .collect(toUnmodifiableList());
     }
