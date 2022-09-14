@@ -17,6 +17,7 @@ import java.util.Optional;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.CHANGE_SURNAME_OR_REMOVE_JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.TERMINATION_OF_APPOINTMENT_OF_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C100_CHILD_ARRANGEMENTS;
@@ -115,6 +116,7 @@ public enum FeeType {
         }
 
         return c2OrdersRequestedList.stream()
+            .filter(el -> !el.equals(REQUESTING_ADJOURNMENT))
             .map(c2AdditionalOrdersToFeesMap::get)
             .collect(toUnmodifiableList());
     }

@@ -1407,6 +1407,34 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "additionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundle.requestedHearingToAdjourn",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[LABARRISTER]",
+          "[SOLICITOR]",
+          "[LASOLICITOR]",
+          "[CAFCASSSOLICITOR]",
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "additionalApplicationsBundle",
     "ListElementCode": "c2DocumentBundle.othersNotified",
     "AccessControl": [
       {
