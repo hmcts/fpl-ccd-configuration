@@ -236,11 +236,9 @@ public class UploadAdditionalApplicationsService {
             && temporaryC2Bundle.getC2AdditionalOrdersRequested().contains(REQUESTING_ADJOURNMENT);
     }
 
-    /**
-     *  Only skip the payment IF:
-     *  - the hearing we are asking to adjourn is >= 14 days away
-     *  - AND we're not applying for an 'other order (C1/C100/supplement)' at the same time
-     *  - AND we aren't applying for other C2 things (surname, guardian appt, etc)
+    /** Only skip the payment if the hearing we are asking to adjourn is >= 14 days away,
+     * AND we're not applying for an 'other order (C1/C100/supplement)' at the same time,
+     * AND we aren't applying for other C2 things (surname, guardian appt, etc).
      * @param caseData - CaseData at current callback
      * @param hearing - the selected hearing that the user is applying to adjourn
      * @param temporaryC2Bundle - the current C2 bundle as amended during the callback
