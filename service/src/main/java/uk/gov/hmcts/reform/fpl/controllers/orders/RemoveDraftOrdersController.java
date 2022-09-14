@@ -13,15 +13,19 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersRemovedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.removeorder.RemoveOrderService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
@@ -88,5 +92,20 @@ public class RemoveDraftOrdersController extends CallbackController {
         );
 
         return respond(caseDetailsMap);
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmitted(@RequestBody CallbackRequest request) {
+        final CaseData caseDataBefore = getCaseDataBefore(request);
+        final CaseData caseData = getCaseData(request);
+
+        final List<Element<HearingOrder>> draftOrdersBefore = removeOrderService.getDraftHearingOrders(caseDataBefore);
+        final List<Element<HearingOrder>> draftOrdersAfter = removeOrderService.getDraftHearingOrders(caseDataBefore);
+
+        draftOrdersBefore.stream()
+            .filter(draftOrder -> ElementUtils.findElement(draftOrder.getId(), draftOrdersAfter).isEmpty())
+            .findFirst().ifPresent(hearingOrderElement ->
+                publishEvent(new DraftOrdersRemovedEvent(caseData, caseDataBefore, hearingOrderElement,
+                    caseData.getRemovalToolData().getReasonToRemoveOrder())));
     }
 }
