@@ -55,8 +55,6 @@ public class C2DocumentBundle implements ApplicationsBundle {
     private final List<Element<Other>> others;
     private final List<Element<Respondent>> respondents;
     private final String requestedHearingToAdjourn;
-
-    @JsonIgnore
     private final DynamicList hearingList;
 
     public String toLabel(int index) {

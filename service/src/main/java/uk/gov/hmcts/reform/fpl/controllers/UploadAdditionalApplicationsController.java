@@ -48,6 +48,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
@@ -162,6 +163,10 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     @SuppressWarnings("unchecked")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
+        /* This is a workaround as the 'hearingList' has set itself to the UUID of the selected hearing, NOT the
+         * actual DynamicList data structure anymore so cannot deserialize properly (so we just throw it out, as we
+         * don't need it at this stage anyway). */
         ((LinkedHashMap) caseDetails.getData().get(TEMPORARY_C2_DOCUMENT)).put("hearingList", null);
         CaseData caseData = getCaseData(caseDetails);
 
@@ -227,7 +232,11 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             log.info("Payment for case {} not taken due to user decision", caseDetails.getId());
             publishEvent(new AdditionalApplicationsPbaPaymentNotTakenEvent(caseData));
         } else {
-            if (amountToPayShownToUser(caseDetails)) {
+            if (isNotEmpty(lastBundle.getC2DocumentBundle())
+                && isNotEmpty(lastBundle.getC2DocumentBundle().getRequestedHearingToAdjourn())) {
+                // we skip the payment related things as there's a hearing we want to adjourn
+                log.info("Payment for case {} skipped as requesting adjournment", caseDetails.getId());
+            } else if (amountToPayShownToUser(caseDetails)) {
                 try {
                     FeesData feesData = applicationsFeeCalculator.getFeeDataForAdditionalApplications(lastBundle);
                     paymentService.makePaymentForAdditionalApplications(caseDetails.getId(), caseData, feesData);
