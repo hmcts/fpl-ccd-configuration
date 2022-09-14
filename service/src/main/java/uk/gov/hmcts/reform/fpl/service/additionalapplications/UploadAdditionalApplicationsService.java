@@ -64,7 +64,6 @@ public class UploadAdditionalApplicationsService {
         return applicationTypes;
     }
 
-    // the IMPORTANT BIT
     public AdditionalApplicationsBundle buildAdditionalApplicationsBundle(CaseData caseData) {
         String applicantName = getSelectedApplicantName(caseData.getApplicantsList(), caseData.getOtherApplicant())
             .filter(not(String::isBlank))
