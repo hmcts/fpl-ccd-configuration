@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,8 +17,12 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.CMSReportEventData;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Sort;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -26,14 +32,19 @@ import java.util.Optional;
 import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
+import static uk.gov.hmcts.reform.fpl.service.search.SearchService.ES_DEFAULT_SIZE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,7 +61,7 @@ class CMSReportServiceTest {
 
 
     @Test
-    void shouldReturnReport() {
+    void shouldReturnHtmlReport() {
         LocalDate submittedDate = LocalDate.now().minusWeeks(24);
         CMSReportEventData cmsReportEventData = CMSReportEventData.builder()
                 .swanseaDFJCourts("344")
@@ -77,6 +88,74 @@ class CMSReportServiceTest {
         System.out.println(report);
     }
 
+    @Test
+    void shouldReturnFileReport() throws IOException {
+        LocalDate submittedDate = LocalDate.parse("04-05-2022" , DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        LocalDateTime finalHearing = LocalDateTime.of(
+                LocalDate.parse("03-11-2022" , DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+                LocalTime.now());
+        LocalDateTime issueHearing = LocalDateTime.of(
+                LocalDate.parse("22-09-2022" , DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+                LocalTime.now());
+        CMSReportEventData cmsReportEventData = CMSReportEventData.builder()
+                .swanseaDFJCourts("344")
+                .reportType("MISSING_TIMETABLE")
+                .build();
+
+        CaseData caseDataSelected = CaseData.builder()
+                .cmsReportEventData(cmsReportEventData)
+                .build();
+
+        List<Element<HearingBooking>> hearingDetails = ElementUtils.wrapElements(List.of(createHearingBooking(FINAL, finalHearing),
+                createHearingBooking(ISSUE_RESOLUTION, issueHearing)));
+
+        LocalDateTime caseManagementHearing = LocalDateTime.of(
+                LocalDate.parse("18-06-2022" , DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+                LocalTime.now());
+
+        List<Element<HearingBooking>> hearingDetailsTwo = ElementUtils.wrapElements(
+                List.of(createHearingBooking(CASE_MANAGEMENT, caseManagementHearing),
+                        createHearingBooking(ISSUE_RESOLUTION, issueHearing)));
+
+        List<CaseDetails> caseDetails = List.of(createCaseDetails());
+
+        SearchResult searchResult = SearchResult.builder()
+                .total(100)
+                .cases(caseDetails)
+                .build();
+
+        when(searchService.search(any(), eq(ES_DEFAULT_SIZE), eq(0), isA(Sort.class))).thenReturn(searchResult);
+        when(searchService.search(any(), eq(ES_DEFAULT_SIZE), eq(ES_DEFAULT_SIZE), isA(Sort.class))).thenReturn(searchResult);
+        when(converter.convert(isA(CaseDetails.class))).thenReturn(
+                getCaseData(hearingDetails, submittedDate, "PO22ZA12345"),
+                getCaseData(hearingDetailsTwo, submittedDate, "ZO88ZA56789")
+                );
+        Optional<File> fileReport = service.getFileReport(caseDataSelected);
+        assertThat(fileReport).isPresent();
+
+        List<CSVRecord> csvRecordsList = readCsv(fileReport.get());
+        assertThat(csvRecordsList)
+                .isNotEmpty()
+                .hasSize(3)
+                .extracting(record -> tuple(
+                        record.get(0), record.get(1), record.get(2), record.get(3), record.get(4),
+                        record.get(5), record.get(6))
+                ).containsExactly(
+                        tuple("Case Number", "Receipt date", "Last hearing", "Next hearing",
+                                "Age of case (weeks)", "PLO stage", "Expected FH date"),
+                        tuple("PO22ZA12345", "04-05-2022", "22-09-2022",
+                                "03-11-2022", "19", "Final", "02-11-2022"),
+                        tuple("ZO88ZA56789", "04-05-2022", "18-06-2022",
+                                "22-09-2022", "19", "Issue resolution", "02-11-2022")
+                );
+        verify(searchService, times(2))
+                .search(isA(ESQuery.class), anyInt(), anyInt(), isA(Sort.class));
+    }
+
+    private List<CSVRecord> readCsv(File file) throws IOException {
+        return CSVFormat.DEFAULT.parse(new FileReader(file)).getRecords();
+    }
+
     private CaseDetails createCaseDetails() {
         Random random = new Random();
         return CaseDetails.builder()
@@ -85,8 +164,12 @@ class CMSReportServiceTest {
     }
 
     private CaseData getCaseData(List<Element<HearingBooking>> hearingDetails, LocalDate submittedDate) {
+        return getCaseData(hearingDetails, submittedDate, "PO22ZA12345");
+    }
+
+    private CaseData getCaseData(List<Element<HearingBooking>> hearingDetails, LocalDate submittedDate, String familyManNum) {
         return CaseData.builder()
-                .familyManCaseNumber("PO22ZA12345")
+                .familyManCaseNumber(familyManNum)
                 .dateSubmitted(submittedDate)
                 .hearingDetails(hearingDetails)
                 .build();

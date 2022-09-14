@@ -125,7 +125,7 @@ public class CMSReportService {
     private Optional<File> getFileReport(CaseData caseDataSelected, Function<LocalDate, RangeQuery> rangeQueryFunction)
             throws IOException {
         String courtId = getCourt(caseDataSelected.getCmsReportEventData());
-
+        Optional<File> optFile = Optional.empty();
 
         ESQuery esQuery = buildQuery(courtId, rangeQueryFunction.apply(getComplianceDeadline.get()));
         log.info("query {}", esQuery.toMap());
@@ -149,16 +149,19 @@ public class CMSReportService {
                     Optional<HearingInfo> optionalHearingInfo = getHearingInfo(caseData);
                     optionalHearingInfo.ifPresent(hearingInfoList::add);
                 }
-                searchResult = searchService.search(esQuery,
-                        ES_DEFAULT_SIZE,
-                        ++counter * ES_DEFAULT_SIZE,
-                        buildSortClause());
-            } while (counter < pages);
+                if (++counter  < pages) {
+                    searchResult = searchService.search(esQuery,
+                            ES_DEFAULT_SIZE,
+                            counter * ES_DEFAULT_SIZE,
+                            buildSortClause());
+                }
+            } while (counter  < pages);
 
-            return Optional.of(CsvWriter.writeHearingInfoToCsv(hearingInfoList));
-        } else {
-            return Optional.empty();
+            if (hearingInfoList.size() > 0) {
+                optFile = Optional.of(CsvWriter.writeHearingInfoToCsv(hearingInfoList));
+            }
         }
+        return optFile;
     }
 
     private int paginate(int total) {
