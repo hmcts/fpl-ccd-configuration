@@ -296,16 +296,23 @@ public class CafcassNotificationService {
                             final DocumentReference documentReferences,
                             final String notificationType) {
 
+
         LargeFilesNotificationData largeFileNotificationData = getLargeFileNotificationData(
                 caseData, documentReferences, caseUrlService, notificationType);
+
+        String subject = LARGE_ATTACHEMENTS.getType().apply(caseData, largeFileNotificationData);
+        log.info("For case id: {} notification subject:{}",
+                caseData.getId(),
+                subject);
 
         emailService.sendEmail(configuration.getSender(),
             EmailData.builder()
                 .recipient(LARGE_ATTACHEMENTS.getRecipient().apply(configuration))
-                .subject(LARGE_ATTACHEMENTS.getType().apply(caseData, largeFileNotificationData))
+                .subject(subject)
                 .message(LARGE_ATTACHEMENTS.getContent().apply(caseData, largeFileNotificationData))
                 .build()
         );
+
         log.info("For case id {} notification sent to Cafcass for {} and notification type {}",
                 caseData.getId(),
                 LARGE_ATTACHEMENTS.name(),
