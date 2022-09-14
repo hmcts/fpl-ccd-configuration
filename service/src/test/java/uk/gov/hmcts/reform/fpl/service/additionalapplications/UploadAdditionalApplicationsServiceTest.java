@@ -434,6 +434,40 @@ class UploadAdditionalApplicationsServiceTest {
             boolean result = underTest.shouldSkipPayments(caseData, booking, caseData.getTemporaryC2Document());
             assertThat(result).isFalse();
         }
+
+        @Test
+        void shouldNotSkipPaymentsWhenNotRequestingAdjournment() {
+            HearingBooking booking = HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(15))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationType(List.of(C2_ORDER))
+                .temporaryC2Document(C2DocumentBundle.builder()
+                    .c2AdditionalOrdersRequested(List.of(CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
+                    .build())
+                .build();
+
+            boolean result = underTest.shouldSkipPayments(caseData, booking, caseData.getTemporaryC2Document());
+            assertThat(result).isFalse();
+        }
+
+        @Test
+        void shouldNotSkipPaymentsWhenApplyingForAnOtherOrder() {
+            HearingBooking booking = HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(15))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationType(List.of(OTHER_ORDER))
+                .temporaryC2Document(C2DocumentBundle.builder()
+                    .c2AdditionalOrdersRequested(List.of(CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
+                    .build())
+                .build();
+
+            boolean result = underTest.shouldSkipPayments(caseData, booking, caseData.getTemporaryC2Document());
+            assertThat(result).isFalse();
+        }
     }
 
 
