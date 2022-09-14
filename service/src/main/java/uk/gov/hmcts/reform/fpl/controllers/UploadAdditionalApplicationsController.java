@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
-import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
+import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsPbaPaymentNotTakenEvent;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
@@ -38,8 +38,6 @@ import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -49,6 +47,7 @@ import java.util.stream.Collectors;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
@@ -68,6 +67,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private static final String AMOUNT_TO_PAY = "amountToPay";
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
     private static final String TEMPORARY_OTHER_APPLICATIONS_BUNDLE = "temporaryOtherApplicationsBundle";
+    private static final String SKIP_PAYMENT_PAGE = "skipPaymentPage";
 
     private final ObjectMapper mapper;
     private final DraftOrderService draftOrderService;
@@ -95,9 +95,12 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, C2DocumentBundle.builder()
-            .hearingList(caseData.buildDynamicHearingList())
-            .build());
+        if (caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.C2_ORDER)) {
+            // Initialise the C2 document bundle so we can have a dynamic list present
+            caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, C2DocumentBundle.builder()
+                .hearingList(caseData.buildDynamicHearingList())
+                .build());
+        }
         return respond(caseDetails);
     }
 
@@ -111,8 +114,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             C2DocumentBundle temporaryC2Document = caseData.getTemporaryC2Document();
             temporaryC2Document.setType(caseData.getC2Type());
 
-            if (temporaryC2Document.getC2AdditionalOrdersRequested()
-                .contains(C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT)) {
+            if (temporaryC2Document.getC2AdditionalOrdersRequested().contains(REQUESTING_ADJOURNMENT)) {
                 // Get the selected hearing from the dynamic list + populate the 'selected hearing' field
                 UUID selectedHearingCode = getDynamicListSelectedValue(temporaryC2Document.getHearingList(), mapper);
                 HearingBooking hearing = findElement(selectedHearingCode,
@@ -123,7 +125,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                     .requestedHearingToAdjourn(hearing.asLabel())
                     .build();
 
-                skipPayment = (Duration.between(hearing.getStartDate(), LocalDateTime.now()).abs().toDays() >= 14L);
+                skipPayment = uploadAdditionalApplicationsService.shouldSkipPayments(caseData, hearing,
+                    temporaryC2Document);
                 log.info(skipPayment + "");
             }
             caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, temporaryC2Document);
@@ -131,9 +134,10 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         if (!skipPayment) {
             caseDetails.getData().putAll(applicationsFeeCalculator.calculateFee(caseData));
+            caseDetails.getData().put(SKIP_PAYMENT_PAGE, NO.getValue());
         } else {
             caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
-            caseDetails.getData().put("skipPaymentPage", YES.getValue());
+            caseDetails.getData().put(SKIP_PAYMENT_PAGE, YES.getValue());
         }
 
         if (caseData.hasRespondentsOrOthers()) {
@@ -207,7 +211,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT, "c2Type", "additionalApplicationType",
             AMOUNT_TO_PAY, "temporaryPbaPayment", TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "applicantsList",
             "otherApplicant", "people_label", "hasRespondentsOrOthers", "notifyApplicationsToAllOthers",
-            "personSelector", "skipPaymentPage");
+            "personSelector", SKIP_PAYMENT_PAGE);
 
         return respond(caseDetails);
     }
@@ -233,8 +237,10 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             publishEvent(new AdditionalApplicationsPbaPaymentNotTakenEvent(caseData));
         } else {
             if (isNotEmpty(lastBundle.getC2DocumentBundle())
-                && isNotEmpty(lastBundle.getC2DocumentBundle().getRequestedHearingToAdjourn())) {
-                // we skip the payment related things as there's a hearing we want to adjourn
+                && isNotEmpty(lastBundle.getC2DocumentBundle().getRequestedHearingToAdjourn())
+                && uploadAdditionalApplicationsService.onlyApplyingForAnAdjournment(caseData,
+                    lastBundle.getC2DocumentBundle())) {
+                // we skipped payment related things as there's a hearing we want to adjourn + no other extras
                 log.info("Payment for case {} skipped as requesting adjournment", caseDetails.getId());
             } else if (amountToPayShownToUser(caseDetails)) {
                 try {

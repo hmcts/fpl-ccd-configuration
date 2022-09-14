@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +41,7 @@ import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
@@ -220,5 +223,31 @@ public class UploadAdditionalApplicationsService {
 
     private DocumentReference getDocumentToStore(DocumentReference originalDoc) {
         return documentConversionService.convertToPdf(originalDoc);
+    }
+
+    private boolean onlyApplyingForC2(CaseData caseData) {
+        return caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.C2_ORDER)
+            && caseData.getAdditionalApplicationType().size() == 1;
+    }
+
+    public boolean onlyApplyingForAnAdjournment(CaseData caseData, C2DocumentBundle temporaryC2Bundle) {
+        return onlyApplyingForC2(caseData)
+            && temporaryC2Bundle.getC2AdditionalOrdersRequested().size() == 1
+            && temporaryC2Bundle.getC2AdditionalOrdersRequested().contains(REQUESTING_ADJOURNMENT);
+    }
+
+    /**
+     *  Only skip the payment IF:
+     *  - the hearing we are asking to adjourn is >= 14 days away
+     *  - AND we're not applying for an 'other order (C1/C100/supplement)' at the same time
+     *  - AND we aren't applying for other C2 things (surname, guardian appt, etc)
+     * @param caseData - CaseData at current callback
+     * @param hearing - the selected hearing that the user is applying to adjourn
+     * @param temporaryC2Bundle - the current C2 bundle as amended during the callback
+     * @return - boolean for whether we should skip the payments or not
+     */
+    public boolean shouldSkipPayments(CaseData caseData, HearingBooking hearing, C2DocumentBundle temporaryC2Bundle) {
+        return (Duration.between(LocalDateTime.now(), hearing.getStartDate()).toDays() >= 14L)
+            && onlyApplyingForAnAdjournment(caseData, temporaryC2Bundle);
     }
 }
