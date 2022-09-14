@@ -48,9 +48,8 @@ public class CMSReportEventHandler {
         try {
             Optional<File> fileReport = cmsReportService.getFileReport(caseData);
             if (fileReport.isPresent()) {
-                log.info("TO notify subject {}" , subject);
-                //TODO: remove
-                log.info("Notifying user {}", event.getUserDetails().getEmail());
+                log.info("To notify subject: {}" , subject);
+
                 File file = fileReport.get();
                 EmailAttachment attachment = EmailAttachment.document(defaultIfNull(URLConnection.guessContentTypeFromName(file.getName()),
                                 "application/octet-stream"),
@@ -59,9 +58,11 @@ public class CMSReportEventHandler {
 
                 emailService.sendEmail("noreply@reform.hmcts.net",
                         EmailData.builder()
-                                .recipient(event.getUserDetails().getEmail())
+                                //TODO uncomment and remove next line.recipient(event.getUserDetails().getEmail())
+                                .recipient("risk.case@mailinator.com")
                                 .subject(subject)
                                 .attachments(Set.of(attachment))
+                                .message(subject)
                                 .build()
                 );
                 log.info("Notified cases with subject {}", subject);
