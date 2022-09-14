@@ -275,3 +275,31 @@ resources:
 send-grid:
   host: smtp.sendgrid.net
   port: 587
+
+cafcass:
+  notification:
+    documentType:
+      order: ORDER
+      noticeOfHearing: ORDER
+      respondentStatement: COURT PAPER
+      applicationStatement: COURT PAPER
+      otherReports: COURT PAPER
+      threshold: COURT PAPER
+      swet: COURT PAPER
+      carePlan: COURT PAPER
+      socialWorkChronology: COURT PAPER
+      socialWorkStatement: COURT PAPER
+      genogram: COURT PAPER
+      checklistDocument: COURT PAPER
+      birthCertificate: COURT PAPER
+      additionalApplications: COURT PAPER
+      expertReports: EXPERT
+      childsGuardianReports: REPORTING TO COURT
+      courtBundle: BUNDLE
+      caseSummary: BUNDLE
+      positionStatementChild: BUNDLE
+      positionStatementRespondent: BUNDLE
+      other: CORRESPONDENCE
+      correspondence: CORRESPONDENCE
+      additionalDocument: APPLICATION
+      newApplication: APPLICATION

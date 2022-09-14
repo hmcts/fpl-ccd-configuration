@@ -2,8 +2,10 @@ package uk.gov.hmcts.reform.fpl.service.validators;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseDataParent;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,9 +17,11 @@ import static java.util.stream.Collectors.toList;
 
 public abstract class PropertiesChecker implements EventChecker {
 
-    private static final List<String> AVAILABLE_PROPERTIES = Stream.of(CaseData.class.getDeclaredFields())
-            .map(Field::getName)
-            .collect(toList());
+    private static final List<String> AVAILABLE_PROPERTIES = Stream.of(CaseData.class.getDeclaredFields(),
+            CaseDataParent.class.getDeclaredFields())
+        .flatMap(Arrays::stream)
+        .map(Field::getName)
+        .collect(toList());
 
     @Autowired
     private javax.validation.Validator validator;

@@ -13,11 +13,13 @@ import java.util.UUID;
 public class PositionStatementRespondent extends HearingDocument {
     private final String respondentName;
     private final UUID respondentId;
+    private final UUID hearingId;
 
     @Builder(toBuilder = true)
     public PositionStatementRespondent(DocumentReference document,
                                        LocalDateTime dateTimeUploaded,
                                        String uploadedBy,
+                                       UUID hearingId,
                                        String hearing,
                                        String respondentName,
                                        UUID respondentId,
@@ -29,5 +31,6 @@ public class PositionStatementRespondent extends HearingDocument {
         super.hasConfidentialAddress = hasConfidentialAddress;
         this.respondentName = respondentName;
         this.respondentId = respondentId;
+        this.hearingId = hearingId;
     }
 }

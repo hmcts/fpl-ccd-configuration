@@ -48,5 +48,15 @@
     "ElementLabel": "Organisation (unregistered)",
     "SecurityClassification": "Public",
     "FieldShowCondition": "unregisteredOrganisation.name!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentSolicitor",
+    "ListElementCode": "colleaguesToBeNotified",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Colleague",
+    "ElementLabel": "Colleagues to be notified",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "unregisteredOrganisation = \"DO_NOT_SHOW\""
   }
 ]

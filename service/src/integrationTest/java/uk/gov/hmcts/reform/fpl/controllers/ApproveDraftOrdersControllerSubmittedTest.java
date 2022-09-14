@@ -48,7 +48,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
@@ -451,22 +453,31 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
                     CASE_ID,
                     FAMILY_MAN_CASE_NUMBER, Language.ENGLISH
             );
-            verify(cafcassNotificationService).sendEmail(
+            verify(cafcassNotificationService, times(2)).sendEmail(
                     isA(CaseData.class),
                     documArgumentCaptor.capture(),
                     same(ORDER),
                     orderCafcassDataArgumentCaptor.capture()
             );
 
-            assertThat(documArgumentCaptor.getValue())
-                    .containsAll(
-                            Set.of(
-                                    orderDocumentCmo,
-                                    orderDocumentC21
-                            ));
-            assertThat(orderCafcassDataArgumentCaptor.getValue()
-                    .getDocumentName())
-                    .isEqualTo("\nAgreed CMO discussed at hearing\nC21 test order");
+            Set<DocumentReference> documentReferences = documArgumentCaptor.getAllValues().stream()
+                .flatMap(Set::stream)
+                .collect(toSet());
+
+            assertThat(documentReferences)
+                .containsAll(
+                    Set.of(
+                            orderDocumentCmo,
+                            orderDocumentC21
+                    )
+                );
+
+            assertThat(orderCafcassDataArgumentCaptor.getAllValues())
+                .extracting("documentName", "orderApprovalDate")
+                .contains(
+                    tuple("Agreed CMO discussed at hearing", cmo.getDateIssued()),
+                    tuple("C21 test order", c21.getDateIssued())
+                );
 
             verifyNoMoreInteractions(notificationClient);
             verifyNoMoreInteractions(sendLetters);
@@ -494,22 +505,26 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(CallbackRequest.builder().caseDetails(caseDetails).build());
 
         verifyEmailSentToTranslation(2);
-        verify(cafcassNotificationService).sendEmail(
+        verify(cafcassNotificationService, times(2)).sendEmail(
                 isA(CaseData.class),
                 documArgumentCaptor.capture(),
                 same(ORDER),
                 orderCafcassDataArgumentCaptor.capture()
         );
 
-        assertThat(documArgumentCaptor.getValue())
+        Set<DocumentReference> documentReferences = documArgumentCaptor.getAllValues().stream()
+                .flatMap(Set::stream)
+                .collect(toSet());
+
+        assertThat(documentReferences)
                 .containsAll(
                         Set.of(
                                 orderDocumentCmo,
                                 orderDocumentC21
                         ));
-        assertThat(orderCafcassDataArgumentCaptor.getValue()
-                        .getDocumentName())
-                .isEqualTo("\nAgreed CMO discussed at hearing\nC21 test order");
+        assertThat(orderCafcassDataArgumentCaptor.getAllValues())
+                .extracting("documentName")
+                .contains("Agreed CMO discussed at hearing", "C21 test order");
         verifyNoMoreNotificationsSentToTraslation();
     }
 

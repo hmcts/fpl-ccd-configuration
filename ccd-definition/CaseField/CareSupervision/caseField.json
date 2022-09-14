@@ -87,6 +87,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "groundsForSecureAccommodationOrder",
+    "Label": "How are there grounds for a secure accommodation order?",
+    "FieldType": "GroundsForSecureAccommodationOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "grounds",
     "Label": "How does this case meet the threshold criteria?",
     "FieldType": "Grounds",
@@ -924,7 +933,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "legalRepresentatives",
-    "Label": "LA Legal representatives",
+    "Label": "LA counsel/external solicitors",
     "FieldType": "Collection",
     "FieldTypeParameter": "LegalRepresentative",
     "SecurityClassification": "Public",
@@ -934,7 +943,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageLegalRepresentativesLabel",
-    "Label": "Legal representatives must be registered to use the service before you can add them to a case.<br/><br/>After they're registered, they'll only have access to cases you add them to. They will not be able to see all your organisation's cases.<br/><br/>They will be able to upload:<ul><li>case documents</li><li>c2 applications and associated documents</li><li>pre- and post-hearing CMOs</li></ul>They can register at [https://manage-org.platform.hmcts.net/register-org/register](https://manage-org.platform.hmcts.net/register-org/register)",
+    "Label": "Counsel/external solicitors must be registered to use the service before you can add them to a case.<br/><br/>After they're registered, they'll only have access to cases you add them to. They will not be able to see all your organisation's cases.<br/><br/>They will be able to upload:<ul><li>case documents</li><li>c2 applications and associated documents</li><li>pre- and post-hearing CMOs</li></ul>They can register at [https://manage-org.platform.hmcts.net/register-org/register](https://manage-org.platform.hmcts.net/register-org/register)",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -1989,6 +1998,15 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "otherOrderType",
+    "Label": " ",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "secureAccommodationOrderType",
     "Label": " ",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
