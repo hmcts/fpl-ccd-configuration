@@ -126,10 +126,14 @@ public class CafcassNotificationService {
                                   final CafcassRequestEmailContentProvider provider,
                                   final CafcassData cafcassData,
                                   final BiFunction<CaseData, CafcassData, String> content) {
+        String subject = provider.getType().apply(caseData, cafcassData);
+        log.info("For case id: {} notification subject:{}",
+                caseData.getId(),
+                subject);
         emailService.sendEmail(configuration.getSender(),
                 EmailData.builder()
                         .recipient(provider.getRecipient().apply(configuration))
-                        .subject(provider.getType().apply(caseData, cafcassData))
+                        .subject(subject)
                         .attachments(getEmailAttachments(documentReferences))
                         .message(content.apply(caseData, cafcassData))
                         .build()
@@ -292,16 +296,23 @@ public class CafcassNotificationService {
                             final DocumentReference documentReferences,
                             final String notificationType) {
 
+
         LargeFilesNotificationData largeFileNotificationData = getLargeFileNotificationData(
                 caseData, documentReferences, caseUrlService, notificationType);
+
+        String subject = LARGE_ATTACHEMENTS.getType().apply(caseData, largeFileNotificationData);
+        log.info("For case id: {} notification subject:{}",
+                caseData.getId(),
+                subject);
 
         emailService.sendEmail(configuration.getSender(),
             EmailData.builder()
                 .recipient(LARGE_ATTACHEMENTS.getRecipient().apply(configuration))
-                .subject(LARGE_ATTACHEMENTS.getType().apply(caseData, largeFileNotificationData))
+                .subject(subject)
                 .message(LARGE_ATTACHEMENTS.getContent().apply(caseData, largeFileNotificationData))
                 .build()
         );
+
         log.info("For case id {} notification sent to Cafcass for {} and notification type {}",
                 caseData.getId(),
                 LARGE_ATTACHEMENTS.name(),
