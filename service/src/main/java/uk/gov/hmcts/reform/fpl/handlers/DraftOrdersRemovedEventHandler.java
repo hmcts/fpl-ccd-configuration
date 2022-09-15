@@ -70,7 +70,8 @@ public class DraftOrdersRemovedEventHandler {
         sendToAdminAndLA(caseDataBefore, draftOrdersRemovedTemplate);
     }
 
-    private void sendToJudge(CaseData caseData, AbstractJudge judge, DraftOrdersRemovedTemplate draftOrdersRemovedTemplate) {
+    private void sendToJudge(CaseData caseData, AbstractJudge judge,
+                             DraftOrdersRemovedTemplate draftOrdersRemovedTemplate) {
         notificationService.sendEmail(
             DRAFT_ORDER_REMOVED_TEMPLATE_FOR_JUDGES,
             judge.getJudgeEmailAddress(),
@@ -112,11 +113,10 @@ public class DraftOrdersRemovedEventHandler {
     }
 
     private Optional<HearingBooking> getHearingBookingFromDraftOrder(CaseData caseData, UUID draftOrderId) {
-       return caseData.getHearingOrderBundleThatContainsOrder(draftOrderId)
+        return caseData.getHearingOrderBundleThatContainsOrder(draftOrderId)
            .flatMap(hearingOrdersBundleElement ->
                caseData.findHearingBookingElement(hearingOrdersBundleElement.getValue().getHearingId())
                    .map(Element::getValue));
-
     }
 
     private AbstractJudge getJudge(CaseData caseData, Optional<HearingBooking> hearing) {
