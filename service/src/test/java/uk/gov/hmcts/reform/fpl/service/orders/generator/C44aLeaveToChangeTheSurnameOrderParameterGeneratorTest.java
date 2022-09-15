@@ -56,7 +56,7 @@ public class C44aLeaveToChangeTheSurnameOrderParameterGeneratorTest {
 
         C44aLeaveToChangeTheSurnameOrderDocmosisParameters expectedData =
             C44aLeaveToChangeTheSurnameOrderDocmosisParameters.builder()
-                .orderTitle(Order.C43A_SPECIAL_GUARDIANSHIP_ORDER.getTitle())
+                .orderTitle(Order.C44A_LEAVE_TO_CHANGE_A_SURNAME.getTitle())
                 .orderByConsent("By consent")
                 .orderDetails("The Court grants leave to PartyOne to change the child surname to ABC")
                 .build();
