@@ -27,6 +27,9 @@ public class DocumentService {
     private byte[] getDocument(DocumentReference documentReference, User user) {
         return SerenityRest
             .given()
+            .baseUri("https://fpl-case-service-pr-3784.service.core-compute-preview.internal")
+            .log().all()
+            .relaxedHTTPSValidation()
             .headers(authenticationService.getAuthorizationHeaders(user))
             .body(documentReference.getBinaryUrl())
             .get("/testing-support/document")

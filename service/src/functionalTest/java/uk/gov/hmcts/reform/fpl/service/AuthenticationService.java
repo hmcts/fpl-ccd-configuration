@@ -40,7 +40,7 @@ public class AuthenticationService {
     private String login(User user) {
         try {
             String response = RestAssured
-                .given()
+                .given().log().all()
                 .relaxedHTTPSValidation()
                 .baseUri(testConfiguration.getIdamUrl())
                 .header(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)

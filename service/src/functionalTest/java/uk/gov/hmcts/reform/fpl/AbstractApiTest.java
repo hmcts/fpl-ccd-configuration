@@ -30,7 +30,7 @@ import java.io.UncheckedIOException;
 import static uk.gov.hmcts.reform.fpl.model.User.user;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 
-@ActiveProfiles("test-${env:local}")
+@ActiveProfiles("test-${env:preview}")
 @ContextConfiguration(classes = {
     TestConfiguration.class,
     CaseConverter.class,
