@@ -37,5 +37,9 @@ public class CaseDataParent {
     @Valid
     protected final GroundsForSecureAccommodationOrder groundsForSecureAccommodationOrder;
 
+    @NotNull(message = "Add the grounds for the application")
+    @Valid
+    protected final GroundsForRefuseContactWithChild groundsForRefuseContactWithChild;
+
     protected final YesNo skipPaymentPage;
 }
