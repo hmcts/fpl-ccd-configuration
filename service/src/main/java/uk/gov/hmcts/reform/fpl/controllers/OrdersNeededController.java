@@ -113,6 +113,13 @@ public class OrdersNeededController extends CallbackController {
             removeSecureAccommodationOrderFields(data, ordersFieldName);
         }
 
+        if (caseData.isRefuseContactWithChildApplication()) {
+            data.put("refuseContactWithChildOrderType", YesNo.YES);
+        } else {
+            data.remove("groundsForRefuseContactWithChild");
+            data.remove("refuseContactWithChildOrderType");
+        }
+
         if (caseData.isDischargeOfCareApplication()) {
             data.put("otherOrderType", "YES");
         } else {
