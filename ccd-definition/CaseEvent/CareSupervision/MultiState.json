@@ -314,7 +314,7 @@
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/submitted",
-    "EventEnablingCondition": "otherOrderType!=\"YES\" AND secureAccommodationOrderType!=\"YES\""
+    "EventEnablingCondition": "otherOrderType!=\"YES\" AND secureAccommodationOrderType!=\"YES\" AND refuseContactWithChildOrderType!=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -330,7 +330,7 @@
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/submitted",
-    "EventEnablingCondition": "otherOrderType!=\"YES\" AND secureAccommodationOrderType!=\"YES\""
+    "EventEnablingCondition": "otherOrderType!=\"YES\" AND secureAccommodationOrderType!=\"YES\" AND refuseContactWithChildOrderType!=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
