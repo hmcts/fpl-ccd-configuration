@@ -98,7 +98,7 @@ public class RemoveDraftOrdersController extends CallbackController {
         final CaseData caseData = getCaseData(request);
 
         final List<Element<HearingOrder>> draftOrdersBefore = removeOrderService.getDraftHearingOrders(caseDataBefore);
-        final List<Element<HearingOrder>> draftOrdersAfter = removeOrderService.getDraftHearingOrders(caseDataBefore);
+        final List<Element<HearingOrder>> draftOrdersAfter = removeOrderService.getDraftHearingOrders(caseData);
 
         draftOrdersBefore.stream()
             .filter(draftOrder -> ElementUtils.findElement(draftOrder.getId(), draftOrdersAfter).isEmpty())

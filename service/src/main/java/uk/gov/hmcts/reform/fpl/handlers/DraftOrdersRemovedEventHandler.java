@@ -63,9 +63,11 @@ public class DraftOrdersRemovedEventHandler {
                 draftOrderRemoved.getValue(), event.getRemovalReason());
 
         sendToJudge(caseDataBefore, judge, draftOrdersRemovedTemplate);
-        sendNotificationToCafcass(caseDataBefore, draftOrdersRemovedTemplate);
         sendToRepresentatives(caseDataBefore, draftOrdersRemovedTemplate);
         sendToAdminAndLA(caseDataBefore, draftOrdersRemovedTemplate);
+
+        // TBC
+//        sendNotificationToCafcass(caseDataBefore, draftOrdersRemovedTemplate);
     }
 
     private void sendToJudge(CaseData caseData, AbstractJudge judge,

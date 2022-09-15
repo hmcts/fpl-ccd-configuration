@@ -3,11 +3,15 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersRemovedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.RemovalToolData;
@@ -17,6 +21,9 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.service.EventService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +35,11 @@ import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
@@ -40,6 +52,13 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @WebMvcTest(RemovalToolController.class)
 @OverrideAutoConfiguration(enabled = true)
 public class RemoveDraftOrdersControllerTest extends AbstractCallbackTest {
+
+    @MockBean
+    private EventService eventPublisher;
+
+    @Captor
+    private ArgumentCaptor<DraftOrdersRemovedEvent> draftOrdersRemovedEventCaptor;
+
 
     protected RemoveDraftOrdersControllerTest() {
         super("remove-draft-orders");
@@ -201,6 +220,73 @@ public class RemoveDraftOrdersControllerTest extends AbstractCallbackTest {
                 "showRemoveCMOFieldsFlag",
                 "showReasonFieldFlag"
             );
+        }
+    }
+
+    @Nested
+    class SubmittedTest {
+        @Test
+        void shouldTriggerEvent() {
+            Long caseId = 1L;
+            UUID removedOrderId = UUID.randomUUID();
+            UUID additionalOrderId = UUID.randomUUID();
+            UUID hearingOrderBundleId = UUID.randomUUID();
+
+            Element<HearingOrder> orderToBeRemoved = element(removedOrderId, HearingOrder.builder()
+                .status(DRAFT)
+                .type(HearingOrderType.DRAFT_CMO)
+                .build());
+
+            List<Element<HearingOrder>> caseManagementOrdersBefore = newArrayList(
+                orderToBeRemoved,
+                element(additionalOrderId, HearingOrder.builder().type(HearingOrderType.DRAFT_CMO).build()));
+
+            List<Element<HearingBooking>> hearingBookings = List.of(
+                element(HearingBooking.builder()
+                    .caseManagementOrderId(removedOrderId)
+                    .build()));
+
+            RemovalToolData removalData = RemovalToolData.builder()
+                .removableOrderList(DynamicList.builder()
+                    .value(buildListElement(removedOrderId, "Draft case management order - 15 June 2020")).build())
+                .reasonToRemoveOrder("Removal reason").build();
+
+            CaseData caseDataBefore = CaseData.builder()
+                .id(caseId)
+                .hearingOrdersBundlesDrafts(newArrayList(
+                    element(hearingOrderBundleId, HearingOrdersBundle.builder()
+                        .orders(caseManagementOrdersBefore).build())
+                ))
+                .hearingDetails(hearingBookings)
+                .removalToolData(removalData)
+                .build();
+
+
+            List<Element<HearingOrder>> caseManagementOrdersAfter = newArrayList(
+                element(additionalOrderId, HearingOrder.builder().type(HearingOrderType.DRAFT_CMO).build()));
+
+            CaseData caseDataAfter = CaseData.builder()
+                .id(caseId)
+                .hearingOrdersBundlesDrafts(newArrayList(
+                    element(hearingOrderBundleId,
+                        HearingOrdersBundle.builder().orders(caseManagementOrdersAfter).build())
+                ))
+                .hearingDetails(hearingBookings)
+                .removalToolData(removalData)
+                .build();
+
+            postSubmittedEvent(toCallBackRequest(caseDataAfter, caseDataBefore));
+
+            verify(eventPublisher).publishEvent(draftOrdersRemovedEventCaptor.capture());
+
+            assertThat(draftOrdersRemovedEventCaptor.getValue().getCaseData().getHearingOrdersBundlesDrafts())
+                .isEqualTo(caseDataAfter.getHearingOrdersBundlesDrafts());
+            assertThat(draftOrdersRemovedEventCaptor.getValue().getCaseDataBefore().getHearingOrdersBundlesDrafts())
+                .isEqualTo(caseDataBefore.getHearingOrdersBundlesDrafts());
+            assertThat(draftOrdersRemovedEventCaptor.getValue().getDraftOrderRemoved())
+                .isEqualTo(orderToBeRemoved);
+            assertThat(draftOrdersRemovedEventCaptor.getValue().getRemovalReason())
+                .isEqualTo(removalData.getReasonToRemoveOrder());
         }
     }
 
