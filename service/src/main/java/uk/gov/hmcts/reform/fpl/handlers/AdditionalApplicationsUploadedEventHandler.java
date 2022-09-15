@@ -282,12 +282,4 @@ public class AdditionalApplicationsUploadedEventHandler {
 
         return documents;
     }
-
-    private List<Element<Respondent>> getRespondents(final AdditionalApplicationsBundle lastBundle) {
-        if (lastBundle.getC2DocumentBundle() != null) {
-            return defaultIfNull(lastBundle.getC2DocumentBundle().getRespondents(), List.of());
-        }
-
-        return defaultIfNull(lastBundle.getOtherApplicationsBundle().getRespondents(), List.of());
-    }
 }
