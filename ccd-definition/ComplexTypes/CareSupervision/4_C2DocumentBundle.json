@@ -46,6 +46,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
     "ListElementCode": "othersNotified",
+    "Comment": "Deprecated",
     "FieldType": "Text",
     "ElementLabel": "People notified",
     "SecurityClassification": "Public"
@@ -190,6 +191,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
     "ListElementCode": "others",
+    "Comment": "Deprecated",
     "FieldType": "Collection",
     "FieldTypeParameter": "Others",
     "ElementLabel": " ",
