@@ -304,4 +304,44 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
     }
 
+    @Nested
+    class InitialChoice {
+
+        @Test
+        void shouldInitialiseC2DocumentBundleHearingListIfC2Chosen() {
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationType(List.of(C2_ORDER))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData),"initial-choice");
+
+            assertThat(response.getData().get("temporaryC2Document")).isNotNull();
+            assertThat(response.getData().get("temporaryC2Document")).extracting("hearingList").isNotNull();
+        }
+
+        @Test
+        void shouldInitialiseC2DocumentBundleHearingListIfC2AndOtherChosen() {
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData),"initial-choice");
+
+            assertThat(response.getData().get("temporaryC2Document")).isNotNull();
+            assertThat(response.getData().get("temporaryC2Document")).extracting("hearingList").isNotNull();
+        }
+
+        @Test
+        void shouldNotInitialiseC2DocumentBundleHearingListIfOnlyOtherOrderChosen() {
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationType(List.of(OTHER_ORDER))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData),"initial-choice");
+
+            assertThat(response.getData().get("temporaryC2Document")).isNull();
+        }
+
+    }
+
 }
