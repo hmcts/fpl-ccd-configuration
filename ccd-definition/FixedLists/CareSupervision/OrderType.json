@@ -61,5 +61,12 @@
     "ListElementCode": "SECURE_ACCOMMODATION_ORDER",
     "ListElement": "Secure accommodation order",
     "DisplayOrder": 9
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderType",
+    "ListElementCode": "REFUSE_CONTACT_WITH_CHILD",
+    "ListElement": "Authority to refuse contact with a child in care",
+    "DisplayOrder": 10
   }
 ]

@@ -1178,4 +1178,11 @@ public class CaseData extends CaseDataParent {
     public List<Element<Colleague>> getColleaguesToNotify() {
         return colleaguesToNotify != null ? colleaguesToNotify : new ArrayList<>();
     }
+    
+    @JsonIgnore
+    public boolean isRefuseContactWithChildApplication() {
+        return ofNullable(getOrders())
+            .map(Orders::isRefuseContactWithChildApplication)
+            .orElse(false);
+    }
 }
