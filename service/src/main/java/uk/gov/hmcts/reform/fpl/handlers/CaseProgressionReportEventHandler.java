@@ -6,13 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.fpl.events.CMSReportEvent;
+import uk.gov.hmcts.reform.fpl.events.CaseProgressionReportEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.email.EmailAttachment;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
 import uk.gov.hmcts.reform.fpl.model.event.CMSReportEventData;
-import uk.gov.hmcts.reform.fpl.service.CMSReportService;
+import uk.gov.hmcts.reform.fpl.service.CaseProgressionReportService;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 
@@ -27,14 +27,14 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CMSReportEventHandler {
-    private final CMSReportService cmsReportService;
+public class CaseProgressionReportEventHandler {
+    private final CaseProgressionReportService cmsReportService;
     private final EmailService emailService;
     private final CourtService courtService;
 
     @Async
     @EventListener
-    public void notifyReport(CMSReportEvent event) {
+    public void notifyReport(CaseProgressionReportEvent event) {
         CaseData caseData = event.getCaseData();
         CMSReportEventData cmsReportEventData = caseData.getCmsReportEventData();
         String courtCode = cmsReportService.getCourt(cmsReportEventData);

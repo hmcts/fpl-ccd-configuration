@@ -7,6 +7,7 @@ import lombok.Getter;
 @Builder(toBuilder = true)
 public class HearingInfo {
     private final String familyManCaseNumber;
+    private final String ccdNumber;
     private final String dateSubmitted;
     private final String lastHearing;
     private final String nextHearing;

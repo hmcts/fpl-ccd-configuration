@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 @Getter
 @RequiredArgsConstructor
-public class CMSReportEvent {
+public class CaseProgressionReportEvent {
     private final CaseData caseData;
     private final UserDetails userDetails;
 }

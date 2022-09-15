@@ -13,7 +13,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "nationalArea",
-    "Label": "Which national area?",
+    "Label": "Select region?",
     "FieldType": "FixedList",
     "FieldTypeParameter": "NationalArea",
     "SecurityClassification": "Public",
@@ -92,8 +92,8 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "cmsReportDetails",
-    "Label": "CMS report",
+    "ID": "caseProgressionReportDetails",
+    "Label": "Case Progression Report",
     "FieldType": "Text",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -101,8 +101,8 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "cmsReportView",
-    "Label": "${cmsReportDetails}",
+    "ID": "caseProgressionReportView",
+    "Label": "${caseProgressionReportDetails}",
     "FieldType": "Label",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"

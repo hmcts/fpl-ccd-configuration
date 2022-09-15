@@ -48,7 +48,7 @@ import static uk.gov.hmcts.reform.fpl.service.search.SearchService.ES_DEFAULT_SI
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @ExtendWith(MockitoExtension.class)
-class CMSReportServiceTest {
+class CaseProgressionReportServiceTest {
 
     @Mock
     private SearchService searchService;
@@ -57,7 +57,7 @@ class CMSReportServiceTest {
     private CaseConverter converter;
 
     @InjectMocks
-    private CMSReportService service;
+    private CaseProgressionReportService service;
 
 
     @Test

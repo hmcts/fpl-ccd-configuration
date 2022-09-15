@@ -18,13 +18,13 @@ public final class CsvWriter {
     private static final FileAttribute<Set<PosixFilePermission>> ATTRIBUTE = PosixFilePermissions
             .asFileAttribute(PosixFilePermissions.fromString("rwx------"));
     private static final String[] CMS_REPORT_CSV_HEADERS = {
-           "Case Number", "Receipt date", "Last hearing", "Next hearing" , "Age of case (weeks)", "PLO stage", "Expected FH date"
+           "Case Number", "CCD Number", "Receipt date", "Last PLO hearing", "Next hearing" , "Age of case (weeks)", "PLO stage", "Expected FH date"
     };
 
     public static File writeHearingInfoToCsv(
             List<HearingInfo> hearingInfoList
     ) throws IOException {
-        var path = Files.createTempFile("CMS-Report", ".csv", ATTRIBUTE);// Compliant
+        var path = Files.createTempFile("CaseProgressionReport", ".csv", ATTRIBUTE);// Compliant
         var csvFile = path.toFile();
         CSVFormat csvFileHeader = CSVFormat.DEFAULT.builder().setHeader(CMS_REPORT_CSV_HEADERS).build();
 
@@ -34,6 +34,7 @@ public final class CsvWriter {
             for (HearingInfo hearingInfo : hearingInfoList) {
                 printer.printRecord(
                     hearingInfo.getFamilyManCaseNumber(),
+                    hearingInfo.getCcdNumber(),
                     hearingInfo.getDateSubmitted(),
                     hearingInfo.getLastHearing(),
                     hearingInfo.getNextHearing(),

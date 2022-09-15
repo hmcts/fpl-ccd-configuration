@@ -51,7 +51,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CMSReportService {
+public class CaseProgressionReportService {
     private static final String MATCH_FIELD = "data.court.code";
     private static final String SORT_FIELD = "data.dateSubmitted";
     private static final String RANGE_FIELD = "data.dateSubmitted";
@@ -189,8 +189,9 @@ public class CMSReportService {
                 .append("<tr>")
                 .append(headerField.apply("Sr no."))
                 .append(headerField.apply("Case Number"))
+                .append(headerField.apply("CCD Number"))
                 .append(headerField.apply("Receipt date"))
-                .append(headerField.apply("Last hearing"))
+                .append(headerField.apply("Last PLO hearing"))
                 .append(headerField.apply("Next hearing"))
                 .append(headerField.apply("Age of </br>case</br>(weeks)"))
                 .append(headerField.apply("PLO stage"))
@@ -210,6 +211,7 @@ public class CMSReportService {
                         "<tr>",
                         cellField.apply(String.valueOf(counter[0]++)),
                         cellField.apply(hearingInfo.getFamilyManCaseNumber()),
+                        cellField.apply(hearingInfo.getCcdNumber()),
                         cellField.apply(hearingInfo.getDateSubmitted()),
                         cellField.apply(hearingInfo.getLastHearing()),
                         cellField.apply(hearingInfo.getNextHearing()),
@@ -306,6 +308,7 @@ public class CMSReportService {
         }
         optionalHearingInfoBuilder.ifPresent(hearingInfoBuilder -> hearingInfoBuilder
                 .familyManCaseNumber(String.valueOf(caseData.getFamilyManCaseNumber()))
+                .ccdNumber(caseData.getId().toString())
                 .dateSubmitted(formatLocalDateToString(dateSubmitted, "dd-MM-yyyy"))
                 .ageInWeeks(String.valueOf(ChronoUnit.WEEKS.between(dateSubmitted, LocalDate.now())))
                 .expectedFinalHearing(formatLocalDateToString(dateSubmitted.plusWeeks(26), "dd-MM-yyyy")));
