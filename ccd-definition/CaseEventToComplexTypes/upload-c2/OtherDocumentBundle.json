@@ -48,7 +48,7 @@
     "ListElementCode": "documentAcknowledge",
     "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD"
+    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -127,7 +127,7 @@
     "ListElementCode": "supplementsBundle.documentAcknowledge",
     "FieldDisplayOrder": "13",
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD"
+    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -195,6 +195,6 @@
     "ListElementCode": "supportingEvidenceBundle.documentAcknowledge",
     "FieldDisplayOrder": "19",
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD"
+    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
   }
 ]

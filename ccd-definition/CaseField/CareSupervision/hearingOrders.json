@@ -63,7 +63,7 @@
     "ID": "uploadCMOMessageAcknowledge",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "DocumentAcknowledge",
-    "Label": "Tick to confirm this document is related o Familyman Case number/Names/CCD",
+    "Label": "Tick to confirm this document is related to Familyman Case number/Names/CCD",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

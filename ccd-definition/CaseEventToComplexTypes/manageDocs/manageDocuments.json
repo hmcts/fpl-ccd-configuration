@@ -114,7 +114,7 @@
     "ListElementCode": "documentAcknowledge",
     "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD"
+    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -246,7 +246,7 @@
     "ListElementCode": "documentAcknowledge",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD",
+    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD",
     "FieldShowCondition": "name!=\"SHOW_IN_EVENT_ONLY\""
   },
   {
@@ -339,7 +339,7 @@
     "ListElementCode": "documentAcknowledge",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD"
+    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -399,7 +399,7 @@
     "ListElementCode": "documentAcknowledge",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD",
+    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD",
     "FieldShowCondition": "name!=\"SHOW_IN_EVENT_ONLY\""
   },
   {
@@ -460,7 +460,7 @@
     "ListElementCode": "documentAcknowledge",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related o Familyman Case number/Names/CCD"
+    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
   },
   {
     "LiveFrom": "01/01/2017",
