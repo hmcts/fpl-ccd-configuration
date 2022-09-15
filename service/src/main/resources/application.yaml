@@ -216,6 +216,13 @@ fees-register:
       jurisdiction2: family court
       keyword: ${DECLARATION_OF_PARENTAGE:JKL}
       service: other
+    REFUSE_CONTACT_WITH_CHILD:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: ContactChild
+      service: private law
 
 payment:
   site_id: ABA3
