@@ -6,6 +6,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,12 +22,15 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.cafcass.NoticeOfHearingCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingNoOtherAddressTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingTemplate;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingNoOtherAddressEmailContentProvider;
@@ -42,6 +47,9 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -94,6 +102,10 @@ class SendNoticeOfHearingHandlerTest {
     private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
     @Mock
     private TranslationRequestService translationRequestService;
+    @Mock
+    private CafcassNotificationService cafcassNotificationService;
+    @Captor
+    private ArgumentCaptor<Set<DocumentReference>> setOfDocCap;
 
     @InjectMocks
     private SendNoticeOfHearingHandler underTest;
@@ -118,14 +130,43 @@ class SendNoticeOfHearingHandlerTest {
         given(CASE_DATA.getId()).willReturn(CASE_ID);
         given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
         given(cafcassLookup.getCafcass(LOCAL_AUTHORITY_CODE)).willReturn(new Cafcass("", CAFCASS_EMAIL_ADDRESS));
-        given(contentProvider.buildNewNoticeOfHearingNotification(CASE_DATA, HEARING, EMAIL))
+        given(contentProvider.buildNewNoticeOfHearingNotification(CASE_DATA, HEARING, DIGITAL_SERVICE))
             .willReturn(EMAIL_REP_NOTIFY_DATA);
+        given(cafcassLookup.getCafcassWelsh(LOCAL_AUTHORITY_CODE))
+            .willReturn(Optional.of(
+                new CafcassLookupConfiguration.Cafcass("Cafcass Cymru", CAFCASS_EMAIL_ADDRESS))
+            );
 
         underTest.notifyCafcass(new SendNoticeOfHearing(CASE_DATA, HEARING));
 
         verify(notificationService).sendEmail(
             NOTICE_OF_NEW_HEARING, CAFCASS_EMAIL_ADDRESS, EMAIL_REP_NOTIFY_DATA, CASE_ID
         );
+    }
+
+    @Test
+    void shouldSendNotificationToCafcassWhenNewHearingIsAddedEnglandLA() {
+        DocumentReference documentReference = DocumentReference.builder().build();
+        NoticeOfHearingCafcassData noticeOfHearingCafcassData = NoticeOfHearingCafcassData.builder().build();
+        given(CASE_DATA.getId()).willReturn(CASE_ID);
+        given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
+        given(contentProvider.buildNewNoticeOfHearingNotificationCafcassData(CASE_DATA, HEARING))
+                .willReturn(noticeOfHearingCafcassData);
+        given(cafcassLookup.getCafcassEngland(LOCAL_AUTHORITY_CODE))
+                .willReturn(Optional.of(
+                    new CafcassLookupConfiguration.Cafcass("Cafcass England", CAFCASS_EMAIL_ADDRESS))
+            );
+        given(HEARING.getNoticeOfHearing()).willReturn(documentReference);
+
+        underTest.notifyCafcassSendGrid(new SendNoticeOfHearing(CASE_DATA, HEARING));
+
+        verify(cafcassNotificationService).sendEmail(
+                eq(CASE_DATA),
+                setOfDocCap.capture(),
+                same(CafcassRequestEmailContentProvider.NOTICE_OF_HEARING),
+                eq(noticeOfHearingCafcassData)
+        );
+        assertThat(setOfDocCap.getValue()).contains(documentReference);
     }
 
     @Test
@@ -251,7 +292,7 @@ class SendNoticeOfHearingHandlerTest {
         underTest.sendNoticeOfHearingByPost(new SendNoticeOfHearing(CASE_DATA, HearingBooking.builder()
             .translationRequirements(LanguageTranslationRequirement.WELSH_TO_ENGLISH)
             .build()));
-        
+
         verifyNoInteractions(sendDocumentService, otherRecipientsInbox, notificationService);
     }
 

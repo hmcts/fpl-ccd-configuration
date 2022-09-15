@@ -9,8 +9,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocumentTypeListLA",
-    "ListElementCode": "COURT_BUNDLE",
-    "ListElement": "Court bundle",
+    "ListElementCode": "HEARING_DOCUMENTS",
+    "ListElement": "Hearing Documents",
     "DisplayOrder": 2
   },
   {
@@ -26,5 +26,12 @@
     "ListElementCode": "ADDITIONAL_APPLICATIONS_DOCUMENTS",
     "ListElement": "Documents for additional applications",
     "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentTypeListLA",
+    "ListElementCode": "PLACEMENT_NOTICE_RESPONSE",
+    "ListElement": "Placement responses",
+    "DisplayOrder": 5
   }
 ]

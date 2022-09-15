@@ -1,0 +1,478 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "102",
+    "ListElement": "Aberystwyth",
+    "DisplayOrder": 10
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "117",
+    "ListElement": "Barnet",
+    "DisplayOrder": 20
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "118",
+    "ListElement": "Barnsley",
+    "DisplayOrder": 30
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "120",
+    "ListElement": "Barrow in Furness",
+    "DisplayOrder": 40
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "123",
+    "ListElement": "Bath",
+    "DisplayOrder": 50
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "127",
+    "ListElement": "Birmingham",
+    "DisplayOrder": 60
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "130",
+    "ListElement": "Blackburn",
+    "DisplayOrder": 70
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "131",
+    "ListElement": "Blackpool",
+    "DisplayOrder": 80
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "139",
+    "ListElement": "Bournemouth",
+    "DisplayOrder": 90
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "150",
+    "ListElement": "Brighton",
+    "DisplayOrder": 100
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "151",
+    "ListElement": "Bristol",
+    "DisplayOrder": 110
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "152",
+    "ListElement": "Bromley",
+    "DisplayOrder": 120
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "159",
+    "ListElement": "Caernarfon",
+    "DisplayOrder": 130
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "163",
+    "ListElement": "Canterbury",
+    "DisplayOrder": 140
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "164",
+    "ListElement": "Cardiff Civil and Family Justice Centre",
+    "DisplayOrder": 145
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "165",
+    "ListElement": "Carlisle",
+    "DisplayOrder": 150
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "115",
+    "ListElement": "Central Family Court",
+    "DisplayOrder": 160
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "167",
+    "ListElement": "Chelmsford",
+    "DisplayOrder": 170
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "170",
+    "ListElement": "Chester",
+    "DisplayOrder": 180
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "180",
+    "ListElement": "Coventry",
+    "DisplayOrder": 190
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "181",
+    "ListElement": "Crewe",
+    "DisplayOrder": 200
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "182",
+    "ListElement": "Croydon",
+    "DisplayOrder": 210
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "185",
+    "ListElement": "Derby",
+    "DisplayOrder": 220
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "121",
+    "ListElement": "East London",
+    "DisplayOrder": 230
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "198",
+    "ListElement": "Exeter",
+    "DisplayOrder": 240
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "203",
+    "ListElement": "Gloucester",
+    "DisplayOrder": 250
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "211",
+    "ListElement": "Guildford",
+    "DisplayOrder": 260
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "217",
+    "ListElement": "Haverfordwest",
+    "DisplayOrder": 270
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "239",
+    "ListElement": "Kingston Upon Hull",
+    "DisplayOrder": 280
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "242",
+    "ListElement": "Lancaster",
+    "DisplayOrder": 290
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "243",
+    "ListElement": "Leeds",
+    "DisplayOrder": 300
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "244",
+    "ListElement": "Leicester",
+    "DisplayOrder": 310
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "249",
+    "ListElement": "Lincoln",
+    "DisplayOrder": 320
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "251",
+    "ListElement": "Liverpool",
+    "DisplayOrder": 330
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "253",
+    "ListElement": "Llanelli",
+    "DisplayOrder": 340
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "258",
+    "ListElement": "Luton",
+    "DisplayOrder": 350
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "262",
+    "ListElement": "Manchester",
+    "DisplayOrder": 360
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "267",
+    "ListElement": "Medway",
+    "DisplayOrder": 370
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "269",
+    "ListElement": "Merthyr Tydfil",
+    "DisplayOrder": 380
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "270",
+    "ListElement": "Middlesborough",
+    "DisplayOrder": 390
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "388",
+    "ListElement": "Milton Keynes",
+    "DisplayOrder": 400
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "278",
+    "ListElement": "Newcastle Upon Tyne",
+    "DisplayOrder": 410
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "280",
+    "ListElement": "Newport (Gwent)",
+    "DisplayOrder": 420
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "282",
+    "ListElement": "Northampton",
+    "DisplayOrder": 430
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "285",
+    "ListElement": "Norwich",
+    "DisplayOrder": 440
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "286",
+    "ListElement": "Nottingham",
+    "DisplayOrder": 450
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "291",
+    "ListElement": "Oxford",
+    "DisplayOrder": 460
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "294",
+    "ListElement": "`Peterborough`",
+    "DisplayOrder": 470
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "296",
+    "ListElement": "Plymouth",
+    "DisplayOrder": 480
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "299",
+    "ListElement": "Pontypridd",
+    "DisplayOrder": 490
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "274",
+    "ListElement": "Port Talbot",
+    "DisplayOrder": 500
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "302",
+    "ListElement": "Portsmouth",
+    "DisplayOrder": 510
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "308",
+    "ListElement": "Prestatyn (Rhyl)",
+    "DisplayOrder": 520
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "303",
+    "ListElement": "Preston",
+    "DisplayOrder": 530
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "305",
+    "ListElement": "Reading",
+    "DisplayOrder": 540
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "320",
+    "ListElement": "Sheffield",
+    "DisplayOrder": 550
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "338",
+    "ListElement": "Stoke-On-Trent",
+    "DisplayOrder": 560
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "344",
+    "ListElement": "Swansea",
+    "DisplayOrder": 570
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "345",
+    "ListElement": "Swindon",
+    "DisplayOrder": 580
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "347",
+    "ListElement": "Taunton",
+    "DisplayOrder": 590
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "354",
+    "ListElement": "Truro",
+    "DisplayOrder": 600
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "362",
+    "ListElement": "Watford",
+    "DisplayOrder": 610
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "373",
+    "ListElement": "West Cumbria",
+    "DisplayOrder": 620
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "332",
+    "ListElement": "West London",
+    "DisplayOrder": 630
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "378",
+    "ListElement": "Wolverhampton",
+    "DisplayOrder": 640
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "380",
+    "ListElement": "Worcester",
+    "DisplayOrder": 650
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "384",
+    "ListElement": "Wrexham",
+    "DisplayOrder": 660
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Court",
+    "ListElementCode": "386",
+    "ListElement": "York",
+    "DisplayOrder": 670
+  }
+]

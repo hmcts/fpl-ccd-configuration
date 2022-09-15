@@ -51,16 +51,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "cmoSupportingDocs",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
-    "Label": "Case summary or supporting documents",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "cmosSentToJudge",
     "Label": "Hearings with CMOs already being reviewed",
     "FieldType": "TextArea",
@@ -904,6 +894,16 @@
     "ID": "reviewDecision10",
     "Label": " ",
     "FieldType": "ReviewDecision",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrders",
+    "Label": "Refused Order",
+    "FieldType": "Collection",
     "FieldTypeParameter": "UploadedCaseManagementOrder",
     "SecurityClassification": "Public",
     "Searchable": "N"

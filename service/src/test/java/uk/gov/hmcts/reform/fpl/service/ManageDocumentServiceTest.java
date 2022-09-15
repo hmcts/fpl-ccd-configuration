@@ -5,15 +5,33 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
+import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.exceptions.RespondentNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseSummary;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.DocumentWithConfidentialAddress;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
+import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
@@ -25,9 +43,12 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.ConfidentialBundleHelper;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -47,8 +68,11 @@ import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
@@ -57,8 +81,21 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.ADDITIONAL_APPLICATIONS_BUNDLE_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_DOCUMENTS_COLLECTION_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CASE_SUMMARY_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CASE_SUMMARY_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CHILDREN_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.COURT_BUNDLE_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.COURT_BUNDLE_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_DOCUMENT_HEARING_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_DOCUMENT_RESPONDENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENT_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.PLACEMENT_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_CHILD_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_CHILD_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_RESPONDENT_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_RESPONDENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.RESPONDENTS_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
@@ -68,28 +105,81 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRespondent;
 
 @SuppressWarnings("unchecked")
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = LENIENT)
 class ManageDocumentServiceTest {
     private static final String USER = "HMCTS";
     public static final boolean NOT_SOLICITOR = false;
     public static final boolean IS_SOLICITOR = true;
 
+
+
+    @Spy
     private final Time time = new FixedTimeConfiguration().stoppedTime();
-    private final DocumentUploadHelper documentUploadHelper = mock(DocumentUploadHelper.class);
-    private final UserService userService = mock(UserService.class);
+
+    @Spy
     private final LocalDateTime futureDate = time.now().plusDays(1);
 
+    @Spy
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Mock
+    private DocumentUploadHelper documentUploadHelper;
+
+    @Mock
+    private PlacementService placementService;
+
+    @Mock
+    private UserService userService;
+
+    @InjectMocks
     private ManageDocumentService underTest;
 
     @BeforeEach
     void before() {
-        underTest = new ManageDocumentService(new ObjectMapper(), time, documentUploadHelper, userService);
-
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn("HMCTS");
         given(userService.isHmctsUser()).willReturn(true);
+    }
+
+    @Test
+    void shouldPopulateFieldsWhenPlacementNoticesArePresentOnCaseData() {
+        Placement placement = Placement.builder()
+            .childName("Test Child")
+            .placementNotice(testDocumentReference())
+            .build();
+
+        List<Element<Placement>> placements = wrapElements(placement);
+
+        CaseData caseData = CaseData.builder()
+            .placementEventData(PlacementEventData.builder()
+                .placements(placements)
+                .build())
+            .build();
+
+        Map<String, Object> updates = underTest.baseEventData(caseData);
+
+        ManageDocument expectedManageDocument = ManageDocument.builder()
+            .hasHearings(NO.getValue())
+            .hasC2s(NO.getValue())
+            .hasPlacementNotices(YES.getValue())
+            .hasConfidentialAddress(NO.getValue())
+            .build();
+
+        DynamicList expectedPlacementList = asDynamicList(placements, null, Placement::getChildName);
+
+        assertThat(updates)
+            .extracting(MANAGE_DOCUMENT_KEY)
+            .isEqualTo(expectedManageDocument);
+
+        assertThat(updates)
+            .extracting(PLACEMENT_LIST_KEY)
+            .isEqualTo(expectedPlacementList);
+
     }
 
     @Test
@@ -107,6 +197,9 @@ class ManageDocumentServiceTest {
         Element<Respondent> respondent1 = testRespondent("John", "Smith");
         Element<Respondent> respondent2 = testRespondent("Alex", "Williams");
 
+        Element<Child> child1 = testChild("Tom","Smith");
+        Element<Child> child2 = testChild("Mary","Smith");
+
         CaseData caseData = CaseData.builder()
             .c2DocumentBundle(List.of(c2Bundle1))
             .additionalApplicationsBundle(wrapElements(
@@ -115,6 +208,7 @@ class ManageDocumentServiceTest {
                     .otherApplicationsBundle(otherApplicationsBundle).build()))
             .hearingDetails(hearingBookings)
             .respondents1(List.of(respondent1, respondent2))
+            .children1(List.of(child1, child2))
             .build();
 
         DynamicList expectedC2DocumentsDynamicList = TestDataHelper.buildDynamicList(
@@ -129,15 +223,26 @@ class ManageDocumentServiceTest {
             Pair.of(respondent1.getId(), "John Smith"),
             Pair.of(respondent2.getId(), "Alex Williams"));
 
+        DynamicList expectedChildrenDynamicList = TestDataHelper.buildDynamicList(
+            Pair.of(child1.getId(), "Tom Smith"),
+            Pair.of(child2.getId(), "Mary Smith")
+        );
+
         ManageDocument expectedManageDocument = ManageDocument.builder()
             .hasHearings(YES.getValue())
             .hasC2s(YES.getValue())
+            .hasConfidentialAddress(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
             .build();
 
         Map<String, Object> updates = underTest.baseEventData(caseData);
 
         assertThat(updates)
             .extracting(MANAGE_DOCUMENTS_HEARING_LIST_KEY)
+            .isEqualTo(expectedHearingDynamicList);
+
+        assertThat(updates)
+            .extracting(HEARING_DOCUMENT_HEARING_LIST_KEY)
             .isEqualTo(expectedHearingDynamicList);
 
         assertThat(updates)
@@ -149,8 +254,16 @@ class ManageDocumentServiceTest {
             .isEqualTo(expectedRespondentsDynamicList);
 
         assertThat(updates)
+            .extracting(HEARING_DOCUMENT_RESPONDENT_LIST_KEY)
+            .isEqualTo(expectedRespondentsDynamicList);
+
+        assertThat(updates)
             .extracting(MANAGE_DOCUMENT_KEY)
             .isEqualTo(expectedManageDocument);
+
+        assertThat(updates)
+            .extracting(CHILDREN_LIST_KEY)
+            .isEqualTo(expectedChildrenDynamicList);
     }
 
     @ParameterizedTest
@@ -161,6 +274,8 @@ class ManageDocumentServiceTest {
         ManageDocument expectedManageDocument = ManageDocument.builder()
             .hasHearings(NO.getValue())
             .hasC2s(NO.getValue())
+            .hasConfidentialAddress(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
             .build();
 
         Map<String, Object> updates = underTest.baseEventData(caseData);
@@ -873,7 +988,8 @@ class ManageDocumentServiceTest {
 
         Map<String, Object> expectedData = Map.of(
             C2_DOCUMENTS_COLLECTION_KEY,
-            List.of(element(anotherC2DocumentId, c2Bundle), element(selectedC2DocumentId, expectedC2Bundle)));
+            List.of(element(anotherC2DocumentId, c2Bundle), element(selectedC2DocumentId, expectedC2Bundle)),
+            DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY, emptyList());
 
         assertThat(actualData).isEqualTo(expectedData);
     }
@@ -910,7 +1026,8 @@ class ManageDocumentServiceTest {
 
         Map<String, Object> expectedData = Map.of(ADDITIONAL_APPLICATIONS_BUNDLE_KEY,
             List.of(element(applicationsBundle.getId(),
-                applicationsBundle.getValue().toBuilder().c2DocumentBundle(expectedC2Bundle).build())));
+                applicationsBundle.getValue().toBuilder().c2DocumentBundle(expectedC2Bundle).build())),
+            DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY, emptyList());
 
         assertThat(actualData).isEqualTo(expectedData);
     }
@@ -944,7 +1061,8 @@ class ManageDocumentServiceTest {
         Map<String, Object> expectedData = Map.of(ADDITIONAL_APPLICATIONS_BUNDLE_KEY,
             List.of(element(applicationsBundle.getId(),
                 applicationsBundle.getValue().toBuilder()
-                    .otherApplicationsBundle(expectedOtherApplication).build())));
+                    .otherApplicationsBundle(expectedOtherApplication).build())),
+                DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY, emptyList());
 
         assertThat(actualData).isEqualTo(expectedData);
     }
@@ -1132,7 +1250,8 @@ class ManageDocumentServiceTest {
             .supportingEvidenceBundle(List.of(supportingEvidencePast, supportingEvidenceFuture)).build();
 
         Map<String, Object> expectedBundles = Map.of(
-            C2_DOCUMENTS_COLLECTION_KEY, List.of(element(selectedC2DocumentId, updatedBundle)));
+            C2_DOCUMENTS_COLLECTION_KEY, List.of(element(selectedC2DocumentId, updatedBundle)),
+            DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY, emptyList());
 
         assertThat(updatedBundles).isEqualTo(expectedBundles);
     }
@@ -1178,7 +1297,8 @@ class ManageDocumentServiceTest {
         Map<String, Object> expectedData = Map.of(ADDITIONAL_APPLICATIONS_BUNDLE_KEY,
             List.of(element(applicationsBundle.getId(),
                 applicationsBundle.getValue().toBuilder()
-                    .otherApplicationsBundle(expectedOtherApplication).build())));
+                    .otherApplicationsBundle(expectedOtherApplication).build())),
+            DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY, emptyList());
 
         assertThat(actualData).isEqualTo(expectedData);
     }
@@ -1521,6 +1641,715 @@ class ManageDocumentServiceTest {
         assertThat(underTest.getSelectedRespondentId(caseData)).isEqualTo(selectedRespondentId);
     }
 
+    @Test
+    void shouldGetDocWithConfidentialAddrFromRespondentStatementElements() {
+        CaseData caseData = CaseData.builder().build();
+        UUID uuid = randomUUID();
+        DocumentReference confidentialDoc = DocumentReference.builder()
+            .filename("test file name 1")
+            .binaryUrl("test url 1").build();
+
+        DocumentReference normalDoc = DocumentReference.builder()
+            .filename("test file name 2")
+            .binaryUrl("test url 2").build();
+
+
+        List<Element<SupportingEvidenceBundle>> bundles =  List.of(
+            element(uuid, SupportingEvidenceBundle.builder()
+                .name("test bundle name 1")
+                .document(confidentialDoc)
+                .hasConfidentialAddress(YES.getValue())
+                .build()),
+            element(uuid, SupportingEvidenceBundle.builder()
+                .name("test bundle name 2")
+                .document(normalDoc)
+                .hasConfidentialAddress(NO.getValue())
+                .build())
+        );
+
+        {
+            List<ConfidentialBundle> confidentialBundle = List.of(buildConfidentialBundle(bundles));
+            List<Element<DocumentWithConfidentialAddress>> resultLIst =
+                underTest.getDocumentsWithConfidentialAddress(caseData, new ArrayList<>(),
+                    ConfidentialBundleHelper.getSupportingEvidenceBundle(confidentialBundle));
+            List<Element<DocumentWithConfidentialAddress>> expected = List.of(
+                element(uuid, DocumentWithConfidentialAddress.builder()
+                    .name("test bundle name 1")
+                    .document(confidentialDoc).build())
+            );
+            assertThat(resultLIst).isEqualTo(expected);
+        }
+    }
+
+    @Test
+    void shouldGetDocWithConfidentialAddrFromHearingCourtBundles() {
+        CaseData caseData = CaseData.builder().build();
+        UUID uuid1 = randomUUID();
+        UUID uuid2 = randomUUID();
+
+        DocumentReference confidentialDoc = DocumentReference.builder()
+            .filename("test file name 1")
+            .binaryUrl("test url 1").build();
+
+        DocumentReference normalDoc = DocumentReference.builder()
+            .filename("test file name 2")
+            .binaryUrl("test url 2").build();
+
+        List<Element<CourtBundle>> courtBundles = List.of(
+            element(uuid1, CourtBundle.builder()
+                .document(confidentialDoc)
+                .hasConfidentialAddress(YES.getValue()).build()),
+            element(uuid2, CourtBundle.builder()
+                .document(normalDoc)
+                .hasConfidentialAddress(NO.getValue()).build()));
+
+        List<Element<HearingCourtBundle>> hearingCourtBundles = List.of(
+            element(randomUUID(), HearingCourtBundle.builder()
+                .hearing("Test hearing")
+                .courtBundle(courtBundles)
+                .build()));
+
+        List<Element<DocumentWithConfidentialAddress>> resultLIst =
+            underTest.getDocumentsWithConfidentialAddressFromCourtBundles(caseData,
+                caseData.getHearingDocuments().getCourtBundleListV2(),
+                hearingCourtBundles);
+
+        List<Element<DocumentWithConfidentialAddress>> expected = List.of(
+            element(uuid1, DocumentWithConfidentialAddress.builder()
+                .name("Court bundle of Test hearing")
+                .document(confidentialDoc).build())
+        );
+
+        assertThat(resultLIst).isEqualTo(expected);
+    }
+
+    private ConfidentialBundle buildConfidentialBundle(List<Element<SupportingEvidenceBundle>> bundles) {
+        return new ConfidentialBundle() {
+
+            @Override
+            public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle() {
+                return bundles;
+            }
+
+            @Override
+            public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceLA() {
+                return bundles;
+            }
+
+            @Override
+            public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceNC() {
+                return bundles;
+            }
+        };
+    }
+
+    @Test
+    void shouldReturnNewHearingDocumentListWithCourtBundleWhenNoExistingCourtBundlesPresentForSelectedHearing() {
+        UUID selectedHearingId = randomUUID();
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(selectedHearingId, createHearingBooking(futureDate, futureDate.plusDays(3)))
+        );
+        List<Element<CourtBundle>> courtBundle = List.of(element(CourtBundle.builder().build()));
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsCourtBundle(courtBundle)
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .hearingDetails(hearingBookings)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
+            .build();
+
+        List<HearingCourtBundle> results = unwrapElements((List<Element<HearingCourtBundle>>)
+            underTest.buildHearingDocumentList(caseData).get(COURT_BUNDLE_LIST_KEY));
+        assertThat(results).isNotEmpty();
+        assertThat(results.get(0).getCourtBundle())
+            .isNotEmpty()
+            .isEqualTo(courtBundle);
+    }
+
+
+    @Test
+    void shouldReturnNewCourtBundleListWithCourtBundleWhenNoExistingCourtBundlePresentForSelectedHearing() {
+        UUID selectedHearingId = randomUUID();
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(selectedHearingId, createHearingBooking(futureDate, futureDate.plusDays(3)))
+        );
+        List<Element<CourtBundle>> courtBundle = List.of(element(CourtBundle.builder().build()));
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsCourtBundle(courtBundle)
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .hearingDetails(hearingBookings)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
+            .build();
+
+        List<HearingCourtBundle> results = unwrapElements(
+            (List<Element<HearingCourtBundle>>) underTest
+                .buildHearingDocumentList(caseData).get(COURT_BUNDLE_LIST_KEY));
+        assertThat(results).isNotEmpty();
+        assertThat(results.get(0).getCourtBundle())
+            .isNotEmpty()
+            .isEqualTo(courtBundle);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldReturnEditedCourtBundleListWithCourtBundleWhenExistingCourtBundlePresentForSelectedHearing() {
+        UUID selectedHearingId = randomUUID();
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(selectedHearingId, createHearingBooking(futureDate, futureDate.plusDays(3)))
+        );
+        List<Element<CourtBundle>> currentCourtBundle = List.of(element(createCourtBundleWithFile("Current filename")));
+        List<Element<CourtBundle>> editedCourtBundle = List.of(element(createCourtBundleWithFile("New filename")));
+
+        List<Element<HearingCourtBundle>> courtBundleList = List.of(element(
+            selectedHearingId,
+            HearingCourtBundle.builder()
+                .hearing(hearingBookings.get(0).getValue().toLabel())
+                .courtBundle(currentCourtBundle)
+                .build()));
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsCourtBundle(editedCourtBundle)
+            .hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(courtBundleList).build())
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .hearingDetails(hearingBookings)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
+            .build();
+
+        List<HearingCourtBundle> results = unwrapElements(
+            (List<Element<HearingCourtBundle>>) underTest
+                .buildHearingDocumentList(caseData).get(COURT_BUNDLE_LIST_KEY));
+        assertThat(results).isNotEmpty();
+        assertThat(results.get(0).getCourtBundle())
+            .isNotEmpty()
+            .isEqualTo(editedCourtBundle);
+    }
+
+    @Test
+    void shouldReturnAdditionalCourtBundleForSelectedHearing() {
+        UUID selectedHearingId = randomUUID();
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(selectedHearingId, createHearingBooking(futureDate, futureDate.plusDays(3)))
+        );
+        List<Element<CourtBundle>> currentCourtBundle = List.of(element(createCourtBundleWithFile("Current filename")));
+        List<Element<CourtBundle>> newCourtBundle = new ArrayList<>(currentCourtBundle);
+        newCourtBundle.add(element(createCourtBundleWithFile("New filename 1")));
+        newCourtBundle.add(element(createCourtBundleWithFile("New filename 2")));
+
+        List<Element<HearingCourtBundle>> courtBundleList = List.of(element(
+            selectedHearingId,
+            HearingCourtBundle.builder()
+                .hearing(hearingBookings.get(0).getValue().toLabel())
+                .courtBundle(currentCourtBundle)
+                .build()));
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsCourtBundle(newCourtBundle)
+            .hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(courtBundleList).build())
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .hearingDetails(hearingBookings)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
+            .build();
+
+        List<HearingCourtBundle> results = unwrapElements(
+            (List<Element<HearingCourtBundle>>) underTest
+                .buildHearingDocumentList(caseData).get(COURT_BUNDLE_LIST_KEY));
+        assertThat(results).isNotEmpty();
+        assertThat(results.get(0).getCourtBundle())
+            .hasSize(3)
+            .isEqualTo(newCourtBundle);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenBuildingCourtBundleListNotWithBookedHearing() {
+        UUID selectedHearingId = randomUUID();
+        UUID hearingBookingId = randomUUID();
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(hearingBookingId, createHearingBooking(futureDate, futureDate.plusDays(3)))
+        );
+
+        CaseData caseData = CaseData.builder()
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .hearingDetails(hearingBookings)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
+            .build();
+
+        assertThatThrownBy(() -> underTest.buildHearingDocumentList(caseData))
+            .isInstanceOf(NoHearingBookingException.class);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenInitialisingCourtBundleListNotWithBookedHearing() {
+        UUID selectedHearingId = randomUUID();
+        UUID hearingBookingId = randomUUID();
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(hearingBookingId, createHearingBooking(futureDate, futureDate.plusDays(3)))
+        );
+
+        CaseData caseData = CaseData.builder()
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .hearingDetails(hearingBookings)
+            .build();
+
+        assertThatThrownBy(() -> underTest.initialiseHearingDocumentFields(caseData))
+            .isInstanceOf(NoHearingBookingException.class);
+    }
+
+    @Test
+    void shouldNotInitialiseCourtBundleFieldsIfBundleHearingDifferentToSelected() {
+        UUID selectedHearingId = randomUUID();
+        UUID courtBundleHearingId = randomUUID();
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(selectedHearingId, createHearingBooking(futureDate, futureDate.plusDays(3)))
+        );
+        List<Element<CourtBundle>> courtBundle = List.of(element(createCourtBundleWithFile("Current filename")));
+        List<Element<HearingCourtBundle>> courtBundleList = List.of(element(
+            courtBundleHearingId,
+            HearingCourtBundle.builder()
+                .hearing(hearingBookings.get(0).getValue().toLabel())
+                .courtBundle(courtBundle)
+                .build()));
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsCourtBundle(courtBundle)
+            .hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(courtBundleList).build())
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .hearingDetails(hearingBookings)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
+            .build();
+
+        Map<String, Object> map = underTest.initialiseHearingDocumentFields(caseData);
+        List<CourtBundle> result = getCourtBundleFromMap(map);
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getDocument()).isNull();
+    }
+
+    @Test
+    void shouldThrowExceptionWhenInitialisingCourtBundleFieldsNotWithBookedHearing() {
+        UUID selectedHearingId = randomUUID();
+        UUID courtBundleHearingId = randomUUID();
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(courtBundleHearingId, createHearingBooking(futureDate, futureDate.plusDays(3)))
+        );
+        List<Element<CourtBundle>> courtBundle = List.of(element(createCourtBundleWithFile("Current filename")));
+        List<Element<HearingCourtBundle>> courtBundleList = List.of(element(
+            courtBundleHearingId,
+            HearingCourtBundle.builder()
+                .hearing(hearingBookings.get(0).getValue().toLabel())
+                .courtBundle(courtBundle)
+                .build()));
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsCourtBundle(courtBundle)
+            .hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(courtBundleList).build())
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .hearingDetails(hearingBookings)
+            .build();
+
+        assertThatThrownBy(() -> underTest.initialiseHearingDocumentFields(caseData))
+            .isInstanceOf(NoHearingBookingException.class);
+    }
+
+    private List<CourtBundle> getCourtBundleFromMap(Map<String, Object> map) {
+        if (map.containsKey(COURT_BUNDLE_KEY)) {
+            List value = (List) map.get(COURT_BUNDLE_KEY);
+            return unwrapElements((List<Element<CourtBundle>>) value);
+        }
+        return null;
+    }
+
+    @Test
+    void shouldInitialiseHearingDocumentFields() {
+        UUID selectedHearingId = randomUUID();
+        LocalDateTime today = LocalDateTime.now();
+
+        HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
+        List<Element<HearingBooking>> hearingBookings = List.of(element(selectedHearingId, selectedHearingBooking));
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(hearingBookings)
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
+            .build();
+
+        assertThat(getCourtBundleFromMap(underTest
+            .initialiseHearingDocumentFields(caseData)))
+            .isEqualTo(List.of(CourtBundle.builder().build()));
+
+        assertThat((CaseSummary) underTest
+            .initialiseHearingDocumentFields(caseData.toBuilder()
+                .manageDocumentsHearingDocumentType(HearingDocumentType.CASE_SUMMARY).build())
+            .get(CASE_SUMMARY_KEY))
+            .isEqualTo(CaseSummary.builder().hearing(selectedHearingBooking.toLabel()).build());
+
+        assertThat((PositionStatementChild) underTest
+            .initialiseHearingDocumentFields(caseData.toBuilder()
+                .manageDocumentsHearingDocumentType(HearingDocumentType.POSITION_STATEMENT_CHILD).build())
+            .get(POSITION_STATEMENT_CHILD_KEY))
+            .isEqualTo(PositionStatementChild.builder()
+                .hearing(selectedHearingBooking.toLabel())
+                .hearingId(selectedHearingId).build());
+
+        assertThat((PositionStatementRespondent) underTest
+            .initialiseHearingDocumentFields(caseData.toBuilder()
+                .manageDocumentsHearingDocumentType(HearingDocumentType.POSITION_STATEMENT_RESPONDENT).build())
+            .get(POSITION_STATEMENT_RESPONDENT_KEY))
+            .isEqualTo(PositionStatementRespondent.builder()
+                .hearing(selectedHearingBooking.toLabel())
+                .hearingId(selectedHearingId).build());
+    }
+
+    @Test
+    void shouldReturnNewCaseSummaryListWhenNoExistingCaseSummaryPresentForSelectedHearing() {
+        UUID selectedHearingId = randomUUID();
+        LocalDateTime today = LocalDateTime.now();
+
+        HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
+        List<Element<HearingBooking>> hearingBookings = List.of(element(selectedHearingId, selectedHearingBooking));
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsCaseSummary(CaseSummary.builder().hearing("Test hearing").build())
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .manageDocumentsHearingDocumentType(HearingDocumentType.CASE_SUMMARY)
+            .hearingDetails(hearingBookings)
+            .build();
+
+        assertThat(underTest.buildHearingDocumentList(caseData).get(CASE_SUMMARY_LIST_KEY))
+            .isEqualTo(List.of(element(selectedHearingId, caseData.getManageDocumentsCaseSummary())));
+    }
+
+    @Test
+    void shouldReturnNewPositionStatementChildListWhenNoExistingListPresentForSelectedHearing() {
+        UUID selectedHearingId = randomUUID();
+        LocalDateTime today = LocalDateTime.now();
+
+        UUID selectedChildId = randomUUID();
+        DynamicList childrenDynamicList = TestDataHelper.buildDynamicList(0,
+            Pair.of(selectedChildId, "Tom Smith"),
+            Pair.of(randomUUID(), "Mary Smith")
+        );
+
+        PositionStatementChild positionStatementChild =
+            PositionStatementChild.builder()
+                .hearing("Test hearing")
+                .hearingId(selectedHearingId)
+                .childId(selectedChildId)
+                .childName("Tom Smith")
+                .build();
+
+        HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
+        List<Element<HearingBooking>> hearingBookings = List.of(element(selectedHearingId, selectedHearingBooking));
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsPositionStatementChild(positionStatementChild)
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .manageDocumentsChildrenList(childrenDynamicList)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.POSITION_STATEMENT_CHILD)
+            .hearingDetails(hearingBookings)
+            .build();
+
+        assertThat(
+            unwrapElements((List<Element<PositionStatementChild>>) underTest.buildHearingDocumentList(caseData)
+                .get(POSITION_STATEMENT_CHILD_LIST_KEY)))
+            .isEqualTo(List.of(caseData.getManageDocumentsPositionStatementChild()));
+    }
+
+    @Test
+    void shouldAddNewPositionStatementChildToTheListWhenExistingListPresentForSelectedHearing() {
+        UUID selectedHearingId = randomUUID();
+        LocalDateTime today = LocalDateTime.now();
+
+        UUID selectedChildId = randomUUID();
+        UUID childTwoId = randomUUID();
+        DynamicList childrenDynamicList = TestDataHelper.buildDynamicList(0,
+            Pair.of(selectedChildId, "Tom Smith"),
+            Pair.of(childTwoId, "Mary Smith")
+        );
+
+        PositionStatementChild positionStatementChild =
+            PositionStatementChild.builder()
+                .hearing("Test hearing")
+                .hearingId(selectedHearingId)
+                .childId(selectedChildId)
+                .childName("Tom Smith")
+                .build();
+
+        PositionStatementChild positionStatementChildTwo =
+            PositionStatementChild.builder()
+                .hearing("Test hearing")
+                .hearingId(selectedHearingId)
+                .childId(childTwoId)
+                .childName("Mary Smith")
+                .build();
+
+        HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
+        List<Element<HearingBooking>> hearingBookings = List.of(element(selectedHearingId, selectedHearingBooking));
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsPositionStatementChild(positionStatementChild)
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .manageDocumentsChildrenList(childrenDynamicList)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.POSITION_STATEMENT_CHILD)
+            .hearingDetails(hearingBookings)
+            .hearingDocuments(HearingDocuments.builder()
+                .positionStatementChildListV2(List.of(element(positionStatementChildTwo))).build())
+            .build();
+
+        assertThat(
+            unwrapElements((List<Element<PositionStatementChild>>)
+                underTest.buildHearingDocumentList(caseData).get(POSITION_STATEMENT_CHILD_LIST_KEY)))
+            .isEqualTo(List.of(positionStatementChildTwo, caseData.getManageDocumentsPositionStatementChild()));
+    }
+
+    @Test
+    void shouldReturnNewPositionStatementChildListWhenExistingListPresentForOtherHearing() {
+        UUID selectedHearingId = randomUUID();
+        LocalDateTime today = LocalDateTime.now();
+
+        UUID selectedChildId = randomUUID();
+        UUID childTwoId = randomUUID();
+        DynamicList childrenDynamicList = TestDataHelper.buildDynamicList(0,
+            Pair.of(selectedChildId, "Tom Smith"),
+            Pair.of(childTwoId, "Mary Smith")
+        );
+
+        PositionStatementChild positionStatementChild =
+            PositionStatementChild.builder()
+                .hearing("Test hearing")
+                .hearingId(selectedHearingId)
+                .childId(selectedChildId)
+                .childName("Tom Smith")
+                .build();
+
+        PositionStatementChild positionStatementChildTwo =
+            PositionStatementChild.builder()
+                .hearing("Other hearing")
+                .hearingId(randomUUID())
+                .childId(childTwoId)
+                .childName("Mary Smith")
+                .build();
+
+        HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
+        List<Element<HearingBooking>> hearingBookings = List.of(element(selectedHearingId, selectedHearingBooking));
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsPositionStatementChild(positionStatementChild)
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .manageDocumentsChildrenList(childrenDynamicList)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.POSITION_STATEMENT_CHILD)
+            .hearingDetails(hearingBookings)
+            .hearingDocuments(HearingDocuments.builder()
+                .positionStatementChildListV2(List.of(element(positionStatementChildTwo))).build())
+            .build();
+
+        assertThat(
+            unwrapElements((List<Element<PositionStatementChild>>)
+                underTest.buildHearingDocumentList(caseData).get(POSITION_STATEMENT_CHILD_LIST_KEY)))
+            .isEqualTo(List.of(caseData.getManageDocumentsPositionStatementChild()));
+    }
+
+    @Test
+    void shouldReturnNewPositionStatementRespondentListWhenNoExistingListPresentForSelectedHearing() {
+        UUID selectedHearingId = randomUUID();
+        LocalDateTime today = LocalDateTime.now();
+
+        UUID selectedRespondentId = randomUUID();
+        DynamicList respondentDynamicList = TestDataHelper.buildDynamicList(0,
+            Pair.of(selectedRespondentId, "Tom Smith"),
+            Pair.of(randomUUID(), "Mary Smith")
+        );
+
+        PositionStatementRespondent positionStatementRespondent =
+            PositionStatementRespondent.builder()
+                .hearing("Test hearing")
+                .hearingId(selectedHearingId)
+                .respondentId(selectedRespondentId)
+                .respondentName("Tom Smith")
+                .build();
+
+        HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
+        List<Element<HearingBooking>> hearingBookings = List.of(element(selectedHearingId, selectedHearingBooking));
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsPositionStatementRespondent(positionStatementRespondent)
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .hearingDocumentsRespondentList(respondentDynamicList)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.POSITION_STATEMENT_RESPONDENT)
+            .hearingDetails(hearingBookings)
+            .build();
+
+        assertThat(
+            unwrapElements((List<Element<PositionStatementRespondent>>)
+                underTest.buildHearingDocumentList(caseData).get(POSITION_STATEMENT_RESPONDENT_LIST_KEY)))
+            .isEqualTo(List.of(caseData.getManageDocumentsPositionStatementRespondent()));
+    }
+
+    @Test
+    void shouldAddNewPositionStatementRespondentToTheListWhenExistingListPresentForSelectedHearing() {
+        UUID selectedHearingId = randomUUID();
+        LocalDateTime today = LocalDateTime.now();
+
+        UUID selectedRespondentId = randomUUID();
+        UUID respondentTwoId = randomUUID();
+        DynamicList respondentDynamicList = TestDataHelper.buildDynamicList(0,
+            Pair.of(selectedRespondentId, "Tom Smith"),
+            Pair.of(respondentTwoId, "Mary Smith")
+        );
+
+        PositionStatementRespondent positionStatementRespondent =
+            PositionStatementRespondent.builder()
+                .hearing("Test hearing")
+                .hearingId(selectedHearingId)
+                .respondentId(selectedRespondentId)
+                .respondentName("Tom Smith")
+                .build();
+
+        PositionStatementRespondent positionStatementRespondentTwo =
+            PositionStatementRespondent.builder()
+                .hearing("Test hearing")
+                .hearingId(selectedHearingId)
+                .respondentId(respondentTwoId)
+                .respondentName("Mary Smith")
+                .build();
+
+        HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
+        List<Element<HearingBooking>> hearingBookings = List.of(element(selectedHearingId, selectedHearingBooking));
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsPositionStatementRespondent(positionStatementRespondent)
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .hearingDocumentsRespondentList(respondentDynamicList)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.POSITION_STATEMENT_RESPONDENT)
+            .hearingDetails(hearingBookings)
+            .hearingDocuments(HearingDocuments.builder()
+                .positionStatementRespondentListV2(List.of(element(positionStatementRespondentTwo)))
+                .build())
+            .build();
+
+        assertThat(
+            unwrapElements((List<Element<PositionStatementRespondent>>) underTest
+                .buildHearingDocumentList(caseData).get(POSITION_STATEMENT_RESPONDENT_LIST_KEY)))
+            .isEqualTo(List.of(positionStatementRespondentTwo,
+                caseData.getManageDocumentsPositionStatementRespondent()));
+    }
+
+    @Test
+    void shouldReturnNewPositionStatementRespondentListWhenExistingListPresentForOtherHearing() {
+        UUID selectedHearingId = randomUUID();
+        LocalDateTime today = LocalDateTime.now();
+
+        UUID selectedRespondentId = randomUUID();
+        UUID respondentTwoId = randomUUID();
+        DynamicList respondentDynamicList = TestDataHelper.buildDynamicList(0,
+            Pair.of(selectedRespondentId, "Tom Smith"),
+            Pair.of(respondentTwoId, "Mary Smith")
+        );
+
+        PositionStatementRespondent positionStatementRespondent =
+            PositionStatementRespondent.builder()
+                .hearing("Test hearing")
+                .hearingId(selectedHearingId)
+                .respondentId(selectedRespondentId)
+                .respondentName("Tom Smith")
+                .build();
+
+        PositionStatementRespondent positionStatementRespondentTwo =
+            PositionStatementRespondent.builder()
+                .hearing("Other hearing")
+                .hearingId(randomUUID())
+                .respondentId(respondentTwoId)
+                .respondentName("Mary Smith")
+                .build();
+
+        HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
+        List<Element<HearingBooking>> hearingBookings = List.of(element(selectedHearingId, selectedHearingBooking));
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsPositionStatementRespondent(positionStatementRespondent)
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .hearingDocumentsRespondentList(respondentDynamicList)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.POSITION_STATEMENT_RESPONDENT)
+            .hearingDetails(hearingBookings)
+            .hearingDocuments(HearingDocuments.builder()
+                .positionStatementRespondentListV2(List.of(element(positionStatementRespondentTwo)))
+                .build())
+            .build();
+
+        assertThat(
+            unwrapElements((List<Element<PositionStatementRespondent>>) underTest
+                .buildHearingDocumentList(caseData).get(POSITION_STATEMENT_RESPONDENT_LIST_KEY)))
+            .isEqualTo(List.of(caseData.getManageDocumentsPositionStatementRespondent()));
+    }
+
+    @Test
+    void shouldUpdatePlacementNoticesForLA() {
+        final DocumentReference laResponseRef = testDocumentReference();
+
+        final PlacementNoticeDocument laResponse = PlacementNoticeDocument.builder()
+            .response(laResponseRef)
+            .responseDescription("LA response")
+            .type(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
+            .build();
+
+        final Placement placement = Placement.builder()
+            .placementNotice(testDocumentReference())
+            .childName("Test Child")
+            .noticeDocuments(wrapElements(laResponse))
+            .build();
+
+        final PlacementEventData uploadLAData = PlacementEventData.builder()
+            .placements(wrapElements(placement))
+            .placement(placement)
+            .build();
+
+        when(placementService.savePlacementNoticeResponses(any(),
+            eq(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)))
+            .thenReturn(uploadLAData);
+
+
+        Placement placementBefore = Placement.builder()
+            .placementNotice(placement.getPlacementNotice())
+            .childName("Test Child")
+            .build();
+
+        PlacementNoticeDocument toAdd = PlacementNoticeDocument.builder()
+            .response(laResponseRef)
+            .responseDescription("LA response")
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .placementEventData(PlacementEventData.builder()
+                .placements(wrapElements(placementBefore))
+                .placement(placementBefore)
+                .build())
+            .placementNoticeResponses(wrapElements(toAdd))
+            .build();
+
+        PlacementEventData after = underTest.updatePlacementNoticesLA(caseData);
+
+        Placement updated = after.getPlacements().get(0).getValue();
+        PlacementNoticeDocument updatedNoticeDocument = updated.getNoticeDocuments().get(0).getValue();
+
+        assertThat(after.getPlacements()).hasSize(1);
+        assertThat(updated.getChildName()).contains("Test Child");
+        assertThat(updated.getNoticeDocuments()).hasSize(1);
+        assertThat(updatedNoticeDocument.getType()).isEqualTo(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY);
+        assertThat(updatedNoticeDocument.getResponse()).isEqualTo(laResponseRef);
+        assertThat(updatedNoticeDocument.getResponseDescription()).isEqualTo("LA response");
+    }
+
+
+
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
         return wrapElements(SupportingEvidenceBundle.builder()
             .name("test")
@@ -1579,6 +2408,15 @@ class ManageDocumentServiceTest {
             .value(DynamicListElement.builder()
                 .code(selectedId)
                 .build())
+            .build();
+    }
+
+    private CourtBundle createCourtBundleWithFile(String filename) {
+        return CourtBundle.builder()
+            .document(
+                DocumentReference.builder()
+                    .filename(filename)
+                    .build())
             .build();
     }
 }

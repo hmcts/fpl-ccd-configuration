@@ -104,6 +104,7 @@ fpl:
     username: 'fpl-system-update@mailnesia.com'
     password: 'Password12'
   ctsc_inbox: 'FamilyPublicLaw+ctsc@gmail.com'
+  rcj_family_high_court_inbox: 'FamilyPublicLaw+rcjfamilyhighcourt@gmail.com'
 
 robotics:
   notification:
@@ -124,6 +125,8 @@ cafcass:
     newapplication: FamilyPublicLaw+cafcass@gmail.com
     newdocument: FamilyPublicLaw+cafcass@gmail.com
     additionaldocument: FamilyPublicLaw+cafcass@gmail.com
+    noticeofhearing: FamilyPublicLaw+cafcass@gmail.com
+    changeofaddress: FamilyPublicLaw+cafcass@gmail.com
 
 security:
   anonymousPaths:

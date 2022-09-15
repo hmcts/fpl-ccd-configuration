@@ -273,12 +273,13 @@ def versions = [
   mockito         : '3.7.7',
   serenity        : '2.4.5',
   pact_version    : '4.1.7',
-  junit_jupiter   : '5.7.1'
+  junit_jupiter   : '5.7.1',
+  lombok          : '1.18.22'
 ]
 
 dependencies {
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
@@ -322,7 +323,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0'
   compile group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
   compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '3.0.3'
-  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.2-RELEASE'
+  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.3-RELEASE'
 
   implementation group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
   implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'

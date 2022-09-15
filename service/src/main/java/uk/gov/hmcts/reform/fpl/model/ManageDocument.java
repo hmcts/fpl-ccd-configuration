@@ -10,4 +10,6 @@ public class ManageDocument {
     private final ManageDocumentType type;
     private final String hasHearings; // Hidden CCD field
     private final String hasC2s; // Hidden CCD field
+    private final String hasPlacementNotices; // Hidden CCD field
+    private final String hasConfidentialAddress;
 }

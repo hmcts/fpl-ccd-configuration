@@ -4,10 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -33,20 +32,23 @@ import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.MANAGE_DOCUMENT_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RESPONDENTS_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_DOCUMENT_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("unchecked")
 class ManageDocumentsLAServiceTest {
+
+    @Mock
+    private PlacementService placementService;
 
     private final ManageDocumentLAService manageDocumentLAService = new ManageDocumentLAService(new ObjectMapper());
 
@@ -107,12 +109,14 @@ class ManageDocumentsLAServiceTest {
         ManageDocumentLA expectedManageDocument = ManageDocumentLA.builder()
             .hasHearings(YES.getValue())
             .hasC2s(YES.getValue())
+            .hasConfidentialAddress(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
             .build();
 
         Map<String, Object> listAndLabel = manageDocumentLAService.baseEventData(caseData);
 
         assertThat(listAndLabel)
-            .extracting(COURT_BUNDLE_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_LA_KEY,
+            .extracting(HEARING_DOCUMENT_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_LA_KEY,
                 RESPONDENTS_LIST_KEY)
             .containsExactly(expectedHearingDynamicList, expectedC2DocumentsDynamicList, expectedManageDocument,
                 expectedRespondentStatementList);
@@ -124,12 +128,14 @@ class ManageDocumentsLAServiceTest {
         ManageDocumentLA expectedManageDocument = ManageDocumentLA.builder()
             .hasHearings(NO.getValue())
             .hasC2s(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
+            .hasConfidentialAddress(NO.getValue())
             .build();
 
         Map<String, Object> listAndLabel = manageDocumentLAService.baseEventData(caseData);
 
         assertThat(listAndLabel)
-            .extracting(COURT_BUNDLE_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_LA_KEY)
+            .extracting(HEARING_DOCUMENT_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_LA_KEY)
             .containsExactly(null, null, expectedManageDocument);
     }
 
@@ -139,6 +145,8 @@ class ManageDocumentsLAServiceTest {
         ManageDocumentLA expectedManageDocument = ManageDocumentLA.builder()
             .hasHearings(NO.getValue())
             .hasC2s(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
+            .hasConfidentialAddress(NO.getValue())
             .build();
 
         Map<String, Object> listAndLabel = manageDocumentLAService.baseEventData(caseData);
@@ -146,36 +154,6 @@ class ManageDocumentsLAServiceTest {
         assertThat(listAndLabel)
             .extracting(RESPONDENTS_LIST_KEY, MANAGE_DOCUMENT_LA_KEY)
             .containsExactly(null, expectedManageDocument);
-    }
-
-    @Test
-    void shouldReturnNewCourtBundleListWithCourtBundleWhenNoExistingCourtBundlesPresentForSelectedHearing() {
-        UUID selectedHearingId = randomUUID();
-
-        CaseData caseData = CaseData.builder()
-            .manageDocumentsCourtBundle(CourtBundle.builder().hearing("Test hearing").build())
-            .courtBundleHearingList(selectedHearingId.toString())
-            .build();
-
-        assertThat(manageDocumentLAService.buildCourtBundleList(caseData))
-            .isEqualTo(List.of(element(selectedHearingId, caseData.getManageDocumentsCourtBundle())));
-    }
-
-    @Test
-    void shouldReturnEditedCourtBundleListWithCourtBundleWhenExistingCourtBundlePresentForSelectedHearing() {
-        UUID selectedHearingId = randomUUID();
-        List<Element<CourtBundle>> courtBundleList = new ArrayList<>();
-        courtBundleList.add(element(selectedHearingId, CourtBundle.builder().hearing("Test hearing").build()));
-
-        CourtBundle editedBundle = CourtBundle.builder().hearing("Edited hearing").build();
-        CaseData caseData = CaseData.builder()
-            .courtBundleList(courtBundleList)
-            .manageDocumentsCourtBundle(editedBundle)
-            .courtBundleHearingList(selectedHearingId.toString())
-            .build();
-
-        assertThat(unwrapElements(manageDocumentLAService.buildCourtBundleList(caseData)))
-            .containsExactly(editedBundle);
     }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {

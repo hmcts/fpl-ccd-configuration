@@ -41,9 +41,6 @@ public class HearingVenueLookUpService {
 
     public HearingVenue getHearingVenue(final HearingBooking hearingBooking) {
         if (!HEARING_VENUE_ID_OTHER.equals(hearingBooking.getVenue())) {
-            if (hearingBooking.getVenue() == null) {
-                throw new IllegalStateException("Unexpected null venue." + hearingBooking);
-            }
             return getHearingVenue(hearingBooking.getVenue());
         } else {
             return HearingVenue.builder()
@@ -55,6 +52,9 @@ public class HearingVenueLookUpService {
     }
 
     public HearingVenue getHearingVenue(final String venueId) {
+        if (venueId == null) {
+            return HearingVenue.builder().build();
+        }
         return this.hearingVenues.stream()
             .filter(hearingVenue -> venueId.equalsIgnoreCase(hearingVenue.getHearingVenueId()))
             .findFirst()
@@ -75,7 +75,8 @@ public class HearingVenueLookUpService {
             return "";
         } else {
             return Stream.of(hearingVenue.getAddress().getAddressLine1(), hearingVenue.getAddress().getAddressLine2(),
-                hearingVenue.getAddress().getPostTown(), hearingVenue.getAddress().getPostcode())
+                hearingVenue.getAddress().getPostTown(), hearingVenue.getAddress().getCounty(),
+                hearingVenue.getAddress().getPostcode())
                 .filter(StringUtils::isNotBlank)
                 .collect(joining(", "));
         }

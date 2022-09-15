@@ -31,11 +31,6 @@ public class FeatureToggleService {
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
     }
 
-    public boolean isCtscReportEnabled() {
-        return ldClient.boolVariation("CTSC",
-            createLDUser(Map.of("report", LDValue.of(true))), false);
-    }
-
     public boolean isCaseCreationForNotOnboardedUsersEnabled(String localAuthorityCode) {
         return ldClient.boolVariation("allow-case-creation-for-users-not-onboarded-to-mo",
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityCode))), false);
@@ -76,6 +71,10 @@ public class FeatureToggleService {
 
     public boolean isLanguageRequirementsEnabled() {
         return ldClient.boolVariation("language-requirements", createLDUser(), false);
+    }
+
+    public boolean isCafcassSubjectCategorised() {
+        return ldClient.boolVariation("cafcass-subject-category", createLDUser(), false);
     }
 
     private LDUser createLDUser() {

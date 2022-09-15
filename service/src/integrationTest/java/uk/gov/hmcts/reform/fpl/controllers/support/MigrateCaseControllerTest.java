@@ -4,44 +4,46 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
-import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
+import uk.gov.hmcts.reform.fpl.model.CaseNote;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.group.C110A;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
-import java.util.HashMap;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
 class MigrateCaseControllerTest extends AbstractCallbackTest {
-    public static final DocumentReference DOCUMENT_REFERENCE = testDocumentReference();
-
 
     MigrateCaseControllerTest() {
         super("migrate-case");
@@ -70,301 +72,20 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Dfpl451 {
+    class DfplRemoveC110a {
+        private final long invalidCaseId = 1643728359576136L;
+        private final UUID invalidDocId = UUID.randomUUID();
 
-        private final String migrationId = "DFPL-451";
-        private final long validCaseId = 1603370139459131L;
-        private final long invalidCaseId = 1626258358022000L;
-
-        @Test
-        void shouldThrowAssertionErrorWhenCaseIdIsInvalid() {
-
-            CaseDetails caseDetails = CaseDetails.builder()
-                .id(invalidCaseId)
-                .state("Submitted")
-                .data(Map.of(
-                    "name", "Test",
-                    "hearingOption", HearingOptions.NEW_HEARING,
-                    "migrationId", migrationId))
-                .build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-451, case reference = 1626258358022000},"
-                    + " Unexpected case reference");
+        private Stream<Arguments> provideMigrationTestData() {
+            return Stream.of(
+                Arguments.of("DFPL-798", 1654765774567742L, UUID.fromString("1756656b-6931-467e-8dfe-ac9f152351fe")),
+                Arguments.of("DFPL-802", 1659528630126722L, UUID.fromString("dcd016c6-a0de-4ed2-91ce-5582a6acaf25"))
+            );
         }
 
         @ParameterizedTest
-        @ValueSource(
-            longs = {1603370139459131L, 1618403849028418L, 1592492643062277L, 1615809514849016L, 1605537316992153L})
-        void shouldRemoveHearingOptionIfPresent(Long caseId) {
-
-            CaseDetails caseDetails = CaseDetails.builder()
-                .id(caseId)
-                .state("Submitted")
-                .data(Map.of(
-                    "name", "Test",
-                    "hearingOption", HearingOptions.EDIT_PAST_HEARING,
-                    "migrationId", migrationId))
-                .build();
-
-            Map<String, Object> expected = new HashMap<>(caseDetails.getData());
-            expected.remove("hearingOption");
-            expected.remove("migrationId");
-
-            Map<String, Object> response = postAboutToSubmitEvent(caseDetails).getData();
-
-            assertThat(response).isEqualTo(expected);
-        }
-
-        @Test
-        void shouldRemoveMigrationIdWhenHearingOptionNotPresent() {
-            CaseDetails caseDetails = CaseDetails.builder()
-                .id(validCaseId)
-                .state("Submitted")
-                .data(Map.of(
-                    "name", "Test",
-                    "migrationId", migrationId))
-                .build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails).getData());
-        }
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class Dfpl500 {
-        private final String migrationId = "DFPL-500";
-        private final long validCaseId = 1643728359576136L;
-        private final long invalidCaseId = 1626258358022000L;
-
-        @Test
-        void shouldPerformMigrationWhenNameMatches() {
-            List<UUID> uuidsToBeRetained = List.of(UUID.randomUUID(), UUID.randomUUID());
-            CaseData caseData = CaseData.builder()
-                .id(validCaseId)
-                .state(State.SUBMITTED)
-                .documentsSentToParties(
-                    wrapElements(
-                        SentDocuments.builder()
-                            .documentsSentToParty(
-                                List.of(
-                                    element(
-                                        uuidsToBeRetained.get(0),
-                                        SentDocument.builder()
-                                            .document(
-                                                DocumentReference.builder()
-                                                    .filename("ToBeRetained.doc")
-                                                    .build()
-                                            ).build()
-                                    ),
-                                    element(
-                                        UUID.fromString("ad5c738e-d7aa-4ccf-b53b-0b1e40a19182"),
-                                        SentDocument.builder()
-                                            .document(
-                                                DocumentReference.builder()
-                                                    .filename("ToBeRemoved.doc")
-                                                    .build()
-                                            ).build()
-                                    )
-                                )
-                            ).build(),
-                        SentDocuments.builder()
-                            .documentsSentToParty(
-                                List.of(
-                                    element(
-                                        uuidsToBeRetained.get(1),
-                                        SentDocument.builder()
-                                            .document(
-                                                DocumentReference.builder()
-                                                    .filename("ToBeRetained.doc")
-                                                    .build()
-                                            ).build()
-                                    ),
-                                    element(
-                                        UUID.fromString("61f97374-360b-4759-9329-af10fae1317e"),
-                                        SentDocument.builder()
-                                            .document(
-                                                DocumentReference.builder()
-                                                    .filename("ToBeRemoved.doc")
-                                                    .build()
-                                            ).build()
-                                    )
-                                )
-                            ).build()
-                    )
-                ).build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId)
-            );
-
-            CaseData responseData = extractCaseData(response);
-
-            List<Element<SentDocuments>> documentsSentToParties = responseData.getDocumentsSentToParties();
-
-            List<UUID> retainedUUIDs = documentsSentToParties.stream()
-                .map(Element::getValue)
-                .flatMap(value -> value.getDocumentsSentToParty().stream())
-                .map(Element::getId)
-                .collect(toList());
-
-            assertThat(retainedUUIDs).isEqualTo(uuidsToBeRetained);
-        }
-
-        @Test
-        void shouldThrowAssersionErrorWhenCaseIdIsInvalid() {
-            CaseData caseData = CaseData.builder()
-                .id(invalidCaseId)
-                .state(State.SUBMITTED)
-                .legalRepresentatives(
-                    wrapElements(
-                        LegalRepresentative.builder()
-                            .fullName("First User")
-                            .email("first@gamil.com")
-                            .build(),
-                        LegalRepresentative.builder()
-                            .fullName("Second User")
-                            .email("second@gamil.com")
-                            .build()
-                    )
-                )
-                .build();
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-500, case reference = 1626258358022000},"
-                    + " expected case id 1643728359576136");
-        }
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class Dfpl482 {
-        private final String migrationId = "DFPL-482";
-        private final long validCaseId = 1636970654155393L;
-        private final long invalidCaseId = 1643728359576136L;
-
-        @Test
-        void shouldPerformMigrationWhenNameMatches() {
-            List<UUID> uuidsToBeRetained = List.of(UUID.randomUUID(), UUID.randomUUID());
-            CaseData caseData = CaseData.builder()
-                .id(validCaseId)
-                .state(State.SUBMITTED)
-                .documentsSentToParties(
-                    wrapElements(
-                        SentDocuments.builder()
-                            .documentsSentToParty(
-                                List.of(
-                                    element(
-                                        uuidsToBeRetained.get(0),
-                                        SentDocument.builder()
-                                            .document(
-                                                DocumentReference.builder()
-                                                    .filename("ToBeRetained1.doc")
-                                                    .build()
-                                            ).build()
-                                    ),
-                                    element(
-                                        UUID.fromString("75dcdc34-7f13-4c56-aad6-8dcf7b2261b6"),
-                                        SentDocument.builder()
-                                            .document(
-                                                DocumentReference.builder()
-                                                    .filename("ToBeRemoved1.doc")
-                                                    .build()
-                                            ).build()
-                                    )
-                                )
-                            ).build(),
-                        SentDocuments.builder()
-                            .documentsSentToParty(
-                                List.of(
-                                    element(
-                                        uuidsToBeRetained.get(1),
-                                        SentDocument.builder()
-                                            .document(
-                                                DocumentReference.builder()
-                                                    .filename("ToBeRetained2.doc")
-                                                    .build()
-                                            ).build()
-                                    ),
-                                    element(
-                                        UUID.fromString("401d9cd0-50ae-469d-b355-d467742d7ef3"),
-                                        SentDocument.builder()
-                                            .document(
-                                                DocumentReference.builder()
-                                                    .filename("ToBeRemoved2.doc")
-                                                    .build()
-                                            ).build()
-                                    )
-                                )
-                            ).build()
-                    )
-                ).build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId)
-            );
-
-            CaseData responseData = extractCaseData(response);
-
-            List<Element<SentDocuments>> documentsSentToParties = responseData.getDocumentsSentToParties();
-
-            List<UUID> retainedUUIDs = documentsSentToParties.stream()
-                .map(Element::getValue)
-                .flatMap(value -> value.getDocumentsSentToParty().stream())
-                .map(Element::getId)
-                .collect(toList());
-
-            assertThat(retainedUUIDs).isEqualTo(uuidsToBeRetained);
-        }
-
-        @Test
-        void shouldThrowAssersionErrorWhenCaseIdIsInvalid() {
-            CaseData caseData = CaseData.builder()
-                .id(invalidCaseId)
-                .state(State.SUBMITTED)
-                .documentsSentToParties(
-                    wrapElements(
-                        SentDocuments.builder()
-                            .documentsSentToParty(
-                                List.of(
-                                    element(
-                                        UUID.randomUUID(),
-                                        SentDocument.builder()
-                                            .document(
-                                                DocumentReference.builder()
-                                                    .filename("DocSent.doc")
-                                                    .build()
-                                            ).build()
-                                    )
-                                )
-                            ).build()
-                    )
-                ).build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-482, case reference = 1643728359576136},"
-                    + " expected case id 1636970654155393");
-        }
-
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class Dfpl562 {
-        private final String migrationId = "DFPL-562";
-        private final long validCaseId = 1644420520106477L;
-        private final long invalidCaseId = 1643728359576136L;
-
-        private final UUID validDocId = UUID.fromString("c9ac3123-ab10-484c-b74b-40d551f7fc9c");
-        private final UUID invalidDocId = UUID.randomUUID();
-
-        @Test
-        void shouldPerformMigrationWhenDocIdMatches() {
+        @MethodSource("provideMigrationTestData")
+        void shouldPerformMigrationWhenDocIdMatches(String migrationId, Long validCaseId, UUID validDocId) {
 
             CaseData caseData = CaseData.builder()
                 .id(validCaseId)
@@ -384,8 +105,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThat(responseData.getC110A().getSubmittedForm()).isNull();
         }
 
-        @Test
-        void shouldThrowAssersionErrorWhenCaseIdIsInvalid() {
+        @ParameterizedTest
+        @MethodSource("provideMigrationTestData")
+        void shouldThrowAssersionErrorWhenCaseIdIsInvalid(String migrationId, Long validCaseId, UUID validDocId) {
             CaseData caseData = CaseData.builder()
                 .id(invalidCaseId)
                 .state(State.SUBMITTED)
@@ -399,12 +121,13 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-562, case reference = 1643728359576136},"
-                    + " expected case id 1644420520106477");
+                .hasMessage(String.format("Migration {id = %s, case reference = 1643728359576136}, expected case id %d",
+                    migrationId, validCaseId));
         }
 
-        @Test
-        void shouldThrowAssersionErrorWhenDocumentIdIsInvalid() {
+        @ParameterizedTest
+        @MethodSource("provideMigrationTestData")
+        void shouldThrowAssersionErrorWhenDocumentIdIsInvalid(String migrationId, Long validCaseId, UUID validDocId) {
             CaseData caseData = CaseData.builder()
                 .id(validCaseId)
                 .state(State.SUBMITTED)
@@ -418,11 +141,346 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-562, case reference = 1644420520106477},"
-                    + " expected c110a document id c9ac3123-ab10-484c-b74b-40d551f7fc9c");
+                .hasMessage(String.format("Migration {id = %s, case reference = %d}, expected c110a document id %s",
+                    migrationId, validCaseId, validDocId));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class DfplRemoveCaseNotes {
+        private Stream<Arguments> provideMigrationTestData() {
+            return Stream.of(
+                Arguments.of("DFPL-810", 1639481593478877L,
+                    List.of(UUID.fromString("2824e43b-3250-485a-b069-6fd06390ce83")))
+            );
         }
 
+        @ParameterizedTest
+        @MethodSource("provideMigrationTestData")
+        void shouldRemoveCaseNotes(String migrationId, Long expectedCaseId, List<UUID> validNoteId) {
+            UUID otherNoteId = UUID.randomUUID();
+            List<UUID> testNoteId = new ArrayList<>(validNoteId);
+            testNoteId.add(otherNoteId);
 
+            CaseData caseData = CaseData.builder()
+                .id(expectedCaseId)
+                .caseNotes(testNoteId.stream().map(this::buildMockCaseNotes).collect(Collectors.toList()))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getCaseNotes().size()).isEqualTo(1);
+            assertThat(responseData.getCaseNotes().stream().map(Element::getId).collect(Collectors.toList()))
+                .doesNotContainAnyElementsOf(validNoteId)
+                .contains(otherNoteId);
+
+        }
+
+        @ParameterizedTest
+        @MethodSource("provideMigrationTestData")
+        void shouldThrowExceptionWhenCaseIdInvalid(String migrationId, Long expectedCaseId, List<UUID> validNoteId) {
+            CaseData caseData = CaseData.builder().id(1L).build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format("Migration {id = %s, case reference = %s}, expected case id %d",
+                    migrationId, 1, expectedCaseId));
+        }
+
+        @ParameterizedTest
+        @MethodSource("provideMigrationTestData")
+        void shouldThrowExceptionWhenCasNotesIdInvalid(String migrationId, Long expectedCaseId,
+                                                       List<UUID> validNoteId) {
+            CaseData caseData = CaseData.builder()
+                .id(expectedCaseId)
+                .caseNotes(List.of(buildMockCaseNotes(UUID.randomUUID()),
+                    buildMockCaseNotes(UUID.randomUUID()),
+                    buildMockCaseNotes(UUID.randomUUID()))).build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format(
+                    "Migration {id = %s, case reference = %s}, expected caseNotes id not found",
+                    migrationId, expectedCaseId));
+        }
+
+        private Element<CaseNote> buildMockCaseNotes(UUID id) {
+            return element(id, CaseNote.builder()
+                .createdBy("mockCreatedBy")
+                .date(LocalDate.of(2022, 6, 14))
+                .note("Testing Note")
+                .build());
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl776 {
+        final String migrationId = "DFPL-776";
+        final long expectedCaseId = 1646318196381762L;
+        final UUID expectedMsgId = UUID.fromString("878a2dd7-8d50-46b1-88d3-a5c6fe9a39ba");
+
+        @Test
+        void shouldRemoveMsg() {
+            UUID otherMsgId = UUID.randomUUID();
+
+            CaseData caseData = CaseData.builder()
+                .id(expectedCaseId)
+                .judicialMessages(List.of(
+                    element(otherMsgId, JudicialMessage.builder()
+                        .dateSent("19 May 2022 at 10:16am")
+                        .latestMessage("Test Message").build()),
+                    element(expectedMsgId, JudicialMessage.builder()
+                        .dateSent("19 May 2022 at 11:16am")
+                        .latestMessage("Test Message to be removed").build())
+                ))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getJudicialMessages().size()).isEqualTo(1);
+            assertThat(responseData.getJudicialMessages().stream().map(Element::getId).collect(Collectors.toList()))
+                .doesNotContain(expectedMsgId)
+                .contains(otherMsgId);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenCaseIdInvalid() {
+            CaseData caseData = CaseData.builder().id(1L).build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format("Migration {id = %s, case reference = %s}, expected case id %d",
+                    migrationId, 1, expectedCaseId));
+        }
+
+        @Test
+        void shouldThrowExceptionWhenMsgIdInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(expectedCaseId)
+                .judicialMessages(wrapElements(
+                    JudicialMessage.builder()
+                        .dateSent("19 May 2022 at 10:16am")
+                        .latestMessage("Test Message").build()))
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format(
+                    "Migration {id = %s, case reference = %s}, invalid JudicialMessage ID",
+                    migrationId, expectedCaseId));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl826 {
+        final String migrationId = "DFPL-826";
+        final Long caseId = 1660300177298257L;
+        final UUID hearingId = UUID.fromString("d76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0");
+
+        final Element<HearingBooking> hearingToBeRemoved = element(hearingId, HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(now().minusDays(3))
+            .endDate(now().minusDays(2))
+            .build());
+        final Element<HearingBooking> hearingBooking1 = element(HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(now().minusDays(3))
+            .endDate(now().minusDays(2))
+            .build());
+        final Element<HearingBooking> hearingBooking2 = element(HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(now().minusDays(3))
+            .endDate(now().minusDays(2))
+            .build());
+
+        @Test
+        void shouldPerformMigrationWhenHearingIdMatches() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .hearingDetails(List.of(hearingToBeRemoved, hearingBooking1, hearingBooking2))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+
+            List<Element<HearingBooking>> expectedHearingDetails = List.of(hearingBooking1, hearingBooking2);
+
+            assertThat(responseData.getHearingDetails()).isEqualTo(expectedHearingDetails);
+            assertThat(responseData.getSelectedHearingId()).isIn(hearingBooking1.getId(), hearingBooking2.getId());
+        }
+
+        @Test
+        void shouldThrowAssertionErrorWhenHearingDetailsIsNull() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-826, case reference = 1660300177298257},"
+                    + " hearing details not found");
+        }
+
+        @Test
+        void shouldThrowAssertionErrorWhenCaseIdIsInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(1111111111111111L)
+                .hearingDetails(List.of(hearingToBeRemoved, hearingBooking1, hearingBooking2))
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-826, case reference = 1111111111111111},"
+                    + " expected case id 1660300177298257");
+        }
+
+        @Test
+        void shouldThrowAssertionErrorWhenHearingBookingIdIsInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .hearingDetails(List.of(hearingBooking1, hearingBooking2))
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-826, case reference = 1660300177298257},"
+                    + " hearing booking d76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0 not found");
+        }
+
+        @Test
+        void shouldThrowAssertionErrorWhenMoreThanOneHearingBookingWithSameIdFound() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .hearingDetails(List.of(hearingToBeRemoved, hearingToBeRemoved))
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-826, case reference = 1660300177298257},"
+                    + " more than one hearing booking d76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0 found");
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl816 {
+        final String migrationId = "DFPL-816";
+        final long expectedCaseId = 1659614144221728L;
+        final UUID expectedPartyId = UUID.fromString("a7549435-47ca-4c2c-aaec-7ddd81befc1d");
+        final UUID expectedDocId = UUID.fromString("d4779e5e-1f3a-4f21-967d-7b6109931009");
+
+        UUID[] otherDocIds = new UUID[] {UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+            UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()};
+        UUID otherPartyId = UUID.randomUUID();
+
+        Element<SentDocuments> targetDocumentSentToParties = element(expectedPartyId, SentDocuments.builder()
+            .documentsSentToParty(List.of(element(expectedDocId, SentDocument.builder().build()),
+                element(otherDocIds[0], SentDocument.builder().build()),
+                element(otherDocIds[1], SentDocument.builder().build()),
+                element(otherDocIds[2], SentDocument.builder().build()),
+                element(otherDocIds[3], SentDocument.builder().build()),
+                element(otherDocIds[4], SentDocument.builder().build()),
+                element(otherDocIds[5], SentDocument.builder().build())))
+            .build());
+
+        Element<SentDocuments> otherDocumentSentToParties = element(otherPartyId, SentDocuments.builder()
+            .documentsSentToParty(List.of(element(SentDocument.builder().build()),
+                element(SentDocument.builder().build()))).build());
+
+        @Test
+        void shouldRemoveDocumentLinked() {
+
+            CaseData caseData = CaseData.builder()
+                .id(expectedCaseId)
+                .documentsSentToParties(List.of(targetDocumentSentToParties, otherDocumentSentToParties))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getDocumentsSentToParties().size()).isEqualTo(2);
+            assertThat(responseData.getDocumentsSentToParties().stream()
+                .map(Element::getId).collect(Collectors.toList()))
+                .containsExactly(expectedPartyId, otherPartyId);
+
+            assertThat(ElementUtils.getElement(expectedPartyId, responseData.getDocumentsSentToParties()).getValue()
+                .getDocumentsSentToParty().stream().map(Element::getId).collect(Collectors.toList()))
+                .doesNotContain(expectedDocId)
+                .containsExactly(otherDocIds);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenCaseIdInvalid() {
+            CaseData caseData = CaseData.builder().id(1L).build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format("Migration {id = %s, case reference = %s}, expected case id %d",
+                    migrationId, 1, expectedCaseId));
+        }
+
+        @Test
+        void shouldThrowExceptionWhenPartyIdInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(expectedCaseId)
+                .documentsSentToParties(List.of(otherDocumentSentToParties))
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format(
+                    "Migration {id = %s, case reference = %s}, party Id not found",
+                    migrationId, expectedCaseId));
+        }
+
+        @Test
+        void shouldThrowExceptionWhenDocIdInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(expectedCaseId)
+                .documentsSentToParties(List.of(element(expectedPartyId, SentDocuments.builder()
+                        .documentsSentToParty(List.of(
+                            element(otherDocIds[0], SentDocument.builder().build()),
+                            element(otherDocIds[1], SentDocument.builder().build()),
+                            element(otherDocIds[2], SentDocument.builder().build()),
+                            element(otherDocIds[3], SentDocument.builder().build()),
+                            element(otherDocIds[4], SentDocument.builder().build()),
+                            element(otherDocIds[5], SentDocument.builder().build()))).build())))
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format(
+                    "Migration {id = %s, case reference = %s}, document Id not found",
+                    migrationId, expectedCaseId));
+        }
     }
 
     private CaseDetails buildCaseDetails(CaseData caseData, String migrationId) {

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.validators;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -9,6 +10,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
+import uk.gov.hmcts.reform.fpl.model.GroundsForRefuseContactWithChild;
+import uk.gov.hmcts.reform.fpl.model.GroundsForSecureAccommodationOrder;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -53,6 +56,35 @@ class GroundsCheckerIsStartedTest {
         assertThat(groundsChecker.isStarted(caseData)).isTrue();
     }
 
+    @Test
+    void shouldReturnTrueWhenGroundsForEPOProvided() {
+        final CaseData caseData = CaseData.builder()
+            .groundsForSecureAccommodationOrder(GroundsForSecureAccommodationOrder.builder()
+                .reasonAndLength("some reason").build())
+            .build();
+
+        assertThat(groundsChecker.isStarted(caseData)).isTrue();
+    }
+
+    @ParameterizedTest
+    @MethodSource("emptyGroundsForRefuseContact")
+    void shouldReturnTrueWhenGroundsForRefuseContactProvided(GroundsForRefuseContactWithChild grounds) {
+        final CaseData caseData = CaseData.builder()
+            .groundsForRefuseContactWithChild(grounds)
+            .build();
+
+        assertThat(groundsChecker.isStarted(caseData)).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenEmptyGroundsForRefuseContact() {
+        final CaseData caseData = CaseData.builder()
+            .groundsForRefuseContactWithChild(GroundsForRefuseContactWithChild.builder().build())
+            .build();
+
+        assertThat(groundsChecker.isStarted(caseData)).isFalse();
+    }
+
     private static Stream<Arguments> nonEmptyGrounds() {
         return Stream.of(
                 Grounds.builder().thresholdReason(List.of(("Test"))).build(),
@@ -79,5 +111,13 @@ class GroundsCheckerIsStartedTest {
                         GroundsForEPO.builder()
                                 .reason(emptyList())
                                 .build()));
+    }
+
+    private static Stream<Arguments> emptyGroundsForRefuseContact() {
+        return Stream.of(
+            Arguments.of(GroundsForRefuseContactWithChild.builder().laHasRefusedContact("1").build()),
+            Arguments.of(GroundsForRefuseContactWithChild.builder().personHasContactAndCurrentArrangement("1").build()),
+            Arguments.of(GroundsForRefuseContactWithChild.builder().reasonsOfApplication("1").build()),
+            Arguments.of(GroundsForRefuseContactWithChild.builder().personsBeingRefusedContactWithChild("1").build()));
     }
 }

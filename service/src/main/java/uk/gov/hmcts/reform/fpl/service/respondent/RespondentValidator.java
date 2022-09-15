@@ -3,9 +3,11 @@ package uk.gov.hmcts.reform.fpl.service.respondent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -14,7 +16,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 
 @Component
@@ -30,11 +35,16 @@ public class RespondentValidator {
     private final Time time;
 
     public List<String> validate(CaseData caseData, CaseData caseDataBefore) {
+        return validate(caseData, caseDataBefore, false);
+    }
+
+    public List<String> validate(CaseData caseData, CaseData caseDataBefore, boolean hideRespondentIndex) {
         List<String> errors = new ArrayList<>();
 
         validateMaximumSize(caseData).ifPresent(errors::add);
 
-        errors.addAll(validateDob(caseData));
+        errors.addAll(validateDob(caseData, hideRespondentIndex));
+        errors.addAll(validateAddress(caseData));
 
         List<Respondent> respondentsWithLegalRep =
             respondentService.getRespondentsWithLegalRepresentation(caseData.getRespondents1());
@@ -42,13 +52,13 @@ public class RespondentValidator {
         errors.addAll(validateEmailService.validate(emails, "Representative"));
 
         if (caseData.getState() != OPEN) {
-            errors.addAll(respondentAfterSubmissionValidator.validate(caseData, caseDataBefore));
+            errors.addAll(respondentAfterSubmissionValidator.validate(caseData, caseDataBefore, hideRespondentIndex));
         }
 
         return errors;
     }
 
-    private List<String> validateDob(CaseData caseData) {
+    private List<String> validateDob(CaseData caseData, boolean hideRespondentIndex) {
         List<String> dobErrors = new ArrayList<>();
         List<Element<Respondent>> allRespondents = caseData.getAllRespondents();
 
@@ -56,7 +66,8 @@ public class RespondentValidator {
             LocalDate dob = allRespondents.get(i).getValue().getParty().getDateOfBirth();
             if (dob != null) {
                 if (dob.isAfter(time.now().toLocalDate())) {
-                    dobErrors.add(String.format("Date of birth for respondent %s cannot be in the future", i + 1));
+                    dobErrors.add(String.format("Date of birth for respondent %scannot be in the future",
+                        hideRespondentIndex ? "" : ((i + 1) + " ")));
                 }
             }
         }
@@ -70,4 +81,30 @@ public class RespondentValidator {
         return Optional.empty();
     }
 
+    private List<String> validateAddress(CaseData caseData) {
+        return caseData.getAllRespondents().stream()
+            .map(Element::getValue).map(Respondent::getParty)
+            .filter(party -> YesNo.YES.getValue().equals(party.getAddressKnow()))
+            .map(Party::getAddress)
+            .map(address -> {
+                List<String> addErrs = new ArrayList<>();
+                if (isEmpty(address)) {
+                    addErrs.add("Enter respondent's address");
+                } else {
+                    if (isBlank(address.getAddressLine1())) {
+                        addErrs.add("Building and Street is required");
+                    }
+                    if (isBlank(address.getPostTown())) {
+                        addErrs.add("Town or City is required");
+                    }
+                    if (isBlank(address.getPostcode())) {
+                        addErrs.add("Postcode/Zipcode is required");
+                    }
+                    if (isBlank(address.getCountry())) {
+                        addErrs.add("Country is required");
+                    }
+                }
+                return addErrs;
+            }).flatMap(List::stream).collect(Collectors.toList());
+    }
 }

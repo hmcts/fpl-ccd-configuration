@@ -126,10 +126,62 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "courtBundleList",
+    "ID": "courtBundleListV2",
     "FieldType": "Collection",
-    "FieldTypeParameter": "CourtBundleV2",
+    "FieldTypeParameter": "HearingCourtBundle",
     "Label": "Court bundle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseSummaryList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "CaseSummary",
+    "Label": "Case summary",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "positionStatementChildList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatementChild",
+    "Label": "Position statement child",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Deprecated. To be removed once all case migrated"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "positionStatementRespondentList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatementRespondent",
+    "Label": "Position statement respondent",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Deprecated. To be removed once all case migrated"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "positionStatementChildListV2",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatementChild",
+    "Label": "Position statement child",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "positionStatementRespondentListV2",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatementRespondent",
+    "Label": "Position statement respondent",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }

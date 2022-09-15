@@ -21,17 +21,24 @@ public class OrderDocumentGeneratorHolder {
     private final C23EPODocumentParameterGenerator c23EPODocumentParameterGenerator;
     private final C26SecureAccommodationOrderDocumentParameterGenerator
         c26SecureAccommodationOrderDocumentParameterGenerator;
+    private final C34BAuthorityToRefuseContactOrderParameterGenerator
+        c34BAuthorityToRefuseContactOrderParameterGenerator;
+    private final C29RecoveryOfAChildDocumentParameterGenerator c29RecoveryOfAChildDocumentParameterGenerator;
     private final C32CareOrderDocumentParameterGenerator c32CareOrderDocumentParameterGenerator;
     private final C32bDischargeOfCareOrderDocumentParameterGenerator c32bDischargeOfCareOrderDocumentParameterGenerator;
     private final C33InterimCareOrderDocumentParameterGenerator c33InterimCareOrderDocumentParameterGenerator;
     private final C35aSupervisionOrderDocumentParameterGenerator c35aSupervisionOrderDocumentParameterGenerator;
     private final C35bISODocumentParameterGenerator c35bISODocumentParameterGenerator;
+    private final C39ChildAssessmentOrderParameterGenerator c39ChildAssessmentOrderParameterGenerator;
+    private final C37EducationSupervisionOrderParameterGenerator c37EducationSupervisionOrderParameterGenerator;
     private final C43ChildArrangementOrderDocumentParameterGenerator c43ChildArrangementOrderDocumentParameterGenerator;
     private final C43aSpecialGuardianshipOrderDocumentParameterGenerator
         c43ASpecialGuardianshipOrderDocumentParameterGenerator;
     private final C47AAppointmentOfAChildrensGuardianParameterGenerator c47AParameterGenerator;
     private final C45aParentalResponsibilityOrderDocumentParameterGenerator
         c45aParentalResponsibilityOrderDocumentParameterGenerator;
+    private final C36VariationOrExtensionOfSupervisionOrdersParameterGenerator
+        c36VariationOrExtensionOfSupervisionOrdersParameterGenerator;
     private final A206PlacementOrderNotificationParameterGenerator a206PlacementOrderNotificationParameterGenerator;
 
     // additional document collectors
@@ -48,15 +55,20 @@ public class OrderDocumentGeneratorHolder {
                 c21BlankOrderDocumentParameterGenerator,
                 c23EPODocumentParameterGenerator,
                 c26SecureAccommodationOrderDocumentParameterGenerator,
+                c29RecoveryOfAChildDocumentParameterGenerator,
                 c32CareOrderDocumentParameterGenerator,
                 c32bDischargeOfCareOrderDocumentParameterGenerator,
                 c33InterimCareOrderDocumentParameterGenerator,
                 c35aSupervisionOrderDocumentParameterGenerator,
                 c35bISODocumentParameterGenerator,
+                c39ChildAssessmentOrderParameterGenerator,
+                c37EducationSupervisionOrderParameterGenerator,
                 c43ChildArrangementOrderDocumentParameterGenerator,
                 c43ASpecialGuardianshipOrderDocumentParameterGenerator,
                 c47AParameterGenerator,
-                c45aParentalResponsibilityOrderDocumentParameterGenerator
+                c45aParentalResponsibilityOrderDocumentParameterGenerator,
+                c36VariationOrExtensionOfSupervisionOrdersParameterGenerator,
+                c34BAuthorityToRefuseContactOrderParameterGenerator
             ).stream().collect(Collectors.toMap(DocmosisParameterGenerator::accept, Function.identity()));
         }
         return typeToGenerator;

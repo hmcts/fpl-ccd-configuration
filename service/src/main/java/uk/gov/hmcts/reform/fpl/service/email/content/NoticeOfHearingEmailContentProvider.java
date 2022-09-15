@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
+import uk.gov.hmcts.reform.fpl.model.cafcass.NoticeOfHearingCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingTemplate;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
@@ -51,6 +52,21 @@ public class NoticeOfHearingEmailContentProvider extends AbstractEmailContentPro
             .caseUrl(DIGITAL_SERVICE == preference ? getCaseUrl(caseData.getId(), HEARINGS) : "")
             .childLastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .build();
+    }
+
+
+    public NoticeOfHearingCafcassData buildNewNoticeOfHearingNotificationCafcassData(CaseData caseData,
+                                                                                     HearingBooking hearingBooking) {
+        HearingVenue venue = hearingVenueLookUpService.getHearingVenue(hearingBooking);
+        return NoticeOfHearingCafcassData.builder()
+                .hearingType(getHearingType(hearingBooking))
+                .eldestChildLastName(helper.getEldestChildLastName(caseData.getAllChildren()))
+                .firstRespondentName(getFirstRespondentLastName(caseData))
+                .hearingDate(hearingBooking.getStartDate())
+                .hearingVenue(hearingVenueLookUpService.buildHearingVenue(venue))
+                .preHearingTime(hearingBooking.getPreAttendanceDetails())
+                .hearingTime(caseDataExtractionService.getHearingTime(hearingBooking))
+                .build();
     }
 
     private String getHearingType(HearingBooking hearingBooking) {

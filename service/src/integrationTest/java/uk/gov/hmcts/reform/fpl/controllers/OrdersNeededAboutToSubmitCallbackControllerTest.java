@@ -4,8 +4,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.GroundsForRefuseContactWithChild;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,5 +44,54 @@ class OrdersNeededAboutToSubmitCallbackControllerTest extends AbstractCallbackTe
 
         assertThat(response.getData().get("otherOrderType")).isEqualTo("YES");
         assertThat(response.getData().get("EPO_REASONING_SHOW")).isEqualTo(null);
+    }
+
+    @Test
+    void shouldRaiseErrorWhenStandaloneAndCareOrderSelected() {
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(
+            "fixtures/caseCareAndStandaloneOrderType.json");
+
+        assertThat(response.getErrors()).contains("You have selected a standalone order, "
+            + "this cannot be applied for alongside other orders.");
+    }
+
+    @Test
+    void shouldShowSecureAccommodationOrderFieldWhenSecureAccommodationOrderIsSelected() {
+        AboutToStartOrSubmitCallbackResponse response =
+            postAboutToSubmitEvent("fixtures/caseSecureAccommodationOrder.json");
+
+        assertThat(response.getData().get("secureAccommodationOrderType")).isEqualTo("YES");
+        assertThat(response.getData().get("otherOrderType")).isEqualTo("NO");
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldRemoveSecureAccommodationOrderDataWhenSecureAccommodationOrderIsUnselected() {
+        AboutToStartOrSubmitCallbackResponse response =
+            postAboutToSubmitEvent("fixtures/caseWithSecureAccommodationOrderRemoved.json");
+
+        assertThat(response.getData().get("secureAccommodationOrderType")).isEqualTo("NO");
+        assertThat(((Map<String, Object>) response.getData().get("orders")).get("secureAccommodationOrderSection"))
+            .isEqualTo(null);
+    }
+
+    @Test
+    void shouldShowRefuseContactFieldWhenRefuseContactIsSelected() {
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(CaseData.builder()
+            .orders(Orders.builder().orderType(List.of(OrderType.REFUSE_CONTACT_WITH_CHILD)).build()).build());
+
+        assertThat(response.getData().get("refuseContactWithChildOrderType")).isEqualTo("YES");
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldRemoveRefuseContactDataWhenRefuseContactIsUnselected() {
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(CaseData.builder()
+            .orders(Orders.builder().orderType(List.of(OrderType.CARE_ORDER)).build())
+            .groundsForRefuseContactWithChild(GroundsForRefuseContactWithChild.builder()
+                .personHasContactAndCurrentArrangement("test").build()).build());
+
+        assertThat(response.getData().get("refuseContactWithChildOrderType")).isNull();
+        assertThat((Map<String, Object>) response.getData().get("groundsForRefuseContactWithChild")).isNullOrEmpty();
     }
 }

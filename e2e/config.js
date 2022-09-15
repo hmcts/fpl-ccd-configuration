@@ -100,7 +100,7 @@ module.exports = {
     jurisdiction: 'PUBLICLAW',
     jurisdictionFullDesc: 'Public Law',
     caseType: 'CARE_SUPERVISION_EPO',
-    caseTypeFullDesc: 'Care, supervision and EPOs',
+    caseTypeFullDesc: 'Public Law Applications',
   },
   // actions
   applicationActions: {
@@ -127,7 +127,7 @@ module.exports = {
     approveOrders: 'Approve orders',
     allocatedJudge: 'Allocated Judge',
     extend26WeekTimeline: 'Extend 26-week timeline',
-    manageLegalRepresentatives: 'Manage legal representatives',
+    manageLegalRepresentatives: 'Add counsel/external solicitor',
     addApplicationDocuments: 'Application documents',
     manageDocumentsLA: 'Manage documents',
     messageJudge: 'Send and reply to messages',
@@ -168,7 +168,7 @@ module.exports = {
     manageOrders: 'Manage orders',
     uploadWelshTranslations: 'Upload translated documents',
     languageRequirement: 'Welsh language requirements',
-    manageLocalAuthorities: 'Manage local authorities',
+    manageLocalAuthorities: 'Manage LAs / Transfer to court',
   },
   superUserActions: {
     removeOrdersAndApplications: 'Remove orders and applications',

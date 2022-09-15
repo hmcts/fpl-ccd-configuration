@@ -151,6 +151,33 @@
     "ID": "Orders",
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
+    "ListElementCode": "childAssessmentOrderLabel",
+    "EventElementLabel": "## Child Assessment Order",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "childAssessmentOrderAssessmentDirections",
+    "EventElementLabel": "The direction(s) sought in respect of the assessment",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "childAssessmentOrderContactDirections",
+    "EventElementLabel": "The direction(s) sought in respect of contact",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
     "ListElementCode": "directionLabel",
     "DisplayContext": "OPTIONAL"
   },
@@ -170,6 +197,32 @@
     "CaseFieldID": "orders",
     "ListElementCode": "directionDetails",
     "EventElementLabel": "*Give details",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "secureAccommodationOrderLabel",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "secureAccommodationOrderSection",
+    "EventElementLabel": "Under which section are you applying?",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "court",
+    "EventElementLabel": "*Which court are you issuing for?",
     "DisplayContext": "OPTIONAL"
   }
 ]

@@ -1,11 +1,16 @@
 package uk.gov.hmcts.reform.fpl.service.respondent;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -15,8 +20,11 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
@@ -51,8 +59,9 @@ class RespondentValidatorTest {
         when(time.now()).thenReturn(NOW);
     }
 
-    @Test
-    void shouldReturnErrorWhenMaximumRespondentsExceeded() {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldReturnErrorWhenMaximumRespondentsExceeded(Boolean hideRespondentIndex) {
         Respondent respondent = Respondent.builder()
             .party(RespondentParty.builder()
                 .dateOfBirth(NOW.toLocalDate().minusDays(1))
@@ -68,15 +77,29 @@ class RespondentValidatorTest {
 
         mockServices(caseData);
 
-        List<String> actual = underTest.validate(caseData, CASE_DATA_BEFORE);
+        List<String> actual = underTest.validate(caseData, CASE_DATA_BEFORE, hideRespondentIndex);
 
         assertThat(actual).isEqualTo(List.of(
             "Maximum number of respondents is 10",
             "emailValidatorError"));
     }
 
-    @Test
-    void shouldReturnErrorWhenDateOfBirthInTheFuture() {
+    private static Stream<Arguments> shouldReturnErrorWhenDateOfBirthInTheFutureParam() {
+        return Stream.of(
+            Arguments.of(false, new String[] {
+                "Date of birth for respondent 1 cannot be in the future",
+                "emailValidatorError"
+            }),
+            Arguments.of(true, new String[] {
+                "Date of birth for respondent cannot be in the future",
+                "emailValidatorError"
+            })
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("shouldReturnErrorWhenDateOfBirthInTheFutureParam")
+    void shouldReturnErrorWhenDateOfBirthInTheFuture(boolean hideRespondentIndex, String[] messages) {
         Respondent respondent = Respondent.builder()
             .party(RespondentParty.builder()
                 .dateOfBirth(NOW.toLocalDate().plusDays(1))
@@ -89,15 +112,14 @@ class RespondentValidatorTest {
 
         mockServices(caseData);
 
-        List<String> actual = underTest.validate(caseData, CASE_DATA_BEFORE);
+        List<String> actual = underTest.validate(caseData, CASE_DATA_BEFORE, hideRespondentIndex);
 
-        assertThat(actual).isEqualTo(List.of(
-            "Date of birth for respondent 1 cannot be in the future",
-            "emailValidatorError"));
+        assertThat(actual).isEqualTo(List.of(messages));
     }
 
-    @Test
-    void shouldShowAfterSubmissionErrors() {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldShowAfterSubmissionErrors(boolean hideRespondentIndex) {
         Respondent respondent = Respondent.builder()
             .party(RespondentParty.builder()
                 .dateOfBirth(NOW.toLocalDate().minusDays(1))
@@ -110,18 +132,19 @@ class RespondentValidatorTest {
             .build();
 
         mockServices(caseData);
-        when(respondentAfterSubmissionValidator.validate(caseData, CASE_DATA_BEFORE))
+        when(respondentAfterSubmissionValidator.validate(eq(caseData), eq(CASE_DATA_BEFORE), isA(Boolean.class)))
             .thenReturn(List.of("afterSubmissionValidatorError"));
 
-        List<String> actual = underTest.validate(caseData, CASE_DATA_BEFORE);
+        List<String> actual = underTest.validate(caseData, CASE_DATA_BEFORE, hideRespondentIndex);
 
         assertThat(actual).isEqualTo(List.of(
             "emailValidatorError",
             "afterSubmissionValidatorError"));
     }
 
-    @Test
-    void shouldNotShowAfterSubmissionErrorsWhenStateIsOpen() {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldNotShowAfterSubmissionErrorsWhenStateIsOpen(boolean hideRespondentIndex) {
         Respondent respondent = Respondent.builder()
             .party(RespondentParty.builder()
                 .dateOfBirth(NOW.toLocalDate().minusDays(1))
@@ -136,9 +159,62 @@ class RespondentValidatorTest {
 
         mockServices(caseData);
 
-        List<String> actual = underTest.validate(caseData, CASE_DATA_BEFORE);
+        List<String> actual = underTest.validate(caseData, CASE_DATA_BEFORE, hideRespondentIndex);
 
         assertThat(actual).isEqualTo(List.of(
+            "emailValidatorError"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldReturnErrorWhenMissingAddress(boolean hideRespondentIndex) {
+        Respondent respondent = Respondent.builder()
+            .party(RespondentParty.builder()
+                .dateOfBirth(NOW.toLocalDate().minusDays(1))
+                .addressKnow(YesNo.YES.getValue())
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .respondents1(List.of(
+                element(respondent), element(respondent)))
+            .build();
+
+        mockServices(caseData);
+
+        List<String> actual = underTest.validate(caseData, CASE_DATA_BEFORE, hideRespondentIndex);
+
+        assertThat(actual).isEqualTo(List.of(
+            "Enter respondent's address",
+            "Enter respondent's address",
+            "emailValidatorError"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldReturnErrorWhenMissingAddressFields(boolean hideRespondentIndex) {
+        Respondent respondent = Respondent.builder()
+            .party(RespondentParty.builder()
+                .dateOfBirth(NOW.toLocalDate().minusDays(1))
+                .addressKnow(YesNo.YES.getValue())
+                .address(Address.builder().build())
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .respondents1(List.of(
+                element(respondent)))
+            .build();
+
+        mockServices(caseData);
+
+        List<String> actual = underTest.validate(caseData, CASE_DATA_BEFORE, hideRespondentIndex);
+
+        assertThat(actual).isEqualTo(List.of(
+            "Building and Street is required",
+            "Town or City is required",
+            "Postcode/Zipcode is required",
+            "Country is required",
             "emailValidatorError"));
     }
 

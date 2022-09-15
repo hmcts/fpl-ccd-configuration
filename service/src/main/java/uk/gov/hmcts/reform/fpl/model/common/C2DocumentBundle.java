@@ -9,11 +9,13 @@ import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
+import uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +34,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public class C2DocumentBundle implements ApplicationsBundle {
     private final UUID id;
     private C2ApplicationType type;
+    private final UrgencyTimeFrameType urgencyTimeFrameType;
     private final String nameOfRepresentative;
     private final String usePbaPayment;
     private final String pbaNumber;
@@ -42,6 +45,7 @@ public class C2DocumentBundle implements ApplicationsBundle {
     private final String uploadedDateTime;
     private final String author;
     private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
+    private List<Element<DraftOrder>> draftOrdersBundle;
     private final List<Element<Supplement>> supplementsBundle;
     private final List<C2AdditionalOrdersRequested> c2AdditionalOrdersRequested;
     private final ParentalResponsibilityType parentalResponsibilityType;

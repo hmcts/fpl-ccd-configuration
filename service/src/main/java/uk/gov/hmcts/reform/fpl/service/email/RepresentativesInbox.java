@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -14,6 +15,8 @@ import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -70,7 +73,9 @@ public class RepresentativesInbox {
                                                               RepresentativeServingPreferences preference) {
         return caseData.getAllRespondents().stream()
             .filter(respondent -> shouldSend(preference, respondent))
-            .map(this::extractEmail)
+            .map(this::extractEmailsForSolicitorAndColleagues)
+            .flatMap(Collection::stream).collect(Collectors.toList())
+            .stream()
             .filter(StringUtils::isNotBlank)
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
@@ -79,7 +84,9 @@ public class RepresentativesInbox {
                                                             RepresentativeServingPreferences preference) {
         return caseData.getAllChildren().stream()
             .filter(child -> shouldSend(preference, child))
-            .map(this::extractEmail)
+            .map(this::extractEmailsForSolicitorAndColleagues)
+            .flatMap(Collection::stream).collect(Collectors.toList())
+            .stream()
             .filter(StringUtils::isNotBlank)
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
@@ -119,7 +126,10 @@ public class RepresentativesInbox {
     public Set<Recipient> getSelectedRecipientsWithNoRepresentation(List<Element<Respondent>> selectedRespondents) {
         return selectedRespondents.stream()
             .map(Element::getValue)
-            .filter(respondent -> isEmpty(respondent.getRepresentedBy()) && respondent.hasAddress())
+            .filter(respondent -> isEmpty(respondent.getRepresentedBy())
+                && isEmpty(respondent.getSolicitor())
+                && respondent.hasAddress()
+                && !respondent.isDeceasedOrNFA())
             .map(Respondent::toParty)
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
@@ -151,6 +161,21 @@ public class RepresentativesInbox {
         return Optional.ofNullable(element.getValue().getSolicitor())
             .map(RespondentSolicitor::getEmail)
             .orElse(null);
+    }
+
+    private List<String> extractEmailsForSolicitorAndColleagues(Element<? extends WithSolicitor> element) {
+        List<String> colleagues = Optional.ofNullable(element.getValue().getSolicitor())
+            .map(RespondentSolicitor::getColleaguesToBeNotified)
+            .map(elements -> elements.stream()
+                .map(Element::getValue)
+                .map(Colleague::getEmail)
+                .collect(Collectors.toList())
+            ).orElse(new ArrayList<>());
+        Optional.ofNullable(element.getValue().getSolicitor()).ifPresent(
+            el -> colleagues.add(el.getEmail())
+        );
+
+        return colleagues;
     }
 
     private static boolean hasRole(Representative rep, List<RepresentativeRole.Type> roles) {

@@ -2343,18 +2343,18 @@
     "hearingVenueId": 301,
     "venue": "Medway County Court and Family Court",
     "address": {
-      "AddressLine1": "Medway County Court and Family Court, 47-67 High Street",
-      "AddressLine2": "Anchorage House",
+      "AddressLine1": "Medway County Court and Family Court",
+      "AddressLine2": "The Brook",
       "PostTown": "Chatham",
-      "PostCode": "ME4 4DW"
+      "PostCode": "ME4 4JZ"
     }
   },
   {
     "hearingVenueId": 302,
     "venue": "Medway M&F Court",
     "address": {
-      "AddressLine1": "Medway Magistrates' Court and Family Court, The Brook",
-      "AddressLine2": "The Court House",
+      "AddressLine1": "Medway Magistrates' Court and Family Court, The Court House",
+      "AddressLine2": "The Brook",
       "PostTown": "Chatham",
       "PostCode": "ME4 4JZ"
     }
@@ -3630,6 +3630,16 @@
     }
   },
   {
+    "hearingVenueId": 436,
+    "venue": "Watford County Court and Family Court (New address after 19 Sep 2022)",
+    "address": {
+      "AddressLine1": "Watford County and Family Court, 10 King Street",
+      "AddressLine2": "",
+      "PostTown": "Watford",
+      "PostCode": "WD18 0BW"
+    }
+  },
+  {
     "hearingVenueId": 405,
     "venue": "Watford Tribunal Hearing Centre",
     "address": {
@@ -3957,6 +3967,60 @@
       "AddressLine2": "1 Tower Street",
       "PostTown": "York",
       "PostCode": "YO1 9WD"
+    }
+  },
+  {
+    "hearingVenueId": 432,
+    "venue": "Medway Civil and Family Court",
+    "address": {
+      "AddressLine1": "Medway Civil and Family Court, Gun Wharf",
+      "AddressLine2": "Dock Road",
+      "PostTown": "Chatham",
+      "County": "Kent",
+      "PostCode": "ME4 4TR"
+    }
+  },
+  {
+    "hearingVenueId": 433,
+    "venue": "Medway Family & Civil Court 1 - Holiday Inn",
+    "address": {
+      "AddressLine1": "Medway Family & Civil Court 1 - Holiday Inn, The Holiday Inn",
+      "AddressLine2": "Maidstone Road",
+      "PostTown": "Rochester",
+      "County": "Kent",
+      "PostCode": "ME5 9SF"
+    }
+  },
+  {
+    "hearingVenueId": 434,
+    "venue": "Medway Family & Civil Court 2 - Orida",
+    "address": {
+      "AddressLine1": "Medway Family & Civil Court 2 - Orida",
+      "AddressLine2": "Bearsted Road",
+      "PostTown": "Maidstone",
+      "County": "Kent",
+      "PostCode": "ME14 5AA"
+    }
+  },
+  {
+    "hearingVenueId": 435,
+    "venue": "Medway Family & Civil Court 3 - The Brook",
+    "address": {
+      "AddressLine1": "Medway Family & Civil Court 3 - The Brook",
+      "AddressLine2": "The Court House",
+      "PostTown": "Chatham",
+      "County": "Kent",
+      "PostCode": "ME4 4JZ"
+    }
+  },
+  {
+    "hearingVenueId": -1,
+    "venue": "High Court Family Division",
+    "address": {
+      "AddressLine1": "Queen’s Building, 1st Mezzanine Floor",
+      "AddressLine2": "Royal Courts of Justice",
+      "PostTown": "Strand London",
+      "PostCode": "WC2A 2LL"
     }
   }
 ]

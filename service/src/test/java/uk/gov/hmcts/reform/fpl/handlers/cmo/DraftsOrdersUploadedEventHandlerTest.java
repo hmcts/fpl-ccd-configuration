@@ -4,15 +4,20 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersUploaded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.cafcass.OrderCafcassData;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.CMOReadyToSealTemplate;
@@ -20,38 +25,44 @@ import uk.gov.hmcts.reform.fpl.model.notify.cmo.DraftOrdersUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
-import uk.gov.hmcts.reform.fpl.service.email.content.cmo.AgreedCMOUploadedContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.DraftOrdersUploadedContentProvider;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
 class DraftsOrdersUploadedEventHandlerTest {
-    private static final String HMCTS_ADMIN_EMAIL = "admin@hmcts.gov.uk";
     private static final Long CASE_ID = 12345L;
     private static final CMOReadyToSealTemplate CMO_READY_TO_SEAL_TEMPLATE_DATA = mock(CMOReadyToSealTemplate.class);
     private static final DraftOrdersUploadedTemplate DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA = mock(
@@ -68,10 +79,131 @@ class DraftsOrdersUploadedEventHandlerTest {
     private DraftOrdersUploadedContentProvider draftOrdersContentProvider;
 
     @Mock
-    private AgreedCMOUploadedContentProvider agreedCMOContentProvider;
+    private CafcassNotificationService cafcassNotificationService;
+
+    @Mock
+    private CafcassLookupConfiguration cafcassLookupConfiguration;
+
+    @Captor
+    private ArgumentCaptor<Set<DocumentReference>> documentsToSend;
+
+    @Captor
+    private ArgumentCaptor<OrderCafcassData> orderCafcassDataCaptor;
 
     @InjectMocks
     private DraftOrdersUploadedEventHandler underTest;
+
+    @Test
+    void shouldSendNotificationToCafcass() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+            .thenReturn(
+                    Optional.of(
+                            new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                    )
+            );
+        final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
+        final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
+
+        final HearingOrdersBundle bundle = ordersBundle(hearing.getId(), AGREED_CMO, C21);
+        final HearingOrdersBundle selectedHearingBundle = ordersBundle(selectedHearing.getId(), DRAFT_CMO, C21, C21);
+
+        Set<DocumentReference> documentReferences = unwrapElements(selectedHearingBundle.getOrders()).stream()
+                .map(HearingOrder::getOrder)
+                .collect(Collectors.toSet());
+
+        final CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .allocatedJudge(allocatedJudge())
+                .hearingDetails(List.of(hearing, selectedHearing))
+                .hearingOrdersBundlesDrafts(wrapElements(bundle, selectedHearingBundle))
+                .lastHearingOrderDraftsHearingId(selectedHearing.getId())
+                .build();
+
+        underTest.sendNotificationToCafcass(new DraftOrdersUploaded(caseData));
+
+        verify(cafcassNotificationService).sendEmail(
+            caseData,
+            documentReferences,
+            ORDER,
+            OrderCafcassData.builder()
+                .documentName("draft order")
+                .hearingDate(selectedHearing.getValue().getStartDate())
+                .build()
+        );
+    }
+
+    @Test
+    void shouldNotNotifyCafcassWhenHearingOrderIsNotCurrent() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+            .thenReturn(
+                    Optional.of(
+                            new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                    )
+            );
+
+        final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
+        final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
+
+        final HearingOrdersBundle bundle = ordersBundle(hearing.getId(), AGREED_CMO, C21);
+        final HearingOrdersBundle selectedHearingBundleTemp = ordersBundle(
+                selectedHearing.getId(),
+                DRAFT_CMO,
+                C21,
+                C21
+        );
+
+        List<Element<HearingOrder>> collect = unwrapElements(selectedHearingBundleTemp.getOrders())
+                .stream()
+                .map(hearingOrder -> hearingOrder.toBuilder()
+                        .dateSent(LocalDate.now().minusDays(2))
+                        .build()
+                )
+                .map(Element::newElement)
+                .collect(Collectors.toList());
+
+        HearingOrdersBundle selectedHearingBundle = selectedHearingBundleTemp.toBuilder()
+                .orders(collect)
+                .build();
+
+        final CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .allocatedJudge(allocatedJudge())
+                .hearingDetails(List.of(hearing, selectedHearing))
+                .hearingOrdersBundlesDrafts(wrapElements(bundle, selectedHearingBundle))
+                .lastHearingOrderDraftsHearingId(selectedHearing.getId())
+                .build();
+
+        underTest.sendNotificationToCafcass(new DraftOrdersUploaded(caseData));
+
+        verify(cafcassNotificationService, never()).sendEmail(
+            same(caseData),
+            any(),
+            same(ORDER),
+            any()
+        );
+    }
+
+    @Test
+    void shouldNotNotifyCafcassWhenLAisNonEnglish() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+            .thenReturn(
+                    Optional.empty()
+            );
+
+        final CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .build();
+
+        underTest.sendNotificationToCafcass(new DraftOrdersUploaded(caseData));
+
+        verify(cafcassNotificationService, never()).sendEmail(
+                same(caseData),
+                any(),
+                same(ORDER),
+                any()
+        );
+    }
+
 
     @Test
     void shouldSendNotificationToHearingJudge() {
@@ -177,91 +309,6 @@ class DraftsOrdersUploadedEventHandlerTest {
         verifyNoInteractions(notificationService);
     }
 
-    @Test
-    void shouldNotSendNotificationForAdminWhenNoOrdersPresent() {
-        CaseData caseData = CaseData.builder().build();
-
-        underTest.sendNotificationToAdmin(new DraftOrdersUploaded(caseData));
-
-        verifyNoInteractions(notificationService, agreedCMOContentProvider);
-    }
-
-    @Test
-    void shouldNotSendNotificationForAdminWhenNoAgreedCMOPresent() {
-        final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
-        final HearingOrdersBundle bundle = ordersBundle(hearing.getId(), DRAFT_CMO, C21);
-
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(List.of(hearing))
-            .hearingOrdersBundlesDrafts(wrapElements(bundle))
-            .build();
-
-        underTest.sendNotificationToAdmin(new DraftOrdersUploaded(caseData));
-
-        verifyNoInteractions(notificationService, agreedCMOContentProvider);
-    }
-
-    @Test
-    void shouldSendNotificationForAdminWhenTemporaryHearingJudgeAssigned() {
-        final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
-        final HearingOrdersBundle bundle = ordersBundle(hearing.getId(), AGREED_CMO);
-        final Judge judge = allocatedJudge();
-
-        CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
-            .allocatedJudge(judge)
-            .hearingDetails(List.of(hearing))
-            .lastHearingOrderDraftsHearingId(hearing.getId())
-            .hearingOrdersBundlesDrafts(wrapElements(bundle))
-            .respondents1(createRespondents())
-            .familyManCaseNumber("12345")
-            .build();
-
-        when(courtService.getCourtEmail(caseData)).thenReturn(HMCTS_ADMIN_EMAIL);
-        when(agreedCMOContentProvider.buildTemplate(
-            hearing.getValue(), hearing.getValue().getJudgeAndLegalAdvisor(), caseData
-        )).thenReturn(CMO_READY_TO_SEAL_TEMPLATE_DATA);
-
-        underTest.sendNotificationToAdmin(new DraftOrdersUploaded(caseData));
-
-        verify(notificationService).sendEmail(
-            CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
-            HMCTS_ADMIN_EMAIL,
-            CMO_READY_TO_SEAL_TEMPLATE_DATA,
-            CASE_ID
-        );
-    }
-
-    @Test
-    void shouldSendNotificationForAdminWhenNoTemporaryHearingJudgeAssigned() {
-        final Element<HearingBooking> hearing = hearingWithJudgeEmail(null);
-        final HearingOrdersBundle bundle = ordersBundle(hearing.getId(), AGREED_CMO);
-        final Judge judge = allocatedJudge();
-
-        CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
-            .allocatedJudge(judge)
-            .hearingDetails(List.of(hearing))
-            .lastHearingOrderDraftsHearingId(hearing.getId())
-            .hearingOrdersBundlesDrafts(wrapElements(bundle))
-            .respondents1(createRespondents())
-            .familyManCaseNumber("12345")
-            .build();
-
-        when(courtService.getCourtEmail(caseData)).thenReturn(HMCTS_ADMIN_EMAIL);
-        when(agreedCMOContentProvider.buildTemplate(hearing.getValue(), judge, caseData))
-            .thenReturn(CMO_READY_TO_SEAL_TEMPLATE_DATA);
-
-        underTest.sendNotificationToAdmin(new DraftOrdersUploaded(caseData));
-
-        verify(notificationService).sendEmail(
-            CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
-            HMCTS_ADMIN_EMAIL,
-            CMO_READY_TO_SEAL_TEMPLATE_DATA,
-            CASE_ID
-        );
-    }
-
     private Element<HearingBooking> hearingWithJudgeEmail(String email) {
         return element(HearingBooking.builder()
             .type(HearingType.CASE_MANAGEMENT)
@@ -275,6 +322,7 @@ class DraftsOrdersUploadedEventHandlerTest {
             .type(hearingOrderType)
             .title(hearingOrderType.toString())
             .order(TestDataHelper.testDocumentReference())
+            .dateSent(LocalDate.now())
             .build())
             .collect(Collectors.toList());
 

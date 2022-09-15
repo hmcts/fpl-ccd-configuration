@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.fpl.docmosis.generator;
 
 import org.apache.commons.lang3.tuple.Pair;
+import uk.gov.hmcts.reform.fpl.enums.C29ActionsPermitted;
 import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
+import uk.gov.hmcts.reform.fpl.enums.PlacedUnderOrder;
 import uk.gov.hmcts.reform.fpl.enums.RelationshipWithChild;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -35,6 +37,7 @@ import static uk.gov.hmcts.reform.fpl.enums.EnglandOffices.BRIGHTON;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.Jurisdiction.ENGLAND;
 import static uk.gov.hmcts.reform.fpl.enums.ReasonForSecureAccommodation.ABSCOND;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersChildAssessmentType.PSYCHIATRIC_ASSESSMENT;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -73,7 +76,7 @@ public class DocmosisOrderCaseDataGenerator {
         ).build();
     }
 
-    private CaseData.CaseDataBuilder commonCaseData(Order order) {
+    private CaseData.CaseDataBuilder<?,?> commonCaseData(Order order) {
         return CaseData.builder()
             .children1(List.of(FIRST_CHILD))
             .placementEventData(PlacementEventData.builder()
@@ -99,7 +102,7 @@ public class DocmosisOrderCaseDataGenerator {
             .id(1234567890123456L);
     }
 
-    private CaseData.CaseDataBuilder addDataForQuestion(CaseData.CaseDataBuilder builder,
+    private CaseData.CaseDataBuilder<?,?> addDataForQuestion(CaseData.CaseDataBuilder<?,?> builder,
                                                         OrderQuestionBlock questionBlock) {
 
         switch (questionBlock) {
@@ -208,6 +211,16 @@ public class DocmosisOrderCaseDataGenerator {
                         .manageOrdersEndDateTime(LocalDateTime.of(2018, 9, 1, 13, 20, 4))
                         .build()
                 );
+            case ORDER_PLACED_CHILD_IN_CUSTODY:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersPlacedUnderOrder(PlacedUnderOrder.CARE_ORDER)
+                        .manageOrdersOrderCreatedDate(LocalDate.of(2021, 8, 20))
+                        .manageOrdersActionsPermitted(List.of(C29ActionsPermitted.ENTRY, C29ActionsPermitted.REMOVE))
+                        .manageOrdersIsExParte("Yes")
+                        .manageOrdersOfficerName("Officer Barbrady")
+                        .build()
+                );
             case CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS:
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)
@@ -279,6 +292,33 @@ public class DocmosisOrderCaseDataGenerator {
                         .manageOrdersBirthCertificateRegistrationCounty("RegCounty")
                         .build()
                 );
+            case CHILD_ASSESSMENT_ORDER:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersChildAssessmentType(PSYCHIATRIC_ASSESSMENT)
+                        .manageOrdersAssessmentStartDate(LocalDate.of(2022, 6, 4))
+                        .manageOrdersDurationOfAssessment(7)
+                        .manageOrdersPlaceOfAssessment("Place Of Assessment")
+                        .manageOrdersAssessingBody("Assessing Body")
+                        .manageOrdersChildKeepAwayFromHome(YesNo.YES)
+                        .manageOrdersFullAddressToStayIfKeepAwayFromHome(Address.builder()
+                            .addressLine1("addressLine1")
+                            .addressLine2("addressLine2")
+                            .addressLine3("addressLine3")
+                            .country("country")
+                            .postcode("postcode")
+                            .postTown("postTown")
+                            .county("county")
+                            .build())
+                        .manageOrdersStartDateOfStayIfKeepAwayFromHome(LocalDate.of(2022, 6, 1))
+                        .manageOrdersEndDateOfStayIfKeepAwayFromHome(LocalDate.of(2023, 6, 1))
+                        .manageOrdersChildFirstContactIfKeepAwayFromHome("Child First Contact")
+                        .manageOrdersChildSecondContactIfKeepAwayFromHome("Child Second Contact")
+                        .manageOrdersChildThirdContactIfKeepAwayFromHome("Child Third Contact")
+                        .manageOrdersDoesCostOrderExist(YesNo.YES)
+                        .manageOrdersCostOrderDetails("Cost Order Details")
+                        .build()
+                );
             default:
                 throw new RuntimeException("Question block for " + questionBlock + " not implemented");
         }
@@ -286,11 +326,12 @@ public class DocmosisOrderCaseDataGenerator {
         return builder;
     }
 
-    private ManageOrdersEventData.ManageOrdersEventDataBuilder getManageOrdersEvent(CaseData.CaseDataBuilder builder) {
+    private ManageOrdersEventData.ManageOrdersEventDataBuilder getManageOrdersEvent(
+            CaseData.CaseDataBuilder<?,?> builder) {
         return getManageOrdersEventData(builder).toBuilder();
     }
 
-    private ManageOrdersEventData getManageOrdersEventData(CaseData.CaseDataBuilder builder) {
+    private ManageOrdersEventData getManageOrdersEventData(CaseData.CaseDataBuilder<?,?> builder) {
         return defaultIfNull(builder.build().getManageOrdersEventData(), ManageOrdersEventData.builder().build());
     }
 

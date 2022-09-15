@@ -16,11 +16,13 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DA
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CAFCASS_JURISDICTIONS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_ASSESSMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_PLACEMENT;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_PLACEMENT_APPLICATIONS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CLOSE_CASE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DISCHARGE_DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EDUCATION_SUPERVISION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_CHILDREN_DESCRIPTION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_INCLUDE_PHRASE;
@@ -34,9 +36,12 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDE
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.NEED_SEALING;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_BY_CONSENT;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_PLACED_CHILD_IN_CUSTODY;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_TO_AMEND;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.PARENTAL_RESPONSIBILITY;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REASON_FOR_SECURE_ACCOMMODATION;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REFUSE_CONTACT_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.RESPONDENTS_REFUSED;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REVIEW_DRAFT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SECURE_ACCOMMODATION_ORDER_JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SELECT_SINGLE_CHILD;
@@ -44,6 +49,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TITLE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TRANSLATION_REQUIREMENTS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.UPLOAD_AMENDED_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.UPLOAD_ORDER_FILE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.VARY_OR_EXTEND_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_OTHERS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSourceType.AMENDED;
@@ -93,6 +99,17 @@ public enum Order {
             SECURE_ACCOMMODATION_ORDER_JURISDICTION, MANAGE_ORDER_END_DATE_WITH_MONTH, FURTHER_DIRECTIONS,
             REVIEW_DRAFT_ORDER, CLOSE_CASE, WHICH_OTHERS)
     ),
+    C29_RECOVERY_OF_A_CHILD(
+        DIGITAL,
+        "Recovery of a child (C29)",
+        "Section 50 Children Act 1989",
+        "Recovery of a child (C29)",
+        IsFinalOrder.MAYBE,
+        List.of(
+            LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN,
+            ORDER_PLACED_CHILD_IN_CUSTODY, FURTHER_DIRECTIONS, CLOSE_CASE, REVIEW_DRAFT_ORDER, WHICH_OTHERS
+        )
+    ),
     C32A_CARE_ORDER(
         DIGITAL,
         "Care order",
@@ -130,6 +147,22 @@ public enum Order {
         List.of(
             LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, ICO_EXCLUSION,
             FURTHER_DIRECTIONS, MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS, REVIEW_DRAFT_ORDER, WHICH_OTHERS)
+    ),
+    C39_CHILD_ASSESSMENT_ORDER(
+        DIGITAL,
+        "Child assessment order",
+        "Section 43 Children Act 1989",
+        "Child assessment order (C39)",
+        IsFinalOrder.YES,
+        List.of(
+            APPROVER,
+            APPROVAL_DATE,
+            SELECT_SINGLE_CHILD,
+            CHILD_ASSESSMENT_ORDER,
+            ORDER_BY_CONSENT,
+            REVIEW_DRAFT_ORDER,
+            CLOSE_CASE,
+            WHICH_OTHERS)
     ),
     C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER(
         DIGITAL,
@@ -188,6 +221,21 @@ public enum Order {
             WHICH_OTHERS
         )
     ),
+    C36_VARIATION_OR_EXTENSION_OF_SUPERVISION_ORDERS(
+        DIGITAL,
+        "Variation or extension of supervision orders (C36)",
+        "Sections 39(2), 39(3) and 39(4) and Paragraph 6(3) Schedule 3 Children Act 1989",
+        "Variation or extension of supervision orders (C36)",
+        IsFinalOrder.MAYBE,
+        List.of(
+            APPROVER,
+            APPROVAL_DATE,
+            VARY_OR_EXTEND_SUPERVISION_ORDER,
+            ORDER_BY_CONSENT,
+            WHICH_CHILDREN,
+            REVIEW_DRAFT_ORDER
+        )
+    ),
 
     /* MANUAL UPLOADS */
     C24_VARIATION_OF_EMERGENCY_PROTECTION_ORDER(
@@ -222,14 +270,6 @@ public enum Order {
         IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
-    C29_RECOVERY_OF_A_CHILD(
-        MANUAL_UPLOAD,
-        "Recovery of a child (C29)",
-        "",
-        "Recovery of a child (C29)",
-        IsFinalOrder.NO,
-        Constants.MANUAL_UPLOAD_QUESTIONS
-    ),
     C30_TO_DISCLOSE_INFORMATION_ABOUT_THE_WHEREABOUTS_OF_A_MISSING_CHILD(
         MANUAL_UPLOAD,
         "To disclose information about the whereabouts of a missing child (C30)",
@@ -246,14 +286,6 @@ public enum Order {
         IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
-    C34B_REFUSAL_OF_CONTACT_WITH_A_CHILD_IN_CARE(
-        MANUAL_UPLOAD,
-        "Refusal of contact with a child in care (C34B)",
-        "",
-        "Refusal of contact with a child in care (C34B)",
-        IsFinalOrder.NO,
-        Constants.MANUAL_UPLOAD_QUESTIONS
-    ),
     C34A_CONTACT_WITH_A_CHILD_IN_CARE(
         MANUAL_UPLOAD,
         "Contact with a child in care (C34A)",
@@ -262,6 +294,15 @@ public enum Order {
         IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
+    C34B_AUTHORITY_TO_REFUSE_CONTACT(
+        DIGITAL,
+        "Authority to refuse contact with a child in care (C34B)",
+        "",
+        "Authority to refuse contact with a child in care (C34B)",
+        IsFinalOrder.MAYBE,
+        List.of(ORDER_BY_CONSENT, REFUSE_CONTACT_ORDER, RESPONDENTS_REFUSED,
+            APPROVER, APPROVAL_DATE, WHICH_CHILDREN, WHICH_OTHERS, REVIEW_DRAFT_ORDER)
+    ),
     C36_VARIATION_EXTENSION_OF_EDUCATION_SUPERVISION_ORDER(
         MANUAL_UPLOAD,
         "Variation/extension of Education supervision order (C36)",
@@ -269,6 +310,22 @@ public enum Order {
         "Variation/extension of Education supervision order (C36)",
         IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C37_EDUCATION_SUPERVISION_ORDER_DIGITAL(
+        DIGITAL,
+        "Education supervision order (C37)",
+        "Section 36 Children Act 1989",
+        "Education supervision order (C37)",
+        IsFinalOrder.MAYBE,
+        List.of(
+            APPROVER,
+            APPROVAL_DATE,
+            WHICH_CHILDREN,
+            EDUCATION_SUPERVISION,
+            ORDER_BY_CONSENT,
+            REVIEW_DRAFT_ORDER,
+            CLOSE_CASE,
+            WHICH_OTHERS)
     ),
     C37_EDUCATION_SUPERVISION_ORDER(
         MANUAL_UPLOAD,
@@ -291,14 +348,6 @@ public enum Order {
         "Extension of an education supervision order (C38B)",
         "",
         "Extension of an education supervision order (C38B)",
-        IsFinalOrder.NO,
-        Constants.MANUAL_UPLOAD_QUESTIONS
-    ),
-    C39_CHILD_ASSESSMENT_ORDER(
-        MANUAL_UPLOAD,
-        "Child assessment order (C39)",
-        "",
-        "Child assessment order (C39)",
         IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),

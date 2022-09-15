@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingNoOtherAddressEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
@@ -49,7 +50,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 })
 @MockBeans(value = {
     @MockBean(SendDocumentService.class),
-    @MockBean(TranslationRequestService.class)
+    @MockBean(TranslationRequestService.class),
+    @MockBean(CafcassNotificationService.class)
 })
 class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String CHILD_LAST_NAME = "Mortarion";
@@ -110,9 +112,9 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .h1("Next steps")
                 .line("You can check what you need to do before the hearing by:")
+                .list("signing into " + caseDetailsUrl(CASE_ID, TabUrlAnchor.HEARINGS))
                 .line()
-                .line()
-                .list("using this link " + GOV_NOTIFY_DOC_URL)
+                .list("using this link http://fake-url/binary/url")
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .end("Please do not reply to this email. If you need to contact us, call 0330 808 4424 or email "

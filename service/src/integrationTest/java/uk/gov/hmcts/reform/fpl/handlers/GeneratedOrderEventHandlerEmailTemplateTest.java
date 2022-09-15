@@ -114,7 +114,7 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
     @Test
     void notifyParties() {
         underTest.notifyParties(new GeneratedOrderEvent(CASE_DATA, ORDER_DOCUMENT, TRANSLATION_REQUIREMENT,
-            ORDER_TITLE));
+            ORDER_TITLE, LocalDate.now()));
 
         SendEmailResponse adminResponse = response();
         SendEmailResponse laResponse = response();
@@ -150,8 +150,7 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .line("You can review the order by:")
                 .line()
-                .list("signing into http://fake-url/cases/case-details/12345#Orders",
-                    "using this link http://fake-url/documents/some-random-string/binary")
+                .list("signing into http://fake-url/cases/case-details/12345#Orders")
                 .line()
                 .line("HM Courts & Tribunal Service")
                 .line()
@@ -168,8 +167,7 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .line("You can review the order by:")
                 .line()
-                .list("signing into http://fake-url/cases/case-details/12345#Orders",
-                    "using this link http://fake-url/documents/some-random-string/binary")
+                .list("signing into http://fake-url/cases/case-details/12345#Orders")
                 .line()
                 .line("HM Courts & Tribunal Service")
                 .line()

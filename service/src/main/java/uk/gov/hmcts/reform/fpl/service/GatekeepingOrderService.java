@@ -88,7 +88,7 @@ public class GatekeepingOrderService {
 
         DocumentReference draftDocument = decision.getDraftDocument();
         DocumentReference document = decision.isSealed()
-            ? sealingService.sealDocument(draftDocument, caseData.getSealType()) : draftDocument;
+            ? sealingService.sealDocument(draftDocument, caseData.getCourt(), caseData.getSealType()) : draftDocument;
 
         LanguageTranslationRequirement translationRequirements =
             gatekeepingOrderEventData.getGatekeepingTranslationRequirements();
@@ -129,7 +129,8 @@ public class GatekeepingOrderService {
     }
 
     public Optional<HearingBooking> getHearing(CaseData caseData) {
-        return caseData.getFirstHearingOfType(HearingType.CASE_MANAGEMENT);
+        return caseData.getFirstHearingOfTypes(List.of(HearingType.CASE_MANAGEMENT,
+            HearingType.INTERIM_CARE_ORDER, HearingType.ACCELERATED_DISCHARGE_OF_CARE));
     }
 
     public JudgeAndLegalAdvisor setAllocatedJudgeLabel(Judge allocatedJudge, JudgeAndLegalAdvisor issuingJudge) {

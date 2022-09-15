@@ -15,10 +15,10 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
+import uk.gov.hmcts.reform.fpl.model.cafcass.OrderCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -28,8 +28,10 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
@@ -37,6 +39,7 @@ import uk.gov.service.notify.NotificationClient;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
@@ -55,12 +58,8 @@ import static uk.gov.hmcts.reform.fpl.Constants.PRIVATE_SOLICITOR_USER_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_FAMILY_MAN_NUMBER;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_ORDER_GENERATED_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.CAFCASS;
-import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.PARENT_FIRST;
-import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.PARENT_SECOND;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Language.ENGLISH;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.A70_PLACEMENT_ORDER;
-import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.CAFCASS_EMAIL;
 import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.COVERSHEET_PDF;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -100,6 +99,9 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
 
     @MockBean
     private NotificationClient notificationClient;
+
+    @MockBean
+    private DocumentConversionService documentConversionService;
 
     @MockBean
     private DocumentDownloadService documentDownloadService;
@@ -143,6 +145,10 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
             .thenReturn(ORDER_BINARY);
         when(documentDownloadService.downloadDocument(ORDER_NOTIFICATION_DOCUMENT_REFERENCE.getBinaryUrl()))
             .thenReturn(ORDER_NOTIFICATION_BINARY);
+        when(documentConversionService.convertToPdf(ORDER_DOCUMENT_REFERENCE))
+            .thenReturn(ORDER_DOCUMENT_REFERENCE);
+        when(documentConversionService.convertToPdf(ORDER_NOTIFICATION_DOCUMENT_REFERENCE))
+            .thenReturn(ORDER_NOTIFICATION_DOCUMENT_REFERENCE);
         when(uploadDocumentService.uploadPDF(ORDER_NOTIFICATION_BINARY,
             ORDER_NOTIFICATION_DOCUMENT_REFERENCE.getFilename()))
             .thenReturn(ORDER_NOTIFICATION_DOCUMENT);
@@ -176,6 +182,11 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
         //Order notification
         checkOrderNotificationLetterWasMailedToParents();
         checkCaseDataHasReferenceToSentLetters(firstLetterId, secondLetterId, father, mother);
+
+        verify(cafcassNotificationService).sendEmail(any(),
+            eq(Set.of(ORDER_DOCUMENT_REFERENCE, ORDER_NOTIFICATION_DOCUMENT_REFERENCE)),
+            eq(CafcassRequestEmailContentProvider.ORDER),
+            eq(OrderCafcassData.builder().documentName(ORDER_DOCUMENT_REFERENCE.getFilename()).build()));
     }
 
     @Test
@@ -213,6 +224,11 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
         //Order notification
         checkEmailWithOrderNotificationWasSentToParentsSolicitors();
         checkEmailWithOrderNotificationWasSentToChildSolicitor();
+
+        verify(cafcassNotificationService).sendEmail(any(),
+            eq(Set.of(ORDER_DOCUMENT_REFERENCE, ORDER_NOTIFICATION_DOCUMENT_REFERENCE)),
+            eq(CafcassRequestEmailContentProvider.ORDER),
+            eq(OrderCafcassData.builder().documentName(ORDER_DOCUMENT_REFERENCE.getFilename()).build()));
     }
 
     private CaseData buildCaseData(Element<Child> child,
@@ -226,14 +242,10 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
             .children1(List.of(child))
             .placementEventData(PlacementEventData.builder()
                 .placements(wrapElements(
-                    Placement.builder().childId(child.getId()).noticeDocuments(wrapElements(
-                        PlacementNoticeDocument.builder().type(CAFCASS)
-                            .respondentId(ANOTHER_RESPONDENT.getId()).build(),
-                        PlacementNoticeDocument.builder().type(PARENT_SECOND)
-                            .respondentId(firstParent.getId()).build(),
-                        PlacementNoticeDocument.builder().type(PARENT_FIRST)
-                            .respondentId(secondParent.getId()).build()
-                    )).build()
+                    Placement.builder()
+                        .childId(child.getId())
+                        .placementRespondentsToNotify(List.of(firstParent, secondParent))
+                        .build()
                 )).build())
             .orderCollection(wrapElements(
                 GeneratedOrder.builder()
@@ -249,7 +261,6 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
     private void checkPlacementOrderWasDeliveredAsExpected() {
         checkEmailWithOrderWasSent(LOCAL_AUTHORITY_1_INBOX);
         checkEmailWithOrderWasSent(DEFAULT_ADMIN_EMAIL);
-        checkEmailWithOrderWasSent(CAFCASS_EMAIL);
     }
 
     private void checkEmailWithOrderWasSent(String recipient) {

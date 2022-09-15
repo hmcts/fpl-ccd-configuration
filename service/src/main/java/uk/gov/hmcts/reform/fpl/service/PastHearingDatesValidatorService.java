@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -68,5 +69,31 @@ public class PastHearingDatesValidatorService {
 
     private boolean isMidnight(LocalDateTime localDateTime) {
         return localDateTime.toLocalTime().equals(MIDNIGHT);
+    }
+
+    private boolean isInvalidField(Object s) {
+        if (s == null) {
+            return false;
+        }
+        try {
+            Integer.parseInt(s.toString());
+            return false;
+        } catch (NumberFormatException ex) {
+            return true;
+        }
+    }
+
+    public List<String> validateHearingIntegers(CaseDetails caseDetails) {
+        List<String> errors = new ArrayList<>();
+        if (isInvalidField(caseDetails.getData().get("hearingHours"))) {
+            errors.add("Hearing length, in hours should be a whole number");
+        }
+        if (isInvalidField(caseDetails.getData().get("hearingMinutes"))) {
+            errors.add("Hearing length, in minutes should be a whole number");
+        }
+        if (isInvalidField(caseDetails.getData().get("hearingDays"))) {
+            errors.add("Hearing length, in days should be a whole number");
+        }
+        return errors;
     }
 }

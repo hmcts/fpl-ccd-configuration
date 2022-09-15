@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.ObjectUtils;
+import uk.gov.hmcts.reform.fpl.enums.AddressNotKnowReason;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
@@ -16,12 +17,14 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -42,11 +45,32 @@ public class Other implements Representable, ConfidentialParty<Other> {
     private final String litigationIssuesDetails;
     private final String detailsHidden;
     private final String detailsHiddenReason;
-    private final List<Element<UUID>> representedBy = new ArrayList<>();
+    private List<Element<UUID>> representedBy;
+    private final String addressNotKnowReason;
+    private final String addressKnow;
+
+    public List<Element<UUID>> getRepresentedBy() {
+        if (this.representedBy == null) {
+            this.representedBy = new ArrayList<>();
+        }
+        return this.representedBy;
+    }
 
     public void addRepresentative(UUID representativeId) {
         if (!unwrapElements(representedBy).contains(representativeId)) {
+            if (this.representedBy == null) {
+                this.representedBy = new ArrayList<>();
+            }
             this.representedBy.add(element(representativeId));
+        }
+    }
+
+    public void addRepresentative(UUID id, UUID representativeId) {
+        if (!unwrapElements(representedBy).contains(representativeId)) {
+            if (this.representedBy == null) {
+                this.representedBy = new ArrayList<>();
+            }
+            this.representedBy.add(element(id, representativeId));
         }
     }
 
@@ -81,6 +105,8 @@ public class Other implements Representable, ConfidentialParty<Other> {
         return OtherParty.builder()
             .firstName(this.getName())
             .address(this.getAddress())
+            .dateOfBirth(nonNull(this.getDateOfBirth()) ? LocalDate.parse(this.getDateOfBirth(),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd")) : null)
             .telephoneNumber(Telephone.builder().telephoneNumber(this.telephone).build())
             .build();
     }
@@ -101,10 +127,11 @@ public class Other implements Representable, ConfidentialParty<Other> {
 
     @Override
     public Other removeConfidentialDetails() {
-        return this.toBuilder()
+        Other other =  this.toBuilder()
             .address(null)
             .telephone(null)
             .build();
+        return other;
     }
 
     @JsonIgnore
@@ -120,7 +147,15 @@ public class Other implements Representable, ConfidentialParty<Other> {
     @JsonIgnore
     public boolean isEmpty() {
         return Stream.of(dateOfBirth, name, gender, telephone, birthPlace, childInformation, genderIdentification,
-            litigationIssues, litigationIssuesDetails, detailsHidden, detailsHiddenReason, representedBy
-        ).allMatch(ObjectUtils::isEmpty) && (isNull(address) || address.equals(Address.builder().build()));
+            litigationIssues, litigationIssuesDetails, detailsHidden, detailsHiddenReason, representedBy,
+            addressNotKnowReason
+        ).allMatch(ObjectUtils::isEmpty)
+            && (isNull(address) || address.equals(Address.builder().build()));
+    }
+
+    @JsonIgnore
+    public boolean isDeceasedOrNFA() {
+        return AddressNotKnowReason.DECEASED.getType().equals(addressNotKnowReason)
+            || AddressNotKnowReason.NO_FIXED_ABODE.getType().equals(addressNotKnowReason);
     }
 }

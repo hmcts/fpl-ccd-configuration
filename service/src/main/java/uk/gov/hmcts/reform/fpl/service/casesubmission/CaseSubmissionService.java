@@ -4,19 +4,23 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.CaseSubmissionGenerationService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 
 import java.util.Optional;
 
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C1;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C110A;
 import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFileName;
+import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildGenericFileName;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -25,20 +29,55 @@ public class CaseSubmissionService {
     private final UploadDocumentService uploadDocumentService;
     private final CaseSubmissionGenerationService documentGenerationService;
 
-    public Document generateSubmittedFormPDF(final CaseData caseData, final boolean isDraft) {
+    public Document generateC110aSubmittedFormPDF(final CaseData caseData, final boolean isDraft) {
+        return generateSubmittedFormPDF(caseData, isDraft, C110A);
+    }
+
+    public Document generateC1SubmittedFormPDF(final CaseData caseData, final boolean isDraft) {
+        return generateSubmittedFormPDF(caseData, isDraft, C1);
+    }
+
+    private Document generateSubmittedFormPDF(CaseData caseData, boolean isDraft, DocmosisTemplates template) {
         DocmosisCaseSubmission submittedCase = documentGenerationService.getTemplateData(caseData);
 
         documentGenerationService.populateCaseNumber(submittedCase, caseData.getId());
-        documentGenerationService.populateDraftWaterOrCourtSeal(submittedCase, isDraft,caseData.getImageLanguage());
+        documentGenerationService.populateDraftWaterOrCourtSeal(submittedCase, isDraft, caseData);
         Language applicationLanguage = Optional.ofNullable(caseData.getC110A().getLanguageRequirementApplication())
             .orElse(Language.ENGLISH);
 
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(submittedCase,
-            C110A,
+            template,
             RenderFormat.PDF,
             applicationLanguage);
 
-        return uploadDocumentService.uploadPDF(document.getBytes(), buildFileName(caseData, isDraft));
+        return uploadDocumentService.uploadPDF(document.getBytes(), buildFileName(caseData, isDraft, template));
+    }
+
+    public Document generateC1SupplementPDF(final CaseData caseData, final boolean isDraft) {
+        if (caseData.isSecureAccommodationOrderType()) {
+            return generateSupplementPDF(caseData, isDraft, DocmosisTemplates.C20_SUPPLEMENT,
+                documentGenerationService.getC20SupplementData(caseData, isDraft));
+        } else if (caseData.isRefuseContactWithChildApplication()) {
+            return generateSupplementPDF(caseData, isDraft, DocmosisTemplates.C14_SUPPLEMENT,
+                documentGenerationService.getC14SupplementData(caseData, isDraft));
+        } else {
+            return generateSupplementPDF(caseData, isDraft, DocmosisTemplates.C16_SUPPLEMENT,
+                documentGenerationService.getC16SupplementData(caseData, isDraft));
+        }
+    }
+
+    public Document generateSupplementPDF(final CaseData caseData, final boolean isDraft, DocmosisTemplates template,
+                                          DocmosisData supplementData) {
+        Language applicationLanguage = Optional.ofNullable(caseData.getC110A().getLanguageRequirementApplication())
+            .orElse(Language.ENGLISH);
+
+        DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(supplementData,
+            template,
+            RenderFormat.PDF,
+            applicationLanguage);
+
+        return uploadDocumentService.uploadPDF(document.getBytes(), buildGenericFileName(isDraft, template));
+
     }
 
     public String getSigneeName(CaseData caseData) {

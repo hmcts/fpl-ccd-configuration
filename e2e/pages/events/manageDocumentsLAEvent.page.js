@@ -1,6 +1,7 @@
 const {I} = inject();
 const c2SupportingDocuments = require('../../fixtures/c2SupportingDocuments.js');
 const supportingDocumentsFragment = require('../../fragments/supportingDocuments.js');
+const placementNoticeResponsesFragment = require('../../fragments/placementNoticeResponse.js');
 
 module.exports = {
   fields: {
@@ -9,6 +10,7 @@ module.exports = {
       correspondence: '#manageDocumentLA_type-CORRESPONDENCE',
       additionalApplications: '#manageDocumentLA_type-ADDITIONAL_APPLICATIONS_DOCUMENTS',
       courtBundle: '#manageDocumentLA_type-COURT_BUNDLE',
+      placementNoticeResponses: '#manageDocumentLA_type-PLACEMENT_NOTICE_RESPONSE',
     },
     relatedToHearing: {
       yes: '#manageDocumentLA_relatedToHearing_Yes',
@@ -20,13 +22,15 @@ module.exports = {
       otherDocuments: '#manageDocumentSubtypeListLA-OTHER',
     },
     respondentStatementList: '#respondentStatementList',
+    placementList: '#manageDocumentsPlacementList',
     hearingList: '#manageDocumentsHearingList',
-    courtBundleHearingList: '#courtBundleHearingList',
-    courtBundleDocument: '#manageDocumentsCourtBundle_document',
+    hearingDocumentsHearingList: '#hearingDocumentsHearingList',
+    courtBundleDocument: index => supportingDocumentsFragment.supportingDocuments(index, 'manageDocumentsCourtBundle'),
     c2DocumentsList: '#manageDocumentsSupportingC2List',
     supportingDocumentsForC2: supportingDocumentsFragment.supportingDocuments(0, 'temporaryC2Document_supportingEvidenceBundle'),
     supportingDocumentsCollectionId: '#supportingEvidenceDocumentsTemp',
     supportingDocuments: index => supportingDocumentsFragment.supportingDocuments(index, 'supportingEvidenceDocumentsTemp'),
+    placementNoticeResponses: index => placementNoticeResponsesFragment.placementResponses(index, 'placementNoticeResponses'),
   },
 
   async selectFurtherEvidence() {
@@ -57,6 +61,14 @@ module.exports = {
     I.click(this.fields.documentType.courtBundle);
   },
 
+  async selectPlacementResponses() {
+    I.click(this.fields.documentType.placementNoticeResponses);
+  },
+
+  async selectPlacementApplication(childName) {
+    I.selectOption(this.fields.placementList, childName);
+  },
+
   async selectApplicationBundleFromDropdown(index) {
     const dropdownLabel = await I.grabTextFrom(`${this.fields.c2DocumentsList} option:nth-child(${index})`);
     I.waitForElement(this.fields.c2DocumentsList);
@@ -71,12 +83,18 @@ module.exports = {
   },
 
   async selectCourtBundleHearing(hearingDate) {
-    I.waitForElement(this.fields.courtBundleHearingList);
-    I.selectOption(this.fields.courtBundleHearingList, `Case management hearing, ${hearingDate}`);
+    I.waitForElement(this.fields.hearingDocumentsHearingList);
+    I.selectOption(this.fields.hearingDocumentsHearingList, `Case management hearing, ${hearingDate}`);
   },
 
-  async attachCourtBundle(document) {
-    I.attachFile(this.fields.courtBundleDocument, document);
+  async uploadCourtBundleDocument(document) {
+    const elementIndex = await this.getActiveElementIndex();
+    I.attachFile(this.fields.courtBundleDocument(elementIndex).document, document);
+  },
+
+  async uploadConfidentialCourtBundleDocument(document) {
+    await this.uploadCourtBundleDocument(document);
+    await this.selectConfidentialCourtBundle();
   },
 
   async selectFurtherEvidenceIsRelatedToHearing() {
@@ -116,6 +134,16 @@ module.exports = {
     I.attachFile(this.fields.supportingDocuments(elementIndex).document, document);
   },
 
+  async uploadPlacementResponseDocument(document) {
+    const elementIndex = await this.getActiveElementIndex();
+    I.attachFile(this.fields.placementNoticeResponses(elementIndex).document, document);
+  },
+
+  async enterPlacementResponseDescription(description) {
+    const elementIndex = await this.getActiveElementIndex();
+    I.fillField(this.fields.placementNoticeResponses(elementIndex).description, description);
+  },
+
   async selectFurtherEvidenceType(type) {
     const elementIndex = await this.getActiveElementIndex();
     switch (type) {
@@ -133,6 +161,11 @@ module.exports = {
   async selectConfidential() {
     const elementIndex = await this.getActiveElementIndex();
     I.click(this.fields.supportingDocuments(elementIndex).confidential);
+  },
+
+  async selectConfidentialCourtBundle() {
+    const elementIndex = await this.getActiveElementIndex();
+    I.click(this.fields.courtBundleDocument(elementIndex).confidential);
   },
 
   async uploadSupportingEvidenceDocument(supportingEvidenceDocument, selectEvidenceType) {
@@ -153,6 +186,12 @@ module.exports = {
     await this.enterDocumentName(supportingEvidenceDocument.name);
     await this.enterDocumentNotes(supportingEvidenceDocument.notes);
     await this.uploadDocument(supportingEvidenceDocument.document);
+    await I.runAccessibilityTest();
+  },
+
+  async uploadPlacementResponse(placementResponse) {
+    await this.enterPlacementResponseDescription(placementResponse.description);
+    await this.uploadPlacementResponseDocument(placementResponse.document);
     await I.runAccessibilityTest();
   },
 

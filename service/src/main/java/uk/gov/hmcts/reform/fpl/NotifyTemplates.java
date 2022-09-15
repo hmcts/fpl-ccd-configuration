@@ -15,11 +15,11 @@ public final class NotifyTemplates {
     public static final String INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS
         = "62791aee-6caf-4a22-a599-fcfc4381ba20";
     public static final String INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC
-        = "d5f41125-76d0-43f9-971b-fe1ff6a26acf";
+        = "ec65728e-39da-4a04-b1df-66363f4d858d";
     public static final String INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE
         = "3284c63a-b88f-4a20-979a-ea7d017b45aa";
     public static final String ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES =
-        "a0f911cf-4010-4022-bf34-a183cd711b8e";
+        "f6c91430-5b83-4058-914f-3111e52ed6c3";
     public static final String PLACEMENT_ORDER_GENERATED_NOTIFICATION_TEMPLATE =
         "673ff6f1-2a1f-4f0a-8e3b-d2044047304d";
     public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN = "bb40930c-a583-4868-a1f6-1e398e7554d3";
@@ -27,7 +27,7 @@ public final class NotifyTemplates {
         "1827ae2d-d7c3-4094-8978-c2f77d7713fa";
     public static final String DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE = "f9ef5385-258b-4d57-84b4-4915afd3ba5e";
     public static final String CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE =
-        "369882a3-743d-49c9-bab8-1b8a445d1b5d";
+        "e6e899b1-ce44-4626-bb44-b9532af3983f";
     public static final String CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE =
         "90c5f4b3-738b-4c8d-b433-c8c90095f815";
     public static final String CMO_REJECTED_BY_JUDGE_TEMPLATE = "acb99554-4806-41f9-a95b-df7ee9b9b878";
@@ -50,6 +50,7 @@ public final class NotifyTemplates {
     public static final String APPLICATION_RETURNED_TO_THE_LA = "2d8b5486-7527-42ea-9b56-e79bfc0f6c27";
     public static final String AMENDED_APPLICATION_RETURNED_ADMIN_TEMPLATE = "7d72d10b-155f-4a27-94ad-8e8be71d1265";
     public static final String AMENDED_APPLICATION_RETURNED_CAFCASS_TEMPLATE = "d2e44b62-436c-4bb6-b3b9-afa4f2bca7b5";
+    public static final String COURT_BUNDLE_UPLOADED_NOTIFICATION = "8ef65a4d-cf5c-4dcf-9f3b-57906c3a3720";
     public static final String NOTICE_OF_NEW_HEARING = "aa997c49-efe7-4443-a4ea-6198f62ce449";
     public static final String NOTICE_OF_NEW_HEARING_NO_OTHER_ADDRESS = "a51849ac-8fd9-4387-be37-0d80a9209b79";
     public static final String SDO_AND_NOP_ISSUED_CTSC = "5ddf3927-f102-4c81-900a-57d8facac1d0";
@@ -66,7 +67,7 @@ public final class NotifyTemplates {
     public static final String SDO_REMOVAL_NOTIFICATION_TEMPLATE = "8f66e70f-e328-4a22-aa17-f52f44e69d45";
     public static final String JUDICIAL_MESSAGE_ADDED_TEMPLATE = "bf041444-5a4e-4045-878a-4833f57b7d96";
     public static final String JUDICIAL_MESSAGE_REPLY_TEMPLATE = "e0603270-376b-4d9b-8570-7fd6f2e295ec";
-    public static final String JUDGE_APPROVES_DRAFT_ORDERS = "632ea051-0ab0-447d-9d6c-54118b04a5c1";
+    public static final String JUDGE_APPROVES_DRAFT_ORDERS = "ad724f72-eae8-4774-b12a-0c3c658b7095";
     public static final String JUDGE_REJECTS_DRAFT_ORDERS = "6d0ab7cb-8f1e-4ac0-b51d-11cf0b6ee568";
     public static final String FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE = "917c07b2-b414-41ab-9d0b-14a570fad413";
     public static final String DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE = "47b6ec09-da8c-452d-9ec7-bc3153890959";
@@ -88,4 +89,6 @@ public final class NotifyTemplates {
     public static final String PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE = "a79ed53c-336d-4844-b4de-f430ff991b8d";
     public static final String PLACEMENT_NOTICE_UPLOADED_TEMPLATE = "6a0e419a-7b14-4227-9363-6612c3dcafad";
     public static final String PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE = "9d828e63-0b06-40c3-bd20-473ef8f0f2a8";
+    public static final String CASE_TRANSFERRED_TO_ANOTHER_COURT_TEMPLATE = "b845848e-1376-4c9b-bfe3-e48615ab4891";
+    public static final String APPLICATION_FORM_REMOVED_CTSC_LEAD_TEMPLATE = "6aafe553-a493-477a-8599-4321506bc217";
 }

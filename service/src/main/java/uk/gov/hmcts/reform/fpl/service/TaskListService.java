@@ -10,7 +10,9 @@ import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
 import uk.gov.hmcts.reform.fpl.service.validators.EventsChecker;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
@@ -71,33 +73,56 @@ public class TaskListService {
 
     private List<Event> getEvents(CaseData caseData) {
 
+        // Core Events for all combinations of C110a + C1 apps
         final List<Event> events = new ArrayList<>(List.of(
             ORDERS_SOUGHT,
-            HEARING_URGENCY,
             featureToggles.isApplicantAdditionalContactsEnabled() ? LOCAL_AUTHORITY_DETAILS : ORGANISATION_DETAILS,
             CHILDREN,
             RESPONDENTS,
-            ALLOCATION_PROPOSAL,
             OTHER_PROCEEDINGS,
-            INTERNATIONAL_ELEMENT,
             OTHERS,
             COURT_SERVICES,
             SUBMIT_APPLICATION,
             CASE_NAME,
             APPLICATION_DOCUMENTS,
-            LANGUAGE_REQUIREMENTS
+            HEARING_URGENCY
         ));
 
         if (YES.equals(caseData.getMultiCourts())) {
             events.add(SELECT_COURT);
         }
 
-        if (!caseData.isDischargeOfCareApplication()) {
-            events.add(GROUNDS);
+        // C1s and C110a's (except SAO, DoC and Refuse Contact Application)
+        if (!caseData.isSecureAccommodationOrderType() && !caseData.isDischargeOfCareApplication()
+                && !caseData.isRefuseContactWithChildApplication()) {
             events.add(RISK_AND_HARM);
             events.add(FACTORS_AFFECTING_PARENTING);
         }
 
+        // C1s and C110a's (except DoC)
+        if (!caseData.isDischargeOfCareApplication()) {
+            events.add(GROUNDS);
+        }
+
+        // C110a's only
+        if (!caseData.isC1Application()) {
+            events.add(INTERNATIONAL_ELEMENT);
+            events.add(LANGUAGE_REQUIREMENTS);
+        }
+
+        if (!caseData.isC1Application() || caseData.isSecureAccommodationOrderType()
+                || caseData.isRefuseContactWithChildApplication()) {
+            events.add(ALLOCATION_PROPOSAL);
+        }
+
         return events;
+    }
+
+    public Map<Event, String> getTaskHints(CaseData caseData) {
+        Map<Event, String> taskHintsMap = new HashMap<>();
+        if (caseData.isC1Application() && !caseData.isRefuseContactWithChildApplication()) {
+            taskHintsMap.put(HEARING_URGENCY, "Optional for C1 applications");
+        }
+        return taskHintsMap;
     }
 }

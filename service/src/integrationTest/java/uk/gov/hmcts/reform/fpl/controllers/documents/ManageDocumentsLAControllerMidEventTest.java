@@ -6,13 +6,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
+import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
+import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
@@ -22,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
@@ -29,6 +34,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -39,15 +45,19 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.RESPONDENT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.ADDITIONAL_APPLICATIONS_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.CORRESPONDENCE;
-import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.FURTHER_EVIDENCE_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.HEARING_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.PLACEMENT_NOTICE_RESPONSE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(ManageDocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -98,8 +108,10 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
             .type(FURTHER_EVIDENCE_DOCUMENTS)
-            .hasHearings("Yes")
-            .hasC2s("No")
+            .hasHearings(YES.getValue())
+            .hasC2s(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
+            .hasConfidentialAddress(NO.getValue())
             .build());
     }
 
@@ -119,8 +131,10 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
             .type(CORRESPONDENCE)
-            .hasHearings("No")
-            .hasC2s("No")
+            .hasHearings(NO.getValue())
+            .hasC2s(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
+            .hasConfidentialAddress(NO.getValue())
             .build());
     }
 
@@ -130,7 +144,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
         LocalDateTime today = LocalDateTime.now();
         HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
 
-        List<Element<CourtBundle>> courtBundleList = buildCourtBundleList(selectedHearingId);
+        List<Element<HearingCourtBundle>> courtBundleList = buildCourtBundleList(selectedHearingId);
 
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(createHearingBooking(today.plusDays(5), today.plusDays(6))),
@@ -143,21 +157,25 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData caseData = CaseData.builder()
             .hearingDetails(hearingBookings)
-            .courtBundleList(courtBundleList)
-            .courtBundleHearingList(hearingList)
-            .manageDocumentLA(buildManagementDocument(COURT_BUNDLE))
+            .hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(courtBundleList).build())
+            .hearingDocumentsHearingList(hearingList)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
+            .manageDocumentLA(buildManagementDocument(HEARING_DOCUMENTS))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
             "initialise-manage-document-collections", USER_ROLES);
 
         CaseData responseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-        assertThat(responseData.getCourtBundleList()).isEqualTo(courtBundleList);
+        assertThat(responseData.getHearingDocuments().getCourtBundleListV2()).isEqualTo(courtBundleList);
 
         assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
-            .type(COURT_BUNDLE)
-            .hasHearings("Yes")
-            .hasC2s("No")
+            .type(HEARING_DOCUMENTS)
+            .hasHearings(YES.getValue())
+            .hasC2s(NO.getValue())
+            .hasConfidentialAddress(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
             .build());
     }
 
@@ -190,8 +208,40 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
             .type(ADDITIONAL_APPLICATIONS_DOCUMENTS)
-            .hasHearings("No")
-            .hasC2s("Yes")
+            .hasHearings(NO.getValue())
+            .hasC2s(YES.getValue())
+            .hasPlacementNotices(NO.getValue())
+            .hasConfidentialAddress(NO.getValue())
+            .build());
+    }
+
+    @Test
+    void shouldInitialisePlacementNoticeFields() {
+        Placement placement = Placement.builder()
+            .placementNotice(testDocumentReference())
+            .noticeDocuments(emptyList())
+            .childName("Test Child")
+            .childId(randomUUID())
+            .build();
+
+        PlacementEventData eventData = PlacementEventData.builder()
+            .placements(wrapElements(placement))
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentLA(buildManagementDocument(PLACEMENT_NOTICE_RESPONSE))
+            .placementEventData(eventData)
+            .placementList(asDynamicList(eventData.getPlacements(), null, Placement::getChildName))
+            .build();
+
+        CaseData after = extractCaseData(postMidEvent(caseData, "initialise-manage-document-collections", USER_ROLES));
+
+        assertThat(after.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
+            .type(PLACEMENT_NOTICE_RESPONSE)
+            .hasHearings(NO.getValue())
+            .hasC2s(NO.getValue())
+            .hasPlacementNotices(YES.getValue())
+            .hasConfidentialAddress(NO.getValue())
             .build());
     }
 
@@ -349,13 +399,15 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
     @Test
     void shouldThrowErrorWhenCourtBundleSelectedButNoHearingsFound() {
         CaseData caseData = CaseData.builder()
-            .manageDocumentLA(buildManagementDocument(COURT_BUNDLE))
+            .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
+            .manageDocumentLA(buildManagementDocument(HEARING_DOCUMENTS))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
             "initialise-manage-document-collections", USER_ROLES);
 
-        assertThat(callbackResponse.getErrors()).containsExactly("There are no hearings to associate a bundle with");
+        assertThat(callbackResponse.getErrors()).containsExactly(
+            "There are no hearings to associate a hearing document with");
     }
 
     @Test
@@ -383,8 +435,14 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .build());
     }
 
-    private List<Element<CourtBundle>> buildCourtBundleList(UUID hearingId) {
-        return List.of(element(hearingId, CourtBundle.builder().hearing("test hearing").build()));
+    private List<Element<HearingCourtBundle>> buildCourtBundleList(UUID hearingId) {
+        List<Element<CourtBundle>> courtBundle = List.of(element(CourtBundle.builder().build()));
+        return List.of(element(
+            hearingId,
+            HearingCourtBundle.builder()
+                .hearing("Test hearing")
+                .courtBundle(courtBundle)
+                .build()));
     }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {

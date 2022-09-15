@@ -2,9 +2,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "courtBundleTabHeading",
+    "ID": "hearingDocumentsTabHeading",
     "FieldType": "Label",
-    "Label": "## Court bundle",
+    "Label": "## Hearing documents",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -103,6 +103,15 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseSummaryPeopleInTheCaseHeading",
     "Label": "## People in the case",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedOrdersTabHeading",
+    "Label": "## Refused Orders",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"

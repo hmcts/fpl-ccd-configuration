@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
+import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 
 import java.time.LocalDateTime;
@@ -45,10 +46,12 @@ public class GatekeepingOrderGenerationService extends
     DocmosisTemplateDataGeneration<DocmosisStandardDirectionOrder> {
     private final CaseDataExtractionService dataService;
     private final OrdersLookupService ordersConfig;
+    private final CourtService courtService;
 
     public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData) {
         GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
-        HearingBooking firstHearing = caseData.getFirstHearingOfType(HearingType.CASE_MANAGEMENT)
+        HearingBooking firstHearing = caseData.getFirstHearingOfTypes(List.of(HearingType.CASE_MANAGEMENT,
+                HearingType.INTERIM_CARE_ORDER, HearingType.ACCELERATED_DISCHARGE_OF_CARE))
             .orElse(null);
 
         GatekeepingOrderSealDecision gatekeepingOrderSealDecision = eventData.getGatekeepingOrderSealDecision();
@@ -73,7 +76,7 @@ public class GatekeepingOrderGenerationService extends
                 .crest(getCrestData());
 
         if (SEALED.equals(gatekeepingOrderSealDecision.getOrderStatus())) {
-            orderBuilder.courtseal(getCourtSealData(caseData.getImageLanguage()));
+            orderBuilder.courtseal(courtService.getCourtSeal(caseData, SEALED));
             orderBuilder.dateOfIssue(formatLocalDateToString(gatekeepingOrderSealDecision.getDateOfIssue(), DATE));
         } else {
             orderBuilder.draftbackground(getDraftWaterMarkData());

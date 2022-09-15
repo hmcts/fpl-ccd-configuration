@@ -19,7 +19,7 @@ import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.C2_WITHOUT_NOTICE;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.C2_WITH_NOTICE;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.CHANGE_SURNAME;
-import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.CHILD_ASSESSMENT;
+import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.CHILD_ASSESSMENT_ORDER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.INTERIM_CARE_ORDER;
@@ -59,6 +59,7 @@ public class TestFeeConfig {
     public static final String RECOVERY_ORDER_KEYWORD = "Recovery";
     public static final String SECURE_ACCOMMODATION_ENG_KEYWORD = "SecureAccommEngland";
     public static final String SECURE_ACCOMMODATION_WALES_KEYWORD = "SecureAccommWales";
+    public static final String REFUSE_CONTACT_WITH_CHILD_KEYWORD = "WXY";
     public static final String PR_FATHER_KEYWORD = "XYZ";
     public static final String PR_FEMALE_PARENT_KEYWORD = "AABC";
 
@@ -78,7 +79,7 @@ public class TestFeeConfig {
         feeTypeToKeyword.put(SUPERVISION_ORDER, SUPERVISION_ORDER_KEYWORD);
 
         feeTypeToKeyword.put(CHANGE_SURNAME, CHANGE_SURNAME_KEYWORD);
-        feeTypeToKeyword.put(CHILD_ASSESSMENT, CHILD_ASSESSMENT_KEYWORD);
+        feeTypeToKeyword.put(CHILD_ASSESSMENT_ORDER, CHILD_ASSESSMENT_KEYWORD);
         feeTypeToKeyword.put(APPOINTMENT_OF_GUARDIAN, APPOINTMENT_OF_GUARDIAN_KEYWORD);
         feeTypeToKeyword.put(RECOVERY_ORDER, RECOVERY_ORDER_KEYWORD);
         feeTypeToKeyword.put(SECURE_ACCOMMODATION_ENGLAND, SECURE_ACCOMMODATION_ENG_KEYWORD);

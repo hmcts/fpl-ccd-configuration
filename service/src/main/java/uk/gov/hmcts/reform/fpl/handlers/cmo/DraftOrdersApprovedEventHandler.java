@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -39,9 +40,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.lang.System.lineSeparator;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toSet;
+import static java.util.Set.of;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
@@ -120,7 +119,8 @@ public class DraftOrdersApprovedEventHandler {
                 .map(Element::getValue)
                 .orElse(null);
 
-            NotifyData content = contentProvider.buildOrdersApprovedContent(caseData, hearing, approvedOrders, EMAIL);
+            NotifyData content = contentProvider.buildOrdersApprovedContent(caseData, hearing, approvedOrders,
+                DIGITAL_SERVICE);
 
             notificationService.sendEmail(
                     JUDGE_APPROVES_DRAFT_ORDERS,
@@ -139,21 +139,24 @@ public class DraftOrdersApprovedEventHandler {
                 cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
 
         if (recipientIsEngland.isPresent()) {
-            List<HearingOrder> approvedOrders = event.getApprovedOrders();
+            LocalDateTime hearingStartDate = findElement(caseData.getLastHearingOrderDraftsHearingId(),
+                    caseData.getHearingDetails())
+                    .map(Element::getValue)
+                    .map(HearingBooking::getStartDate)
+                    .orElse(null);
 
-            String content = String.join("",
-                    lineSeparator(),
-                    approvedOrders.stream()
-                        .map(HearingOrder::getTitle)
-                        .collect(joining(lineSeparator())));
-
-            cafcassNotificationService.sendEmail(caseData,
-                    approvedOrders.stream().map(HearingOrder::getOrder).collect(toSet()),
-                    ORDER,
-                    OrderCafcassData.builder()
-                        .documentName(content)
-                        .build()
-            );
+            event.getApprovedOrders()
+                .forEach(hearingOrder ->
+                    cafcassNotificationService.sendEmail(caseData,
+                            of(hearingOrder.getOrder()),
+                            ORDER,
+                            OrderCafcassData.builder()
+                                    .documentName(hearingOrder.getTitle())
+                                    .hearingDate(hearingStartDate)
+                                    .orderApprovalDate(hearingOrder.getDateIssued())
+                                    .build()
+                        )
+                );
         }
     }
 

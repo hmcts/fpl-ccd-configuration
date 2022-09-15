@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -124,12 +125,13 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
         Element<HearingOrder> cmoElement = element(cmoId, cmo);
         Element<HearingOrdersBundle> hearingOrdersBundle = buildHearingOrdersBundle(
             UUID.randomUUID(), newArrayList(cmoElement));
-
-        given(documentSealingService.sealDocument(order, SealType.ENGLISH)).willReturn(sealedDocument);
+        Court court = Court.builder().build();
+        given(documentSealingService.sealDocument(order, court, SealType.ENGLISH)).willReturn(sealedDocument);
 
         Selector othersSelector = Selector.newSelector(2);
         othersSelector.setSelected(List.of(0, 1));
         CaseData caseData = CaseData.builder()
+            .court(court)
             .state(State.CASE_MANAGEMENT)
             .ordersToBeSent(List.of(element(HearingOrder.builder().build())))
             .others(Others.builder().firstOther(
@@ -179,14 +181,16 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
     @MethodSource("populateCaseDataWithState")
     void shouldUpdateCaseStateWhenCmoDecisionIsSendToAllParties(
         String testName, HearingType hearingType, State expectedCaseState) {
-
-        given(documentSealingService.sealDocument(convertedDocument, SealType.ENGLISH)).willReturn(sealedDocument);
+        Court court = Court.builder().build();
+        given(documentSealingService.sealDocument(convertedDocument, court, SealType.ENGLISH))
+                .willReturn(sealedDocument);
 
         UUID cmoId = UUID.randomUUID();
         Element<HearingOrdersBundle> hearingOrdersBundle = buildHearingOrdersBundle(
             UUID.randomUUID(), newArrayList(element(cmoId, cmo)));
 
         CaseData caseData = CaseData.builder()
+            .court(court)
             .state(State.CASE_MANAGEMENT)
             .draftUploadedCMOs(List.of(element(cmoId, cmo)))
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
@@ -226,15 +230,17 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
     void shouldSealPDFAndCreateBlankOrderWhenJudgeApprovesBlankOrders(CMOReviewOutcome reviewOutcome) {
         DocumentReference order = draftOrder.getOrder();
         UUID draftOrderId = UUID.randomUUID();
-
+        Court court = Court.builder().build();
         Element<HearingOrder> orderElement = element(draftOrderId, draftOrder);
         Element<HearingOrdersBundle> hearingOrdersBundle = buildHearingOrdersBundle(
             UUID.randomUUID(), newArrayList(orderElement));
 
         if (SEND_TO_ALL_PARTIES.equals(reviewOutcome)) {
-            given(documentSealingService.sealDocument(order, SealType.ENGLISH)).willReturn(sealedDocument);
+            given(documentSealingService.sealDocument(order, court, SealType.ENGLISH))
+                    .willReturn(sealedDocument);
         } else {
-            given(documentSealingService.sealDocument(convertedDocument, SealType.ENGLISH)).willReturn(sealedDocument);
+            given(documentSealingService.sealDocument(convertedDocument, court, SealType.ENGLISH))
+                    .willReturn(sealedDocument);
         }
 
         ReviewDecision reviewDecision =
@@ -245,6 +251,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
         Judge allocatedJudge = buildJudge();
 
         CaseData caseData = CaseData.builder()
+            .court(court)
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .draftUploadedCMOs(newArrayList())
             .children1(children())
@@ -278,7 +285,8 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
     @Test
     void shouldRemoveRejectedBlankOrderAndSealApprovedOrderWhenJudgeRejectsOneOrderAndApprovesTheOther() {
         DocumentReference order = cmo.getOrder();
-        given(documentSealingService.sealDocument(order, SealType.ENGLISH)).willReturn(sealedDocument);
+        Court court = Court.builder().build();
+        given(documentSealingService.sealDocument(order, court, SealType.ENGLISH)).willReturn(sealedDocument);
 
         UUID cmoId = UUID.randomUUID();
         UUID draftOrderId = UUID.randomUUID();
@@ -286,6 +294,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
             UUID.randomUUID(), newArrayList(element(cmoId, cmo), element(draftOrderId, draftOrder)));
 
         CaseData caseData = CaseData.builder()
+            .court(court)
             .state(State.CASE_MANAGEMENT)
             .draftUploadedCMOs(List.of(element(cmoId, cmo)))
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
@@ -346,8 +355,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
             "draftOrder8Title", "draftOrder9Title", "draftOrder10Title", "cmoDraftOrderDocument",
             "draftOrder1Document", "draftOrder2Document", "draftOrder3Document", "draftOrder4Document",
             "draftOrder5Document", "draftOrder6Document", "draftOrder7Document", "draftOrder8Document",
-            "draftOrder9Document", "draftOrder10Document", "reviewDraftOrdersTitles", "draftOrdersTitlesInBundle",
-            "others_label", "hasOthers", "othersSelector", "reviewCMOShowOthers");
+            "draftOrder9Document", "draftOrder10Document", "reviewDraftOrdersTitles", "draftOrdersTitlesInBundle");
     }
 
     private static Stream<Arguments> populateCaseDataWithState() {

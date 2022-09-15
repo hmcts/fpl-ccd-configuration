@@ -31,6 +31,10 @@ public class OrderCreationService {
         ManageOrdersEventData manageOrdersEventData = caseData.getManageOrdersEventData();
         Order orderType = manageOrdersEventData.getManageOrdersType();
 
+        if (orderType == null) {
+            throw new IllegalStateException("Unexpected null order type. " + manageOrdersEventData);
+        }
+
         OrderDocumentGeneratorResult result = generateContent(caseData, status, format, orderType);
 
         String orderName = status == DRAFT ? DRAFT_ORDER_NAME :

@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Map;
+import javax.validation.constraints.NotNull;
+
 @Data
 @Configuration
 @NoArgsConstructor
@@ -15,6 +18,9 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "cafcass.notification")
 public class CafcassEmailConfiguration {
     private String sender;
+
+    @Getter(AccessLevel.NONE)
+    private String changeofaddress;
 
     @Getter(AccessLevel.NONE)
     private String order;
@@ -33,6 +39,12 @@ public class CafcassEmailConfiguration {
 
     @Getter(AccessLevel.NONE)
     private String large;
+
+    @Getter(AccessLevel.NONE)
+    private String noticeofhearing;
+
+    @NotNull
+    private Map<String, String> documentType;
 
     public String getRecipientForOrder() {
         return order;
@@ -56,5 +68,13 @@ public class CafcassEmailConfiguration {
 
     public String getRecipientForLargeAttachements() {
         return large;
+    }
+
+    public String getRecipientForNoticeOfHearing() {
+        return noticeofhearing;
+    }
+
+    public String getRecipientForChangeOfAddress() {
+        return changeofaddress;
     }
 }
