@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForChildAssessmentOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
+import uk.gov.hmcts.reform.fpl.model.GroundsForRefuseContactWithChild;
 import uk.gov.hmcts.reform.fpl.model.GroundsForSecureAccommodationOrder;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Orders;
@@ -44,6 +45,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisAnnexDocuments;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC14Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC16Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC20Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
@@ -333,6 +335,7 @@ class CaseSubmissionGenerationServiceTest {
                 + "Variation or discharge of care or supervision order\n"
                 + "Child Assessment Order\n"
                 + "Secure Accommodation order\n"
+                + "Authority to refuse contact with a child in care\n"
                 + "expected other order";
             assertThat(caseSubmission.getOrdersNeeded()).isEqualTo(expectedOrdersNeeded);
         }
@@ -461,6 +464,71 @@ class CaseSubmissionGenerationServiceTest {
         }
 
 
+    }
+
+    @Nested
+    class DocmosisC14SupplementTest {
+
+        @Test
+        void shouldPopulateC14Supplement() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.REFUSE_CONTACT_WITH_CHILD))
+                    .build())
+                .groundsForRefuseContactWithChild(GroundsForRefuseContactWithChild.builder()
+                    .personHasContactAndCurrentArrangement("test1")
+                    .laHasRefusedContact("test2")
+                    .personsBeingRefusedContactWithChild("test3")
+                    .reasonsOfApplication("test4")
+                    .build())
+                .build();
+
+            DocmosisC14Supplement supplement = underTest.getC14SupplementData(updatedCaseData, false);
+            assertThat(supplement.getPersonHasContactAndCurrentArrangement()).isEqualTo("test1");
+            assertThat(supplement.getLaHasRefusedContact()).isEqualTo("test2");
+            assertThat(supplement.getPersonsBeingRefusedContactWithChild()).isEqualTo("test3");
+            assertThat(supplement.getReasonsOfApplication()).isEqualTo("test4");
+        }
+
+        @Test
+        void shouldNotPopulateDraftWatermarkOrSealIfDraft() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.SECURE_ACCOMMODATION_ORDER))
+                    .secureAccommodationOrderSection(SecureAccommodationOrderSection.ENGLAND)
+                    .build())
+                .groundsForRefuseContactWithChild(GroundsForRefuseContactWithChild.builder()
+                    .personHasContactAndCurrentArrangement("test1")
+                    .laHasRefusedContact("test2")
+                    .personsBeingRefusedContactWithChild("test3")
+                    .reasonsOfApplication("test4")
+                    .build())
+                .build();
+
+            DocmosisC14Supplement supplement = underTest.getC14SupplementData(updatedCaseData, true);
+            assertThat(supplement.getDraftWaterMark()).isNotEmpty();
+            assertThat(supplement.getCourtSeal()).isNullOrEmpty();
+        }
+
+        @Test
+        void shouldPopulateDraftWatermarkOrSealIfNotDraft() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.SECURE_ACCOMMODATION_ORDER))
+                    .secureAccommodationOrderSection(SecureAccommodationOrderSection.ENGLAND)
+                    .build())
+                .groundsForRefuseContactWithChild(GroundsForRefuseContactWithChild.builder()
+                    .personHasContactAndCurrentArrangement("test1")
+                    .laHasRefusedContact("test2")
+                    .personsBeingRefusedContactWithChild("test3")
+                    .reasonsOfApplication("test4")
+                    .build())
+                .build();
+
+            DocmosisC14Supplement supplement = underTest.getC14SupplementData(updatedCaseData, false);
+            assertThat(supplement.getDraftWaterMark()).isNullOrEmpty();
+            assertThat(supplement.getCourtSeal()).isNotEmpty();
+        }
     }
 
     @Nested
