@@ -40,7 +40,6 @@ public class DraftOrdersRemovedEventHandler {
 
     private final DraftOrdersRemovedContentProvider draftOrdersRemovedContentProvider;
 
-    private final RepresentativesInbox representativesInbox;
     private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final CourtService courtService;
 
@@ -72,11 +71,13 @@ public class DraftOrdersRemovedEventHandler {
 
     private void sendToJudge(CaseData caseData, AbstractJudge judge,
                              DraftOrdersRemovedTemplate draftOrdersRemovedTemplate) {
-        notificationService.sendEmail(
-            DRAFT_ORDER_REMOVED_TEMPLATE_FOR_JUDGES,
-            judge.getJudgeEmailAddress(),
-            draftOrdersRemovedTemplate,
-            caseData.getId());
+        if (judge != null) {
+            notificationService.sendEmail(
+                DRAFT_ORDER_REMOVED_TEMPLATE_FOR_JUDGES,
+                judge.getJudgeEmailAddress(),
+                draftOrdersRemovedTemplate,
+                caseData.getId());
+        }
     }
 
     private void sendToAdminAndLA(CaseData caseData, DraftOrdersRemovedTemplate draftOrdersRemovedTemplate) {
