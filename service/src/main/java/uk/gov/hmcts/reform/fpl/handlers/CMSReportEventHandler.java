@@ -59,7 +59,7 @@ public class CMSReportEventHandler {
                 emailService.sendEmail("noreply@reform.hmcts.net",
                         EmailData.builder()
                                 //TODO uncomment and remove next line.recipient(event.getUserDetails().getEmail())
-                                .recipient("risk.case@mailinator.com")
+                                .recipient("somesh.acharya1@hmcts.net")
                                 .subject(subject)
                                 .attachments(Set.of(attachment))
                                 .message(subject)
