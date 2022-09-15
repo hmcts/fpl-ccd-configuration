@@ -587,6 +587,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                     .pbaPayment(PBAPayment.builder().usePbaPayment(usePbaPayment.getValue()).build())
                     .c2DocumentBundle(C2DocumentBundle.builder()
                         .type(WITH_NOTICE)
+                        .supplementsBundle(new ArrayList<>())
                         .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant").build())
                     .build()));
     }
@@ -601,7 +602,6 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                         .type(WITH_NOTICE)
                         .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
                         .requestedHearingToAdjourn("Case management hearing, 15th September 2022")
-                        .supplementsBundle(new ArrayList<>())
                         .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant").build())
                     .build()));
     }
