@@ -54,7 +54,8 @@ public class Orders {
 
     public boolean isC1Order() {
         return isNotEmpty(orderType) && (this.getOrderType().contains(CHILD_ASSESSMENT_ORDER)
-               || isSecureAccommodationOrder());
+                || isSecureAccommodationOrder()
+                || isRefuseContactWithChildApplication());
     }
 
     public boolean isDischargeOfCareOrder() {
