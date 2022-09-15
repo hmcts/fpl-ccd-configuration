@@ -67,7 +67,7 @@ public class DraftOrdersRemovedEventHandler {
         sendToAdminAndLA(caseDataBefore, draftOrdersRemovedTemplate);
 
         // TBC
-//        sendNotificationToCafcass(caseDataBefore, draftOrdersRemovedTemplate);
+        // sendNotificationToCafcass(caseDataBefore, draftOrdersRemovedTemplate);
     }
 
     private void sendToJudge(CaseData caseData, AbstractJudge judge,

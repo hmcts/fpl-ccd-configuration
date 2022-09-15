@@ -106,18 +106,18 @@ public class DraftOrdersRemovedEventHandlerTest {
 
         List<Element<HearingOrder>> caseManagementOrdersAfter = List.of(element(additionalOrderId, additionalOrder));
 
+        when(draftOrdersRemovedContentProvider.buildContent(
+            caseDataBefore, Optional.of(hearing.getValue()), judge, orderToBeRemoved.getValue(), REMOVAL_REASON)
+        ).thenReturn(DRAFT_ORDERS_REMOVED_TEMPLATE_DATA);
+        when(courtService.getCourtEmail(any())).thenReturn("cort@email.com");
+        when(localAuthorityRecipients.getRecipients(any())).thenReturn(Set.of("la@email.com"));
+
         CaseData caseDataAfter = caseDataBefore.toBuilder()
             .hearingOrdersBundlesDrafts(List.of(
                 element(hearingOrderBundleId,
                     hearingOrdersBundleBefore.toBuilder().orders(caseManagementOrdersAfter).build())
             ))
             .build();
-
-        when(draftOrdersRemovedContentProvider.buildContent(
-            caseDataBefore, Optional.of(hearing.getValue()), judge, orderToBeRemoved.getValue(), REMOVAL_REASON)
-        ).thenReturn(DRAFT_ORDERS_REMOVED_TEMPLATE_DATA);
-        when(courtService.getCourtEmail(any())).thenReturn("cort@email.com");
-        when(localAuthorityRecipients.getRecipients(any())).thenReturn(Set.of("la@email.com"));
 
         underTest.sendNotification(new DraftOrdersRemovedEvent(caseDataAfter, caseDataBefore, orderToBeRemoved,
             REMOVAL_REASON));
