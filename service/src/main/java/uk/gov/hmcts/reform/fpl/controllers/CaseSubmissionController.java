@@ -194,11 +194,10 @@ public class CaseSubmissionController extends CallbackController {
     private List<String> validate(CaseData caseData) {
         List<String> errors = new ArrayList<>();
 
-        // Temporarily disable this check for testing purposes.
-        /*if (featureToggleService.isRestrictedFromCaseSubmission(caseData.getCaseLocalAuthority())) {
+        if (featureToggleService.isRestrictedFromCaseSubmission(caseData.getCaseLocalAuthority())) {
             errors.add("You cannot submit this application online yet."
                 + " Ask your FPL administrator for your local authority’s enrolment date");
-        }*/
+        }
 
         return errors;
     }
