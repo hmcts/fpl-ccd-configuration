@@ -54,12 +54,12 @@ public class TaskListRenderer {
     private final FeatureToggleService featureToggleService;
 
     public String render(List<Task> allTasks, List<EventValidationErrors> taskErrors) {
-        return render(allTasks, taskErrors, Optional.empty());
+        return render(allTasks, taskErrors, Optional.empty(), Optional.empty());
     }
 
     //TODO consider templating solution like mustache
     public String render(List<Task> allTasks, List<EventValidationErrors> tasksErrors,
-                         Optional<String> applicationType) {
+                         Optional<String> applicationType, Optional<Map<Event, String>> tasksHints) {
         final List<String> lines = new LinkedList<>();
 
         lines.add("<div class='width-50'>");
@@ -68,7 +68,7 @@ public class TaskListRenderer {
             lines.add(String.format("<div class='govuk-tag govuk-tag--blue'>%s Application</div>", s));
         });
 
-        groupInSections(allTasks, applicationType).forEach(section -> lines.addAll(renderSection(section)));
+        groupInSections(allTasks, tasksHints).forEach(section -> lines.addAll(renderSection(section)));
 
         lines.add("</div>");
 
@@ -77,20 +77,15 @@ public class TaskListRenderer {
         return String.join("\n\n", lines);
     }
 
-    private List<TaskSection> groupInSections(List<Task> allTasks, Optional<String> applicationType) {
+    private List<TaskSection> groupInSections(List<Task> allTasks, Optional<Map<Event, String>> tasksHints) {
         final Map<Event, Task> tasks = allTasks.stream().collect(toMap(Task::getEvent, identity()));
 
-        Task hearingUrgency = tasks.get(HEARING_URGENCY);
-        applicationType.ifPresent(s -> {
-            if (s.equals("C1")) {
-                hearingUrgency.withHint("Optional for C1 applications");
-            }
-        });
+        tasksHints.ifPresent(tasksHintsMap -> tasksHintsMap.forEach((event, hint) -> tasks.get(event).withHint(hint)));
 
         final TaskSection applicationDetails = newSection("Add application details")
             .withTask(tasks.get(CASE_NAME))
             .withTask(tasks.get(ORDERS_SOUGHT))
-            .withTask(hearingUrgency);
+            .withTask(tasks.get(HEARING_URGENCY));
 
         final TaskSection applicationGrounds = newSection("Add grounds for the application");
 
