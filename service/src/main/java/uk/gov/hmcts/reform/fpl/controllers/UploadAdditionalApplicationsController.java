@@ -123,7 +123,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
                 temporaryC2Document = temporaryC2Document.toBuilder()
                     .hearingList(null)
-                    .requestedHearingToAdjourn(hearing.asLabel())
+                    .requestedHearingToAdjourn(hearing.toLabel())
                     .build();
 
                 skipPayment = uploadAdditionalApplicationsService.shouldSkipPayments(caseData, hearing,
