@@ -61,7 +61,7 @@
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "orders.orderType CONTAINS \"CARE_ORDER\" OR orders.orderType CONTAINS \"INTERIM_CARE_ORDER\" OR orders.orderType CONTAINS \"SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"INTERIM_SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"EDUCATION_SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\" OR orders.orderType CONTAINS \"OTHER\" OR secureAccommodationOrderType!=\"YES\" OR orders.orderType!=\"*\""
+    "FieldShowCondition": "orders.orderType CONTAINS \"CARE_ORDER\" OR orders.orderType CONTAINS \"INTERIM_CARE_ORDER\" OR orders.orderType CONTAINS \"SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"INTERIM_SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"EDUCATION_SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\" OR orders.orderType CONTAINS \"OTHER\" OR orders.orderType!=\"*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -105,5 +105,34 @@
     "FieldShowCondition": "groundsForSecureAccommodationOrder=\"DO_NOT_SHOW\"",
     "DisplayContext": "READONLY",
     "Comments": "A control flag. Yes if order type of this case is secure accommodation order"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "enterGrounds",
+    "CaseFieldID": "groundsForRefuseContactWithChild",
+    "CaseEventFieldLabel": " ",
+    "PageFieldDisplayOrder": 8,
+    "DisplayContext": "COMPLEX",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "orders.orderType CONTAINS \"REFUSE_CONTACT_WITH_CHILD\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "enterGrounds",
+    "CaseFieldID": "refuseContactWithChildOrderType",
+    "CaseEventFieldLabel": " ",
+    "PageFieldDisplayOrder": 7,
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N",
+    "FieldShowCondition": "groundsForRefuseContactWithChild=\"DO_NOT_SHOW\"",
+    "DisplayContext": "READONLY",
+    "Comments": "A control flag. Yes if order type of this case is Refuse contact with child application"
   }
 ]
