@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.handlers.cmo;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,7 +35,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DRAFT_ORDER_REMOVED_TEMPLATE;
@@ -117,18 +115,18 @@ public class DraftOrdersRemovedEventHandlerTest {
 
         List<Element<HearingOrder>> caseManagementOrdersAfter = List.of(element(OTHER_ORDER_ID, additionalOrder));
 
+        when(draftOrdersRemovedContentProvider.buildContent(
+            caseDataBefore, Optional.of(HEARING.getValue()), JUDGE, ORDER_TO_BE_REMOVED.getValue(), REMOVAL_REASON)
+        ).thenReturn(DRAFT_ORDERS_REMOVED_TEMPLATE_DATA);
+        when(courtService.getCourtEmail(any())).thenReturn(COURT_EMAIL_ADDRESS);
+        when(localAuthorityRecipients.getRecipients(any())).thenReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+
         CaseData caseDataAfter = caseDataBefore.toBuilder()
             .hearingOrdersBundlesDrafts(List.of(
                 element(HEARING_ORDER_BUNDLE_ID,
                     hearingOrdersBundleBefore.toBuilder().orders(caseManagementOrdersAfter).build())
             ))
             .build();
-
-        when(draftOrdersRemovedContentProvider.buildContent(
-            caseDataBefore, Optional.of(HEARING.getValue()), JUDGE, ORDER_TO_BE_REMOVED.getValue(), REMOVAL_REASON)
-        ).thenReturn(DRAFT_ORDERS_REMOVED_TEMPLATE_DATA);
-        when(courtService.getCourtEmail(any())).thenReturn(COURT_EMAIL_ADDRESS);
-        when(localAuthorityRecipients.getRecipients(any())).thenReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         underTest.sendNotification(new DraftOrdersRemovedEvent(caseDataAfter, caseDataBefore, ORDER_TO_BE_REMOVED,
             REMOVAL_REASON));
