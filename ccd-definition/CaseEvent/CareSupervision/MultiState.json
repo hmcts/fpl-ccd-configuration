@@ -988,6 +988,7 @@
     "ShowSummary": "Y",
     "ShowEventNotes": "Y",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/remove-draft-orders/about-to-start",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/remove-draft-orders/about-to-submit"
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/remove-draft-orders/about-to-submit",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/remove-draft-orders/submitted"
   }
 ]
