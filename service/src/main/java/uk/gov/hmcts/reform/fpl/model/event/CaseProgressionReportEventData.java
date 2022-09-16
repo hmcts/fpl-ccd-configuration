@@ -20,5 +20,27 @@ public class CaseProgressionReportEventData {
     @Temp
     private String eastLondonDFJCourts;
     @Temp
+    private String westLondonDFJCourts;
+    @Temp
+    private String birminghamDJFCourts;
+    @Temp
+    private String coventryDJFCourts;
+    @Temp
+    private String derbyDJFCourts;
+    @Temp
+    private String leicesterDJFCourts;
+    @Temp
+    private String lincolnDJFCourts;
+    @Temp
+    private String northamptonDJFCourts;
+    @Temp
+    private String nottinghamDJFCourts;
+    @Temp
+    private String wolverhampton;
+    @Temp
+    private String worcester;
+    @Temp
+    private String stokeOnTrent;
+    @Temp
     private String reportType;
 }
