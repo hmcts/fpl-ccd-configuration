@@ -9,6 +9,7 @@ import java.util.Optional;
 public enum DocmosisTemplates {
     C110A("FL-PLW-APP-ENG-00095.doc", "FL-PLW-APP-WEL-00753.doc", "c110a_application_%s"),
     C1("FL-PLW-APP-ENG-01084.doc", null, "c1_application_%s"),
+    C15_SUPPLEMENT("FL-PLW-APP-ENG-01087.doc", null, "c15_supplement_%s"),
     C16_SUPPLEMENT("FL-PLW-APP-ENG-01083.doc", null, "c16_supplement_%s"),
     C20_SUPPLEMENT("FL-PLW-APP-ENG-01085.doc", null, "c20_supplement_%s"),
     C6("FL-PLW-HNO-ENG-00092.doc", null, "Notice_of_proceedings_c6"),

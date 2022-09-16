@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +24,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.CONTACT_WITH_CHILD_IN_CARE;
+
+@Slf4j
 @Api
 @RestController
 @RequestMapping("/callback/orders-needed")
@@ -60,10 +65,13 @@ public class OrdersNeededController extends CallbackController {
         Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get(ordersFieldName))
             .map(orders -> (List<String>) orders.get("orderType"));
 
-        if (orderType.isPresent()
-            && orderType.get().contains(OrderType.CHILD_ASSESSMENT_ORDER.name()) && orderType.get().size() > 1) {
-            return respond(caseDetails, List.of("You have selected a standalone order, "
-                + "this cannot be applied for alongside other orders."));
+        if (orderType.isPresent() && orderType.get().size() > 1) {
+            if (orderType.get().contains(OrderType.CHILD_ASSESSMENT_ORDER.name())
+                || orderType.get().contains(OrderType.CONTACT_WITH_CHILD_IN_CARE.name())
+                || orderType.get().contains(OrderType.OTHER.name())) {
+                return respond(caseDetails, List.of("You have selected a standalone order, "
+                    + "this cannot be applied for alongside other orders."));
+            }
         }
 
         return respond(caseDetails);
@@ -113,10 +121,21 @@ public class OrdersNeededController extends CallbackController {
             removeSecureAccommodationOrderFields(data, ordersFieldName);
         }
 
-        if (caseData.isDischargeOfCareApplication()) {
+        if (isDischargeOfCareOrder(orderType)) {
             data.put("otherOrderType", "YES");
+            log.info("DOC");
         } else {
+            log.info("NON DOC");
             data.put("otherOrderType", "NO");
+        }
+
+        if (isContactWithChildInCareOrder(orderType)) {
+            data.put("contactWithChildInCareOrderType", "YES");
+            log.info("CIC");
+        } else {
+            log.info("NON CIC");
+            data.remove("groundsForContactWithChildInCare");
+            data.remove("contactWithChildInCareOrderType");
         }
 
         Court selectedCourt = getCourtSelection(courtID);
@@ -144,5 +163,17 @@ public class OrdersNeededController extends CallbackController {
 
     private Court getCourtSelection(String courtID) {
         return courtLookup.getCourtByCode(courtID).orElse(null);
+    }
+
+    private boolean isContactWithChildInCareOrder(Optional<List<String>> orderType) {
+        return orderType.isPresent()
+            && orderType.get().size() == 1
+            && orderType.get().contains(OrderType.CONTACT_WITH_CHILD_IN_CARE.name());
+    }
+
+    private boolean isDischargeOfCareOrder(Optional<List<String>> orderType) {
+        return orderType.isPresent()
+            && orderType.get().size() == 1
+            && orderType.get().contains(OrderType.OTHER.name());
     }
 }

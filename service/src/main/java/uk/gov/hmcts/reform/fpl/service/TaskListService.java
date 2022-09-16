@@ -99,7 +99,7 @@ public class TaskListService {
         }
 
         // C1s and C110a's (except DoC)
-        if (!caseData.isDischargeOfCareApplication() && !caseData.isContactWithChildInCareApplication()) {
+        if (!caseData.isDischargeOfCareApplication()) {
             events.add(GROUNDS);
         }
 
@@ -109,7 +109,9 @@ public class TaskListService {
             events.add(LANGUAGE_REQUIREMENTS);
         }
 
-        if (!caseData.isC1Application() || caseData.isSecureAccommodationOrderType()) {
+        if (!caseData.isC1Application()
+            || caseData.isSecureAccommodationOrderType()
+            || caseData.isContactWithChildInCareApplication()) {
             events.add(ALLOCATION_PROPOSAL);
         }
 
