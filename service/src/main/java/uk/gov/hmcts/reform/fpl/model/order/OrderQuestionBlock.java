@@ -117,7 +117,13 @@ public enum OrderQuestionBlock {
                        List.of("respondentsRefused_label", "respondentsRefusedSelector")),
     ORDER_PLACED_CHILD_IN_CUSTODY("orderPlacedChildInCustody", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersPlacedUnderOrder", "manageOrdersOrderCreatedDate", "manageOrdersActionsPermitted",
-            "manageOrdersIsExParte"));
+            "manageOrdersIsExParte")),
+    PARTY_ALLOWED_CONTACTS_AND_CONDITIONS("partyAllowedContactsAndConditions", OrderSection.ORDER_DETAILS,
+                                  List.of(
+                                      "manageOrdersAllowedContact1",
+                                      "manageOrdersAllowedContact2",
+                                      "manageOrdersAllowedContact3",
+                                      "manageOrdersConditionsOfContact"));
 
     private final String showHideField;
     private final OrderSection section;
