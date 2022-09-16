@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.email.EmailAttachment;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
-import uk.gov.hmcts.reform.fpl.model.event.CMSReportEventData;
+import uk.gov.hmcts.reform.fpl.model.event.CaseProgressionReportEventData;
 import uk.gov.hmcts.reform.fpl.service.CaseProgressionReportService;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
@@ -36,11 +36,11 @@ public class CaseProgressionReportEventHandler {
     @EventListener
     public void notifyReport(CaseProgressionReportEvent event) {
         CaseData caseData = event.getCaseData();
-        CMSReportEventData cmsReportEventData = caseData.getCmsReportEventData();
-        String courtCode = cmsReportService.getCourt(cmsReportEventData);
+        CaseProgressionReportEventData caseProgressionReportEventData = caseData.getCaseProgressionReportEventData();
+        String courtCode = cmsReportService.getCourt(caseProgressionReportEventData);
         Optional<Court> court = courtService.getCourt(courtCode);
         String subject = String.join(" ",
-                cmsReportEventData.getReportType(),
+                caseProgressionReportEventData.getReportType(),
                 "for court: ",
                 court.map(Court::getName).orElse("Court not found")
         );

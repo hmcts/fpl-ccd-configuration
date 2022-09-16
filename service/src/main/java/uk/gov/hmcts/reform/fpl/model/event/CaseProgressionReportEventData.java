@@ -10,13 +10,15 @@ import uk.gov.hmcts.reform.fpl.model.Temp;
 @Builder(toBuilder = true)
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CMSReportEventData {
+public class CaseProgressionReportEventData {
     @Temp
     private String carlisleDFJCourts;
     @Temp
     private String swanseaDFJCourts;
     @Temp
     private String centralLondonDFJCourts;
+    @Temp
+    private String eastLondonDFJCourts;
     @Temp
     private String reportType;
 }

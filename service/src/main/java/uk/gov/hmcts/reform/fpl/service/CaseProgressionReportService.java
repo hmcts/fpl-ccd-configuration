@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingInfo;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.event.CMSReportEventData;
+import uk.gov.hmcts.reform.fpl.model.event.CaseProgressionReportEventData;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
 import uk.gov.hmcts.reform.fpl.utils.CsvWriter;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -81,20 +81,20 @@ public class CaseProgressionReportService {
     Supplier<LocalDate> getComplianceDeadline = () -> LocalDate.now().minusWeeks(26);
 
     public String getHtmlReport(CaseData caseData)  {
-        CMSReportEventData cmsReportEventData = caseData.getCmsReportEventData();
+        CaseProgressionReportEventData caseProgressionReportEventData = caseData.getCaseProgressionReportEventData();
         try {
-            if ("AT_RISK".equals(cmsReportEventData.getReportType())) {
+            if ("AT_RISK".equals(caseProgressionReportEventData.getReportType())) {
                 return getHtmlReport(caseData, (complianceDeadline) -> RangeQuery.builder()
                         .field(RANGE_FIELD)
                         .greaterThanOrEqual(complianceDeadline)
                         .build());
-            } else if ("MISSING_TIMETABLE".equals(cmsReportEventData.getReportType())) {
+            } else if ("MISSING_TIMETABLE".equals(caseProgressionReportEventData.getReportType())) {
                 return getHtmlReport(caseData, (complianceDeadline) -> RangeQuery.builder()
                         .field(RANGE_FIELD)
                         .lessThan(complianceDeadline)
                         .build());
             }
-            throw new IllegalArgumentException("Requested unknown report type:" + cmsReportEventData.getReportType());
+            throw new IllegalArgumentException("Requested unknown report type:" + caseProgressionReportEventData.getReportType());
         } catch (JsonProcessingException e) {
             log.error("Exception e", e);
             throw new RuntimeException(e.getMessage());
@@ -102,20 +102,20 @@ public class CaseProgressionReportService {
     }
 
     public Optional<File> getFileReport(CaseData caseData)  {
-        CMSReportEventData cmsReportEventData = caseData.getCmsReportEventData();
+        CaseProgressionReportEventData caseProgressionReportEventData = caseData.getCaseProgressionReportEventData();
         try {
-            if ("AT_RISK".equals(cmsReportEventData.getReportType())) {
+            if ("AT_RISK".equals(caseProgressionReportEventData.getReportType())) {
                 return getFileReport(caseData, (complianceDeadline) -> RangeQuery.builder()
                         .field(RANGE_FIELD)
                         .greaterThanOrEqual(complianceDeadline)
                         .build());
-            } else if ("MISSING_TIMETABLE".equals(cmsReportEventData.getReportType())) {
+            } else if ("MISSING_TIMETABLE".equals(caseProgressionReportEventData.getReportType())) {
                 return getFileReport(caseData, (complianceDeadline) -> RangeQuery.builder()
                         .field(RANGE_FIELD)
                         .lessThan(complianceDeadline)
                         .build());
             }
-            throw new IllegalArgumentException("Requested unknown report type:" + cmsReportEventData.getReportType());
+            throw new IllegalArgumentException("Requested unknown report type:" + caseProgressionReportEventData.getReportType());
         } catch (Exception e) {
             log.error("Exception e", e);
             throw new RuntimeException(e.getMessage());
@@ -124,7 +124,7 @@ public class CaseProgressionReportService {
 
     private Optional<File> getFileReport(CaseData caseDataSelected, Function<LocalDate, RangeQuery> rangeQueryFunction)
             throws IOException {
-        String courtId = getCourt(caseDataSelected.getCmsReportEventData());
+        String courtId = getCourt(caseDataSelected.getCaseProgressionReportEventData());
         Optional<File> optFile = Optional.empty();
 
         ESQuery esQuery = buildQuery(courtId, rangeQueryFunction.apply(getComplianceDeadline.get()));
@@ -169,8 +169,8 @@ public class CaseProgressionReportService {
     }
 
     private String getHtmlReport(CaseData caseDataSelected, Function<LocalDate, RangeQuery> rangeQueryFunction) throws JsonProcessingException {
-        CMSReportEventData cmsReportEventData = caseDataSelected.getCmsReportEventData();
-        String courtId = getCourt(cmsReportEventData);
+        CaseProgressionReportEventData caseProgressionReportEventData = caseDataSelected.getCaseProgressionReportEventData();
+        String courtId = getCourt(caseProgressionReportEventData);
 
         ESQuery esQuery = buildQuery(courtId, rangeQueryFunction.apply(getComplianceDeadline.get()));
         log.info("query {}", esQuery.toMap());
@@ -316,11 +316,12 @@ public class CaseProgressionReportService {
         return optionalHearingInfoBuilder.map(HearingInfo.HearingInfoBuilder::build);
     }
 
-    public String getCourt(CMSReportEventData cmsReportEventData) {
-        return Optional.ofNullable(cmsReportEventData.getCarlisleDFJCourts())
-                .orElseGet(() -> Optional.ofNullable(cmsReportEventData.getCentralLondonDFJCourts())
-                        .orElseGet(cmsReportEventData::getSwanseaDFJCourts));
-
+    public String getCourt(CaseProgressionReportEventData caseProgressionReportEventData) {
+        return Optional.ofNullable(caseProgressionReportEventData.getCarlisleDFJCourts())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getCentralLondonDFJCourts())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getEastLondonDFJCourts())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getSwanseaDFJCourts())
+                .orElseThrow(() ->new IllegalArgumentException("Court not found")))));
     }
 
     private ESQuery buildQuery(String courtId, RangeQuery rangeQuery) {

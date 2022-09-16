@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingInfo;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.event.CMSReportEventData;
+import uk.gov.hmcts.reform.fpl.model.event.CaseProgressionReportEventData;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESQuery;
@@ -63,13 +63,13 @@ class CaseProgressionReportServiceTest {
     @Test
     void shouldReturnHtmlReport() {
         LocalDate submittedDate = LocalDate.now().minusWeeks(24);
-        CMSReportEventData cmsReportEventData = CMSReportEventData.builder()
+        CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
                 .swanseaDFJCourts("344")
                 .reportType("MISSING_TIMETABLE")
                 .build();
 
         CaseData caseDataSelected = CaseData.builder()
-                .cmsReportEventData(cmsReportEventData)
+                .caseProgressionReportEventData(caseProgressionReportEventData)
                 .build();
 
         List<Element<HearingBooking>> hearingDetails =
@@ -97,13 +97,13 @@ class CaseProgressionReportServiceTest {
         LocalDateTime issueHearing = LocalDateTime.of(
                 LocalDate.parse("22-09-2022" , DateTimeFormatter.ofPattern("dd-MM-yyyy")),
                 LocalTime.now());
-        CMSReportEventData cmsReportEventData = CMSReportEventData.builder()
+        CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
                 .swanseaDFJCourts("344")
                 .reportType("MISSING_TIMETABLE")
                 .build();
 
         CaseData caseDataSelected = CaseData.builder()
-                .cmsReportEventData(cmsReportEventData)
+                .caseProgressionReportEventData(caseProgressionReportEventData)
                 .build();
 
         List<Element<HearingBooking>> hearingDetails = ElementUtils.wrapElements(List.of(createHearingBooking(FINAL, finalHearing),
