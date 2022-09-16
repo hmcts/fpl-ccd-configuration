@@ -2,12 +2,11 @@ package uk.gov.hmcts.reform.fpl.model.notify.cmo;
 
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 
 @Data
 @Builder
-public class DraftOrdersRemovedTemplate implements NotifyData, CafcassData {
+public class DraftOrdersRemovedTemplate implements NotifyData {
     private final String judgeTitle;
     private final String judgeName;
     private final String subjectLineWithHearingDate;

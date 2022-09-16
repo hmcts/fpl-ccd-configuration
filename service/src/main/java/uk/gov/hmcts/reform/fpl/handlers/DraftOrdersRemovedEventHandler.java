@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersRemovedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.cafcass.OrderRemovedCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.AbstractJudge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
@@ -33,6 +34,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DRAFT_ORDER_REMOVED_TEMPLA
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DRAFT_ORDER_REMOVED_TEMPLATE_FOR_JUDGES;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -52,6 +54,7 @@ public class DraftOrdersRemovedEventHandler {
     @Async
     @EventListener
     public void sendNotification(final DraftOrdersRemovedEvent event) {
+        // get the case data before the order was removed
         final CaseData caseDataBefore = event.getCaseDataBefore();
         final Element<HearingOrder> draftOrderRemoved = event.getDraftOrderRemoved();
 
@@ -79,9 +82,6 @@ public class DraftOrdersRemovedEventHandler {
         } catch (Exception e) {
             log.error("Fail to notify admin and LA", e);
         }
-
-        // TBC
-        // sendNotificationToCafcass(caseDataBefore, draftOrdersRemovedTemplate);
     }
 
     private void sendToJudge(CaseData caseData, AbstractJudge judge,
@@ -119,13 +119,21 @@ public class DraftOrdersRemovedEventHandler {
         );
     }
 
-    private void sendNotificationToCafcass(CaseData caseData, DraftOrdersRemovedTemplate draftOrdersRemovedTemplate) {
-        final String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
-        notificationService.sendEmail(
-            DRAFT_ORDER_REMOVED_TEMPLATE,
-            recipient,
-            draftOrdersRemovedTemplate,
-            caseData.getId());
+    @Async
+    @EventListener
+    public void sendNotificationToCafcass(final DraftOrdersRemovedEvent event) {
+        CaseData caseData = event.getCaseData();
+        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
+            cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
+
+        if (recipientIsEngland.isPresent()) {
+            cafcassNotificationService.sendEmail(caseData,
+                ORDER,
+                OrderRemovedCafcassData.builder()
+                    .documentName("draft order")
+                    .removalReason(event.getRemovalReason())
+                    .build());
+        }
     }
 
     private Optional<HearingBooking> getHearingBookingFromDraftOrder(CaseData caseData, UUID draftOrderId) {
