@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -35,6 +36,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
+@Slf4j
 public class DraftOrdersRemovedEventHandler {
 
     private final DraftOrdersRemovedContentProvider draftOrdersRemovedContentProvider;
@@ -62,9 +64,21 @@ public class DraftOrdersRemovedEventHandler {
             .buildContent(caseDataBefore, hearingBooking, judge,
                 draftOrderRemoved.getValue(), event.getRemovalReason());
 
-        sendToJudge(caseDataBefore, judge, draftOrdersRemovedTemplate);
-        sendToRepresentatives(caseDataBefore, draftOrdersRemovedTemplate);
-        sendToAdminAndLA(caseDataBefore, draftOrdersRemovedTemplate);
+        try {
+            sendToJudge(caseDataBefore, judge, draftOrdersRemovedTemplate);
+        } catch (Exception e) {
+            log.error("Fail to notify judges", e);
+        }
+        try {
+            sendToRepresentatives(caseDataBefore, draftOrdersRemovedTemplate);
+        } catch (Exception e) {
+            log.error("Fail to notify representatives", e);
+        }
+        try {
+            sendToAdminAndLA(caseDataBefore, draftOrdersRemovedTemplate);
+        } catch (Exception e) {
+            log.error("Fail to notify admin and LA", e);
+        }
 
         // TBC
         // sendNotificationToCafcass(caseDataBefore, draftOrdersRemovedTemplate);
