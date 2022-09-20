@@ -11,16 +11,14 @@
     "ID": "CarlisleDFJCourts",
     "ListElementCode": "165",
     "ListElement": "Carlisle",
-    "DisplayOrder": 1
+    "DisplayOrder": 2
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "CarlisleDFJCourts",
     "ListElementCode": "373",
-    "ListElement": "West Cumbria",
-    "DisplayOrder": 1
+    "ListElement": "West Cumbria ",
+    "DisplayOrder": 3
   }
+
 ]
-
-
-

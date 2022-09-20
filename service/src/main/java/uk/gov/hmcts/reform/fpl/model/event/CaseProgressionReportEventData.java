@@ -12,45 +12,51 @@ import uk.gov.hmcts.reform.fpl.model.Temp;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CaseProgressionReportEventData {
     @Temp
-    private String carlisleDFJCourts;
-    @Temp
     private String centralLondonDFJCourts;
     @Temp
     private String eastLondonDFJCourts;
     @Temp
     private String westLondonDFJCourts;
     @Temp
-    private String birminghamDJFCourts;
+    private String birminghamDFJCourts;
     @Temp
-    private String coventryDJFCourts;
+    private String coventryDFJCourts;
     @Temp
-    private String derbyDJFCourts;
+    private String derbyDFJCourts;
     @Temp
-    private String leicesterDJFCourts;
+    private String leicesterDFJCourts;
     @Temp
-    private String lincolnDJFCourts;
+    private String lincolnDFJCourts;
     @Temp
-    private String northamptonDJFCourts;
+    private String northamptonDFJCourts;
     @Temp
-    private String nottinghamDJFCourts;
+    private String nottinghamDFJCourts;
     @Temp
-    private String wolverhamptonDJFCourts;
+    private String wolverhamptonDFJCourts;
     @Temp
-    private String worcesterDJFCourts;
+    private String worcesterDFJCourts;
     @Temp
-    private String stokeOnTrentrDJFCourts;
+    private String stokeOnTrentrDFJCourts;
     @Temp
-    private String clevelandAndSouthDurhamDJFCourts;
+    private String clevelandAndSouthDurhamDFJCourts;
     @Temp
-    private String humbersideDJFCourts;
+    private String humbersideDFJCourts;
     @Temp
-    private String northYorkshireDJFCourts;
+    private String northYorkshireDFJCourts;
     @Temp
-    private String northumbriaAndNorthDurhamDJFCourts;
+    private String northumbriaAndNorthDurhamDFJCourts;
     @Temp
-    private String southYorkshireDJFCourts;
+    private String southYorkshireDFJCourts;
     @Temp
-    private String westYorkshireDJFCourts;
+    private String westYorkshireDFJCourts;
+    @Temp
+    private String blackburnLancasterDFJCourts;
+    @Temp
+    private String carlisleDFJCourts;
+    @Temp
+    private String liverpoolDFJCourts;
+    @Temp
+    private String manchesterDFJCourts;
     @Temp
     private String swanseaDFJCourts;
     @Temp

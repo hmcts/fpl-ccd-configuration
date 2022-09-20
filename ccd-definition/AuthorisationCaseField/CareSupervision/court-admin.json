@@ -4069,35 +4069,28 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "midlandsDJF",
+    "CaseFieldID": "midlandsDFJ",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "northEastDJF",
+    "CaseFieldID": "northEastDFJ",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   }
 ,{
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "northWestDJF",
+    "CaseFieldID": "northWestDFJ",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "WalesDJF",
-    "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "carlisleDFJCourts",
+    "CaseFieldID": "WalesDFJ",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
@@ -4139,112 +4132,140 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "birminghamDJFCourts",
+    "CaseFieldID": "birminghamDFJCourts",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "coventryDJFCourts",
+    "CaseFieldID": "coventryDFJCourts",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "derbyDJFCourts",
+    "CaseFieldID": "derbyDFJCourts",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "leicesterDJFCourts",
+    "CaseFieldID": "leicesterDFJCourts",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "lincolnDJFCourts",
+    "CaseFieldID": "lincolnDFJCourts",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "northamptonDJFCourts",
+    "CaseFieldID": "northamptonDFJCourts",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "nottinghamDJFCourts",
+    "CaseFieldID": "nottinghamDFJCourts",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "wolverhamptonDJFCourts",
+    "CaseFieldID": "wolverhamptonDFJCourts",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "worcesterDJFCourts",
+    "CaseFieldID": "worcesterDFJCourts",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "stokeOnTrentrDJFCourts",
+    "CaseFieldID": "stokeOnTrentrDFJCourts",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "clevelandAndSouthDurhamDJFCourts",
+    "CaseFieldID": "clevelandAndSouthDurhamDFJCourts",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "humbersideDJFCourts",
+    "CaseFieldID": "humbersideDFJCourts",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "northYorkshireDJFCourts",
+    "CaseFieldID": "northYorkshireDFJCourts",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "northumbriaAndNorthDurhamDJFCourts",
+    "CaseFieldID": "northumbriaAndNorthDurhamDFJCourts",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "southYorkshireDJFCourts",
+    "CaseFieldID": "southYorkshireDFJCourts",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "westYorkshireDJFCourts",
+    "CaseFieldID": "westYorkshireDFJCourts",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "blackburnLancasterDFJCourts",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "carlisleDFJCourts",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "liverpoolDFJCourts",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manchesterDFJCourts",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
