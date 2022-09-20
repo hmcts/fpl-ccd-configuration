@@ -11,21 +11,21 @@
     "ID": "NorthWestDJF",
     "ListElementCode": "CARLISLE",
     "ListElement": "Carlisle",
-    "DisplayOrder": 1
+    "DisplayOrder": 2
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "NorthWestDJF",
     "ListElementCode": "LIVERPOOL",
     "ListElement": "Liverpool",
-    "DisplayOrder": 1
+    "DisplayOrder": 3
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "NorthWestDJF",
     "ListElementCode": "MANCHESTER",
     "ListElement": "Manchester",
-    "DisplayOrder": 1
+    "DisplayOrder": 4
   }
 ]
 

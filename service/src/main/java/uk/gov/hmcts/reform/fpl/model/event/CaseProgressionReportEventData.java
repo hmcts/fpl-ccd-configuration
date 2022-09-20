@@ -14,8 +14,6 @@ public class CaseProgressionReportEventData {
     @Temp
     private String carlisleDFJCourts;
     @Temp
-    private String swanseaDFJCourts;
-    @Temp
     private String centralLondonDFJCourts;
     @Temp
     private String eastLondonDFJCourts;
@@ -36,11 +34,25 @@ public class CaseProgressionReportEventData {
     @Temp
     private String nottinghamDJFCourts;
     @Temp
-    private String wolverhampton;
+    private String wolverhamptonDJFCourts;
     @Temp
-    private String worcester;
+    private String worcesterDJFCourts;
     @Temp
-    private String stokeOnTrent;
+    private String stokeOnTrentrDJFCourts;
+    @Temp
+    private String clevelandAndSouthDurhamDJFCourts;
+    @Temp
+    private String humbersideDJFCourts;
+    @Temp
+    private String northYorkshireDJFCourts;
+    @Temp
+    private String northumbriaAndNorthDurhamDJFCourts;
+    @Temp
+    private String southYorkshireDJFCourts;
+    @Temp
+    private String westYorkshireDJFCourts;
+    @Temp
+    private String swanseaDFJCourts;
     @Temp
     private String reportType;
 }

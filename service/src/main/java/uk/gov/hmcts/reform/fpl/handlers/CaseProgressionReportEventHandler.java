@@ -54,7 +54,11 @@ public class CaseProgressionReportEventHandler {
                 EmailAttachment attachment = EmailAttachment.document(defaultIfNull(URLConnection.guessContentTypeFromName(file.getName()),
                                 "application/octet-stream"),
                         Files.readAllBytes(file.toPath()),
-                        file.getName());
+                        String.join("-",
+                                court.map(Court::getName)
+                                    .map(name -> name.replace(" ",""))
+                                    .orElse(""),
+                                file.getName()));
 
                 emailService.sendEmail("noreply@reform.hmcts.net",
                         EmailData.builder()

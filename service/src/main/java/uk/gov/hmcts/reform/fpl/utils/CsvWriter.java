@@ -24,7 +24,7 @@ public final class CsvWriter {
     public static File writeHearingInfoToCsv(
             List<HearingInfo> hearingInfoList
     ) throws IOException {
-        var path = Files.createTempFile("CaseProgressionReport", ".csv", ATTRIBUTE);// Compliant
+        var path = Files.createTempFile("CaseProgressionReport", ".xlsx", ATTRIBUTE);// Compliant
         var csvFile = path.toFile();
         CSVFormat csvFileHeader = CSVFormat.DEFAULT.builder().setHeader(CMS_REPORT_CSV_HEADERS).build();
 

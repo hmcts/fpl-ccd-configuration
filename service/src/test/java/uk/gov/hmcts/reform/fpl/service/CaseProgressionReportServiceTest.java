@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingInfo;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -36,6 +37,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.times;
@@ -55,6 +57,9 @@ class CaseProgressionReportServiceTest {
 
     @Mock
     private CaseConverter converter;
+
+    @Mock
+    private CourtService courtService;
 
     @InjectMocks
     private CaseProgressionReportService service;
@@ -81,7 +86,10 @@ class CaseProgressionReportServiceTest {
                 .total(caseDetails.size())
                 .cases(caseDetails)
                 .build();
-
+        when(courtService.getCourt(anyString())).thenReturn(Optional.of(Court.builder()
+                .code("115")
+                .name("Central Family Court")
+                .build()));
         when(searchService.search(any(), eq(100), eq(0), isA(Sort.class))).thenReturn(searchResult);
         when(converter.convert(isA(CaseDetails.class))).thenReturn(getCaseData(hearingDetails, submittedDate));
         String report = service.getHtmlReport(caseDataSelected);
@@ -113,22 +121,30 @@ class CaseProgressionReportServiceTest {
                 LocalDate.parse("18-06-2022" , DateTimeFormatter.ofPattern("dd-MM-yyyy")),
                 LocalTime.now());
 
+        LocalDateTime firstCaseManagementHearing = LocalDateTime.of(
+                LocalDate.parse("22-08-2022" , DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+                LocalTime.now());
+
         List<Element<HearingBooking>> hearingDetailsTwo = ElementUtils.wrapElements(
                 List.of(createHearingBooking(CASE_MANAGEMENT, caseManagementHearing),
                         createHearingBooking(ISSUE_RESOLUTION, issueHearing)));
 
+        List<Element<HearingBooking>> hearingDetailsThree = ElementUtils.wrapElements(
+                List.of(createHearingBooking(CASE_MANAGEMENT, firstCaseManagementHearing)));
         List<CaseDetails> caseDetails = List.of(createCaseDetails());
 
         SearchResult searchResult = SearchResult.builder()
-                .total(100)
+                .total(150)
                 .cases(caseDetails)
                 .build();
 
         when(searchService.search(any(), eq(ES_DEFAULT_SIZE), eq(0), isA(Sort.class))).thenReturn(searchResult);
         when(searchService.search(any(), eq(ES_DEFAULT_SIZE), eq(ES_DEFAULT_SIZE), isA(Sort.class))).thenReturn(searchResult);
+        when(searchService.search(any(), eq(ES_DEFAULT_SIZE), eq(ES_DEFAULT_SIZE * 2), isA(Sort.class))).thenReturn(searchResult);
         when(converter.convert(isA(CaseDetails.class))).thenReturn(
-                getCaseData(hearingDetails, submittedDate, "PO22ZA12345"),
-                getCaseData(hearingDetailsTwo, submittedDate, "ZO88ZA56789")
+                getCaseData(hearingDetails, submittedDate, "PO22ZA12345", 1663342447124290L),
+                getCaseData(hearingDetailsTwo, submittedDate.minusMonths(1), "ZO88ZA56789", 1663342966373807L),
+                getCaseData(hearingDetailsThree, submittedDate.plusMonths(2), "AO88ZA56789", 1663342966000000L)
                 );
         Optional<File> fileReport = service.getFileReport(caseDataSelected);
         assertThat(fileReport).isPresent();
@@ -136,19 +152,21 @@ class CaseProgressionReportServiceTest {
         List<CSVRecord> csvRecordsList = readCsv(fileReport.get());
         assertThat(csvRecordsList)
                 .isNotEmpty()
-                .hasSize(3)
+                .hasSize(4)
                 .extracting(record -> tuple(
                         record.get(0), record.get(1), record.get(2), record.get(3), record.get(4),
-                        record.get(5), record.get(6))
+                        record.get(5), record.get(6), record.get(7))
                 ).containsExactly(
-                        tuple("Case Number", "Receipt date", "Last hearing", "Next hearing",
-                                "Age of case (weeks)", "PLO stage", "Expected FH date"),
-                        tuple("PO22ZA12345", "04-05-2022", "22-09-2022",
+                        tuple("Case Number", "CCD Number","Receipt date", "Last PLO hearing", "Next hearing",
+                                "Age of case (weeks)","PLO stage", "Expected FH date"),
+                        tuple("PO22ZA12345", "1663342447124290", "04-05-2022", "22-09-2022",
                                 "03-11-2022", "19", "Final", "02-11-2022"),
-                        tuple("ZO88ZA56789", "04-05-2022", "18-06-2022",
-                                "22-09-2022", "19", "Issue resolution", "02-11-2022")
+                        tuple("ZO88ZA56789", "1663342966373807", "04-04-2022", "18-06-2022",
+                                "22-09-2022", "23", "Issue resolution", "03-10-2022"),
+                        tuple("AO88ZA56789", "1663342966000000", "04-07-2022", "22-08-2022",
+                                "-", "10", "Case management", "02-01-2023")
                 );
-        verify(searchService, times(2))
+        verify(searchService, times(3))
                 .search(isA(ESQuery.class), anyInt(), anyInt(), isA(Sort.class));
     }
 
@@ -164,12 +182,14 @@ class CaseProgressionReportServiceTest {
     }
 
     private CaseData getCaseData(List<Element<HearingBooking>> hearingDetails, LocalDate submittedDate) {
-        return getCaseData(hearingDetails, submittedDate, "PO22ZA12345");
+        return getCaseData(hearingDetails, submittedDate, "PO22ZA12345", 1663342966373807L);
     }
 
-    private CaseData getCaseData(List<Element<HearingBooking>> hearingDetails, LocalDate submittedDate, String familyManNum) {
+    private CaseData getCaseData(List<Element<HearingBooking>> hearingDetails,
+                                 LocalDate submittedDate, String familyManNum, Long caseId) {
         return CaseData.builder()
                 .familyManCaseNumber(familyManNum)
+                .id(caseId)
                 .dateSubmitted(submittedDate)
                 .hearingDetails(hearingDetails)
                 .build();

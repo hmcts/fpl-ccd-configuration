@@ -1,0 +1,50 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NorthEastDJF",
+    "ListElementCode": "CLEVELAND_AND_SOUTH_DURHAM",
+    "ListElement": "Cleveland & South Durham",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NorthEastDJF",
+    "ListElementCode": "HUMBERSIDE",
+    "ListElement": "Humberside",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NorthEastDJF",
+    "ListElementCode": "NORTH_YORKSHIRE",
+    "ListElement": "North Yorkshire",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NorthEastDJF",
+    "ListElementCode": "NORTHUMBRIA_AND_NORTH_DURHAM",
+    "ListElement": "Northumbria & North Durham",
+    "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NorthEastDJF",
+    "ListElementCode": "SOUTH_YORKSHIRE",
+    "ListElement": "South Yorkshire",
+    "DisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NorthEastDJF",
+    "ListElementCode": "WEST_YORKSHIRE",
+    "ListElement": "West Yorkshire",
+    "DisplayOrder": 6
+  }
+]
+
+
+
+
+
+

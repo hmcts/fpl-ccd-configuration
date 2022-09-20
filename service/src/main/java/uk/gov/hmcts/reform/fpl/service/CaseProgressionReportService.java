@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingInfo;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -61,6 +62,7 @@ public class CaseProgressionReportService {
 
     private final SearchService searchService;
     private final CaseConverter converter;
+    private final CourtService courtService;
     private final static List<HearingType> REQUIRED_HEARING_TYPE = List.of(
             CASE_MANAGEMENT, ISSUE_RESOLUTION, FINAL
     );
@@ -186,6 +188,11 @@ public class CaseProgressionReportService {
         StringBuilder result = new StringBuilder();
         if (searchResult.getTotal() > 0) {
             result.append("<table>")
+                .append("<tr>")
+                .append("<th class='search-result-column-label' colspan=\"9\">")
+                .append(courtService.getCourt(courtId).map(Court::getName).orElse(""))
+                .append("<th class='search-result-column-label'>")
+                .append("</tr>")
                 .append("<tr>")
                 .append(headerField.apply("Sr no."))
                 .append(headerField.apply("Case Number"))
@@ -329,10 +336,16 @@ public class CaseProgressionReportService {
                 .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getLincolnDJFCourts())
                 .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getNorthamptonDJFCourts())
                 .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getNottinghamDJFCourts())
-                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getWolverhampton())
-                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getStokeOnTrent())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getWolverhamptonDJFCourts())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getStokeOnTrentrDJFCourts())
                 .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getWestLondonDFJCourts())
-                .orElseThrow(() ->new IllegalArgumentException("Court not found"))))))))))))))));
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getClevelandAndSouthDurhamDJFCourts())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getHumbersideDJFCourts())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getNorthYorkshireDJFCourts())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getNorthumbriaAndNorthDurhamDJFCourts())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getSouthYorkshireDJFCourts())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getWestYorkshireDJFCourts())
+                .orElseThrow(() ->new IllegalArgumentException("Court not found"))))))))))))))))))))));
     }
 
     private ESQuery buildQuery(String courtId, RangeQuery rangeQuery) {

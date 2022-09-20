@@ -42,6 +42,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "northEastDJF",
+    "Label": "Select DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "NorthEastDJF",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "northWestDJF",
     "Label": "Select DFJ area",
     "FieldType": "FixedList",
@@ -172,7 +182,17 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "wolverhampton",
+    "ID": "stokeOnTrentrDJFCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "Stoke-on-TrentDJFCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "wolverhamptonDJFCourts",
     "Label": "Select court under DFJ area",
     "FieldType": "FixedList",
     "FieldTypeParameter": "WolverhamptonDJFCourts",
@@ -182,7 +202,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "worcester",
+    "ID": "worcesterDJFCourts",
     "Label": "Select court under DFJ area",
     "FieldType": "FixedList",
     "FieldTypeParameter": "WorcesterDJFCourts",
@@ -192,10 +212,60 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "stokeOnTrent",
+    "ID": "clevelandAndSouthDurhamDJFCourts",
     "Label": "Select court under DFJ area",
     "FieldType": "FixedList",
-    "FieldTypeParameter": "Stoke-on-TrentDJFCourts",
+    "FieldTypeParameter": "ClevelandAndSouthDurhamDJFCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "humbersideDJFCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "HumbersideDJFCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "northYorkshireDJFCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "NorthYorkshireDJFCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "northumbriaAndNorthDurhamDJFCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "NorthumbriaAndNorthDurhamDJFCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "southYorkshireDJFCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "SouthYorkshireDJFCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "westYorkshireDJFCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "WestYorkshireDJFCourts",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
