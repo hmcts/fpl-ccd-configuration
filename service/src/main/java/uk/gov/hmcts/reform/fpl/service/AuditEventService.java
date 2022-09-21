@@ -30,17 +30,4 @@ public class AuditEventService {
             .filter(auditEvent -> eventName.equals(auditEvent.getId()))
             .max(Comparator.comparing(AuditEvent::getCreatedDate));
     }
-
-    public Optional<AuditEvent> getOldestAuditEventByName(String caseId, String eventName) {
-        log.info("Case id {} and event name {}", caseId, eventName);
-        String userToken = systemUserService.getSysUserToken();
-
-        AuditEventsResponse auditEventsResponse
-            = caseDataApi.getAuditEvents(userToken, authTokenGenerator.generate(), false, caseId);
-
-        return auditEventsResponse.getAuditEvents().stream()
-                .peek(auditEvent -> log.info("audit event name {}", auditEvent.getId()))
-            .filter(auditEvent -> eventName.equals(auditEvent.getId()))
-            .min(Comparator.comparing(AuditEvent::getCreatedDate));
-    }
 }
