@@ -92,6 +92,10 @@ public class CaseProgressionReportEventData {
     @Temp
     private String truroDFJCourts;
     @Temp
+    private String northWalesDFJCourts;
+    @Temp
+    private String southEastWalesDFJCourts;
+    @Temp
     private String swanseaDFJCourts;
     @Temp
     private String reportType;

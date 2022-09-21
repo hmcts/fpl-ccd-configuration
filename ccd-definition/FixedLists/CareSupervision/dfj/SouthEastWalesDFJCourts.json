@@ -1,0 +1,30 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SouthEastWalesDFJCourts",
+    "ListElementCode": "164",
+    "ListElement": "Cardiff",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SouthEastWalesDFJCourts",
+    "ListElementCode": "269",
+    "ListElement": "Merthyr Tydfil",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SouthEastWalesDFJCourts",
+    "ListElementCode": "280",
+    "ListElement": "Newport (Gwent)",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SouthEastWalesDFJCourts",
+    "ListElementCode": "299",
+    "ListElement": "Pontypridd",
+    "DisplayOrder": 3
+  }
+]
