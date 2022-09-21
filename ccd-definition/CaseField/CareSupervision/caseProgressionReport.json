@@ -62,6 +62,26 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "southEastDFJ",
+    "Label": "Select DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "SouthEastDFJ",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "southWestDFJ",
+    "Label": "Select DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "SouthWestDFJ",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "WalesDFJ",
     "Label": "Select DFJ area",
     "FieldType": "FixedList",
@@ -296,6 +316,176 @@
     "Label": "Select court under DFJ area",
     "FieldType": "FixedList",
     "FieldTypeParameter": "ManchesterDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "brightonDFJCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "BrightonDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "essexAndSuffolkDFJCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "EssexAndSuffolkDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "guildfordDFJCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "GuildfordDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "lutonDFJCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "LutonDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "medwayDFJCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "MedwayDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "miltonKeynesDFJCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "MiltonKeynesDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "norwichDFJCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "NorwichDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "peterboroughDFJCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "PeterboroughDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "readingDFJCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "ReadingDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "watfordDFJCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "WatfordDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "bournemouthAndDorsetDFJCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "BournemouthAndDorsetDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "bristolDFJCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "BristolDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "devonDFJCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "DevonDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "portsmouthDFJCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "PortsmouthDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "swindonDFJCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "SwindonDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "tauntonDFJCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "TauntonDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "truroDFJCourts",
+    "Label": "Select court under DFJ area",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "TruroDFJCourts",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

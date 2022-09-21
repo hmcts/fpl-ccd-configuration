@@ -349,7 +349,23 @@ public class CaseProgressionReportService {
                 .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getCarlisleDFJCourts())
                 .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getLiverpoolDFJCourts())
                 .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getManchesterDFJCourts())
-                .orElseThrow(() ->new IllegalArgumentException("Court not found"))))))))))))))))))))))))));
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getBirminghamDFJCourts())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getGuildfordDFJCourts())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getLutonDFJCourts())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getMedwayDFJCourts())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getMiltonKeynesDFJCourts())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getNorwichDFJCourts())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getPeterboroughDFJCourts())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getReadingDFJCourts())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getWatfordDFJCourts())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getBournemouthAndDorsetDFJCourts())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getBristolDFJCourts())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getDevonDFJCourts())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getPortsmouthDFJCourts())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getSwindonDFJCourts())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getTauntonDFJCourts())
+                .orElseGet(() -> Optional.ofNullable(caseProgressionReportEventData.getTruroDFJCourts())
+                .orElseThrow(() ->new IllegalArgumentException("Court not found"))))))))))))))))))))))))))))))))))))))))));
     }
 
     private ESQuery buildQuery(String courtId, RangeQuery rangeQuery) {

@@ -58,6 +58,40 @@ public class CaseProgressionReportEventData {
     @Temp
     private String manchesterDFJCourts;
     @Temp
+    private String brightonDFJCourts;
+    @Temp
+    private String essexAndSuffolkDFJCourts;
+    @Temp
+    private String guildfordDFJCourts;
+    @Temp
+    private String lutonDFJCourts;
+    @Temp
+    private String medwayDFJCourts;
+    @Temp
+    private String miltonKeynesDFJCourts;
+    @Temp
+    private String norwichDFJCourts;
+    @Temp
+    private String peterboroughDFJCourts;
+    @Temp
+    private String readingDFJCourts;
+    @Temp
+    private String watfordDFJCourts;
+    @Temp
+    private String bournemouthAndDorsetDFJCourts;
+    @Temp
+    private String bristolDFJCourts;
+    @Temp
+    private String devonDFJCourts;
+    @Temp
+    private String portsmouthDFJCourts;
+    @Temp
+    private String swindonDFJCourts;
+    @Temp
+    private String tauntonDFJCourts;
+    @Temp
+    private String truroDFJCourts;
+    @Temp
     private String swanseaDFJCourts;
     @Temp
     private String reportType;

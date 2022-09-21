@@ -1,0 +1,72 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SouthEastDFJ",
+    "ListElementCode": "BRIGHTON",
+    "ListElement": "Brighton",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SouthEastDFJ",
+    "ListElementCode": "ESSEX_AND_SUFFOLK",
+    "ListElement": "Essex & Suffolk",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SouthEastDFJ",
+    "ListElementCode": "GUILDFORD",
+    "ListElement": "Guildford",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SouthEastDFJ",
+    "ListElementCode": "LUTON",
+    "ListElement": "Luton",
+    "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SouthEastDFJ",
+    "ListElementCode": "MEDWAY",
+    "ListElement": "Medway",
+    "DisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SouthEastDFJ",
+    "ListElementCode": "MILTON_KEYNES",
+    "ListElement": "Milton Keynes",
+    "DisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SouthEastDFJ",
+    "ListElementCode": "NORWICH",
+    "ListElement": "Norwich",
+    "DisplayOrder": 7
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SouthEastDFJ",
+    "ListElementCode": "PETERBOROUGH",
+    "ListElement": "Peterborough",
+    "DisplayOrder": 8
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SouthEastDFJ",
+    "ListElementCode": "READING",
+    "ListElement": "Reading",
+    "DisplayOrder": 9
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SouthEastDFJ",
+    "ListElementCode": "WATFORD",
+    "ListElement": "Watford",
+    "DisplayOrder": 10
+  }
+]

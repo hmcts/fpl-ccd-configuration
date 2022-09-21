@@ -1,0 +1,51 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SouthWestDFJ",
+    "ListElementCode": "BOURNEMOUTH_AND_DORSET",
+    "ListElement": "Bournemouth & Dorset",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SouthWestDFJ",
+    "ListElementCode": "BRISTOL",
+    "ListElement": "Bristol",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SouthWestDFJ",
+    "ListElementCode": "DEVON",
+    "ListElement": "Devon",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SouthWestDFJ",
+    "ListElementCode": "PORTSMOUTH",
+    "ListElement": "Portsmouth",
+    "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SouthWestDFJ",
+    "ListElementCode": "SWINDON",
+    "ListElement": "Swindon",
+    "DisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SouthWestDFJ",
+    "ListElementCode": "TAUNTON",
+    "ListElement": "Taunton",
+    "DisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SouthWestDFJ",
+    "ListElementCode": "TRURO",
+    "ListElement": "Truro",
+    "DisplayOrder": 7
+  }
+]

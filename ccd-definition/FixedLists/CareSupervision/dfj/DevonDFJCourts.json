@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DevonDFJCourts",
+    "ListElementCode": "198",
+    "ListElement": "Exeter",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DevonDFJCourts",
+    "ListElementCode": "296",
+    "ListElement": "Plymouth",
+    "DisplayOrder": 2
+  }
+]
