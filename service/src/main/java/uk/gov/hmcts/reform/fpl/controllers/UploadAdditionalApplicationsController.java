@@ -128,7 +128,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
                 skipPayment = uploadAdditionalApplicationsService.shouldSkipPayments(caseData, hearing,
                     temporaryC2Document);
-                log.info(skipPayment + "");
             }
             caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, temporaryC2Document);
         }
