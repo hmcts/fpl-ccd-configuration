@@ -72,9 +72,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageOrdersType",
+    "ListElementCode": "C34A_CONTACT_WITH_A_CHILD_IN_CARE",
+    "ListElement": "Contact with a child in care order (C34A)",
+    "DisplayOrder": 11
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersType",
     "ListElementCode": "C35B_INTERIM_SUPERVISION_ORDER",
     "ListElement": "Interim supervision order (C35B)",
-    "DisplayOrder": 11
+    "DisplayOrder": 12
   },
   {
     "LiveFrom": "01/01/2017",

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.orders;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,6 +12,10 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
     @Test
     void calculate() {
         assertThat(underTest.calculate()).containsExactlyInAnyOrder(
+            "manageOrdersAllowedContact1",
+            "manageOrdersAllowedContact2",
+            "manageOrdersAllowedContact3",
+            "manageOrdersConditionsOfContact",
             "manageOrdersApprovedAtHearing",
             "manageOrdersApprovedAtHearingList",
             "manageOrdersUploadType",
