@@ -168,6 +168,7 @@ public class CaseData extends CaseDataParent {
     private OrganisationPolicy sharedLocalAuthorityPolicy;
     private OutsourcingType outsourcingType;
     private RepresentativeType representativeType;
+    private YesNo isLocalAuthority;
     private Object outsourcingLAs;
     private Court court;
     private List<Element<Court>> pastCourtList;
@@ -1176,7 +1177,7 @@ public class CaseData extends CaseDataParent {
     public List<Element<Colleague>> getColleaguesToNotify() {
         return colleaguesToNotify != null ? colleaguesToNotify : new ArrayList<>();
     }
-    
+
     @JsonIgnore
     public boolean isRefuseContactWithChildApplication() {
         return ofNullable(getOrders())

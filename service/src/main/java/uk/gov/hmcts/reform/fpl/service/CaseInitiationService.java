@@ -97,13 +97,20 @@ public class CaseInitiationService {
         }
     }
 
+    public boolean isUserLocalAuthority() {
+        Optional<String> userLA = localAuthorities.getLocalAuthorityCode();
+
+        return userLA.isPresent();
+    }
+
     public List<String> checkUserAllowedToCreateCase(CaseData caseData) {
 
         Optional<Organisation> userOrg = organisationService.findOrganisation();
         Optional<String> outsourcingLA = dynamicLists.getSelectedValue(caseData.getOutsourcingLAs());
         Optional<String> userLA = localAuthorities.getLocalAuthorityCode();
         Optional<String> caseLA = outsourcingLA.isPresent() ? outsourcingLA : userLA;
-        RepresentativeType representativeType = caseData.getRepresentativeType();
+        RepresentativeType representativeType = nonNull(caseData.getRepresentativeType())
+            ? caseData.getRepresentativeType() : RepresentativeType.LOCAL_AUTHORITY;
 
         boolean userInMO = userOrg.isPresent();
         boolean userInLA = userLA.isPresent();
@@ -177,6 +184,7 @@ public class CaseInitiationService {
                 .localAuthorityPolicy(organisationPolicy(outsourcingOrgId, outsourcingOrgName, LASOLICITOR))
                 .caseLocalAuthority(outsourcingLocalAuthority.get())
                 .caseLocalAuthorityName(localAuthorities.getLocalAuthorityName(outsourcingLocalAuthority.get()))
+                .representativeType(RepresentativeType.LOCAL_AUTHORITY)
                 .build();
 
             return addCourtDetails(updatedCaseData);
@@ -188,6 +196,7 @@ public class CaseInitiationService {
                     organisationPolicy(currentUserOrganisationId, currentUserOrganisationName, LASOLICITOR))
                 .caseLocalAuthority(userLocalAuthority.get())
                 .caseLocalAuthorityName(localAuthorities.getLocalAuthorityName(userLocalAuthority.get()))
+                .representativeType(RepresentativeType.LOCAL_AUTHORITY)
                 .build();
 
             return addCourtDetails(updatedCaseData);
@@ -205,6 +214,7 @@ public class CaseInitiationService {
                         currentUserOrganisationId,
                         currentUserOrganisationName,
                         isRespondentSolicitor ? SOLICITORA : CHILDSOLICITORA))
+                    .representativeType(caseData.getRepresentativeType())
                     .build();
 
                 return addCourtDetails(updatedCaseData);
