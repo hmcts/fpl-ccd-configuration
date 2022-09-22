@@ -74,7 +74,7 @@ public class SubmittedCaseEventHandler {
     public void notifyCafcass(final SubmittedCaseEvent event) {
         CaseData caseData = event.getCaseData();
 
-            NotifyData notifyData = cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData);
+        NotifyData notifyData = cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData);
         String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 
         notificationService.sendEmail(CAFCASS_SUBMISSION_TEMPLATE, recipient, notifyData, caseData.getId());
