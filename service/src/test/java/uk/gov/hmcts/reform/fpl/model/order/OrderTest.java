@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.C34AContactWithAChildInCareOrderDocumentParameterGenerator;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +28,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C29_RECOVERY_OF_A_CHILD;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C34A_CONTACT_WITH_A_CHILD_IN_CARE;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C34B_AUTHORITY_TO_REFUSE_CONTACT;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35B_INTERIM_SUPERVISION_ORDER;
@@ -86,6 +88,8 @@ class OrderTest {
             .isEqualTo("c45a_parental_responsibility_order.doc");
         assertThat(C45A_PARENTAL_RESPONSIBILITY_ORDER.fileName(RenderFormat.PDF))
             .isEqualTo("c45a_parental_responsibility_order.pdf");
+        assertThat(C34A_CONTACT_WITH_A_CHILD_IN_CARE.fileName(RenderFormat.PDF))
+            .isEqualTo("c34a_contact_with_a_child_in_care.pdf");
     }
 
     @ParameterizedTest
@@ -118,6 +122,7 @@ class OrderTest {
         assertThat(C33_INTERIM_CARE_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C35A_SUPERVISION_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C35B_INTERIM_SUPERVISION_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
+        assertThat(C34A_CONTACT_WITH_A_CHILD_IN_CARE.firstSection()).isEqualTo(HEARING_DETAILS);
     }
 
     @ParameterizedTest
@@ -270,7 +275,8 @@ class OrderTest {
             Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, ISSUING_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, ORDER_DETAILS, Optional.of(REVIEW)),
             Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, REVIEW, Optional.of(OTHER_DETAILS)),
-            Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, OTHER_DETAILS, Optional.empty())
+            Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, OTHER_DETAILS, Optional.empty()),
+            Arguments.of(C34A_CONTACT_WITH_A_CHILD_IN_CARE, OTHER_DETAILS, Optional.empty())
         );
     }
 
