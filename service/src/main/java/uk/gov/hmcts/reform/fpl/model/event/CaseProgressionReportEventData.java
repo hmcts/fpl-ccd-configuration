@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.enums.CaseProgressionReportType;
 import uk.gov.hmcts.reform.fpl.model.Temp;
 
 @Data
@@ -98,5 +99,5 @@ public class CaseProgressionReportEventData {
     @Temp
     private String swanseaDFJCourts;
     @Temp
-    private String reportType;
+    private CaseProgressionReportType reportType;
 }

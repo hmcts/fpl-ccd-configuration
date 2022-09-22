@@ -43,6 +43,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static java.math.RoundingMode.UP;
+import static uk.gov.hmcts.reform.fpl.enums.CaseProgressionReportType.AT_RISK;
+import static uk.gov.hmcts.reform.fpl.enums.CaseProgressionReportType.MISSING_TIMETABLE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
@@ -85,12 +87,12 @@ public class CaseProgressionReportService {
     public String getHtmlReport(CaseData caseData)  {
         CaseProgressionReportEventData caseProgressionReportEventData = caseData.getCaseProgressionReportEventData();
         try {
-            if ("AT_RISK".equals(caseProgressionReportEventData.getReportType())) {
+            if (AT_RISK.equals(caseProgressionReportEventData.getReportType())) {
                 return getHtmlReport(caseData, (complianceDeadline) -> RangeQuery.builder()
                         .field(RANGE_FIELD)
                         .greaterThanOrEqual(complianceDeadline)
                         .build());
-            } else if ("MISSING_TIMETABLE".equals(caseProgressionReportEventData.getReportType())) {
+            } else if (MISSING_TIMETABLE.equals(caseProgressionReportEventData.getReportType())) {
                 return getHtmlReport(caseData, (complianceDeadline) -> RangeQuery.builder()
                         .field(RANGE_FIELD)
                         .lessThan(complianceDeadline)
@@ -106,12 +108,12 @@ public class CaseProgressionReportService {
     public Optional<File> getFileReport(CaseData caseData)  {
         CaseProgressionReportEventData caseProgressionReportEventData = caseData.getCaseProgressionReportEventData();
         try {
-            if ("AT_RISK".equals(caseProgressionReportEventData.getReportType())) {
+            if (AT_RISK.equals(caseProgressionReportEventData.getReportType())) {
                 return getFileReport(caseData, (complianceDeadline) -> RangeQuery.builder()
                         .field(RANGE_FIELD)
                         .greaterThanOrEqual(complianceDeadline)
                         .build());
-            } else if ("MISSING_TIMETABLE".equals(caseProgressionReportEventData.getReportType())) {
+            } else if (MISSING_TIMETABLE.equals(caseProgressionReportEventData.getReportType())) {
                 return getFileReport(caseData, (complianceDeadline) -> RangeQuery.builder()
                         .field(RANGE_FIELD)
                         .lessThan(complianceDeadline)

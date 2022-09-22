@@ -40,7 +40,7 @@ public class CaseProgressionReportEventHandler {
         String courtCode = cmsReportService.getCourt(caseProgressionReportEventData);
         Optional<Court> court = courtService.getCourt(courtCode);
         String subject = String.join(" ",
-                caseProgressionReportEventData.getReportType(),
+                caseProgressionReportEventData.getReportType().getType(),
                 "for court: ",
                 court.map(Court::getName).orElse("Court not found")
         );

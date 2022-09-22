@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
+import uk.gov.hmcts.reform.fpl.enums.CaseProgressionReportType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
@@ -43,6 +44,7 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.CaseProgressionReportType.MISSING_TIMETABLE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
@@ -70,7 +72,7 @@ class CaseProgressionReportServiceTest {
         LocalDate submittedDate = LocalDate.now().minusWeeks(24);
         CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
                 .swanseaDFJCourts("344")
-                .reportType("MISSING_TIMETABLE")
+                .reportType(MISSING_TIMETABLE)
                 .build();
 
         CaseData caseDataSelected = CaseData.builder()
@@ -107,7 +109,7 @@ class CaseProgressionReportServiceTest {
                 LocalTime.now());
         CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
                 .swanseaDFJCourts("344")
-                .reportType("MISSING_TIMETABLE")
+                .reportType(MISSING_TIMETABLE)
                 .build();
 
         CaseData caseDataSelected = CaseData.builder()
@@ -160,11 +162,11 @@ class CaseProgressionReportServiceTest {
                         tuple("Case Number", "CCD Number","Receipt date", "Last PLO hearing", "Next hearing",
                                 "Age of case (weeks)","PLO stage", "Expected FH date"),
                         tuple("PO22ZA12345", "1663342447124290", "04-05-2022", "22-09-2022",
-                                "03-11-2022", "19", "Final", "02-11-2022"),
+                                "03-11-2022", "20", "Final", "02-11-2022"),
                         tuple("ZO88ZA56789", "1663342966373807", "04-04-2022", "18-06-2022",
-                                "22-09-2022", "23", "Issue resolution", "03-10-2022"),
+                                "22-09-2022", "24", "Issue resolution", "03-10-2022"),
                         tuple("AO88ZA56789", "1663342966000000", "04-07-2022", "22-08-2022",
-                                "-", "10", "Case management", "02-01-2023")
+                                "-", "11", "Case management", "02-01-2023")
                 );
         verify(searchService, times(3))
                 .search(isA(ESQuery.class), anyInt(), anyInt(), isA(Sort.class));
