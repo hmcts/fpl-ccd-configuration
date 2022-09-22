@@ -51,8 +51,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @MockBeans(value = {
     @MockBean(PaymentService.class),
     @MockBean(EventService.class),
-    @MockBean(TranslationRequestService.class),
-    @MockBean(CafcassNotificationService.class)
+    @MockBean(TranslationRequestService.class)
 })
 class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
