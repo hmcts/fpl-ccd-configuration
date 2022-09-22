@@ -7,7 +7,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
-import uk.gov.hmcts.reform.fpl.service.orders.generator.C34AContactWithAChildInCareOrderDocumentParameterGenerator;
 
 import java.util.Arrays;
 import java.util.List;
