@@ -4,6 +4,9 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -32,6 +35,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
@@ -44,6 +48,7 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.CaseProgressionReportType.AT_RISK;
 import static uk.gov.hmcts.reform.fpl.enums.CaseProgressionReportType.MISSING_TIMETABLE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
@@ -66,36 +71,115 @@ class CaseProgressionReportServiceTest {
     @InjectMocks
     private CaseProgressionReportService service;
 
+    @ParameterizedTest
+    @MethodSource("provideCourtDetails")
+    void shouldReturnHtmlReport(String courtId, Optional<Court> court, String courtName) {
+        LocalDate submittedDate = LocalDate.parse("04-05-2022" , DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        LocalDateTime finalHearing = LocalDateTime.of(
+                LocalDate.parse("03-11-2022" , DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+                LocalTime.now());
+        LocalDateTime issueHearing = LocalDateTime.of(
+                LocalDate.parse("22-09-2022" , DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+                LocalTime.now());
 
-    @Test
-    void shouldReturnHtmlReport() {
-        LocalDate submittedDate = LocalDate.now().minusWeeks(24);
         CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
-                .swanseaDFJCourts("344")
-                .reportType(MISSING_TIMETABLE)
+                .swanseaDFJCourts(courtId)
+                .reportType(AT_RISK)
                 .build();
 
         CaseData caseDataSelected = CaseData.builder()
                 .caseProgressionReportEventData(caseProgressionReportEventData)
                 .build();
 
-        List<Element<HearingBooking>> hearingDetails =
-                ElementUtils.wrapElements(List.of(createHearingBooking(FINAL, LocalDateTime.of(submittedDate.plusDays(24), LocalTime.now()))));
+        List<Element<HearingBooking>> hearingDetails = ElementUtils.wrapElements(List.of(createHearingBooking(FINAL, finalHearing),
+                createHearingBooking(ISSUE_RESOLUTION, issueHearing)));
+
 
         List<CaseDetails> caseDetails = List.of(createCaseDetails());
 
         SearchResult searchResult = SearchResult.builder()
-                .total(caseDetails.size())
+                .total(1)
                 .cases(caseDetails)
                 .build();
-        when(courtService.getCourt(anyString())).thenReturn(Optional.of(Court.builder()
-                .code("115")
-                .name("Central Family Court")
-                .build()));
-        when(searchService.search(any(), eq(100), eq(0), isA(Sort.class))).thenReturn(searchResult);
-        when(converter.convert(isA(CaseDetails.class))).thenReturn(getCaseData(hearingDetails, submittedDate));
+
+        when(courtService.getCourt(courtId)).thenReturn(court);
+
+        when(searchService.search(any(), eq(100), eq(0), isA(Sort.class)))
+                .thenReturn(searchResult);
+
+        when(converter.convert(isA(CaseDetails.class))).thenReturn(
+                getCaseData(hearingDetails, submittedDate, "PO22ZA12345", 1663342447124290L)
+        );
+
         String report = service.getHtmlReport(caseDataSelected);
-        System.out.println(report);
+        assertThat(report).isEqualTo("<table>" +
+                "<tr><th class='search-result-column-label' colspan=\"9\">"+
+                courtName +
+                "<th class='search-result-column-label'></tr>" +
+                "<tr><th class='search-result-column-label'>Sr no.</th>" +
+                "<th class='search-result-column-label'>Case Number</th>" +
+                "<th class='search-result-column-label'>CCD Number</th>" +
+                "<th class='search-result-column-label'>Receipt date</th>" +
+                "<th class='search-result-column-label'>Last PLO hearing</th>" +
+                "<th class='search-result-column-label'>Next hearing</th>" +
+                "<th class='search-result-column-label'>Age of </br>case</br>(weeks)</th>" +
+                "<th class='search-result-column-label'>PLO stage</th>" +
+                "<th class='search-result-column-label'>Expected FH date</th></tr>" +
+                "<tr><td class='search-result-column-cell'>1</td>" +
+                "<td class='search-result-column-cell'>PO22ZA12345</td>" +
+                "<td class='search-result-column-cell'>1663342447124290</td>" +
+                "<td class='search-result-column-cell'>04-05-2022</td>" +
+                "<td class='search-result-column-cell'>22-09-2022</td>" +
+                "<td class='search-result-column-cell'>03-11-2022</td>" +
+                "<td class='search-result-column-cell'>20</td>" +
+                "<td class='search-result-column-cell'>Final</td>" +
+                "<td class='search-result-column-cell'>02-11-2022</td></tr>" +
+                "</table>");
+    }
+
+    @Test
+    void shouldReturnHtmlReportWithEmptyTable() {
+
+        CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
+                .swanseaDFJCourts("344")
+                .reportType(AT_RISK)
+                .build();
+
+        CaseData caseDataSelected = CaseData.builder()
+                .caseProgressionReportEventData(caseProgressionReportEventData)
+                .build();
+
+
+
+        List<CaseDetails> caseDetails = List.of(createCaseDetails());
+
+        SearchResult searchResult = SearchResult.builder()
+                .total(0)
+                .cases(caseDetails)
+                .build();
+
+        when(courtService.getCourt("344"))
+                .thenReturn(Optional.of(Court.builder().name("Family court Swansea").build()));
+
+        when(searchService.search(any(), eq(100), eq(0), isA(Sort.class)))
+                .thenReturn(searchResult);
+
+
+        String report = service.getHtmlReport(caseDataSelected);
+        assertThat(report).isEqualTo("<table>" +
+                "<tr><th class='search-result-column-label' colspan=\"9\">Family court Swansea<th class='search-result-column-label'></tr>" +
+                "</table>");
+    }
+
+    private static Stream<Arguments> provideCourtDetails() {
+        return Stream.of(
+                Arguments.of("344",
+                        Optional.of(Court.builder().name("Family court Swansea").build()),
+                        "Family court Swansea"),
+                Arguments.of("123",
+                        Optional.empty(),
+                        "Court name not found")
+        );
     }
 
     @Test

@@ -28,7 +28,9 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @Component
 @RequiredArgsConstructor
 public class CaseProgressionReportEventHandler {
-    private final CaseProgressionReportService cmsReportService;
+    public static final String FROM_EMAIL = "noreply@reform.hmcts.net";
+
+    private final CaseProgressionReportService caseProgressionReportService;
     private final EmailService emailService;
     private final CourtService courtService;
 
@@ -37,7 +39,7 @@ public class CaseProgressionReportEventHandler {
     public void notifyReport(CaseProgressionReportEvent event) {
         CaseData caseData = event.getCaseData();
         CaseProgressionReportEventData caseProgressionReportEventData = caseData.getCaseProgressionReportEventData();
-        String courtCode = cmsReportService.getCourt(caseProgressionReportEventData);
+        String courtCode = caseProgressionReportService.getCourt(caseProgressionReportEventData);
         Optional<Court> court = courtService.getCourt(courtCode);
         String subject = String.join(" ",
                 caseProgressionReportEventData.getReportType().getType(),
@@ -46,7 +48,7 @@ public class CaseProgressionReportEventHandler {
         );
 
         try {
-            Optional<File> fileReport = cmsReportService.getFileReport(caseData);
+            Optional<File> fileReport = caseProgressionReportService.getFileReport(caseData);
             if (fileReport.isPresent()) {
                 log.info("To notify subject: {}" , subject);
 
@@ -60,16 +62,18 @@ public class CaseProgressionReportEventHandler {
                                     .orElse(""),
                                 file.getName()));
 
-                emailService.sendEmail("noreply@reform.hmcts.net",
+                emailService.sendEmail(FROM_EMAIL,
                         EmailData.builder()
-                                //TODO uncomment and remove next line.recipient(event.getUserDetails().getEmail())
-                                .recipient("somesh.acharya1@hmcts.net")
+                                .recipient(event.getUserDetails().getEmail())
+                                //TODO: comment out above for testing and uncomment below
+                                //.recipient("somesh.acharya1@hmcts.net")
                                 .subject(subject)
                                 .attachments(Set.of(attachment))
                                 .message(subject)
                                 .build()
                 );
-                log.info("Notified cases with subject {}", subject);
+                boolean deleted = file.delete();
+                log.info("Notified cases with subject {} and file deleted {}", subject, deleted);
             } else {
                 log.info("No records found for  subject {}" , subject);
             }

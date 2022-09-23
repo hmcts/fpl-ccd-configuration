@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseProgressionReportController extends CallbackController {
     public static final String CMS_REPORT_DETAILS = "caseProgressionReportDetails";
-    private final CaseProgressionReportService cmsReportService;
+    private final CaseProgressionReportService caseProgressionReportService;
     private final IdamClient idamClient;
     private final RequestData requestData;
 
@@ -28,7 +28,7 @@ public class CaseProgressionReportController extends CallbackController {
     public CallbackResponse handleValidateCollectionMidEvent(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
 
-        caseDetails.getData().put(CMS_REPORT_DETAILS, cmsReportService.getHtmlReport(getCaseData(caseDetails)));
+        caseDetails.getData().put(CMS_REPORT_DETAILS, caseProgressionReportService.getHtmlReport(getCaseData(caseDetails)));
 
         return respond(caseDetails);
     }

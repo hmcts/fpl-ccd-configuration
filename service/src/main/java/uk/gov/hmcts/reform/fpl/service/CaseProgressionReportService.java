@@ -186,61 +186,55 @@ public class CaseProgressionReportService {
         log.info("record count {}", searchResult.getTotal());
 
         int[] counter = new int[]{1};
-
         StringBuilder result = new StringBuilder();
+        result.append("<table>")
+            .append("<tr>")
+            .append("<th class='search-result-column-label' colspan=\"9\">")
+            .append(courtService.getCourt(courtId).map(Court::getName).orElse("Court name not found"))
+            .append("<th class='search-result-column-label'>")
+            .append("</tr>");
+
         if (searchResult.getTotal() > 0) {
-            result.append("<table>")
-                .append("<tr>")
-                .append("<th class='search-result-column-label' colspan=\"9\">")
-                .append(courtService.getCourt(courtId).map(Court::getName).orElse(""))
-                .append("<th class='search-result-column-label'>")
-                .append("</tr>")
-                .append("<tr>")
-                .append(headerField.apply("Sr no."))
-                .append(headerField.apply("Case Number"))
-                .append(headerField.apply("CCD Number"))
-                .append(headerField.apply("Receipt date"))
-                .append(headerField.apply("Last PLO hearing"))
-                .append(headerField.apply("Next hearing"))
-                .append(headerField.apply("Age of </br>case</br>(weeks)"))
-                .append(headerField.apply("PLO stage"))
-                .append(headerField.apply("Expected FH date"))
-                .append("</tr>");
-        }
+            result.append("<tr>")
+            .append(headerField.apply("Sr no."))
+            .append(headerField.apply("Case Number"))
+            .append(headerField.apply("CCD Number"))
+            .append(headerField.apply("Receipt date"))
+            .append(headerField.apply("Last PLO hearing"))
+            .append(headerField.apply("Next hearing"))
+            .append(headerField.apply("Age of </br>case</br>(weeks)"))
+            .append(headerField.apply("PLO stage"))
+            .append(headerField.apply("Expected FH date"))
+            .append("</tr>");
 
-        for (CaseDetails caseDetails : searchResult.getCases()) {
-            CaseData caseData = converter.convert(caseDetails);
+            for (CaseDetails caseDetails : searchResult.getCases()) {
+                CaseData caseData = converter.convert(caseDetails);
 
-            Optional<HearingInfo> optionalHearingInfo = getHearingInfo(caseData);
+                Optional<HearingInfo> optionalHearingInfo = getHearingInfo(caseData);
 
-            if (optionalHearingInfo.isPresent()) {
-                HearingInfo hearingInfo = optionalHearingInfo.get();
-                result.append(
-                    String.join("",
-                        "<tr>",
-                        cellField.apply(String.valueOf(counter[0]++)),
-                        cellField.apply(hearingInfo.getFamilyManCaseNumber()),
-                        cellField.apply(hearingInfo.getCcdNumber()),
-                        cellField.apply(hearingInfo.getDateSubmitted()),
-                        cellField.apply(hearingInfo.getLastHearing()),
-                        cellField.apply(hearingInfo.getNextHearing()),
-                        cellField.apply(hearingInfo.getAgeInWeeks()),
-                        cellField.apply(hearingInfo.getPloStage()),
-                        cellField.apply(hearingInfo.getExpectedFinalHearing()),
-                        "</tr>")
-                );
+                if (optionalHearingInfo.isPresent()) {
+                    HearingInfo hearingInfo = optionalHearingInfo.get();
+                    result.append(
+                        String.join("",
+                            "<tr>",
+                            cellField.apply(String.valueOf(counter[0]++)),
+                            cellField.apply(hearingInfo.getFamilyManCaseNumber()),
+                            cellField.apply(hearingInfo.getCcdNumber()),
+                            cellField.apply(hearingInfo.getDateSubmitted()),
+                            cellField.apply(hearingInfo.getLastHearing()),
+                            cellField.apply(hearingInfo.getNextHearing()),
+                            cellField.apply(hearingInfo.getAgeInWeeks()),
+                            cellField.apply(hearingInfo.getPloStage()),
+                            cellField.apply(hearingInfo.getExpectedFinalHearing()),
+                            "</tr>")
+                    );
+                }
             }
         }
 
-        if (searchResult.getTotal() > 0) {
-            result.append("</table>");
-        }
+        result.append("</table>");
 
-        return String.join("",
-                "Total record count : ",
-                String.valueOf(searchResult.getTotal()),
-                System.lineSeparator(),
-                result);
+        return result.toString();
     }
 
     public Optional<HearingInfo> getHearingInfo(CaseData caseData) {
