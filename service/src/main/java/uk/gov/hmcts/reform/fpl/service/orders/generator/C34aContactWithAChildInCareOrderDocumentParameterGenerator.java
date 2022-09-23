@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class C34aContactWithAChildInCareOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
