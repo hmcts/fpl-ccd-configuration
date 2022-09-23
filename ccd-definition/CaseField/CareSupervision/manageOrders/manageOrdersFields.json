@@ -934,7 +934,7 @@
     "ID": "manageOrdersAllowedContact1",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "DynamicList",
-    "Label": "3rd party allowed contact",
+    "Label": "3rd party allowed contact 1",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   },
@@ -943,7 +943,7 @@
     "ID": "manageOrdersAllowedContact2",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "DynamicList",
-    "Label": "3rd party allowed contact",
+    "Label": "3rd party allowed contact 2",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   },
@@ -952,7 +952,7 @@
     "ID": "manageOrdersAllowedContact3",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "DynamicList",
-    "Label": "3rd party allowed contact",
+    "Label": "3rd party allowed contact 3",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   },
