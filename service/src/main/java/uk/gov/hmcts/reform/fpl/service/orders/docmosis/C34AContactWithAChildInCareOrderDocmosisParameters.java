@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 @Value
 @SuperBuilder(toBuilder = true)
-public class C34AContactWithAChildInCareOrderDocmosisParameters extends DocmosisParameters {
+public class C34aContactWithAChildInCareOrderDocmosisParameters extends DocmosisParameters {
     String orderByConsent;
     String orderDetails;
     String orderMessage;

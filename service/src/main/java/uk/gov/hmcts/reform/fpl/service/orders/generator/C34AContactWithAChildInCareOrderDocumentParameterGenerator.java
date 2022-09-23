@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
-import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -14,7 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
-import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C34AContactWithAChildInCareOrderDocmosisParameters;
+import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C34aContactWithAChildInCareOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 
 import java.util.List;
@@ -25,13 +24,9 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class C34AContactWithAChildInCareOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
-
-    private static final GeneratedOrderType TYPE = GeneratedOrderType.CARE_ORDER;
-    //private static final String ORDER_HEADER = "Contact with a child in care order";
+public class C34aContactWithAChildInCareOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
 
     private final LocalAuthorityNameLookupConfiguration laNameLookup;
-    //private final OrderMessageGenerator orderMessageGenerator;
     private final ChildrenSmartSelector childrenSmartSelector;
 
     @Override
@@ -65,7 +60,7 @@ public class C34AContactWithAChildInCareOrderDocumentParameterGenerator implemen
         String localAuthorityCode = caseData.getCaseLocalAuthority();
         String localAuthorityName = laNameLookup.getLocalAuthorityName(localAuthorityCode);
 
-        return C34AContactWithAChildInCareOrderDocmosisParameters.builder()
+        return C34aContactWithAChildInCareOrderDocmosisParameters.builder()
             .orderTitle(Order.C34A_CONTACT_WITH_A_CHILD_IN_CARE.getTitle())
             .orderMessage("The local authority is " + localAuthorityName + ".")
             .orderByConsent("Order By Consent")

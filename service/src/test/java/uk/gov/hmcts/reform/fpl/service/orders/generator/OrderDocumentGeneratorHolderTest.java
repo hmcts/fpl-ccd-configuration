@@ -68,7 +68,7 @@ class OrderDocumentGeneratorHolderTest {
     @Mock
     private C33InterimCareOrderDocumentParameterGenerator c33InterimCareOrderDocumentParameterGenerator;
     @Mock
-    private C34AContactWithAChildInCareOrderDocumentParameterGenerator
+    private C34aContactWithAChildInCareOrderDocumentParameterGenerator
         c34AContactWithAChildInCareOrderDocumentParameterGenerator;
     @Mock
     private C34BAuthorityToRefuseContactOrderParameterGenerator c34BAuthorityToRefuseContactOrderParameterGenerator;
