@@ -20,8 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.lang.String.format;
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class C34aContactWithAChildInCareOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
@@ -62,6 +61,7 @@ public class C34aContactWithAChildInCareOrderDocumentParameterGenerator implemen
 
         return C34aContactWithAChildInCareOrderDocmosisParameters.builder()
             .orderTitle(Order.C34A_CONTACT_WITH_A_CHILD_IN_CARE.getTitle())
+            .childrenAct(Order.C34A_CONTACT_WITH_A_CHILD_IN_CARE.getChildrenAct())
             .orderMessage("The local authority is " + localAuthorityName + ".")
             .orderByConsent("Order By Consent")
             .orderDetails(orderDetails(selectedChildren.size(), peopleAllowedContact,
