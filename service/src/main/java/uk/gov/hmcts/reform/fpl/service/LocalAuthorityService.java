@@ -39,7 +39,7 @@ public class LocalAuthorityService {
     public Optional<String> getLocalAuthorityCode() {
         UserInfo userInfo = idam.getUserInfo(requestData.authorisation());
 
-        if(isNull(userInfo)) {
+        if (isNull(userInfo)) {
             return Optional.empty();
         }
 
