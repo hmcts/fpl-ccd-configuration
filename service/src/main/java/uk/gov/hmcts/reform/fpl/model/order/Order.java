@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE_AN
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.FURTHER_DIRECTIONS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ICO_EXCLUSION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.IS_CHILD_REPRESENTED;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LEAVE_TO_CHANGE_CHILD_SURNAME;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINKED_TO_HEARING;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINK_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS;
@@ -233,6 +234,21 @@ public enum Order {
             VARY_OR_EXTEND_SUPERVISION_ORDER,
             ORDER_BY_CONSENT,
             WHICH_CHILDREN,
+            REVIEW_DRAFT_ORDER
+        )
+    ),
+    C44A_LEAVE_TO_CHANGE_A_SURNAME(
+        DIGITAL,
+        "Leave to change the surname by which a child is known",
+        "Section [13(1)] [14C(3)] [33(7)] Children Act 1989",
+        "Leave to change the surname by which a child is known",
+        IsFinalOrder.MAYBE,
+        List.of(
+            APPROVER,
+            APPROVAL_DATE,
+            WHICH_CHILDREN,
+            LEAVE_TO_CHANGE_CHILD_SURNAME,
+            ORDER_BY_CONSENT,
             REVIEW_DRAFT_ORDER
         )
     ),
