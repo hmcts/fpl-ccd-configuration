@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -36,6 +38,11 @@ public class LocalAuthorityService {
 
     public Optional<String> getLocalAuthorityCode() {
         UserInfo userInfo = idam.getUserInfo(requestData.authorisation());
+
+        if(isNull(userInfo)) {
+            return Optional.empty();
+        }
+
         String email = userInfo.getSub();
         String domain = extractEmailDomain(email);
 
