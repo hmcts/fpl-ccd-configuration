@@ -10,10 +10,13 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseProgressionReportEvent;
+import uk.gov.hmcts.reform.fpl.model.event.CaseProgressionReportEventData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseProgressionReportService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
 @RestController
 @RequestMapping("/callback/case-progression-report/")
@@ -40,6 +43,7 @@ public class CaseProgressionReportController extends CallbackController {
         publishEvent(new CaseProgressionReportEvent(getCaseData(caseDetails), userDetails));
 
         caseDetails.getData().remove(CMS_REPORT_DETAILS);
+        removeTemporaryFields(caseDetails, CaseProgressionReportEventData.class);
 
         return respond(caseDetails);
     }
