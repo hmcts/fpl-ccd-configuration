@@ -93,11 +93,6 @@ public class OrdersNeededController extends CallbackController {
         Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get(ordersFieldName))
             .map(orders -> (List<String>) orders.get("orderType"));
 
-        String courtID = Optional.ofNullable((Map<String, Object>) data.get(ordersFieldName))
-            .map(orders -> (String) orders.get("court"))
-            .map(Object::toString)
-            .orElse(null);
-
         if (orderType.isPresent()) {
             orderType.ifPresent(orderTypes -> {
                 if (orderTypes.contains(OrderType.EMERGENCY_PROTECTION_ORDER.name())) {
@@ -121,12 +116,11 @@ public class OrdersNeededController extends CallbackController {
             removeSecureAccommodationOrderFields(data, ordersFieldName);
         }
 
-        if (isDischargeOfCareOrder(orderType)) {
-            data.put("otherOrderType", "YES");
-            log.info("DOC");
+        if (caseData.isRefuseContactWithChildApplication()) {
+            data.put("refuseContactWithChildOrderType", YesNo.YES);
         } else {
-            log.info("NON DOC");
-            data.put("otherOrderType", "NO");
+            data.remove("groundsForRefuseContactWithChild");
+            data.remove("refuseContactWithChildOrderType");
         }
 
         if (isContactWithChildInCareOrder(orderType)) {
@@ -137,6 +131,19 @@ public class OrdersNeededController extends CallbackController {
             data.remove("groundsForContactWithChildInCare");
             data.remove("contactWithChildInCareOrderType");
         }
+
+        if (caseData.isDischargeOfCareApplication()) {
+            data.put("otherOrderType", "YES");
+            log.info("DOC");
+        } else {
+            log.info("NON DOC");
+            data.put("otherOrderType", "NO");
+        }
+
+        String courtID = Optional.ofNullable((Map<String, Object>) data.get(ordersFieldName))
+            .map(orders -> (String) orders.get("court"))
+            .map(Object::toString)
+            .orElse(null);
 
         Court selectedCourt = getCourtSelection(courtID);
 

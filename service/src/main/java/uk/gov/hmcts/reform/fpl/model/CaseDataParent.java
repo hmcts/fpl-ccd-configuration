@@ -38,5 +38,9 @@ public class CaseDataParent {
 
     @NotNull(message = "Add the grounds for the application")
     @Valid
+    protected final GroundsForRefuseContactWithChild groundsForRefuseContactWithChild;
+
+    @NotNull(message = "Add the grounds for the application")
+    @Valid
     protected final GroundsForContactWithChild groundsForContactWithChild;
 }

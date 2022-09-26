@@ -57,6 +57,9 @@ public class CaseSubmissionService {
         if (caseData.isSecureAccommodationOrderType()) {
             return generateSupplementPDF(caseData, isDraft, DocmosisTemplates.C20_SUPPLEMENT,
                 documentGenerationService.getC20SupplementData(caseData, isDraft));
+        } else if (caseData.isRefuseContactWithChildApplication()) {
+            return generateSupplementPDF(caseData, isDraft, DocmosisTemplates.C14_SUPPLEMENT,
+                documentGenerationService.getC14SupplementData(caseData, isDraft));
         } else if (caseData.isContactWithChildInCareApplication()) {
             return generateSupplementPDF(caseData, isDraft, DocmosisTemplates.C15_SUPPLEMENT,
                 documentGenerationService.getC15SupplementData(caseData, isDraft));

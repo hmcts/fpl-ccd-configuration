@@ -126,6 +126,17 @@
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
+    "CaseFieldID": "groundsForRefuseContactWithChild",
+    "FieldShowCondition": "orders.orderType CONTAINS \"REFUSE_CONTACT_WITH_CHILD\"",
+    "TabFieldDisplayOrder": 10
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View application",
+    "TabDisplayOrder": 1,
     "CaseFieldID": "groundsForContactWithChild",
     "FieldShowCondition": "orders.orderType CONTAINS \"CONTACT_WITH_CHILD_IN_CARE\"",
     "TabFieldDisplayOrder": 10

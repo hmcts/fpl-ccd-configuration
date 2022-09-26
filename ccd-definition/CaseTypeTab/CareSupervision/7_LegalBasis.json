@@ -71,6 +71,17 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 7,
+    "CaseFieldID": "groundsForRefuseContactWithChild",
+    "TabFieldDisplayOrder": 3,
+    "FieldShowCondition": "orders.orderType CONTAINS \"REFUSE_CONTACT_WITH_CHILD\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "LegalBasisTab",
+    "TabLabel": "Legal basis",
+    "TabDisplayOrder": 7,
     "CaseFieldID": "risks",
     "TabFieldDisplayOrder": 4
   },

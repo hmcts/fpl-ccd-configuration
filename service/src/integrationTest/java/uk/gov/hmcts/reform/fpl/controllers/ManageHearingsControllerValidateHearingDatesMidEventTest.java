@@ -84,7 +84,7 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
         assertThat(callbackResponse.getErrors()).isEmpty();
         assertThat(responseData.get("hearingEndDate")).isNotNull();
         LocalDateTime hearingEndDate = LocalDateTime.parse((String) responseData.get("hearingEndDate"));
-        assertThat(hearingEndDate).isEqualTo(startDate.plusDays(numberOfDays));
+        assertThat(hearingEndDate).isEqualTo(startDate.plusDays(numberOfDays - 1));
         assertThat(responseData.get("showConfirmPastHearingDatesPage")).isEqualTo(YES.getValue());
         assertThat(responseData.get("startDateFlag")).isEqualTo(YES.getValue());
         assertThat(responseData.get("endDateFlag")).isEqualTo(YES.getValue());

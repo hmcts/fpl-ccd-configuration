@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
@@ -96,21 +97,36 @@ public class CaseInitiationService {
         }
     }
 
+    public boolean isUserLocalAuthority() {
+        Optional<String> userLA = localAuthorities.getLocalAuthorityCode();
+
+        return userLA.isPresent();
+    }
+
     public List<String> checkUserAllowedToCreateCase(CaseData caseData) {
 
         Optional<Organisation> userOrg = organisationService.findOrganisation();
         Optional<String> outsourcingLA = dynamicLists.getSelectedValue(caseData.getOutsourcingLAs());
         Optional<String> userLA = localAuthorities.getLocalAuthorityCode();
         Optional<String> caseLA = outsourcingLA.isPresent() ? outsourcingLA : userLA;
+        RepresentativeType representativeType = nonNull(caseData.getRepresentativeType())
+            ? caseData.getRepresentativeType() : RepresentativeType.LOCAL_AUTHORITY;
 
         boolean userInMO = userOrg.isPresent();
         boolean userInLA = userLA.isPresent();
         boolean caseOutsourced = outsourcingLA.isPresent() && !outsourcingLA.equals(userLA);
+        boolean isLocalAuthority = representativeType.equals(RepresentativeType.LOCAL_AUTHORITY);
 
         log.info("userOrg: {}, userLA: {} and outsourcingLA: {}",
             userOrg.map(Organisation::getOrganisationIdentifier).orElse(NOT_PRESENT),
             userLA.orElse(NOT_PRESENT),
             outsourcingLA.orElse(NOT_PRESENT));
+
+        if (userInMO && !userInLA && !caseOutsourced && isLocalAuthority) {
+            return List.of(
+                "You do not have permission to proceed as a local authority.",
+                "Email FamilyPublicLawServiceTeam@justice.gov.uk for further guidance.");
+        }
 
         if (!userInMO) {
             if (!userInLA && !caseOutsourced) {
@@ -168,6 +184,7 @@ public class CaseInitiationService {
                 .localAuthorityPolicy(organisationPolicy(outsourcingOrgId, outsourcingOrgName, LASOLICITOR))
                 .caseLocalAuthority(outsourcingLocalAuthority.get())
                 .caseLocalAuthorityName(localAuthorities.getLocalAuthorityName(outsourcingLocalAuthority.get()))
+                .representativeType(RepresentativeType.LOCAL_AUTHORITY)
                 .build();
 
             return addCourtDetails(updatedCaseData);
@@ -179,6 +196,7 @@ public class CaseInitiationService {
                     organisationPolicy(currentUserOrganisationId, currentUserOrganisationName, LASOLICITOR))
                 .caseLocalAuthority(userLocalAuthority.get())
                 .caseLocalAuthorityName(localAuthorities.getLocalAuthorityName(userLocalAuthority.get()))
+                .representativeType(RepresentativeType.LOCAL_AUTHORITY)
                 .build();
 
             return addCourtDetails(updatedCaseData);
@@ -196,6 +214,7 @@ public class CaseInitiationService {
                         currentUserOrganisationId,
                         currentUserOrganisationName,
                         isRespondentSolicitor ? SOLICITORA : CHILDSOLICITORA))
+                    .representativeType(caseData.getRepresentativeType())
                     .build();
 
                 return addCourtDetails(updatedCaseData);

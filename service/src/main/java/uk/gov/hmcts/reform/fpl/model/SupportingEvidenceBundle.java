@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ExpertReportType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.FurtherDocument;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -45,6 +47,7 @@ public class SupportingEvidenceBundle implements TranslatableItem, FurtherDocume
     private final LocalDateTime translationUploadDateTime;
     private final LanguageTranslationRequirement translationRequirements;
     private String hasConfidentialAddress;
+    private ExpertReportType expertReportType;
 
     public String getHasConfidentialAddress() {
         return ((!isBlank(name) || document != null) && (!YesNo.isYesOrNo(hasConfidentialAddress)))
@@ -105,6 +108,19 @@ public class SupportingEvidenceBundle implements TranslatableItem, FurtherDocume
     @Override
     public LocalDateTime translationUploadDateTime() {
         return translationUploadDateTime;
+    }
+
+    public ExpertReportType getExpertReportType() {
+        if (!isNull(expertReportType)) {
+            // if we have an expert report type set use that
+            return expertReportType;
+        } else if (FurtherEvidenceType.EXPERT_REPORTS.equals(type)) {
+            // otherwise, if it's an expert report without a type, use generic 'other'
+            return ExpertReportType.OTHER_EXPERT_REPORT;
+        } else {
+            // otherwise, it's not an expert report - so don't fill in this field
+            return null;
+        }
     }
 
 }
