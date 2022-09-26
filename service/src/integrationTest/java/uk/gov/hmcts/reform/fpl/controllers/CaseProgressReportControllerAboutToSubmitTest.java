@@ -50,9 +50,11 @@ class CaseProgressReportControllerAboutToSubmitTest extends AbstractCallbackTest
         assertThat(data).doesNotContainKey("swanseaDFJCourts");
 
         verify(idamClient).getUserDetails(isA(String.class));
+
         verify(eventService).publishEvent(caseProgressionReportEventArgumentCaptor.capture());
         CaseProgressionReportEvent caseProgressionReportEvent = caseProgressionReportEventArgumentCaptor.getValue();
-        CaseProgressionReportEventData eventData = caseProgressionReportEvent.getCaseData().getCaseProgressionReportEventData();
+        CaseProgressionReportEventData eventData = caseProgressionReportEvent.getCaseData()
+                .getCaseProgressionReportEventData();
         assertThat(eventData.getSwanseaDFJCourts())
                 .isEqualTo("344");
         assertThat(eventData.getCentralLondonDFJCourts())
