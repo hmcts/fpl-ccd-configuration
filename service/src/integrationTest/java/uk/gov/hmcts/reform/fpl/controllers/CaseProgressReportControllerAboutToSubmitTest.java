@@ -10,15 +10,12 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.fpl.events.CaseProgressionReportEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.CaseProgressionReportEventData;
-import uk.gov.hmcts.reform.fpl.service.CaseProgressionReportService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.controllers.CaseProgressionReportController.CASE_PROGRESSION_REPORT_DETAILS;
 
@@ -55,9 +52,11 @@ class CaseProgressReportControllerAboutToSubmitTest extends AbstractCallbackTest
         verify(idamClient).getUserDetails(isA(String.class));
         verify(eventService).publishEvent(caseProgressionReportEventArgumentCaptor.capture());
         CaseProgressionReportEvent caseProgressionReportEvent = caseProgressionReportEventArgumentCaptor.getValue();
-        assertThat(caseProgressionReportEvent.getCaseData().getCaseProgressionReportEventData().getSwanseaDFJCourts())
+        CaseProgressionReportEventData eventData = caseProgressionReportEvent.getCaseData().getCaseProgressionReportEventData();
+        assertThat(eventData.getSwanseaDFJCourts())
                 .isEqualTo("344");
-        assertThat(caseProgressionReportEvent.getCaseData().getCaseProgressionReportEventData().getCentralLondonDFJCourts())
+        assertThat(eventData.getCentralLondonDFJCourts())
                 .isNull();
     }
 }
+
