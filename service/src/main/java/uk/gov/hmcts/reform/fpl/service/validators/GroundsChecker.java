@@ -38,7 +38,6 @@ public class GroundsChecker extends PropertiesChecker {
         } else if (caseData.isRefuseContactWithChildApplication()) {
             return super.validate(caseData, List.of("groundsForRefuseContactWithChild"));
         } else if (caseData.isContactWithChildInCareApplication()) {
-            log.info("AAAAAAAAAAAAA");
             return super.validate(caseData, List.of("groundsForContactWithChild"));
         } else {
             return super.validate(caseData, List.of("grounds"));
@@ -115,8 +114,6 @@ public class GroundsChecker extends PropertiesChecker {
     }
 
     private static boolean isContactWithChildGroundsStarted(GroundsForContactWithChild grounds) {
-        log.info("BBBBBBBBBBB");
-
         return isNotEmpty(grounds)
             && (isNotEmpty(grounds.getParentOrGuardian())
             || isNotEmpty(grounds.getResidenceOrder())
@@ -125,8 +122,6 @@ public class GroundsChecker extends PropertiesChecker {
     }
 
     private static boolean isContactWithChildGroundsCompleted(GroundsForContactWithChild grounds) {
-        log.info("CCCCCCCCCCCCC");
-
         return isNotEmpty(grounds)
             && (isNotEmpty(grounds.getParentOrGuardian())
             && isNotEmpty(grounds.getResidenceOrder())
