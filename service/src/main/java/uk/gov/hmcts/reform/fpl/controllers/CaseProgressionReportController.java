@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFie
 @RequestMapping("/callback/case-progression-report/")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseProgressionReportController extends CallbackController {
-    public static final String CMS_REPORT_DETAILS = "caseProgressionReportDetails";
+    public static final String CASE_PROGRESSION_REPORT_DETAILS = "caseProgressionReportDetails";
     private final CaseProgressionReportService caseProgressionReportService;
     private final IdamClient idamClient;
     private final RequestData requestData;
@@ -31,7 +31,7 @@ public class CaseProgressionReportController extends CallbackController {
     public CallbackResponse handleValidateCollectionMidEvent(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
 
-        caseDetails.getData().put(CMS_REPORT_DETAILS, caseProgressionReportService.getHtmlReport(getCaseData(caseDetails)));
+        caseDetails.getData().put(CASE_PROGRESSION_REPORT_DETAILS, caseProgressionReportService.getHtmlReport(getCaseData(caseDetails)));
 
         return respond(caseDetails);
     }
@@ -42,7 +42,7 @@ public class CaseProgressionReportController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         publishEvent(new CaseProgressionReportEvent(getCaseData(caseDetails), userDetails));
 
-        caseDetails.getData().remove(CMS_REPORT_DETAILS);
+        caseDetails.getData().remove(CASE_PROGRESSION_REPORT_DETAILS);
         removeTemporaryFields(caseDetails, CaseProgressionReportEventData.class);
 
         return respond(caseDetails);
