@@ -24,9 +24,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.OrderType.CONTACT_WITH_CHILD_IN_CARE;
-
 @Slf4j
 @Api
 @RestController
@@ -132,7 +129,7 @@ public class OrdersNeededController extends CallbackController {
             data.remove("contactWithChildInCareOrderType");
         }
 
-        if (caseData.isDischargeOfCareApplication()) {
+        if (isDischargeOfCareOrder(orderType)) {
             data.put("otherOrderType", "YES");
             log.info("DOC");
         } else {

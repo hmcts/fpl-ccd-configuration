@@ -18,8 +18,8 @@ public class GroundsForContactWithChild {
                         + "immediately before the care order was made (Section 34(1)(c) Children Act 1989)")
     private String residenceOrder;
 
-    @NotBlank(message = "Please state whether you had care of the child(ren) through an order "
-                        + "which was in force immediately before the care order was made (Section 34(1)(d) Children Act 1989)")
+    @NotBlank(message = "Please state whether you had care of the child(ren) through an order which was in force "
+                        + "immediately before the care order was made (Section 34(1)(d) Children Act 1989)")
     private String hadCareOfChildrenBeforeCareOrder;
 
     @NotBlank(message = "Please provide reasons for application")
