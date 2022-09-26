@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure@fpl-longer-ft-timeou")
+@Library("Infrastructure@fpl-long-ft-timeout")
 import uk.gov.hmcts.contino.AppPipelineConfig
 import uk.gov.hmcts.contino.AppPipelineDsl
 
