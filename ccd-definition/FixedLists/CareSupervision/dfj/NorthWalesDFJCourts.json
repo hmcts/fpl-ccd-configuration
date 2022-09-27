@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NorthWalesDFJCourts",
+    "ListElementCode": "159",
+    "ListElement": "Caernarfon",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NorthWalesDFJCourts",
+    "ListElementCode": "308",
+    "ListElement": "Prestatyn (Rhyl)",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NorthWalesDFJCourts",
+    "ListElementCode": "384",
+    "ListElement": "Wrexham",
+    "DisplayOrder": 3
+  }
+]

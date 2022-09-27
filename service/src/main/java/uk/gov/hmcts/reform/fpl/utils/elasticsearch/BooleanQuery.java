@@ -11,6 +11,7 @@ import java.util.Map;
 public class BooleanQuery implements ESQuery {
     private final MustNot mustNot;
     private final Must must;
+    private final Filter filter;
 
     @Override
     public Map<String, Object> toMap() {
@@ -20,6 +21,9 @@ public class BooleanQuery implements ESQuery {
         }
         if (must != null) {
             query.putAll(must.toMap());
+        }
+        if (filter != null) {
+            query.putAll(filter.toMap());
         }
         return Map.of("bool", query);
     }

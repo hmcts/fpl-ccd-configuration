@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SwanseaDFJCourts",
+    "ListElementCode": "253",
+    "ListElement": "Llanelli",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SwanseaDFJCourts",
+    "ListElementCode": "274",
+    "ListElement": "Port Talbot ",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SwanseaDFJCourts",
+    "ListElementCode": "344",
+    "ListElement": "Swansea",
+    "DisplayOrder": 3
+  }
+]

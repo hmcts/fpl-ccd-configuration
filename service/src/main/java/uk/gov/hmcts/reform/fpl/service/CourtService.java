@@ -37,6 +37,10 @@ public class CourtService {
         return ofNullable(caseData.getCourt()).orElseGet(() -> inferCourt(caseData));
     }
 
+    public Optional<Court> getCourt(String code) {
+        return courtLookup.getCourtByCode(code);
+    }
+
     public String getCourtEmail(CaseData caseData) {
         if (YES.getValue().equals(caseData.getSendToCtsc())) {
             return ctscLookup.getEmail();
@@ -95,6 +99,4 @@ public class CourtService {
 
         return courtLookup.getCourts(caseData.getCaseLocalAuthority()).get(0);
     }
-
-
 }

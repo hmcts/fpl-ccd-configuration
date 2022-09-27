@@ -61,13 +61,18 @@
     },
     {
       "code": "159",
-      "name": "Caernafon",
+      "name": "Caernarfon",
       "region": "Wales"
     },
     {
       "code": "163",
       "name": "Canterbury",
       "region": "South East"
+    },
+    {
+      "code": "164",
+      "name": "Cardiff",
+      "region": "Wales"
     },
     {
       "code": "165",

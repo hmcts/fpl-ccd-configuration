@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LondonDFJ",
+    "ListElementCode": "CENTRAL_LONDON",
+    "ListElement": "Central London",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LondonDFJ",
+    "ListElementCode": "EAST_LONDON",
+    "ListElement": "East London",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LondonDFJ",
+    "ListElementCode": "WEST_LONDON",
+    "ListElement": "West London",
+    "DisplayOrder": 3
+  }
+]

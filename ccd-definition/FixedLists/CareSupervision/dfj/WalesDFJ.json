@@ -1,0 +1,29 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "WalesDFJ",
+    "ListElementCode": "NORTH_WALES",
+    "ListElement": "North Wales",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "WalesDFJ",
+    "ListElementCode": "SOUTH_EAST_WALES",
+    "ListElement": "South East Wales",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "WalesDFJ",
+    "ListElementCode": "SWANSEA",
+    "ListElement": "Swansea",
+    "DisplayOrder": 3
+  }
+]
+
+
+
+
+
+
