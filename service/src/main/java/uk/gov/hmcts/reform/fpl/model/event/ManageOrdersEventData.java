@@ -123,6 +123,8 @@ public class ManageOrdersEventData {
     LocalDate manageOrdersSupervisionOrderApprovalDate;
     LocalDate manageOrdersSupervisionOrderEndDate;
     ChildArrangementsOrderType manageOrdersChildArrangementsOrderType;
+    String manageOrdersPartyGrantedLeave;
+    String manageOrdersChildNewSurname;
 
     @JsonIgnore
     public LocalDateTime getManageOrdersApprovalDateOrDateTime() {
