@@ -385,24 +385,25 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Dfpl816 {
-        final String migrationId = "DFPL-816";
-        final long expectedCaseId = 1659614144221728L;
-        final UUID expectedPartyId = UUID.fromString("a7549435-47ca-4c2c-aaec-7ddd81befc1d");
-        final UUID expectedDocId = UUID.fromString("d4779e5e-1f3a-4f21-967d-7b6109931009");
+    class Dfpl828 {
+        final String migrationId = "DFPL-828";
+        final long expectedCaseId = 1651850415891595L;
+        final UUID expectedPartyId = UUID.fromString("f3264cc6-61b7-4cf7-ab37-c9eb35a13e03");
+        final List<UUID> expectedDocId = List.of("6fcc6eb4-942d-40e1-bfa6-befd70254f7f",
+                "fbea9e67-8244-43b8-97c5-265da7b9b6c7", "518a9339-786c-4b68-bce9-a064616ac47f",
+                "61733660-67ed-4ea7-8711-2fe80e15af68")
+            .stream().map(UUID::fromString).collect(Collectors.toList());
 
-        UUID[] otherDocIds = new UUID[] {UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
-            UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()};
+        UUID[] otherDocIds = new UUID[]{UUID.randomUUID(), UUID.randomUUID()};
         UUID otherPartyId = UUID.randomUUID();
 
         Element<SentDocuments> targetDocumentSentToParties = element(expectedPartyId, SentDocuments.builder()
-            .documentsSentToParty(List.of(element(expectedDocId, SentDocument.builder().build()),
+            .documentsSentToParty(List.of(element(expectedDocId.get(0), SentDocument.builder().build()),
+                element(expectedDocId.get(1), SentDocument.builder().build()),
+                element(expectedDocId.get(2), SentDocument.builder().build()),
+                element(expectedDocId.get(3), SentDocument.builder().build()),
                 element(otherDocIds[0], SentDocument.builder().build()),
-                element(otherDocIds[1], SentDocument.builder().build()),
-                element(otherDocIds[2], SentDocument.builder().build()),
-                element(otherDocIds[3], SentDocument.builder().build()),
-                element(otherDocIds[4], SentDocument.builder().build()),
-                element(otherDocIds[5], SentDocument.builder().build())))
+                element(otherDocIds[1], SentDocument.builder().build())))
             .build());
 
         Element<SentDocuments> otherDocumentSentToParties = element(otherPartyId, SentDocuments.builder()
@@ -430,7 +431,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             assertThat(ElementUtils.getElement(expectedPartyId, responseData.getDocumentsSentToParties()).getValue()
                 .getDocumentsSentToParty().stream().map(Element::getId).collect(Collectors.toList()))
-                .doesNotContain(expectedDocId)
+                .doesNotContainAnyElementsOf(expectedDocId)
                 .containsExactly(otherDocIds);
         }
 
@@ -467,11 +468,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .documentsSentToParties(List.of(element(expectedPartyId, SentDocuments.builder()
                         .documentsSentToParty(List.of(
                             element(otherDocIds[0], SentDocument.builder().build()),
-                            element(otherDocIds[1], SentDocument.builder().build()),
-                            element(otherDocIds[2], SentDocument.builder().build()),
-                            element(otherDocIds[3], SentDocument.builder().build()),
-                            element(otherDocIds[4], SentDocument.builder().build()),
-                            element(otherDocIds[5], SentDocument.builder().build()))).build())))
+                            element(otherDocIds[1], SentDocument.builder().build()))).build())))
                 .build();
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))

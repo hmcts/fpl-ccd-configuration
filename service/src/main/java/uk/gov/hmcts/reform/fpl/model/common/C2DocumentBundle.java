@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType;
-import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -50,8 +49,6 @@ public class C2DocumentBundle implements ApplicationsBundle {
     private final List<C2AdditionalOrdersRequested> c2AdditionalOrdersRequested;
     private final ParentalResponsibilityType parentalResponsibilityType;
     private final String applicantName;
-    private final String othersNotified;
-    private final List<Element<Other>> others;
     private final List<Element<Respondent>> respondents;
 
     public String toLabel(int index) {

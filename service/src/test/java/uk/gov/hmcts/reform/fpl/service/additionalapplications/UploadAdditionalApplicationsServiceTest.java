@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -102,8 +101,7 @@ class UploadAdditionalApplicationsServiceTest {
         given(conversionService.convertToPdf(DOCUMENT)).willReturn(CONVERTED_DOCUMENT);
         given(conversionService.convertToPdf(SUPPLEMENT_DOCUMENT)).willReturn(CONVERTED_SUPPLEMENT_DOCUMENT);
         underTest = new UploadAdditionalApplicationsService(
-            time, user, uploadHelper, conversionService, peopleInCaseService
-        );
+            time, user, uploadHelper, conversionService);
         given(user.isHmctsUser()).willReturn(true);
         given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(HMCTS);
     }
@@ -193,7 +191,6 @@ class UploadAdditionalApplicationsServiceTest {
             .otherApplicant("some other name")
             .build();
 
-        given(peopleInCaseService.getSelectedOthers(any())).willReturn(List.of());
         given(peopleInCaseService.getSelectedRespondents(any())).willReturn(List.of());
         given(peopleInCaseService.getPeopleNotified(any(), eq(List.of()), eq(List.of()))).willReturn("");
 
@@ -202,8 +199,6 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(actual.getAuthor()).isEqualTo(HMCTS);
         assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
         assertThat(actual.getOtherApplicationsBundle().getApplicantName()).isEqualTo("some other name");
-        assertThat(actual.getOtherApplicationsBundle().getOthersNotified()).isEmpty();
-        assertThat(actual.getOtherApplicationsBundle().getOthers()).isEmpty();
         assertThat(actual.getOtherApplicationsBundle().getRespondents()).isEmpty();
 
         assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), supplement, supportingDocument);
@@ -240,6 +235,11 @@ class UploadAdditionalApplicationsServiceTest {
             .value(DYNAMIC_LIST_ELEMENTS.get(0))
             .listItems(DYNAMIC_LIST_ELEMENTS).build();
 
+        List<Element<Respondent>> respondentsInCase = wrapElements(
+            Respondent.builder().party(
+                RespondentParty.builder().firstName("First").lastName("Respondent")
+                    .address(Address.builder().postcode("SE1").build()).build()).build());
+
         CaseData caseData = CaseData.builder().temporaryPbaPayment(pbaPayment)
             .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
             .c2Type(WITH_NOTICE)
@@ -247,23 +247,10 @@ class UploadAdditionalApplicationsServiceTest {
             .temporaryOtherApplicationsBundle(createOtherApplicationsBundle(otherSupplement, otherSupportingDocument))
             .temporaryPbaPayment(pbaPayment)
             .applicantsList(applicantsList)
+            .respondents1(respondentsInCase)
             .build();
 
-        List<Element<Other>> selectedOthers = wrapElements(
-            Other.builder().name("Other1").address(Address.builder().postcode("SE1").build()).build(),
-            Other.builder().name("Other2").address(Address.builder().postcode("SE2").build()).build()
-        );
-
-        List<Element<Respondent>> selectedRespondents = wrapElements(
-            Respondent.builder().party(
-                RespondentParty.builder().firstName("First").lastName("Respondent")
-                    .address(Address.builder().postcode("SE1").build()).build()).build());
-
-        String othersNotified = "First Respondent, Other1, Other2";
-        given(peopleInCaseService.getSelectedOthers(any())).willReturn(selectedOthers);
-        given(peopleInCaseService.getSelectedRespondents(any())).willReturn(selectedRespondents);
-        given(peopleInCaseService.getPeopleNotified(any(), eq(selectedRespondents), eq(selectedOthers)))
-            .willReturn(othersNotified);
+        assertThat(caseData.getAllRespondents()).isEqualTo(respondentsInCase);
 
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
@@ -271,11 +258,6 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
         assertThat(actual.getC2DocumentBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
         assertThat(actual.getOtherApplicationsBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
-
-        assertThat(actual.getC2DocumentBundle().getOthers()).isEqualTo(selectedOthers);
-        assertThat(actual.getC2DocumentBundle().getOthersNotified()).isEqualTo(othersNotified);
-        assertThat(actual.getOtherApplicationsBundle().getOthers()).isEqualTo(selectedOthers);
-        assertThat(actual.getOtherApplicationsBundle().getOthersNotified()).isEqualTo(othersNotified);
 
         assertC2DocumentBundle(actual.getC2DocumentBundle(), c2Supplement, c2SupportingDocument);
         assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), otherSupplement, otherSupportingDocument);
