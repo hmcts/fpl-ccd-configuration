@@ -12,11 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -115,16 +111,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                 .party(RespondentParty.builder().firstName("Margaret").lastName("Jones").build())
                 .build()
             ))
-            .others(Others.builder()
-                .firstOther(
-                    Other.builder().name("Tim Jones").address(Address.builder().postcode("SE1").build()).build()
-                )
-                .additionalOthers(wrapElements(
-                    Other.builder().name("Stephen Jones").address(Address.builder().postcode("SW2").build()).build()
-                ))
-                .build())
-            .personSelector(Selector.newSelector(3))
-            .notifyApplicationsToAllOthers(YesNo.YES.getValue()).build();
+            .build();
 
         CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, ADMIN_ROLE));
 
@@ -136,12 +123,6 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertC2DocumentBundle(uploadedC2DocumentBundle);
         assertThat(uploadedC2DocumentBundle.getApplicantName()).isEqualTo(LOCAL_AUTHORITY_NAME);
         assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(temporaryPbaPayment);
-
-        assertThat(uploadedC2DocumentBundle.getOthersNotified()).contains("Margaret Jones, Tim Jones, Stephen Jones");
-        assertThat(unwrapElements(uploadedC2DocumentBundle.getOthers())).contains(
-            updatedCaseData.getOthers().getFirstOther(),
-            updatedCaseData.getOthers().getAdditionalOthers().get(0).getValue()
-        );
 
         assertTemporaryFieldsAreRemoved(updatedCaseData);
     }
@@ -170,16 +151,6 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .otherApplicant(OTHER_APPLICANT_NAME)
             .representatives(List.of(representative))
             .respondents1(List.of(respondentElement))
-            .others(Others.builder()
-                .firstOther(
-                    Other.builder().name("Stephen Miller").address(Address.builder().postcode("SE1").build()).build()
-                )
-                .additionalOthers(wrapElements(
-                    Other.builder().name("Alex Smith").address(Address.builder().postcode("SE2").build()).build()
-                ))
-                .build())
-            .personSelector(personSelector)
-            .notifyApplicationsToAllOthers("No")
             .build();
 
         CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, ADMIN_ROLE));
@@ -191,10 +162,6 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getApplicantName())
             .isEqualTo(OTHER_APPLICANT_NAME);
 
-        assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthersNotified())
-            .isEqualTo("Margaret Jones, Alex Smith");
-        assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthers())
-            .isEqualTo(List.of(updatedCaseData.getOthers().getAdditionalOthers().get(0)));
         assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getRespondents())
             .hasSize(1)
             .containsExactly(respondentElement);
@@ -214,14 +181,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .temporaryOtherApplicationsBundle(createTemporaryOtherApplicationDocument())
             .temporaryPbaPayment(temporaryPbaPayment)
             .applicantsList(createApplicantsDynamicList(APPLICANT))
-            .others(Others.builder()
-                .firstOther(
-                    Other.builder().name("Stephen Miller").address(Address.builder().postcode("SE1").build()).build()
-                )
-                .build()
-            )
-            .personSelector(Selector.newSelector(1))
-            .notifyApplicationsToAllOthers("No").build();
+            .build();
 
         CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, ADMIN_ROLE));
 
@@ -231,9 +191,6 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertC2DocumentBundle(additionalApplicationsBundle.getC2DocumentBundle());
         assertOtherApplicationsBundle(additionalApplicationsBundle.getOtherApplicationsBundle());
         assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(temporaryPbaPayment);
-
-        assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthersNotified()).isEmpty();
-        assertThat(additionalApplicationsBundle.getC2DocumentBundle().getOthersNotified()).isEmpty();
 
         assertThat(additionalApplicationsBundle.getC2DocumentBundle().getApplicantName())
             .isEqualTo(LOCAL_AUTHORITY_NAME);
@@ -277,15 +234,12 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                 "additionalApplicationType", List.of("C2_ORDER"),
                 "temporaryPbaPayment", createPbaPayment(),
                 "amountToPay", "Yes",
-                "temporaryOtherApplicationsBundle", createTemporaryOtherApplicationDocument(),
-                "hasRespondentsOrOthers", "Yes",
-                "people_label", "Other 1: Alex",
-                "notifyApplicationsToAllOthers", "Yes"))
+                "temporaryOtherApplicationsBundle", createTemporaryOtherApplicationDocument()))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails, ADMIN_ROLE);
 
-        assertThat(callbackResponse.getData()).doesNotContainKeys("c2Type", "people_label", "hasRespondentsOrOthers");
+        assertThat(callbackResponse.getData()).doesNotContainKey("c2Type");
 
         CaseData caseData = extractCaseData(callbackResponse);
         assertTemporaryFieldsAreRemoved(caseData);
