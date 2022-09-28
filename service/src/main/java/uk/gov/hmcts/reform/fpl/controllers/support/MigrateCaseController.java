@@ -45,7 +45,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-776", this::run776,
         "DFPL-826", this::run826,
         "DFPL-810", this::run810,
-        "DFPL-816", this::run816
+        "DFPL-828", this::run828
     );
 
     @PostMapping("/about-to-submit")
@@ -228,10 +228,19 @@ public class MigrateCaseController extends CallbackController {
         }
     }
 
-    private void run816(CaseDetails caseDetails) {
-        var migrationId = "DFPL-816";
-        var expectedCaseId = 1659614144221728L;
+    private void run828(CaseDetails caseDetails) {
+        removeDocumentSentToParty(caseDetails, 1651850415891595L, "DFPL-828",
+            "f3264cc6-61b7-4cf7-ab37-c9eb35a13e03",
+            List.of("6fcc6eb4-942d-40e1-bfa6-befd70254f7f",
+                "fbea9e67-8244-43b8-97c5-265da7b9b6c7",
+                "518a9339-786c-4b68-bce9-a064616ac47f",
+                "61733660-67ed-4ea7-8711-2fe80e15af68"));
+    }
 
+    private void removeDocumentSentToParty(CaseDetails caseDetails, long expectedCaseId,
+                                          String migrationId,
+                                          String expectedDocumentsSentToPartiesId,
+                                          List<String> docIdsToBeRemoved) {
         CaseData caseData = getCaseData(caseDetails);
         Long caseId = caseData.getId();
 
@@ -242,31 +251,34 @@ public class MigrateCaseController extends CallbackController {
             ));
         }
 
-        final UUID expectedPartyId = UUID.fromString("a7549435-47ca-4c2c-aaec-7ddd81befc1d");
-        final UUID expectedDocId = UUID.fromString("d4779e5e-1f3a-4f21-967d-7b6109931009");
+        final UUID expectedPartyUuid = UUID.fromString(expectedDocumentsSentToPartiesId);
+        final List<UUID> docUuidsToBeRemoved = docIdsToBeRemoved.stream().map(UUID::fromString).collect(toList());
 
-        final Element<SentDocuments> targetDocumentsSentToParties = ElementUtils.findElement(expectedPartyId,
+        final Element<SentDocuments> targetDocumentsSentToParties = ElementUtils.findElement(expectedPartyUuid,
                 caseData.getDocumentsSentToParties())
             .orElseThrow(() -> new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, party Id not found",
                 migrationId, caseId)));
 
-        if (!ElementUtils.findElement(expectedDocId, targetDocumentsSentToParties.getValue().getDocumentsSentToParty())
-                .isPresent()) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, document Id not found",
-                migrationId, caseId));
-        }
+        docUuidsToBeRemoved.stream().forEach(docIdToBeRemoved -> {
+                if (ElementUtils.findElement(docIdToBeRemoved,
+                        targetDocumentsSentToParties.getValue().getDocumentsSentToParty()).isEmpty()) {
+                    throw new AssertionError(format(
+                        "Migration {id = %s, case reference = %s}, document Id not found",
+                        migrationId, caseId));
+                }
+            }
+        );
 
         final List<Element<SentDocuments>> resultDocumentsSentToParties = caseData.getDocumentsSentToParties().stream()
             .map(documentsSentToParty -> {
-                if (!expectedPartyId.equals(documentsSentToParty.getId())) {
+                if (!expectedPartyUuid.equals(documentsSentToParty.getId())) {
                     return documentsSentToParty;
                 } else {
                     return element(documentsSentToParty.getId(),
                         documentsSentToParty.getValue().toBuilder()
                             .documentsSentToParty(documentsSentToParty.getValue().getDocumentsSentToParty().stream()
-                                .filter(documentSent -> !expectedDocId.equals(documentSent.getId()))
+                                .filter(documentSent -> !docUuidsToBeRemoved.contains(documentSent.getId()))
                                 .collect(Collectors.toList())).build());
                 }
             }).collect(Collectors.toList());
