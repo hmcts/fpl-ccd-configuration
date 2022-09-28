@@ -78,8 +78,8 @@ public class CaseProgressionReportEventHandler {
                                 .message(subject)
                                 .build()
                 );
-                boolean deleted = file.delete();
-                log.info("Notified cases with subject {} and file deleted {}", subject, deleted);
+                Files.delete(file.toPath());
+                log.info("Notified cases with subject {} ", subject);
             } else {
                 log.info("No records found for  subject {}", subject);
             }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.exceptions.CaseProgressionReportException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -44,6 +45,7 @@ import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 import static java.math.RoundingMode.UP;
 import static java.util.stream.Collectors.groupingBy;
@@ -78,12 +80,12 @@ public class CaseProgressionReportService {
     private final CourtService courtService;
 
 
-    Function<String, String> headerField = fieldName ->  String.join("",
+    UnaryOperator<String> headerField = fieldName ->  String.join("",
             "<th class='search-result-column-label'>",
             fieldName,
             "</th>");
 
-    Function<String, String> cellField = fieldName ->  String.join("",
+    UnaryOperator<String> cellField = fieldName ->  String.join("",
             "<td class='search-result-column-cell'>",
             fieldName,
             "</td>");
@@ -94,12 +96,12 @@ public class CaseProgressionReportService {
         CaseProgressionReportEventData caseProgressionReportEventData = caseData.getCaseProgressionReportEventData();
         try {
             if (AT_RISK.equals(caseProgressionReportEventData.getReportType())) {
-                return getHtmlReport(caseData, (complianceDeadline) -> RangeQuery.builder()
+                return getHtmlReport(caseData, complianceDeadline -> RangeQuery.builder()
                         .field(RANGE_FIELD)
                         .greaterThanOrEqual(complianceDeadline)
                         .build());
             } else if (MISSING_TIMETABLE.equals(caseProgressionReportEventData.getReportType())) {
-                return getHtmlReport(caseData, (complianceDeadline) -> RangeQuery.builder()
+                return getHtmlReport(caseData, complianceDeadline -> RangeQuery.builder()
                         .field(RANGE_FIELD)
                         .lessThan(complianceDeadline)
                         .build());
@@ -107,8 +109,9 @@ public class CaseProgressionReportService {
             throw new IllegalArgumentException("Requested unknown report type:"
                     + caseProgressionReportEventData.getReportType());
         } catch (Exception e) {
-            log.error("Exception e", e);
-            throw new RuntimeException(e.getMessage());
+            throw new CaseProgressionReportException(
+                    String.join(" : ", "Failed for report ", caseProgressionReportEventData.toString()),
+                    e);
         }
     }
 
@@ -129,27 +132,29 @@ public class CaseProgressionReportService {
                 buildSortClause());
         log.info("record count {}", searchResult.getTotal());
 
-        int[] counter = new int[]{1};
-        StringBuilder result = new StringBuilder();
-        result.append("<table>")
-            .append("<tr>")
+        StringBuilder courtTable = new StringBuilder();
+        courtTable.append("<table><tr>")
             .append("<th class='search-result-column-label' colspan=\"9\">")
             .append(courtService.getCourt(courtId).map(Court::getName).orElse("Court name not found"))
             .append("<th class='search-result-column-label'>")
+            .append("</tr></table>");
+
+        StringBuilder tableHeader = new StringBuilder();
+        tableHeader.append("<table><tr>")
+            .append(headerField.apply("Sr no."))
+            .append(headerField.apply("Case Number"))
+            .append(headerField.apply("CCD Number"))
+            .append(headerField.apply("Receipt date"))
+            .append(headerField.apply("Last PLO hearing"))
+            .append(headerField.apply("Next hearing"))
+            .append(headerField.apply("Age of </br>case</br>(weeks)"))
+            .append(headerField.apply("PLO stage"))
+            .append(headerField.apply("Expected FH date"))
             .append("</tr>");
 
+        StringBuilder result = new StringBuilder();
+        int count = 0;
         if (searchResult.getTotal() > 0) {
-            result.append("<tr>")
-                .append(headerField.apply("Sr no."))
-                .append(headerField.apply("Case Number"))
-                .append(headerField.apply("CCD Number"))
-                .append(headerField.apply("Receipt date"))
-                .append(headerField.apply("Last PLO hearing"))
-                .append(headerField.apply("Next hearing"))
-                .append(headerField.apply("Age of </br>case</br>(weeks)"))
-                .append(headerField.apply("PLO stage"))
-                .append(headerField.apply("Expected FH date"))
-                .append("</tr>");
 
             for (CaseDetails caseDetails : searchResult.getCases()) {
                 CaseData caseData = converter.convert(caseDetails);
@@ -157,11 +162,12 @@ public class CaseProgressionReportService {
                 Optional<HearingInfo> optionalHearingInfo = getHearingInfo(caseData);
 
                 if (optionalHearingInfo.isPresent()) {
+                    count++;
                     HearingInfo hearingInfo = optionalHearingInfo.get();
                     result.append(
                         String.join("",
                             "<tr>",
-                            cellField.apply(String.valueOf(counter[0]++)),
+                            cellField.apply(String.valueOf(count++)),
                             cellField.apply(hearingInfo.getFamilyManCaseNumber()),
                             cellField.apply(hearingInfo.getCcdNumber()),
                             cellField.apply(hearingInfo.getDateSubmitted()),
@@ -174,11 +180,13 @@ public class CaseProgressionReportService {
                     );
                 }
             }
+            if (count > 0) {
+                courtTable.append(tableHeader)
+                        .append(result)
+                        .append("</table>");
+            }
         }
-
-        result.append("</table>");
-
-        return result.toString();
+        return courtTable.toString();
     }
 
     public Optional<File> getFileReport(CaseData caseData)  {
@@ -198,8 +206,9 @@ public class CaseProgressionReportService {
             throw new IllegalArgumentException("Requested unknown report type:"
                     + caseProgressionReportEventData.getReportType());
         } catch (Exception e) {
-            log.error("Exception e", e);
-            throw new RuntimeException(e.getMessage());
+            throw new CaseProgressionReportException(
+                    String.join(" : ", "Failed for report ", caseProgressionReportEventData.toString()),
+                    e);
         }
     }
 

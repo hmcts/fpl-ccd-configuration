@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.exceptions.CaseProgressionReportException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -38,6 +39,7 @@ import java.util.Random;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -117,8 +119,8 @@ class CaseProgressionReportServiceTest {
         assertThat(report).isEqualTo("<table>" 
                 + "<tr><th class='search-result-column-label' colspan=\"9\">"
                 +  courtName
-                + "<th class='search-result-column-label'></tr>"
-                + "<tr><th class='search-result-column-label'>Sr no.</th>"
+                + "<th class='search-result-column-label'></tr></table>"
+                + "<table><tr><th class='search-result-column-label'>Sr no.</th>"
                 + "<th class='search-result-column-label'>Case Number</th>"
                 + "<th class='search-result-column-label'>CCD Number</th>"
                 + "<th class='search-result-column-label'>Receipt date</th>"
@@ -144,7 +146,7 @@ class CaseProgressionReportServiceTest {
     }
 
     @Test
-    void shouldReturnHtmlReportWithEmptyTable() {
+    void shouldReturnHtmlReportWithEmptyTableWhenNoResultFound() {
         CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
                 .swanseaDFJCourts("344")
                 .reportType(AT_RISK)
@@ -153,8 +155,6 @@ class CaseProgressionReportServiceTest {
         CaseData caseDataSelected = CaseData.builder()
                 .caseProgressionReportEventData(caseProgressionReportEventData)
                 .build();
-
-
 
         List<CaseDetails> caseDetails = List.of(createCaseDetails());
 
@@ -169,6 +169,95 @@ class CaseProgressionReportServiceTest {
         when(searchService.search(any(), eq(100), eq(0), isA(Sort.class)))
                 .thenReturn(searchResult);
 
+
+        String report = service.getHtmlReport(caseDataSelected);
+        assertThat(report).isEqualTo("<table>"
+                + "<tr><th class='search-result-column-label' colspan=\"9\">"
+                + "Family court Swansea<th class='search-result-column-label'>"
+                + "</tr>"
+                + "</table>");
+    }
+
+    @Test
+    void shouldThowExceptionWhenEmptyResultSet() {
+        CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
+                .swanseaDFJCourts("344")
+                .reportType(AT_RISK)
+                .build();
+
+        CaseData caseDataSelected = CaseData.builder()
+                .caseProgressionReportEventData(caseProgressionReportEventData)
+                .build();
+
+        List<CaseDetails> caseDetails = List.of(createCaseDetails());
+
+        SearchResult searchResult = SearchResult.builder()
+                .total(1)
+                .cases(caseDetails)
+                .build();
+
+        when(courtService.getCourt("344"))
+                .thenReturn(Optional.of(Court.builder().name("Family court Swansea").build()));
+
+        when(searchService.search(any(), eq(100), eq(0), isA(Sort.class)))
+                .thenReturn(searchResult);
+
+        assertThatThrownBy(() -> service.getHtmlReport(caseDataSelected))
+                .isInstanceOf(CaseProgressionReportException.class);
+    }
+
+    @Test
+    void shouldThowExceptionWhenReportTypeUnknow() {
+        CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
+                .swanseaDFJCourts("344")
+                .build();
+
+        CaseData caseDataSelected = CaseData.builder()
+                .caseProgressionReportEventData(caseProgressionReportEventData)
+                .build();
+
+        assertThatThrownBy(() -> service.getHtmlReport(caseDataSelected))
+                .isInstanceOf(CaseProgressionReportException.class);
+    }
+
+    @Test
+    void shouldReturnHtmlReportWithEmptyTableWhenCasesHearingAreWithinThreshold() {
+        CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
+                .swanseaDFJCourts("344")
+                .reportType(AT_RISK)
+                .build();
+
+        CaseData caseDataSelected = CaseData.builder()
+                .caseProgressionReportEventData(caseProgressionReportEventData)
+                .build();
+
+        List<CaseDetails> caseDetails = List.of(createCaseDetails());
+
+        SearchResult searchResult = SearchResult.builder()
+                .total(1)
+                .cases(caseDetails)
+                .build();
+
+        LocalDate submittedDate = LocalDate.parse("04-05-2022", DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+
+        LocalDateTime finalHearing = LocalDateTime.of(
+                LocalDate.parse("03-06-2022", DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+                LocalTime.now());
+
+        List<Element<HearingBooking>> hearingDetails = ElementUtils.wrapElements(
+                List.of(
+                        createHearingBooking(FINAL, finalHearing)
+                ));
+
+        when(courtService.getCourt("344"))
+                .thenReturn(Optional.of(Court.builder().name("Family court Swansea").build()));
+
+        when(searchService.search(any(), eq(100), eq(0), isA(Sort.class)))
+                .thenReturn(searchResult);
+
+        when(converter.convert(isA(CaseDetails.class))).thenReturn(
+                getCaseData(hearingDetails, submittedDate, "PO22ZA12345", 1663342447124290L)
+        );
 
         String report = service.getHtmlReport(caseDataSelected);
         assertThat(report).isEqualTo("<table>"
