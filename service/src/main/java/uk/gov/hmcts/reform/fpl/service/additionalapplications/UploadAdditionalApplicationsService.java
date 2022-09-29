@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -18,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -52,7 +50,6 @@ public class UploadAdditionalApplicationsService {
     private final UserService user;
     private final DocumentUploadHelper documentUploadHelper;
     private final DocumentConversionService documentConversionService;
-    private final PeopleInCaseService peopleInCaseService;
 
     public List<ApplicationType> getApplicationTypes(AdditionalApplicationsBundle bundle) {
         List<ApplicationType> applicationTypes = new ArrayList<>();
@@ -75,11 +72,7 @@ public class UploadAdditionalApplicationsService {
         final String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
         final LocalDateTime now = time.now();
 
-        List<Element<Other>> selectedOthers = peopleInCaseService.getSelectedOthers(caseData);
-        List<Element<Respondent>> selectedRespondents = peopleInCaseService.getSelectedRespondents(caseData);
-        String othersNotified = peopleInCaseService.getPeopleNotified(
-            caseData.getRepresentatives(), selectedRespondents, selectedOthers
-        );
+        List<Element<Respondent>> respondentsInCase = caseData.getAllRespondents();
 
         AdditionalApplicationsBundleBuilder additionalApplicationsBundleBuilder = AdditionalApplicationsBundle.builder()
             .pbaPayment(caseData.getTemporaryPbaPayment())
@@ -90,13 +83,13 @@ public class UploadAdditionalApplicationsService {
         List<AdditionalApplicationType> additionalApplicationTypeList = caseData.getAdditionalApplicationType();
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.C2_ORDER)) {
             additionalApplicationsBundleBuilder.c2DocumentBundle(buildC2DocumentBundle(
-                caseData, applicantName, selectedOthers, selectedRespondents, othersNotified, uploadedBy, now
+                caseData, applicantName, respondentsInCase, uploadedBy, now
             ));
         }
 
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.OTHER_ORDER)) {
             additionalApplicationsBundleBuilder.otherApplicationsBundle(buildOtherApplicationsBundle(
-                caseData, applicantName, selectedOthers, selectedRespondents, othersNotified, uploadedBy, now
+                caseData, applicantName, respondentsInCase, uploadedBy, now
             ));
         }
 
@@ -125,9 +118,7 @@ public class UploadAdditionalApplicationsService {
 
     private C2DocumentBundle buildC2DocumentBundle(CaseData caseData,
                                                    String applicantName,
-                                                   List<Element<Other>> selectedOthers,
-                                                   List<Element<Respondent>> selectedRespondents,
-                                                   String othersNotified,
+                                                   List<Element<Respondent>> respondentsInCase,
                                                    String uploadedBy,
                                                    LocalDateTime uploadedTime) {
         C2DocumentBundle temporaryC2Document = caseData.getTemporaryC2Document();
@@ -150,17 +141,13 @@ public class UploadAdditionalApplicationsService {
             .supplementsBundle(updatedSupplementsBundle)
             .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
             .type(caseData.getC2Type())
-            .respondents(selectedRespondents)
-            .others(selectedOthers)
-            .othersNotified(othersNotified)
+            .respondents(respondentsInCase)
             .build();
     }
 
     private OtherApplicationsBundle buildOtherApplicationsBundle(CaseData caseData,
                                                                  String applicantName,
-                                                                 List<Element<Other>> selectedOthers,
-                                                                 List<Element<Respondent>> selectedRespondents,
-                                                                 String othersNotified,
+                                                                 List<Element<Respondent>> respondentsInCase,
                                                                  String uploadedBy,
                                                                  LocalDateTime uploadedTime) {
         OtherApplicationsBundle temporaryOtherApplicationsBundle = caseData.getTemporaryOtherApplicationsBundle();
@@ -182,9 +169,7 @@ public class UploadAdditionalApplicationsService {
             .document(getDocumentToStore(temporaryOtherApplicationsBundle.getDocument()))
             .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
             .supplementsBundle(updatedSupplementsBundle)
-            .respondents(selectedRespondents)
-            .others(selectedOthers)
-            .othersNotified(othersNotified)
+            .respondents(respondentsInCase)
             .build();
     }
 
