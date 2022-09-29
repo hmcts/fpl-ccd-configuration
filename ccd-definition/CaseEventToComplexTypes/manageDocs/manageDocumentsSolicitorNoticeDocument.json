@@ -15,29 +15,9 @@
     "ID": "PlacementNoticeDocument",
     "CaseEventID": "manageDocumentsSolicitor",
     "CaseFieldID": "placementNoticeResponses",
-    "ListElementCode": "documentAcknowledgeLabel",
-    "FieldDisplayOrder": 4,
-    "DisplayContext": "READONLY",
-    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "PlacementNoticeDocument",
-    "CaseEventID": "manageDocumentsSolicitor",
-    "CaseFieldID": "placementNoticeResponses",
-    "ListElementCode": "documentAcknowledge",
-    "FieldDisplayOrder": 5,
-    "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "PlacementNoticeDocument",
-    "CaseEventID": "manageDocumentsSolicitor",
-    "CaseFieldID": "placementNoticeResponses",
     "ListElementCode": "responseDescription",
     "EventElementLabel": "Notice of placement response description",
-    "FieldDisplayOrder": 6,
+    "FieldDisplayOrder": 4,
     "DisplayContext": "OPTIONAL",
     "EventHintText": "Description of this response"
   }
