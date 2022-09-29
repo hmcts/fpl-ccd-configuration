@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
-import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OutsourcedCaseContentProvider;
@@ -51,8 +50,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @MockBeans(value = {
     @MockBean(PaymentService.class),
     @MockBean(EventService.class),
-    @MockBean(TranslationRequestService.class),
-    @MockBean(CafcassNotificationService.class)
+    @MockBean(TranslationRequestService.class)
 })
 class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
