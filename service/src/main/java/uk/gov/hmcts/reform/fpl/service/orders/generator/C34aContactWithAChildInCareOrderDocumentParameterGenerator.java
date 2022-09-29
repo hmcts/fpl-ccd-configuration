@@ -40,7 +40,7 @@ public class C34aContactWithAChildInCareOrderDocumentParameterGenerator implemen
         if (isEmpty(dle.getCode())) {
             return "";
         } else {
-            return dle.getLabel();
+            return dle.getLabel() + "\n";
         }
     }
     
@@ -50,10 +50,8 @@ public class C34aContactWithAChildInCareOrderDocumentParameterGenerator implemen
 
         String peopleAllowedContact = "";
         peopleAllowedContact += eventData.getManageOrdersAllowedContact1().getValue().getLabel() + "\n";
-        String peopleAllowedContact2 = getPeopleAllowedContactLabel(eventData.getManageOrdersAllowedContact2());
-        peopleAllowedContact += (isEmpty(peopleAllowedContact2) ? "" : (peopleAllowedContact2 + "\n"));
-        String peopleAllowedContact3 = getPeopleAllowedContactLabel(eventData.getManageOrdersAllowedContact3());
-        peopleAllowedContact += (isEmpty(peopleAllowedContact3) ? "" : (peopleAllowedContact3 + "\n"));
+        peopleAllowedContact += getPeopleAllowedContactLabel(eventData.getManageOrdersAllowedContact2());
+        peopleAllowedContact += getPeopleAllowedContactLabel(eventData.getManageOrdersAllowedContact3());
 
         List<Element<Child>> selectedChildren = childrenSmartSelector.getSelectedChildren(caseData);
 

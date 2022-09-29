@@ -36,9 +36,9 @@ class C34aContactWithAChildCareOrderParameterGeneratorTest {
     public static final String CONSENT = "Order By Consent";
     private static final String LOCAL_AUTHORITY_NAME = "Swansea Local Authority";
     private static final String CONDITION_MESSAGE = "This is the condition message.";
-    private static final String CONTACT_NAME_1 = "Carrie Lam";
-    private static final String CONTACT_NAME_2 = "John Lee";
-    private static final String CONTACT_NAME_3 = "CY Leung";
+    private static final String CONTACT_NAME_1 = "Peter Smith";
+    private static final String CONTACT_NAME_2 = "Holmes Watson";
+    private static final String CONTACT_NAME_3 = "Baker Smith";
     @Mock
     private static Child CHILD;
 
