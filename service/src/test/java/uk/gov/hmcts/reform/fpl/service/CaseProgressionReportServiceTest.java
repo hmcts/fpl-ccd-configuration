@@ -149,7 +149,7 @@ class CaseProgressionReportServiceTest {
     void shouldReturnHtmlReportWithEmptyTableWhenNoResultFound() {
         CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
                 .swanseaDFJCourts("344")
-                .reportType(AT_RISK)
+                .reportType(MISSING_TIMETABLE)
                 .build();
 
         CaseData caseDataSelected = CaseData.builder()
@@ -179,7 +179,7 @@ class CaseProgressionReportServiceTest {
     }
 
     @Test
-    void shouldThowExceptionWhenEmptyResultSet() {
+    void shouldThrowExceptionWhenEmptyResultSet() {
         CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
                 .swanseaDFJCourts("344")
                 .reportType(AT_RISK)
@@ -207,7 +207,7 @@ class CaseProgressionReportServiceTest {
     }
 
     @Test
-    void shouldThowExceptionWhenReportTypeUnknow() {
+    void shouldThrowExceptionWhenReportTypeunknown() {
         CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
                 .swanseaDFJCourts("344")
                 .build();
@@ -359,6 +359,170 @@ class CaseProgressionReportServiceTest {
             );
         verify(searchService, times(3))
                 .search(isA(ESQuery.class), anyInt(), anyInt(), isA(Sort.class));
+    }
+
+    @Test
+    void shouldReturnFileReportWithFutureCaseManagement() throws IOException {
+        LocalDate submittedDate = LocalDate.parse("04-05-2022", DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+
+        CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
+                .swanseaDFJCourts("344")
+                .reportType(MISSING_TIMETABLE)
+                .build();
+
+        CaseData caseDataSelected = CaseData.builder()
+                .caseProgressionReportEventData(caseProgressionReportEventData)
+                .build();
+
+
+        LocalDateTime caseManagementHearing = LocalDateTime.of(
+                LocalDate.parse("18-06-2050", DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+                LocalTime.now());
+
+        List<Element<HearingBooking>> hearingDetails = ElementUtils.wrapElements(
+                List.of(createHearingBooking(CASE_MANAGEMENT, caseManagementHearing)));
+
+        List<CaseDetails> caseDetails = List.of(createCaseDetails());
+
+        SearchResult searchResult = SearchResult.builder()
+                .total(1)
+                .cases(caseDetails)
+                .build();
+
+        when(searchService.search(any(), eq(ES_DEFAULT_SIZE), eq(0), isA(Sort.class)))
+            .thenReturn(searchResult);
+
+        when(converter.convert(isA(CaseDetails.class)))
+            .thenReturn(
+                getCaseData(hearingDetails, submittedDate, "PO22ZA12345", 1663342447124290L)
+            );
+
+        Optional<File> fileReport = service.getFileReport(caseDataSelected);
+        assertThat(fileReport).isPresent();
+
+        List<CSVRecord> csvRecordsList = readCsv(fileReport.get());
+        assertThat(csvRecordsList)
+            .isNotEmpty()
+            .hasSize(2)
+            .extracting(record -> tuple(
+                record.get(0), record.get(1), record.get(2), record.get(3), record.get(4),
+                record.get(5), record.get(6), record.get(7))
+            ).containsExactly(
+                tuple("Case Number", "CCD Number","Receipt date", "Last PLO hearing", "Next hearing",
+                        "Age of case (weeks)","PLO stage", "Expected FH date"),
+                tuple("PO22ZA12345", "1663342447124290", "04-05-2022", "-",
+                        "18-06-2050", getWeeks(submittedDate), "Case management", "02-11-2022")
+            );
+        verify(searchService)
+                .search(isA(ESQuery.class), anyInt(), anyInt(), isA(Sort.class));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenEmptyResultSetForFileGeneration() {
+        CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
+                .swanseaDFJCourts("344")
+                .reportType(AT_RISK)
+                .build();
+
+        CaseData caseDataSelected = CaseData.builder()
+                .caseProgressionReportEventData(caseProgressionReportEventData)
+                .build();
+
+        List<CaseDetails> caseDetails = List.of(createCaseDetails());
+
+        SearchResult searchResult = SearchResult.builder()
+                .total(1)
+                .cases(caseDetails)
+                .build();
+
+        when(courtService.getCourt("344"))
+                .thenReturn(Optional.of(Court.builder().name("Family court Swansea").build()));
+
+        when(searchService.search(any(), eq(100), eq(0), isA(Sort.class)))
+                .thenReturn(searchResult);
+
+        assertThatThrownBy(() -> service.getFileReport(caseDataSelected))
+                .isInstanceOf(CaseProgressionReportException.class);
+    }
+
+
+    @Test
+    void shouldThrowExceptionWhenReportTypeUnknownForFileGeneration() {
+        CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
+                .swanseaDFJCourts("344")
+                .build();
+
+        CaseData caseDataSelected = CaseData.builder()
+                .caseProgressionReportEventData(caseProgressionReportEventData)
+                .build();
+
+        assertThatThrownBy(() -> service.getFileReport(caseDataSelected))
+                .isInstanceOf(CaseProgressionReportException.class);
+    }
+
+    @Test
+    void shouldReturnEmptyFileWhenNoRecordFound() {
+        CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
+                .swanseaDFJCourts("344")
+                .reportType(MISSING_TIMETABLE)
+                .build();
+
+        CaseData caseDataSelected = CaseData.builder()
+                .caseProgressionReportEventData(caseProgressionReportEventData)
+                .build();
+
+        List<CaseDetails> caseDetails = List.of(createCaseDetails());
+
+        SearchResult searchResult = SearchResult.builder()
+                .total(0)
+                .cases(caseDetails)
+                .build();
+        when(searchService.search(any(), eq(50), eq(0), isA(Sort.class)))
+                .thenReturn(searchResult);
+
+        Optional<File> fileReport = service.getFileReport(caseDataSelected);
+        assertThat(fileReport).isEmpty();
+    }
+
+
+    @Test
+    void shouldReturnEmptyFileOptionalWhenCasesHearingAreWithinThresholdForFile() {
+        CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
+                .swanseaDFJCourts("344")
+                .reportType(AT_RISK)
+                .build();
+
+        CaseData caseDataSelected = CaseData.builder()
+                .caseProgressionReportEventData(caseProgressionReportEventData)
+                .build();
+
+        List<CaseDetails> caseDetails = List.of(createCaseDetails());
+
+        SearchResult searchResult = SearchResult.builder()
+                .total(1)
+                .cases(caseDetails)
+                .build();
+
+        LocalDate submittedDate = LocalDate.parse("04-05-2022", DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+
+        LocalDateTime finalHearing = LocalDateTime.of(
+                LocalDate.parse("03-06-2022", DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+                LocalTime.now());
+
+        List<Element<HearingBooking>> hearingDetails = ElementUtils.wrapElements(
+                List.of(
+                        createHearingBooking(FINAL, finalHearing)
+                ));
+
+        when(searchService.search(any(), eq(50), eq(0), isA(Sort.class)))
+                .thenReturn(searchResult);
+
+        when(converter.convert(isA(CaseDetails.class))).thenReturn(
+                getCaseData(hearingDetails, submittedDate, "PO22ZA12345", 1663342447124290L)
+        );
+
+        Optional<File> fileReport = service.getFileReport(caseDataSelected);
+        assertThat(fileReport).isEmpty();
     }
 
     private List<CSVRecord> readCsv(File file) throws IOException {
@@ -521,6 +685,25 @@ class CaseProgressionReportServiceTest {
 
     @Test
     void shouldReturnHearingWithEmptyCaseManagementHearingDetail() {
+        LocalDate submittedDate = LocalDate.parse("04-05-2022", DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        LocalDateTime firstCaseManagementHearing = LocalDateTime.of(
+                LocalDate.parse("26-05-2022", DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+                LocalTime.now());
+        LocalDateTime secondCaseManagementHearing = LocalDateTime.of(
+                LocalDate.parse("27-05-2022", DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+                LocalTime.now());
+
+        List<Element<HearingBooking>> hearingBooking = ElementUtils.wrapElements(
+                List.of(createHearingBooking(CASE_MANAGEMENT, firstCaseManagementHearing),
+                        createHearingBooking(CASE_MANAGEMENT, secondCaseManagementHearing)));
+        CaseData caseData = getCaseData(hearingBooking, submittedDate);
+
+        Optional<HearingInfo> hearingInfo = service.getHearingInfo(caseData);
+        assertTrue(hearingInfo.isEmpty());
+    }
+
+    @Test
+    void shouldReturnHearingWithEmptyCaseManagementHearingDetailEmpty() {
         LocalDate submittedDate = LocalDate.parse("04-05-2022", DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         LocalDateTime firstCaseManagementHearing = LocalDateTime.of(
                 LocalDate.parse("26-05-2022", DateTimeFormatter.ofPattern("dd-MM-yyyy")),

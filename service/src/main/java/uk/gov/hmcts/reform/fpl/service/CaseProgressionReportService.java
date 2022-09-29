@@ -62,6 +62,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @RequiredArgsConstructor
 @Slf4j
 public class CaseProgressionReportService {
+    public static final String DATE_FORMAT = "dd-MM-yyyy";
     private static final String MATCH_FIELD = "data.court.code";
     private static final String SORT_FIELD = "data.dateSubmitted";
     private static final String RANGE_FIELD = "data.dateSubmitted";
@@ -193,12 +194,12 @@ public class CaseProgressionReportService {
         CaseProgressionReportEventData caseProgressionReportEventData = caseData.getCaseProgressionReportEventData();
         try {
             if (AT_RISK.equals(caseProgressionReportEventData.getReportType())) {
-                return getFileReport(caseData, (complianceDeadline) -> RangeQuery.builder()
+                return getFileReport(caseData, complianceDeadline -> RangeQuery.builder()
                         .field(RANGE_FIELD)
                         .greaterThanOrEqual(complianceDeadline)
                         .build());
             } else if (MISSING_TIMETABLE.equals(caseProgressionReportEventData.getReportType())) {
-                return getFileReport(caseData, (complianceDeadline) -> RangeQuery.builder()
+                return getFileReport(caseData, complianceDeadline -> RangeQuery.builder()
                         .field(RANGE_FIELD)
                         .lessThan(complianceDeadline)
                         .build());
@@ -247,7 +248,7 @@ public class CaseProgressionReportService {
                 }
             } while (counter  < pages);
 
-            if (hearingInfoList.size() > 0) {
+            if (!hearingInfoList.isEmpty()) {
                 optFile = Optional.of(CsvWriter.writeHearingInfoToCsv(hearingInfoList));
             }
         }
@@ -308,11 +309,12 @@ public class CaseProgressionReportService {
         BiFunction<Optional<HearingBooking>, Optional<HearingBooking>, Optional<HearingInfo.HearingInfoBuilder>>
             getHearingInfo = (currentHearing, previousHearing) ->
             currentHearing.map(hearingBooking -> HearingInfo.builder()
-            .nextHearing(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), "dd-MM-yyyy"))
+            .nextHearing(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), DATE_FORMAT))
             .lastHearing(
                 previousHearing.map(issueBooking ->
-                    formatLocalDateToString(issueBooking.getStartDate().toLocalDate(), "dd-MM-yyyy")).orElse("-"))
+                    formatLocalDateToString(issueBooking.getStartDate().toLocalDate(), DATE_FORMAT)).orElse("-"))
             .ploStage(hearingBooking.getType().getLabel()));
+
 
         Optional<HearingInfo.HearingInfoBuilder> optionalHearingInfoBuilder = getHearingInfo.apply(
             finalCutoffBooking,
@@ -336,13 +338,13 @@ public class CaseProgressionReportService {
                     if (isFutureDate) {
                         optionalHearingInfoBuilder = caseManagementBooking.map(hearingBooking ->
                             hearingInfoBuilderOptional.get().nextHearing(
-                                formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), "dd-MM-yyyy"))
+                                formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), DATE_FORMAT))
                                 .lastHearing("-")
                         );
                     } else {
                         optionalHearingInfoBuilder = caseManagementBooking.map(hearingBooking ->
                             hearingInfoBuilderOptional.get().lastHearing(
-                                formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), "dd-MM-yyyy"))
+                                formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), DATE_FORMAT))
                                 .nextHearing("-")
                         );
                     }
@@ -352,9 +354,9 @@ public class CaseProgressionReportService {
         optionalHearingInfoBuilder.ifPresent(hearingInfoBuilder -> hearingInfoBuilder
                 .familyManCaseNumber(String.valueOf(caseData.getFamilyManCaseNumber()))
                 .ccdNumber(caseData.getId().toString())
-                .dateSubmitted(formatLocalDateToString(dateSubmitted, "dd-MM-yyyy"))
+                .dateSubmitted(formatLocalDateToString(dateSubmitted, DATE_FORMAT))
                 .ageInWeeks(String.valueOf(ChronoUnit.WEEKS.between(dateSubmitted, LocalDate.now())))
-                .expectedFinalHearing(formatLocalDateToString(dateSubmitted.plusWeeks(26), "dd-MM-yyyy")));
+                .expectedFinalHearing(formatLocalDateToString(dateSubmitted.plusWeeks(26), DATE_FORMAT)));
 
         return optionalHearingInfoBuilder.map(HearingInfo.HearingInfoBuilder::build);
     }
