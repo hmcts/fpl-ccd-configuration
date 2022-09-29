@@ -112,19 +112,19 @@ class C34aContactWithAChildCareOrderParameterGeneratorTest {
     }
 
     private String getOrderDetailForOneAllowedContactName() {
-        return format("The Court orders that there may be contact between the child and \n\nCarrie Lam\n\n"
+        return format("The Court orders that there may be contact between the child and \n\nPeter Smith\n\n"
             + "The contact is subject to the following conditions\n\n%s", CONDITION_MESSAGE);
     }
 
     private String getOrderDetailForTwoAllowedContactName() {
-        return format("The Court orders that there may be contact between the child and \n\nCarrie Lam\n"
-            + "John Lee\n\nThe contact is subject to the following conditions\n\n%s", CONDITION_MESSAGE);
+        return format("The Court orders that there may be contact between the child and \n\nPeter Smith\n"
+            + "Holmes Watson\n\nThe contact is subject to the following conditions\n\n%s", CONDITION_MESSAGE);
     }
 
     private String getOrderDetailForThreeAllowedContactName() {
-        return format("The Court orders that there may be contact between the child and \n\nCarrie Lam\n"
-            + "John Lee\n"
-            + "CY Leung\n\nThe contact is subject to the following conditions\n\n%s", CONDITION_MESSAGE);
+        return format("The Court orders that there may be contact between the child and \n\nPeter Smith\n"
+            + "Holmes Watson\n"
+            + "Baker Smith\n\nThe contact is subject to the following conditions\n\n%s", CONDITION_MESSAGE);
     }
 
     private String getOrderMessageForLocalAuthority(String localAuthority) {
