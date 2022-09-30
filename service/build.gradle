@@ -486,8 +486,6 @@ bootWithCCD {
         environment key, value
       }
     }
-    environment "FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING", "EX=>cafcass:cafcass@cafcass.com"
-    environment "FPL_LOCAL_AUTHORITY_USER_MAPPING", "EX=>1,2,3"
     environment "spring.profiles.active", "feature-toggle,local,user-mappings"
     environment 'rse.lib.stub.s2s', 'true'
     environment 'DOCUMENT_MANAGEMENT_URL', 'http://dm-store-aat.service.core-compute-aat.internal'
