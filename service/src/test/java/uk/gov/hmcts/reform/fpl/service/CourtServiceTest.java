@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.Court;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -80,6 +81,17 @@ class CourtServiceTest {
             final Court actualCourt = underTest.getCourt(caseData);
 
             assertThat(actualCourt).isEqualTo(court1);
+        }
+
+
+        @Test
+        void shouldReturnCourtForAGivenCourtId() {
+            when(courtLookup.getCourtByCode(court1.getCode()))
+                    .thenReturn(Optional.of(court1));
+
+            Optional<Court> actualCourt = underTest.getCourt(court1.getCode());
+            assertThat(actualCourt).isPresent();
+            assertThat(actualCourt.get()).isEqualTo(court1);
         }
 
         @Test

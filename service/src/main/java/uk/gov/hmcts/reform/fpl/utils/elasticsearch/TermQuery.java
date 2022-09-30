@@ -7,7 +7,7 @@ import java.util.Map;
 import static java.util.Objects.requireNonNull;
 
 @EqualsAndHashCode
-public class TermQuery implements ESClause {
+public class TermQuery implements ESClause<Map<String, Object>> {
     private final String field;
     private final String value;
 

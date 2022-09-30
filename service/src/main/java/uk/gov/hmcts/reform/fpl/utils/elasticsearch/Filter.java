@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Builder
-public class Filter implements ESClause {
+public class Filter implements ESClause<Map<String, Object>> {
     private final List<ESClause> clauses;
     private TermQuery termQuery;
     private TermsQuery termsQuery;

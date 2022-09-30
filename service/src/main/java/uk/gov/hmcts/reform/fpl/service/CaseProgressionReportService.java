@@ -63,16 +63,16 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @Slf4j
 public class CaseProgressionReportService {
     public static final String DATE_FORMAT = "dd-MM-yyyy";
-    private static final String MATCH_FIELD = "data.court.code";
-    private static final String SORT_FIELD = "data.dateSubmitted";
-    private static final String RANGE_FIELD = "data.dateSubmitted";
+    public static final String MATCH_FIELD = "data.court.code";
+    public static final String SORT_FIELD = "data.dateSubmitted";
+    public static final String RANGE_FIELD = "data.dateSubmitted";
     private static final Integer CASE_MANAGEMENT_CUTOFF_DAYS = 24;
     private static final Integer ISSUE_RESOLUTION_CUTOFF_DAYS = 140;
     private static final Integer FINAL_CUTOFF_DAYS = 182;
     private static final List<HearingType> REQUIRED_HEARING_TYPE = List.of(
             CASE_MANAGEMENT, ISSUE_RESOLUTION, FINAL
     );
-    private static final List<String> REQUIRED_STATES = List.of(
+    public static final List<String> REQUIRED_STATES = List.of(
             "submitted","gatekeeping","prepare_for_hearing","final_hearing"
     );
 

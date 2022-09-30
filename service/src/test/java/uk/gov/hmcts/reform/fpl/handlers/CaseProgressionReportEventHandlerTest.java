@@ -96,7 +96,7 @@ class CaseProgressionReportEventHandlerTest {
         assertThat(emailAttachment.get().getData().getInputStream().readAllBytes())
                 .isEqualTo(actualContent);
         assertThat(emailAttachment.get().getFilename()).contains("FamilycourtSwansea-CaseProgressionReport");
-        assertThat(file.exists()).isFalse();
+        assertThat(file).doesNotExist();
     }
 
     @Test
