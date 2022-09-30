@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Sort;
 
-import java.beans.IntrospectionException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
