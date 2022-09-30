@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.service.CaseProgressionReportService;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 
-import java.beans.IntrospectionException;
 import java.io.File;
 import java.net.URLConnection;
 import java.nio.file.Files;
@@ -39,44 +38,41 @@ public class CaseProgressionReportEventHandler {
     public void notifyReport(CaseProgressionReportEvent event) {
         CaseData caseData = event.getCaseData();
         CaseProgressionReportEventData caseProgressionReportEventData = caseData.getCaseProgressionReportEventData();
-        String courtCode = null;
+
         try {
-            courtCode = caseProgressionReportService.getCourt(caseProgressionReportEventData);
-        } catch (IntrospectionException e) {
-            log.error("court lookup failed", e);
-        }
-        Optional<Court> court = courtService.getCourt(courtCode);
-        String subject = String.join(" ",
+            String courtCode  = caseProgressionReportService.getCourt(caseProgressionReportEventData);
+
+            Optional<Court> court = courtService.getCourt(courtCode);
+            String subject = String.join(" ",
                 caseProgressionReportEventData.getReportType().getType(),
                 "for court: ",
                 court.map(Court::getName).orElse("Court not found")
-        );
+              );
 
-        try {
             Optional<File> fileReport = caseProgressionReportService.getFileReport(caseData);
             if (fileReport.isPresent()) {
                 log.info("To notify subject: {}", subject);
 
                 File file = fileReport.get();
                 EmailAttachment attachment = EmailAttachment.document(
-                        defaultIfNull(URLConnection.guessContentTypeFromName(file.getName()),
-                                "application/octet-stream"),
-                        Files.readAllBytes(file.toPath()),
-                        String.join("-",
-                                court.map(Court::getName)
-                                    .map(name -> name.replace(" ",""))
-                                    .orElse(""),
-                                file.getName()));
+                    defaultIfNull(URLConnection.guessContentTypeFromName(file.getName()),
+                            "application/octet-stream"),
+                    Files.readAllBytes(file.toPath()),
+                    String.join("-",
+                        court.map(Court::getName)
+                            .map(name -> name.replace(" ",""))
+                            .orElse(""),
+                        file.getName()));
 
                 emailService.sendEmail(FROM_EMAIL,
-                        EmailData.builder()
-                                .recipient(event.getUserDetails().getEmail())
-                                //TODO: comment out above for testing and uncomment below
-                                //.recipient("somesh.acharya1@hmcts.net")
-                                .subject(subject)
-                                .attachments(Set.of(attachment))
-                                .message(subject)
-                                .build()
+                    EmailData.builder()
+                        .recipient(event.getUserDetails().getEmail())
+                        //TODO: comment out above for testing and uncomment below
+                        //.recipient("somesh.acharya1@hmcts.net")
+                        .subject(subject)
+                        .attachments(Set.of(attachment))
+                        .message(subject)
+                        .build()
                 );
                 Files.delete(file.toPath());
                 log.info("Notified cases with subject {} ", subject);
@@ -84,7 +80,7 @@ public class CaseProgressionReportEventHandler {
                 log.info("No records found for  subject {}", subject);
             }
         } catch (Exception e) {
-            log.error("Notification exception for subject " + subject, e);
+            log.error("Notification exception for subject " + caseProgressionReportEventData, e);
         }
     }
 }

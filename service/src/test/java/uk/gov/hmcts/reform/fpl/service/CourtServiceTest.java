@@ -90,8 +90,7 @@ class CourtServiceTest {
                     .thenReturn(Optional.of(court1));
 
             Optional<Court> actualCourt = underTest.getCourt(court1.getCode());
-            assertThat(actualCourt).isPresent();
-            assertThat(actualCourt.get()).isEqualTo(court1);
+            assertThat(actualCourt).contains(court1);
         }
 
         @Test

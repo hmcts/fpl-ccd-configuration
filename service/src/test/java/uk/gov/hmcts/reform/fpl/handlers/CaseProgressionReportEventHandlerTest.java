@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.never;
@@ -125,6 +126,30 @@ class CaseProgressionReportEventHandlerTest {
                 UserDetails.builder().email(toEmail).build());
 
         caseProgressionReportEventHandler.notifyReport(caseProgressionReportEvent);
+        verify(emailService, never()).sendEmail(eq(FROM_EMAIL), isA(EmailData.class));
+    }
+
+    @Test
+    void shouldNotSendNotificationWhenCourtLookUpFails() throws IntrospectionException {
+        CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
+                .reportType(MISSING_TIMETABLE)
+                .build();
+        CaseData caseDataSelected = CaseData.builder()
+                .caseProgressionReportEventData(caseProgressionReportEventData)
+                .build();
+
+        String toEmail = "test@gmail.com";
+
+        when(caseProgressionReportService.getCourt(caseProgressionReportEventData))
+                .thenThrow(new IntrospectionException("Court not set"));
+
+        CaseProgressionReportEvent caseProgressionReportEvent = new CaseProgressionReportEvent(
+                caseDataSelected,
+                UserDetails.builder().email(toEmail).build());
+
+        caseProgressionReportEventHandler.notifyReport(caseProgressionReportEvent);
+        verify(courtService, never()).getCourt(anyString());
+        verify(caseProgressionReportService, never()).getFileReport(eq(caseDataSelected));
         verify(emailService, never()).sendEmail(eq(FROM_EMAIL), isA(EmailData.class));
     }
 }

@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Sort;
 
+import java.beans.IntrospectionException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -703,21 +704,10 @@ class CaseProgressionReportServiceTest {
     }
 
     @Test
-    void shouldReturnHearingWithEmptyCaseManagementHearingDetailEmpty() {
-        LocalDate submittedDate = LocalDate.parse("04-05-2022", DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-        LocalDateTime firstCaseManagementHearing = LocalDateTime.of(
-                LocalDate.parse("26-05-2022", DateTimeFormatter.ofPattern("dd-MM-yyyy")),
-                LocalTime.now());
-        LocalDateTime secondCaseManagementHearing = LocalDateTime.of(
-                LocalDate.parse("27-05-2022", DateTimeFormatter.ofPattern("dd-MM-yyyy")),
-                LocalTime.now());
-
-        List<Element<HearingBooking>> hearingBooking = ElementUtils.wrapElements(
-                List.of(createHearingBooking(CASE_MANAGEMENT, firstCaseManagementHearing),
-                        createHearingBooking(CASE_MANAGEMENT, secondCaseManagementHearing)));
-        CaseData caseData = getCaseData(hearingBooking, submittedDate);
-
-        Optional<HearingInfo> hearingInfo = service.getHearingInfo(caseData);
-        assertTrue(hearingInfo.isEmpty());
+    void shouldThrowIllegalArgumentExceptionWhenCourtIdNotSet() {
+        assertThatThrownBy(() ->
+            service.getCourt(CaseProgressionReportEventData.builder().build()))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Court not found");
     }
 }

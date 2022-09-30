@@ -14,6 +14,9 @@ import uk.gov.hmcts.reform.fpl.utils.elasticsearch.BooleanQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MustNot;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Sort;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.SortOrder;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.SortQuery;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,6 +30,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static org.skyscreamer.jsonassert.JSONCompareMode.NON_EXTENSIBLE;
+import static uk.gov.hmcts.reform.fpl.service.CaseProgressionReportService.SORT_FIELD;
 
 @ExtendWith(MockitoExtension.class)
 class SearchServiceTest {
@@ -77,6 +81,35 @@ class SearchServiceTest {
             + "\"query\":\"b\"}}}]}}}";
 
         assertThat(casesFound).isEqualTo(EXPECTED_CASES);
+
+        verify(coreCaseDataService).searchCases(eq("CARE_SUPERVISION_EPO"), queryCaptor.capture());
+
+        assertEquals(queryCaptor.getValue(), expectedQuery, NON_EXTENSIBLE);
+    }
+
+    @Test
+    void shouldSearchCasesWithSortWhenGivenESQuery() {
+        ESQuery query = BooleanQuery.builder()
+            .mustNot(MustNot.builder().clauses(List.of(MatchQuery.of("a", "b"))).build())
+            .build();
+
+        Sort sort = Sort.builder()
+            .clauses(List.of(
+                SortQuery.of(SORT_FIELD, SortOrder.DESC)
+            ))
+            .build();
+
+        when(coreCaseDataService.searchCases(any(), any())).thenReturn(SEARCH_RESULT);
+
+        SearchResult search = searchService.search(query, 15, 0, sort);
+
+
+        String expectedQuery = "{\"from\":0,"
+                + "\"sort\":[{\"data.dateSubmitted\":{\"order\":\"desc\"}}],"
+                + "\"size\":15,"
+                + "\"query\":{\"bool\":{\"must_not\":[{\"match\":{\"a\":{\"query\":\"b\"}}}]}}} ";
+
+        assertThat(search.getCases()).isEqualTo(EXPECTED_CASES);
 
         verify(coreCaseDataService).searchCases(eq("CARE_SUPERVISION_EPO"), queryCaptor.capture());
 

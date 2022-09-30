@@ -308,12 +308,15 @@ public class CaseProgressionReportService {
 
         BiFunction<Optional<HearingBooking>, Optional<HearingBooking>, Optional<HearingInfo.HearingInfoBuilder>>
             getHearingInfo = (currentHearing, previousHearing) ->
-            currentHearing.map(hearingBooking -> HearingInfo.builder()
-            .nextHearing(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), DATE_FORMAT))
-            .lastHearing(
-                previousHearing.map(issueBooking ->
-                    formatLocalDateToString(issueBooking.getStartDate().toLocalDate(), DATE_FORMAT)).orElse("-"))
-            .ploStage(hearingBooking.getType().getLabel()));
+            currentHearing.map(hearingBooking ->
+                HearingInfo.builder()
+                    .nextHearing(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), DATE_FORMAT))
+                    .lastHearing(
+                        previousHearing.map(previousHearingBooking ->
+                            formatLocalDateToString(previousHearingBooking.getStartDate().toLocalDate(), DATE_FORMAT))
+                                .orElse("-"))
+                    .ploStage(hearingBooking.getType().getLabel())
+            );
 
 
         Optional<HearingInfo.HearingInfoBuilder> optionalHearingInfoBuilder = getHearingInfo.apply(
@@ -327,8 +330,9 @@ public class CaseProgressionReportService {
             if (optionalHearingInfoBuilder.isEmpty()) {
                 Optional<HearingInfo.HearingInfoBuilder> hearingInfoBuilderOptional =
                     caseManagementBooking.map(
-                        hearingBooking -> HearingInfo.builder()
-                            .ploStage(hearingBooking.getType().getLabel())
+                        hearingBooking ->
+                            HearingInfo.builder()
+                                .ploStage(hearingBooking.getType().getLabel())
                     );
 
                 boolean isFutureDate = caseManagementBooking.filter(
