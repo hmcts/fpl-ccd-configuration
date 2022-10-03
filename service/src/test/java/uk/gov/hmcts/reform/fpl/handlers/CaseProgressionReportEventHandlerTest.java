@@ -149,7 +149,7 @@ class CaseProgressionReportEventHandlerTest {
 
         caseProgressionReportEventHandler.notifyReport(caseProgressionReportEvent);
         verify(courtService, never()).getCourt(anyString());
-        verify(caseProgressionReportService, never()).getFileReport(eq(caseDataSelected));
+        verify(caseProgressionReportService, never()).getFileReport(caseDataSelected);
         verify(emailService, never()).sendEmail(eq(FROM_EMAIL), isA(EmailData.class));
     }
 }
