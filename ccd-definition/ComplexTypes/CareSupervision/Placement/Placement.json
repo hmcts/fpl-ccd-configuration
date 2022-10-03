@@ -76,7 +76,7 @@
     "ListElementCode": "placementNoticeDocuments",
     "FieldType": "Collection",
     "FieldTypeParameter": "PlacementNoticeDocument",
-    "ElementLabel": "Notice of placement",
+    "ElementLabel": "Notice of placement response",
     "SecurityClassification": "Public"
   },
   {

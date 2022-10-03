@@ -1138,6 +1138,8 @@ public class CaseData extends CaseDataParent {
 
     private final DynamicList placementList;
 
+    private final List<Element<PlacementNoticeDocument>> placementNoticeResponses;
+
     @JsonIgnore
     public boolean isDischargeOfCareApplication() {
 
@@ -1170,5 +1172,12 @@ public class CaseData extends CaseDataParent {
 
     public List<Element<Colleague>> getColleaguesToNotify() {
         return colleaguesToNotify != null ? colleaguesToNotify : new ArrayList<>();
+    }
+    
+    @JsonIgnore
+    public boolean isRefuseContactWithChildApplication() {
+        return ofNullable(getOrders())
+            .map(Orders::isRefuseContactWithChildApplication)
+            .orElse(false);
     }
 }

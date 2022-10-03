@@ -910,5 +910,23 @@
     "Label": "Cost order details",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersPartyGrantedLeave",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Text",
+    "Label": "Party granted leave",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersChildNewSurname",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Text",
+    "Label": "Child/Children's new surname",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
   }
 ]
