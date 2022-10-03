@@ -111,8 +111,10 @@ public class DraftOrderService {
                 HearingOrder cmo = findElement(hearing.getCaseManagementOrderId(), caseData.getDraftUploadedCMOs())
                     .map(Element::getValue)
                     .orElseThrow(() -> new CMONotFoundException("CMO for related hearing could not be found"));
-
                 newEventDataBuilder.previousCMO(cmo.getOrder());
+                newEventDataBuilder.showCMODocumentAcknowledge(YesNo.NO);
+            } else {
+                newEventDataBuilder.showCMODocumentAcknowledge(YesNo.YES);
             }
 
             newEventDataBuilder

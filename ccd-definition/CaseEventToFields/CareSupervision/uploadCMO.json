@@ -108,6 +108,19 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadCMO",
+    "CaseFieldID": "showCMODocumentAcknowledge",
+    "PageID": "Upload",
+    "PageFieldDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "PageDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "cmoUploadType = \"DO_NOT_SHOW\"",
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadCMO",
     "CaseFieldID": "cmoHearingInfo",
     "PageID": "Upload",
     "PageFieldDisplayOrder": 2,
@@ -166,6 +179,7 @@
     "PageColumnNumber": 1,
     "PageDisplayOrder": 3,
     "DisplayContext": "READONLY",
+    "FieldShowCondition": "showCMODocumentAcknowledge = \"YES\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -178,6 +192,7 @@
     "PageColumnNumber": 1,
     "PageDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "showCMODocumentAcknowledge = \"YES\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
