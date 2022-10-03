@@ -15,8 +15,10 @@ import org.mockito.quality.Strictness;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
+import uk.gov.hmcts.reform.fpl.enums.ChildRecoveryOrderGround;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.ParticularsOfChildren;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderGround;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderSection;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -28,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForChildAssessmentOrder;
+import uk.gov.hmcts.reform.fpl.model.GroundsForChildRecoveryOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
 import uk.gov.hmcts.reform.fpl.model.GroundsForRefuseContactWithChild;
 import uk.gov.hmcts.reform.fpl.model.GroundsForSecureAccommodationOrder;
@@ -47,6 +50,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisAnnexDocuments;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC14Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC16Supplement;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC18Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC20Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisFactorsParenting;
@@ -336,6 +340,7 @@ class CaseSubmissionGenerationServiceTest {
                 + "Child Assessment Order\n"
                 + "Secure Accommodation order\n"
                 + "Authority to refuse contact with a child in care\n"
+                + "Child Recovery Order\n"
                 + "expected other order";
             assertThat(caseSubmission.getOrdersNeeded()).isEqualTo(expectedOrdersNeeded);
         }
@@ -601,6 +606,99 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisC16Supplement supplement = underTest.getC16SupplementData(updatedCaseData, false);
             assertThat(supplement.getGroundsForChildAssessmentOrderReason()).isEqualTo("-");
+        }
+    }
+
+    @Nested
+    class DocmosisC18SupplementTest {
+
+        @Test
+        void shouldPopulateC18Supplement() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.CHILD_RECOVERY_ORDER))
+                    .particularsOfChildren(List.of(ParticularsOfChildren.IN_CARE,
+                        ParticularsOfChildren.IN_POLICE_PROTECTION,
+                        ParticularsOfChildren.SUBJECT_OF_EPO))
+                    .childRecoveryOrderDirectionsAppliedFor("childRecoveryOrderDirectionsAppliedFor")
+                    .particularsOfChildrenDetails("particularsOfChildrenDetails")
+                    .build())
+                .groundsForChildRecoveryOrder(GroundsForChildRecoveryOrder.builder()
+                    .grounds(List.of(ChildRecoveryOrderGround.IS_MISSING,
+                        ChildRecoveryOrderGround.RUN_AWAY_FROM_RESPONSIBLE_PERSON,
+                        ChildRecoveryOrderGround.UNLAWFULLY_TAKEN_AWAY))
+                    .reason("Reason for grounds")
+                    .build())
+                .build();
+
+            DocmosisC18Supplement supplement = underTest.getC18SupplementData(updatedCaseData, false);
+            assertThat(supplement.getGrounds())
+                .containsAll(List.of(
+                    ChildRecoveryOrderGround.IS_MISSING.getLabel()
+                        .replace("[is] [are]", "are"),
+                    ChildRecoveryOrderGround.RUN_AWAY_FROM_RESPONSIBLE_PERSON.getLabel()
+                        .replace("[is] [are]", "are")
+                        .replace("[has] [have]", "have"),
+                    ChildRecoveryOrderGround.UNLAWFULLY_TAKEN_AWAY.getLabel()
+                        .replace("[is] [are]", "are")
+                        .replace("[has] [have]", "have")));
+            assertThat(supplement.getReason()).isEqualTo("Reason for grounds");
+            assertThat(supplement.getDirectionsAppliedFor()).isEqualTo("childRecoveryOrderDirectionsAppliedFor");
+            assertThat(supplement.getParticularsOfChildren())
+                .isEqualTo(List.of(ParticularsOfChildren.IN_CARE.getLabel(),
+                    ParticularsOfChildren.IN_POLICE_PROTECTION.getLabel(),
+                    ParticularsOfChildren.SUBJECT_OF_EPO.getLabel()));
+            assertThat(supplement.getParticularsOfChildrenDetails()).isEqualTo("particularsOfChildrenDetails");
+            assertThat(supplement.getIsOrAre()).isEqualTo("are");
+            assertThat(supplement.getChildOrChildren()).isEqualTo("children");
+        }
+
+        @Test
+        void shouldNotPopulateDraftWatermarkOrSealIfDraft() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.CHILD_RECOVERY_ORDER))
+                    .particularsOfChildren(List.of(ParticularsOfChildren.IN_CARE,
+                        ParticularsOfChildren.IN_POLICE_PROTECTION,
+                        ParticularsOfChildren.SUBJECT_OF_EPO))
+                    .childRecoveryOrderDirectionsAppliedFor("childRecoveryOrderDirectionsAppliedFor")
+                    .particularsOfChildrenDetails("particularsOfChildrenDetails")
+                    .build())
+                .groundsForChildRecoveryOrder(GroundsForChildRecoveryOrder.builder()
+                    .grounds(List.of(ChildRecoveryOrderGround.IS_MISSING,
+                        ChildRecoveryOrderGround.RUN_AWAY_FROM_RESPONSIBLE_PERSON,
+                        ChildRecoveryOrderGround.UNLAWFULLY_TAKEN_AWAY))
+                    .reason("Reason for grounds")
+                    .build())
+                .build();
+
+            DocmosisC18Supplement supplement = underTest.getC18SupplementData(updatedCaseData, true);
+            assertThat(supplement.getDraftWaterMark()).isNotEmpty();
+            assertThat(supplement.getCourtSeal()).isNullOrEmpty();
+        }
+
+        @Test
+        void shouldPopulateDraftWatermarkOrSealIfNotDraft() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.CHILD_RECOVERY_ORDER))
+                    .particularsOfChildren(List.of(ParticularsOfChildren.IN_CARE,
+                        ParticularsOfChildren.IN_POLICE_PROTECTION,
+                        ParticularsOfChildren.SUBJECT_OF_EPO))
+                    .childRecoveryOrderDirectionsAppliedFor("childRecoveryOrderDirectionsAppliedFor")
+                    .particularsOfChildrenDetails("particularsOfChildrenDetails")
+                    .build())
+                .groundsForChildRecoveryOrder(GroundsForChildRecoveryOrder.builder()
+                    .grounds(List.of(ChildRecoveryOrderGround.IS_MISSING,
+                        ChildRecoveryOrderGround.RUN_AWAY_FROM_RESPONSIBLE_PERSON,
+                        ChildRecoveryOrderGround.UNLAWFULLY_TAKEN_AWAY))
+                    .reason("Reason for grounds")
+                    .build())
+                .build();
+
+            DocmosisC18Supplement supplement = underTest.getC18SupplementData(updatedCaseData, false);
+            assertThat(supplement.getDraftWaterMark()).isNullOrEmpty();
+            assertThat(supplement.getCourtSeal()).isNotEmpty();
         }
     }
 

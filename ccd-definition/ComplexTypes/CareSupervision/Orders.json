@@ -175,6 +175,52 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Orders",
+    "ListElementCode": "childRecoveryOrderLabel",
+    "FieldType": "Label",
+    "ElementLabel": "## Child recovery order",
+    "FieldShowCondition": "orderType CONTAINS \"CHILD_RECOVERY_ORDER\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "childRecoveryOrderDirectionsAppliedFor",
+    "FieldType": "TextArea",
+    "ElementLabel": "The orders and directions applied for",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orderType CONTAINS \"CHILD_RECOVERY_ORDER\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "particularsOfChildrenHeader",
+    "FieldType": "Label",
+    "ElementLabel": "## Particulars of the child(ren)",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orderType CONTAINS \"CHILD_RECOVERY_ORDER\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "particularsOfChildren",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ParticularsOfChildren",
+    "ElementLabel": "State whether the child[ren] [is] [are]",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orderType CONTAINS \"CHILD_RECOVERY_ORDER\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "particularsOfChildrenDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "If a child’s identity is not known, state details that will identify the child. You may enclose a recent photograph of the child, which should be dated.",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orderType CONTAINS \"CHILD_RECOVERY_ORDER\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
     "ListElementCode": "court",
     "FieldType": "FixedList",
     "FieldTypeParameter": "Court",

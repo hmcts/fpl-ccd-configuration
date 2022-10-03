@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Api
 @RestController
@@ -23,6 +24,10 @@ import java.util.Optional;
 public class OrdersNeededAboutToSubmitCallbackController extends CallbackController {
 
     public static final String ORDERS = "orders";
+    public static final List<OrderType> STANDALONE_ORDER_TYPE = List.of(OrderType.CHILD_ASSESSMENT_ORDER,
+        OrderType.CHILD_RECOVERY_ORDER);
+    public static final List<String> STANDALONE_ORDER_TYPE_NAME = STANDALONE_ORDER_TYPE.stream().map(OrderType::name)
+        .collect(Collectors.toList());
 
     @PostMapping("/mid-event")
     @SuppressWarnings("unchecked")
@@ -33,8 +38,8 @@ public class OrdersNeededAboutToSubmitCallbackController extends CallbackControl
         Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get("orders"))
             .map(orders -> (List<String>) orders.get("orderType"));
 
-        if (orderType.isPresent()
-            && orderType.get().contains(OrderType.CHILD_ASSESSMENT_ORDER.name()) && orderType.get().size() > 1) {
+        if (orderType.isPresent() && orderType.get().size() > 1
+            && orderType.get().stream().anyMatch(STANDALONE_ORDER_TYPE_NAME::contains)) {
             return respond(caseDetails, List.of("You have selected a standalone order, "
                 + "this cannot be applied for alongside other orders."));
         }
@@ -67,6 +72,10 @@ public class OrdersNeededAboutToSubmitCallbackController extends CallbackControl
                     removeSecureAccommodationOrderFields(data);
                 } else {
                     data.put("secureAccommodationOrderType", YesNo.YES);
+                }
+
+                if (!orderTypes.contains(OrderType.CHILD_RECOVERY_ORDER.name())) {
+                    data.remove("groundsForChildRecoveryOrder");
                 }
             });
 

@@ -1162,6 +1162,13 @@ public class CaseData extends CaseDataParent {
             .orElse(false);
     }
 
+    @JsonIgnore
+    public boolean isChildRecoveryOrder() {
+        return ofNullable(getOrders())
+            .map(Orders::isChildRecoveryOrder)
+            .orElse(false);
+    }
+
     private List<Element<DocumentWithConfidentialAddress>> documentsWithConfidentialAddress;
 
     @JsonUnwrapped
@@ -1173,7 +1180,7 @@ public class CaseData extends CaseDataParent {
     public List<Element<Colleague>> getColleaguesToNotify() {
         return colleaguesToNotify != null ? colleaguesToNotify : new ArrayList<>();
     }
-    
+
     @JsonIgnore
     public boolean isRefuseContactWithChildApplication() {
         return ofNullable(getOrders())

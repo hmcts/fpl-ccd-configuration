@@ -57,7 +57,8 @@ public enum FeeType {
     PARENTAL_RESPONSIBILITY_FEMALE_PARENT,
     SECURE_ACCOMMODATION_WALES,
     DECLARATION_OF_PARENTAGE,
-    REFUSE_CONTACT_WITH_CHILD;
+    REFUSE_CONTACT_WITH_CHILD,
+    CHILD_RECOVERY_ORDER;
 
     private static final Map<OrderType, FeeType> orderToFeeMap = Map.of(
         OrderType.CARE_ORDER, CARE_ORDER,
@@ -68,7 +69,8 @@ public enum FeeType {
         OrderType.SUPERVISION_ORDER, SUPERVISION_ORDER,
         OrderType.OTHER, OTHER,
         OrderType.CHILD_ASSESSMENT_ORDER, CHILD_ASSESSMENT_ORDER,
-        OrderType.REFUSE_CONTACT_WITH_CHILD, REFUSE_CONTACT_WITH_CHILD);
+        OrderType.REFUSE_CONTACT_WITH_CHILD, REFUSE_CONTACT_WITH_CHILD,
+        OrderType.CHILD_RECOVERY_ORDER, CHILD_RECOVERY_ORDER);
 
     private static final Map<SupplementType, FeeType> supplementToFeeMap = Map.of(
         SupplementType.C13A_SPECIAL_GUARDIANSHIP, SPECIAL_GUARDIANSHIP,
