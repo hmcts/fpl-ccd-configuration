@@ -704,7 +704,8 @@ class CaseProgressionReportServiceTest {
 
     @Test
     void shouldThrowIllegalArgumentExceptionWhenCourtIdNotSet() {
-        CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder().build();
+        CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
+                .build();
         assertThatThrownBy(() -> service.getCourt(caseProgressionReportEventData))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Court not found");
