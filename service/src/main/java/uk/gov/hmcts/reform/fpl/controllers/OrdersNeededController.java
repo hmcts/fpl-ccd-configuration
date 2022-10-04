@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,7 +23,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-@Slf4j
 @Api
 @RestController
 @RequestMapping("/callback/orders-needed")
@@ -122,18 +120,14 @@ public class OrdersNeededController extends CallbackController {
 
         if (isContactWithChildInCareOrder(orderType)) {
             data.put("contactWithChildInCareOrderType", "YES");
-            log.info("CIC");
         } else {
-            log.info("NON CIC");
             data.remove("groundsForContactWithChildInCare");
             data.remove("contactWithChildInCareOrderType");
         }
 
         if (isDischargeOfCareOrder(orderType)) {
             data.put("otherOrderType", "YES");
-            log.info("DOC");
         } else {
-            log.info("NON DOC");
             data.put("otherOrderType", "NO");
         }
 

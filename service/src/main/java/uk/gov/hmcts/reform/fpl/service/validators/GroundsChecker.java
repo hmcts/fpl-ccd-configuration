@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.validators;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -21,7 +20,6 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyNonEmpty;
 
-@Slf4j
 @Component
 public class GroundsChecker extends PropertiesChecker {
 
@@ -116,17 +114,17 @@ public class GroundsChecker extends PropertiesChecker {
     private static boolean isContactWithChildGroundsStarted(GroundsForContactWithChild grounds) {
         return isNotEmpty(grounds)
             && (isNotEmpty(grounds.getParentOrGuardian())
-            || isNotEmpty(grounds.getResidenceOrder())
-            || isNotEmpty(grounds.getHadCareOfChildrenBeforeCareOrder())
-            || isNotEmpty(grounds.getReasonsForApplication()));
+                || isNotEmpty(grounds.getResidenceOrder())
+                || isNotEmpty(grounds.getHadCareOfChildrenBeforeCareOrder())
+                || isNotEmpty(grounds.getReasonsForApplication()));
     }
 
     private static boolean isContactWithChildGroundsCompleted(GroundsForContactWithChild grounds) {
         return isNotEmpty(grounds)
             && (isNotEmpty(grounds.getParentOrGuardian())
-            && isNotEmpty(grounds.getResidenceOrder())
-            && isNotEmpty(grounds.getHadCareOfChildrenBeforeCareOrder())
-            && isNotEmpty(grounds.getReasonsForApplication()));
+                && isNotEmpty(grounds.getResidenceOrder())
+                && isNotEmpty(grounds.getHadCareOfChildrenBeforeCareOrder())
+                && isNotEmpty(grounds.getReasonsForApplication()));
     }
 
     @Override
