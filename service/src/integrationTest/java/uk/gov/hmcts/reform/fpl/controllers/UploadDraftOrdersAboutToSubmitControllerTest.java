@@ -242,7 +242,8 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
             "orderToSendTranslationRequirements8",
             "orderToSend9",
             "orderToSendTranslationRequirements9",
-            "orderToSendOptionCount"
+            "orderToSendOptionCount",
+            "uploadCMOMessageAcknowledge"
         ));
 
         assertThat(response.getData().keySet()).isEqualTo(keys);
