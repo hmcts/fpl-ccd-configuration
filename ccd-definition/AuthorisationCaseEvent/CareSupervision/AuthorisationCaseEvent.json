@@ -51,7 +51,9 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
+          "[LAMANAGING]",
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -454,7 +456,9 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
+          "[LAMANAGING]",
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -498,7 +502,9 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
+          "[LAMANAGING]",
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       },
@@ -1100,6 +1106,8 @@
           "[LASHARED]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]",
           "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
@@ -1290,7 +1298,9 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
+          "[LAMANAGING]",
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
       }
@@ -1492,7 +1502,9 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
+          "[LAMANAGING]",
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "R"
       },
