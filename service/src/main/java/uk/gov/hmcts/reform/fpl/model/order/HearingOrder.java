@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -39,6 +40,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJud
 @Builder(toBuilder = true)
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class HearingOrder implements RemovableOrder, AmendableOrder, TranslatableItem {
+    private YesNo showDocumentAcknowledge;
     private String title;
     private HearingOrderType type;
     private DocumentReference order;
@@ -168,5 +170,9 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     @Override
     public List<Element<Other>> getSelectedOthers() {
         return this.getOthers();
+    }
+
+    public YesNo getShowDocumentAcknowledge() {
+        return YesNo.from(getDocument() == null);
     }
 }
