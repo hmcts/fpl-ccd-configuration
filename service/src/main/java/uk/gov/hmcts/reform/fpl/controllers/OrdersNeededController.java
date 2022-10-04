@@ -121,7 +121,7 @@ public class OrdersNeededController extends CallbackController {
         if (isContactWithChildInCareOrder(orderType)) {
             data.put("contactWithChildInCareOrderType", "YES");
         } else {
-            data.remove("groundsForContactWithChildInCare");
+            data.remove("groundsForContactWithChild");
             data.remove("contactWithChildInCareOrderType");
         }
 
