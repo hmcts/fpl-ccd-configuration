@@ -17,15 +17,12 @@ import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
-import uk.gov.hmcts.reform.fpl.model.cafcass.NewApplicationCafcassData;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.group.C110A;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
-import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
@@ -36,15 +33,12 @@ import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
-import static java.util.Set.of;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.OUTSOURCED_CASE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NEW_APPLICATION;
 
 @Slf4j
 @Component
@@ -61,7 +55,6 @@ public class SubmittedCaseEventHandler {
     private final PaymentService paymentService;
     private final EventService eventService;
     private final TranslationRequestService translationRequestService;
-    private final CafcassNotificationService cafcassNotificationService;
 
     @Async
     @EventListener
@@ -81,40 +74,10 @@ public class SubmittedCaseEventHandler {
     public void notifyCafcass(final SubmittedCaseEvent event) {
         CaseData caseData = event.getCaseData();
 
-        Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
-            .map(CafcassLookupConfiguration.Cafcass::getEmail);
+        NotifyData notifyData = cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData);
+        String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 
-        if (recipientIsWelsh.isPresent()) {
-            NotifyData notifyData = cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData);
-            notificationService.sendEmail(CAFCASS_SUBMISSION_TEMPLATE, recipientIsWelsh.get(),
-                    notifyData, caseData.getId());
-        }
-    }
-
-    @Async
-    @EventListener
-    public void notifyCafcassSendGrid(final SubmittedCaseEvent event) {
-        CaseData caseData = event.getCaseData();
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-
-        if (recipientIsEngland.isPresent()) {
-            Set<DocumentReference> documentReferences = Optional.ofNullable(caseData.getC110A().getSubmittedForm())
-                    .map(documentReference ->
-                        documentReference.toBuilder()
-                            .type(NEW_APPLICATION.getLabel())
-                            .build()
-                    )
-                    .map(Set::of)
-                    .orElse(of());
-
-            NewApplicationCafcassData newApplicationCafcassData = cafcassEmailContentProvider
-                    .buildCafcassSubmissionSendGridData(caseData);
-            cafcassNotificationService.sendEmail(caseData,
-                    documentReferences,
-                    NEW_APPLICATION,
-                    newApplicationCafcassData);
-        }
+        notificationService.sendEmail(CAFCASS_SUBMISSION_TEMPLATE, recipient, notifyData, caseData.getId());
     }
 
     @EventListener

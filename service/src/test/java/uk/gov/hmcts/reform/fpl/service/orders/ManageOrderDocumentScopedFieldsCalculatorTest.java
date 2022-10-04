@@ -116,7 +116,9 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersSupervisionOrderCourtDirection",
             "manageOrdersSupervisionOrderApprovalDate",
             "manageOrdersSupervisionOrderEndDate",
-            "manageOrdersOrderCreatedDate"
+            "manageOrdersOrderCreatedDate",
+            "manageOrdersPartyGrantedLeave",
+            "manageOrdersChildNewSurname"
         );
     }
 }
