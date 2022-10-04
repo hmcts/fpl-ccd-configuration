@@ -63,8 +63,7 @@ class UploadDraftOrdersDataTest {
                 "orderToSend9",
                 "orderToSendTranslationRequirements9",
                 "orderToSendOptionCount",
-                "uploadCMOMessageAcknowledge",
-                "showCMODocumentAcknowledge"
+                "uploadCMOMessageAcknowledge"
             );
     }
 

@@ -81,6 +81,12 @@ public class HearingOrderKindEventDataBuilder {
         if (isEmpty(nonCMODraftOrders)) {
             nonCMODraftOrders.add(element(identityService.generateId(), HearingOrder.builder().build()));
         }
+        nonCMODraftOrders.forEach(h -> {
+                if (h.getValue().getDocument() != null) {
+                    h.getValue().setDocumentAcknowledge(List.of("ACK_RELATED_TO_CASE"));
+                }
+            }
+        );
 
         return nonCMODraftOrders;
     }

@@ -212,6 +212,7 @@ class DraftOrderServiceTest {
                 .pastHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
                 .futureHearingsForCMO(dynamicList(emptyList()))
                 .hearingsForHearingOrderDrafts(dynamicList(hearings, defaultListItem("No hearing")))
+                .uploadCMOMessageAcknowledge(List.of("ACK_RELATED_TO_CASE"))
                 .build();
 
             assertThat(cmoInfo).isEqualTo(expectedInfo);
@@ -262,6 +263,7 @@ class DraftOrderServiceTest {
                 .futureHearingsForCMO(dynamicList(futureHearings.get(0).getId(), futureHearings))
                 .pastHearingsForCMO(dynamicList(emptyList()))
                 .hearingsForHearingOrderDrafts(dynamicList(emptyList(), defaultListItem("No hearing")))
+                .uploadCMOMessageAcknowledge(List.of("ACK_RELATED_TO_CASE"))
                 .build();
 
             assertThat(cmoInfo).isEqualTo(expectedInfo);
@@ -307,6 +309,7 @@ class DraftOrderServiceTest {
                 .futureHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
                 .pastHearingsForCMO(dynamicList(emptyList()))
                 .hearingsForHearingOrderDrafts(dynamicList(emptyList(), defaultListItem("No hearing")))
+                .uploadCMOMessageAcknowledge(List.of("ACK_RELATED_TO_CASE"))
                 .build();
 
             assertThat(cmoInfo).isEqualTo(expectedInfo);
@@ -382,6 +385,7 @@ class DraftOrderServiceTest {
                 .pastHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
                 .futureHearingsForCMO(dynamicList(emptyList()))
                 .hearingsForHearingOrderDrafts(dynamicList(hearings, defaultListItem("No hearing")))
+                .uploadCMOMessageAcknowledge(List.of("ACK_RELATED_TO_CASE"))
                 .build();
 
             assertThat(reviewData).isEqualTo(expectedData);
@@ -419,6 +423,7 @@ class DraftOrderServiceTest {
                 .pastHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
                 .futureHearingsForCMO(dynamicList(emptyList()))
                 .hearingsForHearingOrderDrafts(dynamicList(hearings, defaultListItem("No hearing")))
+                .uploadCMOMessageAcknowledge(List.of("ACK_RELATED_TO_CASE"))
                 .build();
 
             assertThat(reviewData).isEqualTo(expectedData);
