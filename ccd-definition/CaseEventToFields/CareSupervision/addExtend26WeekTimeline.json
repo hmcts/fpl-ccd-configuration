@@ -3,13 +3,65 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "extend26WeekTimeline",
+    "CaseFieldID": "childCaseCompletionDateLabel",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY",
+    "PageID": "extend26WeekTimelineChildSelect",
+    "PageLabel": "",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "extend26WeekTimeline",
+    "CaseFieldID": "extensionForAllChildren",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY",
+    "PageID": "extend26WeekTimelineChildSelect",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "extend26WeekTimeline",
+    "CaseFieldID": "childSelectorForExtension",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "COMPLEX",
+    "PageID": "extend26WeekTimelineChildSelect",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-extension/pre-populate/mid-event",
+    "FieldShowCondition": "extensionForAllChildren=\"No\"",
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "extend26WeekTimeline",
+    "CaseFieldID": "extendTimelineForChildren",
+    "PageFieldDisplayOrder": 4,
+    "DisplayContext": "COMPLEX",
+    "PageID": "extend26WeekTimelineSelectExtension",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-extension/mid-event",
+    "PageLabel": "",
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "extend26WeekTimeline",
     "CaseFieldID": "shouldBeCompletedByDate",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
     "PageID": "extend26WeekTimeline",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-extension/mid-event",
     "PageLabel": "",
-    "PageDisplayOrder": 1,
+    "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
     "FieldShowCondition": "shouldBeCompletedByLabel=\"DO NOT SHOW\""
   },
@@ -22,7 +74,7 @@
     "DisplayContext": "READONLY",
     "PageID": "extend26WeekTimeline",
     "PageLabel": "",
-    "PageDisplayOrder": 1,
+    "PageDisplayOrder": 3,
     "ShowSummaryChangeOption": "No"
   },
   {
@@ -34,19 +86,7 @@
     "DisplayContext": "READONLY",
     "PageID": "extend26WeekTimeline",
     "PageLabel": "",
-    "PageDisplayOrder": 1,
-    "ShowSummaryChangeOption": "No"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "extend26WeekTimeline",
-    "CaseFieldID": "caseExtensionTimeList",
-    "PageFieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY",
-    "PageID": "extend26WeekTimeline",
-    "PageLabel": "",
-    "PageDisplayOrder": 1,
+    "PageDisplayOrder": 3,
     "ShowSummaryChangeOption": "No"
   },
   {
@@ -57,20 +97,7 @@
     "PageFieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
     "PageID": "extend26WeekTimeline",
-    "PageDisplayOrder": "2",
-    "ShowSummaryChangeOption": "No",
-    "FieldShowCondition": "caseExtensionTimeList=\"OtherExtension\""
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "extend26WeekTimeline",
-    "CaseFieldID": "caseExtensionReasonList",
-    "PageFieldDisplayOrder": 6,
-    "DisplayContext": "MANDATORY",
-    "PageID": "extend26WeekTimeline",
-    "PageLabel": "",
-    "PageDisplayOrder": 1,
+    "PageDisplayOrder": "3",
     "ShowSummaryChangeOption": "No"
   },
   {
@@ -82,7 +109,7 @@
     "DisplayContext": "OPTIONAL",
     "PageID": "extend26WeekTimeline",
     "PageLabel": "",
-    "PageDisplayOrder": 1,
+    "PageDisplayOrder": 3,
     "ShowSummaryChangeOption": "No"
   },
   {
@@ -94,7 +121,7 @@
     "DisplayContext": "MANDATORY",
     "PageID": "extend26WeekTimeline",
     "PageLabel": "",
-    "PageDisplayOrder": 1,
+    "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
     "FieldShowCondition": "shouldBeCompletedByConfirmationLabel=\"DO NOT SHOW\""
   },
@@ -108,9 +135,8 @@
     "PageID": "extend26WeekTimelineConfirmation",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-extension/mid-event",
     "PageLabel": "",
-    "PageDisplayOrder": 2,
-    "ShowSummaryChangeOption": "No",
-    "PageShowCondition": "caseExtensionTimeList=\"EightWeekExtension\""
+    "PageDisplayOrder": 4,
+    "ShowSummaryChangeOption": "No"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -121,7 +147,7 @@
     "DisplayContext": "READONLY",
     "PageID": "extend26WeekTimelineConfirmation",
     "PageLabel": "",
-    "PageDisplayOrder": 2,
+    "PageDisplayOrder": 4,
     "ShowSummaryChangeOption": "No"
   },
   {
@@ -133,19 +159,7 @@
     "DisplayContext": "MANDATORY",
     "PageID": "extend26WeekTimelineConfirmation",
     "PageLabel": "",
-    "PageDisplayOrder": 2,
+    "PageDisplayOrder": 4,
     "ShowSummaryChangeOption": "No"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "extend26WeekTimeline",
-    "CaseFieldID": "eightWeeksExtensionDateOther",
-    "PageFieldDisplayOrder": 5,
-    "DisplayContext": "MANDATORY",
-    "PageID": "extend26WeekTimelineConfirmation",
-    "PageDisplayOrder": "2",
-    "ShowSummaryChangeOption": "No",
-    "FieldShowCondition": "caseExtensionTimeConfirmationList=\"OtherExtension\""
   }
 ]

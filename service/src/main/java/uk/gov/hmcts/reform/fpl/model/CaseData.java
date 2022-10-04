@@ -444,6 +444,7 @@ public class CaseData extends CaseDataParent {
     private final Integer orderMonths;
     private final InterimEndDate interimEndDate;
     private final Selector childSelector;
+    private final Selector childSelectorForExtension;
     private final Selector othersSelector;
     private final Selector respondentsSelector;
     private final Selector personSelector;
@@ -453,6 +454,7 @@ public class CaseData extends CaseDataParent {
     private final Selector respondentsRefusedSelector;
 
     private final String orderAppliesToAllChildren;
+    private final String extensionForAllChildren;
     private final String sendOrderToAllOthers;
     private final String sendPlacementNoticeToAllRespondents;
     private final List<Element<Respondent>> placementRespondentsToNotify;
@@ -1173,7 +1175,7 @@ public class CaseData extends CaseDataParent {
     public List<Element<Colleague>> getColleaguesToNotify() {
         return colleaguesToNotify != null ? colleaguesToNotify : new ArrayList<>();
     }
-    
+
     @JsonIgnore
     public boolean isRefuseContactWithChildApplication() {
         return ofNullable(getOrders())

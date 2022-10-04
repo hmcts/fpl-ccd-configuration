@@ -11,12 +11,16 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.CaseExtensionService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
-
+import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
@@ -28,17 +32,25 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class CaseExtensionController extends CallbackController {
     private final ValidateGroupService validateGroupService;
     private final CaseExtensionService caseExtensionService;
+    private final OptionCountBuilder optionCountBuilder;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
-
-        LocalDate caseCompletionDate = caseExtensionService.getCaseShouldBeCompletedByDate(caseData);
-
-        caseDetails.getData().put("shouldBeCompletedByDate", formatLocalDateToString(caseCompletionDate, DATE));
-
+        caseDetails.getData().putAll(caseExtensionService.prePopulateFields(caseData));
         return respond(caseDetails);
+    }
+
+    @PostMapping("/pre-populate/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleMidEventPrePopulation(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+        Map<String, Object> data = caseDetails.getData();
+
+        List<String> errors = caseExtensionService.validateChildSelector(caseData);
+
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/mid-event")
