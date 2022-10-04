@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -81,6 +82,8 @@ public class HearingOrderKindEventDataBuilder {
         if (isEmpty(nonCMODraftOrders)) {
             nonCMODraftOrders.add(element(identityService.generateId(), HearingOrder.builder().build()));
         }
+        nonCMODraftOrders.forEach(h ->
+            h.getValue().setShowDocumentAcknowledge(YesNo.from(h.getValue().getDocument() == null)));
 
         return nonCMODraftOrders;
     }
