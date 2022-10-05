@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
+import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
@@ -93,8 +94,15 @@ public class ManageDocumentsLAController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
-
         caseDetails.getData().putAll(manageDocumentLAService.baseEventData(caseData));
+        caseData.getApplicationDocuments().forEach(ad -> {
+            if (ad.getValue().getDocument() != null) {
+                ad.getValue().setDocumentAcknowledge(List.of("ACK_RELATED_TO_CASE"));
+            } else {
+                ad.getValue().setDocumentAcknowledge(List.of());
+            }
+        });
+        caseDetails.getData().put("applicationDocuments", caseData.getApplicationDocuments());
 
         return respond(caseDetails);
     }
