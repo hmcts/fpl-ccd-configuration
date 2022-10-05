@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -397,6 +398,50 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
     }
 
     @Test
+    void shouldInitialiseRespondentStatementCollectionWithExistingDocument() {
+        UUID selectedRespondentId = randomUUID();
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle =
+            buildSupportingEvidenceBundleWithExistingDocument();
+
+        List<Element<Respondent>> respondents = List.of(
+            element(selectedRespondentId, Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("David")
+                    .lastName("Stevenson")
+                    .build())
+                .build()));
+
+        CaseData caseData = CaseData.builder()
+            .respondents1(respondents)
+            .respondentStatementList(selectedRespondentId)
+            .manageDocumentsRelatedToHearing(YES.getValue())
+            .manageDocumentSubtypeListLA(RESPONDENT_STATEMENT)
+            .respondentStatements(List.of(
+                element(RespondentStatement.builder()
+                    .respondentId(selectedRespondentId)
+                    .supportingEvidenceBundle(supportingEvidenceBundle)
+                    .build())))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+            "further-evidence-documents", USER_ROLES);
+
+        CaseData responseData = extractCaseData(callbackResponse);
+
+        DynamicList expectedRespondentStatementList = ElementUtils
+            .asDynamicList(respondents, selectedRespondentId,
+                respondent -> respondent.getParty().getFullName());
+
+        DynamicList respondentDynamicList
+            = mapper.convertValue(responseData.getRespondentStatementList(), DynamicList.class);
+
+        assertThat(respondentDynamicList).isEqualTo(expectedRespondentStatementList);
+        supportingEvidenceBundle
+            .forEach(svb -> svb.getValue().setDocumentAcknowledge(List.of("ACK_RELATED_TO_CASE")));
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(supportingEvidenceBundle);
+    }
+
+    @Test
     void shouldThrowErrorWhenCourtBundleSelectedButNoHearingsFound() {
         CaseData caseData = CaseData.builder()
             .manageDocumentsHearingDocumentType(HearingDocumentType.COURT_BUNDLE)
@@ -432,6 +477,16 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .name("test")
             .uploadedBy("kurt.swansea@gov.uk")
             .type(GUARDIAN_REPORTS)
+            .build());
+    }
+
+    private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundleWithExistingDocument() {
+        return wrapElements(SupportingEvidenceBundle.builder()
+            .name("test")
+            .uploadedBy("kurt.swansea@gov.uk")
+            .type(GUARDIAN_REPORTS)
+            .document(DocumentReference.builder().build())
+            .documentAcknowledge(List.of())
             .build());
     }
 

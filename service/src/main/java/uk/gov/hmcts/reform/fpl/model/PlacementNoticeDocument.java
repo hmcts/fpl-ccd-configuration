@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,6 +23,7 @@ public class PlacementNoticeDocument {
     private String responseDescription;
     private String recipientName;
     private UUID respondentId;
+    private List<String> documentAcknowledge;
 
     @Getter
     @RequiredArgsConstructor
@@ -35,6 +37,17 @@ public class PlacementNoticeDocument {
         private final String name;
 
         public static final List<RecipientType> PARENT_TYPES = asList(PARENT_FIRST, PARENT_SECOND);
+    }
+
+    public List<String> getDocumentAcknowledge() {
+        if (this.documentAcknowledge == null) {
+            this.documentAcknowledge = new ArrayList<>();
+        }
+        String acknowledgement = "ACK_RELATED_TO_CASE";
+        if (response != null && !this.documentAcknowledge.contains(acknowledgement)) {
+            this.documentAcknowledge.add(acknowledgement);
+        }
+        return this.documentAcknowledge;
     }
 
 }

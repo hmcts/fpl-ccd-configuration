@@ -82,7 +82,8 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
                                 "document_filename", FILE_NAME,
                                 "document_binary_url", FILE_BINARY_URL
                             ),
-                            "documentType", "SOCIAL_WORK_STATEMENT"
+                            "documentType", "SOCIAL_WORK_STATEMENT",
+                            "documentAcknowledge", List.of("ACK_RELATED_TO_CASE")
                         )
                     )
                 )
@@ -106,6 +107,7 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
                     .filename(FILE_NAME)
                     .url(ANOTHER_FILE_URL)
                     .build())
+                .documentAcknowledge(List.of("ACK_RELATED_TO_CASE"))
                 .uploadedBy(ANOTHER_USER)
                 .dateTimeUploaded(now())
                 .build()))

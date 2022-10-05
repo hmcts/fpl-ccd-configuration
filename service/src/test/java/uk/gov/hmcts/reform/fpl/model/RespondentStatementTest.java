@@ -81,6 +81,7 @@ class RespondentStatementTest {
                     "document_filename", "filename",
                     "document_url", "url"
                 )),
+                Map.entry("documentAcknowledge", List.of("ACK_RELATED_TO_CASE")),
                 Map.entry("hasConfidentialAddress", YesNo.NO.getValue())
             )
         ));
@@ -120,7 +121,8 @@ class RespondentStatementTest {
         List<Map<String, Object>> expectedBundles = List.of(Map.of(
             "id", "dc6b2154-9e5d-480d-adca-d70b4e1f6384",
             "value", Map.ofEntries(
-                Map.entry("needTranslation", "NO")
+                Map.entry("needTranslation", "NO"),
+                Map.entry("documentAcknowledge", List.of())
             )
         ));
 

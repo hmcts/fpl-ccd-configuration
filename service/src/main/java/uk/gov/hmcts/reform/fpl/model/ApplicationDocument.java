@@ -9,6 +9,8 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.interfaces.FurtherDocument;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder(toBuilder = true)
@@ -20,6 +22,7 @@ public class ApplicationDocument implements FurtherDocument {
     private String uploadedBy;
     private String documentName;
     private String includedInSWET;
+    private List<String> documentAcknowledge;
 
     @JsonIgnore
     public boolean hasDocument() {
@@ -34,5 +37,16 @@ public class ApplicationDocument implements FurtherDocument {
     @JsonIgnore
     public String getName() {
         return documentType.getLabel();
+    }
+
+    public List<String> getDocumentAcknowledge() {
+        if (this.documentAcknowledge == null) {
+            this.documentAcknowledge = new ArrayList<>();
+        }
+        String acknowledgement = "ACK_RELATED_TO_CASE";
+        if (document != null && !this.documentAcknowledge.contains(acknowledgement)) {
+            this.documentAcknowledge.add(acknowledgement);
+        }
+        return this.documentAcknowledge;
     }
 }

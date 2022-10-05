@@ -67,6 +67,7 @@ public class HearingCourtBundleTest {
                     "document_filename", CONFIDENTIAL_COURT_BUNDLE.getDocument().getFilename(),
                     "document_url", CONFIDENTIAL_COURT_BUNDLE.getDocument().getUrl()
                 )),
+                Map.entry("documentAcknowledge", List.of("ACK_RELATED_TO_CASE")),
                 Map.entry("hasConfidentialAddress", YesNo.NO.getValue())
             )));
 
@@ -79,6 +80,7 @@ public class HearingCourtBundleTest {
                     "document_filename", NON_CONFIDENTIAL_COURT_BUNDLE.getDocument().getFilename(),
                     "document_url", NON_CONFIDENTIAL_COURT_BUNDLE.getDocument().getUrl()
                 )),
+                Map.entry("documentAcknowledge", List.of("ACK_RELATED_TO_CASE")),
                 Map.entry("hasConfidentialAddress", YesNo.NO.getValue())
             )));
 
@@ -127,7 +129,9 @@ public class HearingCourtBundleTest {
 
         List<Map<String, Object>> expectedCourtBundle = List.of(Map.of(
             "id", TEST_ID.toString(),
-            "value", Map.ofEntries()));
+            "value", Map.ofEntries(
+                Map.entry("documentAcknowledge", List.of())
+            )));
 
         Map<String, Object> expectedHearingCourtBundle = Map.of(
             "hearing", TEST_HEARING,
