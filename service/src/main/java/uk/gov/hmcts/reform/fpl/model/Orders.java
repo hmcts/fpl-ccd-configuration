@@ -50,7 +50,6 @@ public class Orders {
     private final String court;
     private final String childAssessmentOrderAssessmentDirections;
     private final String childAssessmentOrderContactDirections;
-    @NotBlank(message = "Please provide ")
     private final String childRecoveryOrderDirectionsAppliedFor;
     private final List<ParticularsOfChildren> particularsOfChildren;
     private final String particularsOfChildrenDetails;
