@@ -214,7 +214,7 @@
     "ID": "Orders",
     "ListElementCode": "particularsOfChildrenDetails",
     "FieldType": "TextArea",
-    "ElementLabel": "If a child’s identity is not known, state details that will identify the child. You may enclose a recent photograph of the child, which should be dated.",
+    "ElementLabel": "Details that will identify the child",
     "SecurityClassification": "Public",
     "FieldShowCondition": "orderType CONTAINS \"CHILD_RECOVERY_ORDER\""
   },
