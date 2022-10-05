@@ -109,8 +109,6 @@ public class UploadDraftOrdersData {
     YesNo showReplacementCMO;
     @Temp
     List<String> uploadCMOMessageAcknowledge;
-    @Temp
-    YesNo showCMODocumentAcknowledge;
 
     @JsonIgnore
     public boolean isCmoAgreed() {
