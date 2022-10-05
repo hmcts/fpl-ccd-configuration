@@ -31,13 +31,16 @@ public class CaseExtensionService {
     private final OptionCountBuilder optionCountBuilder;
 
     public LocalDate getCaseCompletionDate(CaseData caseData) {
-        if (caseData.getCaseExtensionTimeList().equals(EIGHT_WEEK_EXTENSION)) {
-            if (caseData.getCaseExtensionTimeConfirmationList().equals(EIGHT_WEEK_EXTENSION)) {
+        if (EIGHT_WEEK_EXTENSION.equals(caseData.getCaseExtensionTimeList())) {
+            if (EIGHT_WEEK_EXTENSION.equals(caseData.getCaseExtensionTimeConfirmationList())) {
                 return getCaseCompletionDateFor8WeekExtension(caseData);
             }
             return caseData.getEightWeeksExtensionDateOther();
         }
-        return caseData.getExtensionDateOther();
+        if(caseData.getExtensionDateOther() != null){
+            return caseData.getExtensionDateOther();
+        }
+        return caseData.getDefaultCompletionDate();
     }
 
     public LocalDate getCaseCompletionDateFor8WeekExtension(CaseData caseData) {

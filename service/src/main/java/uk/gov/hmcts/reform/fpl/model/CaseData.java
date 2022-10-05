@@ -157,6 +157,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @EPOTimeRange(message = "Date must be within 8 days of the order date", groups = EPOEndDateGroup.class,
     maxDate = @TimeDifference(amount = 8, unit = DAYS))
 public class CaseData extends CaseDataParent {
+    public static final int DEFAULT_CASE_COMPLETION = 26;
     private final Long id;
     private final State state;
     @NotBlank(message = "Enter a case name")
@@ -633,8 +634,13 @@ public class CaseData extends CaseDataParent {
     private final List<Element<EmailAddress>> gatekeeperEmails;
 
     @JsonIgnore
+    public LocalDate getDefaultCompletionDate() {
+        return dateSubmitted.plusWeeks(DEFAULT_CASE_COMPLETION);
+    }
+
+    @JsonIgnore
     public String getComplianceDeadline() {
-        return formatLocalDateToString(dateSubmitted.plusWeeks(26), FormatStyle.LONG);
+        return formatLocalDateToString(getDefaultCompletionDate(), FormatStyle.LONG);
     }
 
     private final String amountToPay;
