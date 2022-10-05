@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C34aContactWithAChildInCareOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,7 +34,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class C34aContactWithAChildCareOrderParameterGeneratorTest {
 
     public static final LocalDateTime APPROVAL_DATE_TIME = LocalDateTime.of(2021, 4, 20, 10, 0, 0);
-    public static final String CONSENT = "Order By Consent";
+    public static final String CONSENT = "By consent";
     private static final String LOCAL_AUTHORITY_NAME = "Swansea Local Authority";
     private static final String CONDITION_MESSAGE = "This is the condition message.";
     private static final String CONTACT_NAME_1 = "Peter Smith";
@@ -48,6 +49,8 @@ class C34aContactWithAChildCareOrderParameterGeneratorTest {
     private ChildrenSmartSelector childrenSmartSelector;
     @InjectMocks
     private C34aContactWithAChildInCareOrderDocumentParameterGenerator underTest;
+    @Mock
+    private OrderMessageGenerator orderMessageGenerator;
 
     @Test
     void shouldReturnCorrectOrder() {
@@ -66,6 +69,7 @@ class C34aContactWithAChildCareOrderParameterGeneratorTest {
         List<Element<Child>> selectedChildren = wrapElements(CHILD);
         when(laNameLookup.getLocalAuthorityName(any())).thenReturn(LOCAL_AUTHORITY_NAME);
         when(childrenSmartSelector.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
@@ -83,6 +87,7 @@ class C34aContactWithAChildCareOrderParameterGeneratorTest {
         List<Element<Child>> selectedChildren = wrapElements(CHILD);
         when(laNameLookup.getLocalAuthorityName(any())).thenReturn(LOCAL_AUTHORITY_NAME);
         when(childrenSmartSelector.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
@@ -101,9 +106,29 @@ class C34aContactWithAChildCareOrderParameterGeneratorTest {
         List<Element<Child>> selectedChildren = wrapElements(CHILD);
         when(laNameLookup.getLocalAuthorityName(any())).thenReturn(LOCAL_AUTHORITY_NAME);
         when(childrenSmartSelector.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
+            .orderDetails(getOrderDetailForThreeAllowedContactName())
+            .orderMessage(getOrderMessageForLocalAuthority(LOCAL_AUTHORITY_NAME))
+            .build();
+
+        assertThat(generatedParameters).isEqualTo(expectedParameters);
+    }
+
+    @Test
+    void generateDocumentForThreeChildren() {
+        CaseData caseData = getCaseData(false, CONDITION_MESSAGE, CONTACT_NAME_1, CONTACT_NAME_2,
+            CONTACT_NAME_3);
+
+        List<Element<Child>> selectedChildren = wrapElements(CHILD);
+        when(laNameLookup.getLocalAuthorityName(any())).thenReturn(LOCAL_AUTHORITY_NAME);
+        when(childrenSmartSelector.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(null);
+
+        DocmosisParameters generatedParameters = underTest.generate(caseData);
+        DocmosisParameters expectedParameters = expectedCommonParameters(false)
             .orderDetails(getOrderDetailForThreeAllowedContactName())
             .orderMessage(getOrderMessageForLocalAuthority(LOCAL_AUTHORITY_NAME))
             .build();

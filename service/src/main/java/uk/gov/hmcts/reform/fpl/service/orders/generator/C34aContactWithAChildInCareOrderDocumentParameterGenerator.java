@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C34aContactWithAChildInCareOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,7 @@ public class C34aContactWithAChildInCareOrderDocumentParameterGenerator implemen
 
     private final LocalAuthorityNameLookupConfiguration laNameLookup;
     private final ChildrenSmartSelector childrenSmartSelector;
+    private final OrderMessageGenerator orderMessageGenerator;
 
     @Override
     public Order accept() {
@@ -62,7 +64,7 @@ public class C34aContactWithAChildInCareOrderDocumentParameterGenerator implemen
             .orderTitle(Order.C34A_CONTACT_WITH_A_CHILD_IN_CARE.getTitle())
             .childrenAct(Order.C34A_CONTACT_WITH_A_CHILD_IN_CARE.getChildrenAct())
             .orderMessage("The local authority is " + localAuthorityName + ".")
-            .orderByConsent("Order By Consent")
+            .orderByConsent(orderMessageGenerator.getOrderByConsentMessage(eventData))
             .orderDetails(orderDetails(selectedChildren.size(), peopleAllowedContact,
                 eventData.getManageOrdersConditionsOfContact()))
             .noticeMessage("An authority may refuse to allow the contact that would otherwise be required by "
