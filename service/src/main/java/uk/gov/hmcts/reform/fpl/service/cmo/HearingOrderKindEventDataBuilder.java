@@ -83,7 +83,12 @@ public class HearingOrderKindEventDataBuilder {
             nonCMODraftOrders.add(element(identityService.generateId(), HearingOrder.builder().build()));
         }
         nonCMODraftOrders.forEach(h ->
-            h.getValue().setShowDocumentAcknowledge(YesNo.from(h.getValue().getDocument() == null)));
+            {
+                if (h.getValue().getDocument() != null) {
+                    h.getValue().setDocumentAcknowledge(List.of("ACK_RELATED_TO_CASE"));
+                }
+            }
+        );
 
         return nonCMODraftOrders;
     }

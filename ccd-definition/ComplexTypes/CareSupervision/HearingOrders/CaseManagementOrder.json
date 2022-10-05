@@ -193,14 +193,5 @@
     "ElementLabel": " ",
     "SecurityClassification": "Public",
     "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "UploadedCaseManagementOrder",
-    "ListElementCode": "showDocumentAcknowledge",
-    "FieldType": "Text",
-    "ElementLabel": " ",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
   }
 ]

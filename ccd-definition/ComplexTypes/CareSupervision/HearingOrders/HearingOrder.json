@@ -151,14 +151,5 @@
     "ElementLabel": " ",
     "SecurityClassification": "Public",
     "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingOrder",
-    "ListElementCode": "showDocumentAcknowledge",
-    "FieldType": "Text",
-    "ElementLabel": " ",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
   }
 ]
