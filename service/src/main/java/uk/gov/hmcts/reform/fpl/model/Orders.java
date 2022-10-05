@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEPOType;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEnteredEPOExcluded;
 
 import java.util.List;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
