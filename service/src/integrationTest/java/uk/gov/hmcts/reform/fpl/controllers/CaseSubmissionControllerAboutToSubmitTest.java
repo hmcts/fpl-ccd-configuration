@@ -174,7 +174,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             ))
             .build();
 
-        /*@Test
+        @Test
         void shouldReturnErrorWhenCaseSubmissionIsBlockedForLocalAuthority() {
             given(featureToggleService.isRestrictedFromCaseSubmission(localAuthority)).willReturn(true);
 
@@ -182,8 +182,8 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
 
             assertThat(callbackResponse.getData()).containsEntry("caseLocalAuthority", localAuthority);
             assertThat(callbackResponse.getErrors()).contains("You cannot submit this application online yet."
-                + " Ask your FPL administrator for your local authority’s enrolment date");
-        }*/
+                + " Ask your FPL administrator for your local authority's enrolment date");
+        }
 
         @Test
         void shouldReturnNoErrorsWhenCaseSubmissionIsAllowedForLocalAuthority() {
