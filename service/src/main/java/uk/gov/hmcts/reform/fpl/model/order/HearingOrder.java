@@ -39,7 +39,8 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJud
 @Builder(toBuilder = true)
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class HearingOrder implements RemovableOrder, AmendableOrder, TranslatableItem {
-    private List<String> documentAcknowledge;
+    @Builder.Default
+    private List<String> documentAcknowledge = List.of();
     private String title;
     private HearingOrderType type;
     private DocumentReference order;

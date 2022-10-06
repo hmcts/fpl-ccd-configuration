@@ -21,7 +21,8 @@ public class ApplicationDocument implements FurtherDocument {
     private String uploadedBy;
     private String documentName;
     private String includedInSWET;
-    private List<String> documentAcknowledge;
+    @Builder.Default
+    private List<String> documentAcknowledge = List.of();
 
     @JsonIgnore
     public boolean hasDocument() {
