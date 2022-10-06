@@ -94,13 +94,15 @@ public class ManageDocumentsLAController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         caseDetails.getData().putAll(manageDocumentLAService.baseEventData(caseData));
-        caseData.getApplicationDocuments().forEach(ad -> {
-            if (ad.getValue().getDocument() != null) {
-                ad.getValue().setDocumentAcknowledge(List.of("ACK_RELATED_TO_CASE"));
-            } else {
-                ad.getValue().setDocumentAcknowledge(List.of());
-            }
-        });
+        if (caseData.getApplicationDocuments() != null) {
+            caseData.getApplicationDocuments().forEach(ad -> {
+                if (ad.getValue().getDocument() != null) {
+                    ad.getValue().setDocumentAcknowledge(List.of("ACK_RELATED_TO_CASE"));
+                } else {
+                    ad.getValue().setDocumentAcknowledge(List.of());
+                }
+            });
+        }
         caseDetails.getData().put("applicationDocuments", caseData.getApplicationDocuments());
 
         return respond(caseDetails);
