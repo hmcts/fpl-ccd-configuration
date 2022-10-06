@@ -14,11 +14,11 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@WebMvcTest(OrdersNeededAboutToSubmitCallbackController.class)
+@WebMvcTest(OrdersNeededController.class)
 @OverrideAutoConfiguration(enabled = true)
-class OrdersNeededAboutToSubmitCallbackControllerTest extends AbstractCallbackTest {
+class OrdersNeededControllerTest extends AbstractCallbackTest {
 
-    OrdersNeededAboutToSubmitCallbackControllerTest() {
+    OrdersNeededControllerTest() {
         super("orders-needed");
     }
 
@@ -93,5 +93,28 @@ class OrdersNeededAboutToSubmitCallbackControllerTest extends AbstractCallbackTe
 
         assertThat(response.getData().get("refuseContactWithChildOrderType")).isNull();
         assertThat((Map<String, Object>) response.getData().get("groundsForRefuseContactWithChild")).isNullOrEmpty();
+    }
+
+    @Test
+    void shouldSetCourtWhenCourtIsSelected() {
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent("fixtures/caseOtherOrderType.json");
+
+        assertThat(response.getData().get("court")).isNotNull();
+    }
+
+    @Test
+    void shouldSetOrdersToOrdersSolicitorForSolicitorsAfterOrderSubmitted() {
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent("fixtures/caseRespondentSolicitor.json");
+
+        assertThat(response.getData().get("representativeType")).isEqualTo("RESPONDENT_SOLICITOR");
+        assertThat(response.getData().get("orders")).isEqualTo(response.getData().get("ordersSolicitor"));
+    }
+
+    @Test
+    void shouldSetRepresentativeTypeToLAIfItIsNotAlreadySet() {
+        //In this case fixture, representativeType is not set.
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent("fixtures/caseOtherOrderType.json");
+
+        assertThat(response.getData().get("representativeType")).isEqualTo("LOCAL_AUTHORITY");
     }
 }

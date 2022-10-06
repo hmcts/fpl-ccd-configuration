@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,33 +11,59 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Api
 @RestController
 @RequestMapping("/callback/orders-needed")
-public class OrdersNeededAboutToSubmitCallbackController extends CallbackController {
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class OrdersNeededController extends CallbackController {
 
     public static final String ORDERS = "orders";
     public static final List<OrderType> STANDALONE_ORDER_TYPE = List.of(OrderType.CHILD_ASSESSMENT_ORDER,
         OrderType.CHILD_RECOVERY_ORDER);
     public static final List<String> STANDALONE_ORDER_TYPE_NAME = STANDALONE_ORDER_TYPE.stream().map(OrderType::name)
         .collect(Collectors.toList());
+    private final HmctsCourtLookupConfiguration courtLookup;
+
+    @PostMapping("/about-to-start")
+    @SuppressWarnings("unchecked")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
+        @RequestBody CallbackRequest callbackrequest) {
+        final CaseData caseData = getCaseData(callbackrequest);
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        Map<String, Object> data = caseDetails.getData();
+
+        if (Objects.isNull(caseData.getRepresentativeType())) {
+            data.put("representativeType", RepresentativeType.LOCAL_AUTHORITY);
+        }
+
+        return respond(caseDetails);
+    }
 
     @PostMapping("/mid-event")
     @SuppressWarnings("unchecked")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
+        final CaseData caseData = getCaseData(callbackrequest);
+        final RepresentativeType representativeType = Objects.nonNull(caseData.getRepresentativeType())
+            ? caseData.getRepresentativeType() : RepresentativeType.LOCAL_AUTHORITY;
+        final String ordersFieldName = representativeType.equals(RepresentativeType.LOCAL_AUTHORITY)
+            ? "orders" : "ordersSolicitor";
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
 
-        Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get("orders"))
+        Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get(ordersFieldName))
             .map(orders -> (List<String>) orders.get("orderType"));
 
         if (orderType.isPresent() && orderType.get().size() > 1
@@ -43,20 +71,24 @@ public class OrdersNeededAboutToSubmitCallbackController extends CallbackControl
             return respond(caseDetails, List.of("You have selected a standalone order, "
                 + "this cannot be applied for alongside other orders."));
         }
+
         return respond(caseDetails);
     }
 
-
     @PostMapping("/about-to-submit")
     @SuppressWarnings("unchecked")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(
         @RequestBody CallbackRequest callbackrequest) {
         final String showEpoFieldId = "EPO_REASONING_SHOW";
         final CaseData caseData = getCaseData(callbackrequest);
+        final RepresentativeType representativeType = Objects.nonNull(caseData.getRepresentativeType())
+            ? caseData.getRepresentativeType() : RepresentativeType.LOCAL_AUTHORITY;
+        final String ordersFieldName = representativeType.equals(RepresentativeType.LOCAL_AUTHORITY)
+            ? "orders" : "ordersSolicitor";
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
 
-        Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get(ORDERS))
+        Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get(ordersFieldName))
             .map(orders -> (List<String>) orders.get("orderType"));
 
         if (orderType.isPresent()) {
@@ -68,8 +100,9 @@ public class OrdersNeededAboutToSubmitCallbackController extends CallbackControl
                     data.remove("groundsForEPO");
                     data.remove(showEpoFieldId);
                 }
+
                 if (!orderTypes.contains(OrderType.SECURE_ACCOMMODATION_ORDER.name())) {
-                    removeSecureAccommodationOrderFields(data);
+                    removeSecureAccommodationOrderFields(data, ordersFieldName);
                 } else {
                     data.put("secureAccommodationOrderType", YesNo.YES);
                 }
@@ -82,7 +115,7 @@ public class OrdersNeededAboutToSubmitCallbackController extends CallbackControl
         } else {
             data.remove("groundsForEPO");
             data.remove(showEpoFieldId);
-            removeSecureAccommodationOrderFields(data);
+            removeSecureAccommodationOrderFields(data, ordersFieldName);
         }
 
         if (caseData.isRefuseContactWithChildApplication()) {
@@ -98,16 +131,35 @@ public class OrdersNeededAboutToSubmitCallbackController extends CallbackControl
             data.put("otherOrderType", "NO");
         }
 
+        String courtID = Optional.ofNullable((Map<String, Object>) data.get(ordersFieldName))
+            .map(orders -> (String) orders.get("court"))
+            .map(Object::toString)
+            .orElse(null);
+
+        Court selectedCourt = getCourtSelection(courtID);
+
+        if (Objects.nonNull(selectedCourt)) {
+            data.put("court", selectedCourt);
+        }
+
+        if (ordersFieldName.equals("ordersSolicitor")) {
+            data.put("orders", data.get("ordersSolicitor"));
+        }
+
         return respond(caseDetails);
     }
 
     @SuppressWarnings("unchecked")
-    private void removeSecureAccommodationOrderFields(Map<String, Object> data) {
+    private void removeSecureAccommodationOrderFields(Map<String, Object> data, String ordersFieldName) {
         data.remove("groundsForSecureAccommodationOrder");
         // remove the secureAccommodationOrderSection field
-        ((Map<String, Object>) data.get(ORDERS)).remove("secureAccommodationOrderSection");
+        ((Map<String, Object>) data.get(ordersFieldName)).remove("secureAccommodationOrderSection");
 
         // set this control flag to NO
         data.put("secureAccommodationOrderType", YesNo.NO);
+    }
+
+    private Court getCourtSelection(String courtID) {
+        return courtLookup.getCourtByCode(courtID).orElse(null);
     }
 }

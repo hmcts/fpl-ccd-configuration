@@ -1495,6 +1495,78 @@ class CaseSubmissionGenerationServiceTest {
             assertThat(caseSubmission.getApplicants()).containsExactly(expectedDocmosisApplicant);
             assertThat(caseSubmission.getApplicantOrganisations()).isEqualTo("Applicant organisation");
         }
+
+        @Test
+        void shouldTakeApplicantDetailsFromLocalAuthorityEvenWhenDesignatedLocalAuthorityDoesntExist() {
+            final Colleague solicitor = Colleague.builder()
+                .role(SOLICITOR)
+                .fullName("Alex Williams")
+                .email("alex@test.com")
+                .phone("0777777777")
+                .dx("DX1")
+                .reference("Ref 1")
+                .build();
+
+            final Colleague mainContact = Colleague.builder()
+                .role(OTHER)
+                .title("Legal adviser")
+                .fullName("Emma White")
+                .phone("07778888888")
+                .mainContact("Yes")
+                .build();
+
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .designated("No")
+                .name("Local authority 1")
+                .email("la@test.com")
+                .phone("0777999999")
+                .pbaNumber("PBA1234567")
+                .address(Address.builder()
+                    .addressLine1("L1")
+                    .postcode("AB 100")
+                    .build())
+                .colleagues(wrapElements(solicitor, mainContact))
+                .build();
+
+            final CaseData updatedCaseData = givenCaseData.toBuilder()
+                .localAuthorities(wrapElements(localAuthority))
+                .solicitor(Solicitor.builder()
+                    .name("Legacy solicitor")
+                    .email("legacy@test.com")
+                    .mobile("0777111111")
+                    .build())
+                .applicants(wrapElements(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .organisationName("Applicant organisation")
+                        .email(EmailAddress.builder()
+                            .email("applicantemail@gmail.com")
+                            .build())
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
+
+            DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
+                .organisationName(localAuthority.getName())
+                .jobTitle(mainContact.getTitle())
+                .mobileNumber(mainContact.getPhone())
+                .telephoneNumber(localAuthority.getPhone())
+                .pbaNumber(localAuthority.getPbaNumber())
+                .email(localAuthority.getEmail())
+                .contactName(mainContact.getFullName())
+                .solicitorDx(solicitor.getDx())
+                .solicitorEmail(solicitor.getEmail())
+                .solicitorMobile(solicitor.getPhone())
+                .solicitorName(solicitor.getFullName())
+                .solicitorReference(solicitor.getReference())
+                .solicitorTelephone(solicitor.getPhone())
+                .address("L1\nAB 100")
+                .build();
+
+            assertThat(caseSubmission.getApplicants()).containsExactly(expectedDocmosisApplicant);
+            assertThat(caseSubmission.getApplicantOrganisations()).isEqualTo(localAuthority.getName());
+        }
     }
 
     @Nested

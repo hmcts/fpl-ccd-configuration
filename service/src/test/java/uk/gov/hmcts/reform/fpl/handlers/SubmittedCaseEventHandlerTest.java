@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fnp.exception.RetryablePaymentException;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -106,6 +107,7 @@ class SubmittedCaseEventHandlerTest {
         final String email = "test@test.com";
 
         when(caseData.getCaseLocalAuthority()).thenReturn(LOCAL_AUTHORITY_CODE);
+        when(caseData.getRepresentativeType()).thenReturn(RepresentativeType.LOCAL_AUTHORITY);
         when(caseData.getId()).thenReturn(CASE_ID);
         when(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
                 .thenReturn(new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, email));
