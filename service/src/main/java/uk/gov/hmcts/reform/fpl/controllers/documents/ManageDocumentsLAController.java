@@ -167,8 +167,17 @@ public class ManageDocumentsLAController extends CallbackController {
             caseDetails.getData().put(RESPONDENTS_LIST_KEY,
                 caseData.buildRespondentDynamicList(selectedRespondentId));
 
-            caseDetails.getData().put(TEMP_EVIDENCE_DOCUMENTS_KEY,
-                manageDocumentService.getRespondentStatements(caseData, selectedRespondentId));
+            List<Element<SupportingEvidenceBundle>> respondentStatements =
+                manageDocumentService.getRespondentStatements(caseData, selectedRespondentId);
+            respondentStatements.forEach(rs -> {
+                if (rs.getValue().getDocument() != null) {
+                    rs.getValue().setDocumentAcknowledge(List.of("ACK_RELATED_TO_CASE"));
+                } else {
+                    rs.getValue().setDocumentAcknowledge(List.of());
+                }
+            });
+
+            caseDetails.getData().put(TEMP_EVIDENCE_DOCUMENTS_KEY, respondentStatements);
         }
 
         return respond(caseDetails);

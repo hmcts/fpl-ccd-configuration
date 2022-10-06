@@ -48,6 +48,7 @@ public class SupportingEvidenceBundle implements TranslatableItem, FurtherDocume
     private final LanguageTranslationRequirement translationRequirements;
     private String hasConfidentialAddress;
     private ExpertReportType expertReportType;
+    private List<String> documentAcknowledge;
 
     public String getHasConfidentialAddress() {
         return ((!isBlank(name) || document != null) && (!YesNo.isYesOrNo(hasConfidentialAddress)))
