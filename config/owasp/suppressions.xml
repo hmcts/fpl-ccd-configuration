@@ -232,16 +232,4 @@
     <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
     <cpe>cpe:/a:snakeyaml_project:snakeyaml</cpe>
   </suppress>
-  <suppress>
-    <notes><![CDATA[
-   file name: jackson-databind-2.12.5.jar (pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.12.5
-   ]]></notes>
-    <vulnerabilityName>CVE-2022-42003</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
-   file name: cpe:2.3:a:fasterxml:jackson-databind:2.12.5:*:*:*:*:*:*:*)
-   ]]></notes>
-    <vulnerabilityName>CVE-2022-42004</vulnerabilityName>
-  </suppress>
 </suppressions>
