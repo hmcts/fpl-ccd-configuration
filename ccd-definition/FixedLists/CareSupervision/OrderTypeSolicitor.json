@@ -1,9 +1,9 @@
 [
-    {
-      "LiveFrom": "01/01/2017",
-      "ID": "OrderTypeSolicitor",
-      "ListElementCode": "OTHER",
-      "ListElement": "Variation or discharge of care or supervision order",
-      "DisplayOrder": 1
-    }
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTypeSolicitor",
+    "ListElementCode": "OTHER",
+    "ListElement": "Variation or discharge of care or supervision order",
+    "DisplayOrder": 1
+  }
 ]
