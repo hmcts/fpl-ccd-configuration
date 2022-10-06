@@ -43,7 +43,6 @@ import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -87,15 +86,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, caseData.getTemporaryC2Document());
         }
         caseDetails.getData().putAll(applicationsFeeCalculator.calculateFee(caseData));
-
-        if (caseData.hasRespondentsOrOthers()) {
-            caseDetails.getData().put("hasRespondentsOrOthers", "Yes");
-            caseDetails.getData().put("people_label", peopleInCaseService.buildPeopleInCaseLabel(
-                caseData.getAllRespondents(), caseData.getOthers()));
-
-            int selectorSize = caseData.getAllRespondents().size() + caseData.getAllOthers().size();
-            caseDetails.getData().put("personSelector", newSelector(selectorSize));
-        }
 
         return respond(caseDetails);
     }
@@ -150,10 +140,9 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         caseDetails.getData().put("c2DocumentBundle", uploadAdditionalApplicationsService
             .sortOldC2DocumentCollection(oldC2DocumentCollection));
 
-        removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT, "c2Type", "additionalApplicationType",
-            AMOUNT_TO_PAY, "temporaryPbaPayment", TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "applicantsList",
-            "otherApplicant", "people_label", "hasRespondentsOrOthers", "notifyApplicationsToAllOthers",
-            "personSelector");
+        removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT, "c2Type",
+            "additionalApplicationType", AMOUNT_TO_PAY, "temporaryPbaPayment",
+            TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "applicantsList", "otherApplicant");
 
         return respond(caseDetails);
     }
