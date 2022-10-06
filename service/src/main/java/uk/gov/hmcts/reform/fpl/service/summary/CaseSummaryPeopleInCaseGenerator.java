@@ -4,14 +4,17 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_1;
@@ -51,11 +54,21 @@ public class CaseSummaryPeopleInCaseGenerator implements CaseSummaryFieldsGenera
     }
 
     private String generateSummaryMainContactEmail(CaseData caseData) {
-
         if (isNotEmpty(caseData.getLocalAuthorities())) {
-            return caseData.getDesignatedLocalAuthority().getMainContact()
-                .map(Colleague::getEmail)
-                .orElse(null);
+            if (nonNull(caseData.getDesignatedLocalAuthority())) {
+                return caseData.getDesignatedLocalAuthority().getMainContact()
+                    .map(Colleague::getEmail)
+                    .orElse(null);
+            } else {
+                LocalAuthority applicant = caseData.getLocalAuthorities().stream()
+                    .map(Element::getValue)
+                    .findFirst()
+                    .orElse(null);
+
+                return nonNull(applicant) ? applicant.getMainContact()
+                    .map(Colleague::getEmail)
+                    .orElse(null) : null;
+            }
         }
 
         return ofNullable(caseData.getSolicitor()).map(Solicitor::getEmail).orElse(null);
@@ -63,9 +76,20 @@ public class CaseSummaryPeopleInCaseGenerator implements CaseSummaryFieldsGenera
 
     private String generateSummaryMainContactName(CaseData caseData) {
         if (isNotEmpty(caseData.getLocalAuthorities())) {
-            return caseData.getDesignatedLocalAuthority().getMainContact()
-                .map(Colleague::getFullName)
-                .orElse(null);
+            if (nonNull(caseData.getDesignatedLocalAuthority())) {
+                return caseData.getDesignatedLocalAuthority().getMainContact()
+                    .map(Colleague::getFullName)
+                    .orElse(null);
+            } else {
+                LocalAuthority applicant = caseData.getLocalAuthorities().stream()
+                    .map(Element::getValue)
+                    .findFirst()
+                    .orElse(null);
+
+                return nonNull(applicant) ? applicant.getMainContact()
+                    .map(Colleague::getFullName)
+                    .orElse(null) : null;
+            }
         }
 
         return ofNullable(caseData.getSolicitor()).map(Solicitor::getName).orElse(null);
