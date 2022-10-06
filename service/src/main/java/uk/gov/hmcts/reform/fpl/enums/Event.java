@@ -15,7 +15,7 @@ public enum Event {
     ////TO DO remove when toggling on FPLA-768
     DOCUMENTS("uploadDocuments", "Upload documents"),
     ORGANISATION_DETAILS("enterApplicant", "Applicant's details"),
-    LOCAL_AUTHORITY_DETAILS("enterLocalAuthority", "Local authority's details"),
+    LOCAL_AUTHORITY_DETAILS("enterLocalAuthority", "Applicant's details"),
     CHILDREN("enterChildren", "Child's details"),
     RESPONDENTS("enterRespondents", "Respondents' details"),
     ALLOCATION_PROPOSAL("otherProposal", "Allocation proposal"),

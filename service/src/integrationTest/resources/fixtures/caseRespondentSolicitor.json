@@ -49,12 +49,13 @@
           }
         }
       ],
-      "orders": {
+      "ordersSolicitor": {
         "orderType": [
           "OTHER"
         ],
         "court": "22"
-      }
+      },
+      "representativeType": "RESPONDENT_SOLICITOR" 
     }
   }
 }
