@@ -94,6 +94,7 @@ class C2DocumentBundleSerializationTest {
                     "document_binary_url", "binaryUrl",
                     "document_filename", "filename", "document_url", "url"
                 )),
+                Map.entry("documentAcknowledge", List.of()),
                 Map.entry("translationRequirements", "ENGLISH_TO_WELSH"),
                 Map.entry("needTranslation", "YES"),
                 Map.entry("translatedDocument", Map.of(
@@ -186,7 +187,8 @@ class C2DocumentBundleSerializationTest {
         List<Map<String, Object>> expectedBundles = List.of(Map.of(
             "id", "dc6b2154-9e5d-480d-adca-d70b4e1f6384",
             "value", Map.ofEntries(
-                Map.entry("needTranslation", "NO")
+                Map.entry("needTranslation", "NO"),
+                Map.entry("documentAcknowledge", List.of())
             )
         ));
 
