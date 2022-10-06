@@ -98,8 +98,6 @@ public class ManageDocumentsLAController extends CallbackController {
             caseData.getApplicationDocuments().forEach(ad -> {
                 if (ad.getValue().getDocument() != null) {
                     ad.getValue().setDocumentAcknowledge(List.of("ACK_RELATED_TO_CASE"));
-                } else {
-                    ad.getValue().setDocumentAcknowledge(List.of());
                 }
             });
         }
@@ -173,8 +171,6 @@ public class ManageDocumentsLAController extends CallbackController {
             respondentStatements.forEach(rs -> {
                 if (rs.getValue().getDocument() != null) {
                     rs.getValue().setDocumentAcknowledge(List.of("ACK_RELATED_TO_CASE"));
-                } else {
-                    rs.getValue().setDocumentAcknowledge(List.of());
                 }
             });
 
