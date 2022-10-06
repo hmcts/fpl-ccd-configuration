@@ -6,11 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersRemovedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.cafcass.OrderRemovedCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.AbstractJudge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
@@ -18,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.cmo.DraftOrdersRemovedTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
-import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.DraftOrdersRemovedContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
@@ -34,7 +31,6 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DRAFT_ORDER_REMOVED_TEMPLA
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DRAFT_ORDER_REMOVED_TEMPLATE_FOR_JUDGES;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -48,8 +44,6 @@ public class DraftOrdersRemovedEventHandler {
 
     private final NotificationService notificationService;
     private final RepresentativeNotificationService representativeNotificationService;
-    private final CafcassNotificationService cafcassNotificationService;
-    private final CafcassLookupConfiguration cafcassLookupConfiguration;
 
     @Async
     @EventListener
@@ -117,23 +111,6 @@ public class DraftOrdersRemovedEventHandler {
                 caseData
             )
         );
-    }
-
-    @Async
-    @EventListener
-    public void sendNotificationToCafcass(final DraftOrdersRemovedEvent event) {
-        CaseData caseData = event.getCaseData();
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-            cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-
-        if (recipientIsEngland.isPresent()) {
-            cafcassNotificationService.sendEmail(caseData,
-                ORDER,
-                OrderRemovedCafcassData.builder()
-                    .documentName("draft order")
-                    .removalReason(event.getRemovalReason())
-                    .build());
-        }
     }
 
     private Optional<HearingBooking> getHearingBookingFromDraftOrder(CaseData caseData, UUID draftOrderId) {

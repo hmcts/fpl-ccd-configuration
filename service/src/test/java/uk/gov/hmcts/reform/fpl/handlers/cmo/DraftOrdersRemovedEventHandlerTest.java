@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.handlers.DraftOrdersRemovedEventHandler;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
-import uk.gov.hmcts.reform.fpl.model.cafcass.OrderRemovedCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.DraftOrdersRemovedTemplate;
@@ -45,11 +44,8 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.ALLOCATED_JUDGE_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(MockitoExtension.class)
@@ -153,20 +149,6 @@ public class DraftOrdersRemovedEventHandlerTest {
             Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS, COURT_EMAIL_ADDRESS),
             DRAFT_ORDERS_REMOVED_TEMPLATE_DATA,
             CASE_ID);
-    }
-
-    @Test
-    void shouldSendNotificationToCafcass() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any())).thenReturn(
-            Optional.of(
-                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-            ));
-        underTest.sendNotificationToCafcass(new DraftOrdersRemovedEvent(CaseData.builder().build(),
-            CaseData.builder().build(), ORDER_TO_BE_REMOVED, REMOVAL_REASON));
-        verify(cafcassNotificationService).sendEmail(
-            CaseData.builder().build(),
-            ORDER,
-            OrderRemovedCafcassData.builder().documentName("draft order").removalReason(REMOVAL_REASON).build());
     }
 
     private static Element<HearingBooking> hearingWithJudgeEmail(String email) {

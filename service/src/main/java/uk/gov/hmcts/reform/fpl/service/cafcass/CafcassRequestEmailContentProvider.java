@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.fpl.config.cafcass.CafcassEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.ChangeOfAddressData;
-import uk.gov.hmcts.reform.fpl.model.cafcass.OrderRemovedCafcassData;
 
 import java.time.format.FormatStyle;
 import java.util.function.BiFunction;
@@ -144,18 +143,7 @@ public enum CafcassRequestEmailContentProvider {
             "Notice of Placement"),
         CafcassRequestEmailContentProvider::getPlacementNoticeMessage,
         CafcassEmailConfiguration::getRecipientForNoticeOfHearing,
-            true),
-
-    DRAFT_ORDER_REMOVED("Draft order removed",
-        (caseData, cafcassData) -> String.format(getSubject(),
-            caseData.getFamilyManCaseNumber(),
-            "draft order removed -" + (cafcassData.getDocumentName())),
-        (caseData, cafcassData) ->
-            String.format("A draft order has been removed for this case "
-                          + "which was uploaded to the Public Law Portal entitled %s. The removal reason is [%s].",
-                cafcassData.getDocumentName(), ((OrderRemovedCafcassData) cafcassData).getRemovalReason()),
-        CafcassEmailConfiguration::getRecipientForOrder,
-        false);
+            true);
 
 
     private final String label;
