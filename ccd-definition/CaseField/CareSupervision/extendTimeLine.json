@@ -1,0 +1,40 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "extensionForAllChildren",
+    "Label": "Is the timeline extending for all the children?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childCaseCompletionDateLabel",
+    "FieldType": "TextArea",
+    "Label": "This case should be completed by:",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Displays a list of children on the case and their respective case completion dates"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childSelectorForExtension",
+    "Label": "Select whose timeline is being extended",
+    "FieldType": "ChildSelector",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "extendTimelineForChildren",
+    "Label": "Extend timetable for selected children",
+    "FieldType": "Collection",
+    "FieldType": "ExtendTimetable",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  }
+]
