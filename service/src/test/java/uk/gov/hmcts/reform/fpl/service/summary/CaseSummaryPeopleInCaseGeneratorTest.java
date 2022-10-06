@@ -178,6 +178,38 @@ class CaseSummaryPeopleInCaseGeneratorTest {
                 .build());
         }
 
+        @Test
+        void shouldPopulateMainContactEvenWhenDesignatedLocalAuthorityDoesntExist() {
+            final Colleague colleague1 = Colleague.builder()
+                .fullName("John Smith")
+                .email("john.smith@test.com")
+                .mainContact("Yes")
+                .build();
+
+            final Colleague colleague2 = Colleague.builder()
+                .fullName("Alex Williams")
+                .mainContact("No")
+                .build();
+
+            final LocalAuthority localAuthority1 = LocalAuthority.builder()
+                .name("Non-Designated LA")
+                .designated("No")
+                .colleagues(wrapElements(colleague1, colleague2))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .localAuthorities(wrapElements(localAuthority1))
+                .solicitor(legacySolicitor)
+                .build();
+
+            final SyntheticCaseSummary actual = underTest.generate(caseData);
+
+            assertThat(actual).isEqualTo(SyntheticCaseSummary.builder()
+                .caseSummaryLASolicitorName("John Smith")
+                .caseSummaryLASolicitorEmail("john.smith@test.com")
+                .build());
+        }
+
         @ParameterizedTest
         @NullAndEmptySource
         void shouldPopulateMainContactFromLegacySolicitorWhenNoLocalAuthorities(List<LocalAuthority> localAuthorities) {
