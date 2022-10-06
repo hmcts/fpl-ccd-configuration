@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.docmosis.DocmosisHelper;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -161,6 +162,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
         caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
         caseDetails.getData().put("submittedForm", DocumentReference.builder().binaryUrl("/testUrl").build());
+        caseDetails.getData().put("representativeType", RepresentativeType.LOCAL_AUTHORITY);
 
         postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
 
@@ -189,6 +191,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     void shouldNotifyRegisteredSolicitorsWhenCaseIsSubmitted() {
         CaseData caseData = CaseData.builder()
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .representativeType(RepresentativeType.LOCAL_AUTHORITY)
             .respondents1(wrapElements(Respondent.builder()
                 .legalRepresentation("Yes")
                 .party(RespondentParty.builder()
@@ -222,6 +225,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     void shouldNotifyTranslationTeamWhenCaseIsSubmittedAndTranslationRequested() {
         CaseData caseData = CaseData.builder()
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .representativeType(RepresentativeType.LOCAL_AUTHORITY)
             .respondents1(wrapElements(Respondent.builder()
                 .legalRepresentation("Yes")
                 .party(RespondentParty.builder()
@@ -252,6 +256,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     void shouldNotNotifyTranslationTeamWhenCaseIsSubmittedAndTranslationNotRequested() {
         CaseData caseData = CaseData.builder()
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .representativeType(RepresentativeType.LOCAL_AUTHORITY)
             .respondents1(wrapElements(Respondent.builder()
                 .legalRepresentation("Yes")
                 .party(RespondentParty.builder()
@@ -279,6 +284,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     @Test
     void shouldUpdateTheCaseManagementSummary() {
         CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
+        caseDetails.getData().put("representativeType", RepresentativeType.LOCAL_AUTHORITY);
 
         postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
 
@@ -343,6 +349,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     @Test
     void shouldNotifyManagedLAWhenCaseCreatedOnBehalfOfLA() {
         CaseData caseData = CaseData.builder()
+            .representativeType(RepresentativeType.LOCAL_AUTHORITY)
             .outsourcingPolicy(OrganisationPolicy.builder()
                 .organisation(Organisation.builder()
                     .organisationID("ORG1")
@@ -378,6 +385,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
         CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
         caseDetails.getData().put("respondents1", wrapElements(respondent));
+        caseDetails.getData().put("representativeType", RepresentativeType.LOCAL_AUTHORITY);
 
         postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
 
@@ -416,6 +424,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
         CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
         caseDetails.getData().put("respondents1", wrapElements(respondent));
+        caseDetails.getData().put("representativeType", RepresentativeType.LOCAL_AUTHORITY);
 
         postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
 
@@ -534,9 +543,11 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     @Test
     void shouldPopulateResponseWithMarkdown() {
         String caseName = "Names are hard";
-        CallbackRequest request = buildCallbackRequest(populatedCaseDetails(
-            Map.of("caseName", caseName)
-        ), OPEN);
+
+        CaseDetails caseDetails = populatedCaseDetails(Map.of("caseName", caseName));
+        caseDetails.getData().put("representativeType", RepresentativeType.LOCAL_AUTHORITY);
+
+        CallbackRequest request = buildCallbackRequest(caseDetails, OPEN);
 
         SubmittedCallbackResponse response = postSubmittedEvent(request);
         String expectedHeader = "# Application sent\n\n## " + caseName;
@@ -634,7 +645,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
                 "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
                 "caseLocalAuthorityName", LOCAL_AUTHORITY_1_NAME,
                 "sendToCtsc", enableCtsc.getValue(),
-                "dateSubmitted", LocalDate.of(2020, 1, 1)
+                "dateSubmitted", LocalDate.of(2020, 1, 1),
+                "representativeType", RepresentativeType.LOCAL_AUTHORITY
             ))).build();
     }
 
