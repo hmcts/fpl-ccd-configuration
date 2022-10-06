@@ -432,6 +432,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .name("test")
             .uploadedBy("kurt.swansea@gov.uk")
             .type(GUARDIAN_REPORTS)
+            .documentAcknowledge(List.of())
             .build());
     }
 
