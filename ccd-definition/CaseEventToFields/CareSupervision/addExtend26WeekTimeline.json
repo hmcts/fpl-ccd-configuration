@@ -5,7 +5,7 @@
     "CaseEventID": "extend26WeekTimeline",
     "CaseFieldID": "childCaseCompletionDateLabel",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "READONLY",
     "PageID": "extend26WeekTimelineChildSelect",
     "PageLabel": "",
     "PageDisplayOrder": 1,
