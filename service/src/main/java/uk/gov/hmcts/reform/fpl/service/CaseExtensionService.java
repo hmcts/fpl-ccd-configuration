@@ -9,18 +9,19 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.EIGHT_WEEK_EXTENSION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Service
@@ -29,6 +30,7 @@ public class CaseExtensionService {
 
     private final ChildrenService childrenService;
     private final OptionCountBuilder optionCountBuilder;
+    private final ChildrenSmartSelector childrenSmartSelector;
 
     public LocalDate getCaseCompletionDate(CaseData caseData) {
         if (EIGHT_WEEK_EXTENSION.equals(caseData.getCaseExtensionTimeList())) {
@@ -53,7 +55,7 @@ public class CaseExtensionService {
 
 
     public String buildChildCaseCompletionDateLabel(CaseData caseData) {
-        List<Child> children = caseData.getChildren1().stream().map(Element::getValue).collect(Collectors.toList());
+        List<Child> children = caseData.getChildren1().stream().map(Element::getValue).collect(toList());
 
         StringBuilder sb = new StringBuilder();
 
@@ -88,5 +90,18 @@ public class CaseExtensionService {
         }
 
         return Collections.emptyList();
+    }
+
+    public Map<String, String> getSelectedChildren(CaseData caseData) {
+        List<Integer> selected = caseData.getChildSelectorForExtension().getSelected();
+        List<Element<Child>> children = caseData.getChildren1();
+        Map<String, String> selectedChildren = new HashMap<>();
+        selected.forEach(value ->
+                selectedChildren.put(
+                        String.join("","childSelected",value.toString()),
+                        "Yes")
+        );
+
+        return selectedChildren;
     }
 }

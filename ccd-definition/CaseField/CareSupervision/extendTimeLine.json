@@ -32,9 +32,44 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "extendTimelineForChildren",
     "Label": "Extend timetable for selected children",
-    "FieldType": "Collection",
     "FieldType": "ExtendTimetable",
     "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childExtension1",
+    "Label": "Child 1",
+    "FieldType": "ChildExtension",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childExtension2",
+    "Label": "Child 2",
+    "FieldType": "ChildExtension",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childSelected0",
+    "FieldType": "Text",
+    "Label": " ",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childSelected1",
+    "FieldType": "Text",
+    "Label": " ",
+    "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   }
 ]

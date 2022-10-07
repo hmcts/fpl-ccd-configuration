@@ -11,6 +11,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.CaseExtensionService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
@@ -46,12 +48,14 @@ public class CaseExtensionController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleMidEventPrePopulation(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
-        Map<String, Object> data = caseDetails.getData();
+
 
         List<String> errors = caseExtensionService.validateChildSelector(caseData);
+        caseDetails.getData().putAll(caseExtensionService.getSelectedChildren(caseData));
 
         return respond(caseDetails, errors);
     }
+
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
