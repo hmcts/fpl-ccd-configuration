@@ -111,7 +111,7 @@ public class OrdersNeededController extends CallbackController {
             removeSecureAccommodationOrderFields(data, ordersFieldName);
         }
 
-        if (caseData.isRefuseContactWithChildApplication()) {
+        if (isRefuseContactWithChildOrder(orderType)) {
             data.put("refuseContactWithChildOrderType", YesNo.YES);
         } else {
             data.remove("groundsForRefuseContactWithChild");
@@ -161,5 +161,16 @@ public class OrdersNeededController extends CallbackController {
 
     private Court getCourtSelection(String courtID) {
         return courtLookup.getCourtByCode(courtID).orElse(null);
+    }
+
+    private boolean isDischargeOfCareOrder(Optional<List<String>> orderType) {
+        return orderType.isPresent()
+            && orderType.get().size() == 1
+            && orderType.get().contains(OrderType.OTHER.name());
+    }
+
+    private boolean isRefuseContactWithChildOrder(Optional<List<String>> orderType) {
+        return orderType.isPresent()
+            && orderType.get().contains(OrderType.REFUSE_CONTACT_WITH_CHILD.name());
     }
 }
