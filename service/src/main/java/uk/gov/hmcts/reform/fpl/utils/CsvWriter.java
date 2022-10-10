@@ -30,7 +30,7 @@ public final class CsvWriter {
     public static File writeHearingInfoToCsv(
             List<HearingInfo> hearingInfoList
     ) throws IOException {
-        Path path = Files.createTempFile("CaseProgressionReport", ".xlsx", ATTRIBUTE);
+        Path path = Files.createTempFile("CaseProgressionReport", ".csv", ATTRIBUTE);
         File file = path.toFile();
         CSVFormat csvFileHeader = CSVFormat.DEFAULT.builder().setHeader(CMS_REPORT_CSV_HEADERS).build();
 
