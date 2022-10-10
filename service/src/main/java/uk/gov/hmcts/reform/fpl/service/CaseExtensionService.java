@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -94,12 +95,17 @@ public class CaseExtensionService {
 
     public Map<String, String> getSelectedChildren(CaseData caseData) {
         List<Integer> selected = caseData.getChildSelectorForExtension().getSelected();
-        List<Element<Child>> children = caseData.getChildren1();
+        List<Child> children = ElementUtils.unwrapElements(caseData.getChildren1());
         Map<String, String> selectedChildren = new HashMap<>();
-        selected.forEach(value ->
+        selected.forEach(value -> {
                 selectedChildren.put(
-                        String.join("","childSelected",value.toString()),
-                        "Yes")
+                        String.join("", "childSelected", value.toString()),
+                        "Yes");
+
+                selectedChildren.put(
+                        String.join("", "childName", value.toString()),
+                        children.get(value).getParty().getFullName());
+            }
         );
 
         return selectedChildren;

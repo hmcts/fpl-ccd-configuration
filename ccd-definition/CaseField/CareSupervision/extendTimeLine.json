@@ -71,5 +71,23 @@
     "Label": " ",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
+  } ,
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childName0",
+    "FieldType": "Text",
+    "Label": " ",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childName1",
+    "FieldType": "Text",
+    "Label": " ",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
   }
 ]
