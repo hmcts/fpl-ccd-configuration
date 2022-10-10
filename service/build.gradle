@@ -492,6 +492,22 @@ bootWithCCD {
     environment 'SEND_LETTER_URL', 'http://dm-store-aat.service.core-compute-aat.internal'
     environment 'PRD_HOST', 'http://rd-professional-api-aat.service.core-compute-aat.internal'
     environment 'MANAGE_CASE_S2S_AUTHORISED_SERVICES', 'ccd_gw,xui_webapp,ccd_data,fpl_case_service'
+
+    if (project.hasProperty('docmosis')) {
+      println 'Setting up local Docmosis'
+      exec {
+        ignoreExitValue = true
+        commandLine 'docker', 'compose', '-f', '../fpla-docker/compose/docmosis.yml', 'create'
+      }
+      exec {
+        ignoreExitValue = false
+        commandLine 'docker', 'compose', '-f', '../fpla-docker/compose/docmosis.yml', 'start'
+      }
+      environment 'docmosis.tornado.url', 'http://localhost:5433'
+      environment 'docmosis.tornado.key', 'ACCESS_KEY'
+    } else {
+      println 'Using AAT Docmosis'
+    }
   }
 }
 
