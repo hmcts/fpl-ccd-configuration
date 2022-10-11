@@ -390,7 +390,7 @@ public class ManageDocumentService {
                         caseData.getHearingDocuments().getCourtBundleListV2(), courtBundles));
                 break;
             case CASE_SUMMARY :
-                List<Element<CaseSummary>> caseSummaries = buildHearingDocumentList(caseData, selectedHearingId,
+                List<Element<CaseSummary>> caseSummaries = buildHearingDocumentsList(caseData, selectedHearingId,
                     caseData.getHearingDocuments().getCaseSummaryList(), caseData.getManageDocumentsCaseSummary());
                 map.put(CASE_SUMMARY_LIST_KEY, caseSummaries);
                 map.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
@@ -431,7 +431,7 @@ public class ManageDocumentService {
         return map;
     }
 
-    private <T> List<Element<T>> buildCourtBundleList(CaseData caseData, UUID selectedHearingId,
+    private <T> List<Element<T>> buildCourtBundlesList(CaseData caseData, UUID selectedHearingId,
                                                       List<Element<T>> hearingDocumentList, T hearingDocument) {
         if (isNotEmpty(caseData.getHearingDetails())) {
             return List.of(element(selectedHearingId, hearingDocument));
@@ -440,8 +440,8 @@ public class ManageDocumentService {
         return hearingDocumentList;
     }
 
-    private <T extends HearingDocument> List<Element<T>> buildHearingDocumentList(CaseData caseData, UUID selectedHearingId,
-                                                                                  List<Element<T>> hearingDocumentList, T hearingDocument) {
+    private <T extends HearingDocument> List<Element<T>> buildHearingDocumentsList(CaseData caseData,
+           UUID selectedHearingId, List<Element<T>> hearingDocumentList, T hearingDocument) {
         List<Element<T>> list = hearingDocumentList.stream().filter(el -> !el.getId().equals(selectedHearingId))
             .collect(Collectors.toList());
         if (isNotEmpty(caseData.getHearingDetails())) {
@@ -492,7 +492,7 @@ public class ManageDocumentService {
             .filter(doc -> !doc.getValue().isConfidentialDocument())
             .collect(Collectors.toList());
 
-        return buildCourtBundleList(caseData, selectedHearingId,
+        return buildCourtBundlesList(caseData, selectedHearingId,
             caseData.getHearingDocuments().getCourtBundleListV2(),
             HearingCourtBundle.builder()
                 .hearing(hearingBooking.toLabel())
