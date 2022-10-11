@@ -170,4 +170,15 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     public List<Element<Other>> getSelectedOthers() {
         return this.getOthers();
     }
+
+    public List<String> getDocumentAcknowledge() {
+        if (this.documentAcknowledge == null) {
+            this.documentAcknowledge = new ArrayList<>();
+        }
+        String acknowledgement = "ACK_RELATED_TO_CASE";
+        if (order != null && !this.documentAcknowledge.contains(acknowledgement)) {
+            this.documentAcknowledge.add(acknowledgement);
+        }
+        return this.documentAcknowledge;
+    }
 }
