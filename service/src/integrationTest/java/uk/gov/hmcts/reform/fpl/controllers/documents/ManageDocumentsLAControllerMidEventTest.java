@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -486,7 +487,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .uploadedBy("kurt.swansea@gov.uk")
             .type(GUARDIAN_REPORTS)
             .document(DocumentReference.builder().build())
-            .documentAcknowledge(List.of())
+            .documentAcknowledge(new ArrayList<>())
             .build());
     }
 
