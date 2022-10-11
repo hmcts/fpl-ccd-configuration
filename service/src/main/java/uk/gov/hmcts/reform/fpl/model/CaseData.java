@@ -49,6 +49,7 @@ import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
+import uk.gov.hmcts.reform.fpl.model.event.ChildExtensionEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthoritiesEventData;
@@ -656,6 +657,8 @@ public class CaseData extends CaseDataParent {
     private LocalDate eightWeeksExtensionDateOther;
     private final CaseExtensionTime caseExtensionTimeList;
     private final CaseExtensionTime caseExtensionTimeConfirmationList;
+    @JsonUnwrapped
+    private final ChildExtensionEventData childExtensionEventData;
 
     private final CloseCase closeCase;
     private final String deprivationOfLiberty;
@@ -696,6 +699,7 @@ public class CaseData extends CaseDataParent {
     private final PositionStatementRespondent manageDocumentsPositionStatementRespondent;
     private final DynamicList manageDocumentsChildrenList;
     private final DynamicList hearingDocumentsRespondentList;
+
 
     @JsonUnwrapped
     @Builder.Default

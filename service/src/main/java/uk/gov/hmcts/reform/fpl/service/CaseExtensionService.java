@@ -4,10 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
+import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildExtension;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.event.ChildExtensionEventData;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -19,8 +22,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.validation.constraints.NotNull;
+
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.EIGHT_WEEK_EXTENSION;
+import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.OTHER_EXTENSION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -95,19 +101,54 @@ public class CaseExtensionService {
 
     public Map<String, String> getSelectedChildren(CaseData caseData) {
         List<Integer> selected = caseData.getChildSelectorForExtension().getSelected();
-        List<Child> children = ElementUtils.unwrapElements(caseData.getChildren1());
+        List<Element<Child>> children = caseData.getChildren1();
         Map<String, String> selectedChildren = new HashMap<>();
         selected.forEach(value -> {
-                selectedChildren.put(
-                        String.join("", "childSelected", value.toString()),
-                        "Yes");
+            selectedChildren.put(
+                String.join("", "childSelected", value.toString()),
+                "Yes");
 
-                selectedChildren.put(
-                        String.join("", "childName", value.toString()),
-                        children.get(value).getParty().getFullName());
+            selectedChildren.put(
+                String.join("", "childName", value.toString()),
+                children.get(value).getValue().getParty().getFullName());
+
+            selectedChildren.put(
+                String.join("", "id", value.toString()),
+                children.get(value).getId().toString());
+
             }
         );
 
         return selectedChildren;
+    }
+
+    public List<Element<Child>> updateChildrenExtension(CaseData caseData) {
+        ChildExtensionEventData childExtensionEventData = caseData.getChildExtensionEventData();
+        List<Element<Child>> children = caseData.getChildren1();
+        LocalDate defaultCompletionDate = caseData.getDefaultCompletionDate();
+
+        Optional.ofNullable(childExtensionEventData.getChildExtension0())
+                .ifPresent(childExtension -> updateExtensionDate(childExtension, children.get(0), defaultCompletionDate));
+
+        Optional.ofNullable(childExtensionEventData.getChildExtension1())
+                .ifPresent(childExtension -> updateExtensionDate(childExtension, children.get(1), defaultCompletionDate));
+
+        return children;
+    }
+
+    private void updateExtensionDate(ChildExtension childExtension, Element<Child> childElement, LocalDate caseCompletionDate) {
+        Child child = childElement.getValue();
+        ChildParty.ChildPartyBuilder childPartyBuilder = child.getParty().toBuilder();
+        LocalDate childExtensionDate = null;
+
+        if (EIGHT_WEEK_EXTENSION.equals(childExtension.getCaseExtensionTimeList())) {
+            childExtensionDate = Optional.ofNullable(child.getParty().getCompletionDate()).map(childCompletionDate -> childCompletionDate.plusWeeks(8))
+                .orElseGet(() -> caseCompletionDate.plusWeeks(8));
+        } else if (OTHER_EXTENSION.equals(childExtension.getCaseExtensionTimeList())) {
+            childExtensionDate = Optional.ofNullable(child.getParty().getCompletionDate()).map(childCompletionDate -> childCompletionDate.plusWeeks(8))
+                .orElseGet(() -> caseCompletionDate.plusWeeks(8));
+        }
+        ChildParty childParty = childPartyBuilder.completionDate(childExtensionDate).build();
+        childElement.setValue(child.toBuilder().party(childParty).build());
     }
 }

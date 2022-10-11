@@ -76,6 +76,7 @@ public class CaseExtensionController extends CallbackController {
 
         LocalDate caseCompletionDate = caseExtensionService.getCaseCompletionDate(caseData);
         caseDetails.getData().put("caseCompletionDate", caseCompletionDate);
+        caseDetails.getData().put("children1", caseExtensionService.updateChildrenExtension(caseData));
 
         return respond(caseDetails);
     }
