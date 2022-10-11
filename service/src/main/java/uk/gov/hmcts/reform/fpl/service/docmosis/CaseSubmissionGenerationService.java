@@ -68,6 +68,7 @@ import java.util.Optional;
 
 import static java.lang.String.join;
 import static java.time.LocalDate.parse;
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -488,7 +489,16 @@ public class CaseSubmissionGenerationService
     private List<DocmosisApplicant> buildDocmosisApplicants(CaseData caseData) {
 
         if (isNotEmpty(caseData.getLocalAuthorities())) {
-            return List.of(buildApplicant(caseData.getDesignatedLocalAuthority()));
+            if (nonNull(caseData.getDesignatedLocalAuthority())) {
+                return List.of(buildApplicant(caseData.getDesignatedLocalAuthority()));
+            } else {
+                LocalAuthority applicant = caseData.getLocalAuthorities().stream()
+                    .map(Element::getValue)
+                    .findFirst()
+                    .orElse(null);
+
+                return List.of(buildApplicant(applicant));
+            }
         }
 
         final Solicitor legacySolicitor = caseData.getSolicitor();

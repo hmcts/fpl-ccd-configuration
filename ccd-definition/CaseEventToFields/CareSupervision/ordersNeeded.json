@@ -15,12 +15,39 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "ordersNeeded",
-    "CaseFieldID": "orders",
+    "CaseFieldID": "representativeType",
     "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "submissionRequiredFieldsInfo = \"DO_NOT_SHOW\"",
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "PageFieldDisplayOrder": 3,
     "DisplayContext": "COMPLEX",
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
+    "FieldShowCondition": "representativeType = \"LOCAL_AUTHORITY\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "ordersSolicitor",
+    "PageFieldDisplayOrder": 4,
+    "DisplayContext": "COMPLEX",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "representativeType = \"CHILD_SOLICITOR\" OR representativeType = \"RESPONDENT_SOLICITOR\"",
     "ShowSummaryChangeOption": "Y"
   }
 ]
