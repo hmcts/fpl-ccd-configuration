@@ -431,13 +431,24 @@ public class ManageDocumentService {
         return map;
     }
 
-    private <T> List<Element<T>> buildHearingDocumentList(CaseData caseData, UUID selectedHearingId,
-                                                          List<Element<T>> hearingDocumentList, T hearingDocument) {
+    private <T> List<Element<T>> buildCourtBundleList(CaseData caseData, UUID selectedHearingId,
+                                                      List<Element<T>> hearingDocumentList, T hearingDocument) {
         if (isNotEmpty(caseData.getHearingDetails())) {
             return List.of(element(selectedHearingId, hearingDocument));
         }
 
         return hearingDocumentList;
+    }
+
+    private <T extends HearingDocument> List<Element<T>> buildHearingDocumentList(CaseData caseData, UUID selectedHearingId,
+                                                                                  List<Element<T>> hearingDocumentList, T hearingDocument) {
+        List<Element<T>> list = hearingDocumentList.stream().filter(el -> !el.getId().equals(selectedHearingId))
+            .collect(Collectors.toList());
+        if (isNotEmpty(caseData.getHearingDetails())) {
+            list.add(element(selectedHearingId, hearingDocument));
+        }
+
+        return list;
     }
 
     private List<Element<PositionStatementRespondent>> buildRespondentPositionStatementList(CaseData caseData,
@@ -447,8 +458,8 @@ public class ManageDocumentService {
         // and replace the existing uploaded statement of the selected respondent with the new statement.
         if (isNotEmpty(caseData.getHearingDetails())) {
             List<Element<PositionStatementRespondent>> resultList = hearingDocumentList.stream()
-                .filter(doc -> doc.getValue().getHearingId().equals(selectedHearingId)
-                               && !doc.getValue().getRespondentId().equals(respondentStatement.getRespondentId()))
+                .filter(doc -> !(doc.getValue().getHearingId().equals(selectedHearingId)
+                               && doc.getValue().getRespondentId().equals(respondentStatement.getRespondentId())))
                 .collect(Collectors.toList());
             resultList.add(element(respondentStatement));
             return resultList;
@@ -464,8 +475,8 @@ public class ManageDocumentService {
         // and replace the existing uploaded statement of the selected child with the new statement.
         if (isNotEmpty(caseData.getHearingDetails())) {
             List<Element<PositionStatementChild>> resultList = hearingDocumentList.stream()
-                .filter(doc -> doc.getValue().getHearingId().equals(selectedHearingId)
-                               && !doc.getValue().getChildId().equals(respondentStatement.getChildId()))
+                .filter(doc -> !(doc.getValue().getHearingId().equals(selectedHearingId)
+                               && doc.getValue().getChildId().equals(respondentStatement.getChildId())))
                 .collect(Collectors.toList());
 
             resultList.add(element(respondentStatement));
@@ -481,7 +492,7 @@ public class ManageDocumentService {
             .filter(doc -> !doc.getValue().isConfidentialDocument())
             .collect(Collectors.toList());
 
-        return buildHearingDocumentList(caseData, selectedHearingId,
+        return buildCourtBundleList(caseData, selectedHearingId,
             caseData.getHearingDocuments().getCourtBundleListV2(),
             HearingCourtBundle.builder()
                 .hearing(hearingBooking.toLabel())
