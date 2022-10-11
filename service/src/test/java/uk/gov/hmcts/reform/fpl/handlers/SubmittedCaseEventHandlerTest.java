@@ -10,21 +10,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fnp.exception.RetryablePaymentException;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
-import uk.gov.hmcts.reform.fpl.model.cafcass.NewApplicationCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.group.C110A;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
-import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
-import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
@@ -33,7 +30,6 @@ import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -48,13 +44,11 @@ import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
-import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NEW_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.utils.assertions.AnnotationAssertion.assertClass;
 
 @ExtendWith(MockitoExtension.class)
 class SubmittedCaseEventHandlerTest {
 
-    public static final String EMAIL = "test@test.com";
     private static final long CASE_ID = 12345L;
     private static final LanguageTranslationRequirement TRANSLATION_REQUIREMENTS =
         LanguageTranslationRequirement.ENGLISH_TO_WELSH;
@@ -84,9 +78,6 @@ class SubmittedCaseEventHandlerTest {
     @Mock
     private TranslationRequestService translationRequestService;
 
-    @Mock
-    private CafcassNotificationService cafcassNotificationService;
-
     @InjectMocks
     private SubmittedCaseEventHandler submittedCaseEventHandler;
 
@@ -113,42 +104,18 @@ class SubmittedCaseEventHandlerTest {
         final CaseData caseDataBefore = mock(CaseData.class);
 
         final SubmitCaseCafcassTemplate parameters = mock(SubmitCaseCafcassTemplate.class);
+        final String email = "test@test.com";
 
         when(caseData.getCaseLocalAuthority()).thenReturn(LOCAL_AUTHORITY_CODE);
+        when(caseData.getRepresentativeType()).thenReturn(RepresentativeType.LOCAL_AUTHORITY);
         when(caseData.getId()).thenReturn(CASE_ID);
-        when(cafcassLookupConfiguration.getCafcassWelsh(LOCAL_AUTHORITY_CODE))
-            .thenReturn(Optional.of(new Cafcass(LOCAL_AUTHORITY_CODE, EMAIL)));
+        when(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
+                .thenReturn(new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, email));
         when(cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData)).thenReturn(parameters);
 
         submittedCaseEventHandler.notifyCafcass(new SubmittedCaseEvent(caseData, caseDataBefore));
 
-        verify(notificationService).sendEmail(CAFCASS_SUBMISSION_TEMPLATE, EMAIL, parameters, CASE_ID);
-    }
-
-    @Test
-    void shouldSendEmailToCafcassFromSendGrid() {
-        final CaseData caseData = mock(CaseData.class);
-        final CaseData caseDataBefore = mock(CaseData.class);
-        final DocumentReference documentReference = DocumentReference.builder()
-                .type(NEW_APPLICATION.getLabel())
-                .build();
-        C110A c110A = C110A.builder()
-            .submittedForm(documentReference)
-            .build();
-
-        final NewApplicationCafcassData parameters = mock(NewApplicationCafcassData.class);
-
-        when(caseData.getCaseLocalAuthority()).thenReturn(LOCAL_AUTHORITY_CODE);
-        when(cafcassEmailContentProvider.buildCafcassSubmissionSendGridData(caseData)).thenReturn(parameters);
-        when(caseData.getC110A()).thenReturn(c110A);
-        when(cafcassLookupConfiguration.getCafcassEngland(LOCAL_AUTHORITY_CODE))
-                .thenReturn(Optional.of(new Cafcass(LOCAL_AUTHORITY_CODE, EMAIL)));
-
-        submittedCaseEventHandler.notifyCafcassSendGrid(new SubmittedCaseEvent(caseData, caseDataBefore));
-
-        verify(cafcassNotificationService).sendEmail(caseData,
-            Set.of(documentReference),
-            CafcassRequestEmailContentProvider.NEW_APPLICATION, parameters);
+        verify(notificationService).sendEmail(CAFCASS_SUBMISSION_TEMPLATE, email, parameters, CASE_ID);
     }
 
     @Test
@@ -195,8 +162,7 @@ class SubmittedCaseEventHandlerTest {
             "notifyAdmin",
             "notifyCafcass",
             "makePayment",
-            "notifyTranslationTeam",
-            "notifyCafcassSendGrid"
+            "notifyTranslationTeam"
         );
     }
 

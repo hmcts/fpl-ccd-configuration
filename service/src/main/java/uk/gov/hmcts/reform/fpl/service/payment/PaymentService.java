@@ -12,12 +12,14 @@ import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.math.BigDecimal;
 import java.util.Optional;
 
+import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.isNoneBlank;
@@ -62,11 +64,14 @@ public class PaymentService {
     }
 
     private CreditAccountPaymentRequest getPaymentRequest(CaseData caseData, FeesData feesData) {
-        final String localAuthorityName =
-            localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority());
+        final String localAuthorityName = nonNull(caseData.getCaseLocalAuthority())
+            ? localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority())
+            : getApplicant(caseData).getName();
 
         if (isNotEmpty(caseData.getLocalAuthorities())) {
-            final LocalAuthority localAuthority = caseData.getDesignatedLocalAuthority();
+            final LocalAuthority localAuthority = nonNull(caseData.getDesignatedLocalAuthority())
+                ? caseData.getDesignatedLocalAuthority()
+                : getApplicant(caseData);
 
             return getCreditAccountPaymentRequest(caseData.getId(),
                 localAuthority.getPbaNumber(),
@@ -161,5 +166,12 @@ public class PaymentService {
         }
 
         return builder.build();
+    }
+
+    public LocalAuthority getApplicant(CaseData caseData) {
+        return caseData.getLocalAuthorities().stream()
+            .map(Element::getValue)
+            .findFirst()
+            .orElse(null);
     }
 }

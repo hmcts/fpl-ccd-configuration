@@ -8,6 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -19,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
-import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OutsourcedCaseContentProvider;
@@ -51,8 +51,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @MockBeans(value = {
     @MockBean(PaymentService.class),
     @MockBean(EventService.class),
-    @MockBean(TranslationRequestService.class),
-    @MockBean(CafcassNotificationService.class)
+    @MockBean(TranslationRequestService.class)
 })
 class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
@@ -64,6 +63,7 @@ class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final CaseData CASE_DATA = CaseData.builder()
         .id(123L)
         .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+        .representativeType(RepresentativeType.LOCAL_AUTHORITY)
         .respondents1(wrapElements(Respondent.builder()
             .party(RespondentParty.builder().lastName(RESPONDENT_LAST_NAME).build())
             .build()))

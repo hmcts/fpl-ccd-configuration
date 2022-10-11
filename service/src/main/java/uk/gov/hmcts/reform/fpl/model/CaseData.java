@@ -28,11 +28,11 @@ import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
-import uk.gov.hmcts.reform.fpl.exceptions.LocalAuthorityNotFound;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -167,6 +167,8 @@ public class CaseData extends CaseDataParent {
     private OrganisationPolicy outsourcingPolicy;
     private OrganisationPolicy sharedLocalAuthorityPolicy;
     private OutsourcingType outsourcingType;
+    private RepresentativeType representativeType;
+    private YesNo isLocalAuthority;
     private Object outsourcingLAs;
     private Court court;
     private List<Element<Court>> pastCourtList;
@@ -185,6 +187,7 @@ public class CaseData extends CaseDataParent {
     @NotNull(message = "Add the orders and directions sought")
     @Valid
     private final Orders orders;
+    private final Orders ordersSolicitor;
     @NotNull(message = "Add the grounds for the application")
     @Valid
     private final Grounds grounds;
@@ -199,7 +202,8 @@ public class CaseData extends CaseDataParent {
     @Deprecated
     private final List<@NotNull(message = "Add applicant's details") Element<Applicant>> applicants;
 
-    private List<@NotNull(message = "Add local authority's details") Element<LocalAuthority>> localAuthorities;
+    // This holds all applicants, not just LA's
+    private List<@NotNull(message = "Add applicant's details") Element<LocalAuthority>> localAuthorities;
 
     @Valid
     @NotEmpty(message = "Add the respondents' details")
@@ -1112,7 +1116,7 @@ public class CaseData extends CaseDataParent {
             .map(Element::getValue)
             .filter(la -> YesNo.YES.getValue().equals(la.getDesignated()))
             .findFirst()
-            .orElseThrow(() -> new LocalAuthorityNotFound("Designated local authority not found for case " + id));
+            .orElse(null);
     }
 
     @JsonIgnore
@@ -1173,7 +1177,7 @@ public class CaseData extends CaseDataParent {
     public List<Element<Colleague>> getColleaguesToNotify() {
         return colleaguesToNotify != null ? colleaguesToNotify : new ArrayList<>();
     }
-    
+
     @JsonIgnore
     public boolean isRefuseContactWithChildApplication() {
         return ofNullable(getOrders())
