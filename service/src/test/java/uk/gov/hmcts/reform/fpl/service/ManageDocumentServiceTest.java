@@ -2112,7 +2112,7 @@ class ManageDocumentServiceTest {
     }
 
     @Test
-    void shouldReturnNewPositionStatementChildListWhenExistingListPresentForOtherHearing() {
+    void shouldReturnCombinedPositionStatementChildListWhenExistingListPresentForOtherHearing() {
         UUID selectedHearingId = randomUUID();
         LocalDateTime today = LocalDateTime.now();
 
@@ -2155,7 +2155,7 @@ class ManageDocumentServiceTest {
         assertThat(
             unwrapElements((List<Element<PositionStatementChild>>)
                 underTest.buildHearingDocumentList(caseData).get(POSITION_STATEMENT_CHILD_LIST_KEY)))
-            .isEqualTo(List.of(caseData.getManageDocumentsPositionStatementChild()));
+            .containsExactlyInAnyOrder(positionStatementChild, positionStatementChildTwo);
     }
 
     @Test
@@ -2288,7 +2288,7 @@ class ManageDocumentServiceTest {
         assertThat(
             unwrapElements((List<Element<PositionStatementRespondent>>) underTest
                 .buildHearingDocumentList(caseData).get(POSITION_STATEMENT_RESPONDENT_LIST_KEY)))
-            .isEqualTo(List.of(caseData.getManageDocumentsPositionStatementRespondent()));
+            .containsExactlyInAnyOrder(positionStatementRespondent, positionStatementRespondentTwo);
     }
 
     @Test
