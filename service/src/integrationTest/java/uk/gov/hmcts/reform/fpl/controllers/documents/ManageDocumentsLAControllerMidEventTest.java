@@ -278,6 +278,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData responseData = extractCaseData(callbackResponse);
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(c2EvidenceDocuments);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp()).hasSizeGreaterThan(0);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp().get(0).getValue().getDocumentAcknowledge())
+            .isEqualTo(List.of("ACK_RELATED_TO_CASE"));
     }
 
     @Test
@@ -310,6 +313,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData responseData = extractCaseData(callbackResponse);
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(supportingEvidenceBundle);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp()).hasSizeGreaterThan(0);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp().get(0).getValue().getDocumentAcknowledge())
+            .isEqualTo(List.of("ACK_RELATED_TO_CASE"));
     }
 
     @Test
@@ -355,6 +361,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .isEqualTo(selectedHearingBooking.toLabel());
 
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(furtherEvidenceBundle);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp()).hasSizeGreaterThan(0);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp().get(0).getValue().getDocumentAcknowledge())
+            .isEqualTo(List.of("ACK_RELATED_TO_CASE"));
     }
 
     @Test
@@ -396,50 +405,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(respondentDynamicList).isEqualTo(expectedRespondentStatementList);
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(supportingEvidenceBundle);
-    }
-
-    @Test
-    void shouldInitialiseRespondentStatementCollectionWithExistingDocument() {
-        UUID selectedRespondentId = randomUUID();
-        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle =
-            buildSupportingEvidenceBundleWithExistingDocument();
-
-        List<Element<Respondent>> respondents = List.of(
-            element(selectedRespondentId, Respondent.builder()
-                .party(RespondentParty.builder()
-                    .firstName("David")
-                    .lastName("Stevenson")
-                    .build())
-                .build()));
-
-        CaseData caseData = CaseData.builder()
-            .respondents1(respondents)
-            .respondentStatementList(selectedRespondentId)
-            .manageDocumentsRelatedToHearing(YES.getValue())
-            .manageDocumentSubtypeListLA(RESPONDENT_STATEMENT)
-            .respondentStatements(List.of(
-                element(RespondentStatement.builder()
-                    .respondentId(selectedRespondentId)
-                    .supportingEvidenceBundle(supportingEvidenceBundle)
-                    .build())))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
-            "further-evidence-documents", USER_ROLES);
-
-        CaseData responseData = extractCaseData(callbackResponse);
-
-        DynamicList expectedRespondentStatementList = ElementUtils
-            .asDynamicList(respondents, selectedRespondentId,
-                respondent -> respondent.getParty().getFullName());
-
-        DynamicList respondentDynamicList
-            = mapper.convertValue(responseData.getRespondentStatementList(), DynamicList.class);
-
-        assertThat(respondentDynamicList).isEqualTo(expectedRespondentStatementList);
-        supportingEvidenceBundle
-            .forEach(svb -> svb.getValue().setDocumentAcknowledge(List.of("ACK_RELATED_TO_CASE")));
-        assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(supportingEvidenceBundle);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp()).hasSizeGreaterThan(0);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp().get(0).getValue().getDocumentAcknowledge())
+            .isEqualTo(List.of("ACK_RELATED_TO_CASE"));
     }
 
     @Test
@@ -478,16 +446,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .name("test")
             .uploadedBy("kurt.swansea@gov.uk")
             .type(GUARDIAN_REPORTS)
-            .build());
-    }
-
-    private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundleWithExistingDocument() {
-        return wrapElements(SupportingEvidenceBundle.builder()
-            .name("test")
-            .uploadedBy("kurt.swansea@gov.uk")
-            .type(GUARDIAN_REPORTS)
             .document(DocumentReference.builder().build())
-            .documentAcknowledge(new ArrayList<>())
             .build());
     }
 

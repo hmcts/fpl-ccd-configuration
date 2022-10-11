@@ -141,7 +141,7 @@ class ManageDocumentsLAControllerAboutToStartTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldBuildApplicationDocumentWithDefaultDocumentAcknowledge() {
+    void shouldInitialiseApplicationDocumentCollectionWithExistingDocument() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of(
                 "applicationDocuments", List.of(element(UUID_1, ApplicationDocument.builder()
