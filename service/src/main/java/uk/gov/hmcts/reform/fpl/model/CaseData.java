@@ -304,7 +304,6 @@ public class CaseData extends CaseDataParent {
         return children1 != null ? children1 : new ArrayList<>();
     }
 
-    @JsonIgnore
     public Orders getOrders() {
         return ordersSolicitor != null ? ordersSolicitor : orders;
     }
