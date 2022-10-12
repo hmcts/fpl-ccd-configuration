@@ -35,20 +35,8 @@
     "PageID": "selectOutsourcingLA",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "PageShowCondition": "isLocalAuthority=\"NO\"",
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-initiation/mid-event"
-  },
-  {
-    "LiveFrom": "12/02/2021",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "openCase",
-    "CaseFieldID": "isOutsourcingLA",
-    "PageFieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY",
-    "PageID": "selectOutsourcingLA",
-    "PageDisplayOrder": 1,
-    "PageColumnNumber": 1,
-    "FieldShowCondition": "representativeType=\"LOCAL_AUTHORITY\"",
+    "PageShowCondition": "isLocalAuthority=\"NO\" OR outsourcingType != \"\"",
+    "FieldShowCondition": "outsourcingType != \"MLA\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-initiation/mid-event"
   },
   {
@@ -56,12 +44,12 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "openCase",
     "CaseFieldID": "outsourcingLAs",
-    "PageFieldDisplayOrder": 5,
+    "PageFieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
     "PageID": "selectOutsourcingLA",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "isOutsourcingLA=\"Yes\" AND representativeType=\"LOCAL_AUTHORITY\"",
+    "FieldShowCondition": "outsourcingType = \"MLA\" OR representativeType=\"LOCAL_AUTHORITY\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-initiation/mid-event"
   },
   {
