@@ -61,7 +61,7 @@ public class Orders {
         return isNotEmpty(orderType) && (this.getOrderType().contains(CHILD_ASSESSMENT_ORDER)
                 || isSecureAccommodationOrder()
                 || isRefuseContactWithChildApplication()
-                || this.getOrderType().contains(CHILD_RECOVERY_ORDER));
+                || isChildRecoveryOrder());
     }
 
     public boolean isDischargeOfCareOrder() {
