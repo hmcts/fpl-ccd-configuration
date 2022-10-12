@@ -2009,13 +2009,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "isOutsourcingLA",
-    "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "outsourcingType",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRUD"
