@@ -75,7 +75,7 @@ public class HearingDocuments {
         return defaultIfNull(positionStatementRespondentListV2, new ArrayList<>());
     }
 
-    public List<Element<SkeletonArgument>> getSkeletonArgumentList(){
+    public List<Element<SkeletonArgument>> getSkeletonArgumentList() {
         return defaultIfNull(skeletonArgumentList, new ArrayList<>());
     }
 }

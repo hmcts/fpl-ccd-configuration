@@ -498,8 +498,8 @@ public class ManageDocumentService {
         return hearingDocumentList;
     }
 
-    private List<Element<SkeletonArgument>> buildSkeletonArgumentList(CaseData caseData, List<Element<SkeletonArgument>> hearingDocumentList,
-                                                                      SkeletonArgument skeletonArgument) {
+    private List<Element<SkeletonArgument>> buildSkeletonArgumentList(CaseData caseData,
+                List<Element<SkeletonArgument>> hearingDocumentList, SkeletonArgument skeletonArgument) {
         if (isNotEmpty(caseData.getHearingDetails())) {
             hearingDocumentList.add(element(skeletonArgument));
         }

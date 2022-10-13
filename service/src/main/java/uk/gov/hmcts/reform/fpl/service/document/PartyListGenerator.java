@@ -44,13 +44,15 @@ public class PartyListGenerator {
 
     private List<Element<String>> buildRespondentElements(List<Element<Respondent>> respondents) {
         return respondents.stream()
-            .map(respondent -> element(respondent.getId(), "Respondent - " + respondent.getValue().toParty().getFullName()))
+            .map(respondent -> element(respondent.getId(),
+                "Respondent - " + respondent.getValue().toParty().getFullName()))
             .collect(Collectors.toList());
     }
 
     private List<Element<String>> buildApplicantElements(List<Element<Applicant>> applicants) {
         return applicants.stream()
-            .map(applicant -> element(applicant.getId(), "Applicant - " + applicant.getValue().getParty().getFullName()))
+            .map(applicant -> element(applicant.getId(),
+                "Applicant - " + applicant.getValue().getParty().getFullName()))
             .collect(Collectors.toList());
     }
 }

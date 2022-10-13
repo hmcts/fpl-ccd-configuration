@@ -305,8 +305,9 @@ public class ManageDocumentsController extends CallbackController {
             "manageDocumentsRelatedToHearing", "furtherEvidenceDocumentsTEMP", HEARING_DOCUMENT_HEARING_LIST_KEY,
             HEARING_DOCUMENT_TYPE, COURT_BUNDLE_KEY, CASE_SUMMARY_KEY, POSITION_STATEMENT_CHILD_KEY,
             POSITION_STATEMENT_RESPONDENT_KEY, CHILDREN_LIST_KEY, HEARING_DOCUMENT_RESPONDENT_LIST_KEY,
-            PLACEMENT_LIST_KEY, SKELETON_ARGUMENT_KEY, "hearingDocumentsPartyList", "placementNoticeResponses", "placement",
-            "manageDocumentSubtypeList", "manageDocumentsRelatedToHearing", "furtherEvidenceDocumentsTEMP");
+            PLACEMENT_LIST_KEY, SKELETON_ARGUMENT_KEY, "hearingDocumentsPartyList", "placementNoticeResponses",
+            "placement", "manageDocumentSubtypeList", "manageDocumentsRelatedToHearing",
+            "furtherEvidenceDocumentsTEMP");
 
         CaseDetails details = CaseDetails.builder().data(caseDetailsMap).build();
         caseDetailsMap.putAll(documentListService.getDocumentView(getCaseData(details)));
