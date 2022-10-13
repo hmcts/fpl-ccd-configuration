@@ -441,7 +441,8 @@ public class ManageDocumentService {
     }
 
     private List<Element<PositionStatementRespondent>> buildRespondentPositionStatementList(CaseData caseData,
-                List<Element<PositionStatementRespondent>> hearingDocumentList, PositionStatementRespondent respondentStatement) {
+                List<Element<PositionStatementRespondent>> hearingDocumentList,
+                PositionStatementRespondent respondentStatement) {
 
         if (isNotEmpty(caseData.getHearingDetails())) {
             hearingDocumentList.add(element(respondentStatement));
@@ -451,7 +452,8 @@ public class ManageDocumentService {
     }
 
     private List<Element<PositionStatementChild>> buildChildPositionStatementList(CaseData caseData,
-                List<Element<PositionStatementChild>> hearingDocumentList, PositionStatementChild respondentStatement) {
+                List<Element<PositionStatementChild>> hearingDocumentList,
+                PositionStatementChild respondentStatement) {
 
         if (isNotEmpty(caseData.getHearingDetails())) {
             hearingDocumentList.add(element(respondentStatement));
