@@ -682,8 +682,10 @@ public class CaseData extends CaseDataParent {
     private final CaseSummary manageDocumentsCaseSummary;
     private final PositionStatementChild manageDocumentsPositionStatementChild;
     private final PositionStatementRespondent manageDocumentsPositionStatementRespondent;
+    private final SkeletonArgument manageDocumentsSkeletonArgument;
     private final DynamicList manageDocumentsChildrenList;
     private final DynamicList hearingDocumentsRespondentList;
+    private final DynamicList hearingDocumentsPartyList;
 
     @JsonUnwrapped
     @Builder.Default
@@ -1173,7 +1175,7 @@ public class CaseData extends CaseDataParent {
     public List<Element<Colleague>> getColleaguesToNotify() {
         return colleaguesToNotify != null ? colleaguesToNotify : new ArrayList<>();
     }
-    
+
     @JsonIgnore
     public boolean isRefuseContactWithChildApplication() {
         return ofNullable(getOrders())

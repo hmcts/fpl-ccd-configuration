@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
+import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -98,6 +99,8 @@ public class ManageDocumentService {
     public static final String CASE_SUMMARY_KEY = "manageDocumentsCaseSummary";
     public static final String POSITION_STATEMENT_CHILD_KEY = "manageDocumentsPositionStatementChild";
     public static final String POSITION_STATEMENT_RESPONDENT_KEY = "manageDocumentsPositionStatementRespondent";
+    public static final String SKELETON_ARGUMENT_KEY = "manageDocumentsSkeletonArgument";
+    public static final String SKELETON_ARGUMENT_LIST_KEY = "skeletonArgumentList";
     public static final String COURT_BUNDLE_LIST_KEY = "courtBundleListV2";
     public static final String CASE_SUMMARY_LIST_KEY = "caseSummaryList";
     public static final String POSITION_STATEMENT_CHILD_LIST_KEY = "positionStatementChildListV2";
@@ -373,6 +376,10 @@ public class ManageDocumentService {
             case POSITION_STATEMENT_RESPONDENT :
                 map.put(POSITION_STATEMENT_RESPONDENT_KEY,
                     getPositionStatementRespondentForHearing(caseData, selectedHearingId));
+                break;
+            case SKELETON_ARGUMENT:
+                map.put(SKELETON_ARGUMENT_KEY,
+                    getSkeletonArgumentForHearing(caseData, selectedHearingId));
         }
         return map;
     }
@@ -426,6 +433,22 @@ public class ManageDocumentService {
                     getDocumentsWithConfidentialAddressFromHearingDocuments(caseData,
                         caseData.getHearingDocuments().getPositionStatementRespondentListV2(),
                         positionStatementRespondentList));
+                break;
+            case SKELETON_ARGUMENT :
+                List<Element<SkeletonArgument>> skeletonArgumentList =
+                    buildSkeletonArgumentList(caseData,
+                        caseData.getHearingDocuments().getSkeletonArgumentList(),
+                        caseData.getManageDocumentsSkeletonArgument().toBuilder()
+                            .partyId(caseData.getHearingDocumentsPartyList().getValueCodeAsUUID())
+                            .partyName(caseData.getHearingDocumentsPartyList().getValueLabel())
+                            .uploadedBy(documentUploadHelper.getUploadedDocumentUserDetails())
+                            .dateTimeUploaded(time.now())
+                            .build());
+                map.put(SKELETON_ARGUMENT_LIST_KEY, skeletonArgumentList);
+                map.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
+                    getDocumentsWithConfidentialAddressFromHearingDocuments(caseData,
+                        caseData.getHearingDocuments().getSkeletonArgumentList(),
+                        skeletonArgumentList));
         }
 
         return map;
@@ -470,6 +493,15 @@ public class ManageDocumentService {
 
             resultList.add(element(respondentStatement));
             return resultList;
+        }
+
+        return hearingDocumentList;
+    }
+
+    private List<Element<SkeletonArgument>> buildSkeletonArgumentList(CaseData caseData, List<Element<SkeletonArgument>> hearingDocumentList,
+                                                                                SkeletonArgument skeletonArgument) {
+        if (isNotEmpty(caseData.getHearingDetails())) {
+            hearingDocumentList.add(element(skeletonArgument));
         }
 
         return hearingDocumentList;
@@ -549,6 +581,13 @@ public class ManageDocumentService {
     private PositionStatementRespondent getPositionStatementRespondentForHearing(CaseData caseData,
                                                                                  UUID selectedHearingId) {
         return PositionStatementRespondent.builder()
+            .hearing(getHearingBooking(caseData, selectedHearingId).toLabel())
+            .hearingId(selectedHearingId).build();
+    }
+
+    private SkeletonArgument getSkeletonArgumentForHearing(CaseData caseData,
+                                                                     UUID selectedHearingId) {
+        return SkeletonArgument.builder()
             .hearing(getHearingBooking(caseData, selectedHearingId).toLabel())
             .hearingId(selectedHearingId).build();
     }

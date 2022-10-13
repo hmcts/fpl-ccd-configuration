@@ -30,6 +30,8 @@ public class HearingDocuments {
     private final List<Element<PositionStatementChild>> positionStatementChildListV2;
     // the element ID of each position statement is unique
     private final List<Element<PositionStatementRespondent>> positionStatementRespondentListV2;
+    // the element ID of each Skeleton argument is unique
+    private final List<Element<SkeletonArgument>> skeletonArgumentList;
 
     public static class HearingDocumentsBuilder {
         @Deprecated
@@ -71,5 +73,9 @@ public class HearingDocuments {
 
     public List<Element<PositionStatementRespondent>> getPositionStatementRespondentListV2() {
         return defaultIfNull(positionStatementRespondentListV2, new ArrayList<>());
+    }
+
+    public List<Element<SkeletonArgument>> getSkeletonArgumentList(){
+        return defaultIfNull(skeletonArgumentList, new ArrayList<>());
     }
 }
