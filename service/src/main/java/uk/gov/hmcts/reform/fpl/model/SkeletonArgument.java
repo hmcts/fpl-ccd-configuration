@@ -17,13 +17,13 @@ public class SkeletonArgument extends HearingDocument {
 
     @Builder(toBuilder = true)
     public SkeletonArgument(DocumentReference document,
-                                      LocalDateTime dateTimeUploaded,
-                                      String uploadedBy,
-                                      UUID hearingId,
-                                      String hearing,
-                                      String partyName,
-                                      UUID partyId,
-                                      String hasConfidentialAddress) {
+                            LocalDateTime dateTimeUploaded,
+                            String uploadedBy,
+                            UUID hearingId,
+                            String hearing,
+                            String partyName,
+                            UUID partyId,
+                            String hasConfidentialAddress) {
         super.dateTimeUploaded = dateTimeUploaded;
         super.uploadedBy = uploadedBy;
         super.hearing = hearing;

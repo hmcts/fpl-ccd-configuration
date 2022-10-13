@@ -499,7 +499,7 @@ public class ManageDocumentService {
     }
 
     private List<Element<SkeletonArgument>> buildSkeletonArgumentList(CaseData caseData, List<Element<SkeletonArgument>> hearingDocumentList,
-                                                                                SkeletonArgument skeletonArgument) {
+                                                                      SkeletonArgument skeletonArgument) {
         if (isNotEmpty(caseData.getHearingDetails())) {
             hearingDocumentList.add(element(skeletonArgument));
         }
@@ -586,7 +586,7 @@ public class ManageDocumentService {
     }
 
     private SkeletonArgument getSkeletonArgumentForHearing(CaseData caseData,
-                                                                     UUID selectedHearingId) {
+                                                           UUID selectedHearingId) {
         return SkeletonArgument.builder()
             .hearing(getHearingBooking(caseData, selectedHearingId).toLabel())
             .hearingId(selectedHearingId).build();

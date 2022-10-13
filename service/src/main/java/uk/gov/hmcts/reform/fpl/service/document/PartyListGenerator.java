@@ -29,21 +29,20 @@ public class PartyListGenerator {
         labels.addAll(buildChildElement(caseData.getAllChildren()));
 
         return dynamicLists.asDynamicList(
-            labels,
-            el -> el.getId().toString(),
-            Element::getValue);
+                labels,
+                el -> el.getId().toString(),
+                Element::getValue);
     }
 
     private List<Element<String>> buildChildElement(List<Element<Child>> children) {
         return children.stream()
-            .map(child -> element(child.getId(), "Child - " + child.getValue().toParty().getFullName()))
-            .collect(Collectors.toList());
+                .map(child -> element(child.getId(), "Child - " + child.getValue().toParty().getFullName()))
+                .collect(Collectors.toList());
     }
 
     private List<Element<String>> buildRespondentElements(List<Element<Respondent>> respondents) {
         return respondents.stream()
-            .map(respondent -> element(respondent.getId(), "Respondent - " + respondent.getValue().toParty().getFullName()))
-            .collect(Collectors.toList());
+                .map(respondent -> element(respondent.getId(), "Respondent - " + respondent.getValue().toParty().getFullName()))
+                .collect(Collectors.toList());
     }
-
 }
