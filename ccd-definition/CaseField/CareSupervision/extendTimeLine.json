@@ -30,9 +30,18 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "extendTimelineForChildren",
-    "Label": "Extend timetable for selected children",
-    "FieldType": "ExtendTimetable",
+    "ID": "sameExtensionForAllChildren",
+    "Label": "Are all the selected children’s timelines being extended by the same amount of time, and for the same reason?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childExtensionAll",
+    "Label": "All children",
+    "FieldType": "ChildExtension",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

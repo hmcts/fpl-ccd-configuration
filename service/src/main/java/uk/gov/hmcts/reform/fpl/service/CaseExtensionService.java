@@ -9,22 +9,29 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildExtension;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Temp;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ChildExtensionEventData;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
 
+import java.lang.reflect.Field;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.reflect.FieldUtils.getFieldsListWithAnnotation;
 import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.EIGHT_WEEK_EXTENSION;
 import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.OTHER_EXTENSION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -38,6 +45,7 @@ public class CaseExtensionService {
     private final ChildrenService childrenService;
     private final OptionCountBuilder optionCountBuilder;
     private final ChildrenSmartSelector childrenSmartSelector;
+    private final ValidateGroupService validateGroupService;
 
     public LocalDate getCaseCompletionDate(CaseData caseData) {
         if (EIGHT_WEEK_EXTENSION.equals(caseData.getCaseExtensionTimeList())) {
@@ -127,28 +135,42 @@ public class CaseExtensionService {
         List<Element<Child>> children = caseData.getChildren1();
         LocalDate defaultCompletionDate = caseData.getDefaultCompletionDate();
 
-        Optional.ofNullable(childExtensionEventData.getChildExtension0())
-                .ifPresent(childExtension -> updateExtensionDate(childExtension, children.get(0), defaultCompletionDate));
+        List<ChildExtension> allChildExtension = childExtensionEventData.getAllChildExtension();
 
-        Optional.ofNullable(childExtensionEventData.getChildExtension1())
-                .ifPresent(childExtension -> updateExtensionDate(childExtension, children.get(1), defaultCompletionDate));
-
+        int index = 0;
+        for (ChildExtension childExtension: allChildExtension) {
+           if (childExtension != null) {
+               updateExtensionDate(childExtension, children.get(index), defaultCompletionDate);
+           }
+            index++;
+        }
         return children;
     }
 
     private void updateExtensionDate(ChildExtension childExtension, Element<Child> childElement, LocalDate caseCompletionDate) {
         Child child = childElement.getValue();
         ChildParty.ChildPartyBuilder childPartyBuilder = child.getParty().toBuilder();
-        LocalDate childExtensionDate = null;
+        LocalDate childExtensionDate = childExtension.getExtensionDateOther();
 
         if (EIGHT_WEEK_EXTENSION.equals(childExtension.getCaseExtensionTimeList())) {
             childExtensionDate = Optional.ofNullable(child.getParty().getCompletionDate()).map(childCompletionDate -> childCompletionDate.plusWeeks(8))
                 .orElseGet(() -> caseCompletionDate.plusWeeks(8));
-        } else if (OTHER_EXTENSION.equals(childExtension.getCaseExtensionTimeList())) {
-            childExtensionDate = Optional.ofNullable(child.getParty().getCompletionDate()).map(childCompletionDate -> childCompletionDate.plusWeeks(8))
-                .orElseGet(() -> caseCompletionDate.plusWeeks(8));
         }
+
         ChildParty childParty = childPartyBuilder.completionDate(childExtensionDate).build();
         childElement.setValue(child.toBuilder().party(childParty).build());
+    }
+
+    public List<String> validateChildExtensionDate(CaseData caseData) {
+        ChildExtensionEventData childExtensionEventData = caseData.getChildExtensionEventData();
+        int[] index = {0};
+
+        return childExtensionEventData.getAllChildExtension().stream()
+                .peek(data -> index[0]++)
+                .filter(childExtension -> Objects.nonNull(childExtension.getExtensionDateOther()))
+                .map(childExtension -> validateGroupService.validateGroup(childExtension, CaseExtensionGroup .class))
+                .flatMap(List::stream)
+                .map(error -> String.join(" ",  error, "for child", String.valueOf(index[0])))
+                .collect(Collectors.toList());
     }
 }

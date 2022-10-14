@@ -159,38 +159,6 @@
     "EventElementLabel": " ",
     "FieldDisplayOrder": 16,
     "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ExtendTimetable",
-    "CaseEventID": "extend26WeekTimeline",
-    "CaseFieldID": "extendTimelineForChildren",
-    "ListElementCode": "timeList",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "CaseExtensionTimeList",
-    "SecurityClassification": "Public",
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "ID": "ExtendTimetable",
-    "CaseEventID": "extend26WeekTimeline",
-    "CaseFieldID": "extendTimelineForChildren",
-    "ListElementCode": "eightWeeksExtensionDateOther",
-    "SecurityClassification": "Public",
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseEventID": "extend26WeekTimeline",
-    "CaseFieldID": "extendTimelineForChildren",
-    "ListElementCode": "reasonList",
-    "ID": "ExtendTimetable",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "CaseExtensionReasonList",
-    "SecurityClassification": "Public",
-    "Searchable": "N",
-    "DisplayContext": "OPTIONAL"
   }
 ]
 

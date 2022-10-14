@@ -66,7 +66,7 @@ public class CaseExtensionController extends CallbackController {
 
         caseDetails.getData().put("extensionDateEightWeeks", formatLocalDateToString(eightWeekExtensionDate, DATE));
 
-        return respond(caseDetails, validateGroupService.validateGroup(caseData, CaseExtensionGroup.class));
+        return respond(caseDetails, caseExtensionService.validateChildExtensionDate(caseData));
     }
 
     @PostMapping("/about-to-submit")

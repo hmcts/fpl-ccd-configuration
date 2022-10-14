@@ -2368,6 +2368,20 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sameExtensionForAllChildren",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "childExtensionAll",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "childExtension0",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "R"
@@ -2427,13 +2441,6 @@
     "CaseFieldID": "childSelectorForExtension",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "extendTimelineForChildren",
-    "UserRole": "caseworker-publiclaw-judiciary",
-    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",

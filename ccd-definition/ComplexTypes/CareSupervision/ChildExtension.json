@@ -11,6 +11,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildExtension",
+    "ListElementCode": "extensionDateOther",
+    "FieldType": "Date",
+    "ElementLabel": "New end date",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "caseExtensionTimeList=\"OtherExtension\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildExtension",
     "ListElementCode": "caseExtensionReasonList",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "CaseExtensionReasonList",
