@@ -48,8 +48,12 @@ class PartyListGeneratorTest {
                                                                                 .lastName("Tomlinson")
                                                                                 .build())
                                                                             .build();
-    private static final LocalAuthority LOCAL_AUTHORITY_1 = LocalAuthority.builder().name("An LA or Solicitor").build();
-    private static final LocalAuthority LOCAL_AUTHORITY_2 = LocalAuthority.builder().name("Another LA or Solicitor").build();
+    private static final LocalAuthority LOCAL_AUTHORITY_1 = LocalAuthority.builder()
+                                                                            .name("An LA or Solicitor")
+                                                                            .build();
+    private static final LocalAuthority LOCAL_AUTHORITY_2 = LocalAuthority.builder()
+                                                                            .name("Another LA or Solicitor")
+                                                                            .build();
 
     private DynamicListService dynamicListService = new DynamicListService(new ObjectMapper());
 
