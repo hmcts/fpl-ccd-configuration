@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -28,7 +29,7 @@ public class PartyListGenerator {
 
         labels.addAll(buildRespondentElements(caseData.getAllRespondents()));
         labels.addAll(buildChildElement(caseData.getAllChildren()));
-        labels.addAll(buildApplicantElements(caseData.getAllApplicants()));
+        labels.addAll(buildApplicantElements(caseData.getLocalAuthorities()));
 
         return dynamicLists.asDynamicList(
             labels,
@@ -49,10 +50,10 @@ public class PartyListGenerator {
             .collect(Collectors.toList());
     }
 
-    private List<Element<String>> buildApplicantElements(List<Element<Applicant>> applicants) {
-        return applicants.stream()
-            .map(applicant -> element(applicant.getId(),
-                "Applicant - " + applicant.getValue().getParty().getFullName()))
+    private List<Element<String>> buildApplicantElements(List<Element<LocalAuthority>> localAuthorities) {
+        return localAuthorities.stream()
+            .map(localAuthority -> element(localAuthority.getId(),
+                "Applicant - " + localAuthority.getValue().getName()))
             .collect(Collectors.toList());
     }
 }
