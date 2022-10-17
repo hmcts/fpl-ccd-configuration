@@ -99,6 +99,7 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POS
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_RESPONDENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.RESPONDENTS_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SKELETON_ARGUMENT_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SKELETON_ARGUMENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
@@ -2299,6 +2300,47 @@ class ManageDocumentServiceTest {
             unwrapElements((List<Element<PositionStatementRespondent>>) underTest
                 .buildHearingDocumentList(caseData).get(POSITION_STATEMENT_RESPONDENT_LIST_KEY)))
             .isEqualTo(List.of(caseData.getManageDocumentsPositionStatementRespondent()));
+    }
+
+    @Test
+    void shouldAddNewSkeletonArgument() {
+        UUID selectedHearingId = randomUUID();
+        LocalDateTime today = LocalDateTime.now();
+        UUID childId = randomUUID();
+        final String PARTY_NAME = "Tom Smith";
+        final String USER = "HMCTS";
+
+        DynamicList partyDynamicList = TestDataHelper.buildDynamicList(0,
+            Pair.of(childId, PARTY_NAME)
+        );
+
+        SkeletonArgument skeletonArgument =
+            SkeletonArgument.builder()
+                .hearing("Test hearing")
+                .hearingId(selectedHearingId)
+                .partyId(childId)
+                .partyName(PARTY_NAME)
+                .build();
+
+        HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
+        List<Element<HearingBooking>> hearingBookings = List.of(element(selectedHearingId, selectedHearingBooking));
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsSkeletonArgument(skeletonArgument)
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .hearingDocumentsPartyList(partyDynamicList)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.SKELETON_ARGUMENT)
+            .hearingDetails(hearingBookings)
+            .build();
+
+        List<Element<SkeletonArgument>> skeletonArgumentUnderTest = (List<Element<SkeletonArgument>>) underTest
+            .buildHearingDocumentList(caseData).get(SKELETON_ARGUMENT_LIST_KEY);
+
+        assertThat(unwrapElements(skeletonArgumentUnderTest)).hasSize(1)
+            .first()
+            .extracting(SkeletonArgument::getDateTimeUploaded, SkeletonArgument::getUploadedBy,
+                        SkeletonArgument::getPartyName, SkeletonArgument::getPartyId)
+            .containsExactly(time.now(), "HMCTS", PARTY_NAME, childId);
     }
 
     @Test
