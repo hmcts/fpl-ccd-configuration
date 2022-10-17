@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -49,9 +50,13 @@ public class CaseExtensionController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-
         List<String> errors = caseExtensionService.validateChildSelector(caseData);
-        caseDetails.getData().putAll(caseExtensionService.getSelectedChildren(caseData));
+        if (YesNo.YES.getValue().equals(caseData.getExtensionForAllChildren())) {
+            caseDetails.getData().putAll(caseExtensionService.getAllChildren(caseData));
+        } else {
+            caseDetails.getData().putAll(caseExtensionService.getSelectedChildren(caseData));
+        }
+
 
         return respond(caseDetails, errors);
     }

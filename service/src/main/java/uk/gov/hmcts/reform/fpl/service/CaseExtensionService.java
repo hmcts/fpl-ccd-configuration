@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
+import org.jose4j.jwk.OctJwkGenerator;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
@@ -107,26 +109,46 @@ public class CaseExtensionService {
         return Collections.emptyList();
     }
 
-    public Map<String, String> getSelectedChildren(CaseData caseData) {
+    public Map<String, Object> getSelectedChildren(CaseData caseData) {
         List<Integer> selected = caseData.getChildSelectorForExtension().getSelected();
         List<Element<Child>> children = caseData.getChildren1();
-        Map<String, String> selectedChildren = new HashMap<>();
-        selected.forEach(value -> {
+        Map<String, Object> selectedChildren = new HashMap<>();
+
+        selected.forEach(value -> setChildDetails(children, selectedChildren, value));
+        return selectedChildren;
+    }
+
+    private void setChildDetails(List<Element<Child>> children, Map<String, Object> selectedChildren, int value) {
+        selectedChildren.put(
+            String.join("", "childSelected", String.valueOf(value)),
+            "Yes");
+
+        selectedChildren.put(
+            String.join("", "childName", String.valueOf(value)),
+            children.get(value).getValue().getParty().getFullName());
+
+        selectedChildren.put(
+            String.join("", "id", String.valueOf(value)),
+            children.get(value).getId().toString());
+
+        selectedChildren.put(
+            String.join("", "childExtension", String.valueOf(value)),
+            ChildExtension.builder()
+                .label(children.get(value).getValue().getParty().getFullName())
+                .id(children.get(value).getId())
+                .build());
+    }
+
+    public Map<String, Object> getAllChildren(CaseData caseData) {
+        List<Element<Child>> children = caseData.getChildren1();
+        Map<String, Object> selectedChildren = new HashMap<>();
+        for(int i=0; i < children.size(); i++) {
+            setChildDetails(children, selectedChildren, i);
             selectedChildren.put(
-                String.join("", "childSelected", value.toString()),
-                "Yes");
-
-            selectedChildren.put(
-                String.join("", "childName", value.toString()),
-                children.get(value).getValue().getParty().getFullName());
-
-            selectedChildren.put(
-                String.join("", "id", value.toString()),
-                children.get(value).getId().toString());
-
-            }
-        );
-
+                String.join("", "id", String.valueOf(i)),
+                "is all selected : " + caseData.getExtensionForAllChildren()
+                );
+        }
         return selectedChildren;
     }
 

@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
 
 import java.time.LocalDate;
+import java.util.UUID;
 import javax.validation.constraints.FutureOrPresent;
 
 @Value
@@ -18,5 +19,6 @@ public class ChildExtension {
     CaseExtensionReasonList caseExtensionReasonList;
     @FutureOrPresent(message = "Enter an end date in the future", groups = CaseExtensionGroup.class)
     LocalDate extensionDateOther;
-
+    String label;
+    UUID id;
 }

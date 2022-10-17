@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.ChildExtension;
 import uk.gov.hmcts.reform.fpl.model.Temp;
 
@@ -21,6 +22,9 @@ public class ChildExtensionEventData {
    ChildExtension childExtension0;
    @Temp
    ChildExtension childExtension1;
+
+   YesNo extensionForAllChildren;
+
 
    @JsonIgnore
    public List<ChildExtension> getAllChildExtension() {

@@ -2,6 +2,22 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildExtension",
+    "ListElementCode": "label",
+    "FieldType": "Text",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildExtension",
+    "ListElementCode": "id",
+    "FieldType": "Text",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildExtension",
     "ListElementCode": "caseExtensionTimeList",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "CaseExtensionTimeList",

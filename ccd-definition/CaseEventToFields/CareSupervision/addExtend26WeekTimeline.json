@@ -175,7 +175,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "extend26WeekTimeline",
     "CaseFieldID": "childExtension1",
-    "PageFieldDisplayOrder": 7,
+    "PageFieldDisplayOrder": 8,
     "DisplayContext": "MANDATORY",
     "PageID": "extend26WeekTimelineSelectExtension",
     "PageLabel": "",
