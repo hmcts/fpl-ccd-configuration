@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
@@ -39,6 +40,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.OTHER_EXTENSION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getElement;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -147,12 +149,10 @@ public class CaseExtensionService {
 
         List<ChildExtension> allChildExtension = childExtensionEventData.getAllChildExtension();
 
-        int index = 0;
         for (ChildExtension childExtension: allChildExtension) {
            if (childExtension != null) {
-               updateExtensionDate(childExtension, children.get(index), defaultCompletionDate);
+               updateExtensionDate(childExtension, getElement(childExtension.getId(), children), defaultCompletionDate);
            }
-            index++;
         }
         return children;
     }
