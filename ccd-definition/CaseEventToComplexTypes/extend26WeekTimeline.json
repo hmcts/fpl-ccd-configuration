@@ -261,6 +261,58 @@
     "EventElementLabel": " ",
     "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "CaseEventID": "extend26WeekTimeline",
+    "CaseFieldID": "childExtensionAll",
+    "ListElementCode": "label",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "FieldShowCondition": "childSelected0=\"DO_NOT_SHOW\"",
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "CaseEventID": "extend26WeekTimeline",
+    "CaseFieldID": "childExtensionAll",
+    "ListElementCode": "id",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 2,
+    "FieldShowCondition": "childSelected0=\"DO_NOT_SHOW\"",
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "CaseEventID": "extend26WeekTimeline",
+    "CaseFieldID": "childExtensionAll",
+    "ListElementCode": "caseExtensionTimeList",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "CaseEventID": "extend26WeekTimeline",
+    "CaseFieldID": "childExtensionAll",
+    "ListElementCode": "extensionDateOther",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "CaseEventID": "extend26WeekTimeline",
+    "CaseFieldID": "childExtensionAll",
+    "ListElementCode": "caseExtensionReasonList",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY"
   }
 ]
 

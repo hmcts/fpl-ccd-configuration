@@ -98,7 +98,7 @@
     "CaseEventID": "extend26WeekTimeline",
     "CaseFieldID": "childExtensionAll",
     "PageFieldDisplayOrder": 7,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "COMPLEX",
     "PageID": "extend26WeekTimelineSelectExtension",
     "PageLabel": "",
     "PageDisplayOrder": 2,
