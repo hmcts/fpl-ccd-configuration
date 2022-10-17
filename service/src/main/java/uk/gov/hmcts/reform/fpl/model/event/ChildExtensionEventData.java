@@ -25,7 +25,6 @@ public class ChildExtensionEventData {
 
    YesNo extensionForAllChildren;
 
-
    @JsonIgnore
    public List<ChildExtension> getAllChildExtension() {
       return List.of(childExtension0, childExtension1);

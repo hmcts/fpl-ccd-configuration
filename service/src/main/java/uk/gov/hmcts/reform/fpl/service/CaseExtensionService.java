@@ -149,21 +149,30 @@ public class CaseExtensionService {
 
         List<ChildExtension> allChildExtension = childExtensionEventData.getAllChildExtension();
 
-        for (ChildExtension childExtension: allChildExtension) {
+        /*for (ChildExtension childExtension: allChildExtension) {
            if (childExtension != null) {
                updateExtensionDate(childExtension, getElement(childExtension.getId(), children), defaultCompletionDate);
            }
-        }
+        }*/
+
+        allChildExtension.stream()
+            .filter(Objects::nonNull)
+            .forEach(childExtension ->
+                    updateExtensionDate(childExtension, getElement(childExtension.getId(), children), defaultCompletionDate)
+            );
+
         return children;
     }
 
     private void updateExtensionDate(ChildExtension childExtension, Element<Child> childElement, LocalDate caseCompletionDate) {
         Child child = childElement.getValue();
         ChildParty.ChildPartyBuilder childPartyBuilder = child.getParty().toBuilder();
+        childPartyBuilder.extensionReason(childExtension.getCaseExtensionReasonList().getLabel());
         LocalDate childExtensionDate = childExtension.getExtensionDateOther();
 
         if (EIGHT_WEEK_EXTENSION.equals(childExtension.getCaseExtensionTimeList())) {
-            childExtensionDate = Optional.ofNullable(child.getParty().getCompletionDate()).map(childCompletionDate -> childCompletionDate.plusWeeks(8))
+            childExtensionDate = Optional.ofNullable(child.getParty().getCompletionDate())
+                    .map(childCompletionDate -> childCompletionDate.plusWeeks(8))
                 .orElseGet(() -> caseCompletionDate.plusWeeks(8));
         }
 
