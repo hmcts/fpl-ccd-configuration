@@ -48,24 +48,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "childName0",
-    "FieldType": "Text",
-    "Label": " ",
-    "SecurityClassification": "PUBLIC",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "childName1",
-    "FieldType": "Text",
-    "Label": " ",
-    "SecurityClassification": "PUBLIC",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "childExtension0",
     "Label": "Child 1",
     "FieldType": "ChildExtension",
@@ -94,24 +76,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "childSelected1",
-    "FieldType": "Text",
-    "Label": " ",
-    "SecurityClassification": "PUBLIC",
-    "Searchable": "N"
-  } ,
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "id0",
-    "FieldType": "Text",
-    "Label": " ",
-    "SecurityClassification": "PUBLIC",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "id1",
     "FieldType": "Text",
     "Label": " ",
     "SecurityClassification": "PUBLIC",

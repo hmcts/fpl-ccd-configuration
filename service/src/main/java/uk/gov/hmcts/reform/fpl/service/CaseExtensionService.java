@@ -124,14 +124,6 @@ public class CaseExtensionService {
             "Yes");
 
         selectedChildren.put(
-            String.join("", "childName", String.valueOf(value)),
-            children.get(value).getValue().getParty().getFullName());
-
-        selectedChildren.put(
-            String.join("", "id", String.valueOf(value)),
-            children.get(value).getId().toString());
-
-        selectedChildren.put(
             String.join("", "childExtension", String.valueOf(value)),
             ChildExtension.builder()
                 .label(children.get(value).getValue().getParty().getFullName())
@@ -144,10 +136,6 @@ public class CaseExtensionService {
         Map<String, Object> selectedChildren = new HashMap<>();
         for(int i=0; i < children.size(); i++) {
             setChildDetails(children, selectedChildren, i);
-            selectedChildren.put(
-                String.join("", "id", String.valueOf(i)),
-                "is all selected : " + caseData.getExtensionForAllChildren()
-                );
         }
         return selectedChildren;
     }
