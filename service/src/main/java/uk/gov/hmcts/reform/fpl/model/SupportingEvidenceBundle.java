@@ -26,6 +26,7 @@ import java.util.Optional;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
@@ -129,9 +130,8 @@ public class SupportingEvidenceBundle implements TranslatableItem, FurtherDocume
         if (this.documentAcknowledge == null) {
             this.documentAcknowledge = new ArrayList<>();
         }
-        String acknowledgement = "ACK_RELATED_TO_CASE";
-        if (document != null && !this.documentAcknowledge.contains(acknowledgement)) {
-            this.documentAcknowledge.add(acknowledgement);
+        if (document != null && !this.documentAcknowledge.contains(DOCUMENT_ACKNOWLEDGEMENT_KEY)) {
+            this.documentAcknowledge.add(DOCUMENT_ACKNOWLEDGEMENT_KEY);
         }
         return this.documentAcknowledge;
     }

@@ -44,6 +44,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement.DEFAULT_CODE;
 import static uk.gov.hmcts.reform.fpl.model.order.HearingOrder.from;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -112,7 +113,7 @@ public class DraftOrderService {
                     .map(Element::getValue)
                     .orElseThrow(() -> new CMONotFoundException("CMO for related hearing could not be found"));
                 newEventDataBuilder.previousCMO(cmo.getOrder());
-                newEventDataBuilder.uploadCMOMessageAcknowledge(List.of("ACK_RELATED_TO_CASE"));
+                newEventDataBuilder.uploadCMOMessageAcknowledge(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
             } else {
                 newEventDataBuilder.uploadCMOMessageAcknowledge(List.of());
             }

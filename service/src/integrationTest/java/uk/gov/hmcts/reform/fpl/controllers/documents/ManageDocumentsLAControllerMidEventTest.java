@@ -51,6 +51,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.HEARING_DOC
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.PLACEMENT_NOTICE_RESPONSE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
@@ -279,7 +280,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(c2EvidenceDocuments);
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).hasSizeGreaterThan(0);
         assertThat(responseData.getSupportingEvidenceDocumentsTemp().get(0).getValue().getDocumentAcknowledge())
-            .isEqualTo(List.of("ACK_RELATED_TO_CASE"));
+            .isEqualTo(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
     }
 
     @Test
@@ -314,7 +315,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(supportingEvidenceBundle);
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).hasSizeGreaterThan(0);
         assertThat(responseData.getSupportingEvidenceDocumentsTemp().get(0).getValue().getDocumentAcknowledge())
-            .isEqualTo(List.of("ACK_RELATED_TO_CASE"));
+            .isEqualTo(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
     }
 
     @Test
@@ -362,7 +363,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(furtherEvidenceBundle);
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).hasSizeGreaterThan(0);
         assertThat(responseData.getSupportingEvidenceDocumentsTemp().get(0).getValue().getDocumentAcknowledge())
-            .isEqualTo(List.of("ACK_RELATED_TO_CASE"));
+            .isEqualTo(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
     }
 
     @Test
@@ -406,7 +407,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(supportingEvidenceBundle);
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).hasSizeGreaterThan(0);
         assertThat(responseData.getSupportingEvidenceDocumentsTemp().get(0).getValue().getDocumentAcknowledge())
-            .isEqualTo(List.of("ACK_RELATED_TO_CASE"));
+            .isEqualTo(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
     }
 
     @Test

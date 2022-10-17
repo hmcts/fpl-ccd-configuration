@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
+
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -33,9 +35,8 @@ public class PlacementConfidentialDocument {
         if (this.documentAcknowledge == null) {
             this.documentAcknowledge = new ArrayList<>();
         }
-        String acknowledgement = "ACK_RELATED_TO_CASE";
-        if (document != null && !this.documentAcknowledge.contains(acknowledgement)) {
-            this.documentAcknowledge.add(acknowledgement);
+        if (document != null && !this.documentAcknowledge.contains(DOCUMENT_ACKNOWLEDGEMENT_KEY)) {
+            this.documentAcknowledge.add(DOCUMENT_ACKNOWLEDGEMENT_KEY);
         }
         return this.documentAcknowledge;
     }

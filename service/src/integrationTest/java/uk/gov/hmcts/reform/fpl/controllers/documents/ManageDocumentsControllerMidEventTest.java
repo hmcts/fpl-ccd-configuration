@@ -59,6 +59,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.PLACEMENT_NOTICE_
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C12_WARRANT_TO_ASSIST_PERSON;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -111,7 +112,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
         assertThat(extractedCaseData.getCorrespondenceDocuments()).isEqualTo(correspondenceDocuments);
         assertThat(extractedCaseData.getCorrespondenceDocuments()).hasSizeGreaterThan(0);
         assertThat(extractedCaseData.getCorrespondenceDocuments().get(0).getValue().getDocumentAcknowledge())
-            .isEqualTo(List.of("ACK_RELATED_TO_CASE"));
+            .isEqualTo(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
 
         assertThat(extractedCaseData.getManageDocument()).isEqualTo(ManageDocument.builder()
             .type(CORRESPONDENCE)
@@ -139,7 +140,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
         assertThat(extractedCaseData.getCorrespondenceDocumentsSolicitor()).isEqualTo(correspondenceDocuments);
         assertThat(extractedCaseData.getCorrespondenceDocumentsSolicitor()).hasSizeGreaterThan(0);
         assertThat(extractedCaseData.getCorrespondenceDocumentsSolicitor().get(0).getValue().getDocumentAcknowledge())
-            .isEqualTo(List.of("ACK_RELATED_TO_CASE"));
+            .isEqualTo(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
 
         assertThat(extractedCaseData.getManageDocument()).isEqualTo(ManageDocument.builder()
             .type(CORRESPONDENCE)
@@ -233,7 +234,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(after.getPlacementNoticeResponses()).hasSize(1);
         assertThat(after.getPlacementNoticeResponses().get(0).getValue().getDocumentAcknowledge())
-            .isEqualTo(List.of("ACK_RELATED_TO_CASE"));
+            .isEqualTo(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
         assertThat(after.getManageDocument()).isEqualTo(ManageDocument.builder()
             .type(ManageDocumentType.PLACEMENT_NOTICE_RESPONSE)
             .hasHearings(NO.getValue())
@@ -269,7 +270,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
         assertThat(extractedCaseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(c2EvidenceDocuments);
         assertThat(extractedCaseData.getSupportingEvidenceDocumentsTemp()).hasSizeGreaterThan(0);
         assertThat(extractedCaseData.getSupportingEvidenceDocumentsTemp().get(0).getValue().getDocumentAcknowledge())
-            .isEqualTo(List.of("ACK_RELATED_TO_CASE"));
+            .isEqualTo(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
 
         assertThat(extractedCaseData.getManageDocument()).isEqualTo(ManageDocument.builder()
             .type(ADDITIONAL_APPLICATIONS_DOCUMENTS)

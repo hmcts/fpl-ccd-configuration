@@ -23,6 +23,7 @@ import static java.util.stream.IntStream.range;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -83,7 +84,7 @@ public class HearingOrderKindEventDataBuilder {
         }
         nonCMODraftOrders.forEach(h -> {
                 if (h.getValue().getDocument() != null) {
-                    h.getValue().setDocumentAcknowledge(List.of("ACK_RELATED_TO_CASE"));
+                    h.getValue().setDocumentAcknowledge(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
                 }
             }
         );

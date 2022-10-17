@@ -18,6 +18,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
@@ -72,7 +73,7 @@ class HearingFurtherEvidenceBundleSerializationTest {
                 Map.entry("confidentialTabLabel", "Confidential"),
                 Map.entry("dateTimeReceived", "2012-10-10T03:04:00"),
                 Map.entry("dateTimeUploaded", "2013-09-10T03:04:00"),
-                Map.entry("documentAcknowledge", List.of("ACK_RELATED_TO_CASE")),
+                Map.entry("documentAcknowledge", List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY)),
                 Map.entry("document", Map.of(
                     "document_binary_url", "binaryUrl",
                     "document_filename", "filename",

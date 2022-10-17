@@ -36,6 +36,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.MANAGE_DOCUMENT_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RESPONDENTS_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_DOCUMENT_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
@@ -163,7 +164,7 @@ class ManageDocumentsLAControllerAboutToStartTest extends AbstractCallbackTest {
             mapper.convertValue(response.getData().get("applicationDocuments"), List.class);
         Element e = mapper.convertValue(applicationDocuments.get(0), Element.class);
         ApplicationDocument ad = mapper.convertValue(e.getValue(), ApplicationDocument.class);
-        assertThat(ad.getDocumentAcknowledge()).isEqualTo(List.of("ACK_RELATED_TO_CASE"));
+        assertThat(ad.getDocumentAcknowledge()).isEqualTo(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
     }
 
     private HearingBooking buildHearing(LocalDateTime startDate) {

@@ -60,6 +60,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement.DEFAULT_CODE;
 import static uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement.defaultListItem;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
@@ -212,7 +213,7 @@ class DraftOrderServiceTest {
                 .pastHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
                 .futureHearingsForCMO(dynamicList(emptyList()))
                 .hearingsForHearingOrderDrafts(dynamicList(hearings, defaultListItem("No hearing")))
-                .uploadCMOMessageAcknowledge(List.of("ACK_RELATED_TO_CASE"))
+                .uploadCMOMessageAcknowledge(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY))
                 .build();
 
             assertThat(cmoInfo).isEqualTo(expectedInfo);
@@ -263,7 +264,7 @@ class DraftOrderServiceTest {
                 .futureHearingsForCMO(dynamicList(futureHearings.get(0).getId(), futureHearings))
                 .pastHearingsForCMO(dynamicList(emptyList()))
                 .hearingsForHearingOrderDrafts(dynamicList(emptyList(), defaultListItem("No hearing")))
-                .uploadCMOMessageAcknowledge(List.of("ACK_RELATED_TO_CASE"))
+                .uploadCMOMessageAcknowledge(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY))
                 .build();
 
             assertThat(cmoInfo).isEqualTo(expectedInfo);
@@ -309,7 +310,7 @@ class DraftOrderServiceTest {
                 .futureHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
                 .pastHearingsForCMO(dynamicList(emptyList()))
                 .hearingsForHearingOrderDrafts(dynamicList(emptyList(), defaultListItem("No hearing")))
-                .uploadCMOMessageAcknowledge(List.of("ACK_RELATED_TO_CASE"))
+                .uploadCMOMessageAcknowledge(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY))
                 .build();
 
             assertThat(cmoInfo).isEqualTo(expectedInfo);
@@ -385,7 +386,7 @@ class DraftOrderServiceTest {
                 .pastHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
                 .futureHearingsForCMO(dynamicList(emptyList()))
                 .hearingsForHearingOrderDrafts(dynamicList(hearings, defaultListItem("No hearing")))
-                .uploadCMOMessageAcknowledge(List.of("ACK_RELATED_TO_CASE"))
+                .uploadCMOMessageAcknowledge(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY))
                 .build();
 
             assertThat(reviewData).isEqualTo(expectedData);
@@ -423,7 +424,7 @@ class DraftOrderServiceTest {
                 .pastHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
                 .futureHearingsForCMO(dynamicList(emptyList()))
                 .hearingsForHearingOrderDrafts(dynamicList(hearings, defaultListItem("No hearing")))
-                .uploadCMOMessageAcknowledge(List.of("ACK_RELATED_TO_CASE"))
+                .uploadCMOMessageAcknowledge(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY))
                 .build();
 
             assertThat(reviewData).isEqualTo(expectedData);
