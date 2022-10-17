@@ -2340,7 +2340,7 @@ class ManageDocumentServiceTest {
             .first()
             .extracting(SkeletonArgument::getDateTimeUploaded, SkeletonArgument::getUploadedBy,
                         SkeletonArgument::getPartyName, SkeletonArgument::getPartyId)
-            .containsExactly(time.now(), "HMCTS", PARTY_NAME, childId);
+            .containsExactly(time.now(), USER, PARTY_NAME, childId);
     }
 
     @Test
