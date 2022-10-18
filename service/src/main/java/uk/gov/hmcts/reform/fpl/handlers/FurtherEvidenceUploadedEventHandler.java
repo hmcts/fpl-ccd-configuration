@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocument;
+import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
@@ -76,6 +77,7 @@ import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContent
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NEW_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.POSITION_STATEMENT_CHILD;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.POSITION_STATEMENT_RESPONDENT;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.SKELETON_ARGUMENT;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasExtension;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -187,6 +189,9 @@ public class FurtherEvidenceUploadedEventHandler {
         newHearingDocuments.addAll(getNewHearingDocuments(
             caseData.getHearingDocuments().getPositionStatementRespondentListV2(),
             caseDataBefore.getHearingDocuments().getPositionStatementRespondentListV2()));
+        newHearingDocuments.addAll(getNewHearingDocuments(
+            caseData.getHearingDocuments().getSkeletonArgumentList(),
+            caseDataBefore.getHearingDocuments().getSkeletonArgumentList()));
 
         if (!newHearingDocuments.isEmpty()) {
             final Set<String> recipients = new LinkedHashSet<>();
@@ -224,10 +229,15 @@ public class FurtherEvidenceUploadedEventHandler {
                 getNewHearingDocuments(
                     caseData.getHearingDocuments().getPositionStatementRespondentListV2(),
                     caseDataBefore.getHearingDocuments().getPositionStatementRespondentListV2());
+            List<HearingDocument> newSkeletonArgument =
+                getNewHearingDocuments(
+                    caseData.getHearingDocuments().getSkeletonArgumentList(),
+                    caseDataBefore.getHearingDocuments().getSkeletonArgumentList());
 
             sendHearingDocumentsToCafcass(caseData, newCaseSummaries, CASE_SUMMARY);
             sendHearingDocumentsToCafcass(caseData, newPositionStatementChildren, POSITION_STATEMENT_CHILD);
             sendHearingDocumentsToCafcass(caseData, newPositionStatementRespondents, POSITION_STATEMENT_RESPONDENT);
+            sendHearingDocumentsToCafcass(caseData, newSkeletonArgument, SKELETON_ARGUMENT);
         }
     }
 
