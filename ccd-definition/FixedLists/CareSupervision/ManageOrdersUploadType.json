@@ -30,13 +30,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageOrdersUploadType",
-    "ListElementCode": "C34A_CONTACT_WITH_A_CHILD_IN_CARE",
-    "ListElement": "Contact with a child in care (C34A)",
-    "DisplayOrder": 70
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageOrdersUploadType",
     "ListElementCode": "C38A_DISCHARGE_EDUCATION_SUPERVISION_ORDER",
     "ListElement": "Discharge education supervision order (C38A)",
     "DisplayOrder": 80
