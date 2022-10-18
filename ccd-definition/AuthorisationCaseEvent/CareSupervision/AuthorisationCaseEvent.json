@@ -538,7 +538,7 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin"
         ],
-        "CRUD": "CR"
+        "CRUD": "CRUD"
       },
       {
         "UserRoles": [
