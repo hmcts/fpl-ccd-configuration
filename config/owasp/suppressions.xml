@@ -246,4 +246,11 @@
     <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
     <cve>CVE-2022-42004</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: commons-text-1.9.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.commons/commons\-text@.*$</packageUrl>
+    <cve>CVE-2022-42889</cve>
+  </suppress>
 </suppressions>
