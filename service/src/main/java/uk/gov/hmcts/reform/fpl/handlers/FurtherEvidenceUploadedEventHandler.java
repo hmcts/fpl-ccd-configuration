@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocument;
-import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
@@ -221,22 +220,24 @@ public class FurtherEvidenceUploadedEventHandler {
             List<HearingDocument> newCaseSummaries = getNewHearingDocuments(
                 caseData.getHearingDocuments().getCaseSummaryList(),
                 caseDataBefore.getHearingDocuments().getCaseSummaryList());
+            sendHearingDocumentsToCafcass(caseData, newCaseSummaries, CASE_SUMMARY);
+
             List<HearingDocument> newPositionStatementChildren =
                 getNewHearingDocuments(
                     caseData.getHearingDocuments().getPositionStatementChildListV2(),
                     caseDataBefore.getHearingDocuments().getPositionStatementChildListV2());
+            sendHearingDocumentsToCafcass(caseData, newPositionStatementChildren, POSITION_STATEMENT_CHILD);
+
             List<HearingDocument> newPositionStatementRespondents =
                 getNewHearingDocuments(
                     caseData.getHearingDocuments().getPositionStatementRespondentListV2(),
                     caseDataBefore.getHearingDocuments().getPositionStatementRespondentListV2());
+            sendHearingDocumentsToCafcass(caseData, newPositionStatementRespondents, POSITION_STATEMENT_RESPONDENT);
+
             List<HearingDocument> newSkeletonArgument =
                 getNewHearingDocuments(
                     caseData.getHearingDocuments().getSkeletonArgumentList(),
                     caseDataBefore.getHearingDocuments().getSkeletonArgumentList());
-
-            sendHearingDocumentsToCafcass(caseData, newCaseSummaries, CASE_SUMMARY);
-            sendHearingDocumentsToCafcass(caseData, newPositionStatementChildren, POSITION_STATEMENT_CHILD);
-            sendHearingDocumentsToCafcass(caseData, newPositionStatementRespondents, POSITION_STATEMENT_RESPONDENT);
             sendHearingDocumentsToCafcass(caseData, newSkeletonArgument, SKELETON_ARGUMENT);
         }
     }
