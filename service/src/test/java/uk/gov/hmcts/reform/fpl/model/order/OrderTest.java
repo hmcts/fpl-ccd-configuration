@@ -34,6 +34,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C35B_INTERIM_SUPERVISION
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C36_VARIATION_OR_EXTENSION_OF_SUPERVISION_ORDERS;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C37_EDUCATION_SUPERVISION_ORDER_DIGITAL;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C39_CHILD_ASSESSMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C42_FAMILY_ASSISTANCE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43A_SPECIAL_GUARDIANSHIP_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C44A_LEAVE_TO_CHANGE_A_SURNAME;
@@ -90,6 +91,8 @@ class OrderTest {
             .isEqualTo("c45a_parental_responsibility_order.pdf");
         assertThat(C34A_CONTACT_WITH_A_CHILD_IN_CARE.fileName(RenderFormat.PDF))
             .isEqualTo("c34a_contact_with_a_child_in_care.pdf");
+        assertThat(C42_FAMILY_ASSISTANCE_ORDER.fileName(RenderFormat.PDF))
+            .isEqualTo("c42_family_assistance_order.pdf");
     }
 
     @ParameterizedTest
@@ -123,6 +126,7 @@ class OrderTest {
         assertThat(C35A_SUPERVISION_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C35B_INTERIM_SUPERVISION_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C34A_CONTACT_WITH_A_CHILD_IN_CARE.firstSection()).isEqualTo(HEARING_DETAILS);
+        assertThat(C42_FAMILY_ASSISTANCE_ORDER.firstSection()).isEqualTo(ISSUING_DETAILS);
     }
 
     @ParameterizedTest
@@ -169,6 +173,10 @@ class OrderTest {
 
     private static Stream<Arguments> sectionsWithNext() {
         return Stream.of(
+            Arguments.of(C42_FAMILY_ASSISTANCE_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
+            Arguments.of(C42_FAMILY_ASSISTANCE_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
+            Arguments.of(C42_FAMILY_ASSISTANCE_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
+            Arguments.of(C42_FAMILY_ASSISTANCE_ORDER, REVIEW, Optional.empty()),
             Arguments.of(A70_PLACEMENT_ORDER, ISSUING_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(A70_PLACEMENT_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
             Arguments.of(A70_PLACEMENT_ORDER, REVIEW, Optional.empty()),
