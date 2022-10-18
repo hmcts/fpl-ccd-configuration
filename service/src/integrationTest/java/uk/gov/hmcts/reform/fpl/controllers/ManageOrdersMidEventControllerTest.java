@@ -123,6 +123,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         Map.entry("respondentsRefused", "NO"),
         Map.entry("refuseContactQuestions", "NO"),
         Map.entry("leaveToChangeChildSurname", "NO"),
+        Map.entry("partyAllowedContactsAndConditions", "NO"),
         Map.entry("familyAssistanceOrder", "NO")
     ));
 
@@ -576,6 +577,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("refuseContactQuestions", "NO"),
             Map.entry("respondentsRefused", "NO"),
             Map.entry("leaveToChangeChildSurname", "NO"),
+            Map.entry("partyAllowedContactsAndConditions", "NO"),
             Map.entry("familyAssistanceOrder", "NO")
         );
 
@@ -635,6 +637,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("refuseContactQuestions", "NO"),
             Map.entry("respondentsRefused", "NO"),
             Map.entry("leaveToChangeChildSurname", "NO"),
+            Map.entry("partyAllowedContactsAndConditions", "NO"),
             Map.entry("familyAssistanceOrder", "NO")
         );
 

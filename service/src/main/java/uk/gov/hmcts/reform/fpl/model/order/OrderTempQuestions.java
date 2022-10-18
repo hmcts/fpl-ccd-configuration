@@ -50,5 +50,6 @@ public class OrderTempQuestions {
     String manageOrdersEducationSupervision;
     String manageOrdersVaryOrExtendSupervisionOrder;
     String leaveToChangeChildSurname;
+    String partyAllowedContactsAndConditions;
     String familyAssistanceOrder;
 }
