@@ -92,7 +92,8 @@ class OrderShowHideQuestionsCalculatorTest {
             Map.entry("orderPlacedChildInCustody", "NO"),
             Map.entry("manageOrdersVaryOrExtendSupervisionOrder", "NO"),
             Map.entry("leaveToChangeChildSurname", "NO"),
-            Map.entry("partyAllowedContactsAndConditions", "NO")
+            Map.entry("partyAllowedContactsAndConditions", "NO"),
+            Map.entry("declarationOfParentage", "NO")
         ));
     }
 
@@ -869,6 +870,7 @@ class OrderShowHideQuestionsCalculatorTest {
         leaveToChangeChildSurname.put("manageOrdersChildAssessment", "NO");
         leaveToChangeChildSurname.put("leaveToChangeChildSurname", "YES");
         leaveToChangeChildSurname.put("partyAllowedContactsAndConditions", "NO");
+        leaveToChangeChildSurname.put("declarationOfParentage", "NO");
 
         return Stream.of(
             Arguments.of(C21_BLANK_ORDER, blankOrderQuestions),
