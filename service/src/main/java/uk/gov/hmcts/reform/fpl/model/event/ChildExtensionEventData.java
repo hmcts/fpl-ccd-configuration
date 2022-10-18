@@ -42,7 +42,6 @@ public class ChildExtensionEventData {
       ArrayList<ChildExtension> childExtensions = new ArrayList<>();
       childExtensions.add(verify.apply(childExtension0));
       childExtensions.add(verify.apply(childExtension1));
-      childExtensions.add(verify.apply(childExtensionAll));
       return childExtensions;
    }
 }

@@ -186,4 +186,19 @@ public class CaseExtensionService {
                 .map(error -> String.join(" ",  error, "for child", String.valueOf(index[0])))
                 .collect(Collectors.toList());
     }
+
+    public List<String> validateChildExtensionAllDate(CaseData caseData) {
+        ChildExtensionEventData childExtensionEventData = caseData.getChildExtensionEventData();
+        ChildExtension childExtensionAll = childExtensionEventData.getChildExtensionAll();
+
+        int[] index = {0};
+
+        return childExtensionEventData.getAllChildExtension().stream()
+                .peek(data -> index[0]++)
+                .filter(Objects::nonNull)
+                .map(childExtension -> validateGroupService.validateGroup(childExtension, CaseExtensionGroup .class))
+                .flatMap(List::stream)
+                .map(error -> String.join(" ",  error, "for child", String.valueOf(index[0])))
+                .collect(Collectors.toList());
+    }
 }

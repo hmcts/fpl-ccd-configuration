@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ChildExtensionEventData;
 import uk.gov.hmcts.reform.fpl.service.CaseExtensionService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
+import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -56,8 +57,6 @@ public class CaseExtensionController extends CallbackController {
         } else {
             caseDetails.getData().putAll(caseExtensionService.getSelectedChildren(caseData));
         }
-
-
         return respond(caseDetails, errors);
     }
 
@@ -71,7 +70,15 @@ public class CaseExtensionController extends CallbackController {
 
         caseDetails.getData().put("extensionDateEightWeeks", formatLocalDateToString(eightWeekExtensionDate, DATE));
 
-        return respond(caseDetails, caseExtensionService.validateChildExtensionDate(caseData));
+        ChildExtensionEventData childExtensionEventData = caseData.getChildExtensionEventData();
+        List<String> errors;
+        if (YES.getValue().equals(childExtensionEventData.getExtensionForAllChildren()) &&
+                YES.getValue().equals(childExtensionEventData.getSameExtensionForAllChildren())) {
+            errors = validateGroupService.validateGroup(childExtensionEventData.getChildExtensionAll(), CaseExtensionGroup.class);
+        } else {
+            errors =  caseExtensionService.validateChildExtensionDate(caseData);
+        }
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/about-to-submit")
