@@ -26,6 +26,8 @@ public class ChildExtensionEventData {
    @Temp
    ChildExtension childExtension1;
    @Temp
+   ChildExtension childExtensionAll;
+   @Temp
    Selector childSelectorForExtension;
    @Temp
    String extensionForAllChildren;
@@ -40,6 +42,7 @@ public class ChildExtensionEventData {
       ArrayList<ChildExtension> childExtensions = new ArrayList<>();
       childExtensions.add(verify.apply(childExtension0));
       childExtensions.add(verify.apply(childExtension1));
+      childExtensions.add(verify.apply(childExtensionAll));
       return childExtensions;
    }
 }

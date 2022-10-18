@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.EIGHT_WEEK_EXTENSION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getElement;
 
@@ -110,7 +111,7 @@ public class CaseExtensionService {
     private void setChildDetails(List<Element<Child>> children, Map<String, Object> selectedChildren, int value) {
         selectedChildren.put(
             String.join("", "childSelected", String.valueOf(value)),
-            "Yes");
+            YES.getValue());
 
         selectedChildren.put(
             String.join("", "childExtension", String.valueOf(value)),
@@ -141,6 +142,18 @@ public class CaseExtensionService {
             .forEach(childExtension ->
                 updateExtensionDate(childExtension, getElement(childExtension.getId(), children), defaultCompletionDate)
             );
+
+        return children;
+    }
+
+    public List<Element<Child>> updateALlChildrenExtension(CaseData caseData) {
+        ChildExtensionEventData childExtensionEventData = caseData.getChildExtensionEventData();
+        ChildExtension childExtensionAll = childExtensionEventData.getChildExtensionAll();
+        LocalDate defaultCompletionDate = caseData.getDefaultCompletionDate();
+
+        List<Element<Child>> children = caseData.getChildren1();
+
+        children.forEach(childElement -> updateExtensionDate(childExtensionAll, childElement, defaultCompletionDate));
 
         return children;
     }

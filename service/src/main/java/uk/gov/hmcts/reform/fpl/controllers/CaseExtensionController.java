@@ -13,6 +13,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ChildExtensionEventData;
 import uk.gov.hmcts.reform.fpl.service.CaseExtensionService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
@@ -20,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import java.time.LocalDate;
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -48,7 +51,7 @@ public class CaseExtensionController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         List<String> errors = caseExtensionService.validateChildSelector(caseData);
-        if (YesNo.YES.getValue().equals(caseData.getChildExtensionEventData().getExtensionForAllChildren())) {
+        if (YES.getValue().equals(caseData.getChildExtensionEventData().getExtensionForAllChildren())) {
             caseDetails.getData().putAll(caseExtensionService.getAllChildren(caseData));
         } else {
             caseDetails.getData().putAll(caseExtensionService.getSelectedChildren(caseData));
@@ -78,7 +81,16 @@ public class CaseExtensionController extends CallbackController {
 
         LocalDate caseCompletionDate = caseExtensionService.getCaseCompletionDate(caseData);
         caseDetails.getData().put("caseCompletionDate", caseCompletionDate);
-        caseDetails.getData().put("children1", caseExtensionService.updateChildrenExtension(caseData));
+        ChildExtensionEventData childExtensionEventData = caseData.getChildExtensionEventData();
+
+        List<Element<Child>> children1;
+        if (YES.getValue().equals(childExtensionEventData.getExtensionForAllChildren()) &&
+            YES.getValue().equals(childExtensionEventData.getSameExtensionForAllChildren())) {
+            children1 = caseExtensionService.updateALlChildrenExtension(caseData);
+        } else {
+            children1 = caseExtensionService.updateChildrenExtension(caseData);
+        }
+        caseDetails.getData().put("children1", children1);
         removeTemporaryFields(caseDetails, ChildExtensionEventData.class);
         return respond(caseDetails);
     }
