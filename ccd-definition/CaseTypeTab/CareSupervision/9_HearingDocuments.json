@@ -8,7 +8,7 @@
     "TabDisplayOrder": 9,
     "CaseFieldID": "hearingDocumentsTabHeading",
     "TabFieldDisplayOrder": 1,
-    "TabShowCondition": "courtBundleListV2!=\"\" OR caseSummaryList!=\"\" OR positionStatementChildList!=\"\" OR positionStatementRespondentList!=\"\" OR positionStatementChildListV2!=\"\" OR positionStatementRespondentListV2!=\"\""
+    "TabShowCondition": "courtBundleListV2!=\"\" OR caseSummaryList!=\"\" OR positionStatementChildList!=\"\" OR positionStatementRespondentList!=\"\" OR positionStatementChildListV2!=\"\" OR positionStatementRespondentListV2!=\"\" OR skeletonArgumentList!=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
