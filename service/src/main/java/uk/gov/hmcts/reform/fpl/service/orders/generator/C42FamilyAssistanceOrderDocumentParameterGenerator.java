@@ -22,6 +22,9 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuf
 public class C42FamilyAssistanceOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
     private final OrderMessageGenerator orderMessageGenerator;
 
+    public static final String RECITALS_MESSAGE = "The Court orders an officer of the service to be made available to "
+        + "advise, assist and, where appropriate, befriend";
+
     public static final String CONDITIONS_MESSAGE = "Where - \n"
         + "(a) there are no proceedings pending under Part 2 Children Act 1989; \n"
         + "(b) an officer of the service / Welsh family proceedings officer made available under this order is given "
@@ -74,8 +77,8 @@ public class C42FamilyAssistanceOrderDocumentParameterGenerator implements Docmo
 
     private String getOrderRecitalsAndPreambles(ManageOrdersEventData eventData) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("The Court orders an officer of the service to be made available to advise,"
-            + " assist and, where appropriate, befriend \n");
+        stringBuilder.append(RECITALS_MESSAGE + "\n");
+
         if (isNotEmpty(eventData.getManageOrdersPartyToBeBefriended1().getValueLabel())) {
             stringBuilder.append(eventData.getManageOrdersPartyToBeBefriended1().getValueLabel() + "\n");
         }

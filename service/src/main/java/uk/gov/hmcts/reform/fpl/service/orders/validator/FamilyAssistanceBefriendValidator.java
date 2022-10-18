@@ -6,9 +6,13 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.FAMILY_ASSISTANCE_ORDER;
 
 @Component
@@ -24,11 +28,22 @@ public class FamilyAssistanceBefriendValidator implements QuestionBlockOrderVali
 
     @Override
     public List<String> validate(CaseData caseData) {
-        UUID person1 = caseData.getManageOrdersEventData().getManageOrdersPartyToBeBefriended1().getValueCodeAsUUID();
-        UUID person2 = caseData.getManageOrdersEventData().getManageOrdersPartyToBeBefriended2().getValueCodeAsUUID();
-        UUID person3 = caseData.getManageOrdersEventData().getManageOrdersPartyToBeBefriended3().getValueCodeAsUUID();
+        List<UUID> uuids = new ArrayList<>();
 
-        if (person1.equals(person2) || person1.equals(person3) || person2.equals(person3)) {
+        if (isNotEmpty(caseData.getManageOrdersEventData().getManageOrdersPartyToBeBefriended1())) {
+            uuids.add(caseData.getManageOrdersEventData().getManageOrdersPartyToBeBefriended1().getValueCodeAsUUID());
+        }
+        if (isNotEmpty(caseData.getManageOrdersEventData().getManageOrdersPartyToBeBefriended2())) {
+            uuids.add(caseData.getManageOrdersEventData().getManageOrdersPartyToBeBefriended2().getValueCodeAsUUID());
+        }
+        if (isNotEmpty(caseData.getManageOrdersEventData().getManageOrdersPartyToBeBefriended3())) {
+            uuids.add(caseData.getManageOrdersEventData().getManageOrdersPartyToBeBefriended3().getValueCodeAsUUID());
+        }
+
+        Set<UUID> uniques = new HashSet<>(uuids);
+
+        // we have duplicates
+        if (uuids.size() != uniques.size()) {
             return List.of(MESSAGE);
         }
 

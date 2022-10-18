@@ -118,6 +118,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .respondentsRefused(NO)
             .refuseContactQuestions(NO)
             .leaveToChangeChildSurname(NO)
+            .familyAssistanceOrder(NO)
             .build()
         );
     }
@@ -183,6 +184,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .respondentsRefused(NO)
             .refuseContactQuestions(NO)
             .leaveToChangeChildSurname(NO)
+            .familyAssistanceOrder(NO)
             .build()
         );
     }
