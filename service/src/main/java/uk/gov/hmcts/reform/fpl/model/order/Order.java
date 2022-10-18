@@ -40,6 +40,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_BY_CO
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_PLACED_CHILD_IN_CUSTODY;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_TO_AMEND;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.PARENTAL_RESPONSIBILITY;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.PARTY_ALLOWED_CONTACTS_AND_CONDITIONS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REASON_FOR_SECURE_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REFUSE_CONTACT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.RESPONDENTS_REFUSED;
@@ -303,12 +304,21 @@ public enum Order {
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C34A_CONTACT_WITH_A_CHILD_IN_CARE(
-        MANUAL_UPLOAD,
+        DIGITAL,
         "Contact with a child in care (C34A)",
-        "",
+        "Sections 34(2) and (3) Children Act 1989",
         "Contact with a child in care (C34A)",
-        IsFinalOrder.NO,
-        Constants.MANUAL_UPLOAD_QUESTIONS
+        IsFinalOrder.YES,
+        List.of(
+            LINKED_TO_HEARING,
+            LINK_APPLICATION,
+            APPROVER,
+            APPROVAL_DATE,
+            WHICH_CHILDREN,
+            PARTY_ALLOWED_CONTACTS_AND_CONDITIONS,
+            ORDER_BY_CONSENT,
+            REVIEW_DRAFT_ORDER
+        )
     ),
     C34B_AUTHORITY_TO_REFUSE_CONTACT(
         DIGITAL,
