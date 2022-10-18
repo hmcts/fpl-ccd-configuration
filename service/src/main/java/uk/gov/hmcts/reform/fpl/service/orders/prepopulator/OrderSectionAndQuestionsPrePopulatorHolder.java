@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApproverBloc
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ChildPlacementOrderPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.CloseCaseBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.EPOTypeAndPreventRemovalBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.FamilyAssistancePrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkApplicationBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkedToHearingBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ParentalResponsibilityPrePopulator;
@@ -55,6 +56,7 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
     private final AmendOrderToDownloadPrePopulator amendOrderToDownloadPrePopulator;
     private final ParentalResponsibilityPrePopulator parentalResponsibilityPrePopulator;
     private final ChildPlacementOrderPrePopulator childPlacementOrderPrePopulator;
+    private final FamilyAssistancePrePopulator familyAssistancePrePopulator;
 
     // Sections
     private final HearingDetailsSectionPrePopulator hearingDetailsSectionPrePopulator;
@@ -87,7 +89,8 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
             respondentsRefusedBlockPrePopulator,
             whichOthersBlockPrePopulator,
             amendOrderToDownloadPrePopulator,
-            parentalResponsibilityPrePopulator
+            parentalResponsibilityPrePopulator,
+            familyAssistancePrePopulator
         ).stream().collect(Collectors.toMap(
             QuestionBlockOrderPrePopulator::accept,
             Function.identity()

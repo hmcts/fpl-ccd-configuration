@@ -119,7 +119,10 @@ public enum OrderQuestionBlock {
         List.of("manageOrdersPlacedUnderOrder", "manageOrdersOrderCreatedDate", "manageOrdersActionsPermitted",
             "manageOrdersIsExParte")),
     LEAVE_TO_CHANGE_CHILD_SURNAME("leaveToChangeChildSurname", OrderSection.ORDER_DETAILS,
-        List.of("manageOrdersPartyGrantedLeave", "manageOrdersChildNewSurname"));
+        List.of("manageOrdersPartyGrantedLeave", "manageOrdersChildNewSurname")),
+    FAMILY_ASSISTANCE_ORDER("familyAssistanceOrder", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersPartyToBeBefriended1", "manageOrdersPartyToBeBefriended2",
+            "manageOrdersPartyToBeBefriended3", "manageOrdersFamilyAssistanceEndDate"));
 
     private final String showHideField;
     private final OrderSection section;

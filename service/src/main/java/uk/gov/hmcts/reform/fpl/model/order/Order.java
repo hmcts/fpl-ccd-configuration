@@ -27,6 +27,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_CHILDRE
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_INCLUDE_PHRASE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE_AND_PREVENT_REMOVAL;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.FAMILY_ASSISTANCE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.FURTHER_DIRECTIONS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ICO_EXCLUSION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.IS_CHILD_REPRESENTED;
@@ -368,12 +369,21 @@ public enum Order {
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C42_FAMILY_ASSISTANCE_ORDER(
-        MANUAL_UPLOAD,
+        DIGITAL,
         "Family assistance order (C42)",
-        "",
+        "Section 16 Children Act 1989",
         "Family assistance order (C42)",
-        IsFinalOrder.NO,
-        Constants.MANUAL_UPLOAD_QUESTIONS
+        IsFinalOrder.YES,
+        List.of(
+            APPROVER,
+            APPROVAL_DATE,
+            WHICH_CHILDREN,
+            FAMILY_ASSISTANCE_ORDER,
+            FURTHER_DIRECTIONS,
+            ORDER_BY_CONSENT,
+            REVIEW_DRAFT_ORDER,
+            CLOSE_CASE
+        )
     ),
     C44A_LEAVE_TO_CHANGE_SURNAME(
         MANUAL_UPLOAD,
