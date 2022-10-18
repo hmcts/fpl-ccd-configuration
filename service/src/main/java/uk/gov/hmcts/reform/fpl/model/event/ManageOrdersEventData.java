@@ -125,6 +125,10 @@ public class ManageOrdersEventData {
     ChildArrangementsOrderType manageOrdersChildArrangementsOrderType;
     String manageOrdersPartyGrantedLeave;
     String manageOrdersChildNewSurname;
+    DynamicList manageOrdersAllowedContact1;
+    DynamicList manageOrdersAllowedContact2;
+    DynamicList manageOrdersAllowedContact3;
+    String manageOrdersConditionsOfContact;
 
     @JsonIgnore
     public LocalDateTime getManageOrdersApprovalDateOrDateTime() {
