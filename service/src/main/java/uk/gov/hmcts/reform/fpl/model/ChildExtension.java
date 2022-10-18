@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -11,9 +12,12 @@ import java.time.LocalDate;
 import java.util.UUID;
 import javax.validation.constraints.FutureOrPresent;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+
 @Value
 @Jacksonized
 @Builder
+@JsonInclude(value= NON_NULL)
 public class ChildExtension {
     CaseExtensionTime caseExtensionTimeList;
     CaseExtensionReasonList caseExtensionReasonList;

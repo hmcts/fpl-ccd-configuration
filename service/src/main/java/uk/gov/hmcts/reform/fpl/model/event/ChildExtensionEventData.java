@@ -5,11 +5,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.ChildExtension;
 import uk.gov.hmcts.reform.fpl.model.Temp;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.UnaryOperator;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
@@ -22,11 +25,21 @@ public class ChildExtensionEventData {
    ChildExtension childExtension0;
    @Temp
    ChildExtension childExtension1;
-
-   YesNo extensionForAllChildren;
+   @Temp
+   Selector childSelectorForExtension;
+   @Temp
+   String extensionForAllChildren;
+   @Temp
+   String sameExtensionForAllChildren;
 
    @JsonIgnore
    public List<ChildExtension> getAllChildExtension() {
-      return List.of(childExtension0, childExtension1);
+      UnaryOperator<ChildExtension> verify = childExtension -> Optional.ofNullable(childExtension)
+              .filter(child -> child.getId() != null)
+              .orElse(null);
+      ArrayList<ChildExtension> childExtensions = new ArrayList<>();
+      childExtensions.add(verify.apply(childExtension0));
+      childExtensions.add(verify.apply(childExtension1));
+      return childExtensions;
    }
 }

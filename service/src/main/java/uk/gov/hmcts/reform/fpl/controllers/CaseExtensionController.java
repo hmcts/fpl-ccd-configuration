@@ -10,20 +10,17 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.model.event.ChildExtensionEventData;
 import uk.gov.hmcts.reform.fpl.service.CaseExtensionService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
-import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
-import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
+
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
@@ -51,7 +48,7 @@ public class CaseExtensionController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         List<String> errors = caseExtensionService.validateChildSelector(caseData);
-        if (YesNo.YES.getValue().equals(caseData.getExtensionForAllChildren())) {
+        if (YesNo.YES.getValue().equals(caseData.getChildExtensionEventData().getExtensionForAllChildren())) {
             caseDetails.getData().putAll(caseExtensionService.getAllChildren(caseData));
         } else {
             caseDetails.getData().putAll(caseExtensionService.getSelectedChildren(caseData));
@@ -82,7 +79,7 @@ public class CaseExtensionController extends CallbackController {
         LocalDate caseCompletionDate = caseExtensionService.getCaseCompletionDate(caseData);
         caseDetails.getData().put("caseCompletionDate", caseCompletionDate);
         caseDetails.getData().put("children1", caseExtensionService.updateChildrenExtension(caseData));
-
+        removeTemporaryFields(caseDetails, ChildExtensionEventData.class);
         return respond(caseDetails);
     }
 }
