@@ -895,7 +895,7 @@ class OrderShowHideQuestionsCalculatorTest {
         familyAssistanceOrder.put("hearingDetails", "NO");
         familyAssistanceOrder.put("linkApplication", "NO");
         familyAssistanceOrder.put("approvalDate", "YES");
-        familyAssistanceOrder.put("orderDetails", "YES");
+        familyAssistanceOrder.put("orderDetails", "NO");
         familyAssistanceOrder.put("approvalDateTime", "NO");
         familyAssistanceOrder.put("epoIncludePhrase", "NO");
         familyAssistanceOrder.put("uploadOrderFile", "NO");
@@ -918,7 +918,7 @@ class OrderShowHideQuestionsCalculatorTest {
         familyAssistanceOrder.put("whichChildren", "YES");
         familyAssistanceOrder.put("orderIsByConsent", "YES");
         familyAssistanceOrder.put("furtherDirections", "YES");
-        familyAssistanceOrder.put("isFinalOrder", "YES");
+        familyAssistanceOrder.put("isFinalOrder", "NO");
         familyAssistanceOrder.put("appointedGuardian", "NO");
         familyAssistanceOrder.put("parentResponsible", "NO");
         familyAssistanceOrder.put("respondentsRefused", "NO");
@@ -1004,7 +1004,8 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("manageOrdersEducationSupervision", "NO"),
                 Map.entry("orderPlacedChildInCustody", "NO"),
                 Map.entry("manageOrdersVaryOrExtendSupervisionOrder", "NO"),
-                Map.entry("leaveToChangeChildSurname", "NO")
+                Map.entry("leaveToChangeChildSurname", "NO"),
+                Map.entry("familyAssistanceOrder", "NO")
             )));
     }
 
@@ -1057,7 +1058,8 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("respondentsRefused", "NO"),
                 Map.entry("refuseContactQuestions", "NO"),
                 Map.entry("orderPlacedChildInCustody", "NO"),
-                Map.entry("leaveToChangeChildSurname", "NO")
+                Map.entry("leaveToChangeChildSurname", "NO"),
+                Map.entry("familyAssistanceOrder", "NO")
             )));
     }
 }
