@@ -4,17 +4,21 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.GroundsForRefuseContactWithChild;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@WebMvcTest(OrdersNeededAboutToSubmitCallbackController.class)
+@WebMvcTest(OrdersNeededController.class)
 @OverrideAutoConfiguration(enabled = true)
-class OrdersNeededAboutToSubmitCallbackControllerTest extends AbstractCallbackTest {
+class OrdersNeededControllerTest extends AbstractCallbackTest {
 
-    OrdersNeededAboutToSubmitCallbackControllerTest() {
+    OrdersNeededControllerTest() {
         super("orders-needed");
     }
 
@@ -70,6 +74,50 @@ class OrdersNeededAboutToSubmitCallbackControllerTest extends AbstractCallbackTe
         assertThat(((Map<String, Object>) response.getData().get("orders")).get("secureAccommodationOrderSection"))
             .isEqualTo(null);
     }
+
+    @Test
+    void shouldShowRefuseContactFieldWhenRefuseContactIsSelected() {
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(CaseData.builder()
+            .orders(Orders.builder().orderType(List.of(OrderType.REFUSE_CONTACT_WITH_CHILD)).build()).build());
+
+        assertThat(response.getData().get("refuseContactWithChildOrderType")).isEqualTo("YES");
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldRemoveRefuseContactDataWhenRefuseContactIsUnselected() {
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(CaseData.builder()
+            .orders(Orders.builder().orderType(List.of(OrderType.CARE_ORDER)).build())
+            .groundsForRefuseContactWithChild(GroundsForRefuseContactWithChild.builder()
+                .personHasContactAndCurrentArrangement("test").build()).build());
+
+        assertThat(response.getData().get("refuseContactWithChildOrderType")).isNull();
+        assertThat((Map<String, Object>) response.getData().get("groundsForRefuseContactWithChild")).isNullOrEmpty();
+    }
+
+    @Test
+    void shouldSetCourtWhenCourtIsSelected() {
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent("fixtures/caseOtherOrderType.json");
+
+        assertThat(response.getData().get("court")).isNotNull();
+    }
+
+    @Test
+    void shouldSetOrdersToOrdersSolicitorForSolicitorsAfterOrderSubmitted() {
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent("fixtures/caseRespondentSolicitor.json");
+
+        assertThat(response.getData().get("representativeType")).isEqualTo("RESPONDENT_SOLICITOR");
+        assertThat(response.getData().get("orders")).isEqualTo(response.getData().get("ordersSolicitor"));
+    }
+
+    @Test
+    void shouldSetRepresentativeTypeToLAIfItIsNotAlreadySet() {
+        //In this case fixture, representativeType is not set.
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent("fixtures/caseOtherOrderType.json");
+
+        assertThat(response.getData().get("representativeType")).isEqualTo("LOCAL_AUTHORITY");
+    }
+
     @Test
     @SuppressWarnings("unchecked")
     void shouldSetCaseManagementLocation() {
@@ -79,7 +127,7 @@ class OrdersNeededAboutToSubmitCallbackControllerTest extends AbstractCallbackTe
         // court code (344) is defined by application-integration-test.yaml (by LOCAL_AUTHORITY_4_USER_EMAIL)
         // epimms id is defined in courts.json by looking up court code 344
         @SuppressWarnings("unchecked")
-        Map<String,  String> caseManagementLocation = (Map<String, String>)
+        Map<String, String> caseManagementLocation = (Map<String, String>)
             response.getData().get("caseManagementLocation");
         assertThat(caseManagementLocation).containsEntry("baseLocation", "234946");
         assertThat(caseManagementLocation).containsEntry("region", "7");

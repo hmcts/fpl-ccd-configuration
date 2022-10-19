@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForChildAssessmentOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
+import uk.gov.hmcts.reform.fpl.model.GroundsForRefuseContactWithChild;
 import uk.gov.hmcts.reform.fpl.model.GroundsForSecureAccommodationOrder;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Orders;
@@ -44,6 +45,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisAnnexDocuments;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC14Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC16Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC20Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
@@ -333,6 +335,7 @@ class CaseSubmissionGenerationServiceTest {
                 + "Variation or discharge of care or supervision order\n"
                 + "Child Assessment Order\n"
                 + "Secure Accommodation order\n"
+                + "Authority to refuse contact with a child in care\n"
                 + "expected other order";
             assertThat(caseSubmission.getOrdersNeeded()).isEqualTo(expectedOrdersNeeded);
         }
@@ -461,6 +464,71 @@ class CaseSubmissionGenerationServiceTest {
         }
 
 
+    }
+
+    @Nested
+    class DocmosisC14SupplementTest {
+
+        @Test
+        void shouldPopulateC14Supplement() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.REFUSE_CONTACT_WITH_CHILD))
+                    .build())
+                .groundsForRefuseContactWithChild(GroundsForRefuseContactWithChild.builder()
+                    .personHasContactAndCurrentArrangement("test1")
+                    .laHasRefusedContact("test2")
+                    .personsBeingRefusedContactWithChild("test3")
+                    .reasonsOfApplication("test4")
+                    .build())
+                .build();
+
+            DocmosisC14Supplement supplement = underTest.getC14SupplementData(updatedCaseData, false);
+            assertThat(supplement.getPersonHasContactAndCurrentArrangement()).isEqualTo("test1");
+            assertThat(supplement.getLaHasRefusedContact()).isEqualTo("test2");
+            assertThat(supplement.getPersonsBeingRefusedContactWithChild()).isEqualTo("test3");
+            assertThat(supplement.getReasonsOfApplication()).isEqualTo("test4");
+        }
+
+        @Test
+        void shouldNotPopulateDraftWatermarkOrSealIfDraft() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.SECURE_ACCOMMODATION_ORDER))
+                    .secureAccommodationOrderSection(SecureAccommodationOrderSection.ENGLAND)
+                    .build())
+                .groundsForRefuseContactWithChild(GroundsForRefuseContactWithChild.builder()
+                    .personHasContactAndCurrentArrangement("test1")
+                    .laHasRefusedContact("test2")
+                    .personsBeingRefusedContactWithChild("test3")
+                    .reasonsOfApplication("test4")
+                    .build())
+                .build();
+
+            DocmosisC14Supplement supplement = underTest.getC14SupplementData(updatedCaseData, true);
+            assertThat(supplement.getDraftWaterMark()).isNotEmpty();
+            assertThat(supplement.getCourtSeal()).isNullOrEmpty();
+        }
+
+        @Test
+        void shouldPopulateDraftWatermarkOrSealIfNotDraft() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.SECURE_ACCOMMODATION_ORDER))
+                    .secureAccommodationOrderSection(SecureAccommodationOrderSection.ENGLAND)
+                    .build())
+                .groundsForRefuseContactWithChild(GroundsForRefuseContactWithChild.builder()
+                    .personHasContactAndCurrentArrangement("test1")
+                    .laHasRefusedContact("test2")
+                    .personsBeingRefusedContactWithChild("test3")
+                    .reasonsOfApplication("test4")
+                    .build())
+                .build();
+
+            DocmosisC14Supplement supplement = underTest.getC14SupplementData(updatedCaseData, false);
+            assertThat(supplement.getDraftWaterMark()).isNullOrEmpty();
+            assertThat(supplement.getCourtSeal()).isNotEmpty();
+        }
     }
 
     @Nested
@@ -1328,6 +1396,78 @@ class CaseSubmissionGenerationServiceTest {
 
             assertThat(caseSubmission.getApplicants()).containsExactly(expectedDocmosisApplicant);
             assertThat(caseSubmission.getApplicantOrganisations()).isEqualTo("Applicant organisation");
+        }
+
+        @Test
+        void shouldTakeApplicantDetailsFromLocalAuthorityEvenWhenDesignatedLocalAuthorityDoesntExist() {
+            final Colleague solicitor = Colleague.builder()
+                .role(SOLICITOR)
+                .fullName("Alex Williams")
+                .email("alex@test.com")
+                .phone("0777777777")
+                .dx("DX1")
+                .reference("Ref 1")
+                .build();
+
+            final Colleague mainContact = Colleague.builder()
+                .role(OTHER)
+                .title("Legal adviser")
+                .fullName("Emma White")
+                .phone("07778888888")
+                .mainContact("Yes")
+                .build();
+
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .designated("No")
+                .name("Local authority 1")
+                .email("la@test.com")
+                .phone("0777999999")
+                .pbaNumber("PBA1234567")
+                .address(Address.builder()
+                    .addressLine1("L1")
+                    .postcode("AB 100")
+                    .build())
+                .colleagues(wrapElements(solicitor, mainContact))
+                .build();
+
+            final CaseData updatedCaseData = givenCaseData.toBuilder()
+                .localAuthorities(wrapElements(localAuthority))
+                .solicitor(Solicitor.builder()
+                    .name("Legacy solicitor")
+                    .email("legacy@test.com")
+                    .mobile("0777111111")
+                    .build())
+                .applicants(wrapElements(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .organisationName("Applicant organisation")
+                        .email(EmailAddress.builder()
+                            .email("applicantemail@gmail.com")
+                            .build())
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
+
+            DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
+                .organisationName(localAuthority.getName())
+                .jobTitle(mainContact.getTitle())
+                .mobileNumber(mainContact.getPhone())
+                .telephoneNumber(localAuthority.getPhone())
+                .pbaNumber(localAuthority.getPbaNumber())
+                .email(localAuthority.getEmail())
+                .contactName(mainContact.getFullName())
+                .solicitorDx(solicitor.getDx())
+                .solicitorEmail(solicitor.getEmail())
+                .solicitorMobile(solicitor.getPhone())
+                .solicitorName(solicitor.getFullName())
+                .solicitorReference(solicitor.getReference())
+                .solicitorTelephone(solicitor.getPhone())
+                .address("L1\nAB 100")
+                .build();
+
+            assertThat(caseSubmission.getApplicants()).containsExactly(expectedDocmosisApplicant);
+            assertThat(caseSubmission.getApplicantOrganisations()).isEqualTo(localAuthority.getName());
         }
     }
 

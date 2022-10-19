@@ -28,6 +28,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C29_RECOVERY_OF_A_CHILD;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C34A_CONTACT_WITH_A_CHILD_IN_CARE;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C34B_AUTHORITY_TO_REFUSE_CONTACT;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35B_INTERIM_SUPERVISION_ORDER;
@@ -36,6 +37,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C37_EDUCATION_SUPERVISIO
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C39_CHILD_ASSESSMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43A_SPECIAL_GUARDIANSHIP_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C44A_LEAVE_TO_CHANGE_A_SURNAME;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C45A_PARENTAL_RESPONSIBILITY_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN;
 
@@ -66,6 +68,9 @@ class OrderDocumentGeneratorHolderTest {
     @Mock
     private C33InterimCareOrderDocumentParameterGenerator c33InterimCareOrderDocumentParameterGenerator;
     @Mock
+    private C34aContactWithAChildInCareOrderDocumentParameterGenerator
+        c34AContactWithAChildInCareOrderDocumentParameterGenerator;
+    @Mock
     private C34BAuthorityToRefuseContactOrderParameterGenerator c34BAuthorityToRefuseContactOrderParameterGenerator;
     @Mock
     private C35aSupervisionOrderDocumentParameterGenerator c35aSupervisionOrderDocumentParameterGenerator;
@@ -82,6 +87,8 @@ class OrderDocumentGeneratorHolderTest {
     private C43aSpecialGuardianshipOrderDocumentParameterGenerator c43aSGODocumentParameterGenerator;
     @Mock
     private C43ChildArrangementOrderDocumentParameterGenerator c43ChildArrangementOrderDocumentParameterGenerator;
+    @Mock
+    private C44aLeaveToChangeTheSurnameOrderParameterGenerator c44aLeaveToChangeTheSurnameOrderParameterGenerator;
     @Mock
     private C47AAppointmentOfAChildrensGuardianParameterGenerator c47AAppointmentOfAChildrensGuardianParameterGenerator;
     @Mock
@@ -111,7 +118,8 @@ class OrderDocumentGeneratorHolderTest {
             c35bISODocumentParameterGenerator, c36VariationOrExtensionOfSupervisionOrdersParameterGenerator,
             c39ChildAssessmentOrderParameterGenerator, c43ChildArrangementOrderDocumentParameterGenerator,
             c43aSGODocumentParameterGenerator, c45aParentalResponsibilityOrderDocumentParameterGenerator,
-            c34BAuthorityToRefuseContactOrderParameterGenerator
+            c34BAuthorityToRefuseContactOrderParameterGenerator, c44aLeaveToChangeTheSurnameOrderParameterGenerator,
+            c34AContactWithAChildInCareOrderDocumentParameterGenerator
         );
         collectors = List.of(c23EPOAdditionalDocumentsCollector);
 
@@ -137,6 +145,8 @@ class OrderDocumentGeneratorHolderTest {
                 put(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, c47AAppointmentOfAChildrensGuardianParameterGenerator);
                 put(C45A_PARENTAL_RESPONSIBILITY_ORDER, c45aParentalResponsibilityOrderDocumentParameterGenerator);
                 put(C34B_AUTHORITY_TO_REFUSE_CONTACT, c34BAuthorityToRefuseContactOrderParameterGenerator);
+                put(C44A_LEAVE_TO_CHANGE_A_SURNAME, c44aLeaveToChangeTheSurnameOrderParameterGenerator);
+                put(C34A_CONTACT_WITH_A_CHILD_IN_CARE, c34AContactWithAChildInCareOrderDocumentParameterGenerator);
             }
         };
 

@@ -385,5 +385,23 @@
     "ElementLabel": " ",
     "FieldShowCondition": "manageOrdersChildAssessment=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
+    "ListElementCode": "leaveToChangeChildSurname",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "leaveToChangeChildSurname=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
+    "ListElementCode": "partyAllowedContactsAndConditions",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "partyAllowedContactsAndConditions=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
   }
 ]

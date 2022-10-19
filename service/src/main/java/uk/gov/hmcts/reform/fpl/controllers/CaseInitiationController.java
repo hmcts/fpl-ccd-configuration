@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.CaseLocation;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
@@ -51,6 +52,12 @@ public class CaseInitiationController extends CallbackController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         final CaseDetailsMap caseData = caseDetailsMap(callbackrequest.getCaseDetails());
+
+        if (caseInitiationService.isUserLocalAuthority()) {
+            caseData.put("isLocalAuthority", YesNo.YES);
+        } else {
+            caseData.put("isLocalAuthority", YesNo.NO);
+        }
 
         caseInitiationService.getUserOrganisationId().ifPresent(organisationId ->
             caseInitiationService.getOutsourcingType(organisationId).ifPresent(outsourcingType -> {
@@ -101,6 +108,7 @@ public class CaseInitiationController extends CallbackController {
                 DynamicListElement.builder().code("FPL").label("Family Public Law").build()
             ))
             .build());
+        caseDetails.putIfNotEmpty("representativeType", updatedCaseData.getRepresentativeType());
 
         caseDetails.removeAll("outsourcingType", "outsourcingLAs");
 

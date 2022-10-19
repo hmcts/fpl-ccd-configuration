@@ -910,5 +910,59 @@
     "Label": "Cost order details",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersPartyGrantedLeave",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Text",
+    "Label": "Party granted leave",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersChildNewSurname",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Text",
+    "Label": "Child/Children's new surname",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersAllowedContact1",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "DynamicList",
+    "Label": "1st party allowed contact",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersAllowedContact2",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "DynamicList",
+    "Label": "2nd party allowed contact",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersAllowedContact3",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "DynamicList",
+    "Label": "3rd party allowed contact",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersConditionsOfContact",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "TextArea",
+    "Label": "Conditions of contact",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
   }
 ]

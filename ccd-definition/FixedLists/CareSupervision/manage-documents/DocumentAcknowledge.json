@@ -1,0 +1,9 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentAcknowledge",
+    "ListElementCode": "ACK_RELATED_TO_CASE",
+    "ListElement": "Yes",
+    "DisplayOrder": 1
+  }
+]

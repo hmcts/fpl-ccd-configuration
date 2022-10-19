@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE_AN
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.FURTHER_DIRECTIONS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ICO_EXCLUSION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.IS_CHILD_REPRESENTED;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LEAVE_TO_CHANGE_CHILD_SURNAME;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINKED_TO_HEARING;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINK_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS;
@@ -39,6 +40,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_BY_CO
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_PLACED_CHILD_IN_CUSTODY;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_TO_AMEND;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.PARENTAL_RESPONSIBILITY;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.PARTY_ALLOWED_CONTACTS_AND_CONDITIONS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REASON_FOR_SECURE_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REFUSE_CONTACT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.RESPONDENTS_REFUSED;
@@ -236,6 +238,21 @@ public enum Order {
             REVIEW_DRAFT_ORDER
         )
     ),
+    C44A_LEAVE_TO_CHANGE_A_SURNAME(
+        DIGITAL,
+        "Leave to change the surname by which a child is known",
+        "Section [13(1)] [14C(3)] [33(7)] Children Act 1989",
+        "Leave to change the surname by which a child is known",
+        IsFinalOrder.MAYBE,
+        List.of(
+            APPROVER,
+            APPROVAL_DATE,
+            WHICH_CHILDREN,
+            LEAVE_TO_CHANGE_CHILD_SURNAME,
+            ORDER_BY_CONSENT,
+            REVIEW_DRAFT_ORDER
+        )
+    ),
 
     /* MANUAL UPLOADS */
     C24_VARIATION_OF_EMERGENCY_PROTECTION_ORDER(
@@ -287,12 +304,21 @@ public enum Order {
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C34A_CONTACT_WITH_A_CHILD_IN_CARE(
-        MANUAL_UPLOAD,
+        DIGITAL,
         "Contact with a child in care (C34A)",
-        "",
+        "Sections 34(2) and (3) Children Act 1989",
         "Contact with a child in care (C34A)",
-        IsFinalOrder.NO,
-        Constants.MANUAL_UPLOAD_QUESTIONS
+        IsFinalOrder.YES,
+        List.of(
+            LINKED_TO_HEARING,
+            LINK_APPLICATION,
+            APPROVER,
+            APPROVAL_DATE,
+            WHICH_CHILDREN,
+            PARTY_ALLOWED_CONTACTS_AND_CONDITIONS,
+            ORDER_BY_CONSENT,
+            REVIEW_DRAFT_ORDER
+        )
     ),
     C34B_AUTHORITY_TO_REFUSE_CONTACT(
         DIGITAL,

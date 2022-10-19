@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.FactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForChildAssessmentOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
+import uk.gov.hmcts.reform.fpl.model.GroundsForRefuseContactWithChild;
 import uk.gov.hmcts.reform.fpl.model.GroundsForSecureAccommodationOrder;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.HearingPreferences;
@@ -40,6 +41,7 @@ import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC14Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC16Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC20Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
@@ -66,6 +68,7 @@ import java.util.Optional;
 
 import static java.lang.String.join;
 import static java.time.LocalDate.parse;
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -156,6 +159,32 @@ public class CaseSubmissionGenerationService
                 .map(SecureAccommodationOrderGround::getLabel)
                 .collect(toList()))
             .reasonAndLength(grounds.getReasonAndLength())
+            .build();
+
+        if (isDraft) {
+            supplement.setDraftWaterMark(getDraftWaterMarkData());
+        } else {
+            supplement.setCourtSeal(courtService.getCourtSeal(caseData, SEALED));
+        }
+        return supplement;
+    }
+
+    public DocmosisC14Supplement getC14SupplementData(final CaseData caseData, boolean isDraft) {
+        Language applicationLanguage = Optional.ofNullable(caseData.getC110A()
+            .getLanguageRequirementApplication()).orElse(Language.ENGLISH);
+
+        GroundsForRefuseContactWithChild grounds = caseData.getGroundsForRefuseContactWithChild();
+
+        DocmosisC14Supplement supplement = DocmosisC14Supplement.builder()
+            .caseNumber(String.valueOf(caseData.getId()))
+            .welshLanguageRequirement(getWelshLanguageRequirement(caseData, applicationLanguage))
+            .courtName(courtService.getCourtName(caseData))
+            .childrensNames(getChildrensNames(caseData.getAllChildren()))
+            .submittedDate(formatDateDisplay(time.now().toLocalDate(), applicationLanguage))
+            .personHasContactAndCurrentArrangement(grounds.getPersonHasContactAndCurrentArrangement())
+            .laHasRefusedContact(grounds.getLaHasRefusedContact())
+            .personsBeingRefusedContactWithChild(grounds.getPersonsBeingRefusedContactWithChild())
+            .reasonsOfApplication(grounds.getReasonsOfApplication())
             .build();
 
         if (isDraft) {
@@ -460,7 +489,16 @@ public class CaseSubmissionGenerationService
     private List<DocmosisApplicant> buildDocmosisApplicants(CaseData caseData) {
 
         if (isNotEmpty(caseData.getLocalAuthorities())) {
-            return List.of(buildApplicant(caseData.getDesignatedLocalAuthority()));
+            if (nonNull(caseData.getDesignatedLocalAuthority())) {
+                return List.of(buildApplicant(caseData.getDesignatedLocalAuthority()));
+            } else {
+                LocalAuthority applicant = caseData.getLocalAuthorities().stream()
+                    .map(Element::getValue)
+                    .findFirst()
+                    .orElse(null);
+
+                return List.of(buildApplicant(applicant));
+            }
         }
 
         final Solicitor legacySolicitor = caseData.getSolicitor();
