@@ -10,6 +10,7 @@ public interface Constants {
     String LOCAL_AUTHORITY_1_NAME = "Test 1 Local Authority";
     String LOCAL_AUTHORITY_2_NAME = "Test 2 Local Authority";
     String LOCAL_AUTHORITY_3_NAME = "Test 3 Local Authority";
+    String LOCAL_AUTHORITY_4_NAME = "Test 4 Local Authority";
     String LOCAL_AUTHORITY_1_ID = "ORG-LA";
     String LOCAL_AUTHORITY_2_ID = "ORG-LA-2";
     String LOCAL_AUTHORITY_1_INBOX = "shared@test1.org.uk";
@@ -18,7 +19,6 @@ public interface Constants {
     String LOCAL_AUTHORITY_1_USER_EMAIL = "test@test1.org.uk";
     String LOCAL_AUTHORITY_2_USER_EMAIL = "test@test2.org.uk";
     String LOCAL_AUTHORITY_3_USER_EMAIL = "test@test3.org.uk";
-    String LOCAL_AUTHORITY_4_USER_EMAIL = "test@test4.org.uk";
     String PRIVATE_SOLICITOR_USER_EMAIL = "test@private.solicitors.uk";
     String PRIVATE_ORG_ID = "ORG-EXT";
     String DEFAULT_LA_COURT = "Family Court";
@@ -29,7 +29,7 @@ public interface Constants {
     String DEFAULT_ADMIN_EMAIL = "court1@family-court.com";
     String USER_AUTH_TOKEN = "token";
     String LOCAL_AUTHORITY_1_COURT_ID = "11";
-    String LOCAL_AUTHORITY_3_COURT_A_ID = "31";
+    String LOCAL_AUTHORITY_3_COURT_A_ID = "344";
     String LOCAL_AUTHORITY_3_COURT_B_ID = "32";
     String LOCAL_AUTHORITY_1_COURT_NAME = "Family Court";
     String LOCAL_AUTHORITY_3_COURT_A_NAME = "Family Court 3 A";
@@ -48,7 +48,7 @@ public interface Constants {
         .email("court2@family-court.com")
         .build();
     Court COURT_3A = Court.builder()
-        .code("31")
+        .code("344")
         .name("Family Court 3 A")
         .email("court3a@family-court.com")
         .build();

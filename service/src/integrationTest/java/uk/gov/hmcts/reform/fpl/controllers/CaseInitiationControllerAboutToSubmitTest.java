@@ -26,7 +26,6 @@ import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_USER_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_2_USER_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_3_USER_EMAIL;
-import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_4_USER_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.PRIVATE_ORG_ID;
 import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.EPS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -195,7 +194,7 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldAddGlobalSearchTopLevelFields() {
-        givenCurrentUserWithEmail(LOCAL_AUTHORITY_4_USER_EMAIL);
+        givenCurrentUserWithEmail(LOCAL_AUTHORITY_3_USER_EMAIL);
 
         CaseData caseData = CaseData.builder()
             .caseName("GlobalSearchTest CaseName")
@@ -203,7 +202,7 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         Map<String, Object> caseDetails = postAboutToSubmitEvent(caseData).getData();
 
-        // court code (344) is defined by application-integration-test.yaml (by LOCAL_AUTHORITY_4_USER_EMAIL)
+        // court code (344) is defined by application-integration-test.yaml (by LOCAL_AUTHORITY_3_USER_EMAIL)
         // epimms id is defined in courts.json by looking up court code 344
         @SuppressWarnings("unchecked")
         Map<String,  String> caseManagementLocation = (Map<String, String>)

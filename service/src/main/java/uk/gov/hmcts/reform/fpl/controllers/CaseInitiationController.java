@@ -92,15 +92,17 @@ public class CaseInitiationController extends CallbackController {
         caseDetails.putIfNotEmpty("multiCourts", updatedCaseData.getMultiCourts());
         caseDetails.putIfNotEmpty("caseNameHmctsInternal", updatedCaseData.getCaseName());
 
-        String courtCode = updatedCaseData.getCourt().getCode();
-        Optional<Court> lookedUpCourt = courtLookUpService.getCourtByCode(courtCode);
-        if (lookedUpCourt.isPresent()) {
-            caseDetails.putIfNotEmpty("caseManagementLocation", CaseLocation.builder()
-                .baseLocation(lookedUpCourt.get().getEpimmsId())
-                .region(lookedUpCourt.get().getRegionId())
-                .build());
-        } else {
-            log.error("Fail to lookup ePIMMS ID for code: " + courtCode);
+        if (updatedCaseData.getCourt() != null) {
+            String courtCode = updatedCaseData.getCourt().getCode();
+            Optional<Court> lookedUpCourt = courtLookUpService.getCourtByCode(courtCode);
+            if (lookedUpCourt.isPresent()) {
+                caseDetails.putIfNotEmpty("caseManagementLocation", CaseLocation.builder()
+                    .baseLocation(lookedUpCourt.get().getEpimmsId())
+                    .region(lookedUpCourt.get().getRegionId())
+                    .build());
+            } else {
+                log.error("Fail to lookup ePIMMS ID for code: " + courtCode);
+            }
         }
         caseDetails.putIfNotEmpty("caseManagementCategory", DynamicList.builder()
             .value(DynamicListElement.builder().code("FPL").label("Family Public Law").build())

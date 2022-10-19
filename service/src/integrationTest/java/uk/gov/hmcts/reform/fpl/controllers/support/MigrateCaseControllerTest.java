@@ -534,7 +534,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             assertThat(caseDetails.get("caseNameHmctsInternal")).isEqualTo("I AM CASE NAME");
 
-            // court code (344) is defined by application-integration-test.yaml (by LOCAL_AUTHORITY_4_USER_EMAIL)
+            // court code (344) is defined by application-integration-test.yaml (by LOCAL_AUTHORITY_3_USER_EMAIL)
             // epimms id is defined in courts.json by looking up court code 344
             @SuppressWarnings("unchecked")
             Map<String,  String> caseManagementLocation = (Map<String, String>)
@@ -581,7 +581,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             assertThat(caseDetails.get("caseNameHmctsInternal")).isEqualTo("I AM CASE NAME");
 
-            // court code (344) is defined by application-integration-test.yaml (by LOCAL_AUTHORITY_4_USER_EMAIL)
+            // court code (344) is defined by application-integration-test.yaml (by LOCAL_AUTHORITY_3_USER_EMAIL)
             // epimms id is defined in courts.json by looking up court code 344
             @SuppressWarnings("unchecked")
             Map<String,  String> caseManagementLocation = (Map<String, String>)
