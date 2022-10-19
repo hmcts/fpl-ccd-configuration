@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C42_FAMILY_ASSISTANCE_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
@@ -41,7 +42,7 @@ public class C42FamilyAssistanceOrderDocumentParameterGenerator implements Docmo
 
     @Override
     public Order accept() {
-        return Order.C42_FAMILY_ASSISTANCE_ORDER;
+        return C42_FAMILY_ASSISTANCE_ORDER;
     }
 
     @Override
@@ -52,7 +53,8 @@ public class C42FamilyAssistanceOrderDocumentParameterGenerator implements Docmo
         String localAuthorityName = laNameLookup.getLocalAuthorityName(localAuthorityCode);
 
         return C42FamilyAssistanceOrderDocmosisParameters.builder()
-            .orderTitle("Family Assistance Order")
+            .orderTitle(C42_FAMILY_ASSISTANCE_ORDER.getTitle())
+            .childrenAct(C42_FAMILY_ASSISTANCE_ORDER.getChildrenAct())
             .orderByConsent(orderMessageGenerator.getOrderByConsentMessage(eventData))
             .orderDetails(buildOrderDetails(eventData))
             .noticeHeader("Notice \n")
@@ -96,9 +98,10 @@ public class C42FamilyAssistanceOrderDocumentParameterGenerator implements Docmo
 
         stringBuilder.append("\nThe Court directs\n");
         stringBuilder.append(CONDITIONS_MESSAGE + "\n\n");
-        stringBuilder.append(DIRECTIONS_MESSAGE + "\n\n");
-        stringBuilder.append(eventData.getManageOrdersFurtherDirections());
-
+        stringBuilder.append(DIRECTIONS_MESSAGE);
+        if (isNotEmpty(eventData.getManageOrdersFurtherDirections())) {
+            stringBuilder.append("\n\n" + eventData.getManageOrdersFurtherDirections());
+        }
         return stringBuilder.toString();
     }
 
