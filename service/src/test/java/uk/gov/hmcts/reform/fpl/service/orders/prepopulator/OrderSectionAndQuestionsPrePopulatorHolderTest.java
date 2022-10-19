@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.AllowedContactPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.AmendOrderToDownloadPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.AppointedGuardianBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDateBlockPrePopulator;
@@ -49,6 +50,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINKED_TO_H
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINK_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_TO_AMEND;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.PARENTAL_RESPONSIBILITY;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.PARTY_ALLOWED_CONTACTS_AND_CONDITIONS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.RESPONDENTS_REFUSED;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SELECT_SINGLE_CHILD;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TRANSLATION_REQUIREMENTS;
@@ -87,6 +89,8 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
     private AmendOrderToDownloadPrePopulator amendOrderToDownloadPrePopulator;
     @Mock
     private ParentalResponsibilityPrePopulator parentalResponsibilityPrePopulator;
+    @Mock
+    private AllowedContactPrePopulator allowedContactPrePopulator;
     @Mock
     private ChildPlacementOrderPrePopulator childPlacementOrderPrePopulator;
     @Mock
@@ -135,9 +139,11 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             respondentsRefusedBlockPrePopulator,
             whichOthersBlockPrePopulator,
             amendOrderToDownloadPrePopulator,
-            parentalResponsibilityPrePopulator
+            parentalResponsibilityPrePopulator,
+            allowedContactPrePopulator
         );
         questionBlockPrepopulatorMapping = Map.ofEntries(
+            Map.entry(PARTY_ALLOWED_CONTACTS_AND_CONDITIONS, allowedContactPrePopulator),
             Map.entry(LINKED_TO_HEARING, linkedToHearingBlockPrePopulator),
             Map.entry(LINK_APPLICATION, linkApplicationBlockPrePopulator),
             Map.entry(CHILD_PLACEMENT_APPLICATIONS, childPlacementOrderPrePopulator),
