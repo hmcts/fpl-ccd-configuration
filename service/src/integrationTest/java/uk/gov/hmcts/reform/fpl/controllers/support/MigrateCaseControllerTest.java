@@ -21,14 +21,11 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-<<<<<<< HEAD
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-=======
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
->>>>>>> master
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.group.C110A;
@@ -36,17 +33,13 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
-<<<<<<< HEAD
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.time.LocalDate;
 import java.util.HashMap;
-=======
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
->>>>>>> master
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;

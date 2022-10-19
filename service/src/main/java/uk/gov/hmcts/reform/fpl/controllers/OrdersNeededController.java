@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,12 +12,14 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.service.CourtLookUpService;
 
 import java.util.List;
 import java.util.Map;
@@ -24,12 +27,14 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Api
+@Slf4j
 @RestController
 @RequestMapping("/callback/orders-needed")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OrdersNeededController extends CallbackController {
 
     private final HmctsCourtLookupConfiguration courtLookup;
+    private final CourtLookUpService courtLookUpService;
 
     @PostMapping("/about-to-start")
     @SuppressWarnings("unchecked")
@@ -119,6 +124,17 @@ public class OrdersNeededController extends CallbackController {
             data.put("otherOrderType", "YES");
         } else {
             data.put("otherOrderType", "NO");
+        }
+
+        String courtCode = caseData.getOrders().getCourt();
+        Optional<Court> lookedUpCourt = courtLookUpService.getCourtByCode(courtCode);
+        if (lookedUpCourt.isPresent()) {
+            data.put("caseManagementLocation", CaseLocation.builder()
+                .baseLocation(lookedUpCourt.get().getEpimmsId())
+                .region(lookedUpCourt.get().getRegionId())
+                .build());
+        } else {
+            log.error("Fail to lookup ePIMMS ID for code: " + courtCode);
         }
 
         String courtID = Optional.ofNullable((Map<String, Object>) data.get(ordersFieldName))
