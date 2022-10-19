@@ -90,9 +90,6 @@ class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
     private ArgumentCaptor<DecisionRequest> requestCaptor;
 
     @MockBean
-    private CoreCaseDataApiV2 caseDataApi;
-
-    @MockBean
     private CaseAssignmentApi caseAssignmentApi;
 
     NoticeOfChangeAboutToStartControllerTest() {
@@ -103,7 +100,7 @@ class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
     void init() {
         givenFplService();
         givenSystemUser();
-        when(caseDataApi.getAuditEvents(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, false, CASE_ID.toString()))
+        when(coreCaseDataApi.getAuditEvents(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, false, CASE_ID.toString()))
             .thenReturn(AUDIT_EVENTS);
         when(idamClient.getUserByUserId(USER_AUTH_TOKEN, SOLICITOR_ID))
             .thenReturn(SOLICITOR_USER);
