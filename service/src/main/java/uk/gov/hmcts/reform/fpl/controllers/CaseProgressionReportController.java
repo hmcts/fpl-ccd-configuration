@@ -43,8 +43,8 @@ public class CaseProgressionReportController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         publishEvent(new CaseProgressionReportEvent(getCaseData(caseDetails), userDetails));
 
-        caseDetails.getData().remove(CASE_PROGRESSION_REPORT_DETAILS);
-        removeTemporaryFields(caseDetails, CaseProgressionReportEventData.class);
+        //caseDetails.getData().remove(CASE_PROGRESSION_REPORT_DETAILS);
+        //removeTemporaryFields(caseDetails, CaseProgressionReportEventData.class);
 
         return respond(caseDetails);
     }
