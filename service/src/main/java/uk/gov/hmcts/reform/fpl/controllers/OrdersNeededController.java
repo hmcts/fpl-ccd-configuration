@@ -126,15 +126,17 @@ public class OrdersNeededController extends CallbackController {
             data.put("otherOrderType", "NO");
         }
 
-        String courtCode = caseData.getOrders().getCourt();
-        Optional<Court> lookedUpCourt = courtLookUpService.getCourtByCode(courtCode);
-        if (lookedUpCourt.isPresent()) {
-            data.put("caseManagementLocation", CaseLocation.builder()
-                .baseLocation(lookedUpCourt.get().getEpimmsId())
-                .region(lookedUpCourt.get().getRegionId())
-                .build());
-        } else {
-            log.error("Fail to lookup ePIMMS ID for code: " + courtCode);
+        if (caseData.getOrders() != null) {
+            String courtCode = caseData.getOrders().getCourt();
+            Optional<Court> lookedUpCourt = courtLookUpService.getCourtByCode(courtCode);
+            if (lookedUpCourt.isPresent()) {
+                data.put("caseManagementLocation", CaseLocation.builder()
+                    .baseLocation(lookedUpCourt.get().getEpimmsId())
+                    .region(lookedUpCourt.get().getRegionId())
+                    .build());
+            } else {
+                log.error("Fail to lookup ePIMMS ID for code: " + courtCode);
+            }
         }
 
         String courtID = Optional.ofNullable((Map<String, Object>) data.get(ordersFieldName))
