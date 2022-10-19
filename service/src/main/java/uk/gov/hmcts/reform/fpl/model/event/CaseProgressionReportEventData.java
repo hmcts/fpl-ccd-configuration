@@ -100,4 +100,20 @@ public class CaseProgressionReportEventData {
     private String swanseaDFJCourts;
     @Temp
     private CaseProgressionReportType reportType;
+    @Temp
+    private String londonDFJ;
+    @Temp
+    private String midlandsDFJ;
+    @Temp
+    private String northEastDFJ;
+    @Temp
+    private String northWestDFJ;
+    @Temp
+    private String southEastDFJ;
+    @Temp
+    private String southWestDFJ;
+    @Temp
+    private String walesDFJ;
+    @Temp
+    private String nationalArea;
 }

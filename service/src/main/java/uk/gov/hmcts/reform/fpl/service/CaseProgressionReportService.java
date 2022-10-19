@@ -72,9 +72,15 @@ public class CaseProgressionReportService {
     private static final List<HearingType> REQUIRED_HEARING_TYPE = List.of(
             CASE_MANAGEMENT, ISSUE_RESOLUTION, FINAL
     );
+    private static List<String> IGNORE_FIELDS = List.of("getLondonDFJ", "getMidlandsDFJ",
+            "getNorthEastDFJ", "getNorthWestDFJ", "getSouthEastDFJ",
+            "getSouthWestDFJ", "getLondonDFJ", "getMidlandsDFJ", "getReportType");
+
     public static final List<String> REQUIRED_STATES = List.of(
             "submitted","gatekeeping","prepare_for_hearing","final_hearing"
     );
+
+
 
     private final SearchService searchService;
     private final CaseConverter converter;
@@ -163,7 +169,6 @@ public class CaseProgressionReportService {
                 Optional<HearingInfo> optionalHearingInfo = getHearingInfo(caseData);
 
                 if (optionalHearingInfo.isPresent()) {
-                    count++;
                     HearingInfo hearingInfo = optionalHearingInfo.get();
                     result.append(
                         String.join("",
@@ -375,7 +380,7 @@ public class CaseProgressionReportService {
         for (PropertyDescriptor propertyDescriptor: propertyDescriptors) {
             if (Optional.ofNullable(propertyDescriptor.getReadMethod())
                     .map(Method::getName)
-                    .filter(name -> !name.equals("getReportType"))
+                    .filter(name -> !IGNORE_FIELDS.contains(name))
                     .isPresent()
             ) {
                 Optional<String> courtId = Optional.ofNullable(propertyDescriptor.getReadMethod())
