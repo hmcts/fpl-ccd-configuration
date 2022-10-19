@@ -107,7 +107,7 @@
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "caseProgressionReport",
-    "CaseFieldID": "WalesDFJ",
+    "CaseFieldID": "walesDFJ",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
     "PageID": 1,
@@ -647,7 +647,7 @@
     "PageLabel": "",
     "PageDisplayOrder": 1,
     "ShowSummaryChangeOption": "No",
-    "FieldShowCondition" : "WalesDFJ = \"NORTH_WALES\" AND nationalArea = \"60\""
+    "FieldShowCondition" : "walesDFJ = \"NORTH_WALES\" AND nationalArea = \"60\""
   },
   {
     "LiveFrom": "01/01/2018",
@@ -660,7 +660,7 @@
     "PageLabel": "",
     "PageDisplayOrder": 1,
     "ShowSummaryChangeOption": "No",
-    "FieldShowCondition" : "WalesDFJ = \"SOUTH_EAST_WALES\" AND nationalArea = \"60\""
+    "FieldShowCondition" : "walesDFJ = \"SOUTH_EAST_WALES\" AND nationalArea = \"60\""
   },
   {
     "LiveFrom": "01/01/2018",
@@ -673,7 +673,7 @@
     "PageLabel": "",
     "PageDisplayOrder": 1,
     "ShowSummaryChangeOption": "No",
-    "FieldShowCondition" : "WalesDFJ = \"SWANSEA\" AND nationalArea = \"60\""
+    "FieldShowCondition" : "walesDFJ = \"SWANSEA\" AND nationalArea = \"60\""
   },
   {
     "LiveFrom": "01/01/2018",
