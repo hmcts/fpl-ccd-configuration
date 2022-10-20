@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
-import java.beans.IntrospectionException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,7 +26,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.never;
@@ -56,7 +54,7 @@ class CaseProgressionReportEventHandlerTest {
     private ArgumentCaptor<EmailData> emailDataArgumentCaptor;
 
     @Test
-    void shouldSendNotificationWhenReportFilePresent() throws IOException, IntrospectionException {
+    void shouldSendNotificationWhenReportFilePresent() throws IOException {
 
         String courtId = "344";
         CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
@@ -103,7 +101,7 @@ class CaseProgressionReportEventHandlerTest {
     }
 
     @Test
-    void shouldNotSendNotificationWhenNoReportFilePresent() throws IntrospectionException {
+    void shouldNotSendNotificationWhenNoReportFilePresent() {
 
         String courtId = "344";
         CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
@@ -130,32 +128,6 @@ class CaseProgressionReportEventHandlerTest {
                 UserDetails.builder().email(toEmail).build());
 
         caseProgressionReportEventHandler.notifyReport(caseProgressionReportEvent);
-        verify(emailService, never()).sendEmail(eq(FROM_EMAIL), isA(EmailData.class));
-    }
-
-    @Test
-    void shouldNotSendNotificationWhenCourtLookUpFails() throws IntrospectionException {
-        CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
-                .reportType(MISSING_TIMETABLE)
-                .build();
-        CaseData caseDataSelected = CaseData.builder()
-                .caseProgressionReportEventData(caseProgressionReportEventData)
-                .build();
-
-        //todo: uncomment line below
-        //String toEmail = "test@gmail.com";
-        String toEmail = "familypubliclaw+report@gmail.com";
-
-        when(caseProgressionReportService.getCourt(caseProgressionReportEventData))
-                .thenThrow(new IntrospectionException("Court not set"));
-
-        CaseProgressionReportEvent caseProgressionReportEvent = new CaseProgressionReportEvent(
-                caseDataSelected,
-                UserDetails.builder().email(toEmail).build());
-
-        caseProgressionReportEventHandler.notifyReport(caseProgressionReportEvent);
-        verify(courtService, never()).getCourt(anyString());
-        verify(caseProgressionReportService, never()).getFileReport(caseDataSelected);
         verify(emailService, never()).sendEmail(eq(FROM_EMAIL), isA(EmailData.class));
     }
 }
