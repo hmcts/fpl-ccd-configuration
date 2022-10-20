@@ -74,6 +74,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIF
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.OTHER_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
@@ -506,6 +507,29 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             anyString());
     }
 
+    @Test
+    void shouldNotSendPaymentNotificationsWhenApplyingForAdjournment() throws NotificationClientException {
+
+        Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
+            .putAll(buildCommonNotificationParameters())
+            .putAll(buildAdditionalApplicationsAdjournmentBundle(NO))
+            .build();
+
+        postSubmittedEvent(createCase(caseData));
+
+        verify(notificationClient, never()).sendEmail(
+            eq(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA),
+            anyString(),
+            anyMap(),
+            anyString());
+
+        verify(notificationClient, never()).sendEmail(
+            eq(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC),
+            anyString(),
+            anyMap(),
+            anyString());
+    }
+
     private CaseDetails buildCaseDetails(YesNo enableCtsc, YesNo usePbaPayment) {
         return createCase(ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
@@ -543,6 +567,20 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                     .c2DocumentBundle(C2DocumentBundle.builder()
                         .type(WITH_NOTICE)
                         .supplementsBundle(new ArrayList<>())
+                        .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant").build())
+                    .build()));
+    }
+
+    private Map<String, Object> buildAdditionalApplicationsAdjournmentBundle(YesNo usePbaPayment) {
+        return ImmutableMap.of(
+            "additionalApplicationType", List.of(C2_ORDER),
+            "additionalApplicationsBundle", wrapElements(
+                AdditionalApplicationsBundle.builder()
+                    .pbaPayment(PBAPayment.builder().usePbaPayment(usePbaPayment.getValue()).build())
+                    .c2DocumentBundle(C2DocumentBundle.builder()
+                        .type(WITH_NOTICE)
+                        .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                        .requestedHearingToAdjourn("Case management hearing, 15th September 2022")
                         .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant").build())
                     .build()));
     }

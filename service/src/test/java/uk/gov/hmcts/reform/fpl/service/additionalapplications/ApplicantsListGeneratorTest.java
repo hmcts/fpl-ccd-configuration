@@ -9,6 +9,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.enums.ApplicantType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
@@ -36,6 +38,13 @@ class ApplicantsListGeneratorTest {
     private static final RespondentParty RESPONDENT_PARTY_2 = RespondentParty.builder()
         .firstName("David").lastName("Summer").build();
 
+    private static final ChildParty CHILD_PARTY_1 = ChildParty.builder()
+        .firstName("James").lastName("Blogs").build();
+
+    private static final ChildParty CHILD_PARTY_2 = ChildParty.builder()
+        .firstName("Sam").lastName("Blogs").build();
+
+
     private DynamicListService dynamicListService = new DynamicListService(new ObjectMapper());
 
     private ApplicantsListGenerator underTest = new ApplicantsListGenerator(dynamicListService);
@@ -48,6 +57,10 @@ class ApplicantsListGeneratorTest {
             element(Respondent.builder().party(RESPONDENT_PARTY_1).build()),
             element(Respondent.builder().party(RESPONDENT_PARTY_2).build()));
 
+        List<Element<Child>> children = List.of(
+            element(Child.builder().party(CHILD_PARTY_1).build()),
+            element(Child.builder().party(CHILD_PARTY_2).build()));
+
         List<Element<Other>> others = List.of(
             element(Other.builder().name("Bob").build()),
             element(Other.builder().name("Smith").build()));
@@ -55,6 +68,7 @@ class ApplicantsListGeneratorTest {
         caseData = CaseData.builder()
             .caseLocalAuthorityName("Swansea local authority")
             .respondents1(respondents)
+            .children1(children)
             .others(Others.builder()
                 .firstOther(Other.builder().name("Ross").build())
                 .additionalOthers(others)
@@ -71,6 +85,8 @@ class ApplicantsListGeneratorTest {
             .containsExactly("Swansea local authority, Applicant",
                 RESPONDENT_PARTY_1.getFullName() + ", Respondent 1",
                 RESPONDENT_PARTY_2.getFullName() + ", Respondent 2",
+                CHILD_PARTY_1.getFullName() + ", Child 1",
+                CHILD_PARTY_2.getFullName() + ", Child 2",
                 "Ross, Other to be given notice 1",
                 "Bob, Other to be given notice 2",
                 "Smith, Other to be given notice 3",
@@ -107,6 +123,10 @@ class ApplicantsListGeneratorTest {
                     .otherApplicationsBundle(OtherApplicationsBundle.builder()
                         .applicantName(RESPONDENT_PARTY_1.getFullName() + ", Respondent 1").build()).build(),
                 RESPONDENT_PARTY_1.getFullName(), ApplicantType.RESPONDENT),
+            Arguments.of(AdditionalApplicationsBundle.builder()
+                    .otherApplicationsBundle(OtherApplicationsBundle.builder()
+                        .applicantName(CHILD_PARTY_1.getFullName() + ", Child 1").build()).build(),
+                CHILD_PARTY_1.getFullName(), ApplicantType.CHILD),
             Arguments.of(AdditionalApplicationsBundle.builder()
                     .otherApplicationsBundle(OtherApplicationsBundle.builder()
                         .applicantName("Smith, Other to be given notice 3").build()).build(),
