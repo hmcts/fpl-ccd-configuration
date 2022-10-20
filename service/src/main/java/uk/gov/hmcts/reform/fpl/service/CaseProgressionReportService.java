@@ -173,7 +173,7 @@ public class CaseProgressionReportService {
                     result.append(
                         String.join("",
                             "<tr>",
-                            cellField.apply(String.valueOf(count++)),
+                            cellField.apply(String.valueOf(++count)),
                             cellField.apply(hearingInfo.getFamilyManCaseNumber()),
                             cellField.apply(hearingInfo.getCcdNumber()),
                             cellField.apply(hearingInfo.getDateSubmitted()),
