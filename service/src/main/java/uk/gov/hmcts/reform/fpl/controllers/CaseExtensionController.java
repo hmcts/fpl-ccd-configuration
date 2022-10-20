@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
 import java.time.LocalDate;
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -72,8 +73,7 @@ public class CaseExtensionController extends CallbackController {
 
         ChildExtensionEventData childExtensionEventData = caseData.getChildExtensionEventData();
         List<String> errors;
-        if (YES.getValue().equals(childExtensionEventData.getExtensionForAllChildren()) &&
-                YES.getValue().equals(childExtensionEventData.getSameExtensionForAllChildren())) {
+        if (YES.getValue().equals(childExtensionEventData.getSameExtensionForAllChildren())) {
             errors = validateGroupService.validateGroup(childExtensionEventData.getChildExtensionAll(), CaseExtensionGroup.class);
         } else {
             errors =  caseExtensionService.validateChildExtensionDate(caseData);
@@ -93,7 +93,10 @@ public class CaseExtensionController extends CallbackController {
         List<Element<Child>> children1;
         if (YES.getValue().equals(childExtensionEventData.getExtensionForAllChildren()) &&
             YES.getValue().equals(childExtensionEventData.getSameExtensionForAllChildren())) {
-            children1 = caseExtensionService.updateALlChildrenExtension(caseData);
+            children1 = caseExtensionService.updateAllChildrenExtension(caseData);
+        } else if (NO.getValue().equals(childExtensionEventData.getExtensionForAllChildren()) &&
+            YES.getValue().equals(childExtensionEventData.getSameExtensionForAllChildren())) {
+            children1 = caseExtensionService.updateAllSelectedChildrenExtension(caseData);
         } else {
             children1 = caseExtensionService.updateChildrenExtension(caseData);
         }

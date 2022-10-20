@@ -146,15 +146,27 @@ public class CaseExtensionService {
         return children;
     }
 
-    public List<Element<Child>> updateALlChildrenExtension(CaseData caseData) {
+    public List<Element<Child>> updateAllChildrenExtension(CaseData caseData) {
         ChildExtensionEventData childExtensionEventData = caseData.getChildExtensionEventData();
         ChildExtension childExtensionAll = childExtensionEventData.getChildExtensionAll();
         LocalDate defaultCompletionDate = caseData.getDefaultCompletionDate();
+
 
         List<Element<Child>> children = caseData.getChildren1();
 
         children.forEach(childElement -> updateExtensionDate(childExtensionAll, childElement, defaultCompletionDate));
 
+        return children;
+    }
+
+    public List<Element<Child>> updateAllSelectedChildrenExtension(CaseData caseData) {
+        List<Integer> selected = caseData.getChildExtensionEventData().getChildSelectorForExtension().getSelected();
+        LocalDate defaultCompletionDate = caseData.getDefaultCompletionDate();
+        List<Element<Child>> children = caseData.getChildren1();
+        ChildExtensionEventData childExtensionEventData = caseData.getChildExtensionEventData();
+        ChildExtension childExtensionAll = childExtensionEventData.getChildExtensionAll();
+
+        selected.forEach(value -> updateExtensionDate(childExtensionAll, children.get(value), defaultCompletionDate));
         return children;
     }
 
@@ -176,21 +188,6 @@ public class CaseExtensionService {
 
     public List<String> validateChildExtensionDate(CaseData caseData) {
         ChildExtensionEventData childExtensionEventData = caseData.getChildExtensionEventData();
-        int[] index = {0};
-
-        return childExtensionEventData.getAllChildExtension().stream()
-                .peek(data -> index[0]++)
-                .filter(Objects::nonNull)
-                .map(childExtension -> validateGroupService.validateGroup(childExtension, CaseExtensionGroup .class))
-                .flatMap(List::stream)
-                .map(error -> String.join(" ",  error, "for child", String.valueOf(index[0])))
-                .collect(Collectors.toList());
-    }
-
-    public List<String> validateChildExtensionAllDate(CaseData caseData) {
-        ChildExtensionEventData childExtensionEventData = caseData.getChildExtensionEventData();
-        ChildExtension childExtensionAll = childExtensionEventData.getChildExtensionAll();
-
         int[] index = {0};
 
         return childExtensionEventData.getAllChildExtension().stream()
