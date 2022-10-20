@@ -72,7 +72,7 @@ public class CaseProgressionReportService {
     private static final List<HearingType> REQUIRED_HEARING_TYPE = List.of(
             CASE_MANAGEMENT, ISSUE_RESOLUTION, FINAL
     );
-    private static List<String> IGNORE_FIELDS = List.of("getLondonDFJ", "getMidlandsDFJ",
+    private static final List<String> IGNORE_FIELDS = List.of("getLondonDFJ", "getMidlandsDFJ",
             "getNorthEastDFJ", "getNorthWestDFJ", "getSouthEastDFJ",
             "getSouthWestDFJ", "getLondonDFJ", "getMidlandsDFJ", "getReportType");
 
