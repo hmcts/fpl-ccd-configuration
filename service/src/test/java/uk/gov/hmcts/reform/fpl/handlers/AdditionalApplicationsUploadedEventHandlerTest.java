@@ -18,6 +18,8 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ApplicantType;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -66,6 +68,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.CHILD;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.RESPONDENT;
@@ -261,6 +264,47 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS,
                 SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS, respondent1EmailAddress),
+            notifyData, CASE_ID.toString()
+        );
+    }
+
+    @Test
+    void shouldNotifyAllLAsAndChildWhenApplicantIsChild() {
+        final String child1FirstName = "Jack";
+        final String child1LastName = "Smith";
+        final String child1FullName = child1FirstName + " " + child1LastName;
+        final String child1EmailAddress = "child1@test.com";
+        List<Element<Child>> children = wrapElements(
+            Child.builder()
+                .party(ChildParty.builder().firstName(child1FirstName).lastName(child1LastName)
+                    .build())
+                .solicitor(RespondentSolicitor.builder().email(child1EmailAddress).build())
+                .build(),
+            Child.builder()
+                .party(ChildParty.builder().firstName("Ross").lastName("Bob").build())
+                .solicitor(RespondentSolicitor.builder().build())
+                .build()
+        );
+
+        given(localAuthorityRecipients.getRecipients(
+            RecipientsRequest.builder().caseData(caseData).build()))
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS, SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS));
+        given(caseData.getAllChildren()).willReturn(children);
+        given(caseData.getAdditionalApplicationsBundle()).willReturn(wrapElements(
+            AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .document(TEST_DOCUMENT)
+                    .applicantName(child1FullName)
+                    .build())
+                .build()
+        ));
+
+        OrderApplicant applicant = OrderApplicant.builder().name(child1FullName).type(CHILD).build();
+        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, applicant));
+
+        verify(notificationService).sendEmail(
+            INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS,
+                SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS, child1EmailAddress),
             notifyData, CASE_ID.toString()
         );
     }
