@@ -7,6 +7,9 @@ import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.CaseProgressionReportType;
 import uk.gov.hmcts.reform.fpl.model.Temp;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @Builder(toBuilder = true)
 @Jacksonized
@@ -116,4 +119,53 @@ public class CaseProgressionReportEventData {
     private String walesDFJ;
     @Temp
     private String nationalArea;
+
+    public List<String> getDFJCourts() {
+        ArrayList<String> dfgCourts = new ArrayList<>();
+        dfgCourts.add(centralLondonDFJCourts);
+        dfgCourts.add(eastLondonDFJCourts);
+        dfgCourts.add(westLondonDFJCourts);
+        dfgCourts.add(birminghamDFJCourts);
+        dfgCourts.add(coventryDFJCourts);
+        dfgCourts.add(derbyDFJCourts);
+        dfgCourts.add(leicesterDFJCourts);
+        dfgCourts.add(lincolnDFJCourts);
+        dfgCourts.add(northamptonDFJCourts);
+        dfgCourts.add(nottinghamDFJCourts);
+        dfgCourts.add(wolverhamptonDFJCourts);
+        dfgCourts.add(worcesterDFJCourts);
+        dfgCourts.add(stokeOnTrentrDFJCourts);
+        dfgCourts.add(clevelandAndSouthDurhamDFJCourts);
+        dfgCourts.add(humbersideDFJCourts);
+        dfgCourts.add(northYorkshireDFJCourts);
+        dfgCourts.add(northumbriaAndNorthDurhamDFJCourts);
+        dfgCourts.add(southYorkshireDFJCourts);
+        dfgCourts.add(westYorkshireDFJCourts);
+        dfgCourts.add(blackburnLancasterDFJCourts);
+        dfgCourts.add(carlisleDFJCourts);
+        dfgCourts.add(liverpoolDFJCourts);
+        dfgCourts.add(manchesterDFJCourts);
+        dfgCourts.add(brightonDFJCourts);
+        dfgCourts.add(essexAndSuffolkDFJCourts);
+        dfgCourts.add(guildfordDFJCourts);
+        dfgCourts.add(lutonDFJCourts);
+        dfgCourts.add(medwayDFJCourts);
+        dfgCourts.add(miltonKeynesDFJCourts);
+        dfgCourts.add(norwichDFJCourts);
+        dfgCourts.add(peterboroughDFJCourts);
+        dfgCourts.add(readingDFJCourts);
+        dfgCourts.add(watfordDFJCourts);
+        dfgCourts.add(bournemouthAndDorsetDFJCourts);
+        dfgCourts.add(bristolDFJCourts);
+        dfgCourts.add(devonDFJCourts);
+        dfgCourts.add(portsmouthDFJCourts);
+        dfgCourts.add(swindonDFJCourts);
+        dfgCourts.add(tauntonDFJCourts);
+        dfgCourts.add(truroDFJCourts);
+        dfgCourts.add(northWalesDFJCourts);
+        dfgCourts.add(southEastWalesDFJCourts);
+        dfgCourts.add(swanseaDFJCourts);
+        
+        return dfgCourts;
+    }
 }

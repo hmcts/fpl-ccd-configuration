@@ -710,4 +710,15 @@ class CaseProgressionReportServiceTest {
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Court not found");
     }
+
+    @Test
+    void shouldReturnValidCourtIdWhenCourtDFJSet() {
+        String courtId = "123";
+        CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
+                .liverpoolDFJCourts(courtId)
+                .build();
+
+        String actualCourtId = service.getCourt(caseProgressionReportEventData);
+        assertThat(actualCourtId).isEqualTo(courtId);
+    }
 }

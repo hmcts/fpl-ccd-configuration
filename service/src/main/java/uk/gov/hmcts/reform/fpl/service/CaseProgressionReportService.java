@@ -26,13 +26,8 @@ import uk.gov.hmcts.reform.fpl.utils.elasticsearch.SortQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.TermQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.TermsQuery;
 
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -40,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
@@ -72,15 +68,10 @@ public class CaseProgressionReportService {
     private static final List<HearingType> REQUIRED_HEARING_TYPE = List.of(
             CASE_MANAGEMENT, ISSUE_RESOLUTION, FINAL
     );
-    private static final List<String> IGNORE_FIELDS = List.of("getLondonDFJ", "getMidlandsDFJ",
-            "getNorthEastDFJ", "getNorthWestDFJ", "getSouthEastDFJ",
-            "getSouthWestDFJ", "getLondonDFJ", "getMidlandsDFJ", "getReportType");
 
     public static final List<String> REQUIRED_STATES = List.of(
             "submitted","gatekeeping","prepare_for_hearing","final_hearing"
     );
-
-
 
     private final SearchService searchService;
     private final CaseConverter converter;
@@ -125,7 +116,7 @@ public class CaseProgressionReportService {
     private String getHtmlReport(
             CaseData caseDataSelected,
             Function<LocalDate, RangeQuery> rangeQueryFunction
-    ) throws Exception {
+    ) {
         CaseProgressionReportEventData caseProgressionReportEventData =
                 caseDataSelected.getCaseProgressionReportEventData();
         String courtId = getCourt(caseProgressionReportEventData);
@@ -219,7 +210,7 @@ public class CaseProgressionReportService {
     }
 
     private Optional<File> getFileReport(CaseData caseDataSelected, Function<LocalDate, RangeQuery> rangeQueryFunction)
-            throws IOException, IntrospectionException {
+            throws IOException {
         String courtId = getCourt(caseDataSelected.getCaseProgressionReportEventData());
         Optional<File> optFile = Optional.empty();
 
@@ -370,35 +361,11 @@ public class CaseProgressionReportService {
         return optionalHearingInfoBuilder.map(HearingInfo.HearingInfoBuilder::build);
     }
 
-    public String getCourt(CaseProgressionReportEventData caseProgressionReportEventData)
-            throws IntrospectionException {
-        PropertyDescriptor[] propertyDescriptors = Introspector.getBeanInfo(
-                caseProgressionReportEventData.getClass(),
-                        Object.class)
-                .getPropertyDescriptors();
-
-        for (PropertyDescriptor propertyDescriptor: propertyDescriptors) {
-            if (Optional.ofNullable(propertyDescriptor.getReadMethod())
-                    .map(Method::getName)
-                    .filter(name -> !IGNORE_FIELDS.contains(name))
-                    .isPresent()
-            ) {
-                Optional<String> courtId = Optional.ofNullable(propertyDescriptor.getReadMethod())
-                    .map(property -> {
-                        try {
-                            return property.invoke(caseProgressionReportEventData);
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            log.error(property.getName(), e);
-                        }
-                        return null;
-                    })
-                    .map(String::valueOf);
-                if (courtId.isPresent()) {
-                    return courtId.get();
-                }
-            }
-        }
-        throw new IllegalArgumentException("Court not found");
+    public String getCourt(CaseProgressionReportEventData caseProgressionReportEventData) {
+        return caseProgressionReportEventData.getDFJCourts().stream()
+            .filter(Objects::nonNull)
+            .findFirst()
+            .orElseThrow(() ->  new IllegalArgumentException("Court not found"));
     }
 
     private ESQuery buildQuery(String courtId, RangeQuery rangeQuery) {
