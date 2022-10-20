@@ -12,6 +12,7 @@ public enum ApplicantType {
     LOCAL_AUTHORITY("Applicant"),
     SECONDARY_LOCAL_AUTHORITY("Secondary"),
     RESPONDENT("Respondent"),
+    CHILD("Child"),
     OTHER("");
 
     private final String type;
