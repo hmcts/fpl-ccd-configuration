@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
@@ -103,7 +104,8 @@ class FailedPBAPaymentEventHandlerEmailTemplateTest extends EmailTemplateTest {
     @Test
     void notifyLocalAuthorityC110A() {
         underTest.notifyApplicant(new FailedPBAPaymentEvent(
-            CaseData.builder().id(123L).build(), List.of(C110A_APPLICATION),
+            CaseData.builder().id(123L).representativeType(RepresentativeType.LOCAL_AUTHORITY).build(),
+            List.of(C110A_APPLICATION),
             OrderApplicant.builder().type(LOCAL_AUTHORITY).name(LOCAL_AUTHORITY_NAME).build()));
 
         assertThat(response())

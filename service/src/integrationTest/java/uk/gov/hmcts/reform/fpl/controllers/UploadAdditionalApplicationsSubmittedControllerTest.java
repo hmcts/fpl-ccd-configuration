@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -37,6 +36,7 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
+import uk.gov.hmcts.reform.sendletter.api.Letter;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
@@ -50,7 +50,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -87,8 +86,6 @@ import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.CO
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.documentSent;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.printRequest;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinary;
@@ -125,8 +122,6 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private UploadDocumentService uploadDocumentService;
     @MockBean
     private DocmosisCoverDocumentsService documentService;
-    @Captor
-    private ArgumentCaptor<LetterWithPdfsRequest> printRequest;
     @Captor
     private ArgumentCaptor<Map<String, Object>> caseDetails;
     @MockBean
@@ -196,6 +191,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             .willReturn(new SendLetterResponse(LETTER_1_ID));
     }
 
+
     @Test
     void submittedEventShouldNotifyHmctsAdminAndRepresentativesWhenCtscToggleIsDisabled() {
         List<Element<Respondent>> respondents = List.of(RESPONDENT_WITH_DIGITAL_REP, RESPONDENT_WITH_EMAIL_REP,
@@ -206,7 +202,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             .familyManCaseNumber(String.valueOf(CASE_ID))
             .respondents1(respondents)
             .representatives(List.of(REPRESENTATIVE_WITH_DIGITAL_PREFERENCE, REPRESENTATIVE_WITH_EMAIL_PREFERENCE,
-                REPRESENTATIVE_WITH_POST_PREFERENCE, OTHER_REP_BY_POST))
+                REPRESENTATIVE_WITH_POST_PREFERENCE))
             .others(Others.builder().firstOther(other).build())
             .additionalApplicationType(List.of(C2_ORDER))
             .sendToCtsc("No")
@@ -216,7 +212,6 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                     .type(WITH_NOTICE)
                     .document(ORDER)
                     .supplementsBundle(new ArrayList<>())
-                    .others(List.of(element(other)))
                     .respondents(List.of(
                         RESPONDENT_WITH_DIGITAL_REP, RESPONDENT_WITH_EMAIL_REP, UNREPRESENTED_RESPONDENT))
                     .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant").build())
@@ -254,23 +249,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             anyMap(),
             eq(notificationReference(CASE_ID))));
 
-        checkUntil(() -> verify(sendLetterApi).sendLetter(eq(SERVICE_AUTH_TOKEN), printRequest.capture()));
-        checkUntil(() -> verify(coreCaseDataService).updateCase(eq(CASE_ID), caseDetails.capture()));
-
-        LetterWithPdfsRequest expectedPrintRequest2 = printRequest(
-            CASE_ID, ORDER, COVERSHEET_OTHER_REPRESENTATIVE_BINARY, ORDER_BINARY);
-
-        assertThat(printRequest.getAllValues()).usingRecursiveComparison()
-            .isEqualTo(List.of(expectedPrintRequest2));
-
-        final CaseData caseUpdate = getCase(this.caseDetails);
-        SentDocument expectedDocumentSentToRespondent = documentSent(OTHER_REP_BY_POST.getValue(),
-            COVERSHEET_OTHER_REPRESENTATIVE, ORDER_DOCUMENT, LETTER_1_ID, now());
-
-        assertThat(caseUpdate.getDocumentsSentToParties()).hasSize(1);
-        assertThat(caseUpdate.getDocumentsSentToParties().get(0).getValue().getDocumentsSentToParty())
-            .extracting(Element::getValue)
-            .containsExactly(expectedDocumentSentToRespondent);
+        verify(sendLetterApi, never()).sendLetter(any(), any(Letter.class));
     }
 
     @Test

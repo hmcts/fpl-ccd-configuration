@@ -286,13 +286,13 @@ public class ManageHearingsService {
             caseFields.put(HEARING_END_DATE_TIME, hearingBooking.getEndDate());
         }
 
-        if (hearingBooking.getPreviousHearingVenue() == null
-            || hearingBooking.getPreviousHearingVenue().getPreviousVenue() == null) {
-            caseFields.put("hearingVenue", hearingBooking.getVenue());
-            caseFields.put("hearingVenueCustom", hearingBooking.getVenueCustomAddress());
-        } else {
+        if (hearingBooking.getPreviousHearingVenue() != null
+            && hearingBooking.getPreviousHearingVenue().getPreviousVenue() != null) {
             caseFields.put(PREVIOUS_HEARING_VENUE_KEY, hearingBooking.getPreviousHearingVenue());
         }
+
+        caseFields.put("hearingVenue", hearingBooking.getVenue());
+        caseFields.put("hearingVenueCustom", hearingBooking.getVenueCustomAddress());
 
         return caseFields;
     }

@@ -31,7 +31,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseName",
     "Label": "Case name",
-    "HintText": "Include the local authority name and respondent's last name. For example, Endley Council v Smith/Tate/Jones",
+    "HintText": "Include the applicant's name and respondent's last name. For example, Endley Council v Smith/Tate/Jones",
     "FieldType": "Text",
     "SecurityClassification": "Public",
     "Searchable": "Y"
@@ -251,17 +251,18 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "localAuthorities",
-    "Label": "Local authority",
+    "Label": "Applicant",
     "FieldType": "Collection",
     "FieldTypeParameter": "LocalAuthority",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "This holds all applicants, not just LAs"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "localAuthority",
-    "Label": "Applicant local authority",
+    "Label": "Applicant details",
     "FieldType": "LocalAuthority",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -440,6 +441,15 @@
     "ID": "orders",
     "Label": "Orders and directions needed",
     "FieldType": "Orders",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "ordersSolicitor",
+    "Label": "Orders and directions needed",
+    "FieldType": "OrdersSolicitor",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -1734,6 +1744,25 @@
     "Label": "Outsourcing type",
     "FieldType": "FixedList",
     "FieldTypeParameter": "CaseOutsourcingType",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "isLocalAuthority",
+    "Label": "Is local authority?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representativeType",
+    "Label": "Select who you are representing",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "RepresentativeType",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

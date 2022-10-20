@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
@@ -86,6 +88,7 @@ class FailedPBAPaymentEventHandlerTest {
             .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .caseLocalAuthorityName(LOCAL_AUTHORITY_NAME)
+            .representativeType(RepresentativeType.LOCAL_AUTHORITY)
             .respondents1(wrapElements(
                 Respondent.builder().party(RespondentParty.builder().firstName("John").lastName("Smith").build())
                     .solicitor(RespondentSolicitor.builder().email(RESPONDENT_EMAIL).build()).build(),
@@ -140,6 +143,43 @@ class FailedPBAPaymentEventHandlerTest {
         verify(notificationService).sendEmail(
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
             Set.of(DESIGNATED_LA_EMAIL_1, DESIGNATED_LA_EMAIL_2),
+            expectedParameters,
+            caseData.getId().toString());
+    }
+
+    @Test
+    void shouldNotifySolicitorWhenApplicationPBAPaymentFails() {
+        caseData = CaseData.builder()
+            .id(CASE_ID)
+            .representativeType(RepresentativeType.RESPONDENT_SOLICITOR)
+            .localAuthorities(wrapElements(
+                LocalAuthority.builder().name("Respondent Solicitor").email("test@test.com").build()
+            ))
+            .respondents1(wrapElements(
+                Respondent.builder().party(RespondentParty.builder().firstName("John").lastName("Smith").build())
+                    .solicitor(RespondentSolicitor.builder().email(RESPONDENT_EMAIL).build()).build(),
+                Respondent.builder().party(RespondentParty.builder().firstName("Ross").lastName("Bob").build())
+                    .solicitor(RespondentSolicitor.builder().build()).build(),
+                Respondent.builder().party(RespondentParty.builder().firstName("Timothy").lastName("Jones").build())
+                    .build()))
+            .others(Others.builder().firstOther(Other.builder().name("Joe Bloggs").build()).build())
+            .build();
+
+        final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
+            .applicationType(C110A_APPLICATION.getType())
+            .caseUrl("caseUrl")
+            .build();
+
+        given(failedPBAPaymentContentProvider.getApplicantNotifyData(List.of(C110A_APPLICATION), caseData))
+            .willReturn(expectedParameters);
+
+        failedPBAPaymentEventHandler.notifyApplicant(
+            new FailedPBAPaymentEvent(caseData, List.of(C110A_APPLICATION),
+                OrderApplicant.builder().type(LOCAL_AUTHORITY).name(caseData.getCaseLocalAuthorityName()).build()));
+
+        verify(notificationService).sendEmail(
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
+            "test@test.com",
             expectedParameters,
             caseData.getId().toString());
     }

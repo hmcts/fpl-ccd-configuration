@@ -446,7 +446,9 @@ class ManageHearingsServiceTest {
             Map.entry("preHearingAttendanceDetails", "Test pre attendance details"),
             Map.entry("sendNoticeOfHearingTranslationRequirements", TRANSLATION_REQUIREMENTS),
             Map.entry("hearingDuration", "DATE_TIME"),
-            Map.entry("hearingEndDateTime", endDate)
+            Map.entry("hearingEndDateTime", endDate),
+            Map.entry("hearingVenue", "OTHER"),
+            Map.entry("hearingVenueCustom", VENUE_CUSTOM_ADDRESS)
         ));
     }
 

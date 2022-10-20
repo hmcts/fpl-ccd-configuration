@@ -50,7 +50,6 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -140,15 +139,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             caseDetails.getData().put(SKIP_PAYMENT_PAGE, YES.getValue());
         }
 
-        if (caseData.hasRespondentsOrOthers()) {
-            caseDetails.getData().put("hasRespondentsOrOthers", "Yes");
-            caseDetails.getData().put("people_label", peopleInCaseService.buildPeopleInCaseLabel(
-                caseData.getAllRespondents(), caseData.getOthers()));
-
-            int selectorSize = caseData.getAllRespondents().size() + caseData.getAllOthers().size();
-            caseDetails.getData().put("personSelector", newSelector(selectorSize));
-        }
-
         return respond(caseDetails);
     }
 
@@ -208,10 +198,9 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         caseDetails.getData().put("c2DocumentBundle", uploadAdditionalApplicationsService
             .sortOldC2DocumentCollection(oldC2DocumentCollection));
 
-        removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT, "c2Type", "additionalApplicationType",
-            AMOUNT_TO_PAY, "temporaryPbaPayment", TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "applicantsList",
-            "otherApplicant", "people_label", "hasRespondentsOrOthers", "notifyApplicationsToAllOthers",
-            "personSelector", SKIP_PAYMENT_PAGE);
+        removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT, "c2Type",
+            "additionalApplicationType", AMOUNT_TO_PAY, "temporaryPbaPayment",
+            TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "applicantsList", "otherApplicant", SKIP_PAYMENT_PAGE);
 
         return respond(caseDetails);
     }
