@@ -86,8 +86,6 @@ public class CaseExtensionController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        LocalDate caseCompletionDate = caseExtensionService.getCaseCompletionDate(caseData);
-        caseDetails.getData().put("caseCompletionDate", caseCompletionDate);
         ChildExtensionEventData childExtensionEventData = caseData.getChildExtensionEventData();
 
         List<Element<Child>> children1;
@@ -100,6 +98,12 @@ public class CaseExtensionController extends CallbackController {
         } else {
             children1 = caseExtensionService.updateChildrenExtension(caseData);
         }
+        caseDetails.getData().put("caseCompletionDate",
+                caseExtensionService.getMaxExtendedTimeLine(caseData));
+
+        caseDetails.getData().put("caseSummaryExtensionDetails",
+                caseExtensionService.getCaseSummaryExtensionDetails(caseData));
+
         caseDetails.getData().put("children1", children1);
         removeTemporaryFields(caseDetails, ChildExtensionEventData.class);
         return respond(caseDetails);

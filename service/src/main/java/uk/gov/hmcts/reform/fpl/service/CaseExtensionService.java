@@ -24,7 +24,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.joining;
 import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.EIGHT_WEEK_EXTENSION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -178,7 +178,7 @@ public class CaseExtensionService {
     private void updateExtensionDate(ChildExtension childExtension, Element<Child> childElement, LocalDate caseCompletionDate) {
         Child child = childElement.getValue();
         ChildParty.ChildPartyBuilder childPartyBuilder = child.getParty().toBuilder();
-        childPartyBuilder.extensionReason(childExtension.getCaseExtensionReasonList().name());
+        childPartyBuilder.extensionReason(childExtension.getCaseExtensionReasonList());
         LocalDate childExtensionDate = childExtension.getExtensionDateOther();
 
         if (EIGHT_WEEK_EXTENSION.equals(childExtension.getCaseExtensionTimeList())) {
@@ -202,5 +202,28 @@ public class CaseExtensionService {
                 .flatMap(List::stream)
                 .map(error -> String.join(" ",  error, "for child", String.valueOf(index[0])))
                 .collect(Collectors.toList());
+    }
+
+    public String getCaseSummaryExtensionDetails(CaseData caseData) {
+        return ElementUtils.unwrapElements(caseData.getChildren1()).stream()
+            .map(Child::getParty)
+            .filter(childParty -> childParty.getCompletionDate() != null)
+            .map(childParty ->
+                String.join(" - ",
+                    childParty.getFullName(),
+                    formatLocalDateToString(childParty.getCompletionDate(), DATE),
+                    childParty.getExtensionReason().getLabel()
+                )
+            )
+            .collect(joining(System.lineSeparator()));
+    }
+
+    public LocalDate getMaxExtendedTimeLine(CaseData caseData) {
+        return ElementUtils.unwrapElements(caseData.getChildren1()).stream()
+            .map(Child::getParty)
+            .map(ChildParty::getCompletionDate)
+            .filter(Objects::nonNull)
+            .max(LocalDate::compareTo)
+            .orElseGet(caseData::getDefaultCompletionDate);
     }
 }

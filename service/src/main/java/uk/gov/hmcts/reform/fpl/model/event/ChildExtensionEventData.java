@@ -26,6 +26,34 @@ public class ChildExtensionEventData {
    @Temp
    ChildExtension childExtension1;
    @Temp
+   ChildExtension childExtension2;
+   @Temp
+   ChildExtension childExtension3;
+   @Temp
+   ChildExtension childExtension4;
+   @Temp
+   ChildExtension childExtension5;
+   @Temp
+   ChildExtension childExtension6;
+   @Temp
+   ChildExtension childExtension7;
+   @Temp
+   ChildExtension childExtension8;
+   @Temp
+   ChildExtension childExtension9;
+   @Temp
+   ChildExtension childExtension10;
+   @Temp
+   ChildExtension childExtension11;
+   @Temp
+   ChildExtension childExtension12;
+   @Temp
+   ChildExtension childExtension13;
+   @Temp
+   ChildExtension childExtension14;
+   @Temp
+   ChildExtension childExtension15;
+   @Temp
    ChildExtension childExtensionAll;
    @Temp
    Selector childSelectorForExtension;
@@ -37,11 +65,25 @@ public class ChildExtensionEventData {
    @JsonIgnore
    public List<ChildExtension> getAllChildExtension() {
       UnaryOperator<ChildExtension> verify = childExtension -> Optional.ofNullable(childExtension)
-              .filter(child -> child.getId() != null)
-              .orElse(null);
-      ArrayList<ChildExtension> childExtensions = new ArrayList<>();
+        .filter(child -> child.getId() != null)
+        .orElse(null);
+
+      List<ChildExtension> childExtensions = new ArrayList<>();
       childExtensions.add(verify.apply(childExtension0));
       childExtensions.add(verify.apply(childExtension1));
+      childExtensions.add(verify.apply(childExtension3));
+      childExtensions.add(verify.apply(childExtension4));
+      childExtensions.add(verify.apply(childExtension5));
+      childExtensions.add(verify.apply(childExtension6));
+      childExtensions.add(verify.apply(childExtension7));
+      childExtensions.add(verify.apply(childExtension8));
+      childExtensions.add(verify.apply(childExtension9));
+      childExtensions.add(verify.apply(childExtension10));
+      childExtensions.add(verify.apply(childExtension11));
+      childExtensions.add(verify.apply(childExtension12));
+      childExtensions.add(verify.apply(childExtension13));
+      childExtensions.add(verify.apply(childExtension14));
+      childExtensions.add(verify.apply(childExtension15));
       return childExtensions;
    }
 }
