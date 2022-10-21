@@ -2,11 +2,14 @@ package uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
@@ -37,23 +40,75 @@ class DeclarationOfParentagePrePopulatorTest {
         assertThat(underTest.accept()).isEqualTo(OrderQuestionBlock.DECLARATION_OF_PARENTAGE);
     }
 
+    private static Respondent createRespondent(String firstName, String lastName) {
+        return createRespondent(firstName, lastName, null, null);
+    }
+
+    private static Respondent createRespondent(String firstName, String lastName,
+                                               String solicitorFirstName, String solicitorLastName) {
+        Respondent.RespondentBuilder builder = Respondent.builder()
+            .party(RespondentParty.builder().firstName(firstName).lastName(lastName).build());
+        if (solicitorFirstName != null && solicitorLastName != null) {
+            builder.solicitor(RespondentSolicitor.builder()
+                .firstName(solicitorFirstName)
+                .lastName(solicitorLastName).build());
+        }
+        return builder.build();
+    }
+
+    private static Child createChild(String firstName, String lastName,
+                                     String solicitorFirstName, String solicitorLastName) {
+        Child.ChildBuilder builder = Child.builder()
+            .party(ChildParty.builder().firstName(firstName).lastName(lastName).build());
+        if (solicitorFirstName != null && solicitorLastName != null) {
+            builder.solicitor(RespondentSolicitor.builder()
+                .firstName(solicitorFirstName)
+                .lastName(solicitorLastName).build());
+        }
+        return builder.build();
+    }
+
+    private static DynamicList getExpectedManageOrdersParentageAction() {
+        return DynamicList.builder().listItems(
+            List.of(DynamicListElement.builder().code("IS").label("is").build(),
+                DynamicListElement.builder().code("ISNOT").label("is not").build(),
+                DynamicListElement.builder().code("WAS").label("was").build(),
+                DynamicListElement.builder().code("WASNOT").label("was not").build()
+            )
+        ).build();
+    }
+
+    private static Others createOthers(String... names) {
+        if (names == null) {
+            return null;
+        }
+        Others.OthersBuilder builder = Others.builder();
+        List<Element<Other>> additionalOthers = new ArrayList<>();
+        for (int i = 0; i < names.length; i++) {
+            if (i == 0) {
+                builder.firstOther(Other.builder().name(names[i]).build());
+            } else {
+                additionalOthers.add(element(Other.builder().name(names[i]).build()));
+            }
+        }
+        if (!additionalOthers.isEmpty()) {
+            builder.additionalOthers(additionalOthers);
+        }
+        return builder.build();
+    }
+
     @Test
     @SuppressWarnings("unchecked")
     void prePopulate() {
         List<Element<Respondent>> respondents = List.of(
             element(UUID.fromString("11111111-1111-1111-1111-111111111111"),
-                Respondent.builder().party(RespondentParty.builder().firstName("Peter").lastName("Smith").build()
-                ).build()));
+                createRespondent("Peter", "Smith")));
 
-        Others others = Others.builder()
-            .firstOther(Other.builder().name("Jack Johnson").build())
-            .additionalOthers(wrapElements(Other.builder().name("Alan Smith").build()))
-            .build();
         CaseData caseData = CaseData.builder()
             .localAuthorities(List.of(element(UUID.fromString("11111111-1111-1111-1111-111111111111"),
                 LocalAuthority.builder().name("Swansea local authority").build())))
             .respondents1(respondents)
-            .others(others)
+            .others(createOthers("Jack Johnson", "Alan Smith"))
             .build();
 
         when(dynamicListService.asDynamicList(isA(Map.class))).thenAnswer((a) -> DynamicList.builder()
@@ -66,9 +121,14 @@ class DeclarationOfParentagePrePopulatorTest {
                     .label("Swansea local authority").build()))
             .build();
         DynamicList hearingParties = DynamicList.builder().listItems(
-                List.of(DynamicListElement.builder()
-                    .code("Swansea local authority")
-                    .label("Swansea local authority, Applicant").build()))
+                List.of(
+                    DynamicListElement.builder()
+                        .code("Swansea local authority")
+                        .label("Swansea local authority, Applicant").build(),
+                    DynamicListElement.builder()
+                        .code("Peter Smith")
+                        .label("Peter Smith, Respondent 1").build())
+            )
             .build();
         DynamicList personWhoseParenthoodIs = DynamicList.builder().listItems(
                 List.of(DynamicListElement.builder()
@@ -89,14 +149,235 @@ class DeclarationOfParentagePrePopulatorTest {
                 "manageOrdersHearingParty1", hearingParties,
                 "manageOrdersHearingParty2", hearingParties,
                 "manageOrdersPersonWhoseParenthoodIs", personWhoseParenthoodIs,
-                "manageOrdersParentageAction", DynamicList.builder().listItems(
-                    List.of(DynamicListElement.builder().code("IS").label("is").build(),
-                        DynamicListElement.builder().code("ISNOT").label("is not").build(),
-                        DynamicListElement.builder().code("WAS").label("was").build(),
-                        DynamicListElement.builder().code("WASNOT").label("was not").build()
-                    )
-                ).build()
+                "manageOrdersParentageAction", getExpectedManageOrdersParentageAction()
             )
         );
     }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void prePopulateWithRespondentSolicitor() {
+        List<Element<Respondent>> respondents = List.of(
+            element(UUID.fromString("11111111-1111-1111-1111-111111111111"),
+                createRespondent("Peter", "Smith", "Peter", "Solicitor")));
+
+        CaseData caseData = CaseData.builder()
+            .localAuthorities(List.of(element(UUID.fromString("11111111-1111-1111-1111-111111111111"),
+                LocalAuthority.builder().name("Swansea local authority").build())))
+            .respondents1(respondents)
+            .others(createOthers("Jack Johnson", "Alan Smith"))
+            .build();
+
+        when(dynamicListService.asDynamicList(isA(Map.class))).thenAnswer((a) -> DynamicList.builder()
+            .listItems(new ArrayList<DynamicListElement>())
+            .build());
+
+        DynamicList applicants = DynamicList.builder().listItems(
+                List.of(DynamicListElement.builder()
+                    .code("11111111-1111-1111-1111-111111111111")
+                    .label("Swansea local authority").build()))
+            .build();
+        DynamicList hearingParties = DynamicList.builder().listItems(
+            List.of(
+                DynamicListElement.builder()
+                    .code("Swansea local authority")
+                    .label("Swansea local authority, Applicant").build(),
+                DynamicListElement.builder()
+                    .code("Peter Smith")
+                    .label("Peter Smith, Respondent 1").build(),
+                DynamicListElement.builder()
+                    .code("Peter Solicitor")
+                    .label("Peter Solicitor, Respondent 1's solicitor").build())
+        ).build();
+        DynamicList personWhoseParenthoodIs = DynamicList.builder().listItems(
+                List.of(DynamicListElement.builder()
+                        .code("Peter Smith")
+                        .label("Peter Smith, Respondent 1").build(),
+                    DynamicListElement.builder()
+                        .code("Jack Johnson")
+                        .label("Jack Johnson, Other to be given notice 1").build(),
+                    DynamicListElement.builder()
+                        .code("Alan Smith")
+                        .label("Alan Smith, Other to be given notice 2").build()))
+            .build();
+
+        Map<String, Object> actual = underTest.prePopulate(caseData);
+        assertThat(actual).isEqualTo(
+            Map.of(
+                "manageOrdersParentageApplicant", applicants,
+                "manageOrdersHearingParty1", hearingParties,
+                "manageOrdersHearingParty2", hearingParties,
+                "manageOrdersPersonWhoseParenthoodIs", personWhoseParenthoodIs,
+                "manageOrdersParentageAction", getExpectedManageOrdersParentageAction()
+            )
+        );
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void prePopulateWithOnlyOneOtherPerson() {
+        List<Element<Respondent>> respondents = List.of(
+            element(UUID.fromString("11111111-1111-1111-1111-111111111111"),
+                createRespondent("Peter", "Smith", "Peter", "Solicitor")));
+
+        CaseData caseData = CaseData.builder()
+            .localAuthorities(List.of(element(UUID.fromString("11111111-1111-1111-1111-111111111111"),
+                LocalAuthority.builder().name("Swansea local authority").build())))
+            .respondents1(respondents)
+            .others(createOthers("Jack Johnson"))
+            .build();
+
+        when(dynamicListService.asDynamicList(isA(Map.class))).thenAnswer((a) -> DynamicList.builder()
+            .listItems(new ArrayList<DynamicListElement>())
+            .build());
+
+        DynamicList applicants = DynamicList.builder().listItems(
+                List.of(DynamicListElement.builder()
+                    .code("11111111-1111-1111-1111-111111111111")
+                    .label("Swansea local authority").build()))
+            .build();
+        DynamicList hearingParties = DynamicList.builder().listItems(
+            List.of(
+                DynamicListElement.builder()
+                    .code("Swansea local authority")
+                    .label("Swansea local authority, Applicant").build(),
+                DynamicListElement.builder()
+                    .code("Peter Smith")
+                    .label("Peter Smith, Respondent 1").build(),
+                DynamicListElement.builder()
+                    .code("Peter Solicitor")
+                    .label("Peter Solicitor, Respondent 1's solicitor").build())
+        ).build();
+        DynamicList personWhoseParenthoodIs = DynamicList.builder().listItems(
+            List.of(DynamicListElement.builder()
+                        .code("Peter Smith")
+                        .label("Peter Smith, Respondent 1").build(),
+                    DynamicListElement.builder()
+                        .code("Jack Johnson")
+                        .label("Jack Johnson, Other to be given notice 1").build()
+                ))
+                .build();
+
+        Map<String, Object> actual = underTest.prePopulate(caseData);
+        assertThat(actual).isEqualTo(
+            Map.of(
+                "manageOrdersParentageApplicant", applicants,
+                "manageOrdersHearingParty1", hearingParties,
+                "manageOrdersHearingParty2", hearingParties,
+                "manageOrdersPersonWhoseParenthoodIs", personWhoseParenthoodIs,
+                "manageOrdersParentageAction", getExpectedManageOrdersParentageAction()
+            )
+        );
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void prePopulateWithoutOtherPerson() {
+        List<Element<Respondent>> respondents = List.of(
+            element(UUID.fromString("11111111-1111-1111-1111-111111111111"),
+                createRespondent("Peter", "Smith", "Peter", "Solicitor")));
+
+        CaseData caseData = CaseData.builder()
+            .localAuthorities(List.of(element(UUID.fromString("11111111-1111-1111-1111-111111111111"),
+                LocalAuthority.builder().name("Swansea local authority").build())))
+            .respondents1(respondents)
+            .build();
+
+        when(dynamicListService.asDynamicList(isA(Map.class))).thenAnswer((a) -> DynamicList.builder()
+            .listItems(new ArrayList<DynamicListElement>())
+            .build());
+
+        DynamicList applicants = DynamicList.builder().listItems(
+                List.of(DynamicListElement.builder()
+                    .code("11111111-1111-1111-1111-111111111111")
+                    .label("Swansea local authority").build()))
+            .build();
+        DynamicList hearingParties = DynamicList.builder().listItems(
+            List.of(
+                DynamicListElement.builder()
+                    .code("Swansea local authority")
+                    .label("Swansea local authority, Applicant").build(),
+                DynamicListElement.builder()
+                    .code("Peter Smith")
+                    .label("Peter Smith, Respondent 1").build(),
+                DynamicListElement.builder()
+                    .code("Peter Solicitor")
+                    .label("Peter Solicitor, Respondent 1's solicitor").build())
+        ).build();
+        DynamicList personWhoseParenthoodIs = DynamicList.builder().listItems(
+                List.of(DynamicListElement.builder()
+                        .code("Peter Smith")
+                        .label("Peter Smith, Respondent 1").build()
+                ))
+            .build();
+
+        Map<String, Object> actual = underTest.prePopulate(caseData);
+        assertThat(actual).isEqualTo(
+            Map.of(
+                "manageOrdersParentageApplicant", applicants,
+                "manageOrdersHearingParty1", hearingParties,
+                "manageOrdersHearingParty2", hearingParties,
+                "manageOrdersPersonWhoseParenthoodIs", personWhoseParenthoodIs,
+                "manageOrdersParentageAction", getExpectedManageOrdersParentageAction()
+            )
+        );
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void prePopulateWithChildSolicitor() {
+        List<Element<Respondent>> respondents = List.of(
+            element(UUID.fromString("11111111-1111-1111-1111-111111111111"),
+                createRespondent("Peter", "Smith", "Peter", "Solicitor")));
+
+        CaseData caseData = CaseData.builder()
+            .localAuthorities(List.of(element(UUID.fromString("11111111-1111-1111-1111-111111111111"),
+                LocalAuthority.builder().name("Swansea local authority").build())))
+            .children1(wrapElements(createChild("Harley", "Queen", "Harley","Solicitor")))
+            .respondents1(respondents)
+            .build();
+
+        when(dynamicListService.asDynamicList(isA(Map.class))).thenAnswer((a) -> DynamicList.builder()
+            .listItems(new ArrayList<DynamicListElement>())
+            .build());
+
+        DynamicList applicants = DynamicList.builder().listItems(
+                List.of(DynamicListElement.builder()
+                    .code("11111111-1111-1111-1111-111111111111")
+                    .label("Swansea local authority").build()))
+            .build();
+        DynamicList hearingParties = DynamicList.builder().listItems(
+            List.of(
+                DynamicListElement.builder()
+                    .code("Swansea local authority")
+                    .label("Swansea local authority, Applicant").build(),
+                DynamicListElement.builder()
+                    .code("Harley Solicitor")
+                    .label("Harley Solicitor, Child 1's solicitor").build(),
+                DynamicListElement.builder()
+                    .code("Peter Smith")
+                    .label("Peter Smith, Respondent 1").build(),
+                DynamicListElement.builder()
+                    .code("Peter Solicitor")
+                    .label("Peter Solicitor, Respondent 1's solicitor").build())
+        ).build();
+        DynamicList personWhoseParenthoodIs = DynamicList.builder().listItems(
+                List.of(DynamicListElement.builder()
+                    .code("Peter Smith")
+                    .label("Peter Smith, Respondent 1").build()
+                ))
+            .build();
+
+        Map<String, Object> actual = underTest.prePopulate(caseData);
+        assertThat(actual).isEqualTo(
+            Map.of(
+                "manageOrdersParentageApplicant", applicants,
+                "manageOrdersHearingParty1", hearingParties,
+                "manageOrdersHearingParty2", hearingParties,
+                "manageOrdersPersonWhoseParenthoodIs", personWhoseParenthoodIs,
+                "manageOrdersParentageAction", getExpectedManageOrdersParentageAction()
+            )
+        );
+    }
+
 }
