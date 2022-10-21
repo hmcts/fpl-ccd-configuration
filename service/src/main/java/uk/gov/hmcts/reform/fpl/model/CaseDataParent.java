@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.validation.groups.SecureAccommodationGroup;
 
@@ -39,4 +40,6 @@ public class CaseDataParent {
     @NotNull(message = "Add the grounds for the application")
     @Valid
     protected final GroundsForRefuseContactWithChild groundsForRefuseContactWithChild;
+
+    protected final YesNo skipPaymentPage;
 }
