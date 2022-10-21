@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ChildExtensionEventData;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
 
 import java.time.LocalDate;
@@ -28,6 +29,8 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.EIGHT_WEEK_EXTENSI
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getElement;
 
 @Service
@@ -60,17 +63,19 @@ public class CaseExtensionService {
         return Optional.ofNullable(caseData.getCaseCompletionDate()).orElse(caseData.getDateSubmitted().plusWeeks(26));
     }
 
-
     public String buildChildCaseCompletionDateLabel(CaseData caseData) {
-        List<Child> children = caseData.getChildren1().stream().map(Element::getValue).collect(toList());
+        List<Child> children = ElementUtils.unwrapElements(caseData.getChildren1());
 
         StringBuilder sb = new StringBuilder();
 
         for(int i=0; i < children.size(); i++){
             ChildParty childParty = children.get(i).getParty();
-            LocalDate childCaseCompletionDate = this.getCaseCompletionDate(caseData);
+            String childCaseCompletionDate = formatLocalDateToString(
+                    Optional.ofNullable(childParty.getCompletionDate())
+                    .orElseGet(caseData::getDefaultCompletionDate),
+                    DATE);
             sb.append(String.format("Child %d: %s: %s", i+1, childParty.getFullName(), childCaseCompletionDate))
-                .append("\n");
+                .append(System.lineSeparator());
         }
         return sb.toString();
     }
