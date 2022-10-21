@@ -12,13 +12,13 @@ import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
@@ -150,15 +150,21 @@ public class AdditionalApplicationsUploadedEventHandler {
             .caseData(caseData).build()));
 
         if (applicant.getType() != LOCAL_AUTHORITY && applicant.getType() != SECONDARY_LOCAL_AUTHORITY) {
-            final Map<String, String> respondentsEmails = getRespondentsEmails(caseData);
-            if (isNotEmpty(respondentsEmails.get(applicant.getName()))) {
-                recipients.add(respondentsEmails.get(applicant.getName()));
+            final Map<String, String> emails = getRespondentAndChildEmails(caseData);
+            if (isNotEmpty(emails.get(applicant.getName()))) {
+                recipients.add(emails.get(applicant.getName()));
             }
         }
 
         if (isNotEmpty(recipients)) {
             sendNotification(caseData, recipients);
         }
+    }
+
+    private Map<String, String> getRespondentAndChildEmails(CaseData caseData) {
+        Map<String, String> emails = getRespondentsEmails(caseData);
+        emails.putAll(getChildrenEmails(caseData));
+        return emails;
     }
 
     private Map<String, String> getRespondentsEmails(CaseData caseData) {
@@ -170,7 +176,16 @@ public class AdditionalApplicationsUploadedEventHandler {
             ));
     }
 
-    private boolean hasNoSolicitorEmail(Element<Respondent> respondent) {
+    private Map<String, String> getChildrenEmails(CaseData caseData) {
+        return caseData.getAllChildren().stream()
+            .collect(Collectors.toMap(
+                child -> child.getValue().getParty().getFullName(),
+                child -> hasNoSolicitorEmail(child) ? EMPTY
+                    : child.getValue().getSolicitor().getEmail()
+            ));
+    }
+
+    private boolean hasNoSolicitorEmail(Element<? extends WithSolicitor> respondent) {
         return isNull(respondent.getValue().getSolicitor()) || isEmpty(respondent.getValue().getSolicitor().getEmail());
     }
 
