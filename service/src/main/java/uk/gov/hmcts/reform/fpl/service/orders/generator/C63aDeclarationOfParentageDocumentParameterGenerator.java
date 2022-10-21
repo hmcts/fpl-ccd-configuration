@@ -44,17 +44,17 @@ public class C63aDeclarationOfParentageDocumentParameterGenerator implements Doc
             + eventData.getManageOrdersPersonWhoseParenthoodIs().getValue().getCode() + " ";
         ret += eventData.getManageOrdersParentageAction().getValue().getLabel() + " the parent of ";
         ret += childrenSmartSelector.getSelectedChildren(caseData).get(0).getValue().getParty().getFullName();
-        return ret;
+        return ret + ".";
     }
 
     private String buildOrderMessage(ManageOrdersEventData eventData) {
         String ret = "Upon the application of "
             + eventData.getManageOrdersParentageApplicant().getValue().getLabel() + "\n";
-        ret += "and upon hearing " + eventData.getManageOrdersHearingParty1().getValue().getCode() + "\n";
+        ret += "and upon hearing " + eventData.getManageOrdersHearingParty1().getValue().getCode();
         if (eventData.getManageOrdersHearingParty2() != null) {
-            ret += "and upon hearing " + eventData.getManageOrdersHearingParty2().getValue().getCode() + "\n";
+            ret += "\nand upon hearing " + eventData.getManageOrdersHearingParty2().getValue().getCode();
         }
-        return ret;
+        return ret + ".";
     }
 
 }
