@@ -3960,16 +3960,6 @@
     }
   },
   {
-    "hearingVenueId": 431,
-    "venue": "York Family Court",
-    "address": {
-      "AddressLine1": "York Hilton",
-      "AddressLine2": "1 Tower Street",
-      "PostTown": "York",
-      "PostCode": "YO1 9WD"
-    }
-  },
-  {
     "hearingVenueId": 432,
     "venue": "Medway Civil and Family Court",
     "address": {
