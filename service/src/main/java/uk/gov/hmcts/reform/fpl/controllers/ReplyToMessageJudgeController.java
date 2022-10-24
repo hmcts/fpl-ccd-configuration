@@ -12,11 +12,11 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
-import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageEvent;
+import uk.gov.hmcts.reform.fpl.events.JudicialMessageReplyEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
-import uk.gov.hmcts.reform.fpl.service.SendNewMessageJudgeService;
+import uk.gov.hmcts.reform.fpl.service.ReplyToMessageJudgeService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
@@ -29,10 +29,10 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 
 @Api
 @RestController
-@RequestMapping("/callback/message-judge")
+@RequestMapping("/callback/reply-message-judge")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class MessageJudgeController extends CallbackController {
-    private final SendNewMessageJudgeService messageJudgeService;
+public class ReplyToMessageJudgeController extends CallbackController {
+    private final ReplyToMessageJudgeService replyToMessageJudgeService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -40,7 +40,7 @@ public class MessageJudgeController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
 
-        caseDetailsMap.putAll(messageJudgeService.initialiseCaseFields(caseData));
+        caseDetailsMap.putAll(replyToMessageJudgeService.initialiseCaseFields(caseData));
 
         return respond(caseDetailsMap);
     }
@@ -51,15 +51,26 @@ public class MessageJudgeController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
 
-        caseDetailsMap.putAll(messageJudgeService.populateNewMessageFields(caseData));
+        caseDetailsMap.putAll(replyToMessageJudgeService.populateReplyMessageFields(caseData));
 
-        Optional<String> emailError = messageJudgeService.validateRecipientEmail(caseData);
+        Optional<String> emailError = replyToMessageJudgeService.validateRecipientEmail(caseData);
         if (!emailError.isEmpty()) {
             return respond(caseDetailsMap, List.of(emailError.get()));
         }
 
         return respond(caseDetailsMap);
     }
+
+    @PostMapping("/validate/mid-event")
+    public AboutToStartOrSubmitCallbackResponse validateReplyMessage(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        List<String> errors = replyToMessageJudgeService.validateJudgeReplyMessage(caseData);
+
+        return respond(caseDetails, errors);
+    }
+
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -68,8 +79,7 @@ public class MessageJudgeController extends CallbackController {
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
         List<Element<JudicialMessage>> updatedMessages;
 
-        updatedMessages = messageJudgeService.addNewJudicialMessage(caseData);
-        caseDetailsMap.put("judicialMessages", messageJudgeService.sortJudicialMessages(updatedMessages));
+        caseDetailsMap.putAll(replyToMessageJudgeService.updateJudicialMessages(caseData));
 
         removeTemporaryFields(caseDetailsMap, transientFields());
 
@@ -85,11 +95,11 @@ public class MessageJudgeController extends CallbackController {
             judicialMessages.addAll(caseData.getClosedJudicialMessages());
         }
 
-        judicialMessages = messageJudgeService.sortJudicialMessages(judicialMessages);
+        judicialMessages = replyToMessageJudgeService.sortJudicialMessages(judicialMessages);
         JudicialMessage judicialMessage = judicialMessages.get(0).getValue();
 
         if (OPEN.equals(judicialMessage.getStatus())) {
-            publishEvent(new NewJudicialMessageEvent(caseData, judicialMessage));
+            publishEvent(new JudicialMessageReplyEvent(caseData, judicialMessage));
         }
 
         publishEvent(new AfterSubmissionCaseDataUpdated(getCaseData(callbackRequest),
