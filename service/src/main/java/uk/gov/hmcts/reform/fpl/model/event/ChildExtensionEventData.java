@@ -22,6 +22,8 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 @JsonInclude(value= NON_NULL)
 public class ChildExtensionEventData {
    @Temp
+   String childCaseCompletionDateLabel;
+   @Temp
    ChildExtension childExtension0;
    @Temp
    ChildExtension childExtension1;

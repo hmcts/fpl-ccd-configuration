@@ -60,7 +60,7 @@ public class CaseExtensionService {
     }
 
     public LocalDate getCaseShouldBeCompletedByDate(CaseData caseData) {
-        return Optional.ofNullable(getMaxExtendedTimeLine(caseData)).orElse(caseData.getDateSubmitted().plusWeeks(26));
+        return Optional.ofNullable(caseData.getCaseCompletionDate()).orElse(caseData.getDateSubmitted().plusWeeks(26));
     }
 
     public String buildChildCaseCompletionDateLabel(CaseData caseData) {
@@ -204,8 +204,8 @@ public class CaseExtensionService {
                 .collect(Collectors.toList());
     }
 
-    public String getCaseSummaryExtensionDetails(CaseData caseData) {
-        return ElementUtils.unwrapElements(caseData.getChildren1()).stream()
+    public String getCaseSummaryExtensionDetails(List<Element<Child>> children1) {
+        return ElementUtils.unwrapElements(children1).stream()
             .map(Child::getParty)
             .filter(childParty -> childParty.getCompletionDate() != null)
             .map(childParty ->
@@ -218,8 +218,8 @@ public class CaseExtensionService {
             .collect(joining(System.lineSeparator()));
     }
 
-    public LocalDate getMaxExtendedTimeLine(CaseData caseData) {
-        return ElementUtils.unwrapElements(caseData.getChildren1()).stream()
+    public LocalDate getMaxExtendedTimeLine(CaseData caseData, List<Element<Child>> children1) {
+        return ElementUtils.unwrapElements(children1).stream()
             .map(Child::getParty)
             .map(ChildParty::getCompletionDate)
             .filter(Objects::nonNull)
