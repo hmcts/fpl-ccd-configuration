@@ -21,7 +21,7 @@
     "PageID": "extend26WeekTimelineChildSelect",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "Y"
+    "ShowSummaryChangeOption": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -43,14 +43,14 @@
     "CaseEventID": "extend26WeekTimeline",
     "CaseFieldID": "childSelected0",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "READONLY",
     "PageID": "extend26WeekTimelineSelectExtension",
     "PageLabel": "",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-extension/mid-event",
     "FieldShowCondition": "sameExtensionForAllChildren=\"DO_NOT_SHOW\"",
-    "ShowSummaryChangeOption": "N"
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-extension/mid-event",
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -58,13 +58,14 @@
     "CaseEventID": "extend26WeekTimeline",
     "CaseFieldID": "childSelected1",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "READONLY",
     "PageID": "extend26WeekTimelineSelectExtension",
     "PageLabel": "",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "FieldShowCondition": "sameExtensionForAllChildren=\"DO_NOT_SHOW\"",
-    "ShowSummaryChangeOption": "N"
+    "RetainHiddenValue": "Yes",
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -72,12 +73,13 @@
     "CaseEventID": "extend26WeekTimeline",
     "CaseFieldID": "childSelected2",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "READONLY",
     "PageID": "extend26WeekTimelineSelectExtension",
     "PageLabel": "",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "FieldShowCondition": "sameExtensionForAllChildren=\"DO_NOT_SHOW\"",
+    "RetainHiddenValue": "Yes",
     "ShowSummaryChangeOption": "N"
   },
   {
@@ -86,12 +88,13 @@
     "CaseEventID": "extend26WeekTimeline",
     "CaseFieldID": "childSelected3",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "READONLY",
     "PageID": "extend26WeekTimelineSelectExtension",
     "PageLabel": "",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "FieldShowCondition": "sameExtensionForAllChildren=\"DO_NOT_SHOW\"",
+    "RetainHiddenValue": "Yes",
     "ShowSummaryChangeOption": "N"
   },
   {
@@ -100,12 +103,13 @@
     "CaseEventID": "extend26WeekTimeline",
     "CaseFieldID": "childSelected4",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "READONLY",
     "PageID": "extend26WeekTimelineSelectExtension",
     "PageLabel": "",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "FieldShowCondition": "sameExtensionForAllChildren=\"DO_NOT_SHOW\"",
+    "RetainHiddenValue": "Yes",
     "ShowSummaryChangeOption": "N"
   },
   {
@@ -114,12 +118,13 @@
     "CaseEventID": "extend26WeekTimeline",
     "CaseFieldID": "childSelected5",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "READONLY",
     "PageID": "extend26WeekTimelineSelectExtension",
     "PageLabel": "",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "FieldShowCondition": "sameExtensionForAllChildren=\"DO_NOT_SHOW\"",
+    "RetainHiddenValue": "Yes",
     "ShowSummaryChangeOption": "N"
   },
   {
@@ -128,12 +133,13 @@
     "CaseEventID": "extend26WeekTimeline",
     "CaseFieldID": "childSelected6",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "READONLY",
     "PageID": "extend26WeekTimelineSelectExtension",
     "PageLabel": "",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "FieldShowCondition": "sameExtensionForAllChildren=\"DO_NOT_SHOW\"",
+    "RetainHiddenValue": "Yes",
     "ShowSummaryChangeOption": "N"
   },
   {
@@ -142,12 +148,13 @@
     "CaseEventID": "extend26WeekTimeline",
     "CaseFieldID": "childSelected7",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "READONLY",
     "PageID": "extend26WeekTimelineSelectExtension",
     "PageLabel": "",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "FieldShowCondition": "sameExtensionForAllChildren=\"DO_NOT_SHOW\"",
+    "RetainHiddenValue": "Yes",
     "ShowSummaryChangeOption": "N"
   },
   {
@@ -156,12 +163,13 @@
     "CaseEventID": "extend26WeekTimeline",
     "CaseFieldID": "childSelected8",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "READONLY",
     "PageID": "extend26WeekTimelineSelectExtension",
     "PageLabel": "",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "FieldShowCondition": "sameExtensionForAllChildren=\"DO_NOT_SHOW\"",
+    "RetainHiddenValue": "Yes",
     "ShowSummaryChangeOption": "N"
   },
   {
@@ -170,12 +178,13 @@
     "CaseEventID": "extend26WeekTimeline",
     "CaseFieldID": "childSelected9",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "READONLY",
     "PageID": "extend26WeekTimelineSelectExtension",
     "PageLabel": "",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "FieldShowCondition": "sameExtensionForAllChildren=\"DO_NOT_SHOW\"",
+    "RetainHiddenValue": "Yes",
     "ShowSummaryChangeOption": "N"
   },
   {
@@ -184,12 +193,13 @@
     "CaseEventID": "extend26WeekTimeline",
     "CaseFieldID": "childSelected10",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "READONLY",
     "PageID": "extend26WeekTimelineSelectExtension",
     "PageLabel": "",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "FieldShowCondition": "sameExtensionForAllChildren=\"DO_NOT_SHOW\"",
+    "RetainHiddenValue": "Yes",
     "ShowSummaryChangeOption": "N"
   },
   {
@@ -198,12 +208,13 @@
     "CaseEventID": "extend26WeekTimeline",
     "CaseFieldID": "childSelected11",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "READONLY",
     "PageID": "extend26WeekTimelineSelectExtension",
     "PageLabel": "",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "FieldShowCondition": "sameExtensionForAllChildren=\"DO_NOT_SHOW\"",
+    "RetainHiddenValue": "Yes",
     "ShowSummaryChangeOption": "N"
   },
   {
@@ -212,12 +223,13 @@
     "CaseEventID": "extend26WeekTimeline",
     "CaseFieldID": "childSelected12",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "READONLY",
     "PageID": "extend26WeekTimelineSelectExtension",
     "PageLabel": "",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "FieldShowCondition": "sameExtensionForAllChildren=\"DO_NOT_SHOW\"",
+    "RetainHiddenValue": "Yes",
     "ShowSummaryChangeOption": "N"
   },
   {
@@ -226,12 +238,13 @@
     "CaseEventID": "extend26WeekTimeline",
     "CaseFieldID": "childSelected13",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "READONLY",
     "PageID": "extend26WeekTimelineSelectExtension",
     "PageLabel": "",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "FieldShowCondition": "sameExtensionForAllChildren=\"DO_NOT_SHOW\"",
+    "RetainHiddenValue": "Yes",
     "ShowSummaryChangeOption": "N"
   },
   {
@@ -240,12 +253,13 @@
     "CaseEventID": "extend26WeekTimeline",
     "CaseFieldID": "childSelected14",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "READONLY",
     "PageID": "extend26WeekTimelineSelectExtension",
     "PageLabel": "",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "FieldShowCondition": "sameExtensionForAllChildren=\"DO_NOT_SHOW\"",
+    "RetainHiddenValue": "Yes",
     "ShowSummaryChangeOption": "N"
   },
   {
@@ -271,7 +285,7 @@
     "PageID": "extend26WeekTimelineSelectExtension",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "Y"
+    "ShowSummaryChangeOption": "N"
   },
   {
     "LiveFrom": "01/01/2017",

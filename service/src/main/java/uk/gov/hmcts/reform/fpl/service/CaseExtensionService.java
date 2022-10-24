@@ -60,7 +60,7 @@ public class CaseExtensionService {
     }
 
     public LocalDate getCaseShouldBeCompletedByDate(CaseData caseData) {
-        return Optional.ofNullable(caseData.getCaseCompletionDate()).orElse(caseData.getDateSubmitted().plusWeeks(26));
+        return Optional.ofNullable(getMaxExtendedTimeLine(caseData)).orElse(caseData.getDateSubmitted().plusWeeks(26));
     }
 
     public String buildChildCaseCompletionDateLabel(CaseData caseData) {
@@ -116,7 +116,7 @@ public class CaseExtensionService {
     private void setChildDetails(List<Element<Child>> children, Map<String, Object> selectedChildren, int value) {
         selectedChildren.put(
             String.join("", "childSelected", String.valueOf(value)),
-            YES.getValue());
+                YES.getValue());
 
         selectedChildren.put(
             String.join("", "childExtension", String.valueOf(value)),

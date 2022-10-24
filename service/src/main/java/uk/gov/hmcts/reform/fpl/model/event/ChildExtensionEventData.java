@@ -52,8 +52,6 @@ public class ChildExtensionEventData {
    @Temp
    ChildExtension childExtension14;
    @Temp
-   ChildExtension childExtension15;
-   @Temp
    ChildExtension childExtensionAll;
    @Temp
    Selector childSelectorForExtension;
@@ -61,6 +59,36 @@ public class ChildExtensionEventData {
    String extensionForAllChildren;
    @Temp
    String sameExtensionForAllChildren;
+   @Temp
+   String childSelected0;
+   @Temp
+   String childSelected1;
+   @Temp
+   String childSelected2;
+   @Temp
+   String childSelected3;
+   @Temp
+   String childSelected4;
+   @Temp
+   String childSelected5;
+   @Temp
+   String childSelected6;
+   @Temp
+   String childSelected7;
+   @Temp
+   String childSelected8;
+   @Temp
+   String childSelected9;
+   @Temp
+   String childSelected10;
+   @Temp
+   String childSelected11;
+   @Temp
+   String childSelected12;
+   @Temp
+   String childSelected13;
+   @Temp
+   String childSelected14;
 
    @JsonIgnore
    public List<ChildExtension> getAllChildExtension() {
@@ -83,7 +111,7 @@ public class ChildExtensionEventData {
       childExtensions.add(verify.apply(childExtension12));
       childExtensions.add(verify.apply(childExtension13));
       childExtensions.add(verify.apply(childExtension14));
-      childExtensions.add(verify.apply(childExtension15));
+
       return childExtensions;
    }
 }
