@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.HighCourtAdminEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -31,6 +32,7 @@ public class CourtService {
 
     private final HmctsCourtLookupConfiguration courtLookup;
     private final CtscEmailLookupConfiguration ctscLookup;
+    private final HighCourtAdminEmailLookupConfiguration highCourtAdminEmailLookupConfiguration;
 
     public Court getCourt(CaseData caseData) {
 
@@ -42,9 +44,12 @@ public class CourtService {
             return ctscLookup.getEmail();
         }
 
-        return ofNullable(getCourt(caseData))
-            .map(Court::getEmail)
-            .orElse(null);
+        Optional<Court> court = ofNullable(getCourt(caseData));
+        if (court.isPresent() && court.get().getCode().equals(RCJ_HIGH_COURT_CODE)) {
+            return highCourtAdminEmailLookupConfiguration.getEmail();
+        }
+
+        return court.map(Court::getEmail).orElse(null);
     }
 
     public String getPreviousCourtName(CaseData caseData) {
