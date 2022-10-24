@@ -39,7 +39,6 @@ public class CaseExtensionService {
 
     private final ChildrenService childrenService;
     private final OptionCountBuilder optionCountBuilder;
-    private final ChildrenSmartSelector childrenSmartSelector;
     private final ValidateGroupService validateGroupService;
 
     public LocalDate getCaseCompletionDate(CaseData caseData) {
@@ -49,7 +48,7 @@ public class CaseExtensionService {
             }
             return caseData.getEightWeeksExtensionDateOther();
         }
-        if(caseData.getExtensionDateOther() != null){
+        if (caseData.getExtensionDateOther() != null) {
             return caseData.getExtensionDateOther();
         }
         return caseData.getDefaultCompletionDate();
@@ -68,13 +67,13 @@ public class CaseExtensionService {
 
         StringBuilder sb = new StringBuilder();
 
-        for(int i=0; i < children.size(); i++){
+        for (int i = 0; i < children.size(); i++) {
             ChildParty childParty = children.get(i).getParty();
             String childCaseCompletionDate = formatLocalDateToString(
                     Optional.ofNullable(childParty.getCompletionDate())
                     .orElseGet(caseData::getDefaultCompletionDate),
                     DATE);
-            sb.append(String.format("Child %d: %s: %s", i+1, childParty.getFullName(), childCaseCompletionDate))
+            sb.append(String.format("Child %d: %s: %s", i + 1, childParty.getFullName(), childCaseCompletionDate))
                 .append(System.lineSeparator());
         }
         return sb.toString();
@@ -95,7 +94,8 @@ public class CaseExtensionService {
 
     public List<String> validateChildSelector(CaseData caseData) {
         String orderAppliesToAllChildren = caseData.getChildExtensionEventData().getExtensionForAllChildren();
-        Selector childSelector = caseData.getChildExtensionEventData().getChildSelectorForExtension(); // update this to use the new field for extend timeline
+
+        Selector childSelector = caseData.getChildExtensionEventData().getChildSelectorForExtension();
 
         if (NO.getValue().equals(orderAppliesToAllChildren) && childSelector.getSelected().isEmpty()) {
             return List.of("Select the children requiring an extension");
@@ -129,7 +129,7 @@ public class CaseExtensionService {
     public Map<String, Object> getAllChildren(CaseData caseData) {
         List<Element<Child>> children = caseData.getChildren1();
         Map<String, Object> selectedChildren = new HashMap<>();
-        for(int i=0; i < children.size(); i++) {
+        for (int i = 0; i < children.size(); i++) {
             setChildDetails(children, selectedChildren, i);
         }
         return selectedChildren;
@@ -175,7 +175,9 @@ public class CaseExtensionService {
         return children;
     }
 
-    private void updateExtensionDate(ChildExtension childExtension, Element<Child> childElement, LocalDate caseCompletionDate) {
+    private void updateExtensionDate(ChildExtension childExtension,
+                                     Element<Child> childElement,
+                                     LocalDate caseCompletionDate) {
         Child child = childElement.getValue();
         ChildParty.ChildPartyBuilder childPartyBuilder = child.getParty().toBuilder();
         childPartyBuilder.extensionReason(childExtension.getCaseExtensionReasonList());
@@ -198,7 +200,7 @@ public class CaseExtensionService {
         return childExtensionEventData.getAllChildExtension().stream()
                 .peek(data -> index[0]++)
                 .filter(Objects::nonNull)
-                .map(childExtension -> validateGroupService.validateGroup(childExtension, CaseExtensionGroup .class))
+                .map(childExtension -> validateGroupService.validateGroup(childExtension, CaseExtensionGroup.class))
                 .flatMap(List::stream)
                 .map(error -> String.join(" ",  error, "for child", String.valueOf(index[0])))
                 .collect(Collectors.toList());

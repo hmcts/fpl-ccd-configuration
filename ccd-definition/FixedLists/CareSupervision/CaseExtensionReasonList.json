@@ -19,5 +19,12 @@
     "ListElementCode": "DELAY_IN_CASE_OR_IMPACT_ON_CHILD",
     "ListElement": "Delay in case/impact on child",
     "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseExtensionReasonList",
+    "ListElementCode": "INTERNATIONAL_ASPECT",
+    "ListElement": "International Aspect",
+    "DisplayOrder": 4
   }
 ]

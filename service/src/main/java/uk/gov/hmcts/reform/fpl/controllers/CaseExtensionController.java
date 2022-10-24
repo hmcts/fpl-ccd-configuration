@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -74,7 +73,8 @@ public class CaseExtensionController extends CallbackController {
         ChildExtensionEventData childExtensionEventData = caseData.getChildExtensionEventData();
         List<String> errors;
         if (YES.getValue().equals(childExtensionEventData.getSameExtensionForAllChildren())) {
-            errors = validateGroupService.validateGroup(childExtensionEventData.getChildExtensionAll(), CaseExtensionGroup.class);
+            errors = validateGroupService.validateGroup(childExtensionEventData.getChildExtensionAll(),
+                    CaseExtensionGroup.class);
         } else {
             errors =  caseExtensionService.validateChildExtensionDate(caseData);
         }
@@ -89,11 +89,11 @@ public class CaseExtensionController extends CallbackController {
         ChildExtensionEventData childExtensionEventData = caseData.getChildExtensionEventData();
 
         List<Element<Child>> children1;
-        if (YES.getValue().equals(childExtensionEventData.getExtensionForAllChildren()) &&
-            YES.getValue().equals(childExtensionEventData.getSameExtensionForAllChildren())) {
+        if (YES.getValue().equals(childExtensionEventData.getExtensionForAllChildren())
+                && YES.getValue().equals(childExtensionEventData.getSameExtensionForAllChildren())) {
             children1 = caseExtensionService.updateAllChildrenExtension(caseData);
-        } else if (NO.getValue().equals(childExtensionEventData.getExtensionForAllChildren()) &&
-            YES.getValue().equals(childExtensionEventData.getSameExtensionForAllChildren())) {
+        } else if (NO.getValue().equals(childExtensionEventData.getExtensionForAllChildren())
+                && YES.getValue().equals(childExtensionEventData.getSameExtensionForAllChildren())) {
             children1 = caseExtensionService.updateAllSelectedChildrenExtension(caseData);
         } else {
             children1 = caseExtensionService.updateChildrenExtension(caseData);

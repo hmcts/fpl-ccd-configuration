@@ -17,7 +17,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 @Value
 @Jacksonized
 @Builder
-@JsonInclude(value= NON_NULL)
+@JsonInclude(value = NON_NULL)
 public class ChildExtension {
     CaseExtensionTime caseExtensionTimeList;
     CaseExtensionReasonList caseExtensionReasonList;

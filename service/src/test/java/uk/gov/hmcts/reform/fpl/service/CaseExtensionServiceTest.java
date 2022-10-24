@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.Mock;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.time.LocalDate;
@@ -15,15 +17,25 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.EIGHT_WEEK_EXTENSI
 import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.OTHER_EXTENSION;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, CaseExtensionService.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class})
 class CaseExtensionServiceTest {
 
     private static final LocalDate DATE_SUBMITTED = LocalDate.of(2020, 1, 1);
 
     private static final LocalDate OTHER_DATE = LocalDate.of(2020, 3, 3);
     private static final LocalDate EXTENDED_OTHER = OTHER_DATE.plusWeeks(8);
-    @Autowired
+
+    @Mock
+    private ValidateGroupService validateGroupService;
+
     private CaseExtensionService service;
+
+    @BeforeEach
+    void setUp() {
+        ChildrenService childrenService = new ChildrenService();
+        OptionCountBuilder optionCountBuilder = new OptionCountBuilder();
+        service = new CaseExtensionService(childrenService, optionCountBuilder, validateGroupService);
+    }
 
     @Test
     void shouldGetCaseCompletionDateWhenSubmittingWithOtherExtensionDate() {
