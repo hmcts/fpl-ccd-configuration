@@ -3,15 +3,16 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
-import uk.gov.hmcts.reform.fpl.enums.ApplicationRemovalReason;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
@@ -26,13 +27,12 @@ import uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
-import uk.gov.hmcts.reform.fpl.enums.RemovableType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
-import uk.gov.hmcts.reform.fpl.exceptions.LocalAuthorityNotFound;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -146,8 +146,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
-@Builder(toBuilder = true)
-@AllArgsConstructor
+@SuperBuilder(toBuilder = true)
+@Jacksonized
+@EqualsAndHashCode(callSuper = true)
 @HasDocumentsIncludedInSwet(groups = UploadDocumentsGroup.class)
 @IsStateMigratable(groups = MigrateStateGroup.class)
 @IsValidHearingEdit(groups = HearingBookingGroup.class)
@@ -155,7 +156,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
     groups = HearingEndDateGroup.class)
 @EPOTimeRange(message = "Date must be within 8 days of the order date", groups = EPOEndDateGroup.class,
     maxDate = @TimeDifference(amount = 8, unit = DAYS))
-public class CaseData {
+public class CaseData extends CaseDataParent {
     private final Long id;
     private final State state;
     @NotBlank(message = "Enter a case name")
@@ -166,6 +167,8 @@ public class CaseData {
     private OrganisationPolicy outsourcingPolicy;
     private OrganisationPolicy sharedLocalAuthorityPolicy;
     private OutsourcingType outsourcingType;
+    private RepresentativeType representativeType;
+    private YesNo isLocalAuthority;
     private Object outsourcingLAs;
     private Court court;
     private List<Element<Court>> pastCourtList;
@@ -184,9 +187,13 @@ public class CaseData {
     @NotNull(message = "Add the orders and directions sought")
     @Valid
     private final Orders orders;
+    private final Orders ordersSolicitor;
     @NotNull(message = "Add the grounds for the application")
     @Valid
     private final Grounds grounds;
+    @NotNull(message = "Add the grounds for the application")
+    @Valid
+    private final GroundsForChildAssessmentOrder groundsForChildAssessmentOrder;
     @NotNull(message = "Add the grounds for the application", groups = EPOGroup.class)
     @Valid
     private final GroundsForEPO groundsForEPO;
@@ -195,7 +202,8 @@ public class CaseData {
     @Deprecated
     private final List<@NotNull(message = "Add applicant's details") Element<Applicant>> applicants;
 
-    private List<@NotNull(message = "Add local authority's details") Element<LocalAuthority>> localAuthorities;
+    // This holds all applicants, not just LA's
+    private List<@NotNull(message = "Add applicant's details") Element<LocalAuthority>> localAuthorities;
 
     @Valid
     @NotEmpty(message = "Add the respondents' details")
@@ -223,26 +231,8 @@ public class CaseData {
     private final Allocation allocationProposal;
     private final Allocation allocationDecision;
 
-    private final List<Element<Direction>> allParties;
-    private final List<Element<Direction>> allPartiesCustom;
-    private final List<Element<Direction>> localAuthorityDirections;
-    private final List<Element<Direction>> localAuthorityDirectionsCustom;
-    private final List<Element<Direction>> courtDirections;
-    private final List<Element<Direction>> courtDirectionsCustom;
-    private final List<Element<Direction>> cafcassDirections;
-    private final List<Element<Direction>> cafcassDirectionsCustom;
-    private final List<Element<Direction>> otherPartiesDirections;
-    private final List<Element<Direction>> otherPartiesDirectionsCustom;
-    private final List<Element<Direction>> respondentDirections;
-    private final List<Element<Direction>> respondentDirectionsCustom;
-
     private final StandardDirectionOrder standardDirectionOrder;
     private final UrgentHearingOrder urgentHearingOrder;
-    private final List<Element<StandardDirectionOrder>> hiddenStandardDirectionOrders;
-
-    public List<Element<StandardDirectionOrder>> getHiddenStandardDirectionOrders() {
-        return defaultIfNull(hiddenStandardDirectionOrders, new ArrayList<>());
-    }
 
     private GatekeepingOrderRoute sdoRouter;
     private GatekeepingOrderRoute gatekeepingOrderRouter;
@@ -289,7 +279,6 @@ public class CaseData {
     @JsonProperty("documents_socialWorkEvidenceTemplate_document")
     @Valid
     public final Document socialWorkEvidenceTemplateDocument;
-    public final CourtBundle courtBundle;
     @NotEmpty(message = "Add the child's details")
     @Valid
     private final List<@NotNull(message = "Add the child's details") Element<Child>> children1;
@@ -346,7 +335,6 @@ public class CaseData {
     private final PBAPayment temporaryPbaPayment;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
     private final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle;
-    private final List<Element<AdditionalApplicationsBundle>> hiddenApplicationsBundle;
     private final DynamicList applicantsList;
     private final String otherApplicant;
 
@@ -356,9 +344,7 @@ public class CaseData {
     // Transient field
     private YesNo caseFlagValueUpdated;
 
-    public List<Element<AdditionalApplicationsBundle>> getHiddenApplicationsBundle() {
-        return defaultIfNull(hiddenApplicationsBundle, new ArrayList<>());
-    }
+
 
     @JsonIgnore
     public boolean hasC2DocumentBundle() {
@@ -491,17 +477,9 @@ public class CaseData {
         return orderCollection != null ? orderCollection : new ArrayList<>();
     }
 
-    private final Object removableOrderList;
-    private final Object removableApplicationList;
-    private final String reasonToRemoveOrder;
-    private final List<Element<GeneratedOrder>> hiddenOrders;
-    private final RemovableType removableType;
-    private final ApplicationRemovalReason reasonToRemoveApplication;
-    private final String applicationRemovalDetails;
-
-    public List<Element<GeneratedOrder>> getHiddenOrders() {
-        return defaultIfNull(hiddenOrders, new ArrayList<>());
-    }
+    @JsonUnwrapped
+    @Builder.Default
+    private final RemovalToolData removalToolData = RemovalToolData.builder().build();
 
     private final Others others;
 
@@ -971,12 +949,6 @@ public class CaseData {
             .min(comparing(HearingBooking::getStartDate));
     }
 
-    private final List<Element<HearingOrder>> hiddenCaseManagementOrders;
-
-    @JsonIgnore
-    public List<Element<HearingOrder>> getHiddenCMOs() {
-        return defaultIfNull(hiddenCaseManagementOrders, new ArrayList<>());
-    }
 
     private String sendToCtsc;
     private String displayAmountToPay;
@@ -1144,7 +1116,7 @@ public class CaseData {
             .map(Element::getValue)
             .filter(la -> YesNo.YES.getValue().equals(la.getDesignated()))
             .findFirst()
-            .orElseThrow(() -> new LocalAuthorityNotFound("Designated local authority not found for case " + id));
+            .orElse(null);
     }
 
     @JsonIgnore
@@ -1170,6 +1142,8 @@ public class CaseData {
 
     private final DynamicList placementList;
 
+    private final List<Element<PlacementNoticeDocument>> placementNoticeResponses;
+
     @JsonIgnore
     public boolean isDischargeOfCareApplication() {
 
@@ -1178,9 +1152,36 @@ public class CaseData {
             .orElse(false);
     }
 
+    @JsonIgnore
+    public boolean isC1Application() {
+        return ofNullable(getOrders())
+            .map(Orders::isC1Order)
+            .orElse(false);
+    }
+
+    @JsonIgnore
+    public boolean isSecureAccommodationOrderType() {
+        return ofNullable(getOrders())
+            .map(Orders::isSecureAccommodationOrder)
+            .orElse(false);
+    }
+
     private List<Element<DocumentWithConfidentialAddress>> documentsWithConfidentialAddress;
 
     @JsonUnwrapped
     @Builder.Default
     private final OtherToRespondentEventData otherToRespondentEventData = OtherToRespondentEventData.builder().build();
+
+    private List<Element<Colleague>> colleaguesToNotify;
+
+    public List<Element<Colleague>> getColleaguesToNotify() {
+        return colleaguesToNotify != null ? colleaguesToNotify : new ArrayList<>();
+    }
+
+    @JsonIgnore
+    public boolean isRefuseContactWithChildApplication() {
+        return ofNullable(getOrders())
+            .map(Orders::isRefuseContactWithChildApplication)
+            .orElse(false);
+    }
 }

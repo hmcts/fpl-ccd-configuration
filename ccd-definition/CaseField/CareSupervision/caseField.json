@@ -31,7 +31,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseName",
     "Label": "Case name",
-    "HintText": "Include the local authority name and respondent's last name. For example, Endley Council v Smith/Tate/Jones",
+    "HintText": "Include the applicant's name and respondent's last name. For example, Endley Council v Smith/Tate/Jones",
     "FieldType": "Text",
     "SecurityClassification": "Public",
     "Searchable": "Y"
@@ -72,6 +72,33 @@
     "ID": "groundsForEPO",
     "Label": "How are there grounds for an emergency protection order?",
     "FieldType": "GroundsForEPO",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "groundsForChildAssessmentOrder",
+    "Label": "How are there grounds for a child assessment order?",
+    "FieldType": "GroundsForChildAssessmentOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "groundsForSecureAccommodationOrder",
+    "Label": "How are there grounds for a secure accommodation order?",
+    "FieldType": "GroundsForSecureAccommodationOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "groundsForRefuseContactWithChild",
+    "Label": "How are there grounds for an authority to refuse contact with a child in care application?",
+    "FieldType": "GroundsForRefuseContactWithChild",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -224,17 +251,18 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "localAuthorities",
-    "Label": "Local authority",
+    "Label": "Applicant",
     "FieldType": "Collection",
     "FieldTypeParameter": "LocalAuthority",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "This holds all applicants, not just LAs"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "localAuthority",
-    "Label": "Applicant local authority",
+    "Label": "Applicant details",
     "FieldType": "LocalAuthority",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -419,8 +447,26 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "ordersSolicitor",
+    "Label": "Orders and directions needed",
+    "FieldType": "OrdersSolicitor",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "submittedForm",
-    "Label": "C110a Application",
+    "Label": "Application Form",
+    "FieldType": "Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "supplementDocument",
+    "Label": "Application Supplement",
     "FieldType": "Document",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -539,6 +585,15 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "draftApplicationDocument",
+    "FieldType": "Document",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "draftSupplement",
     "FieldType": "Document",
     "Label": " ",
     "SecurityClassification": "Public",
@@ -809,6 +864,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "skipPaymentPage",
+    "Label": "Skip payment page",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Hidden field used to control whether we skip the payment page (i.e. for adjourning hearings additional app)"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "c2ApplicationType",
     "Label": "Upload C2",
     "FieldType": "C2ApplicationTypeSelection",
@@ -897,7 +962,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "legalRepresentatives",
-    "Label": "LA Legal representatives",
+    "Label": "LA counsel/external solicitors",
     "FieldType": "Collection",
     "FieldTypeParameter": "LegalRepresentative",
     "SecurityClassification": "Public",
@@ -907,7 +972,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageLegalRepresentativesLabel",
-    "Label": "Legal representatives must be registered to use the service before you can add them to a case.<br/><br/>After they're registered, they'll only have access to cases you add them to. They will not be able to see all your organisation's cases.<br/><br/>They will be able to upload:<ul><li>case documents</li><li>c2 applications and associated documents</li><li>pre- and post-hearing CMOs</li></ul>They can register at [https://manage-org.platform.hmcts.net/register-org/register](https://manage-org.platform.hmcts.net/register-org/register)",
+    "Label": "Counsel/external solicitors must be registered to use the service before you can add them to a case.<br/><br/>After they're registered, they'll only have access to cases you add them to. They will not be able to see all your organisation's cases.<br/><br/>They will be able to upload:<ul><li>case documents</li><li>c2 applications and associated documents</li><li>pre- and post-hearing CMOs</li></ul>They can register at [https://manage-org.platform.hmcts.net/register-org/register](https://manage-org.platform.hmcts.net/register-org/register)",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -1685,6 +1750,25 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "isLocalAuthority",
+    "Label": "Is local authority?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representativeType",
+    "Label": "Select who you are representing",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "RepresentativeType",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "additionalApplicationType",
     "Label": "What are you applying for?",
     "FieldType": "MultiSelectList",
@@ -1962,6 +2046,24 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "otherOrderType",
+    "Label": " ",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "secureAccommodationOrderType",
+    "Label": " ",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refuseContactWithChildOrderType",
     "Label": " ",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",

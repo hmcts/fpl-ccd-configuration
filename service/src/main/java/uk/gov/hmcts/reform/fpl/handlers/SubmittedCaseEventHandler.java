@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ApplicantType;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
@@ -81,8 +82,13 @@ public class SubmittedCaseEventHandler {
     public void notifyCafcass(final SubmittedCaseEvent event) {
         CaseData caseData = event.getCaseData();
 
+        if (!caseData.getRepresentativeType().equals(RepresentativeType.LOCAL_AUTHORITY)) {
+            log.info("Application has been made as a non-LA, skipping Cafcass notification.");
+            return;
+        }
+
         Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
-            .map(CafcassLookupConfiguration.Cafcass::getEmail);
+                .map(CafcassLookupConfiguration.Cafcass::getEmail);
 
         if (recipientIsWelsh.isPresent()) {
             NotifyData notifyData = cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData);
@@ -95,11 +101,22 @@ public class SubmittedCaseEventHandler {
     @EventListener
     public void notifyCafcassSendGrid(final SubmittedCaseEvent event) {
         CaseData caseData = event.getCaseData();
+
+        if (!caseData.getRepresentativeType().equals(RepresentativeType.LOCAL_AUTHORITY)) {
+            log.info("Application has been made as a non-LA, skipping Cafcass notification.");
+            return;
+        }
+
         final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
                 cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
 
         if (recipientIsEngland.isPresent()) {
             Set<DocumentReference> documentReferences = Optional.ofNullable(caseData.getC110A().getSubmittedForm())
+                    .map(documentReference ->
+                        documentReference.toBuilder()
+                            .type(NEW_APPLICATION.getLabel())
+                            .build()
+                    )
                     .map(Set::of)
                     .orElse(of());
 
@@ -115,6 +132,11 @@ public class SubmittedCaseEventHandler {
     @EventListener
     public void notifyManagedLA(SubmittedCaseEvent event) {
         CaseData caseData = event.getCaseData();
+
+        if (!caseData.getRepresentativeType().equals(RepresentativeType.LOCAL_AUTHORITY)) {
+            log.info("Application has been made as a non-LA, skipping managed LA notification.");
+            return;
+        }
 
         if (!caseData.isOutsourced()) {
             return;

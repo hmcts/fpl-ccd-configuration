@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
 import uk.gov.hmcts.reform.fnp.model.payment.FeeDto;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderSection;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig;
@@ -53,6 +54,8 @@ import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.JURISDICTION_2;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.OTHER_KEYWORD;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.PLACEMENT_KEYWORD;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.PR_FATHER_KEYWORD;
+import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.REFUSE_CONTACT_WITH_CHILD_KEYWORD;
+import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.SECURE_ACCOMMODATION_ENG_KEYWORD;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.SECURE_ACCOMMODATION_WALES_KEYWORD;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.SERVICE;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.SUPERVISION_ORDER_KEYWORD;
@@ -145,6 +148,9 @@ class FeeServiceTest {
     class GetFeesDataForOrders {
         private static final String CARE_ORDER_CODE = "FEE001";
         private static final String SUPERVISION_ORDER_CODE = "FEE002";
+        private static final String SECURE_ACCOMMODATION_ORDER_ENG_CODE = "FEE0331";
+        private static final String SECURE_ACCOMMODATION_ORDER_WALES_CODE = "FEE0503";
+        private static final String REFUSE_CONTACT_WITH_CHILD_CODE = "FEE0329";
 
         @BeforeEach
         void setup() {
@@ -160,6 +166,24 @@ class FeeServiceTest {
                 JURISDICTION_2,
                 SUPERVISION_ORDER_KEYWORD,
                 SERVICE)).thenReturn(buildFeeResponse(SUPERVISION_ORDER_CODE, BigDecimal.TEN));
+            when(feesRegisterApi.findFee(CHANNEL,
+                EVENT,
+                JURISDICTION_1,
+                JURISDICTION_2,
+                SECURE_ACCOMMODATION_ENG_KEYWORD,
+                SERVICE)).thenReturn(buildFeeResponse(SECURE_ACCOMMODATION_ORDER_ENG_CODE, BigDecimal.TEN));
+            when(feesRegisterApi.findFee(CHANNEL,
+                EVENT,
+                JURISDICTION_1,
+                JURISDICTION_2,
+                SECURE_ACCOMMODATION_WALES_KEYWORD,
+                SERVICE)).thenReturn(buildFeeResponse(SECURE_ACCOMMODATION_ORDER_WALES_CODE, BigDecimal.TEN));
+            when(feesRegisterApi.findFee(CHANNEL,
+                EVENT,
+                JURISDICTION_1,
+                JURISDICTION_2,
+                REFUSE_CONTACT_WITH_CHILD_KEYWORD,
+                SERVICE)).thenReturn(buildFeeResponse(REFUSE_CONTACT_WITH_CHILD_CODE, BigDecimal.TEN));
         }
 
         @Test
@@ -186,6 +210,38 @@ class FeeServiceTest {
             assertThat(feesData.getTotalAmount()).isEqualTo(BigDecimal.TEN);
             assertThat(fees).hasSize(1);
             assertThat(fees.get(0).getCode()).isEqualTo(SUPERVISION_ORDER_CODE);
+            assertThat(fees.get(0).getCalculatedAmount()).isEqualTo(BigDecimal.TEN);
+        }
+
+        @Test
+        void shouldReturnCorrectFeesDataForSecureAccommodationOrdersEngland() {
+            Orders orders = Orders.builder()
+                .orderType(List.of(OrderType.SECURE_ACCOMMODATION_ORDER))
+                .secureAccommodationOrderSection(SecureAccommodationOrderSection.ENGLAND)
+                .build();
+
+            FeesData feesData = feeService.getFeesDataForOrders(orders);
+            List<FeeDto> fees = feesData.getFees();
+
+            assertThat(feesData.getTotalAmount()).isEqualTo(BigDecimal.TEN);
+            assertThat(fees).hasSize(1);
+            assertThat(fees.get(0).getCode()).isEqualTo(SECURE_ACCOMMODATION_ORDER_ENG_CODE);
+            assertThat(fees.get(0).getCalculatedAmount()).isEqualTo(BigDecimal.TEN);
+        }
+
+        @Test
+        void shouldReturnCorrectFeesDataForSecureAccommodationOrdersWales() {
+            Orders orders = Orders.builder()
+                .orderType(List.of(OrderType.SECURE_ACCOMMODATION_ORDER))
+                .secureAccommodationOrderSection(SecureAccommodationOrderSection.WALES)
+                .build();
+
+            FeesData feesData = feeService.getFeesDataForOrders(orders);
+            List<FeeDto> fees = feesData.getFees();
+
+            assertThat(feesData.getTotalAmount()).isEqualTo(BigDecimal.TEN);
+            assertThat(fees).hasSize(1);
+            assertThat(fees.get(0).getCode()).isEqualTo(SECURE_ACCOMMODATION_ORDER_WALES_CODE);
             assertThat(fees.get(0).getCalculatedAmount()).isEqualTo(BigDecimal.TEN);
         }
 
@@ -296,7 +352,7 @@ class FeeServiceTest {
         @Test
         void shouldReturnFeesDataWithMaximumAmountForOtherApplicationTypeAndSupplementType() {
             FeesData feesData = feeService.getFeesDataForAdditionalApplications(
-                List.of(FeeType.C2_WITH_NOTICE, FeeType.CHILD_ASSESSMENT, FeeType.RECOVERY_ORDER));
+                List.of(FeeType.C2_WITH_NOTICE, FeeType.CHILD_ASSESSMENT_ORDER, FeeType.RECOVERY_ORDER));
 
             assertThat(feesData.getTotalAmount()).isEqualTo(BigDecimal.valueOf(60));
             assertThat(getFirstFeeCode(feesData)).isEqualTo(CHILD_ASSESSMENT);
@@ -305,7 +361,7 @@ class FeeServiceTest {
         @Test
         void shouldReturnFeesDataWithMaximumAmountForSupplementTypeWithSecureAccommodation() {
             FeesData feesData = feeService.getFeesDataForAdditionalApplications(List.of(
-                FeeType.CHANGE_SURNAME, FeeType.CHILD_ASSESSMENT, FeeType.SECURE_ACCOMMODATION_WALES));
+                FeeType.CHANGE_SURNAME, FeeType.CHILD_ASSESSMENT_ORDER, FeeType.SECURE_ACCOMMODATION_WALES));
 
             assertThat(feesData.getTotalAmount()).isEqualTo(BigDecimal.valueOf(75));
             assertThat(getFirstFeeCode(feesData)).isEqualTo(SECURE_ACCOMMODATION_WALES);

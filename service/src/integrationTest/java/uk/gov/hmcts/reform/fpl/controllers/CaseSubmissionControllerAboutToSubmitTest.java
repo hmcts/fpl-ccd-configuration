@@ -78,7 +78,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
     void mocking() {
         givenCurrentUserWithName("Emma Taylor");
 
-        doReturn(document).when(caseSubmissionService).generateSubmittedFormPDF(any(), eq(false));
+        doReturn(document).when(caseSubmissionService).generateC110aSubmittedFormPDF(any(), eq(false));
 
         given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENT, "2313.pdf"))
             .willReturn(document);
@@ -123,6 +123,25 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
+    void shouldSetCtscPropertyToNoWhenCaseLocalAuthorityIsNotSet() {
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(CaseDetails.builder()
+            .id(2313L)
+            .data(Map.of(
+                "dateSubmitted", dateNow(),
+                "orders", Orders.builder().orderType(List.of(CARE_ORDER)).build(),
+                "amountToPay", "233300",
+                "displayAmountToPay", "Yes",
+                "applicants", wrapElements(buildApplicant()),
+                "respondents1", wrapElements(Respondent.builder().party(buildRespondentParty()).build())
+            ))
+            .build());
+
+        assertThat(callbackResponse.getData())
+            .containsEntry("sendToCtsc", "No");
+    }
+
+    @Test
     void shouldRetainPaymentInformationInCase() {
         given(featureToggleService.isCtscEnabled(anyString())).willReturn(true);
 
@@ -163,7 +182,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
 
             assertThat(callbackResponse.getData()).containsEntry("caseLocalAuthority", localAuthority);
             assertThat(callbackResponse.getErrors()).contains("You cannot submit this application online yet."
-                + " Ask your FPL administrator for your local authority’s enrolment date");
+                + " Ask your FPL administrator for your local authority's enrolment date");
         }
 
         @Test

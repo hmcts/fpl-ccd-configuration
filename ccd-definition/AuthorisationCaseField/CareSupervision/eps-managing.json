@@ -191,6 +191,20 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "groundsForSecureAccommodationOrder",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "groundsForRefuseContactWithChild",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "EPO_REASONING_SHOW",
     "UserRole": "[EPSMANAGING]",
     "CRUD": "CRU"
@@ -373,7 +387,21 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "ordersSolicitor",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "submittedForm",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "supplementDocument",
     "UserRole": "[EPSMANAGING]",
     "CRUD": "CRU"
   },
@@ -493,6 +521,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2DocumentBundle",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "skipPaymentPage",
     "UserRole": "[EPSMANAGING]",
     "CRUD": "CRU"
   },
@@ -1767,6 +1802,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documentsWithConfidentialAddress",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "expertReport",
     "UserRole": "[EPSMANAGING]",
     "CRUD": "R"
   }

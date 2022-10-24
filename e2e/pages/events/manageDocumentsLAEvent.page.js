@@ -1,6 +1,7 @@
 const {I} = inject();
 const c2SupportingDocuments = require('../../fixtures/c2SupportingDocuments.js');
 const supportingDocumentsFragment = require('../../fragments/supportingDocuments.js');
+const placementNoticeResponsesFragment = require('../../fragments/placementNoticeResponse.js');
 
 module.exports = {
   fields: {
@@ -9,6 +10,7 @@ module.exports = {
       correspondence: '#manageDocumentLA_type-CORRESPONDENCE',
       additionalApplications: '#manageDocumentLA_type-ADDITIONAL_APPLICATIONS_DOCUMENTS',
       courtBundle: '#manageDocumentLA_type-COURT_BUNDLE',
+      placementNoticeResponses: '#manageDocumentLA_type-PLACEMENT_NOTICE_RESPONSE',
     },
     relatedToHearing: {
       yes: '#manageDocumentLA_relatedToHearing_Yes',
@@ -20,6 +22,7 @@ module.exports = {
       otherDocuments: '#manageDocumentSubtypeListLA-OTHER',
     },
     respondentStatementList: '#respondentStatementList',
+    placementList: '#manageDocumentsPlacementList',
     hearingList: '#manageDocumentsHearingList',
     hearingDocumentsHearingList: '#hearingDocumentsHearingList',
     courtBundleDocument: index => supportingDocumentsFragment.supportingDocuments(index, 'manageDocumentsCourtBundle'),
@@ -27,6 +30,7 @@ module.exports = {
     supportingDocumentsForC2: supportingDocumentsFragment.supportingDocuments(0, 'temporaryC2Document_supportingEvidenceBundle'),
     supportingDocumentsCollectionId: '#supportingEvidenceDocumentsTemp',
     supportingDocuments: index => supportingDocumentsFragment.supportingDocuments(index, 'supportingEvidenceDocumentsTemp'),
+    placementNoticeResponses: index => placementNoticeResponsesFragment.placementResponses(index, 'placementNoticeResponses'),
   },
 
   async selectFurtherEvidence() {
@@ -55,6 +59,14 @@ module.exports = {
 
   async selectCourtBundle() {
     I.click(this.fields.documentType.courtBundle);
+  },
+
+  async selectPlacementResponses() {
+    I.click(this.fields.documentType.placementNoticeResponses);
+  },
+
+  async selectPlacementApplication(childName) {
+    I.selectOption(this.fields.placementList, childName);
   },
 
   async selectApplicationBundleFromDropdown(index) {
@@ -122,6 +134,16 @@ module.exports = {
     I.attachFile(this.fields.supportingDocuments(elementIndex).document, document);
   },
 
+  async uploadPlacementResponseDocument(document) {
+    const elementIndex = await this.getActiveElementIndex();
+    I.attachFile(this.fields.placementNoticeResponses(elementIndex).document, document);
+  },
+
+  async enterPlacementResponseDescription(description) {
+    const elementIndex = await this.getActiveElementIndex();
+    I.fillField(this.fields.placementNoticeResponses(elementIndex).description, description);
+  },
+
   async selectFurtherEvidenceType(type) {
     const elementIndex = await this.getActiveElementIndex();
     switch (type) {
@@ -164,6 +186,12 @@ module.exports = {
     await this.enterDocumentName(supportingEvidenceDocument.name);
     await this.enterDocumentNotes(supportingEvidenceDocument.notes);
     await this.uploadDocument(supportingEvidenceDocument.document);
+    await I.runAccessibilityTest();
+  },
+
+  async uploadPlacementResponse(placementResponse) {
+    await this.enterPlacementResponseDescription(placementResponse.description);
+    await this.uploadPlacementResponseDocument(placementResponse.document);
     await I.runAccessibilityTest();
   },
 

@@ -15,7 +15,10 @@ import org.mockito.quality.Strictness;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderGround;
+import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderSection;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
@@ -24,7 +27,10 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
+import uk.gov.hmcts.reform.fpl.model.GroundsForChildAssessmentOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
+import uk.gov.hmcts.reform.fpl.model.GroundsForRefuseContactWithChild;
+import uk.gov.hmcts.reform.fpl.model.GroundsForSecureAccommodationOrder;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -39,6 +45,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisAnnexDocuments;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC14Supplement;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC16Supplement;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC20Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisFactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearing;
@@ -59,6 +68,7 @@ import static java.time.LocalDate.now;
 import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -82,6 +92,7 @@ import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissio
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
@@ -117,6 +128,8 @@ class CaseSubmissionGenerationServiceTest {
         given(time.now()).willReturn(LocalDateTime.of(NOW, LocalTime.NOON));
         given(userService.getUserName()).willReturn("Professor");
         given(courtService.getCourtName(any())).willReturn(COURT_NAME);
+        given(courtService.getCourtSeal(any(), eq(OrderStatus.SEALED)))
+            .willReturn(COURT_SEAL.getValue(ENGLISH));
     }
 
     @Test
@@ -320,6 +333,9 @@ class CaseSubmissionGenerationServiceTest {
                 + "Education supervision order\n"
                 + "Emergency protection order\n"
                 + "Variation or discharge of care or supervision order\n"
+                + "Child Assessment Order\n"
+                + "Secure Accommodation order\n"
+                + "Authority to refuse contact with a child in care\n"
                 + "expected other order";
             assertThat(caseSubmission.getOrdersNeeded()).isEqualTo(expectedOrdersNeeded);
         }
@@ -393,6 +409,266 @@ class CaseSubmissionGenerationServiceTest {
                 + "Authorisation to search for another child on the premises\n"
                 + "Other order under section 48 of the Children Act 1989";
             assertThat(caseSubmission.getOrdersNeeded()).isEqualTo(expectedOrdersNeeded);
+        }
+    }
+
+    @Nested
+    class DocmosisCaseSubmissionChildrenNamesTest {
+
+        @Test
+        void shouldPopulateOneChildsNames() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .children1(of(
+                    element(Child.builder()
+                        .party(ChildParty.builder().firstName("David").lastName("Test").build())
+                        .build())
+                ))
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.CHILD_ASSESSMENT_ORDER))
+                    .childAssessmentOrderAssessmentDirections("assessment")
+                    .childAssessmentOrderContactDirections("contact")
+                    .build())
+                .groundsForChildAssessmentOrder(GroundsForChildAssessmentOrder.builder()
+                    .thresholdDetails("details")
+                    .build())
+                .build();
+
+            DocmosisC16Supplement supplement = underTest.getC16SupplementData(updatedCaseData, false);
+            assertThat(supplement.getChildrensNames()).isEqualTo("David Test");
+        }
+
+        @Test
+        void shouldPopulateMultipleChildrensNames() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .children1(of(
+                    element(Child.builder()
+                        .party(ChildParty.builder().firstName("David").lastName("Test").build())
+                        .build()),
+                    element(Child.builder()
+                        .party(ChildParty.builder().firstName("Davina").lastName("Test").build())
+                        .build())
+                ))
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.CHILD_ASSESSMENT_ORDER))
+                    .childAssessmentOrderAssessmentDirections("assessment")
+                    .childAssessmentOrderContactDirections("contact")
+                    .build())
+                .groundsForChildAssessmentOrder(GroundsForChildAssessmentOrder.builder()
+                    .thresholdDetails("details")
+                    .build())
+                .build();
+
+            DocmosisC16Supplement supplement = underTest.getC16SupplementData(updatedCaseData, false);
+            assertThat(supplement.getChildrensNames()).isEqualTo("David Test\n"
+                + "Davina Test");
+        }
+
+
+    }
+
+    @Nested
+    class DocmosisC14SupplementTest {
+
+        @Test
+        void shouldPopulateC14Supplement() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.REFUSE_CONTACT_WITH_CHILD))
+                    .build())
+                .groundsForRefuseContactWithChild(GroundsForRefuseContactWithChild.builder()
+                    .personHasContactAndCurrentArrangement("test1")
+                    .laHasRefusedContact("test2")
+                    .personsBeingRefusedContactWithChild("test3")
+                    .reasonsOfApplication("test4")
+                    .build())
+                .build();
+
+            DocmosisC14Supplement supplement = underTest.getC14SupplementData(updatedCaseData, false);
+            assertThat(supplement.getPersonHasContactAndCurrentArrangement()).isEqualTo("test1");
+            assertThat(supplement.getLaHasRefusedContact()).isEqualTo("test2");
+            assertThat(supplement.getPersonsBeingRefusedContactWithChild()).isEqualTo("test3");
+            assertThat(supplement.getReasonsOfApplication()).isEqualTo("test4");
+        }
+
+        @Test
+        void shouldNotPopulateDraftWatermarkOrSealIfDraft() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.SECURE_ACCOMMODATION_ORDER))
+                    .secureAccommodationOrderSection(SecureAccommodationOrderSection.ENGLAND)
+                    .build())
+                .groundsForRefuseContactWithChild(GroundsForRefuseContactWithChild.builder()
+                    .personHasContactAndCurrentArrangement("test1")
+                    .laHasRefusedContact("test2")
+                    .personsBeingRefusedContactWithChild("test3")
+                    .reasonsOfApplication("test4")
+                    .build())
+                .build();
+
+            DocmosisC14Supplement supplement = underTest.getC14SupplementData(updatedCaseData, true);
+            assertThat(supplement.getDraftWaterMark()).isNotEmpty();
+            assertThat(supplement.getCourtSeal()).isNullOrEmpty();
+        }
+
+        @Test
+        void shouldPopulateDraftWatermarkOrSealIfNotDraft() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.SECURE_ACCOMMODATION_ORDER))
+                    .secureAccommodationOrderSection(SecureAccommodationOrderSection.ENGLAND)
+                    .build())
+                .groundsForRefuseContactWithChild(GroundsForRefuseContactWithChild.builder()
+                    .personHasContactAndCurrentArrangement("test1")
+                    .laHasRefusedContact("test2")
+                    .personsBeingRefusedContactWithChild("test3")
+                    .reasonsOfApplication("test4")
+                    .build())
+                .build();
+
+            DocmosisC14Supplement supplement = underTest.getC14SupplementData(updatedCaseData, false);
+            assertThat(supplement.getDraftWaterMark()).isNullOrEmpty();
+            assertThat(supplement.getCourtSeal()).isNotEmpty();
+        }
+    }
+
+    @Nested
+    class DocmosisC16SupplementTest {
+
+        @Test
+        void shouldPopulateC16Supplement() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.CHILD_ASSESSMENT_ORDER))
+                    .childAssessmentOrderAssessmentDirections("assessment")
+                    .childAssessmentOrderContactDirections("contact")
+                    .build())
+                .groundsForChildAssessmentOrder(GroundsForChildAssessmentOrder.builder()
+                    .thresholdDetails("details")
+                    .build())
+                .build();
+
+            DocmosisC16Supplement supplement = underTest.getC16SupplementData(updatedCaseData, false);
+            assertThat(supplement.getDirectionsSoughtAssessment()).isEqualTo("assessment");
+            assertThat(supplement.getDirectionsSoughtContact()).isEqualTo("contact");
+            assertThat(supplement.getGroundsForChildAssessmentOrderReason()).isEqualTo("details");
+        }
+
+        @Test
+        void shouldNotPopulateDraftWatermarkOrSealIfDraft() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.CHILD_ASSESSMENT_ORDER))
+                    .childAssessmentOrderAssessmentDirections("assessment")
+                    .childAssessmentOrderContactDirections("contact")
+                    .build())
+                .groundsForChildAssessmentOrder(GroundsForChildAssessmentOrder.builder()
+                    .thresholdDetails("details")
+                    .build())
+                .build();
+
+            DocmosisC16Supplement supplement = underTest.getC16SupplementData(updatedCaseData, true);
+            assertThat(supplement.getDraftWaterMark()).isNotEmpty();
+            assertThat(supplement.getCourtSeal()).isNullOrEmpty();
+        }
+
+        @Test
+        void shouldPopulateDraftWatermarkOrSealIfNotDraft() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.CHILD_ASSESSMENT_ORDER))
+                    .childAssessmentOrderAssessmentDirections("assessment")
+                    .childAssessmentOrderContactDirections("contact")
+                    .build())
+                .groundsForChildAssessmentOrder(GroundsForChildAssessmentOrder.builder()
+                    .thresholdDetails("details")
+                    .build())
+                .build();
+
+            DocmosisC16Supplement supplement = underTest.getC16SupplementData(updatedCaseData, false);
+            assertThat(supplement.getDraftWaterMark()).isNullOrEmpty();
+            assertThat(supplement.getCourtSeal()).isNotEmpty();
+        }
+
+        @Test
+        void shouldUseDashIfNoCAOGrounds() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.CHILD_ASSESSMENT_ORDER))
+                    .childAssessmentOrderAssessmentDirections("assessment")
+                    .childAssessmentOrderContactDirections("contact")
+                    .build())
+                .build();
+
+            DocmosisC16Supplement supplement = underTest.getC16SupplementData(updatedCaseData, false);
+            assertThat(supplement.getGroundsForChildAssessmentOrderReason()).isEqualTo("-");
+        }
+    }
+
+    @Nested
+    class DocmosisC20SupplementTest {
+
+        @Test
+        void shouldPopulateC20Supplement() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.SECURE_ACCOMMODATION_ORDER))
+                    .secureAccommodationOrderSection(SecureAccommodationOrderSection.ENGLAND)
+                    .build())
+                .groundsForSecureAccommodationOrder(GroundsForSecureAccommodationOrder.builder()
+                    .grounds(List.of(SecureAccommodationOrderGround.ABSCOND_FROM_ACCOMMODATION,
+                        SecureAccommodationOrderGround.APPROVAL_OF_SECRETARY_OF_STATE,
+                        SecureAccommodationOrderGround.SELF_INJURY))
+                    .reasonAndLength("Reason for grounds")
+                    .build())
+                .build();
+
+            DocmosisC20Supplement supplement = underTest.getC20SupplementData(updatedCaseData, false);
+            assertThat(supplement.getGrounds())
+                .isEqualTo(List.of(SecureAccommodationOrderGround.ABSCOND_FROM_ACCOMMODATION.getLabel(),
+                    SecureAccommodationOrderGround.SELF_INJURY.getLabel(),
+                    SecureAccommodationOrderGround.APPROVAL_OF_SECRETARY_OF_STATE.getLabel()));
+            assertThat(supplement.getReasonAndLength()).isEqualTo("Reason for grounds");
+            assertThat(supplement.getSection()).isEqualTo(SecureAccommodationOrderSection.ENGLAND.getLabel());
+        }
+
+        @Test
+        void shouldNotPopulateDraftWatermarkOrSealIfDraft() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.SECURE_ACCOMMODATION_ORDER))
+                    .secureAccommodationOrderSection(SecureAccommodationOrderSection.ENGLAND)
+                    .build())
+                .groundsForSecureAccommodationOrder(GroundsForSecureAccommodationOrder.builder()
+                    .grounds(List.of(SecureAccommodationOrderGround.ABSCOND_FROM_ACCOMMODATION,
+                        SecureAccommodationOrderGround.APPROVAL_OF_SECRETARY_OF_STATE,
+                        SecureAccommodationOrderGround.SELF_INJURY))
+                    .reasonAndLength("Reason for grounds")
+                    .build())
+                .build();
+
+            DocmosisC20Supplement supplement = underTest.getC20SupplementData(updatedCaseData, true);
+            assertThat(supplement.getDraftWaterMark()).isNotEmpty();
+            assertThat(supplement.getCourtSeal()).isNullOrEmpty();
+        }
+
+        @Test
+        void shouldPopulateDraftWatermarkOrSealIfNotDraft() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.SECURE_ACCOMMODATION_ORDER))
+                    .secureAccommodationOrderSection(SecureAccommodationOrderSection.ENGLAND)
+                    .build())
+                .groundsForSecureAccommodationOrder(GroundsForSecureAccommodationOrder.builder()
+                    .grounds(List.of(SecureAccommodationOrderGround.ABSCOND_FROM_ACCOMMODATION,
+                        SecureAccommodationOrderGround.APPROVAL_OF_SECRETARY_OF_STATE,
+                        SecureAccommodationOrderGround.SELF_INJURY))
+                    .reasonAndLength("Reason for grounds")
+                    .build())
+                .build();
+
+            DocmosisC20Supplement supplement = underTest.getC20SupplementData(updatedCaseData, false);
+            assertThat(supplement.getDraftWaterMark()).isNullOrEmpty();
+            assertThat(supplement.getCourtSeal()).isNotEmpty();
         }
     }
 
@@ -1120,6 +1396,78 @@ class CaseSubmissionGenerationServiceTest {
 
             assertThat(caseSubmission.getApplicants()).containsExactly(expectedDocmosisApplicant);
             assertThat(caseSubmission.getApplicantOrganisations()).isEqualTo("Applicant organisation");
+        }
+
+        @Test
+        void shouldTakeApplicantDetailsFromLocalAuthorityEvenWhenDesignatedLocalAuthorityDoesntExist() {
+            final Colleague solicitor = Colleague.builder()
+                .role(SOLICITOR)
+                .fullName("Alex Williams")
+                .email("alex@test.com")
+                .phone("0777777777")
+                .dx("DX1")
+                .reference("Ref 1")
+                .build();
+
+            final Colleague mainContact = Colleague.builder()
+                .role(OTHER)
+                .title("Legal adviser")
+                .fullName("Emma White")
+                .phone("07778888888")
+                .mainContact("Yes")
+                .build();
+
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .designated("No")
+                .name("Local authority 1")
+                .email("la@test.com")
+                .phone("0777999999")
+                .pbaNumber("PBA1234567")
+                .address(Address.builder()
+                    .addressLine1("L1")
+                    .postcode("AB 100")
+                    .build())
+                .colleagues(wrapElements(solicitor, mainContact))
+                .build();
+
+            final CaseData updatedCaseData = givenCaseData.toBuilder()
+                .localAuthorities(wrapElements(localAuthority))
+                .solicitor(Solicitor.builder()
+                    .name("Legacy solicitor")
+                    .email("legacy@test.com")
+                    .mobile("0777111111")
+                    .build())
+                .applicants(wrapElements(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .organisationName("Applicant organisation")
+                        .email(EmailAddress.builder()
+                            .email("applicantemail@gmail.com")
+                            .build())
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
+
+            DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
+                .organisationName(localAuthority.getName())
+                .jobTitle(mainContact.getTitle())
+                .mobileNumber(mainContact.getPhone())
+                .telephoneNumber(localAuthority.getPhone())
+                .pbaNumber(localAuthority.getPbaNumber())
+                .email(localAuthority.getEmail())
+                .contactName(mainContact.getFullName())
+                .solicitorDx(solicitor.getDx())
+                .solicitorEmail(solicitor.getEmail())
+                .solicitorMobile(solicitor.getPhone())
+                .solicitorName(solicitor.getFullName())
+                .solicitorReference(solicitor.getReference())
+                .solicitorTelephone(solicitor.getPhone())
+                .address("L1\nAB 100")
+                .build();
+
+            assertThat(caseSubmission.getApplicants()).containsExactly(expectedDocmosisApplicant);
+            assertThat(caseSubmission.getApplicantOrganisations()).isEqualTo(localAuthority.getName());
         }
     }
 

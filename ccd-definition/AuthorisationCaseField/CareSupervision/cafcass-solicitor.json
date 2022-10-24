@@ -72,6 +72,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "ordersSolicitor",
+    "UserRole": "[CAFCASSSOLICITOR]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderCollection",
     "UserRole": "[CAFCASSSOLICITOR]",
     "CRUD": "R"
@@ -150,6 +157,20 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "grounds",
+    "UserRole": "[CAFCASSSOLICITOR]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "groundsForSecureAccommodationOrder",
+    "UserRole": "[CAFCASSSOLICITOR]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "groundsForRefuseContactWithChild",
     "UserRole": "[CAFCASSSOLICITOR]",
     "CRUD": "R"
   },
@@ -282,6 +303,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "supplementDocument",
+    "UserRole": "[CAFCASSSOLICITOR]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "submittedFormTranslationRequirements",
     "UserRole": "[CAFCASSSOLICITOR]",
     "CRUD": "R"
@@ -346,6 +374,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "temporaryC2Document",
+    "UserRole": "[CAFCASSSOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "skipPaymentPage",
     "UserRole": "[CAFCASSSOLICITOR]",
     "CRUD": "CRU"
   },

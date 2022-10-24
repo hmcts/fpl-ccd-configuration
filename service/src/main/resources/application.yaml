@@ -149,7 +149,7 @@ fees-register:
       jurisdiction2: family court
       keyword: ${WARRANT_TO_ASSIST_PERSON_KEYWORD:HIJ}
       service: private law
-    CHILD_ASSESSMENT:
+    CHILD_ASSESSMENT_ORDER:
       channel: default
       event: miscellaneous
       jurisdiction1: family
@@ -219,6 +219,13 @@ fees-register:
       jurisdiction2: family court
       keyword: ${DECLARATION_OF_PARENTAGE:JKL}
       service: other
+    REFUSE_CONTACT_WITH_CHILD:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: ContactChild
+      service: private law
 
 payment:
   site_id: ABA3
@@ -278,6 +285,34 @@ resources:
 send-grid:
   host: smtp.sendgrid.net
   port: 587
+
+cafcass:
+  notification:
+    documentType:
+      order: ORDER
+      noticeOfHearing: ORDER
+      respondentStatement: COURT PAPER
+      applicationStatement: COURT PAPER
+      otherReports: COURT PAPER
+      threshold: COURT PAPER
+      swet: COURT PAPER
+      carePlan: COURT PAPER
+      socialWorkChronology: COURT PAPER
+      socialWorkStatement: COURT PAPER
+      genogram: COURT PAPER
+      checklistDocument: COURT PAPER
+      birthCertificate: COURT PAPER
+      additionalApplications: COURT PAPER
+      expertReports: EXPERT
+      childsGuardianReports: REPORTING TO COURT
+      courtBundle: BUNDLE
+      caseSummary: BUNDLE
+      positionStatementChild: BUNDLE
+      positionStatementRespondent: BUNDLE
+      other: CORRESPONDENCE
+      correspondence: CORRESPONDENCE
+      additionalDocument: APPLICATION
+      newApplication: APPLICATION
 
 case_document_am:
   url: ${CASE_DOCUMENT_AM_URL:http://localhost:4455}

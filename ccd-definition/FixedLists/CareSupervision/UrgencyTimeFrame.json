@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UrgencyTimeFrameType",
+    "ListElementCode": "SAME_DAY",
+    "ListElement": "On the same day",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UrgencyTimeFrameType",
+    "ListElementCode": "WITHIN_2_DAYS",
+    "ListElement": "Within 2 days",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UrgencyTimeFrameType",
+    "ListElementCode": "WITHIN_5_DAYS",
+    "ListElement": "Within 5 days",
+    "DisplayOrder": 3
+  }
+]

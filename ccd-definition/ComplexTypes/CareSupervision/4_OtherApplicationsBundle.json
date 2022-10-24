@@ -60,6 +60,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "OtherApplicationsBundle",
     "ListElementCode": "othersNotified",
+    "Comment": "Deprecated",
     "FieldType": "Text",
     "ElementLabel": "People notified",
     "SecurityClassification": "Public"
@@ -116,7 +117,18 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherApplicationsBundle",
+    "ListElementCode": "urgencyTimeFrameType",
+    "ElementLabel": "Please state how soon you want the judge to consider your application?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "UrgencyTimeFrameType",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationsBundle",
     "ListElementCode": "others",
+    "Comment": "Deprecated",
     "FieldType": "Collection",
     "FieldTypeParameter": "Others",
     "ElementLabel": " ",

@@ -814,7 +814,21 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "positionStatementChildListV2",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "positionStatementRespondentList",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "positionStatementRespondentListV2",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "R"
   },
@@ -1228,6 +1242,20 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "groundsForEPO",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "groundsForSecureAccommodationOrder",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "groundsForRefuseContactWithChild",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "R"
   },
@@ -1962,6 +1990,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "ordersSolicitor",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "otherCourtAdminDocuments",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRUD"
@@ -2425,6 +2460,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "submittedForm",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "supplementDocument",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "R"
   },
@@ -3111,6 +3153,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "manageOrdersMultiSelectListForC43",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersChildArrangementsOrderType",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRU"
   },
@@ -3932,5 +3981,47 @@
     "UserRole": "caseworker-publiclaw-judiciary",
     "CaseFieldID": "othersList",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersPartyGrantedLeave",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersChildNewSurname",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersAllowedContact1",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersAllowedContact2",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersAllowedContact3",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersConditionsOfContact",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
   }
 ]

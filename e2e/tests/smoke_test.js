@@ -13,7 +13,7 @@ Scenario('Sign in as local authority and create a case', async ({I, caseListPage
   I.grabCurrentUrl();
   caseListPage.searchForCasesWithName(caseName, 'Open');
   I.grabCurrentUrl();
-  I.waitForElement(`//ccd-search-result/table/tbody//tr//td//a[contains(@href,'/cases/case-details/${caseId}')]`);
+  I.waitForElement(`//ccd-search-result/table/tbody//tr//td//a[contains(@href,'/cases/case-details/${caseId}')]`, 60);
   I.grabCurrentUrl();
   I.seeCaseInSearchResult(caseId);
 });

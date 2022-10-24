@@ -765,6 +765,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "ordersSolicitor",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "children1",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "R"
@@ -1213,7 +1220,21 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "positionStatementChildListV2",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "positionStatementRespondentList",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "positionStatementRespondentListV2",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "R"
   },
