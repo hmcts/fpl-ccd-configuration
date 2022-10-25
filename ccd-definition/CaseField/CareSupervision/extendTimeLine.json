@@ -13,7 +13,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "childCaseCompletionDateLabel",
     "FieldType": "TextArea",
-    "Label": "This case should be completed by:",
+    "Label": " ",
     "SecurityClassification": "Public",
     "Searchable": "N",
     "Comment": "Displays a list of children on the case and their respective case completion dates"

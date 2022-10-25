@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildExtension;
@@ -11,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ChildExtensionEventData;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
-import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
 
@@ -36,47 +34,27 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getElement;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseExtensionService {
-
-    private final ChildrenService childrenService;
-    private final OptionCountBuilder optionCountBuilder;
     private final ValidateGroupService validateGroupService;
 
-    public LocalDate getCaseCompletionDate(CaseData caseData) {
-        if (EIGHT_WEEK_EXTENSION.equals(caseData.getCaseExtensionTimeList())) {
-            if (EIGHT_WEEK_EXTENSION.equals(caseData.getCaseExtensionTimeConfirmationList())) {
-                return getCaseCompletionDateFor8WeekExtension(caseData);
-            }
-            return caseData.getEightWeeksExtensionDateOther();
-        }
-        if (caseData.getExtensionDateOther() != null) {
-            return caseData.getExtensionDateOther();
-        }
-        return caseData.getDefaultCompletionDate();
-    }
-
-    public LocalDate getCaseCompletionDateFor8WeekExtension(CaseData caseData) {
-        return getCaseShouldBeCompletedByDate(caseData).plusWeeks(8);
-    }
 
     public LocalDate getCaseShouldBeCompletedByDate(CaseData caseData) {
         return Optional.ofNullable(caseData.getCaseCompletionDate()).orElse(caseData.getDateSubmitted().plusWeeks(26));
     }
 
-    public String buildChildCaseCompletionDateLabel(CaseData caseData) {
+    private String buildChildCaseCompletionDateLabel(CaseData caseData) {
         List<Child> children = ElementUtils.unwrapElements(caseData.getChildren1());
 
-        StringBuilder sb = new StringBuilder();
-
-        for (int i = 0; i < children.size(); i++) {
-            ChildParty childParty = children.get(i).getParty();
-            String childCaseCompletionDate = formatLocalDateToString(
+        int[] counter = {1};
+        return children.stream()
+            .map(Child::getParty)
+            .map(childParty -> {
+                String childCaseCompletionDate = formatLocalDateToString(
                     Optional.ofNullable(childParty.getCompletionDate())
-                    .orElseGet(caseData::getDefaultCompletionDate),
+                            .orElseGet(caseData::getDefaultCompletionDate),
                     DATE);
-            sb.append(String.format("Child %d: %s: %s", i + 1, childParty.getFullName(), childCaseCompletionDate))
-                .append(System.lineSeparator());
-        }
-        return sb.toString();
+                return String.format("Child %d: %s: %s", counter[0]++, childParty.getFullName(), childCaseCompletionDate);
+            })
+            .collect(joining(System.lineSeparator()));
     }
 
     public Map<String, Object> prePopulateFields(CaseData caseData) {
@@ -85,10 +63,8 @@ public class CaseExtensionService {
 
         return Map.of(
             "childSelectorForExtension", childSelector,
-            "children_label", childrenService.getChildrenLabel(children, false),
             "childCaseCompletionDateLabel", this.buildChildCaseCompletionDateLabel(caseData),
-            "optionCount", optionCountBuilder.generateCode(children),
-            "shouldBeCompletedByDate", this.getCaseShouldBeCompletedByDate(caseData)
+            "shouldBeCompletedByDate", formatLocalDateToString(getCaseShouldBeCompletedByDate(caseData), DATE)
         );
     }
 
