@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,12 +14,14 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
+import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsPbaPaymentNotTakenEvent;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.order.AdditonalAppLicationDraftOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -36,16 +39,21 @@ import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
 
 @Api
 @Slf4j
@@ -58,7 +66,9 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private static final String AMOUNT_TO_PAY = "amountToPay";
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
     private static final String TEMPORARY_OTHER_APPLICATIONS_BUNDLE = "temporaryOtherApplicationsBundle";
+    private static final String SKIP_PAYMENT_PAGE = "skipPaymentPage";
 
+    private final ObjectMapper mapper;
     private final DraftOrderService draftOrderService;
     private final PaymentService paymentService;
     private final PbaNumberService pbaNumberService;
@@ -77,24 +87,56 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         return respond(caseDetails);
     }
 
+    @PostMapping("/initial-choice/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleInitialChoiceMidEvent(
+        @RequestBody CallbackRequest callbackRequest) {
+
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.C2_ORDER)) {
+            // Initialise the C2 document bundle so we can have a dynamic list present
+            caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, C2DocumentBundle.builder()
+                .hearingList(caseData.buildDynamicHearingList())
+                .build());
+        }
+        return respond(caseDetails);
+    }
+
     @PostMapping({"/get-fee/mid-event", "/populate-data/mid-event"})
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
+        boolean skipPayment = false;
         if (!isNull(caseData.getTemporaryC2Document())) {
-            caseData.getTemporaryC2Document().setType(caseData.getC2Type());
-            caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, caseData.getTemporaryC2Document());
+            C2DocumentBundle temporaryC2Document = caseData.getTemporaryC2Document();
+            temporaryC2Document.setType(caseData.getC2Type());
+
+            if (!isNull(temporaryC2Document.getC2AdditionalOrdersRequested())
+                && temporaryC2Document.getC2AdditionalOrdersRequested().contains(REQUESTING_ADJOURNMENT)) {
+                // Get the selected hearing from the dynamic list + populate the 'selected hearing' field
+                UUID selectedHearingCode = getDynamicListSelectedValue(temporaryC2Document.getHearingList(), mapper);
+                HearingBooking hearing = findElement(selectedHearingCode,
+                    caseData.getHearingDetails()).orElseGet(() -> element(HearingBooking.builder().build())).getValue();
+
+                temporaryC2Document = temporaryC2Document.toBuilder()
+                    .hearingList(null)
+                    .requestedHearingToAdjourn(hearing.toLabel())
+                    .build();
+
+                skipPayment = uploadAdditionalApplicationsService.shouldSkipPayments(caseData, hearing,
+                    temporaryC2Document);
+            }
+            caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, temporaryC2Document);
         }
-        caseDetails.getData().putAll(applicationsFeeCalculator.calculateFee(caseData));
 
-        if (caseData.hasRespondentsOrOthers()) {
-            caseDetails.getData().put("hasRespondentsOrOthers", "Yes");
-            caseDetails.getData().put("people_label", peopleInCaseService.buildPeopleInCaseLabel(
-                caseData.getAllRespondents(), caseData.getOthers()));
-
-            int selectorSize = caseData.getAllRespondents().size() + caseData.getAllOthers().size();
-            caseDetails.getData().put("personSelector", newSelector(selectorSize));
+        if (!skipPayment) {
+            caseDetails.getData().putAll(applicationsFeeCalculator.calculateFee(caseData));
+            caseDetails.getData().put(SKIP_PAYMENT_PAGE, NO.getValue());
+        } else {
+            caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
+            caseDetails.getData().put(SKIP_PAYMENT_PAGE, YES.getValue());
         }
 
         return respond(caseDetails);
@@ -112,8 +154,14 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     }
 
     @PostMapping("/about-to-submit")
+    @SuppressWarnings("unchecked")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
+        /* This is a workaround as the 'hearingList' has set itself to the UUID of the selected hearing, NOT the
+         * actual DynamicList data structure anymore so cannot deserialize properly (so we just throw it out, as we
+         * don't need it at this stage anyway). */
+        ((LinkedHashMap) caseDetails.getData().get(TEMPORARY_C2_DOCUMENT)).put("hearingList", null);
         CaseData caseData = getCaseData(caseDetails);
 
         if (!isNull(caseData.getTemporaryC2Document())
@@ -150,10 +198,9 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         caseDetails.getData().put("c2DocumentBundle", uploadAdditionalApplicationsService
             .sortOldC2DocumentCollection(oldC2DocumentCollection));
 
-        removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT, "c2Type", "additionalApplicationType",
-            AMOUNT_TO_PAY, "temporaryPbaPayment", TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "applicantsList",
-            "otherApplicant", "people_label", "hasRespondentsOrOthers", "notifyApplicationsToAllOthers",
-            "personSelector");
+        removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT, "c2Type",
+            "additionalApplicationType", AMOUNT_TO_PAY, "temporaryPbaPayment",
+            TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "applicantsList", "otherApplicant", SKIP_PAYMENT_PAGE);
 
         return respond(caseDetails);
     }
@@ -178,7 +225,13 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             log.info("Payment for case {} not taken due to user decision", caseDetails.getId());
             publishEvent(new AdditionalApplicationsPbaPaymentNotTakenEvent(caseData));
         } else {
-            if (amountToPayShownToUser(caseDetails)) {
+            if (isNotEmpty(lastBundle.getC2DocumentBundle())
+                && isNotEmpty(lastBundle.getC2DocumentBundle().getRequestedHearingToAdjourn())
+                && uploadAdditionalApplicationsService.onlyApplyingForAnAdjournment(caseData,
+                    lastBundle.getC2DocumentBundle())) {
+                // we skipped payment related things as there's a hearing we want to adjourn + no other extras
+                log.info("Payment for case {} skipped as requesting adjournment", caseDetails.getId());
+            } else if (amountToPayShownToUser(caseDetails)) {
                 try {
                     FeesData feesData = applicationsFeeCalculator.getFeeDataForAdditionalApplications(lastBundle);
                     paymentService.makePaymentForAdditionalApplications(caseDetails.getId(), caseData, feesData);

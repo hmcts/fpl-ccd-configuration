@@ -27,6 +27,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C29_RECOVERY_OF_A_CHILD;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C34A_CONTACT_WITH_A_CHILD_IN_CARE;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C34B_AUTHORITY_TO_REFUSE_CONTACT;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35B_INTERIM_SUPERVISION_ORDER;
@@ -35,6 +36,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C37_EDUCATION_SUPERVISIO
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C39_CHILD_ASSESSMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43A_SPECIAL_GUARDIANSHIP_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C44A_LEAVE_TO_CHANGE_A_SURNAME;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C45A_PARENTAL_RESPONSIBILITY_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.CHILDREN_DETAILS;
@@ -86,6 +88,8 @@ class OrderTest {
             .isEqualTo("c45a_parental_responsibility_order.doc");
         assertThat(C45A_PARENTAL_RESPONSIBILITY_ORDER.fileName(RenderFormat.PDF))
             .isEqualTo("c45a_parental_responsibility_order.pdf");
+        assertThat(C34A_CONTACT_WITH_A_CHILD_IN_CARE.fileName(RenderFormat.PDF))
+            .isEqualTo("c34a_contact_with_a_child_in_care.pdf");
     }
 
     @ParameterizedTest
@@ -118,6 +122,7 @@ class OrderTest {
         assertThat(C33_INTERIM_CARE_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C35A_SUPERVISION_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C35B_INTERIM_SUPERVISION_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
+        assertThat(C34A_CONTACT_WITH_A_CHILD_IN_CARE.firstSection()).isEqualTo(HEARING_DETAILS);
     }
 
     @ParameterizedTest
@@ -270,7 +275,12 @@ class OrderTest {
             Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, ISSUING_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, ORDER_DETAILS, Optional.of(REVIEW)),
             Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, REVIEW, Optional.of(OTHER_DETAILS)),
-            Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, OTHER_DETAILS, Optional.empty())
+            Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, OTHER_DETAILS, Optional.empty()),
+            Arguments.of(C44A_LEAVE_TO_CHANGE_A_SURNAME, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
+            Arguments.of(C44A_LEAVE_TO_CHANGE_A_SURNAME, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
+            Arguments.of(C44A_LEAVE_TO_CHANGE_A_SURNAME, ORDER_DETAILS, Optional.of(REVIEW)),
+            Arguments.of(C44A_LEAVE_TO_CHANGE_A_SURNAME, OTHER_DETAILS, Optional.empty()),
+            Arguments.of(C34A_CONTACT_WITH_A_CHILD_IN_CARE, OTHER_DETAILS, Optional.empty())
         );
     }
 

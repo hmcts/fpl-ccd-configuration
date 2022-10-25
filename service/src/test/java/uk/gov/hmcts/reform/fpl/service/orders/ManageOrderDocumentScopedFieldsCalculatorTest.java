@@ -11,6 +11,10 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
     @Test
     void calculate() {
         assertThat(underTest.calculate()).containsExactlyInAnyOrder(
+            "manageOrdersAllowedContact1",
+            "manageOrdersAllowedContact2",
+            "manageOrdersAllowedContact3",
+            "manageOrdersConditionsOfContact",
             "manageOrdersApprovedAtHearing",
             "manageOrdersApprovedAtHearingList",
             "manageOrdersUploadType",
@@ -116,7 +120,9 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersSupervisionOrderCourtDirection",
             "manageOrdersSupervisionOrderApprovalDate",
             "manageOrdersSupervisionOrderEndDate",
-            "manageOrdersOrderCreatedDate"
+            "manageOrdersOrderCreatedDate",
+            "manageOrdersPartyGrantedLeave",
+            "manageOrdersChildNewSurname"
         );
     }
 }

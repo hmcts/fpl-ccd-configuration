@@ -5,7 +5,7 @@
     "CaseEventID": "enterLocalAuthority",
     "CaseFieldID": "localAuthority",
     "ListElementCode": "name",
-    "EventElementLabel": "*Local authority's name",
+    "EventElementLabel": "*Applicant's name",
     "DisplayContext": "OPTIONAL",
     "FieldDisplayOrder": 1
   },

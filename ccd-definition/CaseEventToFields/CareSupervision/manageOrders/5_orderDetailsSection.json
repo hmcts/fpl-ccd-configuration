@@ -9,7 +9,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "PageShowCondition": "orderTempQuestions.furtherDirections=\"YES\" OR orderTempQuestions.orderDetails=\"YES\" OR orderTempQuestions.needSealing=\"YES\" OR orderTempQuestions.uploadOrderFile=\"YES\" OR orderTempQuestions.childPlacementQuestions=\"YES\" OR orderTempQuestions.manageOrdersEducationSupervision=\"YES\" OR orderTempQuestions.manageOrdersVaryOrExtendSupervisionOrder=\"YES\" OR orderTempQuestions.refuseContactQuestions=\"YES\"  OR orderTempQuestions.manageOrdersChildAssessment=\"YES\"",
+    "PageShowCondition": "orderTempQuestions.furtherDirections=\"YES\" OR orderTempQuestions.orderDetails=\"YES\" OR orderTempQuestions.needSealing=\"YES\" OR orderTempQuestions.uploadOrderFile=\"YES\" OR orderTempQuestions.childPlacementQuestions=\"YES\" OR orderTempQuestions.manageOrdersEducationSupervision=\"YES\" OR orderTempQuestions.manageOrdersVaryOrExtendSupervisionOrder=\"YES\" OR orderTempQuestions.refuseContactQuestions=\"YES\"  OR orderTempQuestions.manageOrdersChildAssessment=\"YES\" OR orderTempQuestions.leaveToChangeChildSurname=\"YES\" OR orderTempQuestions.partyAllowedContactsAndConditions=\"YES\"",
     "FieldShowCondition": "manageOrdersOperation=\"CREATE\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/order-details/mid-event",
     "ShowSummaryChangeOption": "N"
@@ -1038,6 +1038,84 @@
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
     "FieldShowCondition": "orderTempQuestions.manageOrdersChildAssessment=\"YES\" AND manageOrdersDoesCostOrderExist=\"Yes\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersPartyGrantedLeave",
+    "PageFieldDisplayOrder": 73,
+    "DisplayContext": "MANDATORY",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "orderTempQuestions.leaveToChangeChildSurname=\"YES\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersChildNewSurname",
+    "PageFieldDisplayOrder": 74,
+    "DisplayContext": "MANDATORY",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "orderTempQuestions.leaveToChangeChildSurname=\"YES\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersAllowedContact1",
+    "PageFieldDisplayOrder": 75,
+    "DisplayContext": "MANDATORY",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "orderTempQuestions.partyAllowedContactsAndConditions=\"YES\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersAllowedContact2",
+    "PageFieldDisplayOrder": 76,
+    "DisplayContext": "OPTIONAL",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "orderTempQuestions.partyAllowedContactsAndConditions=\"YES\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersAllowedContact3",
+    "PageFieldDisplayOrder": 77,
+    "DisplayContext": "OPTIONAL",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "orderTempQuestions.partyAllowedContactsAndConditions=\"YES\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersConditionsOfContact",
+    "PageFieldDisplayOrder": 78,
+    "DisplayContext": "MANDATORY",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "orderTempQuestions.partyAllowedContactsAndConditions=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   }
 ]
