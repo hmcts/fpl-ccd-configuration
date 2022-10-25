@@ -698,7 +698,8 @@ class SendNewMessageJudgeServiceTest {
                 .build())
             .build();
 
-        final List<Element<JudicialMessage>> updatedMessages = sendNewMessageJudgeService.addNewJudicialMessage(caseData);
+        final List<Element<JudicialMessage>> updatedMessages =
+            sendNewMessageJudgeService.addNewJudicialMessage(caseData);
 
         final JudicialMessage newMessage = updatedMessages.get(0).getValue();
 
@@ -748,7 +749,8 @@ class SendNewMessageJudgeServiceTest {
                 .build())
             .build();
 
-        final List<Element<JudicialMessage>> updatedMessages = sendNewMessageJudgeService.addNewJudicialMessage(caseData);
+        final List<Element<JudicialMessage>> updatedMessages =
+            sendNewMessageJudgeService.addNewJudicialMessage(caseData);
 
         final JudicialMessage newMessage = updatedMessages.get(0).getValue();
 

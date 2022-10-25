@@ -1318,13 +1318,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "hasJudicialMessages",
-    "UserRole": "caseworker-publiclaw-judiciary",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hasSession",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRU"
@@ -1776,13 +1769,6 @@
     "CaseFieldID": "messageJudgeLegalAdviserLink",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "messageJudgeOption",
-    "UserRole": "caseworker-publiclaw-judiciary",
-    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",

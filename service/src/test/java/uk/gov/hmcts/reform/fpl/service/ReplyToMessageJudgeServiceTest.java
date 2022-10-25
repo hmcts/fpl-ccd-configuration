@@ -17,23 +17,15 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus;
-import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.exceptions.JudicialMessageNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
-import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
-import uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
@@ -63,9 +55,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith({MockitoExtension.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -362,7 +352,8 @@ class ReplyToMessageJudgeServiceTest {
             .latestMessage("")
             .build();
 
-        Map<String, Object> populateReplyMessageFields = replyToMessageJudgeService.populateReplyMessageFields(caseData);
+        Map<String, Object> populateReplyMessageFields =
+            replyToMessageJudgeService.populateReplyMessageFields(caseData);
 
         assertThat(populateReplyMessageFields)
             .extracting("judicialMessageReply", "judicialMessageDynamicList")
@@ -418,7 +409,8 @@ class ReplyToMessageJudgeServiceTest {
             .latestMessage("")
             .build();
 
-        Map<String, Object> populateReplyMessageFields = replyToMessageJudgeService.populateReplyMessageFields(caseData);
+        Map<String, Object> populateReplyMessageFields =
+            replyToMessageJudgeService.populateReplyMessageFields(caseData);
 
         assertThat(populateReplyMessageFields)
             .extracting("judicialMessageReply")

@@ -6,7 +6,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.exceptions.JudicialMessageNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
@@ -18,15 +17,12 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
-import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.SelectableItem;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,18 +31,14 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.join;
 import static java.util.Comparator.comparing;
-import static java.util.Optional.ofNullable;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.JUDICIARY;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
@@ -55,7 +47,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateTimeFromStringUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -64,6 +55,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SendNewMessageJudgeService extends MessageJudgeService {
+    @Autowired
+    private ValidateEmailService validateEmailService;
+
     private final IdentityService identityService;
     private final ObjectMapper mapper;
     private final UserService userService;
@@ -98,6 +92,15 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         data.put("nextHearingLabel", getNextHearingLabel(caseData));
 
         return data;
+    }
+
+    public Optional<String> validateRecipientEmail(CaseData caseData) {
+        JudicialMessageMetaData judgeMetaData = caseData.getMessageJudgeEventData().getJudicialMessageMetaData();
+        if (nonNull(judgeMetaData)) {
+            String email = judgeMetaData.getRecipient();
+            return validateEmailService.validate(email);
+        }
+        return Optional.empty();
     }
 
     public List<Element<JudicialMessage>> addNewJudicialMessage(CaseData caseData) {

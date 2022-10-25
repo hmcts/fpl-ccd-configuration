@@ -24,18 +24,6 @@ public abstract class MessageJudgeService {
     @Autowired
     protected Time time;
 
-    @Autowired
-    private ValidateEmailService validateEmailService;
-
-    public Optional<String>  validateRecipientEmail(CaseData caseData) {
-        JudicialMessageMetaData judgeMetaData = caseData.getMessageJudgeEventData().getJudicialMessageMetaData();
-        if (nonNull(judgeMetaData)) {
-            String email = judgeMetaData.getRecipient();
-            return validateEmailService.validate(email);
-        }
-        return Optional.empty();
-    }
-
     protected String getNextHearingLabel(CaseData caseData) {
         return caseData.getNextHearingAfter(time.now())
             .map(hearing -> String.format("Next hearing in the case: %s", hearing.toLabel()))

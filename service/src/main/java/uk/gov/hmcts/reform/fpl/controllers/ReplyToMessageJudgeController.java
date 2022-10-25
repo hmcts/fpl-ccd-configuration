@@ -53,11 +53,6 @@ public class ReplyToMessageJudgeController extends CallbackController {
 
         caseDetailsMap.putAll(replyToMessageJudgeService.populateReplyMessageFields(caseData));
 
-        Optional<String> emailError = replyToMessageJudgeService.validateRecipientEmail(caseData);
-        if (!emailError.isEmpty()) {
-            return respond(caseDetailsMap, List.of(emailError.get()));
-        }
-
         return respond(caseDetailsMap);
     }
 

@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 
 import java.util.List;
@@ -46,7 +45,7 @@ class MessageJudgeControllerAboutToStartTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldInitialiseCaseFieldsWhenAdditionalApplicationsDocumentsAndJudicialMessagesExist() {
+    void shouldInitialiseCaseFieldsWhenAdditionalApplicationsDocumentsExist() {
         UUID c2DocumentBundleId = randomUUID();
         UUID otherApplicationsBundleId = randomUUID();
 
@@ -64,23 +63,9 @@ class MessageJudgeControllerAboutToStartTest extends AbstractCallbackTest {
                 .build()
         ));
 
-        List<Element<JudicialMessage>> judicialMessages = List.of(
-            element(JudicialMessage.builder()
-                .latestMessage("some note")
-                .messageHistory("some history")
-                .dateSent("Some date sent")
-                .build()),
-            element(JudicialMessage.builder()
-                .latestMessage("some note")
-                .messageHistory("some history")
-                .dateSent("Some date sent")
-                .build())
-        );
-
         CaseData caseData = CaseData.builder()
             .id(1111L)
             .additionalApplicationsBundle(additionalApplicationsBundles)
-            .judicialMessages(judicialMessages)
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
@@ -88,36 +73,23 @@ class MessageJudgeControllerAboutToStartTest extends AbstractCallbackTest {
         DynamicList additionalApplicationsDynamicList = mapper.convertValue(response.getData()
             .get("additionalApplicationsDynamicList"), DynamicList.class);
 
-        DynamicList judicialMessageDynamicList = mapper.convertValue(
-            response.getData().get("judicialMessageDynamicList"), DynamicList.class
-        );
-
         DynamicList expectedAdditionalApplicationsDynamicList = buildDynamicList(
             Pair.of(otherApplicationsBundleId, "C1, 1 January 2021, 12:00pm"),
             Pair.of(c2DocumentBundleId, "C2, 1 January 2021, 12:00pm")
         );
 
-        DynamicList expectedJudicialMessageDynamicList = buildDynamicList(
-            Pair.of(judicialMessages.get(0).getId(), "Some date sent"),
-            Pair.of(judicialMessages.get(1).getId(), "Some date sent")
-        );
-
         assertThat(additionalApplicationsDynamicList).isEqualTo(expectedAdditionalApplicationsDynamicList);
-        assertThat(judicialMessageDynamicList).isEqualTo(expectedJudicialMessageDynamicList);
 
         assertThat(response.getData().get("hasAdditionalApplications")).isEqualTo(YES.getValue());
-        assertThat(response.getData().get("hasJudicialMessages")).isEqualTo(YES.getValue());
     }
 
     @Test
-    void shouldInitialiseOnlySenderAndRecipientEmailAddressesWhenJudicialMessagesAndApplicationDocumentsDoNotExist() {
+    void shouldInitialiseOnlySenderAndRecipientEmailAddressesWhenApplicationDocumentsDoNotExist() {
         CaseData caseData = CaseData.builder().id(1111L).build();
         Map<String, Object> caseDetails = postAboutToStartEvent(caseData).getData();
 
         assertThat(caseDetails.get("additionalApplicationsDynamicList")).isNull();
-        assertThat(caseDetails.get("judicialMessageDynamicList")).isNull();
         assertThat(caseDetails.get("hasAdditionalApplications")).isNull();
-        assertThat(caseDetails.get("hasJudicialMessages")).isNull();
         assertThat(caseDetails.get("judicialMessageMetaData"))
             .extracting("sender", "recipient")
             .containsExactly(ctscEmailLookupConfiguration.getEmail(), EMPTY);
