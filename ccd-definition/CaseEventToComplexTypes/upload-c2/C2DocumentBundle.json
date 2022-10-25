@@ -14,9 +14,29 @@
     "ID": "C2DocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "documentAcknowledgeLabel",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "documentAcknowledge",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "c2AdditionalOrdersRequested",
     "EventElementLabel": "Are you using the C2 to apply for any of the below?",
-    "FieldDisplayOrder": "2",
+    "FieldDisplayOrder": "4",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -26,7 +46,7 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "parentalResponsibilityType",
     "EventElementLabel": "Who's seeking parental responsibility?",
-    "FieldDisplayOrder": "3",
+    "FieldDisplayOrder": "5",
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "temporaryC2Document.c2AdditionalOrdersRequested CONTAINS \"PARENTAL_RESPONSIBILITY\""
   },
@@ -37,7 +57,7 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "hearingList",
     "EventElementLabel": "Which hearing are you requesting to be adjourned?",
-    "FieldDisplayOrder": "4",
+    "FieldDisplayOrder": "6",
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "temporaryC2Document.c2AdditionalOrdersRequested CONTAINS \"REQUESTING_ADJOURNMENT\""
   },
@@ -48,7 +68,7 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "requestedHearingToAdjourn",
     "EventElementLabel": "Hearing requested to adjourn",
-    "FieldDisplayOrder": "4",
+    "FieldDisplayOrder": "7",
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "temporaryC2Document=\"DO NOT SHOW\""
   },
@@ -59,7 +79,7 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "urgencyTimeFrameType",
     "EventElementLabel": "Please state how soon you want the judge to consider your application?",
-    "FieldDisplayOrder": "5",
+    "FieldDisplayOrder": "8",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -69,7 +89,7 @@
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "Supplements",
     "ListElementCode": "supplementsBundle",
-    "FieldDisplayOrder": "6",
+    "FieldDisplayOrder": "9",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -79,7 +99,7 @@
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "Select supplement",
     "ListElementCode": "supplementsBundle.name",
-    "FieldDisplayOrder": "7",
+    "FieldDisplayOrder": "10",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -89,7 +109,7 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supplementsBundle.secureAccommodationType",
     "EventElementLabel": "Which jurisdiction?",
-    "FieldDisplayOrder": "8",
+    "FieldDisplayOrder": "11",
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "temporaryC2Document.supplementsBundle.name=\"C20_SECURE_ACCOMMODATION\""
   },
@@ -99,7 +119,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supplementsBundle.notes",
-    "FieldDisplayOrder": "9",
+    "FieldDisplayOrder": "12",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -109,8 +129,28 @@
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "Upload document",
     "ListElementCode": "supplementsBundle.document",
-    "FieldDisplayOrder": "10",
+    "FieldDisplayOrder": "13",
     "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "supplementsBundle.documentAcknowledgeLabel",
+    "FieldDisplayOrder": "14",
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "supplementsBundle.documentAcknowledge",
+    "FieldDisplayOrder": "15",
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -119,7 +159,7 @@
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "Draft Orders",
     "ListElementCode": "draftOrdersBundle",
-    "FieldDisplayOrder": "11",
+    "FieldDisplayOrder": "16",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -129,7 +169,7 @@
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "File name",
     "ListElementCode": "draftOrdersBundle.title",
-    "FieldDisplayOrder": "12",
+    "FieldDisplayOrder": "17",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -138,7 +178,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "draftOrdersBundle.notes",
-    "FieldDisplayOrder": "13",
+    "FieldDisplayOrder": "18",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -148,8 +188,28 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "draftOrdersBundle.document",
     "EventElementLabel": "Upload document",
-    "FieldDisplayOrder": "14",
+    "FieldDisplayOrder": "19",
     "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "draftOrdersBundle.documentAcknowledgeLabel",
+    "FieldDisplayOrder": "20",
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "draftOrdersBundle.documentAcknowledge",
+    "FieldDisplayOrder": "21",
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -158,7 +218,7 @@
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "Supporting Documents",
     "ListElementCode": "supportingEvidenceBundle",
-    "FieldDisplayOrder": "15",
+    "FieldDisplayOrder": "22",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -168,7 +228,7 @@
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "File name",
     "ListElementCode": "supportingEvidenceBundle.name",
-    "FieldDisplayOrder": "16",
+    "FieldDisplayOrder": "23",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -177,7 +237,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supportingEvidenceBundle.notes",
-    "FieldDisplayOrder": "17",
+    "FieldDisplayOrder": "24",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -196,7 +256,27 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supportingEvidenceBundle.document",
     "EventElementLabel": "Upload document",
-    "FieldDisplayOrder": "18",
+    "FieldDisplayOrder": "25",
     "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "supportingEvidenceBundle.documentAcknowledgeLabel",
+    "FieldDisplayOrder": "26",
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "supportingEvidenceBundle.documentAcknowledge",
+    "FieldDisplayOrder": "27",
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
   }
 ]
