@@ -69,7 +69,6 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
     public Map<String, Object> initialiseCaseFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
-        data.put("hasJudicialMessages", YES.getValue());
         data.put("judicialMessageDynamicList", caseData.buildJudicialMessageDynamicList());
 
         return data;
@@ -116,7 +115,7 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
 
         data.put("judicialMessageReply", judicialMessageReply);
         data.put("judicialMessageDynamicList", rebuildJudicialMessageDynamicList(caseData, selectedJudicialMessageId));
-        data.put("nextHearingLabel", getNextHearingLabel(caseData));
+        data.put("replyToMessageJudgeNextHearingLabel", getNextHearingLabel(caseData));
 
         return data;
     }

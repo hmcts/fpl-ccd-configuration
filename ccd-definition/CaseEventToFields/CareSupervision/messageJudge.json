@@ -22,7 +22,6 @@
     "PageID": "NewMessageMetaData",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2,
-    "PageShowCondition": "messageJudgeOption!=\"REPLY\"",
     "FieldShowCondition": "hasAdditionalApplications=\"Yes\""
   },
   {
@@ -80,7 +79,6 @@
     "DisplayContext": "MANDATORY",
     "PageID": "NewMessageNote",
     "ShowSummaryChangeOption": "Y",
-    "PageDisplayOrder": 3,
-    "FieldShowCondition": "messageJudgeOption!=\"REPLY\""
+    "PageDisplayOrder": 3
   }
 ]
