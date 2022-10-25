@@ -109,12 +109,4 @@ class OrdersNeededControllerTest extends AbstractCallbackTest {
         assertThat(response.getData().get("representativeType")).isEqualTo("RESPONDENT_SOLICITOR");
         assertThat(response.getData().get("orders")).isEqualTo(response.getData().get("ordersSolicitor"));
     }
-
-    @Test
-    void shouldSetRepresentativeTypeToLAIfItIsNotAlreadySet() {
-        //In this case fixture, representativeType is not set.
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent("fixtures/caseOtherOrderType.json");
-
-        assertThat(response.getData().get("representativeType")).isEqualTo("LOCAL_AUTHORITY");
-    }
 }
