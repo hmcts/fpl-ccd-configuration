@@ -104,7 +104,6 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
                 Map.entry("judicialMessageNote", "some data"),
                 Map.entry("judicialMessageDynamicList",
                     buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "some data"))),
-                Map.entry("hasJudicialMessages", "some data"),
                 Map.entry("judicialMessageReply", JudicialMessage.builder().build())
             ))
             .build();
@@ -120,9 +119,7 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
             "judicialMessageMetaData",
             "judicialMessageNote",
             "judicialMessageDynamicList",
-            "messageJudgeOption",
-            "judicialMessageReply",
-            "hasJudicialMessages"
+            "judicialMessageReply"
         );
     }
 

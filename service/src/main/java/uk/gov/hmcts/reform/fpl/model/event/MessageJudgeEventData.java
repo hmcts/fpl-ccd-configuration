@@ -22,7 +22,7 @@ public class MessageJudgeEventData {
             "hasAdditionalApplications", "isMessageRegardingAdditionalApplications",
             "additionalApplicationsDynamicList", "relatedDocumentsLabel",
             "nextHearingLabel", "judicialMessageMetaData", "judicialMessageNote", "judicialMessageDynamicList",
-            "judicialMessageReply"
+            "judicialMessageReply", "replyToMessageJudgeNextHearingLabel"
         };
     }
 }

@@ -135,7 +135,7 @@ class ReplyToMessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTes
                 Map.entry("isMessageRegardingAdditionalApplications", "some data"),
                 Map.entry("additionalApplicationsDynamicList", "some data"),
                 Map.entry("relatedDocumentsLabel", "some data"),
-                Map.entry("nextHearingLabel", "some data"),
+                Map.entry("replyToMessageJudgeNextHearingLabel", "some data"),
                 Map.entry("judicialMessageMetaData", JudicialMessageMetaData.builder()
                     .recipient("some data")
                     .sender("some data")
@@ -144,7 +144,6 @@ class ReplyToMessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTes
                 Map.entry("judicialMessageNote", "some data"),
                 Map.entry("judicialMessageDynamicList",
                     buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "some data"))),
-                Map.entry("hasJudicialMessages", "some data"),
                 Map.entry("judicialMessageReply", JudicialMessage.builder().build())
             ))
             .build();
