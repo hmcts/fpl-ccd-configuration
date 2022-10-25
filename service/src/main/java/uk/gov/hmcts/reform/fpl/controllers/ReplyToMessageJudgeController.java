@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.service.ReplyToMessageJudgeService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
 import static uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData.transientFields;
