@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import uk.gov.hmcts.reform.fpl.config.HighCourtAdminEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -21,7 +22,8 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ContextConfiguration(classes = {AmendedOrderEmailContentProvider.class, LookupTestConfig.class, CourtService.class})
+@ContextConfiguration(classes = {AmendedOrderEmailContentProvider.class, LookupTestConfig.class, CourtService.class,
+    HighCourtAdminEmailLookupConfiguration.class})
 class AmendedOrderEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final CaseData CASE_DATA = CaseData.builder()
