@@ -134,6 +134,10 @@ public class CaseProgressionReportService {
         courtTable.append("<table><tr>")
             .append("<th class='search-result-column-label' colspan=\"9\">")
             .append(courtService.getCourt(courtId).map(Court::getName).orElse("Court name not found"))
+            .append(System.lineSeparator())
+            .append("Please note: only the top 100 cases can be displayed on this screen. ")
+            .append("To see all cases, please select continue on this page, ")
+            .append("select done on the next page and a full list of cases will be automatically emailed to you.")
             .append("<th class='search-result-column-label'>")
             .append("</tr></table>");
 
