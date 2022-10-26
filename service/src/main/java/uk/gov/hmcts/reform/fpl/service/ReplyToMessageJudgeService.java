@@ -34,11 +34,15 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ReplyToMessageJudgeService extends MessageJudgeService {
-    private final ObjectMapper mapper;
-    private final UserService userService;
-    private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
+    @Autowired
+    private ObjectMapper mapper;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
 
     public Map<String, Object> initialiseCaseFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();

@@ -159,9 +159,7 @@ class ReplyToMessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTes
             "judicialMessageMetaData",
             "judicialMessageNote",
             "judicialMessageDynamicList",
-            "messageJudgeOption",
-            "judicialMessageReply",
-            "hasJudicialMessages"
+            "judicialMessageReply"
         );
     }
 

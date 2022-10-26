@@ -150,15 +150,9 @@ class SendNewMessageJudgeServiceTest {
             + "elit. Sed sollicitudin eu felis tincidunt volutpat. Donec tempus quis metus congue placerat. Sed ligula "
             + "nisl, tempor at eleifend ac, consequat condimentum sem. In sed porttitor turpis...";
 
-        final DynamicList expectedJudicialDynamicList = buildDynamicList(
-            Pair.of(judicialMessages.get(0).getId(), "01 Dec 2020, " + expectedUrgencyText),
-            Pair.of(judicialMessages.get(1).getId(), "02 Dec 2020, High"));
-
         final Map<String, Object> expectedData = Map.of(
             "hasAdditionalApplications", "Yes",
-            "hasJudicialMessages", "Yes",
             "additionalApplicationsDynamicList", expectedAdditionalApplicationsDynamicList,
-            "judicialMessageDynamicList", expectedJudicialDynamicList,
             "judicialMessageMetaData", JudicialMessageMetaData.builder()
                 .sender(COURT_EMAIL)
                 .recipient(EMPTY).build());
@@ -228,8 +222,6 @@ class SendNewMessageJudgeServiceTest {
         );
 
         Map<String, Object> expectedData = Map.of(
-            "hasJudicialMessages", "Yes",
-            "judicialMessageDynamicList", expectedJudicialDynamicList,
             "judicialMessageMetaData", JudicialMessageMetaData.builder()
                 .sender(COURT_EMAIL)
                 .recipient(EMPTY).build()
@@ -268,8 +260,6 @@ class SendNewMessageJudgeServiceTest {
         );
 
         Map<String, Object> expectedData = Map.of(
-            "hasJudicialMessages", "Yes",
-            "judicialMessageDynamicList", expectedJudicialDynamicList,
             "judicialMessageMetaData", JudicialMessageMetaData.builder()
                 .sender(COURT_EMAIL)
                 .recipient(EMPTY).build()
@@ -455,7 +445,7 @@ class SendNewMessageJudgeServiceTest {
             ))
             .build();
 
-        assertThat(sendNewMessageJudgeService.populateNewMessageFields(caseData)).isEmpty();
+        assertThat(sendNewMessageJudgeService.populateNewMessageFields(caseData)).containsOnlyKeys("nextHearingLabel");
     }
 
     @Test
@@ -492,7 +482,7 @@ class SendNewMessageJudgeServiceTest {
             )
             .build();
 
-        assertThat(sendNewMessageJudgeService.populateNewMessageFields(caseData)).isEmpty();
+        assertThat(sendNewMessageJudgeService.populateNewMessageFields(caseData)).containsOnlyKeys("nextHearingLabel");
     }
 
     @Test
@@ -501,7 +491,7 @@ class SendNewMessageJudgeServiceTest {
 
         CaseData caseData = CaseData.builder().build();
 
-        assertThat(sendNewMessageJudgeService.populateNewMessageFields(caseData)).isEmpty();
+        assertThat(sendNewMessageJudgeService.populateNewMessageFields(caseData)).containsOnlyKeys("nextHearingLabel");
     }
 
     @Test
@@ -849,20 +839,6 @@ class SendNewMessageJudgeServiceTest {
         CaseData caseData = CaseData.builder().build();
 
         assertThat(sendNewMessageJudgeService.getNextHearingLabel(caseData)).isEmpty();
-    }
-
-    private MessageJudgeEventData buildMessageEventData(
-        String messageReply, String dateSent, boolean isReplying, String sender, String recipient) {
-
-        return MessageJudgeEventData.builder()
-            .judicialMessageDynamicList(buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, dateSent)))
-            .judicialMessageReply(JudicialMessage.builder()
-                .isReplying(isReplying ? YES.getValue() : NO.getValue())
-                .latestMessage(isReplying ? messageReply : null)
-                .replyFrom(sender)
-                .replyTo(recipient)
-                .build())
-            .build();
     }
 
     private Element<JudicialMessage> buildJudicialMessageElement(LocalDateTime dateTime, JudicialMessageStatus status) {

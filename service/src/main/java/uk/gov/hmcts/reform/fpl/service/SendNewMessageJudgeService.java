@@ -53,15 +53,21 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SendNewMessageJudgeService extends MessageJudgeService {
     @Autowired
     private ValidateEmailService validateEmailService;
 
-    private final IdentityService identityService;
-    private final ObjectMapper mapper;
-    private final UserService userService;
-    private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
+    @Autowired
+    private IdentityService identityService;
+
+    @Autowired
+    private ObjectMapper mapper;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
 
     public Map<String, Object> initialiseCaseFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();

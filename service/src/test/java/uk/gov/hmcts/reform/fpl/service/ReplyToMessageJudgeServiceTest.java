@@ -21,15 +21,10 @@ import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.exceptions.JudicialMessageNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
-import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
-import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
-import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
@@ -39,9 +34,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static java.lang.String.format;
-import static java.util.Map.entry;
 import static java.util.UUID.randomUUID;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.groups.Tuple.tuple;
@@ -66,12 +59,7 @@ class ReplyToMessageJudgeServiceTest {
     private static final String MESSAGE_SENDER = "sender@fpla.com";
     private static final String MESSAGE_REQUESTED_BY = "request review from some court";
     private static final String MESSAGE_RECIPIENT = "recipient@fpla.com";
-    private static final String C2_FILE_NAME = "c2.doc";
-    private static final String C2_SUPPORTING_DOCUMENT_FILE_NAME = "c2_supporting.doc";
-    private static final String OTHER_FILE_NAME = "other.doc";
-    private static final String OTHER_SUPPORTING_DOCUMENT_FILE_NAME = "other_supporting.doc";
     private static final UUID SELECTED_DYNAMIC_LIST_ITEM_ID = randomUUID();
-    private static final UUID NEW_ELEMENT_ID = randomUUID();
 
     @Mock
     private Time time;
@@ -112,35 +100,12 @@ class ReplyToMessageJudgeServiceTest {
                 .urgency("High")
                 .build()));
 
-        final C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder()
-            .id(randomUUID())
-            .uploadedDateTime("01 Dec 2020")
-            .author("Some author")
-            .build();
-
-        final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = List.of(element(
-            AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(c2DocumentBundle)
-                .build()));
-
-        final Element<Placement> placement = element(Placement.builder()
-            .childName("Alex Green")
-            .placementUploadDateTime(LocalDateTime.of(2020, 10, 12, 13, 0))
-            .build());
-
         final CaseData caseData = CaseData.builder()
             .judicialMessages(judicialMessages)
-            .additionalApplicationsBundle(additionalApplicationsBundle)
-            .placementEventData(PlacementEventData.builder()
-                .placements(List.of(placement))
-                .build())
             .build();
 
         final Map<String, Object> expectedEventData = replyToMessageJudgeService.initialiseCaseFields(caseData);
 
-        final DynamicList expectedAdditionalApplicationsDynamicList = buildDynamicList(
-            Pair.of(c2DocumentBundle.getId(), "C2, 01 Dec 2020"),
-            Pair.of(placement.getId(), "A50, Alex Green, 12 October 2020, 1:00pm"));
 
         final String expectedUrgencyText = "Lorem ipsum dolor sit amet, consectetur adipiscing "
             + "elit. Sed sollicitudin eu felis tincidunt volutpat. Donec tempus quis metus congue placerat. Sed ligula "
@@ -151,163 +116,9 @@ class ReplyToMessageJudgeServiceTest {
             Pair.of(judicialMessages.get(1).getId(), "02 Dec 2020, High"));
 
         final Map<String, Object> expectedData = Map.of(
-            "hasAdditionalApplications", "Yes",
-            "hasJudicialMessages", "Yes",
-            "additionalApplicationsDynamicList", expectedAdditionalApplicationsDynamicList,
-            "judicialMessageDynamicList", expectedJudicialDynamicList,
-            "judicialMessageMetaData", JudicialMessageMetaData.builder()
-                .sender(COURT_EMAIL)
-                .recipient(EMPTY).build());
+            "judicialMessageDynamicList", expectedJudicialDynamicList);
 
         assertThat(expectedEventData).isEqualTo(expectedData);
-    }
-
-    @Test
-    void shouldInitialiseAdditionalApplicationDocumentFieldsOnlyWhenJudicialMessagesDoNotExist() {
-        UUID applicationId = randomUUID();
-
-        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = List.of(element(
-            AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(C2DocumentBundle.builder()
-                    .id(applicationId)
-                    .uploadedDateTime("01 Dec 2020")
-                    .author("Some author")
-                    .build())
-                .build())
-        );
-
-        CaseData caseData = CaseData.builder()
-            .additionalApplicationsBundle(additionalApplicationsBundle)
-            .build();
-
-        Map<String, Object> data = replyToMessageJudgeService.initialiseCaseFields(caseData);
-
-        DynamicList expectedAdditionalApplicationsDynamicList = buildDynamicList(
-            Pair.of(applicationId, "C2, 01 Dec 2020")
-        );
-
-        Map<String, Object> expectedData = Map.of(
-            "hasAdditionalApplications", "Yes",
-            "additionalApplicationsDynamicList", expectedAdditionalApplicationsDynamicList,
-            "judicialMessageMetaData", JudicialMessageMetaData.builder()
-                .sender(COURT_EMAIL)
-                .recipient(EMPTY).build()
-        );
-
-        assertThat(data).isEqualTo(expectedData);
-    }
-
-    @Test
-    void shouldInitialiseJudicialFieldsOnlyWhenDocumentsDoNotExist() {
-        List<Element<JudicialMessage>> judicialMessages = List.of(
-            element(JudicialMessage.builder()
-                .latestMessage("some note")
-                .messageHistory("some history")
-                .dateSent("01 Dec 2020")
-                .build()),
-            element(JudicialMessage.builder()
-                .latestMessage("some note")
-                .messageHistory("some history")
-                .dateSent("02 Dec 2020")
-                .build())
-        );
-
-        CaseData caseData = CaseData.builder()
-            .judicialMessages(judicialMessages)
-            .build();
-
-        Map<String, Object> data = replyToMessageJudgeService.initialiseCaseFields(caseData);
-
-        DynamicList expectedJudicialDynamicList = buildDynamicList(
-            Pair.of(judicialMessages.get(0).getId(), "01 Dec 2020"),
-            Pair.of(judicialMessages.get(1).getId(), "02 Dec 2020")
-        );
-
-        Map<String, Object> expectedData = Map.of(
-            "hasJudicialMessages", "Yes",
-            "judicialMessageDynamicList", expectedJudicialDynamicList,
-            "judicialMessageMetaData", JudicialMessageMetaData.builder()
-                .sender(COURT_EMAIL)
-                .recipient(EMPTY).build()
-        );
-
-        assertThat(data).isEqualTo(expectedData);
-    }
-
-    @Test
-    void shouldInitialiseJudicialMessagesWithEmailAddressesWhenDocumentsDoNotExist() {
-        List<Element<JudicialMessage>> judicialMessages = List.of(
-            element(JudicialMessage.builder()
-                .latestMessage("some note")
-                .messageHistory("some history")
-                .dateSent("01 Dec 2020")
-                .build())
-        );
-
-        List<Element<JudicialMessage>> closedJudicialMessages = List.of(
-            element(JudicialMessage.builder()
-                .latestMessage("some note")
-                .messageHistory("some history")
-                .dateSent("02 Dec 2020")
-                .build())
-        );
-
-        CaseData caseData = CaseData.builder()
-            .judicialMessages(judicialMessages)
-            .closedJudicialMessages(closedJudicialMessages)
-            .build();
-
-        Map<String, Object> data = replyToMessageJudgeService.initialiseCaseFields(caseData);
-
-        DynamicList expectedJudicialDynamicList = buildDynamicList(
-            Pair.of(judicialMessages.get(0).getId(), "01 Dec 2020")
-        );
-
-        Map<String, Object> expectedData = Map.of(
-            "hasJudicialMessages", "Yes",
-            "judicialMessageDynamicList", expectedJudicialDynamicList,
-            "judicialMessageMetaData", JudicialMessageMetaData.builder()
-                .sender(COURT_EMAIL)
-                .recipient(EMPTY).build()
-        );
-
-        assertThat(data).isEqualTo(expectedData);
-    }
-
-    @Test
-    void shouldPopulateOnlyEmailAddressesWhenDocumentsDoNotExist() {
-        assertThat(replyToMessageJudgeService.initialiseCaseFields(CaseData.builder().build()))
-            .containsExactly(
-                entry("judicialMessageMetaData", JudicialMessageMetaData.builder()
-                    .sender(COURT_EMAIL)
-                    .recipient(EMPTY).build()));
-    }
-
-    @Test
-    void shouldPrePopulateSenderAndRecipientEmailsWhenNewMessageIsInitiatedByJudge() {
-        when(userService.getUserEmail()).thenReturn(MESSAGE_SENDER);
-        when(userService.hasUserRole(UserRole.JUDICIARY)).thenReturn(true);
-
-        CaseData caseData = CaseData.builder().build();
-
-        assertThat(replyToMessageJudgeService.initialiseCaseFields(caseData))
-            .containsExactly(
-                entry("judicialMessageMetaData", JudicialMessageMetaData.builder()
-                    .recipient(COURT_EMAIL)
-                    .sender(MESSAGE_SENDER).build()));
-    }
-
-    @Test
-    void shouldNotPrePopulateSenderAndRecipientEmailsWhenNewMessageIsInitiatedNotByJudge() {
-        when(userService.hasUserRole(UserRole.JUDICIARY)).thenReturn(false);
-
-        CaseData caseData = CaseData.builder().build();
-
-        assertThat(replyToMessageJudgeService.initialiseCaseFields(caseData))
-            .containsExactly(
-                entry("judicialMessageMetaData", JudicialMessageMetaData.builder()
-                    .sender(COURT_EMAIL)
-                    .recipient(EMPTY).build()));
     }
 
     @Test
