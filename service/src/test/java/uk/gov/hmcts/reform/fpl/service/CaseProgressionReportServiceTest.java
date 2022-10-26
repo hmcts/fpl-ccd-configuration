@@ -119,6 +119,11 @@ class CaseProgressionReportServiceTest {
         assertThat(report).isEqualTo("<table>" 
                 + "<tr><th class='search-result-column-label' colspan=\"9\">"
                 +  courtName
+                + "<br>"
+                + "Please note: only the top 100 cases can be displayed on this screen. "
+                + "To see all cases, please select continue on this page, "
+                + "select done on the next page and a full list of cases "
+                + "will be automatically emailed to you."
                 + "<th class='search-result-column-label'></tr></table>"
                 + "<table><tr><th class='search-result-column-label'>Sr no.</th>"
                 + "<th class='search-result-column-label'>Case Number</th>"
