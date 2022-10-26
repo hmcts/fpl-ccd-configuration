@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -50,6 +51,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.HEARING_DOC
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.PLACEMENT_NOTICE_RESPONSE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
@@ -276,6 +278,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData responseData = extractCaseData(callbackResponse);
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(c2EvidenceDocuments);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp()).hasSizeGreaterThan(0);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp().get(0).getValue().getDocumentAcknowledge())
+            .isEqualTo(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
     }
 
     @Test
@@ -308,6 +313,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData responseData = extractCaseData(callbackResponse);
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(supportingEvidenceBundle);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp()).hasSizeGreaterThan(0);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp().get(0).getValue().getDocumentAcknowledge())
+            .isEqualTo(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
     }
 
     @Test
@@ -353,6 +361,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .isEqualTo(selectedHearingBooking.toLabel());
 
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(furtherEvidenceBundle);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp()).hasSizeGreaterThan(0);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp().get(0).getValue().getDocumentAcknowledge())
+            .isEqualTo(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
     }
 
     @Test
@@ -394,6 +405,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(respondentDynamicList).isEqualTo(expectedRespondentStatementList);
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(supportingEvidenceBundle);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp()).hasSizeGreaterThan(0);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp().get(0).getValue().getDocumentAcknowledge())
+            .isEqualTo(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
     }
 
     @Test
@@ -432,6 +446,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .name("test")
             .uploadedBy("kurt.swansea@gov.uk")
             .type(GUARDIAN_REPORTS)
+            .document(DocumentReference.builder().build())
             .build());
     }
 
