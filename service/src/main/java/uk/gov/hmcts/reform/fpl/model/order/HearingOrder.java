@@ -31,6 +31,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
@@ -39,6 +40,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJud
 @Builder(toBuilder = true)
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class HearingOrder implements RemovableOrder, AmendableOrder, TranslatableItem {
+    private List<String> documentAcknowledge;
     private String title;
     private HearingOrderType type;
     private DocumentReference order;
@@ -172,5 +174,15 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     @Override
     public List<Element<Other>> getSelectedOthers() {
         return this.getOthers();
+    }
+
+    public List<String> getDocumentAcknowledge() {
+        if (this.documentAcknowledge == null) {
+            this.documentAcknowledge = new ArrayList<>();
+        }
+        if (order != null && !this.documentAcknowledge.contains(DOCUMENT_ACKNOWLEDGEMENT_KEY)) {
+            this.documentAcknowledge.add(DOCUMENT_ACKNOWLEDGEMENT_KEY);
+        }
+        return this.documentAcknowledge;
     }
 }
