@@ -46,6 +46,7 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
     public Map<String, Object> initialiseCaseFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
+        data.put("hasJudicialMessages", (caseData.getJudicialMessages().isEmpty()) ? NO : YES);
         data.put("judicialMessageDynamicList", caseData.buildJudicialMessageDynamicList());
 
         return data;
