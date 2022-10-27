@@ -36,11 +36,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getElement;
 public class CaseExtensionService {
     private final ValidateGroupService validateGroupService;
 
-
-    public LocalDate getCaseShouldBeCompletedByDate(CaseData caseData) {
-        return Optional.ofNullable(caseData.getCaseCompletionDate()).orElse(caseData.getDateSubmitted().plusWeeks(26));
-    }
-
     private String buildChildCaseCompletionDateLabel(CaseData caseData) {
         List<Child> children = ElementUtils.unwrapElements(caseData.getChildren1());
 
@@ -63,8 +58,8 @@ public class CaseExtensionService {
 
         return Map.of(
             "childSelectorForExtension", childSelector,
-            "childCaseCompletionDateLabel", this.buildChildCaseCompletionDateLabel(caseData),
-            "shouldBeCompletedByDate", formatLocalDateToString(getCaseShouldBeCompletedByDate(caseData), DATE)
+            "childCaseCompletionDateLabel", buildChildCaseCompletionDateLabel(caseData),
+            "shouldBeCompletedByDate", formatLocalDateToString(getMaxExtendedTimeLine(caseData, caseData.getChildren1()), DATE)
         );
     }
 

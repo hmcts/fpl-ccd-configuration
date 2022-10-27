@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.microsoft.applicationinsights.internal.util.SSLOptionsUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,36 +33,11 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class})
 class CaseExtensionServiceTest {
-    private static final LocalDate DATE_SUBMITTED = LocalDate.of(2020, 1, 1);
-    private static final LocalDate OTHER_DATE = LocalDate.of(2020, 3, 3);
-
     @Mock
     private ValidateGroupService validateGroupService;
 
     @InjectMocks
     private CaseExtensionService service;
-
-    @Test
-    void shouldGetCaseCompletedByDateWhenNoCompletionDate() {
-        CaseData data = CaseData.builder().dateSubmitted(DATE_SUBMITTED).build();
-
-        LocalDate caseCompletionDate = service.getCaseShouldBeCompletedByDate(data);
-
-        assertThat(caseCompletionDate).isEqualTo(DATE_SUBMITTED.plusWeeks(26));
-    }
-
-    @Test
-    void shouldGetCaseCompletedByDateWhenCompletionDateExists() {
-
-        CaseData data = CaseData.builder()
-            .dateSubmitted(DATE_SUBMITTED)
-            .caseCompletionDate(OTHER_DATE)
-            .build();
-
-        LocalDate caseCompletionDate = service.getCaseShouldBeCompletedByDate(data);
-
-        assertThat(caseCompletionDate).isEqualTo(OTHER_DATE);
-    }
 
     @Test
     void shouldReturnPrePopulatedFields() {
@@ -76,17 +52,18 @@ class CaseExtensionServiceTest {
                 .build();
 
         Map<String, Object> prePopulateFields = service.prePopulateFields(caseData);
+
         String expectedLabel = String.join(System.lineSeparator(),
                 "Child 1: Daisy French: 2 February 2024",
                 "Child 2: Archie Turner: 1 April 2024",
                 "Child 3: Julie Jane: 8 April 2025");
 
         assertThat(prePopulateFields)
-                .containsEntry("childCaseCompletionDateLabel", expectedLabel)
-                .containsEntry("childSelectorForExtension", Selector.builder()
-                        .count("123")
-                        .build())
-                .containsEntry("shouldBeCompletedByDate", "1 April 2024");
+            .containsEntry("childCaseCompletionDateLabel", expectedLabel)
+            .containsEntry("childSelectorForExtension", Selector.builder()
+                .count("123")
+                .build())
+            .containsEntry("shouldBeCompletedByDate", "8 April 2025");
     }
 
     @Test
@@ -173,15 +150,18 @@ class CaseExtensionServiceTest {
                 .childExtension0(ChildExtension.builder()
                     .id(id1)
                     .caseExtensionTimeList(CaseExtensionTime.EIGHT_WEEK_EXTENSION)
+                    .caseExtensionReasonList(INTERNATIONAL_ASPECT)
                     .build())
                .childExtension1(ChildExtension.builder()
                     .id(id2)
                     .caseExtensionTimeList(CaseExtensionTime.OTHER_EXTENSION)
-                     .extensionDateOther(LocalDate.of(2024, 3, 4))
+                    .extensionDateOther(LocalDate.of(2024, 3, 4))
+                    .caseExtensionReasonList(INTERNATIONAL_ASPECT)
                     .build())
                .childExtension3(ChildExtension.builder()
                     .id(id3)
                     .caseExtensionTimeList(CaseExtensionTime.EIGHT_WEEK_EXTENSION)
+                    .caseExtensionReasonList(INTERNATIONAL_ASPECT)
                     .build())
                 .build();
 
@@ -197,7 +177,6 @@ class CaseExtensionServiceTest {
                 .childExtensionEventData(childExtensionEventData)
                 .build();
 
-        System.out.println("extension : " + LocalDate.of(2025, 4, 8).plusWeeks(8));
 
         List<Element<Child>> selectedChildren = service.updateChildrenExtension(caseData);
 
