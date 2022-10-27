@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
@@ -47,6 +48,8 @@ public final class ChildParty extends Party {
     private final String litigationIssues;
     private final String litigationIssuesDetails;
     private final String showAddressInConfidentialTab;
+    private final LocalDate completionDate;
+    private final CaseExtensionReasonList extensionReason;
 
     @Override
     @NotBlank(message = "Tell us the names of all children in the case")
@@ -103,7 +106,9 @@ public final class ChildParty extends Party {
                       String detailsHiddenReason,
                       String litigationIssues,
                       String litigationIssuesDetails,
-                      String showAddressInConfidentialTab) {
+                      String showAddressInConfidentialTab,
+                      LocalDate completionDate,
+                      CaseExtensionReasonList extensionReason) {
         super(partyId, partyType, firstName, lastName, organisationName,
             dateOfBirth, address, email, telephoneNumber);
         this.gender = gender;
@@ -131,5 +136,7 @@ public final class ChildParty extends Party {
         this.litigationIssues = litigationIssues;
         this.litigationIssuesDetails = litigationIssuesDetails;
         this.showAddressInConfidentialTab = showAddressInConfidentialTab;
+        this.completionDate = completionDate;
+        this.extensionReason = extensionReason;
     }
 }

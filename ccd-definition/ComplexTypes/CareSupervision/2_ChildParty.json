@@ -283,5 +283,31 @@
     "ElementLabel": "Should Address field be shown in confidential tab",
     "FieldShowCondition": "partyId=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "completionDate",
+    "FieldType": "Date",
+    "ElementLabel": "Completion date",
+    "HintText": "For example, 31 3 2018",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "extensionReason",
+    "FieldType": "Text",
+    "ElementLabel": "Reason for extending completion date",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "caseExtensionReasonList",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "CaseExtensionReasonList",
+    "ElementLabel": "Why is this case being extended?",
+    "SecurityClassification": "Public"
   }
 ]
