@@ -93,7 +93,7 @@ public class CaseExtensionController extends CallbackController {
                 caseExtensionService.getMaxExtendedTimeLine(caseData, children1));
 
         caseDetails.getData().put("caseSummaryExtensionDetails",
-                caseExtensionService.getCaseSummaryExtensionDetails(children1));
+                caseExtensionService.getCaseSummaryExtensionDetails(caseData, children1));
 
         caseDetails.getData().put("children1", children1);
         removeTemporaryFields(caseDetails, ChildExtensionEventData.class);

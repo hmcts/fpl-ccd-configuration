@@ -182,15 +182,15 @@ public class CaseExtensionService {
                 .collect(Collectors.toList());
     }
 
-    public String getCaseSummaryExtensionDetails(List<Element<Child>> children1) {
+    public String getCaseSummaryExtensionDetails(CaseData caseData, List<Element<Child>> children1) {
         return ElementUtils.unwrapElements(children1).stream()
             .map(Child::getParty)
-            .filter(childParty -> childParty.getCompletionDate() != null)
             .map(childParty ->
-                String.join(" - ",
-                    childParty.getFullName(),
-                    formatLocalDateToString(childParty.getCompletionDate(), DATE),
-                    childParty.getExtensionReason().getLabel()
+                    String.join(" - ",
+                        childParty.getFullName(),
+                        formatLocalDateToString(Optional.ofNullable(childParty.getCompletionDate())
+                                .orElse(caseData.getDefaultCompletionDate()), DATE),
+                        childParty.getExtensionReason().getLabel()
                 )
             )
             .collect(joining(System.lineSeparator()));
