@@ -98,6 +98,8 @@ public class TestingSupportController {
             .data(requestBody)
             .build();
 
+        log.info("caseDataContent : {}", caseDataContent);
+        log.info("requestBody : {}", requestBody);
         return coreCaseDataApiV2.saveCase(
             requestData.authorisation(),
             authToken.generate(),
