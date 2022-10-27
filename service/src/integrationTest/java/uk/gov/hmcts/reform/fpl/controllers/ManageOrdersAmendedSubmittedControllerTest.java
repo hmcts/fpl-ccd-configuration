@@ -7,7 +7,7 @@ import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -19,13 +19,16 @@ import uk.gov.hmcts.reform.fpl.model.order.OrderOperation;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static java.util.Collections.emptyList;
@@ -34,6 +37,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -43,7 +47,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 
 @WebMvcTest(ManageOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ManageOrdersAmendedAboutToSubmitControllerTest extends AbstractCallbackTest {
+class ManageOrdersAmendedSubmittedControllerTest extends AbstractCallbackTest {
 
     private static final LocalDate FIXED_DATE = LocalDate.of(420, 6, 9);
 
@@ -80,10 +84,16 @@ class ManageOrdersAmendedAboutToSubmitControllerTest extends AbstractCallbackTes
     private UploadDocumentService uploadService;
     @MockBean
     private Time time; // mocking to ensure time that is stamped into the doc matches the one in the test doc
+    @MockBean
+    private CoreCaseDataService coreCaseDataService;
+    @MockBean
+    private EventService eventPublisher;
     @Captor
     private ArgumentCaptor<byte[]> documentBinaries;
+    @Captor
+    private ArgumentCaptor<Map<String, Object>> updateData;
 
-    ManageOrdersAmendedAboutToSubmitControllerTest() {
+    ManageOrdersAmendedSubmittedControllerTest() {
         super("manage-orders");
     }
 
@@ -97,44 +107,72 @@ class ManageOrdersAmendedAboutToSubmitControllerTest extends AbstractCallbackTes
 
     @Test
     void shouldAmendGeneratedOrder() {
-        CaseData responseData = extractCaseData(postAboutToSubmitEvent(buildCaseData(ORDER_ID, ORDER_DOCUMENT)));
+        CaseData caseData = buildCaseData(ORDER_ID, ORDER_DOCUMENT);
+        postSubmittedEvent(caseData);
 
         verify(uploadService).uploadDocument(documentBinaries.capture(), eq("amended_order.pdf"), eq(MEDIA_TYPE));
         assertThat(documentBinaries.getValue()).isEqualTo(STAMPED_BINARIES);
+        verify(coreCaseDataService).triggerEvent(eq(caseData.getId()), eq("internal-change-manage-order"),
+            updateData.capture());
 
+        Map<String, Object> updates = asCaseDetails(caseData).getData();
+        updates.putAll(updateData.getValue());
+
+        CaseData responseData = extractCaseData(updates);
         GeneratedOrder updatedOrder = ORDER.toBuilder().amendedDate(FIXED_DATE).document(AMENDED_ORDER).build();
         assertOrders(responseData, updatedOrder, CMO, SDO, UHO);
     }
 
     @Test
     void shouldAmendCMO() {
-        CaseData responseData = extractCaseData(postAboutToSubmitEvent(buildCaseData(CMO_ID, CMO_DOCUMENT)));
+        CaseData caseData = buildCaseData(CMO_ID, CMO_DOCUMENT);
+        postSubmittedEvent(caseData);
 
         verify(uploadService).uploadDocument(documentBinaries.capture(), eq("amended_cmo.pdf"), eq(MEDIA_TYPE));
         assertThat(documentBinaries.getValue()).isEqualTo(STAMPED_BINARIES);
+        verify(coreCaseDataService).triggerEvent(eq(caseData.getId()), eq("internal-change-manage-order"),
+            updateData.capture());
 
+        Map<String, Object> updates = asCaseDetails(caseData).getData();
+        updates.putAll(updateData.getValue());
+
+        CaseData responseData = extractCaseData(updates);
         HearingOrder updatedCMO = CMO.toBuilder().amendedDate(FIXED_DATE).order(AMENDED_ORDER).build();
         assertOrders(responseData, ORDER, updatedCMO, SDO, UHO);
     }
 
     @Test
     void shouldAmendSDO() {
-        CaseData responseData = extractCaseData(postAboutToSubmitEvent(buildCaseData(SDO_ID, SDO_DOCUMENT)));
+        CaseData caseData = buildCaseData(SDO_ID, SDO_DOCUMENT);
+        postSubmittedEvent(caseData);
 
         verify(uploadService).uploadDocument(documentBinaries.capture(), eq("amended_sdo.pdf"), eq(MEDIA_TYPE));
         assertThat(documentBinaries.getValue()).isEqualTo(STAMPED_BINARIES);
+        verify(coreCaseDataService).triggerEvent(eq(caseData.getId()), eq("internal-change-manage-order"),
+            updateData.capture());
 
+        Map<String, Object> updates = asCaseDetails(caseData).getData();
+        updates.putAll(updateData.getValue());
+
+        CaseData responseData = extractCaseData(updates);
         StandardDirectionOrder updatedSDO = SDO.toBuilder().amendedDate(FIXED_DATE).orderDoc(AMENDED_ORDER).build();
         assertOrders(responseData, ORDER, CMO, updatedSDO, UHO);
     }
 
     @Test
     void shouldAmendUHO() {
-        CaseData responseData = extractCaseData(postAboutToSubmitEvent(buildCaseData(UHO_ID, UHO_DOCUMENT)));
+        CaseData caseData = buildCaseData(UHO_ID, UHO_DOCUMENT);
+        postSubmittedEvent(caseData);
 
         verify(uploadService).uploadDocument(documentBinaries.capture(), eq("amended_uho.pdf"), eq(MEDIA_TYPE));
         assertThat(documentBinaries.getValue()).isEqualTo(STAMPED_BINARIES);
+        verify(coreCaseDataService).triggerEvent(eq(caseData.getId()), eq("internal-change-manage-order"),
+            updateData.capture());
 
+        Map<String, Object> updates = asCaseDetails(caseData).getData();
+        updates.putAll(updateData.getValue());
+
+        CaseData responseData = extractCaseData(updates);
         UrgentHearingOrder updatedUHO = UHO.toBuilder().amendedDate(FIXED_DATE).order(AMENDED_ORDER).build();
         assertOrders(responseData, ORDER, CMO, SDO, updatedUHO);
     }
@@ -150,6 +188,7 @@ class ManageOrdersAmendedAboutToSubmitControllerTest extends AbstractCallbackTes
     private CaseData buildCaseData(UUID selectedId, DocumentReference originalDocument) {
         return CaseData.builder()
             .state(SUBMITTED)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersOperation(OrderOperation.AMEND)
                 .manageOrdersAmendmentList(DynamicList.builder()
@@ -163,5 +202,9 @@ class ManageOrdersAmendedAboutToSubmitControllerTest extends AbstractCallbackTes
             .urgentHearingOrder(UHO)
             .standardDirectionOrder(SDO)
             .build();
+    }
+
+    private CaseData extractCaseData(Map<String, Object> data) {
+        return mapper.convertValue(data, CaseData.class);
     }
 }

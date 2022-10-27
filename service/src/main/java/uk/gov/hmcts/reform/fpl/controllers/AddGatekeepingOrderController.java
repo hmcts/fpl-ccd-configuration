@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderRouteValidator;
 import uk.gov.hmcts.reform.fpl.service.sdo.UrgentGatekeepingOrderService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -197,7 +198,6 @@ public class AddGatekeepingOrderController extends CallbackController {
             "useServiceRoute",
             "useUploadRoute",
             "judgeAndLegalAdvisor",
-            "gatekeepingOrderSealDecision",
             "gatekeepingOrderHearingDate1",
             "gatekeepingOrderHearingDate2",
             "gatekeepingOrderHasHearing1",
@@ -205,7 +205,7 @@ public class AddGatekeepingOrderController extends CallbackController {
         );
 
         if (decision.isSealed() || sdoRouter == URGENT) {
-            removeTemporaryFields(data, "gatekeepingOrderIssuingJudge", "gatekeepingOrderRouter", "customDirections");
+            removeTemporaryFields(data, "gatekeepingOrderIssuingJudge", "customDirections");
         }
 
         return respond(data);
@@ -214,18 +214,62 @@ public class AddGatekeepingOrderController extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest request) {
         CaseData caseData = getCaseData(request);
+        final CaseDetails caseDetails = request.getCaseDetails();
+        final Map<String, Object> data = caseDetails.getData();
+
+        final GatekeepingOrderRoute sdoRouter = caseData.getGatekeepingOrderRouter();
+
+        Map<String, Object> updates = new HashMap<>();
+        switch (sdoRouter) {
+            case URGENT:
+                updates.putAll(urgentOrderService.sealDocumentAfterEventSubmitted(caseData));
+                break;
+            case UPLOAD:
+                updates.put("standardDirectionOrder", orderService.sealDocumentAfterEventSubmitted(caseData));
+                break;
+        }
+
+        final CaseData caseDataAfterSealing;
+        if (updates.isEmpty()) {
+            caseDataAfterSealing = caseData;
+        } else {
+            data.putAll(updates);
+            caseDataAfterSealing = getCaseData(caseDetails);
+        }
+
+        coreCaseDataService.triggerEvent(caseDataAfterSealing.getId(),
+            "internal-change-add-gatekeeping",
+            updates);
+
         CaseData caseDataBefore = getCaseDataBefore(request);
 
-        notificationDecider.buildEventToPublish(caseData, caseDataBefore.getState())
+        notificationDecider.buildEventToPublish(caseDataAfterSealing, caseDataBefore.getState())
             .ifPresent(eventToPublish -> {
                 coreCaseDataService.triggerEvent(
                     JURISDICTION,
                     CASE_TYPE,
-                    caseData.getId(),
+                    caseDataAfterSealing.getId(),
                     "internal-change-SEND_DOCUMENT",
                     Map.of("documentToBeSent", eventToPublish.getOrder()));
 
                 publishEvent(eventToPublish);
             });
+    }
+
+
+    @PostMapping("/post-submit-callback/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handlePostSubmittedEvent(@RequestBody CallbackRequest request) {
+        final CaseData caseData = getCaseData(request);
+        final CaseDetails caseDetails = request.getCaseDetails();
+        final GatekeepingOrderSealDecision decision = caseData.getGatekeepingOrderEventData()
+            .getGatekeepingOrderSealDecision();
+        removeTemporaryFields(caseDetails, "gatekeepingOrderSealDecision");
+
+        final GatekeepingOrderRoute sdoRouter = caseData.getGatekeepingOrderRouter();
+        if (decision.isSealed() || sdoRouter == URGENT) {
+            removeTemporaryFields(caseDetails, "gatekeepingOrderRouter");
+        }
+
+        return respond(caseDetails);
     }
 }
