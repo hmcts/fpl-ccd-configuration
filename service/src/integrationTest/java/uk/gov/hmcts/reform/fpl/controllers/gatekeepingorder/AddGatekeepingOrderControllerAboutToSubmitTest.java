@@ -12,7 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.AddGatekeepingOrderController;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
@@ -243,8 +243,8 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
             .containsExactly(DocumentBundle.builder().document(C6_REFERENCE)
                 .translationRequirements(expectedTranslationRequirements)
                 .build());
-        assertThat(response.getData()).doesNotContainKeys("gatekeepingOrderRouter", "customDirections",
-            "standardDirections", "gatekeepingOrderIssuingJudge", "gatekeepingOrderSealDecision");
+        assertThat(response.getData()).doesNotContainKeys("customDirections",
+            "standardDirections", "gatekeepingOrderIssuingJudge");
     }
 
 
@@ -298,7 +298,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
         AssertionsForClassTypes.assertThat(responseData.getUrgentHearingOrder()).isEqualTo(
             UrgentHearingOrder.builder()
                 .allocation("Section 9 circuit judge")
-                .order(sealedUrgentReference)
+                .order(urgentReference)
                 .unsealedOrder(urgentReference)
                 .dateAdded(dateNow())
                 .translationRequirements(translationRequirements)
@@ -308,17 +308,14 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
 
     @Test
     void shouldUpdateStateAndOrderDocWhenSDOIsSealedThroughUploadRouteAndRemoveRouterAndSendNoticeOfProceedings() {
-        DocumentReference sealedDocument = DocumentReference.builder().filename("sealed.pdf").build();
         DocumentReference document = DocumentReference.builder().filename("final.docx").build();
         Court court = Court.builder().build();
         givenCurrentUserWithName("adam");
-        given(sealingService.sealDocument(document, court, SealType.ENGLISH)).willReturn(sealedDocument);
 
         CaseData responseCaseData = extractCaseData(
             postAboutToSubmitEvent(validCaseDetailsForUploadRoute(document, court, SEALED))
         );
 
-        assertThat(responseCaseData.getStandardDirectionOrder().getLastUploadedOrder()).isEqualTo(document);
         assertThat(responseCaseData.getNoticeOfProceedingsBundle())
             .extracting(Element::getValue)
             .containsExactly(DocumentBundle.builder().document(C6_REFERENCE).build());

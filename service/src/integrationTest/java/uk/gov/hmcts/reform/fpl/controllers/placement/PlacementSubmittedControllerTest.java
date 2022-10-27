@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers.placement;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -11,7 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fnp.client.FeesRegisterApi;
 import uk.gov.hmcts.reform.fnp.client.PaymentApi;
 import uk.gov.hmcts.reform.fnp.model.payment.CreditAccountPaymentRequest;
@@ -20,10 +21,12 @@ import uk.gov.hmcts.reform.fpl.controllers.PlacementController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
@@ -61,8 +64,11 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.feeResponse;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.feignException;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
@@ -84,6 +90,7 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
     private static final byte[] COVERSHEET_BINARIES = testDocumentBinaries();
     private static final byte[] CAFCASS_NOTICE_BINARIES = testDocumentBinaries();
     private static final byte[] FIRST_PARENT_NOTICE_BINARIES = testDocumentBinaries();
+    public static final String INTERNAL_CHANGE_PLACEMENT = "internal-change-placement";
 
     @MockBean
     private PaymentApi paymentApi;
@@ -111,6 +118,9 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
 
     @Captor
     private ArgumentCaptor<LetterWithPdfsRequest> sendLetterRequestCaptor;
+
+    @MockBean
+    private DocumentConversionService documentConversionService;
 
     @BeforeEach
     void init() {
@@ -319,6 +329,82 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 
         verifyNoInteractions(notificationClient, paymentApi, coreCaseDataApi);
+    }
+
+    @Nested
+    class TestSealing {
+
+        private final Document sealedDocument = testDocument();
+        private final DocumentReference sealedApplication = buildFromDocument(sealedDocument);
+        private final DocumentReference application = testDocumentReference("application.doc");
+
+        @BeforeEach
+        void init() {
+            final byte[] applicationContent = testDocumentBinaries();
+            final byte[] applicationContentAsPdf = readBytes("documents/document.pdf");
+            final byte[] sealedApplicationContent = readBytes("documents/document-sealed.pdf");
+
+            when(documentDownloadService.downloadDocument(application.getBinaryUrl()))
+                .thenReturn(applicationContent);
+
+            when(documentConversionService.convertToPdf(applicationContent, application.getFilename()))
+                .thenReturn(applicationContentAsPdf);
+
+            when(uploadDocumentService.uploadPDF(sealedApplicationContent, "application.pdf"))
+                .thenReturn(sealedDocument);
+
+            given(coreCaseDataApi.startEventForCaseWorker(any(), any(), any(), any(), any(), any(),
+                eq(INTERNAL_CHANGE_PLACEMENT)))
+                .willReturn(StartEventResponse.builder().eventId(INTERNAL_CHANGE_PLACEMENT).token(EVENT_TOKEN).build());
+        }
+
+        @Test
+        void shouldSealPlacementApplication() {
+            UUID applicationUUID = randomUUID();
+
+            Placement placement = Placement.builder()
+                .childId(child1.getId())
+                .application(application)
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .id(1L)
+                .children1(List.of(child1, child2))
+                .placementEventData(PlacementEventData.builder()
+                    .placement(placement)
+                    .placements(List.of(element(applicationUUID, placement)))
+                    .placementIdToBeSealed(applicationUUID)
+                    .placementPaymentRequired(NO)
+                    .build())
+                .build();
+
+            postSubmittedEvent(caseData);
+
+            Placement sealedPlacement = placement.toBuilder().application(sealedApplication).build();
+
+            final Map<String, Object> expectedCaseChanges = new HashMap<>();
+            expectedCaseChanges.put("placements", List.of(element(applicationUUID, sealedPlacement)));
+            expectedCaseChanges.put("placement", sealedPlacement);
+
+            final CaseDataContent expectedCaseDataContent = CaseDataContent.builder()
+                .event(Event.builder()
+                    .id(INTERNAL_CHANGE_PLACEMENT)
+                    .build())
+                .data(expectedCaseChanges)
+                .eventToken(EVENT_TOKEN)
+                .ignoreWarning(false)
+                .build();
+
+            verify(coreCaseDataApi).submitEventForCaseWorker(
+                USER_AUTH_TOKEN,
+                SERVICE_AUTH_TOKEN,
+                SYS_USER_ID,
+                JURISDICTION,
+                CASE_TYPE,
+                "1",
+                true,
+                expectedCaseDataContent);
+        }
     }
 
     private CreditAccountPaymentRequest expectedCreditAccountPaymentRequest() {
