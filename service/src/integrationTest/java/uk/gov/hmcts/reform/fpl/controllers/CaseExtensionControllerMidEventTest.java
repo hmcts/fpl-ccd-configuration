@@ -57,17 +57,20 @@ class CaseExtensionControllerMidEventTest extends AbstractCallbackTest {
                         .id(id1)
                         .caseExtensionTimeList(CaseExtensionTime.EIGHT_WEEK_EXTENSION)
                         .caseExtensionReasonList(INTERNATIONAL_ASPECT)
+                        .index("1")
                         .build())
                 .childExtension1(ChildExtension.builder()
                         .id(id2)
                         .caseExtensionTimeList(CaseExtensionTime.OTHER_EXTENSION)
                         .extensionDateOther(LocalDate.of(2024, 3, 4))
                         .caseExtensionReasonList(INTERNATIONAL_ASPECT)
+                        .index("2")
                         .build())
                 .childExtension3(ChildExtension.builder()
                         .id(id3)
                         .caseExtensionTimeList(CaseExtensionTime.EIGHT_WEEK_EXTENSION)
                         .caseExtensionReasonList(INTERNATIONAL_ASPECT)
+                        .index("3")
                         .build())
                 .build();
         CaseData caseData = CaseData.builder()
@@ -81,6 +84,59 @@ class CaseExtensionControllerMidEventTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
         assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = YesNo.class, names = {"YES", "NO"})
+    void shouldFailValidation(YesNo yesNo) {
+        UUID id1= UUID.randomUUID();
+        UUID id2 = UUID.randomUUID();
+        UUID id3 = UUID.randomUUID();
+
+        List<Child> children = List.of(
+                getChild(LocalDate.of(2024, 7, 2), "Daisy", "French"),
+                getChild(null, "Archie", "Turner"),
+                getChild(LocalDate.of(2024, 10, 8), "Julie", "Jane")
+        );
+        LocalDate caseCompletionDate = LocalDate.of(2030, 11, 12);
+
+        ChildExtensionEventData childExtensionEventData = ChildExtensionEventData.builder()
+                .extensionForAllChildren(yesNo.getValue())
+                .childSelectorForExtension(Selector.builder()
+                        .selected(List.of(0, 1, 2))
+                        .build())
+                .childExtension0(ChildExtension.builder()
+                        .id(id1)
+                        .caseExtensionTimeList(CaseExtensionTime.EIGHT_WEEK_EXTENSION)
+                        .caseExtensionReasonList(INTERNATIONAL_ASPECT)
+                        .index("1")
+                        .build())
+                .childExtension1(ChildExtension.builder()
+                        .id(id2)
+                        .caseExtensionTimeList(CaseExtensionTime.OTHER_EXTENSION)
+                        .extensionDateOther(LocalDate.of(2000, 3, 4))
+                        .caseExtensionReasonList(INTERNATIONAL_ASPECT)
+                        .index("2")
+                        .build())
+                .childExtension3(ChildExtension.builder()
+                        .id(id3)
+                        .caseExtensionTimeList(CaseExtensionTime.EIGHT_WEEK_EXTENSION)
+                        .caseExtensionReasonList(INTERNATIONAL_ASPECT)
+                        .index("3")
+                        .build())
+                .build();
+        CaseData caseData = CaseData.builder()
+            .caseCompletionDate(caseCompletionDate)
+            .dateSubmitted(LocalDate.of(2030, 8, 10))
+            .children1(ElementUtils.wrapElements(children))
+            .childExtensionEventData(childExtensionEventData)
+            .build();
+
+
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
+        assertThat(callbackResponse.getErrors())
+                .contains("Enter an end date in the future for child 2");
     }
 
     private Child getChild(LocalDate completionDate,
