@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.microsoft.applicationinsights.internal.util.SSLOptionsUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,6 +28,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList.INTERNATIONAL_ASPECT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class})
@@ -42,14 +42,14 @@ class CaseExtensionServiceTest {
     @Test
     void shouldReturnPrePopulatedFields() {
         List<Child> children = List.of(
-                getChild(LocalDate.of(2024, 2, 2), "Daisy", "French"),
-                getChild(null, "Archie", "Turner"),
-                getChild(LocalDate.of(2025, 4, 8), "Julie", "Jane")
+            getChild(LocalDate.of(2024, 2, 2), "Daisy", "French"),
+            getChild(null, "Archie", "Turner"),
+            getChild(LocalDate.of(2025, 4, 8), "Julie", "Jane")
         );
         CaseData caseData = CaseData.builder()
-                .children1(ElementUtils.wrapElements(children))
-                .dateSubmitted(LocalDate.of(2023, 10, 2))
-                .build();
+            .children1(wrapElements(children))
+            .dateSubmitted(LocalDate.of(2023, 10, 2))
+            .build();
 
         Map<String, Object> prePopulateFields = service.prePopulateFields(caseData);
 
@@ -81,7 +81,7 @@ class CaseExtensionServiceTest {
                 getChild(LocalDate.of(2025, 4, 8), "Julie", "Jane")
         );
         CaseData caseData = CaseData.builder()
-                .children1(ElementUtils.wrapElements(children))
+                .children1(wrapElements(children))
                 .dateSubmitted(LocalDate.of(2023, 10, 2))
                 .childExtensionEventData(childExtensionEventData)
                 .build();
@@ -89,14 +89,16 @@ class CaseExtensionServiceTest {
         Map<String, Object> selectedChildren = service.getSelectedChildren(caseData);
 
         assertThat(selectedChildren)
-                .containsEntry("childSelected1", YES.getValue())
-                .containsEntry("childSelected2", YES.getValue())
-                .containsEntry("childExtension1", ChildExtension.builder()
-                        .label("Archie Turner")
-                        .build())
-                .containsEntry("childExtension2", ChildExtension.builder()
-                        .label("Julie Jane")
-                        .build());
+            .containsEntry("childSelected1", YES.getValue())
+            .containsEntry("childSelected2", YES.getValue())
+            .containsEntry("childExtension1", ChildExtension.builder()
+                    .label("Archie Turner")
+                    .index("2")
+                    .build())
+            .containsEntry("childExtension2", ChildExtension.builder()
+                    .label("Julie Jane")
+                    .index("3")
+                    .build());
     }
 
     @Test
@@ -114,7 +116,7 @@ class CaseExtensionServiceTest {
                 getChild(LocalDate.of(2025, 4, 8), "Julie", "Jane")
         );
         CaseData caseData = CaseData.builder()
-                .children1(ElementUtils.wrapElements(children))
+                .children1(wrapElements(children))
                 .dateSubmitted(LocalDate.of(2023, 10, 2))
                 .childExtensionEventData(childExtensionEventData)
                 .build();
@@ -127,18 +129,21 @@ class CaseExtensionServiceTest {
                 .containsEntry("childSelected2", YES.getValue())
                 .containsEntry("childExtension0", ChildExtension.builder()
                     .label("Daisy French")
+                    .index("1")
                     .build())
                 .containsEntry("childExtension1", ChildExtension.builder()
                     .label("Archie Turner")
+                    .index("2")
                     .build())
                 .containsEntry("childExtension2", ChildExtension.builder()
                     .label("Julie Jane")
+                    .index("3")
                     .build());
     }
 
     @Test
     void shouldUpdateSelectedChildren() {
-        UUID id1= UUID.randomUUID();
+        UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
         UUID id3 = UUID.randomUUID();
 
@@ -202,7 +207,7 @@ class CaseExtensionServiceTest {
             getChild(LocalDate.of(2025, 4, 8), "Julie", "Jane")
         );
         CaseData caseData = CaseData.builder()
-            .children1(ElementUtils.wrapElements(children))
+            .children1(wrapElements(children))
             .dateSubmitted(LocalDate.of(2023, 10, 2))
             .childExtensionEventData(childExtensionEventData)
             .build();
@@ -215,12 +220,15 @@ class CaseExtensionServiceTest {
             .containsEntry("childSelected2", YES.getValue())
             .containsEntry("childExtension0", ChildExtension.builder()
                 .label("Daisy French")
+                .index("1")
                 .build())
             .containsEntry("childExtension1", ChildExtension.builder()
                 .label("Archie Turner")
+                .index("2")
                 .build())
             .containsEntry("childExtension2", ChildExtension.builder()
                 .label("Julie Jane")
+                .index("3")
                 .build());
     }
 
@@ -232,11 +240,11 @@ class CaseExtensionServiceTest {
             getChild(LocalDate.of(2025, 4, 8), "Julie", "Jane")
         );
         CaseData caseData = CaseData.builder()
-            .children1(ElementUtils.wrapElements(children))
+            .children1(wrapElements(children))
             .dateSubmitted(LocalDate.of(2023, 10, 2))
             .build();
 
-        String caseSummaryExtensionDetails = service.getCaseSummaryExtensionDetails(caseData, ElementUtils.wrapElements(children));
+        String caseSummaryExtensionDetails = service.getCaseSummaryExtensionDetails(caseData, wrapElements(children));
         String expectedLabel = String.join(System.lineSeparator(),
                 "Daisy French - 2 February 2024 - International Aspect",
                 "Archie Turner - 1 April 2024 - International Aspect",
@@ -253,11 +261,11 @@ class CaseExtensionServiceTest {
             getChild(LocalDate.of(2025, 4, 8), "Julie", "Jane")
         );
         CaseData caseData = CaseData.builder()
-            .children1(ElementUtils.wrapElements(children))
+            .children1(wrapElements(children))
             .dateSubmitted(LocalDate.of(2023, 10, 2))
             .build();
 
-        LocalDate maxExtendedTimeLine = service.getMaxExtendedTimeLine(caseData, ElementUtils.wrapElements(children));
+        LocalDate maxExtendedTimeLine = service.getMaxExtendedTimeLine(caseData, wrapElements(children));
         assertThat(maxExtendedTimeLine).isEqualTo(LocalDate.of(2025, 4, 8));
     }
 
@@ -273,6 +281,7 @@ class CaseExtensionServiceTest {
                         .id(id2)
                         .caseExtensionTimeList(CaseExtensionTime.OTHER_EXTENSION)
                         .extensionDateOther(LocalDate.of(2000, 3, 4))
+                        .index("4")
                         .build())
                 .build();
 
@@ -282,7 +291,7 @@ class CaseExtensionServiceTest {
             getChild(LocalDate.of(2025, 4, 8), "Julie", "Jane")
         );
         CaseData caseData = CaseData.builder()
-            .children1(ElementUtils.wrapElements(children))
+            .children1(wrapElements(children))
             .dateSubmitted(LocalDate.of(2023, 10, 2))
             .childExtensionEventData(childExtensionEventData)
             .build();

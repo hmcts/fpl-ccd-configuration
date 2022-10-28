@@ -47,7 +47,10 @@ public class CaseExtensionService {
                     Optional.ofNullable(childParty.getCompletionDate())
                             .orElseGet(caseData::getDefaultCompletionDate),
                     DATE);
-                return String.format("Child %d: %s: %s", counter[0]++, childParty.getFullName(), childCaseCompletionDate);
+                return String.format("Child %d: %s: %s",
+                        counter[0]++,
+                        childParty.getFullName(),
+                        childCaseCompletionDate);
             })
             .collect(joining(System.lineSeparator()));
     }
@@ -59,7 +62,10 @@ public class CaseExtensionService {
         return Map.of(
             "childSelectorForExtension", childSelector,
             "childCaseCompletionDateLabel", buildChildCaseCompletionDateLabel(caseData),
-            "shouldBeCompletedByDate", formatLocalDateToString(getMaxExtendedTimeLine(caseData, caseData.getChildren1()), DATE)
+            "shouldBeCompletedByDate", formatLocalDateToString(
+                    getMaxExtendedTimeLine(caseData, caseData.getChildren1()),
+                    DATE
+                )
         );
     }
 
@@ -94,6 +100,7 @@ public class CaseExtensionService {
             ChildExtension.builder()
                 .label(children.get(value).getValue().getParty().getFullName())
                 .id(children.get(value).getId())
+                .index(String.valueOf(++value))
                 .build());
     }
 
@@ -166,14 +173,16 @@ public class CaseExtensionService {
 
     public List<String> validateChildExtensionDate(CaseData caseData) {
         ChildExtensionEventData childExtensionEventData = caseData.getChildExtensionEventData();
-        int[] index = {0};
+        String[] location = {"0"};
 
         return childExtensionEventData.getAllChildExtension().stream()
-                .peek(data -> index[0]++)
                 .filter(Objects::nonNull)
-                .map(childExtension -> validateGroupService.validateGroup(childExtension, CaseExtensionGroup.class))
+                .map(childExtension -> {
+                    location[0] = childExtension.getIndex();
+                    return validateGroupService.validateGroup(childExtension, CaseExtensionGroup.class);
+                })
                 .flatMap(List::stream)
-                .map(error -> String.join(" ",  error, "for child", String.valueOf(index[0])))
+                .map(error -> String.join(" ",  error, "for child", location[0]))
                 .collect(Collectors.toList());
     }
 
@@ -181,11 +190,11 @@ public class CaseExtensionService {
         return ElementUtils.unwrapElements(children1).stream()
             .map(Child::getParty)
             .map(childParty ->
-                    String.join(" - ",
-                        childParty.getFullName(),
-                        formatLocalDateToString(Optional.ofNullable(childParty.getCompletionDate())
-                                .orElse(caseData.getDefaultCompletionDate()), DATE),
-                        childParty.getExtensionReason().getLabel()
+                String.join(" - ",
+                    childParty.getFullName(),
+                    formatLocalDateToString(Optional.ofNullable(childParty.getCompletionDate())
+                            .orElse(caseData.getDefaultCompletionDate()), DATE),
+                    childParty.getExtensionReason().getLabel()
                 )
             )
             .collect(joining(System.lineSeparator()));
