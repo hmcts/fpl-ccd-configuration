@@ -1142,10 +1142,7 @@ public class CaseData extends CaseDataParent {
     private final LocalAuthoritiesEventData localAuthoritiesEventData = LocalAuthoritiesEventData.builder().build();
 
     @JsonUnwrapped
-    @Builder.Default
-    private final CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData
-            .builder()
-            .build();
+    private final CaseProgressionReportEventData caseProgressionReportEventData;
 
     @JsonUnwrapped
     @Builder.Default
