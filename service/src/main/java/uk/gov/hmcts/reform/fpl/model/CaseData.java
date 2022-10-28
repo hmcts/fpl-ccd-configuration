@@ -301,6 +301,10 @@ public class CaseData extends CaseDataParent {
         return respondents1 != null ? respondents1 : new ArrayList<>();
     }
 
+    public RepresentativeType getRepresentativeType() {
+        return representativeType != null ? representativeType : RepresentativeType.LOCAL_AUTHORITY;
+    }
+
     @JsonIgnore
     public List<Element<Child>> getAllChildren() {
         return children1 != null ? children1 : new ArrayList<>();

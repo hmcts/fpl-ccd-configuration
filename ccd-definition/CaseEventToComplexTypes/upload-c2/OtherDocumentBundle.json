@@ -35,9 +35,29 @@
     "ID": "OtherDocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "ListElementCode": "documentAcknowledgeLabel",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "ListElementCode": "documentAcknowledge",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
     "ListElementCode": "urgencyTimeFrameType",
     "EventElementLabel": "Please state how soon you want the judge to consider your application?",
-    "FieldDisplayOrder": "4",
+    "FieldDisplayOrder": "6",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -47,7 +67,7 @@
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "EventElementLabel": "Supplements",
     "ListElementCode": "supplementsBundle",
-    "FieldDisplayOrder": "5",
+    "FieldDisplayOrder": "7",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -56,7 +76,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "ListElementCode": "supplementsBundle.name",
-    "FieldDisplayOrder": "6",
+    "FieldDisplayOrder": "8",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -66,7 +86,7 @@
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "ListElementCode": "supplementsBundle.secureAccommodationType",
     "EventElementLabel": "Which jurisdiction?",
-    "FieldDisplayOrder": "7",
+    "FieldDisplayOrder": "9",
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "temporaryOtherApplicationsBundle.supplementsBundle.name=\"C20_SECURE_ACCOMMODATION\""
   },
@@ -76,7 +96,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "ListElementCode": "supplementsBundle.notes",
-    "FieldDisplayOrder": "8",
+    "FieldDisplayOrder": "10",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -86,8 +106,28 @@
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "EventElementLabel": "Upload document",
     "ListElementCode": "supplementsBundle.document",
-    "FieldDisplayOrder": "9",
+    "FieldDisplayOrder": "11",
     "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "ListElementCode": "supplementsBundle.documentAcknowledgeLabel",
+    "FieldDisplayOrder": "12",
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "ListElementCode": "supplementsBundle.documentAcknowledge",
+    "FieldDisplayOrder": "13",
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -96,7 +136,7 @@
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "EventElementLabel": "Supporting Documents",
     "ListElementCode": "supportingEvidenceBundle",
-    "FieldDisplayOrder": "10",
+    "FieldDisplayOrder": "14",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -106,7 +146,7 @@
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "EventElementLabel": "File name",
     "ListElementCode": "supportingEvidenceBundle.name",
-    "FieldDisplayOrder": "11",
+    "FieldDisplayOrder": "15",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -115,7 +155,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "ListElementCode": "supportingEvidenceBundle.notes",
-    "FieldDisplayOrder": "12",
+    "FieldDisplayOrder": "16",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -134,7 +174,27 @@
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "ListElementCode": "supportingEvidenceBundle.document",
     "EventElementLabel": "Upload document",
-    "FieldDisplayOrder": "13",
+    "FieldDisplayOrder": "17",
     "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "ListElementCode": "supportingEvidenceBundle.documentAcknowledgeLabel",
+    "FieldDisplayOrder": "18",
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "ListElementCode": "supportingEvidenceBundle.documentAcknowledge",
+    "FieldDisplayOrder": "19",
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
   }
 ]
