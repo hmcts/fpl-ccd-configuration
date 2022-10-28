@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,12 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList.INTERNATIONAL_ASPECT;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.*;
 
 @WebMvcTest(CaseExtensionController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -137,6 +140,81 @@ class CaseExtensionControllerMidEventTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
         assertThat(callbackResponse.getErrors())
                 .contains("Enter an end date in the future for child 2");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = YesNo.class, names = {"YES", "NO"})
+    void shouldSetSelectedChildrens(YesNo yesNo) {
+        List<Child> children = List.of(
+                getChild(LocalDate.of(2024, 7, 2), "Daisy", "French"),
+                getChild(null, "Archie", "Turner"),
+                getChild(LocalDate.of(2024, 10, 8), "Julie", "Jane")
+        );
+        LocalDate caseCompletionDate = LocalDate.of(2030, 11, 12);
+
+        ChildExtensionEventData childExtensionEventData = ChildExtensionEventData.builder()
+            .extensionForAllChildren(yesNo.getValue())
+            .childSelectorForExtension(Selector.builder()
+                .selected(List.of(0, 2))
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .caseCompletionDate(caseCompletionDate)
+            .dateSubmitted(LocalDate.of(2030, 8, 10))
+            .children1(ElementUtils.wrapElements(children))
+            .childExtensionEventData(childExtensionEventData)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "pre-populate");
+        assertThat(callbackResponse.getData().get("childExtension0"))
+            .isEqualTo(Map.of(
+            "label", "Daisy French",
+            "index", "1")
+        );
+
+        assertThat(callbackResponse.getData().get("childSelected0"))
+                .isEqualTo(YES.getValue());
+
+        if (NO == yesNo) {
+            assertThat(callbackResponse.getData().get("childExtension1")).isNull();
+        } else {
+            assertThat(callbackResponse.getData().get("childExtension1"))
+                    .isEqualTo(Map.of("label", "Archie Turner",
+                            "index", "2"));
+
+            assertThat(callbackResponse.getData().get("childSelected1"))
+                .isEqualTo(YES.getValue());
+        }
+
+        assertThat(callbackResponse.getData().get("childExtension2"))
+                .isEqualTo(Map.of("label", "Julie Jane",
+                "index", "3"));
+        assertThat(callbackResponse.getData().get("childSelected2"))
+                .isEqualTo(YES.getValue());
+
+    }
+
+    @Test
+    void shouldSetSelectChildrensError() {
+
+        LocalDate caseCompletionDate = LocalDate.of(2030, 11, 12);
+
+        ChildExtensionEventData childExtensionEventData = ChildExtensionEventData.builder()
+                .childSelectorForExtension(Selector.builder().build())
+            .extensionForAllChildren(NO.getValue())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .caseCompletionDate(caseCompletionDate)
+            .dateSubmitted(LocalDate.of(2030, 8, 10))
+            .childExtensionEventData(childExtensionEventData)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "pre-populate");
+        assertThat(callbackResponse.getErrors())
+                .contains("Select the children requiring an extension");
+
     }
 
     private Child getChild(LocalDate completionDate,
