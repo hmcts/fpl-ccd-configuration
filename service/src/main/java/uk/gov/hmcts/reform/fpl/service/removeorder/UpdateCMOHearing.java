@@ -21,7 +21,7 @@ public class UpdateCMOHearing {
         Optional<Element<HearingBooking>> hearingBooking = caseData.getHearingLinkedToCMO(cmoId);
 
         if (hearingBooking.isEmpty()) {
-            List<Element<HearingBooking>> matchingLabel = caseData.getHearingDetails()
+            List<Element<HearingBooking>> matchingLabel = caseData.getAllHearings()
                 .stream()
                 .filter(hearing -> hearing.getValue().toLabel().equals(cmo.getHearing()))
                 .collect(Collectors.toList());

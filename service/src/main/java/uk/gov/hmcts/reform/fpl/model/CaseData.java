@@ -324,7 +324,7 @@ public class CaseData extends CaseDataParent {
 
     @JsonIgnore
     public Optional<Element<HearingBooking>> getHearingLinkedToCMO(UUID removedOrderId) {
-        return hearingDetails.stream()
+        return getAllHearings().stream()
             .filter(hearingBookingElement ->
                 removedOrderId.equals(hearingBookingElement.getValue().getCaseManagementOrderId()))
             .findFirst();

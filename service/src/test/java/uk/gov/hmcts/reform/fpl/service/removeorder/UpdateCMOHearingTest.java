@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.removeorder;
 
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
 import uk.gov.hmcts.reform.fpl.exceptions.removaltool.UnexpectedNumberOfCMOsRemovedException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -21,6 +22,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -64,6 +66,26 @@ class UpdateCMOHearingTest {
     }
 
     @Test
+    void shouldReturnLinkedCMOByLabel(){
+        Element<HearingBooking> hearingWithCMOId = element(CMO_ID, HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(HEARING_START_DATE)
+            .build()); // do .toLabel() on this
+
+        Element<HearingOrder> linkedCMO = element(CMO_ID, HearingOrder.builder()
+            .type(DRAFT_CMO)
+            .status(DRAFT)
+            .hearing(hearingWithCMOId.getValue().toLabel())
+            .build());
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(hearingWithCMOId))
+            .build();
+
+        assertThat(underTest.getHearingToUnlink(caseData, CMO_ID, linkedCMO.getValue())).isEqualTo(hearingWithCMOId.getValue());
+    }
+
+    @Test
     void shouldThrowExceptionWhenNoHearingFoundForTheCMOId() {
         HearingBooking hearingWithCMOId = hearing(CMO_ID, HEARING_START_DATE);
 
@@ -84,6 +106,50 @@ class UpdateCMOHearingTest {
         AssertionsForClassTypes.assertThat(exception).hasMessageContaining(String.format(
             "CMO %s could not be linked to hearing by CMO id and there wasn't a unique link "
                 + "(%s links found) to a hearing with the same label", ANOTHER_CMO_ID, 0));
+    }
+
+    @Test
+    void shouldReturnTheHearingWhenCancelledForTheCMOId(){
+        Element<HearingBooking> hearingBooking = element(hearing(CMO_ID, HEARING_START_DATE));
+        Element<HearingBooking> vacatedHearing = element(hearing(ANOTHER_CMO_ID, HEARING_START_DATE,
+            VACATED_TO_BE_RE_LISTED));
+
+        Element<HearingOrder> vacatedHearingCMO = element(ANOTHER_CMO_ID, HearingOrder.builder()
+            .type(AGREED_CMO).status(APPROVED)
+            .hearing(vacatedHearing.getId().toString()).build());
+
+        CaseData caseData = CaseData.builder()
+            .sealedCMOs(newArrayList(vacatedHearingCMO))
+            .hearingDetails(newArrayList(hearingBooking))
+            .cancelledHearingDetails(List.of(vacatedHearing))
+            .build();
+
+        assertThat(underTest.getHearingToUnlink(caseData, ANOTHER_CMO_ID, vacatedHearingCMO.getValue()))
+            .isEqualTo(vacatedHearing.getValue());
+    }
+
+    @Test
+    void shouldReturnLinkedCMOByLabelForCancelledHearing(){
+        Element<HearingBooking> hearingBooking = element(hearing(CMO_ID, HEARING_START_DATE));
+        Element<HearingBooking> vacatedHearing = element(ANOTHER_CMO_ID, HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(HEARING_START_DATE)
+            .status(VACATED_TO_BE_RE_LISTED)
+            .build());
+
+        Element<HearingOrder> linkedCMO = element(ANOTHER_CMO_ID, HearingOrder.builder()
+            .type(DRAFT_CMO)
+            .status(DRAFT)
+            .hearing(vacatedHearing.getValue().toLabel())
+            .build());
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(hearingBooking))
+            .cancelledHearingDetails(List.of(vacatedHearing))
+            .build();
+
+        assertThat(underTest.getHearingToUnlink(caseData, ANOTHER_CMO_ID, linkedCMO.getValue()))
+            .isEqualTo(vacatedHearing.getValue());
     }
 
     @Test
@@ -116,12 +182,17 @@ class UpdateCMOHearingTest {
     }
 
     private HearingBooking hearing(UUID cmoId) {
-        return hearing(cmoId, HEARING_START_DATE);
+        return hearing(cmoId, HEARING_START_DATE, null);
     }
 
     private HearingBooking hearing(UUID cmoId, LocalDateTime startDate) {
+        return hearing(cmoId, startDate, null);
+    }
+
+    private HearingBooking hearing(UUID cmoId, LocalDateTime startDate, HearingStatus status) {
         return HearingBooking.builder()
             .caseManagementOrderId(cmoId)
+            .status(status)
             .type(CASE_MANAGEMENT)
             .startDate(startDate)
             .build();
