@@ -43,27 +43,4 @@ public abstract class MessageJudgeService {
 
         return join("\n \n", history, formattedLatestMessage);
     }
-
-    protected List<Element<SelectableItem>> getApplications(CaseData caseData) {
-
-        final List<Element<SelectableItem>> applications = new ArrayList<>();
-
-        ofNullable(caseData.getC2DocumentBundle())
-            .ifPresent(c2s -> c2s
-                .forEach(application -> applications.add(element(application.getId(), application.getValue()))));
-
-        unwrapElements(caseData.getAdditionalApplicationsBundle()).forEach(bundle -> {
-            ofNullable(bundle.getC2DocumentBundle())
-                .ifPresent(application -> applications.add(element(application.getId(), application)));
-            ofNullable(bundle.getOtherApplicationsBundle())
-                .ifPresent(application -> applications.add(element(application.getId(), application)));
-        });
-
-        ofNullable(caseData.getPlacementEventData())
-            .map(PlacementEventData::getPlacements)
-            .ifPresent(placement -> placement
-                .forEach(application -> applications.add(element(application.getId(), application.getValue()))));
-
-        return applications;
-    }
 }

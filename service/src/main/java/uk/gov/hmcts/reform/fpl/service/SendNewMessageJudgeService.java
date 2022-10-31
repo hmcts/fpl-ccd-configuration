@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.SelectableItem;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
@@ -33,6 +34,7 @@ import java.util.function.Function;
 import static java.lang.String.join;
 import static java.util.Comparator.comparing;
 import static java.util.Objects.nonNull;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
@@ -155,6 +157,29 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
 
         judicialMessages.add(element(identityService.generateId(), judicialMessageBuilder.build()));
         return judicialMessages;
+    }
+
+    private List<Element<SelectableItem>> getApplications(CaseData caseData) {
+
+        final List<Element<SelectableItem>> applications = new ArrayList<>();
+
+        ofNullable(caseData.getC2DocumentBundle())
+            .ifPresent(c2s -> c2s
+                .forEach(application -> applications.add(element(application.getId(), application.getValue()))));
+
+        unwrapElements(caseData.getAdditionalApplicationsBundle()).forEach(bundle -> {
+            ofNullable(bundle.getC2DocumentBundle())
+                .ifPresent(application -> applications.add(element(application.getId(), application)));
+            ofNullable(bundle.getOtherApplicationsBundle())
+                .ifPresent(application -> applications.add(element(application.getId(), application)));
+        });
+
+        ofNullable(caseData.getPlacementEventData())
+            .map(PlacementEventData::getPlacements)
+            .ifPresent(placement -> placement
+                .forEach(application -> applications.add(element(application.getId(), application.getValue()))));
+
+        return applications;
     }
 
     private String buildMessageHistory(String message, String sender) {

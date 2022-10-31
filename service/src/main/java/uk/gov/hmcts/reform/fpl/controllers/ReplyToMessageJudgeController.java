@@ -71,7 +71,6 @@ public class ReplyToMessageJudgeController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
-        List<Element<JudicialMessage>> updatedMessages;
 
         caseDetailsMap.putAll(replyToMessageJudgeService.updateJudicialMessages(caseData));
 
