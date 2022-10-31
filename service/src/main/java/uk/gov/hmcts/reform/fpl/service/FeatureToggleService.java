@@ -77,6 +77,10 @@ public class FeatureToggleService {
         return ldClient.boolVariation("cafcass-subject-category", createLDUser(), false);
     }
 
+    public boolean isSecureDocstoreEnabled() {
+        return ldClient.boolVariation("secure-docstore-enabled", createLDUser(), false);
+    }
+
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }
