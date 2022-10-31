@@ -111,14 +111,6 @@ class OrdersNeededControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldSetRepresentativeTypeToLAIfItIsNotAlreadySet() {
-        //In this case fixture, representativeType is not set.
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent("fixtures/caseOtherOrderType.json");
-
-        assertThat(response.getData().get("representativeType")).isEqualTo("LOCAL_AUTHORITY");
-    }
-
-    @Test
     @SuppressWarnings("unchecked")
     void shouldSetCaseManagementLocation() {
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent("fixtures/case.json");
