@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderSection;
+import uk.gov.hmcts.reform.fpl.validation.groups.SecureAccommodationGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEPOAddress;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEPOType;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEnteredEPOExcluded;
@@ -43,7 +44,7 @@ public class Orders {
     private final EPOType epoType;
     private final String excluded;
     private final Address address;
-    @NotNull(message = "Select under which section are you applying")
+    @NotNull(message = "Select under which section are you applying", groups = SecureAccommodationGroup.class)
     private final SecureAccommodationOrderSection secureAccommodationOrderSection;
     private final String court;
     private final String childAssessmentOrderAssessmentDirections;
