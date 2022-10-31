@@ -1137,7 +1137,7 @@
     "CaseEventID": "manageOrders",
     "CaseFieldID": "manageOrdersHearingParty1",
     "PageFieldDisplayOrder": 76,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "OPTIONAL",
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,

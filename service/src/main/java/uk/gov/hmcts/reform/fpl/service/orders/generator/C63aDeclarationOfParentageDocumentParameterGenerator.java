@@ -49,8 +49,10 @@ public class C63aDeclarationOfParentageDocumentParameterGenerator implements Doc
 
     private String buildOrderMessage(ManageOrdersEventData eventData) {
         String ret = "Upon the application of "
-            + eventData.getManageOrdersParentageApplicant().getValue().getLabel() + "\n";
-        ret += "and upon hearing " + eventData.getManageOrdersHearingParty1().getValue().getCode();
+            + eventData.getManageOrdersParentageApplicant().getValue().getLabel();
+        if (eventData.getManageOrdersHearingParty1() != null) {
+            ret += "\nand upon hearing " + eventData.getManageOrdersHearingParty1().getValue().getCode();
+        }
         if (eventData.getManageOrdersHearingParty2() != null) {
             ret += "\nand upon hearing " + eventData.getManageOrdersHearingParty2().getValue().getCode();
         }

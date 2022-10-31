@@ -49,6 +49,23 @@ class C63aDeclarationOfParentageParameterGeneratorTest {
     }
 
     @Test
+    void generateDocumentWithoutHearingParty() {
+        CaseData caseData = getCaseData("Peter Smith", "is",
+            LOCAL_AUTHORITY_NAME, null, null);
+
+        List<Element<Child>> selectedChildren = wrapElements(CHILD);
+        when(childrenSmartSelector.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+
+        DocmosisParameters generatedParameters = underTest.generate(caseData);
+        DocmosisParameters expectedParameters = expectedCommonParameters()
+            .orderDetails("It is declared that Peter Smith is the parent of Harley Bloggs.")
+            .orderMessage("Upon the application of " + LOCAL_AUTHORITY_NAME + ".")
+            .build();
+
+        assertThat(generatedParameters).isEqualTo(expectedParameters);
+    }
+
+    @Test
     void generateDocumentWithTwoHearingParties() {
         CaseData caseData = getCaseData("Peter Smith", "is",
             LOCAL_AUTHORITY_NAME, "Mary", "Joseph");
@@ -104,7 +121,7 @@ class C63aDeclarationOfParentageParameterGeneratorTest {
                     DynamicList.builder().value(DynamicListElement.builder().label(action).build()).build())
                 .manageOrdersParentageApplicant(
                     DynamicList.builder().value(DynamicListElement.builder().label(applicant).build()).build())
-                .manageOrdersHearingParty1(
+                .manageOrdersHearingParty1(hearingParty1 == null ? null :
                     DynamicList.builder().value(DynamicListElement.builder().code(hearingParty1).build()).build())
                 .manageOrdersHearingParty2(hearingParty2 == null ? null :
                     DynamicList.builder().value(DynamicListElement.builder().code(hearingParty2).build()).build())
