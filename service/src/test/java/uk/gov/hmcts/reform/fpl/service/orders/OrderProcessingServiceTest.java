@@ -36,7 +36,7 @@ class OrderProcessingServiceTest {
 
         when(amendmentService.updateOrder(caseData)).thenReturn(AMENDMENT_DATA);
 
-        assertThat(underTest.process(caseData)).isEqualTo(AMENDMENT_DATA);
+        assertThat(underTest.postProcessDocument(caseData)).isEqualTo(AMENDMENT_DATA);
     }
 
     @Test
@@ -46,7 +46,7 @@ class OrderProcessingServiceTest {
 
         when(amendmentService.updateOrder(caseData)).thenReturn(AMENDMENT_DATA);
 
-        assertThat(underTest.process(caseData)).isEqualTo(AMENDMENT_DATA);
+        assertThat(underTest.postProcessDocument(caseData)).isEqualTo(AMENDMENT_DATA);
     }
 
     @Test

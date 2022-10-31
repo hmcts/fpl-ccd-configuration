@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 
 @Data
 @Builder(toBuilder = true)
@@ -19,6 +19,15 @@ public class DocumentReference {
     private Long size;
     @JsonIgnore
     private String type;
+
+    @Deprecated
+    public static DocumentReference buildFromDocument(uk.gov.hmcts.reform.document.domain.Document document) {
+        return DocumentReference.builder()
+            .url(document.links.self.href)
+            .binaryUrl(document.links.binary.href)
+            .filename(document.originalDocumentName)
+            .build();
+    }
 
     public static DocumentReference buildFromDocument(Document document) {
         return DocumentReference.builder()

@@ -23,6 +23,7 @@ import static java.util.stream.IntStream.range;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -81,6 +82,12 @@ public class HearingOrderKindEventDataBuilder {
         if (isEmpty(nonCMODraftOrders)) {
             nonCMODraftOrders.add(element(identityService.generateId(), HearingOrder.builder().build()));
         }
+        nonCMODraftOrders.forEach(h -> {
+                if (h.getValue().getDocument() != null) {
+                    h.getValue().setDocumentAcknowledge(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
+                }
+            }
+        );
 
         return nonCMODraftOrders;
     }
