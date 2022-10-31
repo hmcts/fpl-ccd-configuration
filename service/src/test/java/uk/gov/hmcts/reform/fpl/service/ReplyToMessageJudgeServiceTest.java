@@ -79,7 +79,7 @@ class ReplyToMessageJudgeServiceTest {
     }
 
     @Test
-    void shouldInitialiseCaseFieldsWhenAdditionalApplicationDocumentsAndJudicialMessagesExist() {
+    void shouldInitialiseCaseFieldsWhenJudicialMessagesExist() {
 
         final String longUrgency = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sollicitudin eu felis "
             + "tincidunt volutpat. Donec tempus quis metus congue placerat. Sed ligula nisl, tempor at eleifend ac, "
@@ -116,6 +116,22 @@ class ReplyToMessageJudgeServiceTest {
             Pair.of(judicialMessages.get(1).getId(), "02 Dec 2020, High"));
 
         final Map<String, Object> expectedData = Map.of(
+            "hasJudicialMessages", YES,
+            "judicialMessageDynamicList", expectedJudicialDynamicList);
+
+        assertThat(expectedEventData).isEqualTo(expectedData);
+    }
+
+    @Test
+    void shouldInitialiseCaseFieldsWhenNoJudicialMessage() {
+        final CaseData caseData = CaseData.builder().build();
+
+        final Map<String, Object> expectedEventData = replyToMessageJudgeService.initialiseCaseFields(caseData);
+
+        final DynamicList expectedJudicialDynamicList = buildDynamicList();
+
+        final Map<String, Object> expectedData = Map.of(
+            "hasJudicialMessages", NO,
             "judicialMessageDynamicList", expectedJudicialDynamicList);
 
         assertThat(expectedEventData).isEqualTo(expectedData);
