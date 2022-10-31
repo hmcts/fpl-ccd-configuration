@@ -2109,6 +2109,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "placementIdToBeSealed",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Temporary field. The ID of the application document to be sealed in submitted stage"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "transformedRespondent",
     "Label": "Respondent's detail",
     "FieldType": "RespondentNew",

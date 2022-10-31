@@ -36,21 +36,6 @@ public class OrdersNeededController extends CallbackController {
     private final HmctsCourtLookupConfiguration courtLookup;
     private final CourtLookUpService courtLookUpService;
 
-    @PostMapping("/about-to-start")
-    @SuppressWarnings("unchecked")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
-        @RequestBody CallbackRequest callbackrequest) {
-        final CaseData caseData = getCaseData(callbackrequest);
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        Map<String, Object> data = caseDetails.getData();
-
-        if (Objects.isNull(caseData.getRepresentativeType())) {
-            data.put("representativeType", RepresentativeType.LOCAL_AUTHORITY);
-        }
-
-        return respond(caseDetails);
-    }
-
     @PostMapping("/mid-event")
     @SuppressWarnings("unchecked")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {

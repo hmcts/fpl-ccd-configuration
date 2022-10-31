@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType;
 import uk.gov.hmcts.reform.fpl.enums.DirectionType;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
@@ -86,9 +86,7 @@ public class GatekeepingOrderService {
 
         final GatekeepingOrderSealDecision decision = gatekeepingOrderEventData.getGatekeepingOrderSealDecision();
 
-        DocumentReference draftDocument = decision.getDraftDocument();
-        DocumentReference document = decision.isSealed()
-            ? sealingService.sealDocument(draftDocument, caseData.getCourt(), caseData.getSealType()) : draftDocument;
+        DocumentReference document = decision.getDraftDocument();
 
         LanguageTranslationRequirement translationRequirements =
             gatekeepingOrderEventData.getGatekeepingTranslationRequirements();
@@ -96,7 +94,6 @@ public class GatekeepingOrderService {
             .dateOfUpload(time.now().toLocalDate())
             .uploader(userService.getUserName())
             .orderDoc(document)
-            .lastUploadedOrder(decision.isSealed() ? draftDocument : null)
             .translationRequirements(translationRequirements)
             .build();
     }
@@ -273,6 +270,24 @@ public class GatekeepingOrderService {
         eventData.setStandardDirections(wrapElements(standardDirections));
 
         return caseData;
+    }
+
+    public StandardDirectionOrder sealDocumentAfterEventSubmitted(CaseData caseData) {
+        StandardDirectionOrder order = caseData.getStandardDirectionOrder();
+        if (caseData.getGatekeepingOrderEventData().getGatekeepingOrderSealDecision().isSealed()) {
+            DocumentReference orderDoc = order.getOrderDoc();
+
+            StandardDirectionOrder sealedOrder = buildBaseGatekeepingOrder(caseData).toBuilder()
+                .dateOfUpload(order.getDateOfUpload())
+                .uploader(order.getUploader())
+                .orderDoc(sealingService.sealDocument(orderDoc, caseData.getCourt(), caseData.getSealType()))
+                .lastUploadedOrder(orderDoc)
+                .translationRequirements(order.getTranslationRequirements())
+                .build();
+            return sealedOrder;
+        } else {
+            return order;
+        }
     }
 
     private Optional<StandardDirection> getCurrentStandardDirection(DirectionType type, CaseDetails caseDetails) {
