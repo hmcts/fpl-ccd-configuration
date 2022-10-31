@@ -101,7 +101,7 @@ class DeclarationOfParentagePrePopulatorTest {
     @SuppressWarnings("unchecked")
     void prePopulate() {
         List<Element<Respondent>> respondents = List.of(
-            element(UUID.fromString("11111111-1111-1111-1111-111111111111"),
+            element(UUID.fromString("21111111-1111-1111-1111-111111111111"),
                 createRespondent("Peter", "Smith")));
 
         CaseData caseData = CaseData.builder()
@@ -117,8 +117,12 @@ class DeclarationOfParentagePrePopulatorTest {
 
         DynamicList applicants = DynamicList.builder().listItems(
                 List.of(DynamicListElement.builder()
-                    .code("11111111-1111-1111-1111-111111111111")
-                    .label("Swansea local authority").build()))
+                        .code("11111111-1111-1111-1111-111111111111")
+                        .label("Swansea local authority").build(),
+                    DynamicListElement.builder()
+                        .code("21111111-1111-1111-1111-111111111111")
+                        .label("Peter Smith").build())
+            )
             .build();
         DynamicList hearingParties = DynamicList.builder().listItems(
                 List.of(
@@ -158,7 +162,7 @@ class DeclarationOfParentagePrePopulatorTest {
     @SuppressWarnings("unchecked")
     void prePopulateWithRespondentSolicitor() {
         List<Element<Respondent>> respondents = List.of(
-            element(UUID.fromString("11111111-1111-1111-1111-111111111111"),
+            element(UUID.fromString("21111111-1111-1111-1111-111111111111"),
                 createRespondent("Peter", "Smith", "Peter", "Solicitor")));
 
         CaseData caseData = CaseData.builder()
@@ -174,8 +178,12 @@ class DeclarationOfParentagePrePopulatorTest {
 
         DynamicList applicants = DynamicList.builder().listItems(
                 List.of(DynamicListElement.builder()
-                    .code("11111111-1111-1111-1111-111111111111")
-                    .label("Swansea local authority").build()))
+                        .code("11111111-1111-1111-1111-111111111111")
+                        .label("Swansea local authority").build(),
+                    DynamicListElement.builder()
+                        .code("21111111-1111-1111-1111-111111111111")
+                        .label("Peter Smith").build()
+                ))
             .build();
         DynamicList hearingParties = DynamicList.builder().listItems(
             List.of(
@@ -217,7 +225,7 @@ class DeclarationOfParentagePrePopulatorTest {
     @SuppressWarnings("unchecked")
     void prePopulateWithOnlyOneOtherPerson() {
         List<Element<Respondent>> respondents = List.of(
-            element(UUID.fromString("11111111-1111-1111-1111-111111111111"),
+            element(UUID.fromString("21111111-1111-1111-1111-111111111111"),
                 createRespondent("Peter", "Smith", "Peter", "Solicitor")));
 
         CaseData caseData = CaseData.builder()
@@ -232,9 +240,15 @@ class DeclarationOfParentagePrePopulatorTest {
             .build());
 
         DynamicList applicants = DynamicList.builder().listItems(
-                List.of(DynamicListElement.builder()
-                    .code("11111111-1111-1111-1111-111111111111")
-                    .label("Swansea local authority").build()))
+                List.of(
+                    DynamicListElement.builder()
+                        .code("11111111-1111-1111-1111-111111111111")
+                        .label("Swansea local authority").build(),
+                    DynamicListElement.builder()
+                        .code("21111111-1111-1111-1111-111111111111")
+                        .label("Peter Smith").build()
+                )
+            )
             .build();
         DynamicList hearingParties = DynamicList.builder().listItems(
             List.of(
@@ -249,14 +263,14 @@ class DeclarationOfParentagePrePopulatorTest {
                     .label("Peter Solicitor, Respondent 1's solicitor").build())
         ).build();
         DynamicList personWhoseParenthoodIs = DynamicList.builder().listItems(
-            List.of(DynamicListElement.builder()
+                List.of(DynamicListElement.builder()
                         .code("Peter Smith")
                         .label("Peter Smith, Respondent 1").build(),
                     DynamicListElement.builder()
                         .code("Jack Johnson")
                         .label("Jack Johnson, Other to be given notice 1").build()
                 ))
-                .build();
+            .build();
 
         Map<String, Object> actual = underTest.prePopulate(caseData);
         assertThat(actual).isEqualTo(
@@ -274,7 +288,7 @@ class DeclarationOfParentagePrePopulatorTest {
     @SuppressWarnings("unchecked")
     void prePopulateWithoutOtherPerson() {
         List<Element<Respondent>> respondents = List.of(
-            element(UUID.fromString("11111111-1111-1111-1111-111111111111"),
+            element(UUID.fromString("21111111-1111-1111-1111-111111111111"),
                 createRespondent("Peter", "Smith", "Peter", "Solicitor")));
 
         CaseData caseData = CaseData.builder()
@@ -289,8 +303,12 @@ class DeclarationOfParentagePrePopulatorTest {
 
         DynamicList applicants = DynamicList.builder().listItems(
                 List.of(DynamicListElement.builder()
-                    .code("11111111-1111-1111-1111-111111111111")
-                    .label("Swansea local authority").build()))
+                        .code("11111111-1111-1111-1111-111111111111")
+                        .label("Swansea local authority").build(),
+                    DynamicListElement.builder()
+                        .code("21111111-1111-1111-1111-111111111111")
+                        .label("Peter Smith").build()
+                ))
             .build();
         DynamicList hearingParties = DynamicList.builder().listItems(
             List.of(
@@ -306,8 +324,8 @@ class DeclarationOfParentagePrePopulatorTest {
         ).build();
         DynamicList personWhoseParenthoodIs = DynamicList.builder().listItems(
                 List.of(DynamicListElement.builder()
-                        .code("Peter Smith")
-                        .label("Peter Smith, Respondent 1").build()
+                    .code("Peter Smith")
+                    .label("Peter Smith, Respondent 1").build()
                 ))
             .build();
 
@@ -327,13 +345,13 @@ class DeclarationOfParentagePrePopulatorTest {
     @SuppressWarnings("unchecked")
     void prePopulateWithChildSolicitor() {
         List<Element<Respondent>> respondents = List.of(
-            element(UUID.fromString("11111111-1111-1111-1111-111111111111"),
+            element(UUID.fromString("21111111-1111-1111-1111-111111111111"),
                 createRespondent("Peter", "Smith", "Peter", "Solicitor")));
 
         CaseData caseData = CaseData.builder()
             .localAuthorities(List.of(element(UUID.fromString("11111111-1111-1111-1111-111111111111"),
                 LocalAuthority.builder().name("Swansea local authority").build())))
-            .children1(wrapElements(createChild("Harley", "Queen", "Harley","Solicitor")))
+            .children1(wrapElements(createChild("Harley", "Queen", "Harley", "Solicitor")))
             .respondents1(respondents)
             .build();
 
@@ -343,8 +361,12 @@ class DeclarationOfParentagePrePopulatorTest {
 
         DynamicList applicants = DynamicList.builder().listItems(
                 List.of(DynamicListElement.builder()
-                    .code("11111111-1111-1111-1111-111111111111")
-                    .label("Swansea local authority").build()))
+                        .code("11111111-1111-1111-1111-111111111111")
+                        .label("Swansea local authority").build(),
+                    DynamicListElement.builder()
+                        .code("21111111-1111-1111-1111-111111111111")
+                        .label("Peter Smith").build()
+                ))
             .build();
         DynamicList hearingParties = DynamicList.builder().listItems(
             List.of(

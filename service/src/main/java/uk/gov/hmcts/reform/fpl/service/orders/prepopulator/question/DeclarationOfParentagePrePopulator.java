@@ -64,6 +64,10 @@ public class DeclarationOfParentagePrePopulator implements QuestionBlockOrderPre
         IncrementalInteger respondentIncrementer = new IncrementalInteger(1);
         caseData.getAllRespondents().forEach(r -> {
             RespondentSolicitor solicitor = r.getValue().getSolicitor();
+            applicants.getListItems().add(DynamicListElement.builder()
+                .code(r.getId())
+                .label(r.getValue().getParty().getFullName())
+                .build());
             hearingParties.getListItems().add(DynamicListElement.builder()
                 .code(r.getValue().getParty().getFullName())
                 .label(r.getValue().getParty().getFullName() + ", Respondent " + respondentIncrementer.getValue())
