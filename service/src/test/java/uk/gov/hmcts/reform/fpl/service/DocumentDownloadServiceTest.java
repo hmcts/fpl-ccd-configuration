@@ -37,6 +37,9 @@ class DocumentDownloadServiceTest {
     private DocumentDownloadClientApi documentDownloadClient;
 
     @Mock
+    private SecureDocStoreService secureDocStoreService;
+
+    @Mock
     private AuthTokenGenerator authTokenGenerator;
 
     @Mock
@@ -46,6 +49,9 @@ class DocumentDownloadServiceTest {
     private RequestData requestData;
 
     @Mock
+    private FeatureToggleService featureToggleService;
+
+    @Mock
     private ResponseEntity<Resource> resourceResponseEntity;
 
     @Mock
@@ -53,7 +59,7 @@ class DocumentDownloadServiceTest {
 
     private DocumentDownloadService documentDownloadService;
 
-    private Document document = document();
+    private final Document document = document();
 
     @BeforeEach
     void setup() {
@@ -67,11 +73,14 @@ class DocumentDownloadServiceTest {
         given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(userInfo);
         given(requestData.authorisation()).willReturn(AUTH_TOKEN);
         given(requestData.userId()).willReturn(USER_ID);
+        given(featureToggleService.isSecureDocstoreEnabled()).willReturn(false);
 
         documentDownloadService = new DocumentDownloadService(authTokenGenerator,
             documentDownloadClient,
             idamClient,
-            requestData);
+            requestData,
+            secureDocStoreService,
+            featureToggleService);
     }
 
     @Test
