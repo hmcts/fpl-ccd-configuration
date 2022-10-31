@@ -170,3 +170,12 @@ send-grid:
   port: 1025
   api_key: fake-key
 
+case_document_am:
+  url: http://localhost:4455
+  health:
+    url: ${case_document_am.url}/health
+
+management:
+  health:
+    case-document-am-api:
+      enabled: true
