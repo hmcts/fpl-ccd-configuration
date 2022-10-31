@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
 import java.util.List;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType.EXCLUSION_REQUIREMENT;
 import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -59,6 +60,10 @@ public class OrdersSoughtChecker extends PropertiesChecker {
             }
         }
 
+        if(orders.isSecureAccommodationOrder() && isSecureAccomodationOrderNotCompleted(orders)) {
+            return false;
+        }
+
         if (orders.getOrderType().contains(OrderType.OTHER)
             && isEmpty(orders.getOtherOrder())) {
             return false;
@@ -84,6 +89,10 @@ public class OrdersSoughtChecker extends PropertiesChecker {
         return orders.getEmergencyProtectionOrders() != null
             && orders.getEmergencyProtectionOrders().contains(EmergencyProtectionOrdersType.OTHER)
             && isEmpty(orders.getEmergencyProtectionOrderDetails());
+    }
+
+    private boolean isSecureAccomodationOrderNotCompleted(Orders orders) {
+        return isEmpty(orders.getSecureAccommodationOrderSection());
     }
 
     @Override

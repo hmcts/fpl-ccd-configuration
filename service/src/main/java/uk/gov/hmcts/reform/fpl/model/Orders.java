@@ -43,6 +43,7 @@ public class Orders {
     private final EPOType epoType;
     private final String excluded;
     private final Address address;
+    @NotNull(message = "Select under which section are you applying")
     private final SecureAccommodationOrderSection secureAccommodationOrderSection;
     private final String court;
     private final String childAssessmentOrderAssessmentDirections;
