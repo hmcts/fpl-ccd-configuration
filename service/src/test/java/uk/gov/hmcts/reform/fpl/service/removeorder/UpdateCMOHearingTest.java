@@ -22,6 +22,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -179,6 +180,34 @@ class UpdateCMOHearingTest {
 
         assertThat(underTest.removeHearingLinkedToCMO(caseData, linkedCMO))
             .contains(element(ANOTHER_HEARING_ID, anotherHearing));
+    }
+
+    @Test
+    void shouldRemoveHearingLinkedToCancelledCMO() {
+        HearingBooking cancelledHearing = hearing(CMO_ID, HEARING_START_DATE, VACATED);
+        HearingBooking hearing = hearing(ANOTHER_CMO_ID, HEARING_START_DATE.plusDays(4));
+
+        Element<HearingOrder> linkedCMO = element(CMO_ID, HearingOrder.builder()
+            .type(DRAFT_CMO)
+            .status(DRAFT)
+            .hearing(cancelledHearing.toLabel())
+            .build());
+
+        HearingOrdersBundle hearingOrdersBundle = HearingOrdersBundle.builder()
+            .hearingId(HEARING_ID)
+            .orders(newArrayList(linkedCMO,
+                element(ANOTHER_CMO_ID, HearingOrder.builder().build())))
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(element(ANOTHER_HEARING_ID, hearing)))
+            .cancelledHearingDetails(List.of(element(HEARING_ID, cancelledHearing)))
+            .hearingOrdersBundlesDrafts(List.of(
+                element(HEARING_BUNDLE_ID, hearingOrdersBundle)))
+            .build();
+
+        assertThat(underTest.removeHearingLinkedToCMO(caseData, linkedCMO))
+            .contains(element(HEARING_ID, cancelledHearing));
     }
 
     private HearingBooking hearing(UUID cmoId) {

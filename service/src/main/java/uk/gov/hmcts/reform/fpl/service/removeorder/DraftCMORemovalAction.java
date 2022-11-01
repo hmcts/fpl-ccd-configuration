@@ -85,7 +85,7 @@ public class DraftCMORemovalAction implements OrderRemovalAction {
             updateHearingOrderBundlesDrafts.update(
                 data, caseData.getHearingOrdersBundlesDrafts(), selectedHearingOrderBundle);
 
-            data.put("hearingDetails", updateCmoHearing.removeHearingLinkedToCMO(caseData, cmoElement));
+            updateHearingDetailsWhenCMORemoved(caseData, data, cmoElement);
             data.putIfNotEmpty(DRAFT_UPLOADED_CMOS, caseData.getDraftUploadedCMOs());
         }
     }
@@ -105,6 +105,18 @@ public class DraftCMORemovalAction implements OrderRemovalAction {
         }
 
         data.put("hearingOrdersBundlesDrafts", draftOrderService.migrateCmoDraftToOrdersBundles(caseData));
-        data.put("hearingDetails", updateCmoHearing.removeHearingLinkedToCMO(caseData, cmoElement));
+        updateHearingDetailsWhenCMORemoved(caseData, data, cmoElement);
+    }
+
+    private void updateHearingDetailsWhenCMORemoved(CaseData caseData, CaseDetailsMap data,
+                                                    Element<HearingOrder> cmoElement){
+        List<Element<HearingBooking>> updatedHearingBookings = updateCmoHearing.removeHearingLinkedToCMO(caseData,
+            cmoElement);
+
+        if (updateCmoHearing.hearingLinkedToCMOIsCancelled(caseData, cmoElement)) {
+            data.put("cancelledHearingDetails", updatedHearingBookings);
+        } else {
+            data.put("hearingDetails", updatedHearingBookings);
+        }
     }
 }

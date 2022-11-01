@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
 import uk.gov.hmcts.reform.fpl.enums.RemovableType;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.exceptions.removaltool.UnexpectedNumberOfCMOsRemovedException;
@@ -335,6 +336,44 @@ class DraftCMORemovalActionTest {
     }
 
     @Test
+    void shouldRemoveOrderAssociatedWithCancelledHearingWhenPresentOnDraftCaseManagementOrdersOnly() {
+        HearingOrder draftCMO = HearingOrder.builder().type(DRAFT_CMO).build();
+
+        CaseData caseData = CaseData.builder()
+            .draftUploadedCMOs(newArrayList(
+                element(TO_REMOVE_ORDER_ID, draftCMO),
+                element(ANOTHER_DRAFT_CASE_MANAGEMENT_ORDER_ID, draftCMO)))
+            .hearingDetails(newArrayList(
+                element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID))
+            ))
+            .cancelledHearingDetails(newArrayList(
+                element(HEARING_ID, hearing(TO_REMOVE_ORDER_ID, HEARING_START_DATE, HearingStatus.VACATED))))
+            .build();
+
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder().data(Map.of()).build());
+
+        List<Element<HearingBooking>> updatedHearings = List.of(
+            element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID)));
+
+        List<Element<HearingBooking>> updatedCancelledHearings = List.of(
+            element(HEARING_ID, hearing(null, HEARING_START_DATE, HearingStatus.VACATED)));
+
+        when(updateCMOHearing.removeHearingLinkedToCMO(caseData, element(TO_REMOVE_ORDER_ID, draftCMO)))
+            .thenReturn(updatedCancelledHearings);
+        when(updateCMOHearing.hearingLinkedToCMOIsCancelled(caseData, element(TO_REMOVE_ORDER_ID, draftCMO)))
+            .thenReturn(true);
+
+        underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, draftCMO);
+
+        Map<String, List<?>> expectedData = Map.of(
+            "cancelledHearingDetails", updatedCancelledHearings,
+            "draftUploadedCMOs", newArrayList(element(ANOTHER_DRAFT_CASE_MANAGEMENT_ORDER_ID, draftCMO))
+        );
+
+        assertThat(caseDetailsMap).containsAllEntriesOf(expectedData);
+    }
+
+    @Test
     void shouldRemoveHearingAssociationWithARemovedCaseManagementOrder() {
         HearingOrder draftCMO = HearingOrder.builder().type(DRAFT_CMO).build();
 
@@ -366,6 +405,46 @@ class DraftCMORemovalActionTest {
         assertThat(caseDetailsMap).isEqualTo(Map.of(
             "hearingDetails", updatedHearings)
         );
+    }
+
+    @Test
+    void shouldRemoveCancelledHearingAssociationWithARemovedCaseManagementOrder() {
+        HearingOrder draftCMO = HearingOrder.builder().type(DRAFT_CMO).build();
+
+        CaseData caseData = CaseData.builder()
+            .hearingOrdersBundlesDrafts(List.of(
+                element(HEARING_ORDER_BUNDLE_ID_ONE, HearingOrdersBundle.builder()
+                    .orders(newArrayList(
+                        element(TO_REMOVE_ORDER_ID, draftCMO)
+                    )).build())
+            ))
+            .hearingDetails(newArrayList(
+                element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID))
+            ))
+            .cancelledHearingDetails(newArrayList(
+                element(HEARING_ID, hearing(TO_REMOVE_ORDER_ID, HEARING_START_DATE, HearingStatus.VACATED))))
+            .build();
+
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of())
+            .build());
+
+        List<Element<HearingBooking>> updatedHearings = List.of(
+            element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID)));
+
+        List<Element<HearingBooking>> updatedCancelledHearings = List.of(
+            element(HEARING_ID, hearing(null, HEARING_START_DATE, HearingStatus.VACATED)));
+
+        when(updateCMOHearing.removeHearingLinkedToCMO(caseData, element(TO_REMOVE_ORDER_ID, draftCMO)))
+            .thenReturn(updatedCancelledHearings);
+        when(updateCMOHearing.hearingLinkedToCMOIsCancelled(caseData, element(TO_REMOVE_ORDER_ID, draftCMO)))
+            .thenReturn(true);
+
+        underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, draftCMO);
+
+        assertThat(caseDetailsMap).isEqualTo(Map.of(
+            "cancelledHearingDetails", updatedCancelledHearings
+        ));
     }
 
     @Test
@@ -517,10 +596,15 @@ class DraftCMORemovalActionTest {
     }
 
     private HearingBooking hearing(UUID cmoId, LocalDateTime startDate) {
+        return hearing(cmoId, startDate, null);
+    }
+
+    private HearingBooking hearing(UUID cmoId, LocalDateTime startDate, HearingStatus status) {
         return HearingBooking.builder()
             .caseManagementOrderId(cmoId)
             .type(CASE_MANAGEMENT)
             .startDate(startDate)
+            .status(status)
             .build();
     }
 
