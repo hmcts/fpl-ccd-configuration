@@ -15,19 +15,22 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ChildExtensionEventData;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.time.LocalDate.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList.INTERNATIONAL_ASPECT;
+import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.EIGHT_WEEK_EXTENSION;
+import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.OTHER_EXTENSION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
@@ -42,13 +45,13 @@ class CaseExtensionServiceTest {
     @Test
     void shouldReturnPrePopulatedFields() {
         List<Child> children = List.of(
-            getChild(LocalDate.of(2024, 2, 2), "Daisy", "French"),
+            getChild(of(2024, 2, 2), "Daisy", "French"),
             getChild(null, "Archie", "Turner"),
-            getChild(LocalDate.of(2025, 4, 8), "Julie", "Jane")
+            getChild(of(2025, 4, 8), "Julie", "Jane")
         );
         CaseData caseData = CaseData.builder()
             .children1(wrapElements(children))
-            .dateSubmitted(LocalDate.of(2023, 10, 2))
+            .dateSubmitted(of(2023, 10, 2))
             .build();
 
         Map<String, Object> prePopulateFields = service.prePopulateFields(caseData);
@@ -76,13 +79,13 @@ class CaseExtensionServiceTest {
                 .build();
 
         List<Child> children = List.of(
-                getChild(LocalDate.of(2024, 2, 2), "Daisy", "French"),
+                getChild(of(2024, 2, 2), "Daisy", "French"),
                 getChild(null, "Archie", "Turner"),
-                getChild(LocalDate.of(2025, 4, 8), "Julie", "Jane")
+                getChild(of(2025, 4, 8), "Julie", "Jane")
         );
         CaseData caseData = CaseData.builder()
                 .children1(wrapElements(children))
-                .dateSubmitted(LocalDate.of(2023, 10, 2))
+                .dateSubmitted(of(2023, 10, 2))
                 .childExtensionEventData(childExtensionEventData)
                 .build();
 
@@ -111,13 +114,13 @@ class CaseExtensionServiceTest {
                 .build();
 
         List<Child> children = List.of(
-                getChild(LocalDate.of(2024, 2, 2), "Daisy", "French"),
+                getChild(of(2024, 2, 2), "Daisy", "French"),
                 getChild(null, "Archie", "Turner"),
-                getChild(LocalDate.of(2025, 4, 8), "Julie", "Jane")
+                getChild(of(2025, 4, 8), "Julie", "Jane")
         );
         CaseData caseData = CaseData.builder()
                 .children1(wrapElements(children))
-                .dateSubmitted(LocalDate.of(2023, 10, 2))
+                .dateSubmitted(of(2023, 10, 2))
                 .childExtensionEventData(childExtensionEventData)
                 .build();
 
@@ -160,7 +163,7 @@ class CaseExtensionServiceTest {
                .childExtension1(ChildExtension.builder()
                     .id(id2)
                     .caseExtensionTimeList(CaseExtensionTime.OTHER_EXTENSION)
-                    .extensionDateOther(LocalDate.of(2024, 3, 4))
+                    .extensionDateOther(of(2024, 3, 4))
                     .caseExtensionReasonList(INTERNATIONAL_ASPECT)
                     .build())
                .childExtension3(ChildExtension.builder()
@@ -171,14 +174,14 @@ class CaseExtensionServiceTest {
                 .build();
 
         List<Element<Child>> children1 = List.of(
-                ElementUtils.element(id1, getChild(LocalDate.of(2024, 2, 2), "Daisy", "French")),
-                ElementUtils.element(id2, getChild(null, "Archie", "Turner")),
-                ElementUtils.element(id3, getChild(LocalDate.of(2025, 4, 8), "Julie", "Jane"))
+                element(id1, getChild(of(2024, 2, 2), "Daisy", "French")),
+                element(id2, getChild(null, "Archie", "Turner")),
+                element(id3, getChild(of(2025, 4, 8), "Julie", "Jane"))
         );
 
         CaseData caseData = CaseData.builder()
                 .children1(children1)
-                .dateSubmitted(LocalDate.of(2023, 10, 2))
+                .dateSubmitted(of(2023, 10, 2))
                 .childExtensionEventData(childExtensionEventData)
                 .build();
 
@@ -186,11 +189,136 @@ class CaseExtensionServiceTest {
         List<Element<Child>> selectedChildren = service.updateChildrenExtension(caseData);
 
         assertThat(selectedChildren).contains(
-                ElementUtils.element(id1, getChild(LocalDate.of(2024, 3, 29), "Daisy", "French")),
-                ElementUtils.element(id2, getChild(LocalDate.of(2024, 3, 4), "Archie", "Turner")),
-                ElementUtils.element(id3, getChild(LocalDate.of(2025, 6, 3), "Julie", "Jane"))
+                element(id1, getChild(of(2024, 3, 29), "Daisy", "French")),
+                element(id2, getChild(of(2024, 3, 4), "Archie", "Turner")),
+                element(id3, getChild(of(2025, 6, 3), "Julie", "Jane"))
         );
     }
+
+    @Test
+    void shouldUpdateAllChildrenWithOtherExtension() {
+        UUID id1 = UUID.randomUUID();
+        UUID id2 = UUID.randomUUID();
+        UUID id3 = UUID.randomUUID();
+        LocalDate extensionDateOther = of(2031, 9, 12);
+        ChildExtensionEventData childExtensionEventData = ChildExtensionEventData.builder()
+                .extensionForAllChildren(YES.getValue())
+                .sameExtensionForAllChildren(YES.getValue())
+                .childSelectorForExtension(Selector.builder()
+                        .selected(List.of(1,2))
+                        .build())
+                .childExtensionAll(ChildExtension.builder()
+                        .caseExtensionTimeList(OTHER_EXTENSION)
+                        .caseExtensionReasonList(INTERNATIONAL_ASPECT)
+                        .extensionDateOther(extensionDateOther)
+                        .build())
+                .build();
+
+
+        List<Element<Child>> children1 = List.of(
+                element(id1, getChild(of(2024, 2, 2), "Daisy", "French")),
+                element(id2, getChild(null, "Archie", "Turner")),
+                element(id3, getChild(of(2025, 4, 8), "Julie", "Jane"))
+        );
+
+        CaseData caseData = CaseData.builder()
+                .children1(children1)
+                .dateSubmitted(of(2030, 10, 2))
+                .childExtensionEventData(childExtensionEventData)
+                .build();
+
+
+        List<Element<Child>> selectedChildren = service.updateAllChildrenExtension(caseData);
+
+        assertThat(selectedChildren).contains(
+            element(id1, getChild(of(2031, 9, 12), "Daisy", "French")),
+            element(id2, getChild(of(2031, 9, 12), "Archie", "Turner")),
+            element(id3, getChild(of(2031, 9, 12), "Julie", "Jane"))
+        );
+    }
+
+    @Test
+    void shouldUpdateAllSelectedChildrenExtensions() {
+        UUID id1 = UUID.randomUUID();
+        UUID id2 = UUID.randomUUID();
+        UUID id3 = UUID.randomUUID();
+        LocalDate extensionDateOther = of(2031, 9, 12);
+
+        ChildExtensionEventData childExtensionEventData = ChildExtensionEventData.builder()
+            .extensionForAllChildren(NO.getValue())
+            .sameExtensionForAllChildren(YES.getValue())
+            .childSelectorForExtension(Selector.builder()
+                    .selected(List.of(1,2))
+                    .build())
+            .childExtensionAll(ChildExtension.builder()
+                    .caseExtensionTimeList(OTHER_EXTENSION)
+                    .caseExtensionReasonList(INTERNATIONAL_ASPECT)
+                    .extensionDateOther(extensionDateOther)
+                    .build())
+            .build();
+
+        List<Element<Child>> children1 = List.of(
+            element(id1, getChild(of(2024, 2, 2), "Daisy", "French")),
+            element(id2, getChild(null, "Archie", "Turner")),
+            element(id3, getChild(of(2025, 4, 8), "Julie", "Jane"))
+        );
+
+        CaseData caseData = CaseData.builder()
+            .children1(children1)
+            .dateSubmitted(of(2030, 10, 2))
+            .childExtensionEventData(childExtensionEventData)
+            .build();
+
+
+        List<Element<Child>> selectedChildren = service.updateAllSelectedChildrenExtension(caseData);
+
+        assertThat(selectedChildren).contains(
+            element(id1, getChild(of(2031, 9, 12), "Daisy", "French")),
+            element(id2, getChild(of(2031, 9, 12), "Archie", "Turner")),
+            element(id3, getChild(of(2031, 9, 12), "Julie", "Jane"))
+        );
+    }
+
+    @Test
+    void shouldUpdateAllChildrenWithEigthWeeksExtension() {
+        UUID id1 = UUID.randomUUID();
+        UUID id2 = UUID.randomUUID();
+        UUID id3 = UUID.randomUUID();
+        ChildExtensionEventData childExtensionEventData = ChildExtensionEventData.builder()
+                .extensionForAllChildren(NO.getValue())
+                .sameExtensionForAllChildren(YES.getValue())
+                .childSelectorForExtension(Selector.builder()
+                        .selected(List.of(0,1,2))
+                        .build())
+                .childExtensionAll(ChildExtension.builder()
+                        .caseExtensionTimeList(EIGHT_WEEK_EXTENSION)
+                        .caseExtensionReasonList(INTERNATIONAL_ASPECT)
+                        .build())
+                .build();
+
+
+        List<Element<Child>> children1 = List.of(
+                element(id1, getChild(of(2024, 2, 2), "Daisy", "French")),
+                element(id2, getChild(null, "Archie", "Turner")),
+                element(id3, getChild(of(2025, 4, 8), "Julie", "Jane"))
+        );
+
+        CaseData caseData = CaseData.builder()
+                .children1(children1)
+                .dateSubmitted(of(2030, 10, 2))
+                .childExtensionEventData(childExtensionEventData)
+                .build();
+
+
+        List<Element<Child>> selectedChildren = service.updateAllChildrenExtension(caseData);
+
+        assertThat(selectedChildren).contains(
+                element(id1, getChild(of(2024, 3, 29), "Daisy", "French")),
+                element(id2, getChild(of(2031, 5, 28), "Archie", "Turner")),
+                element(id3, getChild(of(2025, 6, 3), "Julie", "Jane"))
+        );
+    }
+
 
     @Test
     void shouldReturnSelectedAllChildren() {
@@ -202,13 +330,13 @@ class CaseExtensionServiceTest {
             .build();
 
         List<Child> children = List.of(
-            getChild(LocalDate.of(2024, 2, 2), "Daisy", "French"),
+            getChild(of(2024, 2, 2), "Daisy", "French"),
             getChild(null, "Archie", "Turner"),
-            getChild(LocalDate.of(2025, 4, 8), "Julie", "Jane")
+            getChild(of(2025, 4, 8), "Julie", "Jane")
         );
         CaseData caseData = CaseData.builder()
             .children1(wrapElements(children))
-            .dateSubmitted(LocalDate.of(2023, 10, 2))
+            .dateSubmitted(of(2023, 10, 2))
             .childExtensionEventData(childExtensionEventData)
             .build();
 
@@ -235,13 +363,13 @@ class CaseExtensionServiceTest {
     @Test
     void shouldReturnCaseSummaryExtensionDetails() {
         List<Child> children = List.of(
-            getChild(LocalDate.of(2024, 2, 2), "Daisy", "French"),
+            getChild(of(2024, 2, 2), "Daisy", "French"),
             getChild(null, "Archie", "Turner"),
-            getChild(LocalDate.of(2025, 4, 8), "Julie", "Jane")
+            getChild(of(2025, 4, 8), "Julie", "Jane")
         );
         CaseData caseData = CaseData.builder()
             .children1(wrapElements(children))
-            .dateSubmitted(LocalDate.of(2023, 10, 2))
+            .dateSubmitted(of(2023, 10, 2))
             .build();
 
         String caseSummaryExtensionDetails = service.getCaseSummaryExtensionDetails(caseData, wrapElements(children));
@@ -256,17 +384,17 @@ class CaseExtensionServiceTest {
     @Test
     void shouldReturnMaxExtendedTimeLine() {
         List<Child> children = List.of(
-            getChild(LocalDate.of(2024, 2, 2), "Daisy", "French"),
+            getChild(of(2024, 2, 2), "Daisy", "French"),
             getChild(null, "Archie", "Turner"),
-            getChild(LocalDate.of(2025, 4, 8), "Julie", "Jane")
+            getChild(of(2025, 4, 8), "Julie", "Jane")
         );
         CaseData caseData = CaseData.builder()
             .children1(wrapElements(children))
-            .dateSubmitted(LocalDate.of(2023, 10, 2))
+            .dateSubmitted(of(2023, 10, 2))
             .build();
 
         LocalDate maxExtendedTimeLine = service.getMaxExtendedTimeLine(caseData, wrapElements(children));
-        assertThat(maxExtendedTimeLine).isEqualTo(LocalDate.of(2025, 4, 8));
+        assertThat(maxExtendedTimeLine).isEqualTo(of(2025, 4, 8));
     }
 
     @Test
@@ -280,19 +408,19 @@ class CaseExtensionServiceTest {
                 .childExtension3(ChildExtension.builder()
                         .id(id2)
                         .caseExtensionTimeList(CaseExtensionTime.OTHER_EXTENSION)
-                        .extensionDateOther(LocalDate.of(2000, 3, 4))
+                        .extensionDateOther(of(2000, 3, 4))
                         .index("4")
                         .build())
                 .build();
 
         List<Child> children = List.of(
-            getChild(LocalDate.of(2024, 2, 2), "Daisy", "French"),
+            getChild(of(2024, 2, 2), "Daisy", "French"),
             getChild(null, "Archie", "Turner"),
-            getChild(LocalDate.of(2025, 4, 8), "Julie", "Jane")
+            getChild(of(2025, 4, 8), "Julie", "Jane")
         );
         CaseData caseData = CaseData.builder()
             .children1(wrapElements(children))
-            .dateSubmitted(LocalDate.of(2023, 10, 2))
+            .dateSubmitted(of(2023, 10, 2))
             .childExtensionEventData(childExtensionEventData)
             .build();
 
