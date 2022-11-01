@@ -47,10 +47,13 @@ public class CaseExtensionController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         List<String> errors = caseExtensionService.validateChildSelector(caseData);
-        if (YES.getValue().equals(caseData.getChildExtensionEventData().getExtensionForAllChildren())) {
-            caseDetails.getData().putAll(caseExtensionService.getAllChildren(caseData));
-        } else {
-            caseDetails.getData().putAll(caseExtensionService.getSelectedChildren(caseData));
+
+        if (errors.isEmpty()) {
+            if (YES.getValue().equals(caseData.getChildExtensionEventData().getExtensionForAllChildren())) {
+                caseDetails.getData().putAll(caseExtensionService.getAllChildren(caseData));
+            } else {
+                caseDetails.getData().putAll(caseExtensionService.getSelectedChildren(caseData));
+            }
         }
         return respond(caseDetails, errors);
     }

@@ -24,7 +24,8 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList.INTERNATIONAL_ASPECT;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.*;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @WebMvcTest(CaseExtensionController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -40,7 +41,7 @@ class CaseExtensionControllerMidEventTest extends AbstractCallbackTest {
     @ParameterizedTest
     @EnumSource(value = YesNo.class, names = {"YES", "NO"})
     void shouldPassValidation(YesNo yesNo) {
-        UUID id1= UUID.randomUUID();
+        UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
         UUID id3 = UUID.randomUUID();
 
@@ -92,7 +93,7 @@ class CaseExtensionControllerMidEventTest extends AbstractCallbackTest {
     @ParameterizedTest
     @EnumSource(value = YesNo.class, names = {"YES", "NO"})
     void shouldFailValidation(YesNo yesNo) {
-        UUID id1= UUID.randomUUID();
+        UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
         UUID id3 = UUID.randomUUID();
 
@@ -171,7 +172,7 @@ class CaseExtensionControllerMidEventTest extends AbstractCallbackTest {
             .isEqualTo(Map.of(
             "label", "Daisy French",
             "index", "1")
-        );
+            );
 
         assertThat(callbackResponse.getData().get("childSelected0"))
                 .isEqualTo(YES.getValue());
