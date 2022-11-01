@@ -134,5 +134,34 @@
     "FieldShowCondition": "groundsForRefuseContactWithChild=\"DO_NOT_SHOW\"",
     "DisplayContext": "READONLY",
     "Comments": "A control flag. Yes if order type of this case is Refuse contact with child application"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "enterGrounds",
+    "CaseFieldID": "groundsForContactWithChild",
+    "CaseEventFieldLabel": " ",
+    "PageFieldDisplayOrder": 8,
+    "DisplayContext": "COMPLEX",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "contactWithChildInCareOrderType=\"YES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "enterGrounds",
+    "CaseFieldID": "contactWithChildInCareOrderType",
+    "CaseEventFieldLabel": " ",
+    "PageFieldDisplayOrder": 7,
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N",
+    "FieldShowCondition": "groundsForContactWithChild=\"DO_NOT_SHOW\"",
+    "DisplayContext": "READONLY",
+    "Comments": "A control flag. Yes if order type of this case is contact with a child in care application"
   }
 ]
