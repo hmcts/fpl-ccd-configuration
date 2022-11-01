@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.FactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForChildAssessmentOrder;
+import uk.gov.hmcts.reform.fpl.model.GroundsForContactWithChild;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
 import uk.gov.hmcts.reform.fpl.model.GroundsForRefuseContactWithChild;
 import uk.gov.hmcts.reform.fpl.model.GroundsForSecureAccommodationOrder;
@@ -42,6 +43,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC14Supplement;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC15Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC16Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC20Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
@@ -112,6 +114,32 @@ public class CaseSubmissionGenerationService
     private final UserService userService;
     private final CourtService courtService;
     private final CaseSubmissionDocumentAnnexGenerator annexGenerator;
+
+    public DocmosisC15Supplement getC15SupplementData(final CaseData caseData, boolean isDraft) {
+        Language applicationLanguage = Optional.ofNullable(caseData.getC110A()
+            .getLanguageRequirementApplication()).orElse(Language.ENGLISH);
+
+        GroundsForContactWithChild grounds = caseData.getGroundsForContactWithChild();
+
+        DocmosisC15Supplement supplement = DocmosisC15Supplement.builder()
+            .caseNumber(String.valueOf(caseData.getId()))
+            .welshLanguageRequirement(getWelshLanguageRequirement(caseData, applicationLanguage))
+            .courtName(courtService.getCourtName(caseData))
+            .childrensNames(getChildrensNames(caseData.getAllChildren()))
+            .submittedDate(formatDateDisplay(time.now().toLocalDate(), applicationLanguage))
+            .parentOrGuardian(grounds.getParentOrGuardian())
+            .residenceOrder(grounds.getResidenceOrder())
+            .hadCareOfChildrenBeforeCareOrder(grounds.getHadCareOfChildrenBeforeCareOrder())
+            .reasonsForApplication(grounds.getReasonsForApplication())
+            .build();
+
+        if (isDraft) {
+            supplement.setDraftWaterMark(getDraftWaterMarkData());
+        } else {
+            supplement.setCourtSeal(courtService.getCourtSeal(caseData, SEALED));
+        }
+        return supplement;
+    }
 
     public DocmosisC16Supplement getC16SupplementData(final CaseData caseData, boolean isDraft) {
         Language applicationLanguage = Optional.ofNullable(caseData.getC110A()
