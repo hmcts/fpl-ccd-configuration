@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
@@ -37,6 +39,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList.TIMETABLE_FOR_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -477,6 +480,81 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .hasMessage(String.format(
                     "Migration {id = %s, case reference = %s}, document Id not found",
                     migrationId, expectedCaseId));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl872 {
+        final String migrationId = "DFPL-872";
+        final LocalDate extensionDate = LocalDate.now();
+        final Long caseId = 1660300177298257L;
+        final UUID child1Id = UUID.fromString("d76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0");
+        final UUID child2Id = UUID.fromString("c76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0");
+        final Element<Child> childToBeUpdated1 = element(child1Id, Child.builder()
+            .party(ChildParty.builder()
+                .firstName("Jim")
+                .lastName("Bob")
+                .build())
+            .build());
+        final Element<Child> childToBeUpdated2 = element(child2Id, Child.builder()
+            .party(ChildParty.builder()
+                .firstName("Fred")
+                .lastName("Frederson")
+                .build())
+            .build());
+        final Element<Child> expectedChild1 = element(child1Id, Child.builder()
+            .party(ChildParty.builder()
+                .firstName("Jim")
+                .lastName("Bob")
+                .completionDate(extensionDate)
+                .extensionReason(TIMETABLE_FOR_PROCEEDINGS)
+                .build())
+            .build());
+        final Element<Child> expectedChild2 = element(child2Id, Child.builder()
+            .party(ChildParty.builder()
+                .firstName("Fred")
+                .lastName("Frederson")
+                .completionDate(extensionDate)
+                .extensionReason(TIMETABLE_FOR_PROCEEDINGS)
+                .build())
+            .build());
+        @Test
+        void shouldAddAdditionalFieldsToChildren() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .state(State.CASE_MANAGEMENT)
+                .eightWeeksExtensionDateOther(extensionDate)
+                .children1(List.of(childToBeUpdated1, childToBeUpdated2))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+            List<Element<Child>> expectedChildren = List.of(expectedChild1,expectedChild2);
+
+            assertThat(responseData.getAllChildren()).isEqualTo(expectedChildren);
+            //assertThat(responseData.getSelectedHearingId()).isIn(hearingBooking1.getId(), hearingBooking2.getId());
+        }
+
+        @Test
+        void shouldNotUpdateWhenNoExtensionPresent() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .state(State.CASE_MANAGEMENT)
+                .children1(List.of(childToBeUpdated1, childToBeUpdated2))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+            List<Element<Child>> unchangedChildren = List.of(childToBeUpdated1, childToBeUpdated2);
+
+            assertThat(responseData.getAllChildren()).isEqualTo(unchangedChildren);
         }
     }
 
