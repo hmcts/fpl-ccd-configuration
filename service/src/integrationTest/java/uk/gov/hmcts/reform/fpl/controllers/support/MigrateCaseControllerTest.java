@@ -269,9 +269,12 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
 
 
-            assertThat(responseData.getCorrespondenceDocuments().get(0).getValue().getConfidential()).isEqualTo(emptyList());
-            assertThat(responseData.getCorrespondenceDocuments().get(1).getValue().getConfidential()).isEqualTo(List.of("CONFIDENTIAL"));
-            assertThat(responseData.getCorrespondenceDocuments().get(2).getValue().getConfidential()).isEqualTo(null);
+            assertThat(responseData.getCorrespondenceDocuments().get(0).getValue().getConfidential())
+                .isEqualTo(emptyList());
+            assertThat(responseData.getCorrespondenceDocuments().get(1).getValue().getConfidential())
+                .isEqualTo(List.of("CONFIDENTIAL"));
+            assertThat(responseData.getCorrespondenceDocuments().get(2).getValue().getConfidential())
+                .isEqualTo(null);
         }
 
         @ParameterizedTest
