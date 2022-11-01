@@ -267,8 +267,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             CaseData responseData = extractCaseData(response);
 
-
-
             assertThat(responseData.getCorrespondenceDocuments().get(0).getValue().getConfidential())
                 .isEqualTo(emptyList());
             assertThat(responseData.getCorrespondenceDocuments().get(1).getValue().getConfidential())
