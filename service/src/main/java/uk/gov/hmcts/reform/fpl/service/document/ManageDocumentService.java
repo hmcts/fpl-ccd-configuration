@@ -106,6 +106,7 @@ public class ManageDocumentService {
     public static final String POSITION_STATEMENT_RESPONDENT_LIST_KEY_DEPRECATED = "positionStatementRespondentList";
     public static final String DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY = "documentsWithConfidentialAddress";
     public static final String PLACEMENT_LIST_KEY = "manageDocumentsPlacementList";
+    public static final String DOCUMENT_ACKNOWLEDGEMENT_KEY = "ACK_RELATED_TO_CASE";
 
     private static final Predicate<Element<SupportingEvidenceBundle>> HMCTS_FILTER =
         bundle -> bundle.getValue().isUploadedByHMCTS();
@@ -390,7 +391,7 @@ public class ManageDocumentService {
                         caseData.getHearingDocuments().getCourtBundleListV2(), courtBundles));
                 break;
             case CASE_SUMMARY :
-                List<Element<CaseSummary>> caseSummaries = buildHearingDocumentList(caseData, selectedHearingId,
+                List<Element<CaseSummary>> caseSummaries = buildHearingDocumentsList(caseData, selectedHearingId,
                     caseData.getHearingDocuments().getCaseSummaryList(), caseData.getManageDocumentsCaseSummary());
                 map.put(CASE_SUMMARY_LIST_KEY, caseSummaries);
                 map.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
@@ -431,13 +432,24 @@ public class ManageDocumentService {
         return map;
     }
 
-    private <T> List<Element<T>> buildHearingDocumentList(CaseData caseData, UUID selectedHearingId,
-                                                          List<Element<T>> hearingDocumentList, T hearingDocument) {
+    private <T> List<Element<T>> buildCourtBundlesList(CaseData caseData, UUID selectedHearingId,
+                                                      List<Element<T>> hearingDocumentList, T hearingDocument) {
         if (isNotEmpty(caseData.getHearingDetails())) {
             return List.of(element(selectedHearingId, hearingDocument));
         }
 
         return hearingDocumentList;
+    }
+
+    private <T extends HearingDocument> List<Element<T>> buildHearingDocumentsList(CaseData caseData,
+           UUID selectedHearingId, List<Element<T>> hearingDocumentList, T hearingDocument) {
+        List<Element<T>> list = hearingDocumentList.stream().filter(el -> !el.getId().equals(selectedHearingId))
+            .collect(Collectors.toList());
+        if (isNotEmpty(caseData.getHearingDetails())) {
+            list.add(element(selectedHearingId, hearingDocument));
+        }
+
+        return list;
     }
 
     private List<Element<PositionStatementRespondent>> buildRespondentPositionStatementList(CaseData caseData,
@@ -447,8 +459,8 @@ public class ManageDocumentService {
         // and replace the existing uploaded statement of the selected respondent with the new statement.
         if (isNotEmpty(caseData.getHearingDetails())) {
             List<Element<PositionStatementRespondent>> resultList = hearingDocumentList.stream()
-                .filter(doc -> doc.getValue().getHearingId().equals(selectedHearingId)
-                               && !doc.getValue().getRespondentId().equals(respondentStatement.getRespondentId()))
+                .filter(doc -> !(doc.getValue().getHearingId().equals(selectedHearingId)
+                               && doc.getValue().getRespondentId().equals(respondentStatement.getRespondentId())))
                 .collect(Collectors.toList());
             resultList.add(element(respondentStatement));
             return resultList;
@@ -464,8 +476,8 @@ public class ManageDocumentService {
         // and replace the existing uploaded statement of the selected child with the new statement.
         if (isNotEmpty(caseData.getHearingDetails())) {
             List<Element<PositionStatementChild>> resultList = hearingDocumentList.stream()
-                .filter(doc -> doc.getValue().getHearingId().equals(selectedHearingId)
-                               && !doc.getValue().getChildId().equals(respondentStatement.getChildId()))
+                .filter(doc -> !(doc.getValue().getHearingId().equals(selectedHearingId)
+                               && doc.getValue().getChildId().equals(respondentStatement.getChildId())))
                 .collect(Collectors.toList());
 
             resultList.add(element(respondentStatement));
@@ -481,7 +493,7 @@ public class ManageDocumentService {
             .filter(doc -> !doc.getValue().isConfidentialDocument())
             .collect(Collectors.toList());
 
-        return buildHearingDocumentList(caseData, selectedHearingId,
+        return buildCourtBundlesList(caseData, selectedHearingId,
             caseData.getHearingDocuments().getCourtBundleListV2(),
             HearingCourtBundle.builder()
                 .hearing(hearingBooking.toLabel())

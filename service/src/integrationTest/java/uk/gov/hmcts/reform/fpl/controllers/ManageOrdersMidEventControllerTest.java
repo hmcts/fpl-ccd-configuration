@@ -7,7 +7,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
@@ -122,7 +122,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         Map.entry("manageOrdersVaryOrExtendSupervisionOrder", "NO"),
         Map.entry("respondentsRefused", "NO"),
         Map.entry("refuseContactQuestions", "NO"),
-        Map.entry("leaveToChangeChildSurname", "NO")
+        Map.entry("leaveToChangeChildSurname", "NO"),
+        Map.entry("partyAllowedContactsAndConditions", "NO")
     ));
 
     private static final String FAMILY_MAN_CASE_NUMBER = "CASE_NUMBER";
@@ -574,7 +575,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("manageOrdersVaryOrExtendSupervisionOrder", "NO"),
             Map.entry("refuseContactQuestions", "NO"),
             Map.entry("respondentsRefused", "NO"),
-            Map.entry("leaveToChangeChildSurname", "NO")
+            Map.entry("leaveToChangeChildSurname", "NO"),
+            Map.entry("partyAllowedContactsAndConditions", "NO")
         );
 
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
@@ -632,7 +634,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("manageOrdersVaryOrExtendSupervisionOrder", "NO"),
             Map.entry("refuseContactQuestions", "NO"),
             Map.entry("respondentsRefused", "NO"),
-            Map.entry("leaveToChangeChildSurname", "NO")
+            Map.entry("leaveToChangeChildSurname", "NO"),
+            Map.entry("partyAllowedContactsAndConditions", "NO")
         );
 
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);

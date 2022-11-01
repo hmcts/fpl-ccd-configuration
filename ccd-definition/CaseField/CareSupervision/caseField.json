@@ -873,6 +873,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "skipPaymentPage",
+    "Label": "Skip payment page",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Hidden field used to control whether we skip the payment page (i.e. for adjourning hearings additional app)"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "c2ApplicationType",
     "Label": "Upload C2",
     "FieldType": "C2ApplicationTypeSelection",
@@ -2113,6 +2123,16 @@
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "placementIdToBeSealed",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Temporary field. The ID of the application document to be sealed in submitted stage"
   },
   {
     "LiveFrom": "01/01/2017",
