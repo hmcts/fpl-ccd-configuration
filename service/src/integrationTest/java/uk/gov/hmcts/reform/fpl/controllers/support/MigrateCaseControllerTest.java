@@ -501,12 +501,12 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         @Test
         void shouldSetCaseStateToCaseManagement() {
-            CaseData caseData = CaseData.builder().id(incorrectCaseId).state(State.GATEKEEPING).build();
+            CaseData caseData = CaseData.builder().id(expectedCaseId).state(State.GATEKEEPING).build();
 
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(buildCaseDetails(caseData,
                 migrationId));
 
-            assertThat(response.getData()).extracting("state").isEqualTo(State.CASE_MANAGEMENT);
+            assertThat(response.getData()).extracting("state").isEqualTo(State.CASE_MANAGEMENT.getValue());
         }
 
     }
