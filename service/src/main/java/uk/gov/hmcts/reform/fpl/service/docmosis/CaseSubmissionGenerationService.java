@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderReasonsType;
 import uk.gov.hmcts.reform.fpl.enums.ChildGender;
+import uk.gov.hmcts.reform.fpl.enums.ChildRecoveryOrderGround;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.ParticularsOfChildren;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderGround;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -22,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.FactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForChildAssessmentOrder;
+import uk.gov.hmcts.reform.fpl.model.GroundsForChildRecoveryOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForContactWithChild;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
 import uk.gov.hmcts.reform.fpl.model.GroundsForRefuseContactWithChild;
@@ -45,6 +48,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC14Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC15Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC16Supplement;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC18Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC20Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
@@ -60,6 +64,7 @@ import uk.gov.hmcts.reform.fpl.model.robotics.Gender;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.GrammarHelper;
 
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -213,6 +218,44 @@ public class CaseSubmissionGenerationService
             .laHasRefusedContact(grounds.getLaHasRefusedContact())
             .personsBeingRefusedContactWithChild(grounds.getPersonsBeingRefusedContactWithChild())
             .reasonsOfApplication(grounds.getReasonsOfApplication())
+            .build();
+
+        if (isDraft) {
+            supplement.setDraftWaterMark(getDraftWaterMarkData());
+        } else {
+            supplement.setCourtSeal(courtService.getCourtSeal(caseData, SEALED));
+        }
+        return supplement;
+    }
+
+    public DocmosisC18Supplement getC18SupplementData(final CaseData caseData, boolean isDraft) {
+        Language applicationLanguage = Optional.ofNullable(caseData.getC110A()
+            .getLanguageRequirementApplication()).orElse(Language.ENGLISH);
+
+        Orders orders = caseData.getOrders();
+        GroundsForChildRecoveryOrder grounds = caseData.getGroundsForChildRecoveryOrder();
+
+        int numOfChildren = caseData.getAllChildren().size();
+        DocmosisC18Supplement supplement = DocmosisC18Supplement.builder()
+            .caseNumber(String.valueOf(caseData.getId()))
+            .welshLanguageRequirement(getWelshLanguageRequirement(caseData, applicationLanguage))
+            .courtName(courtService.getCourtName(caseData))
+            .childrenNames(getChildrensNames(caseData.getAllChildren()))
+            .submittedDate(formatDateDisplay(time.now().toLocalDate(), applicationLanguage))
+            .childOrChildren(GrammarHelper.getChildGrammar(numOfChildren))
+            .isOrAre(GrammarHelper.getIsOrAreGrammar(numOfChildren))
+            .particularsOfChildren(orders.getParticularsOfChildren().stream()
+                .map(ParticularsOfChildren::getLabel).collect(toList()))
+            .particularsOfChildrenDetails(orders.getParticularsOfChildrenDetails())
+            .directionsAppliedFor(orders.getChildRecoveryOrderDirectionsAppliedFor())
+            .grounds(grounds.getGrounds().stream()
+                .sorted(Comparator.comparingInt(ChildRecoveryOrderGround::getDisplayOrder))
+                .map(ChildRecoveryOrderGround::getLabel)
+                .map(ground -> ground
+                    .replace("[has] [have]", GrammarHelper.geHasOrHaveGrammar(numOfChildren, true))
+                    .replace("[is] [are]", GrammarHelper.getIsOrAreGrammar(numOfChildren)))
+                .collect(toList()))
+            .reason(grounds.getReason())
             .build();
 
         if (isDraft) {
