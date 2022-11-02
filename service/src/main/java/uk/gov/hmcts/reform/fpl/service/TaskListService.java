@@ -92,9 +92,11 @@ public class TaskListService {
             events.add(SELECT_COURT);
         }
 
-        // C1s and C110a's (except SAO, DoC and Refuse Contact Application)
-        if (!caseData.isSecureAccommodationOrderType() && !caseData.isDischargeOfCareApplication()
-                && !caseData.isRefuseContactWithChildApplication()) {
+        // C1s and C110a's (except SAO and DoC)
+        if (!caseData.isSecureAccommodationOrderType()
+                && !caseData.isDischargeOfCareApplication()
+                && !caseData.isRefuseContactWithChildApplication()
+                && !caseData.isContactWithChildInCareApplication()) {
             events.add(RISK_AND_HARM);
             events.add(FACTORS_AFFECTING_PARENTING);
         }
@@ -110,8 +112,10 @@ public class TaskListService {
             events.add(LANGUAGE_REQUIREMENTS);
         }
 
-        if (!caseData.isC1Application() || caseData.isSecureAccommodationOrderType()
-                || caseData.isRefuseContactWithChildApplication()) {
+        if (!caseData.isC1Application()
+            || caseData.isSecureAccommodationOrderType()
+            || caseData.isRefuseContactWithChildApplication()
+            || caseData.isContactWithChildInCareApplication()) {
             events.add(ALLOCATION_PROPOSAL);
         }
 
