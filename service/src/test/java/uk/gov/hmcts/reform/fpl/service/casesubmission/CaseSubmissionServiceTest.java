@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC14Supplement;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC15Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC16Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC20Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
@@ -35,9 +36,11 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C110A;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C14_SUPPLEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C15_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C16_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C20_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisC14Supplement;
+import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisC15Supplement;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisC16Supplement;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisC20Supplement;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisCaseSubmission;
@@ -71,6 +74,7 @@ class CaseSubmissionServiceTest {
     private CaseData givenCaseData;
     private DocmosisCaseSubmission expectedCaseSubmission;
     private DocmosisC14Supplement expectedC14Supplement;
+    private DocmosisC15Supplement expectedC15Supplement;
     private DocmosisC16Supplement expectedC16Supplement;
     private DocmosisC20Supplement expectedC20Supplement;
 
@@ -78,11 +82,14 @@ class CaseSubmissionServiceTest {
     void setup() {
         expectedCaseSubmission = expectedDocmosisCaseSubmission();
         expectedC14Supplement = expectedDocmosisC14Supplement();
+        expectedC15Supplement = expectedDocmosisC15Supplement();
         expectedC16Supplement = expectedDocmosisC16Supplement();
         expectedC20Supplement = expectedDocmosisC20Supplement();
         given(templateDataGenerationService.getTemplateData(any())).willReturn(expectedCaseSubmission);
         given(templateDataGenerationService.getC14SupplementData(any(), anyBoolean()))
             .willReturn(expectedC14Supplement);
+        given(templateDataGenerationService.getC15SupplementData(any(), anyBoolean()))
+            .willReturn(expectedC15Supplement);
         given(templateDataGenerationService.getC16SupplementData(any(), anyBoolean()))
             .willReturn(expectedC16Supplement);
         given(templateDataGenerationService.getC20SupplementData(any(), anyBoolean()))
@@ -173,6 +180,26 @@ class CaseSubmissionServiceTest {
 
         DocmosisData c16Supplement = caseSubmissionSupplementDataCaptor.getValue();
         assertThat(c16Supplement).isEqualTo(expectedC14Supplement);
+
+        verify(uploadDocumentService).uploadPDF(eq(PDF), any());
+    }
+
+    @Test
+    void shouldGenerateC15SupplementSuccessfully() {
+        CaseData caseData = givenCaseData.toBuilder()
+            .orders(givenCaseData.getOrders().toBuilder()
+                .orderType(List.of(OrderType.CONTACT_WITH_CHILD_IN_CARE))
+                .build())
+            .build();
+        caseSubmissionService.generateC1SupplementPDF(caseData, false);
+
+        verify(documentGeneratorService).generateDocmosisDocument(caseSubmissionSupplementDataCaptor.capture(),
+            eq(C15_SUPPLEMENT),
+            eq(RenderFormat.PDF),
+            eq(Language.ENGLISH));
+
+        DocmosisData c15Supplement = caseSubmissionSupplementDataCaptor.getValue();
+        assertThat(c15Supplement).isEqualTo(expectedC15Supplement);
 
         verify(uploadDocumentService).uploadPDF(eq(PDF), any());
     }

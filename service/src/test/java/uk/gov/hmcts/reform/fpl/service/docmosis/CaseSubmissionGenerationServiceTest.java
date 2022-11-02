@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForChildAssessmentOrder;
+import uk.gov.hmcts.reform.fpl.model.GroundsForContactWithChild;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
 import uk.gov.hmcts.reform.fpl.model.GroundsForRefuseContactWithChild;
 import uk.gov.hmcts.reform.fpl.model.GroundsForSecureAccommodationOrder;
@@ -46,6 +47,7 @@ import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisAnnexDocuments;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC14Supplement;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC15Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC16Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC20Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
@@ -336,6 +338,7 @@ class CaseSubmissionGenerationServiceTest {
                 + "Child Assessment Order\n"
                 + "Secure Accommodation order\n"
                 + "Authority to refuse contact with a child in care\n"
+                + "Contact with child in care\n"
                 + "expected other order";
             assertThat(caseSubmission.getOrdersNeeded()).isEqualTo(expectedOrdersNeeded);
         }
@@ -526,6 +529,69 @@ class CaseSubmissionGenerationServiceTest {
                 .build();
 
             DocmosisC14Supplement supplement = underTest.getC14SupplementData(updatedCaseData, false);
+            assertThat(supplement.getDraftWaterMark()).isNullOrEmpty();
+            assertThat(supplement.getCourtSeal()).isNotEmpty();
+        }
+    }
+
+    @Nested
+    class DocmosisC15SupplementTest {
+
+        @Test
+        void shouldPopulateC15Supplement() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.CONTACT_WITH_CHILD_IN_CARE))
+                    .build())
+                .groundsForContactWithChild(GroundsForContactWithChild.builder()
+                    .parentOrGuardian("test1")
+                    .residenceOrder("test2")
+                    .hadCareOfChildrenBeforeCareOrder("test3")
+                    .reasonsForApplication("test4")
+                    .build())
+                .build();
+
+            DocmosisC15Supplement supplement = underTest.getC15SupplementData(updatedCaseData, false);
+            assertThat(supplement.getParentOrGuardian()).isEqualTo("test1");
+            assertThat(supplement.getResidenceOrder()).isEqualTo("test2");
+            assertThat(supplement.getHadCareOfChildrenBeforeCareOrder()).isEqualTo("test3");
+            assertThat(supplement.getReasonsForApplication()).isEqualTo("test4");
+        }
+
+        @Test
+        void shouldNotPopulateDraftWatermarkOrSealIfDraft() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.CONTACT_WITH_CHILD_IN_CARE))
+                    .build())
+                .groundsForContactWithChild(GroundsForContactWithChild.builder()
+                    .parentOrGuardian("test1")
+                    .residenceOrder("test2")
+                    .hadCareOfChildrenBeforeCareOrder("test3")
+                    .reasonsForApplication("test4")
+                    .build())
+                .build();
+
+            DocmosisC15Supplement supplement = underTest.getC15SupplementData(updatedCaseData, true);
+            assertThat(supplement.getDraftWaterMark()).isNotEmpty();
+            assertThat(supplement.getCourtSeal()).isNullOrEmpty();
+        }
+
+        @Test
+        void shouldPopulateDraftWatermarkOrSealIfNotDraft() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.CONTACT_WITH_CHILD_IN_CARE))
+                    .build())
+                .groundsForContactWithChild(GroundsForContactWithChild.builder()
+                    .parentOrGuardian("test1")
+                    .residenceOrder("test2")
+                    .hadCareOfChildrenBeforeCareOrder("test3")
+                    .reasonsForApplication("test4")
+                    .build())
+                .build();
+
+            DocmosisC15Supplement supplement = underTest.getC15SupplementData(updatedCaseData, false);
             assertThat(supplement.getDraftWaterMark()).isNullOrEmpty();
             assertThat(supplement.getCourtSeal()).isNotEmpty();
         }
