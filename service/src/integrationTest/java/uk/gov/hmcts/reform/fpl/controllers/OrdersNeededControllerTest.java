@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.GroundsForContactWithChild;
 import uk.gov.hmcts.reform.fpl.model.GroundsForRefuseContactWithChild;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 
@@ -96,6 +97,26 @@ class OrdersNeededControllerTest extends AbstractCallbackTest {
     }
 
     @Test
+    void shouldShowContactWithChildFieldWhenContactWithChildIsSelected() {
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(CaseData.builder()
+            .orders(Orders.builder().orderType(List.of(OrderType.CONTACT_WITH_CHILD_IN_CARE)).build()).build());
+
+        assertThat(response.getData().get("contactWithChildInCareOrderType")).isEqualTo("YES");
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldRemoveContactWithChildDataWhenContactWithChildIsUnselected() {
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(CaseData.builder()
+            .orders(Orders.builder().orderType(List.of(OrderType.CARE_ORDER)).build())
+            .groundsForContactWithChild(GroundsForContactWithChild.builder()
+                .parentOrGuardian("Parent").build()).build());
+
+        assertThat(response.getData().get("contactWithChildInCareOrderType")).isNull();
+        assertThat((Map<String, Object>) response.getData().get("groundsForContactWithChild")).isNullOrEmpty();
+    }
+
+    @Test
     void shouldSetCourtWhenCourtIsSelected() {
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent("fixtures/caseOtherOrderType.json");
 
@@ -108,13 +129,5 @@ class OrdersNeededControllerTest extends AbstractCallbackTest {
 
         assertThat(response.getData().get("representativeType")).isEqualTo("RESPONDENT_SOLICITOR");
         assertThat(response.getData().get("orders")).isEqualTo(response.getData().get("ordersSolicitor"));
-    }
-
-    @Test
-    void shouldSetRepresentativeTypeToLAIfItIsNotAlreadySet() {
-        //In this case fixture, representativeType is not set.
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent("fixtures/caseOtherOrderType.json");
-
-        assertThat(response.getData().get("representativeType")).isEqualTo("LOCAL_AUTHORITY");
     }
 }

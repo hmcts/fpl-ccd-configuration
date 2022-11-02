@@ -17,6 +17,7 @@ import java.util.Optional;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.CHANGE_SURNAME_OR_REMOVE_JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.TERMINATION_OF_APPOINTMENT_OF_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C100_CHILD_ARRANGEMENTS;
@@ -70,7 +71,8 @@ public enum FeeType {
         OrderType.OTHER, OTHER,
         OrderType.CHILD_ASSESSMENT_ORDER, CHILD_ASSESSMENT_ORDER,
         OrderType.REFUSE_CONTACT_WITH_CHILD, REFUSE_CONTACT_WITH_CHILD,
-        OrderType.CHILD_RECOVERY_ORDER, CHILD_RECOVERY_ORDER);
+        OrderType.CHILD_RECOVERY_ORDER, CHILD_RECOVERY_ORDER,
+        OrderType.CONTACT_WITH_CHILD_IN_CARE, CONTACT_WITH_CHILD_IN_CARE);
 
     private static final Map<SupplementType, FeeType> supplementToFeeMap = Map.of(
         SupplementType.C13A_SPECIAL_GUARDIANSHIP, SPECIAL_GUARDIANSHIP,
@@ -119,6 +121,7 @@ public enum FeeType {
         }
 
         return c2OrdersRequestedList.stream()
+            .filter(el -> !el.equals(REQUESTING_ADJOURNMENT)) // no fee code - it removes the fees entirely
             .map(c2AdditionalOrdersToFeesMap::get)
             .collect(toUnmodifiableList());
     }

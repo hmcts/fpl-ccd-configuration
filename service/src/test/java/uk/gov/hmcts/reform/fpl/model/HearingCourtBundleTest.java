@@ -16,6 +16,7 @@ import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
@@ -67,6 +68,7 @@ public class HearingCourtBundleTest {
                     "document_filename", CONFIDENTIAL_COURT_BUNDLE.getDocument().getFilename(),
                     "document_url", CONFIDENTIAL_COURT_BUNDLE.getDocument().getUrl()
                 )),
+                Map.entry("documentAcknowledge", List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY)),
                 Map.entry("hasConfidentialAddress", YesNo.NO.getValue())
             )));
 
@@ -79,6 +81,7 @@ public class HearingCourtBundleTest {
                     "document_filename", NON_CONFIDENTIAL_COURT_BUNDLE.getDocument().getFilename(),
                     "document_url", NON_CONFIDENTIAL_COURT_BUNDLE.getDocument().getUrl()
                 )),
+                Map.entry("documentAcknowledge", List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY)),
                 Map.entry("hasConfidentialAddress", YesNo.NO.getValue())
             )));
 
@@ -127,7 +130,9 @@ public class HearingCourtBundleTest {
 
         List<Map<String, Object>> expectedCourtBundle = List.of(Map.of(
             "id", TEST_ID.toString(),
-            "value", Map.ofEntries()));
+            "value", Map.ofEntries(
+                Map.entry("documentAcknowledge", List.of())
+            )));
 
         Map<String, Object> expectedHearingCourtBundle = Map.of(
             "hearing", TEST_HEARING,

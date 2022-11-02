@@ -20,6 +20,7 @@ import javax.validation.constraints.Size;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CHILD_ASSESSMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CHILD_RECOVERY_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.CONTACT_WITH_CHILD_IN_CARE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.REFUSE_CONTACT_WITH_CHILD;
@@ -61,7 +62,8 @@ public class Orders {
         return isNotEmpty(orderType) && (this.getOrderType().contains(CHILD_ASSESSMENT_ORDER)
                 || isSecureAccommodationOrder()
                 || isRefuseContactWithChildApplication()
-                || isChildRecoveryOrder());
+                || isChildRecoveryOrder()
+                || isContactWithChildInCareOrder());
     }
 
     public boolean isDischargeOfCareOrder() {
@@ -77,6 +79,10 @@ public class Orders {
     }
 
     public boolean isChildRecoveryOrder() {
-        return this.getOrderType().contains(CHILD_RECOVERY_ORDER);
+        return isNotEmpty(orderType) && this.getOrderType().contains(CHILD_RECOVERY_ORDER);
+    }
+
+    public boolean isContactWithChildInCareOrder() {
+        return isNotEmpty(orderType) && orderType.size() == 1 && orderType.contains(CONTACT_WITH_CHILD_IN_CARE);
     }
 }

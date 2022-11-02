@@ -32,25 +32,12 @@ public class OrdersNeededController extends CallbackController {
 
     public static final String ORDERS = "orders";
     public static final List<OrderType> STANDALONE_ORDER_TYPE = List.of(OrderType.CHILD_ASSESSMENT_ORDER,
+        OrderType.CONTACT_WITH_CHILD_IN_CARE,
+        OrderType.OTHER,
         OrderType.CHILD_RECOVERY_ORDER);
     public static final List<String> STANDALONE_ORDER_TYPE_NAME = STANDALONE_ORDER_TYPE.stream().map(OrderType::name)
         .collect(Collectors.toList());
     private final HmctsCourtLookupConfiguration courtLookup;
-
-    @PostMapping("/about-to-start")
-    @SuppressWarnings("unchecked")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
-        @RequestBody CallbackRequest callbackrequest) {
-        final CaseData caseData = getCaseData(callbackrequest);
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        Map<String, Object> data = caseDetails.getData();
-
-        if (Objects.isNull(caseData.getRepresentativeType())) {
-            data.put("representativeType", RepresentativeType.LOCAL_AUTHORITY);
-        }
-
-        return respond(caseDetails);
-    }
 
     @PostMapping("/mid-event")
     @SuppressWarnings("unchecked")
@@ -118,14 +105,21 @@ public class OrdersNeededController extends CallbackController {
             removeSecureAccommodationOrderFields(data, ordersFieldName);
         }
 
-        if (isRefuseContactWithChildOrder(orderType)) {
+        if (caseData.isRefuseContactWithChildApplication()) {
             data.put("refuseContactWithChildOrderType", YesNo.YES);
         } else {
             data.remove("groundsForRefuseContactWithChild");
             data.remove("refuseContactWithChildOrderType");
         }
 
-        if (isDischargeOfCareOrder(orderType)) {
+        if (caseData.isContactWithChildInCareApplication()) {
+            data.put("contactWithChildInCareOrderType", "YES");
+        } else {
+            data.remove("groundsForContactWithChild");
+            data.remove("contactWithChildInCareOrderType");
+        }
+
+        if (caseData.isDischargeOfCareApplication()) {
             data.put("otherOrderType", "YES");
         } else {
             data.put("otherOrderType", "NO");
@@ -161,16 +155,5 @@ public class OrdersNeededController extends CallbackController {
 
     private Court getCourtSelection(String courtID) {
         return courtLookup.getCourtByCode(courtID).orElse(null);
-    }
-
-    private boolean isDischargeOfCareOrder(Optional<List<String>> orderType) {
-        return orderType.isPresent()
-            && orderType.get().size() == 1
-            && orderType.get().contains(OrderType.OTHER.name());
-    }
-
-    private boolean isRefuseContactWithChildOrder(Optional<List<String>> orderType) {
-        return orderType.isPresent()
-            && orderType.get().contains(OrderType.REFUSE_CONTACT_WITH_CHILD.name());
     }
 }

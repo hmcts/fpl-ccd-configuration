@@ -51,6 +51,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "groundsForContactWithChild",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearing",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "R"
@@ -359,6 +366,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "skipPaymentPage",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2ApplicationType",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
@@ -430,6 +444,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "furtherEvidenceDocumentsLA",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "furtherEvidenceDocumentsSolicitor",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "R"
   },

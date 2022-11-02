@@ -8,6 +8,9 @@ management:
   endpoint:
     health:
       show-details: "always"
+  health:
+    case-document-am-api:
+      enabled: true
 
 spring:
   application:
@@ -317,3 +320,8 @@ cafcass:
       correspondence: CORRESPONDENCE
       additionalDocument: APPLICATION
       newApplication: APPLICATION
+
+case_document_am:
+  url: ${CASE_DOCUMENT_AM_URL:http://localhost:4455}
+  health:
+    url: ${case_document_am.url}/health
