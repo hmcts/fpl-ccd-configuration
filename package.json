@@ -12,7 +12,7 @@
     "html_codesniffer": "^2.5.1",
     "husky": "^7.0.2",
     "lodash": "^4.17.21",
-    "mocha-junit-reporter": "^2.0.0",
+    "mocha-junit-reporter": "^2.1.1",
     "mocha-multi": "^1.1.3",
     "mochawesome": "^6.2.2",
     "moment": "2.29.1",
