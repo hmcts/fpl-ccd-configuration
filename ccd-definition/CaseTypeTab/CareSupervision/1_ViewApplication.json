@@ -148,6 +148,17 @@
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
+    "CaseFieldID": "groundsForChildRecoveryOrder",
+    "FieldShowCondition": "orders.orderType CONTAINS \"CHILD_RECOVERY_ORDER\"",
+    "TabFieldDisplayOrder": 10
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View application",
+    "TabDisplayOrder": 1,
     "CaseFieldID": "groundsForEPO",
     "TabFieldDisplayOrder": 11
   },
