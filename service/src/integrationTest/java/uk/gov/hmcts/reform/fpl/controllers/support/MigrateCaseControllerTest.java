@@ -480,6 +480,36 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
     }
 
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl1006 {
+        final String migrationId = "DFPL-1006";
+        final long expectedCaseId = 1664880596046318L;
+        final long incorrectCaseId = 111111111111111L;
+
+
+        @Test
+        void shouldThrowExceptionWhenIncorrectCaseId() {
+            CaseData caseData = CaseData.builder().id(incorrectCaseId).build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format("Migration {id = %s, case reference = %s}, expected case id %d",
+                    migrationId, incorrectCaseId, expectedCaseId));
+        }
+
+        @Test
+        void shouldSetCaseStateToCaseManagement() {
+            CaseData caseData = CaseData.builder().id(incorrectCaseId).state(State.GATEKEEPING).build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(buildCaseDetails(caseData,
+                migrationId));
+
+            assertThat(response.getData()).extracting("state").isEqualTo(State.CASE_MANAGEMENT);
+        }
+
+    }
     private CaseDetails buildCaseDetails(CaseData caseData, String migrationId) {
         CaseDetails caseDetails = asCaseDetails(caseData);
         caseDetails.getData().put("migrationId", migrationId);

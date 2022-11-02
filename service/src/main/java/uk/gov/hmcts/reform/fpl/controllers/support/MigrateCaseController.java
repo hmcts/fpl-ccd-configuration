@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
+import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Api
@@ -45,7 +46,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-776", this::run776,
         "DFPL-826", this::run826,
         "DFPL-810", this::run810,
-        "DFPL-828", this::run828
+        "DFPL-828", this::run828,
+        "DFPL-1006", this::run1006
     );
 
     @PostMapping("/about-to-submit")
@@ -179,6 +181,23 @@ public class MigrateCaseController extends CallbackController {
         }
 
         caseDetails.getData().put("judicialMessages", resultJudicialMessages);
+    }
+
+    private void run1006(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1006";
+        var expectedCaseId = 1664880596046318L;
+
+        CaseData caseData = getCaseData(caseDetails);
+        Long caseId = caseData.getId();
+
+        if (caseId != expectedCaseId) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId
+            ));
+        }
+
+        caseDetails.getData().put("state", CASE_MANAGEMENT);
     }
 
     private void run826(CaseDetails caseDetails) {
