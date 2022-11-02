@@ -71,11 +71,11 @@ public class Orders {
     }
 
     public boolean isSecureAccommodationOrder() {
-        return this.getOrderType().contains(SECURE_ACCOMMODATION_ORDER);
+        return isNotEmpty(orderType) && this.getOrderType().contains(SECURE_ACCOMMODATION_ORDER);
     }
 
     public boolean isRefuseContactWithChildApplication() {
-        return this.getOrderType().contains(REFUSE_CONTACT_WITH_CHILD);
+        return isNotEmpty(orderType) && this.getOrderType().contains(REFUSE_CONTACT_WITH_CHILD);
     }
 
     public boolean isChildRecoveryOrder() {
