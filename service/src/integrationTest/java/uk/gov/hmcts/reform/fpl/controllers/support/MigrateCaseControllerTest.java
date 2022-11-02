@@ -483,10 +483,10 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class Dfpl1006 {
+
         final String migrationId = "DFPL-1006";
         final long expectedCaseId = 1664880596046318L;
         final long incorrectCaseId = 111111111111111L;
-
 
         @Test
         void shouldThrowExceptionWhenIncorrectCaseId() {
@@ -510,6 +510,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
 
     }
+
     private CaseDetails buildCaseDetails(CaseData caseData, String migrationId) {
         CaseDetails caseDetails = asCaseDetails(caseData);
         caseDetails.getData().put("migrationId", migrationId);
