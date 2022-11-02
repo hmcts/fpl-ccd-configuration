@@ -43,6 +43,10 @@ public class CaseDataParent {
 
     @NotNull(message = "Add the grounds for the application")
     @Valid
+    protected final GroundsForChildRecoveryOrder groundsForChildRecoveryOrder;
+
+    @NotNull(message = "Add the grounds for the application")
+    @Valid
     protected final GroundsForContactWithChild groundsForContactWithChild;
 
     protected final YesNo skipPaymentPage;
