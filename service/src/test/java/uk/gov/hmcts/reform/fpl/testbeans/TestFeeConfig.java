@@ -59,6 +59,7 @@ public class TestFeeConfig {
     public static final String RECOVERY_ORDER_KEYWORD = "Recovery";
     public static final String SECURE_ACCOMMODATION_ENG_KEYWORD = "SecureAccommEngland";
     public static final String SECURE_ACCOMMODATION_WALES_KEYWORD = "SecureAccommWales";
+    public static final String CONTACT_WITH_CHILD_IN_CARE_KEYWORD = "ContactChild";
     public static final String REFUSE_CONTACT_WITH_CHILD_KEYWORD = "WXY";
     public static final String PR_FATHER_KEYWORD = "XYZ";
     public static final String PR_FEMALE_PARENT_KEYWORD = "AABC";
