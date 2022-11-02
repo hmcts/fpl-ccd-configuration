@@ -309,7 +309,7 @@ public class CaseData extends CaseDataParent {
     }
 
     public Orders getOrders() {
-        return ordersSolicitor != null ? ordersSolicitor : orders;
+        return ordersSolicitor != null && ordersSolicitor.getOrderType() != null ? ordersSolicitor : orders;
     }
 
     //TODO add null-checker getter for hearingDetails during refactor/removal of legacy code (FPLA-2280)
