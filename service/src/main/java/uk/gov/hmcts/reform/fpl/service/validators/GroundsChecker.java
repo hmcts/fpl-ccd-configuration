@@ -35,6 +35,8 @@ public class GroundsChecker extends PropertiesChecker {
                 SecureAccommodationGroup.class);
         } else if (caseData.isRefuseContactWithChildApplication()) {
             return super.validate(caseData, List.of("groundsForRefuseContactWithChild"));
+        } else if (hasChildRecoveryOrder(caseData)) {
+            return super.validate(caseData, List.of("groundsForChildRecoveryOrder"));
         } else if (caseData.isContactWithChildInCareApplication()) {
             return super.validate(caseData, List.of("groundsForContactWithChild"));
         } else {
@@ -72,6 +74,11 @@ public class GroundsChecker extends PropertiesChecker {
     private boolean hasSecureAccommodationOrder(CaseData caseData) {
         return caseData.getOrders() != null && caseData.getOrders().getOrderType() != null
                && caseData.getOrders().getOrderType().contains(OrderType.SECURE_ACCOMMODATION_ORDER);
+    }
+
+    private boolean hasChildRecoveryOrder(CaseData caseData) {
+        return caseData.getOrders() != null && caseData.getOrders().getOrderType() != null
+               && caseData.getOrders().getOrderType().contains(OrderType.CHILD_RECOVERY_ORDER);
     }
 
     private static boolean isGroundsStarted(Grounds grounds) {

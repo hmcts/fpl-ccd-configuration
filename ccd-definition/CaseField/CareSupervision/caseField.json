@@ -2081,6 +2081,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "groundsForChildRecoveryOrder",
+    "Label": "How are there grounds for a child recovery order?",
+    "FieldType": "GroundsForChildRecoveryOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "contactWithChildInCareOrderType",
     "Label": " ",
     "FieldType": "YesOrNo",
