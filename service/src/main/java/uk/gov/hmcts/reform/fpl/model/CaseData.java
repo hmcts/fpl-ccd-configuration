@@ -308,6 +308,10 @@ public class CaseData extends CaseDataParent {
         return children1 != null ? children1 : new ArrayList<>();
     }
 
+    public Orders getOrders() {
+        return ordersSolicitor != null ? ordersSolicitor : orders;
+    }
+
     //TODO add null-checker getter for hearingDetails during refactor/removal of legacy code (FPLA-2280)
     @NotNull(message = "Enter hearing details", groups = NoticeOfProceedingsGroup.class)
     @NotEmpty(message = "You need to enter a hearing date.", groups = SealedSDOGroup.class)
@@ -1153,6 +1157,14 @@ public class CaseData extends CaseDataParent {
 
         return ofNullable(getOrders())
             .map(Orders::isDischargeOfCareOrder)
+            .orElse(false);
+    }
+
+    @JsonIgnore
+    public boolean isContactWithChildInCareApplication() {
+
+        return ofNullable(getOrders())
+            .map(Orders::isContactWithChildInCareOrder)
             .orElse(false);
     }
 

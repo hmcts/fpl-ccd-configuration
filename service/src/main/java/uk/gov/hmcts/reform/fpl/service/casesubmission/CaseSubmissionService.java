@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.casesubmission;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -60,6 +60,9 @@ public class CaseSubmissionService {
         } else if (caseData.isRefuseContactWithChildApplication()) {
             return generateSupplementPDF(caseData, isDraft, DocmosisTemplates.C14_SUPPLEMENT,
                 documentGenerationService.getC14SupplementData(caseData, isDraft));
+        } else if (caseData.isContactWithChildInCareApplication()) {
+            return generateSupplementPDF(caseData, isDraft, DocmosisTemplates.C15_SUPPLEMENT,
+                documentGenerationService.getC15SupplementData(caseData, isDraft));
         } else {
             return generateSupplementPDF(caseData, isDraft, DocmosisTemplates.C16_SUPPLEMENT,
                 documentGenerationService.getC16SupplementData(caseData, isDraft));

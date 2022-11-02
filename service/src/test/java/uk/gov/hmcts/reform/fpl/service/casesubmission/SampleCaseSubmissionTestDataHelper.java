@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC14Supplement;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC15Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC16Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC20Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
@@ -291,6 +292,17 @@ public class SampleCaseSubmissionTestDataHelper {
             .laHasRefusedContact("LA has refused contact for 7 days")
             .personsBeingRefusedContactWithChild("Someone is not allowed to contact the child anymore.")
             .reasonsOfApplication("Reason of the application")
+            .build();
+    }
+
+    public static DocmosisC15Supplement expectedDocmosisC15Supplement() {
+        return DocmosisC15Supplement.builder()
+            .childrensNames("Bobby Smith")
+            .caseNumber("01234567890")
+            .parentOrGuardian("Parent")
+            .residenceOrder("Yes")
+            .hadCareOfChildrenBeforeCareOrder("Yes")
+            .reasonsForApplication("Reason for application")
             .build();
     }
 
