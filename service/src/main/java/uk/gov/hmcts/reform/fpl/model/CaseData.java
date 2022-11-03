@@ -703,8 +703,10 @@ public class CaseData extends CaseDataParent {
     private final CaseSummary manageDocumentsCaseSummary;
     private final PositionStatementChild manageDocumentsPositionStatementChild;
     private final PositionStatementRespondent manageDocumentsPositionStatementRespondent;
+    private final SkeletonArgument manageDocumentsSkeletonArgument;
     private final DynamicList manageDocumentsChildrenList;
     private final DynamicList hearingDocumentsRespondentList;
+    private final DynamicList hearingDocumentsPartyList;
 
 
     @JsonUnwrapped
