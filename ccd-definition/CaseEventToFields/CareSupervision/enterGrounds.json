@@ -163,5 +163,19 @@
     "FieldShowCondition": "groundsForContactWithChild=\"DO_NOT_SHOW\"",
     "DisplayContext": "READONLY",
     "Comments": "A control flag. Yes if order type of this case is contact with a child in care application"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "enterGrounds",
+    "CaseFieldID": "groundsForChildRecoveryOrder",
+    "CaseEventFieldLabel": "How are there grounds for a child recovery order?",
+    "PageFieldDisplayOrder": 8,
+    "DisplayContext": "COMPLEX",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "orders.orderType CONTAINS \"CHILD_RECOVERY_ORDER\""
   }
 ]
