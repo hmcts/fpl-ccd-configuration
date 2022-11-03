@@ -299,9 +299,17 @@ public class CaseData extends CaseDataParent {
         return respondents1 != null ? respondents1 : new ArrayList<>();
     }
 
+    public RepresentativeType getRepresentativeType() {
+        return representativeType != null ? representativeType : RepresentativeType.LOCAL_AUTHORITY;
+    }
+
     @JsonIgnore
     public List<Element<Child>> getAllChildren() {
         return children1 != null ? children1 : new ArrayList<>();
+    }
+
+    public Orders getOrders() {
+        return ordersSolicitor != null && ordersSolicitor.getOrderType() != null ? ordersSolicitor : orders;
     }
 
     //TODO add null-checker getter for hearingDetails during refactor/removal of legacy code (FPLA-2280)
@@ -1155,6 +1163,14 @@ public class CaseData extends CaseDataParent {
     }
 
     @JsonIgnore
+    public boolean isContactWithChildInCareApplication() {
+
+        return ofNullable(getOrders())
+            .map(Orders::isContactWithChildInCareOrder)
+            .orElse(false);
+    }
+
+    @JsonIgnore
     public boolean isC1Application() {
         return ofNullable(getOrders())
             .map(Orders::isC1Order)
@@ -1165,6 +1181,13 @@ public class CaseData extends CaseDataParent {
     public boolean isSecureAccommodationOrderType() {
         return ofNullable(getOrders())
             .map(Orders::isSecureAccommodationOrder)
+            .orElse(false);
+    }
+
+    @JsonIgnore
+    public boolean isChildRecoveryOrder() {
+        return ofNullable(getOrders())
+            .map(Orders::isChildRecoveryOrder)
             .orElse(false);
     }
 

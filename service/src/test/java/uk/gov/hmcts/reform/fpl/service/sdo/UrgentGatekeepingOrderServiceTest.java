@@ -22,6 +22,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6A;
@@ -41,6 +42,7 @@ class UrgentGatekeepingOrderServiceTest {
     @BeforeEach
     void setUp() {
         underTest = new UrgentGatekeepingOrderService(allocationService, sealingService, time);
+        when(sealingService.sealDocument(UPLOADED_ORDER, court, SealType.ENGLISH)).thenReturn(SEALED_ORDER);
     }
 
     @Test
@@ -77,10 +79,8 @@ class UrgentGatekeepingOrderServiceTest {
                 .build())
             .build();
 
-        when(sealingService.sealDocument(UPLOADED_ORDER, court, SealType.ENGLISH)).thenReturn(SEALED_ORDER);
-
         UrgentHearingOrder expectedOrder = UrgentHearingOrder.builder()
-            .order(SEALED_ORDER)
+            .order(UPLOADED_ORDER)
             .unsealedOrder(UPLOADED_ORDER)
             .dateAdded(time.now().toLocalDate())
             .build();
@@ -102,10 +102,8 @@ class UrgentGatekeepingOrderServiceTest {
                 .build())
             .build();
 
-        when(sealingService.sealDocument(UPLOADED_ORDER, court, SealType.ENGLISH)).thenReturn(SEALED_ORDER);
-
         UrgentHearingOrder expectedOrder = UrgentHearingOrder.builder()
-            .order(SEALED_ORDER)
+            .order(UPLOADED_ORDER)
             .unsealedOrder(UPLOADED_ORDER)
             .dateAdded(time.now().toLocalDate())
             .translationRequirements(ENGLISH_TO_WELSH)
@@ -130,12 +128,11 @@ class UrgentGatekeepingOrderServiceTest {
                 .build())
             .build();
 
-        when(sealingService.sealDocument(UPLOADED_ORDER, court, SealType.ENGLISH)).thenReturn(SEALED_ORDER);
         when(allocationService.setAllocationDecisionIfNull(caseData, enteredAllocation)).thenReturn(updatedAllocation);
         when(updatedAllocation.getProposal()).thenReturn("some allocation level");
 
         UrgentHearingOrder expectedOrder = UrgentHearingOrder.builder()
-            .order(SEALED_ORDER)
+            .order(UPLOADED_ORDER)
             .unsealedOrder(UPLOADED_ORDER)
             .allocation("some allocation level")
             .dateAdded(time.now().toLocalDate())
@@ -159,5 +156,30 @@ class UrgentGatekeepingOrderServiceTest {
         CaseData caseData = CaseData.builder().others(Others.builder().firstOther(mock(Other.class)).build()).build();
 
         assertThat(underTest.getNoticeOfProceedingsTemplates(caseData)).isEqualTo(List.of(C6, C6A));
+    }
+
+    @Test
+    void sealDocumentAfterEventSubmitted() {
+        UrgentHearingOrder order = UrgentHearingOrder.builder()
+            .order(UPLOADED_ORDER)
+            .unsealedOrder(UPLOADED_ORDER)
+            .dateAdded(time.now().toLocalDate())
+            .translationRequirements(ENGLISH_TO_WELSH)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .court(court)
+            .allocationDecision(mock(Allocation.class))
+            .urgentHearingOrder(order)
+            .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .urgentHearingOrderDocument(UPLOADED_ORDER)
+                .showUrgentHearingAllocation(YesNo.NO)
+                .urgentGatekeepingTranslationRequirements(ENGLISH_TO_WELSH)
+                .build())
+            .build();
+
+        underTest.sealDocumentAfterEventSubmitted(caseData);
+
+        verify(sealingService).sealDocument(UPLOADED_ORDER, court, SealType.ENGLISH);
     }
 }

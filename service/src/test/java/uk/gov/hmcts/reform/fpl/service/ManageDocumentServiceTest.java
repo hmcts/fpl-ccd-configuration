@@ -2123,7 +2123,7 @@ class ManageDocumentServiceTest {
     }
 
     @Test
-    void shouldReturnNewPositionStatementChildListWhenExistingListPresentForOtherHearing() {
+    void shouldReturnCombinedPositionStatementChildListWhenExistingListPresentForOtherHearing() {
         UUID selectedHearingId = randomUUID();
         LocalDateTime today = LocalDateTime.now();
 
@@ -2166,7 +2166,7 @@ class ManageDocumentServiceTest {
         assertThat(
             unwrapElements((List<Element<PositionStatementChild>>)
                 underTest.buildHearingDocumentList(caseData).get(POSITION_STATEMENT_CHILD_LIST_KEY)))
-            .isEqualTo(List.of(caseData.getManageDocumentsPositionStatementChild()));
+            .containsExactlyInAnyOrder(positionStatementChild, positionStatementChildTwo);
     }
 
     @Test
@@ -2299,7 +2299,39 @@ class ManageDocumentServiceTest {
         assertThat(
             unwrapElements((List<Element<PositionStatementRespondent>>) underTest
                 .buildHearingDocumentList(caseData).get(POSITION_STATEMENT_RESPONDENT_LIST_KEY)))
-            .isEqualTo(List.of(caseData.getManageDocumentsPositionStatementRespondent()));
+            .containsExactlyInAnyOrder(positionStatementRespondent, positionStatementRespondentTwo);
+    }
+
+    @Test
+    void shouldReplaceCaseSummaryIfSameHearing() {
+        UUID hearingOne = randomUUID();
+        UUID hearingTwo = randomUUID();
+        String hearingOneLabel = "Hearing one";
+        String hearingTwoLabel = "Hearing two";
+
+        LocalDateTime today = LocalDateTime.now();
+        HearingBooking hearingBookingOne = createHearingBooking(today, today.plusDays(3));
+        HearingBooking hearingBookingTwo = createHearingBooking(today, today.plusDays(5));
+        List<Element<HearingBooking>> hearingBookings = List.of(element(hearingOne, hearingBookingOne),
+            element(hearingTwo, hearingBookingTwo));
+
+        CaseSummary existingHearingOne = CaseSummary.builder().hearing(hearingOneLabel).build();
+        CaseSummary existingHearingTwo = CaseSummary.builder().hearing(hearingTwoLabel).build();
+        CaseSummary newHearingTwo = CaseSummary.builder().hearing(hearingTwoLabel).build();
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsHearingDocumentType(HearingDocumentType.CASE_SUMMARY)
+            .hearingDetails(hearingBookings)
+            .manageDocumentsCaseSummary(newHearingTwo)
+            .hearingDocumentsHearingList(hearingTwo.toString())
+            .hearingDocuments(HearingDocuments.builder()
+                .caseSummaryList(List.of(element(hearingOne, existingHearingOne),
+                    element(hearingTwo, existingHearingTwo)))
+                .build())
+            .build();
+
+        assertThat(unwrapElements((List<Element<CaseSummary>>) underTest.buildHearingDocumentList(caseData)
+            .get(CASE_SUMMARY_LIST_KEY))).containsExactlyInAnyOrder(existingHearingOne, newHearingTwo);
     }
 
     @Test

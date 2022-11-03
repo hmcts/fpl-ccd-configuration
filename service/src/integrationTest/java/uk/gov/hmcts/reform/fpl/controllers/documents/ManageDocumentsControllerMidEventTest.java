@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -59,6 +60,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.PLACEMENT_NOTICE_
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C12_WARRANT_TO_ASSIST_PERSON;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -109,6 +111,9 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
         CaseData extractedCaseData = extractCaseData(postMidEvent(caseData, "initialise-manage-document-collections"));
 
         assertThat(extractedCaseData.getCorrespondenceDocuments()).isEqualTo(correspondenceDocuments);
+        assertThat(extractedCaseData.getCorrespondenceDocuments()).hasSizeGreaterThan(0);
+        assertThat(extractedCaseData.getCorrespondenceDocuments().get(0).getValue().getDocumentAcknowledge())
+            .isEqualTo(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
 
         assertThat(extractedCaseData.getManageDocument()).isEqualTo(ManageDocument.builder()
             .type(CORRESPONDENCE)
@@ -134,6 +139,9 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
         CaseData extractedCaseData = extractCaseData(postMidEvent(caseData, "initialise-manage-document-collections"));
 
         assertThat(extractedCaseData.getCorrespondenceDocumentsSolicitor()).isEqualTo(correspondenceDocuments);
+        assertThat(extractedCaseData.getCorrespondenceDocumentsSolicitor()).hasSizeGreaterThan(0);
+        assertThat(extractedCaseData.getCorrespondenceDocumentsSolicitor().get(0).getValue().getDocumentAcknowledge())
+            .isEqualTo(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
 
         assertThat(extractedCaseData.getManageDocument()).isEqualTo(ManageDocument.builder()
             .type(CORRESPONDENCE)
@@ -171,6 +179,12 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
         CaseData after = extractCaseData(postMidEvent(caseData, "initialise-manage-document-collections", USER_ROLES));
 
         assertThat(after.getPlacementNoticeResponses()).hasSize(3);
+        assertThat(after.getPlacementNoticeResponses().get(0).getValue().getDocumentAcknowledge())
+            .isEqualTo(List.of());
+        assertThat(after.getPlacementNoticeResponses().get(1).getValue().getDocumentAcknowledge())
+            .isEqualTo(List.of());
+        assertThat(after.getPlacementNoticeResponses().get(2).getValue().getDocumentAcknowledge())
+            .isEqualTo(List.of());
         assertThat(after.getManageDocument()).isEqualTo(ManageDocument.builder()
             .type(ManageDocumentType.PLACEMENT_NOTICE_RESPONSE)
             .hasHearings(NO.getValue())
@@ -188,12 +202,15 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
 
         PlacementNoticeDocument laResponse = PlacementNoticeDocument.builder()
             .type(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
+            .response(DocumentReference.builder().build())
             .build();
         PlacementNoticeDocument cafcassResponse = PlacementNoticeDocument.builder()
             .type(PlacementNoticeDocument.RecipientType.CAFCASS)
+            .response(DocumentReference.builder().build())
             .build();
         PlacementNoticeDocument respondentResponse = PlacementNoticeDocument.builder()
             .type(PlacementNoticeDocument.RecipientType.RESPONDENT)
+            .response(DocumentReference.builder().build())
             .build();
 
         Placement placement = Placement.builder()
@@ -217,6 +234,8 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
             SOLICITOR_USER_ROLES));
 
         assertThat(after.getPlacementNoticeResponses()).hasSize(1);
+        assertThat(after.getPlacementNoticeResponses().get(0).getValue().getDocumentAcknowledge())
+            .isEqualTo(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
         assertThat(after.getManageDocument()).isEqualTo(ManageDocument.builder()
             .type(ManageDocumentType.PLACEMENT_NOTICE_RESPONSE)
             .hasHearings(NO.getValue())
@@ -250,6 +269,9 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
         ));
 
         assertThat(extractedCaseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(c2EvidenceDocuments);
+        assertThat(extractedCaseData.getSupportingEvidenceDocumentsTemp()).hasSizeGreaterThan(0);
+        assertThat(extractedCaseData.getSupportingEvidenceDocumentsTemp().get(0).getValue().getDocumentAcknowledge())
+            .isEqualTo(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
 
         assertThat(extractedCaseData.getManageDocument()).isEqualTo(ManageDocument.builder()
             .type(ADDITIONAL_APPLICATIONS_DOCUMENTS)
@@ -577,6 +599,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
             .name(RandomStringUtils.randomAlphabetic(10))
             .uploadedBy("HMCTS")
             .type(GUARDIAN_REPORTS)
+            .document(DocumentReference.builder().build())
             .build());
     }
 
@@ -585,6 +608,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
             .name(RandomStringUtils.randomAlphabetic(10))
             .uploadedBy("ExternalSolicitor")
             .type(GUARDIAN_REPORTS)
+            .document(DocumentReference.builder().build())
             .build());
     }
 

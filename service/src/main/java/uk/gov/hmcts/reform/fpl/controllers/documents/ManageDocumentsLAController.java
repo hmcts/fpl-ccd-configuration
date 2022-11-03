@@ -100,6 +100,9 @@ public class ManageDocumentsLAController extends CallbackController {
         caseDetails.getData().putAll(manageDocumentLAService.baseEventData(caseData));
         caseDetails.getData().put("hearingDocumentsPartyList", partyListGenerator.buildPartyList(caseData));
 
+        // to force invoking ApplicationDocument.getDocumentAcknowledge
+        caseDetails.getData().put("applicationDocuments", caseData.getApplicationDocuments());
+
         return respond(caseDetails);
     }
 

@@ -450,6 +450,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "skipPaymentPage",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2ApplicationType",
     "UserRole": "[LASHARED]",
     "CRUD": "CRU"
@@ -941,6 +948,20 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "replacementCMO",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "uploadCMOMessageAcknowledgeLabel",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "uploadCMOMessageAcknowledge",
     "UserRole": "[LASHARED]",
     "CRUD": "CRU"
   },
