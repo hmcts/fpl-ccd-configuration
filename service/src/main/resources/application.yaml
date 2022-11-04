@@ -226,6 +226,13 @@ fees-register:
       jurisdiction2: family court
       keyword: ContactChild
       service: private law
+    CHILD_RECOVERY_ORDER:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: Recovery
+      service: private law
 
 payment:
   site_id: ABA3
