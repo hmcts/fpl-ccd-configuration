@@ -103,6 +103,8 @@ public class CaseInitiationController extends CallbackController {
             } else {
                 log.error("Fail to lookup ePIMMS ID for code: " + courtCode);
             }
+        } else {
+            log.debug("leave `caseManagementLocation` blank since it may be the multiCourts case.");
         }
         caseDetails.putIfNotEmpty("caseManagementCategory", DynamicList.builder()
             .value(DynamicListElement.builder().code("FPL").label("Family Public Law").build())
