@@ -338,7 +338,7 @@ dependencies {
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
-  testImplementation group: 'org.pitest', name: 'pitest', version: '1.7.1'
+  testImplementation group: 'org.pitest', name: 'pitest', version: '1.9.9'
   testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.5.2'
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
   integrationTestImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
