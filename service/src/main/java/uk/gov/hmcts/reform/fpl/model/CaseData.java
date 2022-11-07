@@ -308,6 +308,10 @@ public class CaseData extends CaseDataParent {
         return children1 != null ? children1 : new ArrayList<>();
     }
 
+    public Orders getOrders() {
+        return ordersSolicitor != null && ordersSolicitor.getOrderType() != null ? ordersSolicitor : orders;
+    }
+
     //TODO add null-checker getter for hearingDetails during refactor/removal of legacy code (FPLA-2280)
     @NotNull(message = "Enter hearing details", groups = NoticeOfProceedingsGroup.class)
     @NotEmpty(message = "You need to enter a hearing date.", groups = SealedSDOGroup.class)
@@ -690,8 +694,10 @@ public class CaseData extends CaseDataParent {
     private final CaseSummary manageDocumentsCaseSummary;
     private final PositionStatementChild manageDocumentsPositionStatementChild;
     private final PositionStatementRespondent manageDocumentsPositionStatementRespondent;
+    private final SkeletonArgument manageDocumentsSkeletonArgument;
     private final DynamicList manageDocumentsChildrenList;
     private final DynamicList hearingDocumentsRespondentList;
+    private final DynamicList hearingDocumentsPartyList;
 
     @JsonUnwrapped
     @Builder.Default
@@ -1157,6 +1163,14 @@ public class CaseData extends CaseDataParent {
     }
 
     @JsonIgnore
+    public boolean isContactWithChildInCareApplication() {
+
+        return ofNullable(getOrders())
+            .map(Orders::isContactWithChildInCareOrder)
+            .orElse(false);
+    }
+
+    @JsonIgnore
     public boolean isC1Application() {
         return ofNullable(getOrders())
             .map(Orders::isC1Order)
@@ -1167,6 +1181,13 @@ public class CaseData extends CaseDataParent {
     public boolean isSecureAccommodationOrderType() {
         return ofNullable(getOrders())
             .map(Orders::isSecureAccommodationOrder)
+            .orElse(false);
+    }
+
+    @JsonIgnore
+    public boolean isChildRecoveryOrder() {
+        return ofNullable(getOrders())
+            .map(Orders::isChildRecoveryOrder)
             .orElse(false);
     }
 
