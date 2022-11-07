@@ -1,3 +1,6 @@
+server:
+  port: 4013
+
 spring:
   security:
     enabled: true
@@ -20,24 +23,24 @@ logging:
 
 idam:
   api:
-    url: http://localhost:5000
+    url: ${IDAM_API_BASE_URL:http://localhost:5000}
   s2s-auth:
-    url: http://localhost:4502
-    totp_secret: AABBCCDDEEFFGGHH
+    microservice: fpl_case_service
+    url: ${IDAM_S2S_URL:http://localhost:4502}
+    totp_secret: ${S2S_KEY:AABBCCDDEEFFGGHH}
   client:
-    id: fpl
-    redirect_uri: https://localhost:9000/oauth2/callback
-    secret: OOOOOOOOOOOOOOOO
+    id: fpl_case_service
+    redirect_uri: ${IDAM_S2S_URL_REDIRECT:https://localhost:9000/oauth2/callback}
+    secret: ${IDAM_CLIENT_SECRET_FPL:AAAAAAAAAAAAAAAA}
 
 auth:
   idam:
     client:
-      baseUrl: http://localhost:5000
+      baseUrl: ${IDAM_API_BASE_URL:http://localhost:5000}
   provider:
     service:
       client:
-        baseUrl: http://localhost:4502
-
+        baseUrl: ${IDAM_S2S_URL:http://localhost:4502}
 
 core_case_data:
   api:
@@ -49,11 +52,11 @@ case-assignment:
 
 docmosis:
   tornado:
-    url: http://localhost:5433
-    key: ACCESS_KEY
+    url: ${DOCMOSIS_TORNADO_URL:http://localhost:5433}
+    key: ${DOCMOSIS_TORNADO_KEY:ACCESS_KEY}
 
 document_management:
-  url: http://localhost:3453
+  url: ${DOCUMENT_MANAGEMENT_URL:http://localhost:3453}
 
 gateway:
   url: http://localhost:3453
@@ -63,7 +66,7 @@ notify:
 
 rd_professional:
   api:
-    url: http://localhost:8765
+    url: ${RD_PROFESSIONAL_API_URL:http://localhost:8765}
 
 fees-register:
   api:
@@ -100,11 +103,11 @@ fpl:
   local_authority_code_to_shared_inbox:
     mapping: 'SA=>FamilyPublicLaw+sa@gmail.com;HN=>FamilyPublicLaw+hn@gmail.com;SW=>FamilyPublicLaw+sn@gmail.com;SNW=>FamilyPublicLaw+sn@gmail.com'
   local_authority_code_to_org_id:
-    mapping: 'SA=>ORGSA;HN=>ORGHN;SW=>ORGSW;SNW=>ORGSNW'
+    mapping: 'SA=>W9V61CP;HN=>Y3CSW9I;SW=>ORGSW;SNW=>11VOC93'
   eps_to_local_authorities:
-    mapping: 'ORGEXT=>SA|HN'
+    mapping: 'D25VR7V=>SA|HN'
   mla_to_local_authorities:
-    mapping: 'ORGSNW=>SA|SW'
+    mapping: '11VOC93=>SA|HN'
   local_authority_fallback_inbox: 'FamilyPublicLaw+PublicLawEmail@gmail.com'
   system_update:
     username: 'fpl-system-update@mailnesia.com'
@@ -113,6 +116,9 @@ fpl:
   ctsc_team_lead_inbox: 'FamilyPublicLaw+ctsc-team-lead@gmail.com'
   rcj_family_high_court_inbox: 'FamilyPublicLaw+rcjfamilyhighcourt@gmail.com'
   env: 'localhost'
+
+ld:
+  sdk_key: ${LD_SDK_KEY:AAAAAAAAAAAAAAA}
 
 robotics:
   notification:
