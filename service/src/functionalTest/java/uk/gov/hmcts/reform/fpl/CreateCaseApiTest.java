@@ -1,17 +1,15 @@
 package uk.gov.hmcts.reform.fpl;
-
-import org.junit.Ignore;
+/*
 import org.junit.Test;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
-
+*/
 public class CreateCaseApiTest extends AbstractApiTest {
 
-    @Test
-    @Ignore
+   /* @Test
     public void shouldCreateAndShareCase() {
         CaseData caseData = caseService.createCase(LA_WILTSHIRE_USER_1);
 
@@ -28,6 +26,6 @@ public class CreateCaseApiTest extends AbstractApiTest {
 
         assertThat(caseService.hasCaseAccess(LA_WILTSHIRE_USER_2, caseData)).isTrue();
         assertThat(caseService.hasCaseAccess(LA_SWANSEA_USER_1, caseData)).isFalse();
-    }
+    }*/
 
 }
