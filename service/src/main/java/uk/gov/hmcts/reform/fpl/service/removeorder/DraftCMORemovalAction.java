@@ -109,7 +109,7 @@ public class DraftCMORemovalAction implements OrderRemovalAction {
     }
 
     private void updateHearingDetailsWhenCMORemoved(CaseData caseData, CaseDetailsMap data,
-                                                    Element<HearingOrder> cmoElement){
+                                                    Element<HearingOrder> cmoElement) {
         List<Element<HearingBooking>> updatedHearingBookings = updateCmoHearing.removeHearingLinkedToCMO(caseData,
             cmoElement);
 

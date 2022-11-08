@@ -67,7 +67,7 @@ class UpdateCMOHearingTest {
     }
 
     @Test
-    void shouldReturnLinkedCMOByLabel(){
+    void shouldReturnLinkedCMOByLabel() {
         Element<HearingBooking> hearingWithCMOId = element(CMO_ID, HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(HEARING_START_DATE)
@@ -83,7 +83,8 @@ class UpdateCMOHearingTest {
             .hearingDetails(List.of(hearingWithCMOId))
             .build();
 
-        assertThat(underTest.getHearingToUnlink(caseData, CMO_ID, linkedCMO.getValue())).isEqualTo(hearingWithCMOId.getValue());
+        assertThat(underTest.getHearingToUnlink(caseData, CMO_ID, linkedCMO.getValue()))
+            .isEqualTo(hearingWithCMOId.getValue());
     }
 
     @Test
@@ -110,7 +111,7 @@ class UpdateCMOHearingTest {
     }
 
     @Test
-    void shouldReturnTheHearingWhenCancelledForTheCMOId(){
+    void shouldReturnTheHearingWhenCancelledForTheCMOId() {
         Element<HearingBooking> hearingBooking = element(hearing(CMO_ID, HEARING_START_DATE));
         Element<HearingBooking> vacatedHearing = element(hearing(ANOTHER_CMO_ID, HEARING_START_DATE,
             VACATED_TO_BE_RE_LISTED));
@@ -130,7 +131,7 @@ class UpdateCMOHearingTest {
     }
 
     @Test
-    void shouldReturnLinkedCMOByLabelForCancelledHearing(){
+    void shouldReturnLinkedCMOByLabelForCancelledHearing() {
         Element<HearingBooking> hearingBooking = element(hearing(CMO_ID, HEARING_START_DATE));
         Element<HearingBooking> vacatedHearing = element(ANOTHER_CMO_ID, HearingBooking.builder()
             .type(CASE_MANAGEMENT)

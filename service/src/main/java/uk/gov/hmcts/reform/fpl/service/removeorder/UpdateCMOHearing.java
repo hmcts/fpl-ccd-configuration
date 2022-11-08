@@ -62,7 +62,7 @@ public class UpdateCMOHearing {
         // this will still be the same reference as the one in the case data list so just update it
         hearingToUnlink.setCaseManagementOrderId(null);
 
-        if(hearingLinkedToCMOIsCancelled(caseData, cmoElement)) {
+        if (hearingLinkedToCMOIsCancelled(caseData, cmoElement)) {
             return caseData.getCancelledHearingDetails();
         }
         return caseData.getHearingDetails();
