@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Api
 @RestController
@@ -29,6 +30,13 @@ import java.util.Optional;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OrdersNeededController extends CallbackController {
 
+    public static final String ORDERS = "orders";
+    public static final List<OrderType> STANDALONE_ORDER_TYPE = List.of(OrderType.CHILD_ASSESSMENT_ORDER,
+        OrderType.CONTACT_WITH_CHILD_IN_CARE,
+        OrderType.OTHER,
+        OrderType.CHILD_RECOVERY_ORDER);
+    public static final List<String> STANDALONE_ORDER_TYPE_NAME = STANDALONE_ORDER_TYPE.stream().map(OrderType::name)
+        .collect(Collectors.toList());
     private final HmctsCourtLookupConfiguration courtLookup;
 
     @PostMapping("/mid-event")
@@ -45,13 +53,10 @@ public class OrdersNeededController extends CallbackController {
         Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get(ordersFieldName))
             .map(orders -> (List<String>) orders.get("orderType"));
 
-        if (orderType.isPresent() && orderType.get().size() > 1) {
-            if (orderType.get().contains(OrderType.CHILD_ASSESSMENT_ORDER.name())
-                || orderType.get().contains(OrderType.CONTACT_WITH_CHILD_IN_CARE.name())
-                || orderType.get().contains(OrderType.OTHER.name())) {
-                return respond(caseDetails, List.of("You have selected a standalone order, "
-                    + "this cannot be applied for alongside other orders."));
-            }
+        if (orderType.isPresent() && orderType.get().size() > 1
+            && orderType.get().stream().anyMatch(STANDALONE_ORDER_TYPE_NAME::contains)) {
+            return respond(caseDetails, List.of("You have selected a standalone order, "
+                + "this cannot be applied for alongside other orders."));
         }
 
         return respond(caseDetails);
@@ -87,6 +92,10 @@ public class OrdersNeededController extends CallbackController {
                     removeSecureAccommodationOrderFields(data, ordersFieldName);
                 } else {
                     data.put("secureAccommodationOrderType", YesNo.YES);
+                }
+
+                if (!orderTypes.contains(OrderType.CHILD_RECOVERY_ORDER.name())) {
+                    data.remove("groundsForChildRecoveryOrder");
                 }
             });
 
