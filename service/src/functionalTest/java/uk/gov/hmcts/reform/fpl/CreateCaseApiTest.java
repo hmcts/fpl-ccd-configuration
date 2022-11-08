@@ -10,7 +10,8 @@ import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 
 public class CreateCaseApiTest extends AbstractApiTest {
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void shouldCreateAndShareCase() {
         CaseData caseData = caseService.createCase(LA_WILTSHIRE_USER_1);
 
