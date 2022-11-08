@@ -36,6 +36,7 @@ public class SubmitCaseApiTest extends AbstractApiTest {
     @Autowired
     private DocumentService documentService;
 
+    /*
     @Test
     public void shouldSubmitAndPayForApplication() {
 
@@ -45,7 +46,7 @@ public class SubmitCaseApiTest extends AbstractApiTest {
         caseData = callMidEvent(caseData);
         caseData = callAboutToSubmit(caseData);
         callSubmitted(caseData);
-    }
+    }*/
 
     public CaseData callAboutToStart(CaseData caseData) {
 
