@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl;
 
-import org.junit.Test;
+//import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.fnp.model.payment.Payment;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
