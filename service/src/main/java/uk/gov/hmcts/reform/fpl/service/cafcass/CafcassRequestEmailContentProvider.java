@@ -83,6 +83,17 @@ public enum CafcassRequestEmailContentProvider {
         CafcassEmailConfiguration::getRecipientForCourtBundle,
         true),
 
+    SKELETON_ARGUMENT("Skeleton Argument",
+        (caseData, cafcassData) -> String.format(getSubject(),
+            caseData.getFamilyManCaseNumber(),
+            "new skeleton argument"),
+        (caseData, cafcassData) ->
+            String.format("A skeleton argument for this case was uploaded to the "
+                    + "Public Law Portal entitled %s",
+                cafcassData.getHearingDetails()),
+        CafcassEmailConfiguration::getRecipientForCourtBundle,
+        true),
+
     NEW_APPLICATION("New application",
         CafcassRequestEmailContentProvider::getNewApplicationSubject,
         CafcassRequestEmailContentProvider::getNewApplicationMessage,

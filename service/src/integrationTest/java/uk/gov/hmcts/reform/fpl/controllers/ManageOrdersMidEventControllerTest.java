@@ -7,7 +7,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
@@ -116,6 +116,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         Map.entry("parentResponsible", "NO"),
         Map.entry("childPlacementApplications", "NO"),
         Map.entry("childPlacementQuestions", "NO"),
+        Map.entry("declarationOfParentage", "NO"),
         Map.entry("manageOrdersChildAssessment", "NO"),
         Map.entry("manageOrdersEducationSupervision", "NO"),
         Map.entry("orderPlacedChildInCustody", "NO"),
@@ -569,6 +570,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("parentResponsible", "NO"),
             Map.entry("childPlacementApplications", "NO"),
             Map.entry("childPlacementQuestions", "NO"),
+            Map.entry("declarationOfParentage", "NO"),
             Map.entry("manageOrdersChildAssessment", "NO"),
             Map.entry("manageOrdersEducationSupervision", "NO"),
             Map.entry("orderPlacedChildInCustody", "NO"),
@@ -629,6 +631,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("childPlacementApplications", "NO"),
             Map.entry("childPlacementQuestions", "NO"),
             Map.entry("manageOrdersChildAssessment", "NO"),
+            Map.entry("declarationOfParentage", "NO"),
             Map.entry("manageOrdersEducationSupervision", "NO"),
             Map.entry("orderPlacedChildInCustody", "NO"),
             Map.entry("manageOrdersVaryOrExtendSupervisionOrder", "NO"),
