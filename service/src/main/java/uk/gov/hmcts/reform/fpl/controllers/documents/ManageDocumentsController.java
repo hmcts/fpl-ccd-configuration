@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
+import uk.gov.hmcts.reform.fpl.service.document.PartyListGenerator;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import uk.gov.hmcts.reform.fpl.utils.ConfidentialBundleHelper;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -68,6 +69,7 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MAN
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.PLACEMENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_CHILD_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_RESPONDENT_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SKELETON_ARGUMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LABEL;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.TEMP_EVIDENCE_DOCUMENTS_KEY;
@@ -86,6 +88,7 @@ public class ManageDocumentsController extends CallbackController {
     private final SupportingEvidenceValidatorService supportingEvidenceValidatorService;
     private final ConfidentialDocumentsSplitter confidentialDocuments;
     private final DocumentListService documentListService;
+    private final PartyListGenerator partyListGenerator;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
@@ -93,7 +96,7 @@ public class ManageDocumentsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().putAll(documentService.baseEventData(caseData));
-
+        caseDetails.getData().put("hearingDocumentsPartyList", partyListGenerator.buildPartyList(caseData));
         caseDetails.getData().remove("furtherEvidenceDocumentsTEMP");
 
         return respond(caseDetails);
@@ -302,8 +305,9 @@ public class ManageDocumentsController extends CallbackController {
             "manageDocumentsRelatedToHearing", "furtherEvidenceDocumentsTEMP", HEARING_DOCUMENT_HEARING_LIST_KEY,
             HEARING_DOCUMENT_TYPE, COURT_BUNDLE_KEY, CASE_SUMMARY_KEY, POSITION_STATEMENT_CHILD_KEY,
             POSITION_STATEMENT_RESPONDENT_KEY, CHILDREN_LIST_KEY, HEARING_DOCUMENT_RESPONDENT_LIST_KEY,
-            PLACEMENT_LIST_KEY, "placementNoticeResponses", "placement", "manageDocumentSubtypeList",
-            "manageDocumentsRelatedToHearing", "furtherEvidenceDocumentsTEMP");
+            PLACEMENT_LIST_KEY, SKELETON_ARGUMENT_KEY, "hearingDocumentsPartyList", "placementNoticeResponses",
+            "placement", "manageDocumentSubtypeList", "manageDocumentsRelatedToHearing",
+            "furtherEvidenceDocumentsTEMP");
 
         CaseDetails details = CaseDetails.builder().data(caseDetailsMap).build();
         caseDetailsMap.putAll(documentListService.getDocumentView(getCaseData(details)));

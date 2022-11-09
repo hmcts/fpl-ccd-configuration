@@ -184,5 +184,15 @@
     "Label": "Position statement respondent",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "skeletonArgumentList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "SkeletonArgument",
+    "Label": "Skeleton argument",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
