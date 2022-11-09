@@ -16,7 +16,12 @@ public class GatekeeperEmailContentProvider extends SharedNotifyContentProvider 
     public NotifyGatekeeperTemplate buildGatekeeperNotification(CaseData caseData) {
         NotifyGatekeeperTemplate template = buildNotifyTemplate(NotifyGatekeeperTemplate.builder().build(), caseData);
 
-        template.setLocalAuthority(config.getLocalAuthorityName(caseData.getCaseLocalAuthority()));
+        // Check if local authority has a value otherwise use 3rd party
+        if (!caseData.getCaseLocalAuthority().isEmpty()) {
+            template.setLocalAuthority(config.getLocalAuthorityName(caseData.getCaseLocalAuthority()));
+        } else {
+            template.setLocalAuthority(config.getLocalAuthorityName(caseData.getLocalAuthorities().get(0).getValue().getName()));
+        }
 
         return template;
     }
