@@ -35,6 +35,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C35B_INTERIM_SUPERVISION
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C36_VARIATION_OR_EXTENSION_OF_SUPERVISION_ORDERS;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C37_EDUCATION_SUPERVISION_ORDER_DIGITAL;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C39_CHILD_ASSESSMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C42_FAMILY_ASSISTANCE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43A_SPECIAL_GUARDIANSHIP_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C44A_LEAVE_TO_CHANGE_A_SURNAME;
@@ -93,6 +94,8 @@ class OrderDocumentGeneratorHolderTest {
     @Mock
     private C47AAppointmentOfAChildrensGuardianParameterGenerator c47AAppointmentOfAChildrensGuardianParameterGenerator;
     @Mock
+    private C42FamilyAssistanceOrderDocumentParameterGenerator c42FamilyAssistanceOrderDocumentParameterGenerator;
+    @Mock
     private C45aParentalResponsibilityOrderDocumentParameterGenerator
         c45aParentalResponsibilityOrderDocumentParameterGenerator;
     @Mock
@@ -124,7 +127,8 @@ class OrderDocumentGeneratorHolderTest {
             c43aSGODocumentParameterGenerator, c45aParentalResponsibilityOrderDocumentParameterGenerator,
             c34BAuthorityToRefuseContactOrderParameterGenerator, c44aLeaveToChangeTheSurnameOrderParameterGenerator,
             c34AContactWithAChildInCareOrderDocumentParameterGenerator,
-            c63aDeclarationOfParentageDocumentParameterGenerator
+            c63aDeclarationOfParentageDocumentParameterGenerator,
+            c42FamilyAssistanceOrderDocumentParameterGenerator
         );
         collectors = List.of(c23EPOAdditionalDocumentsCollector);
 
@@ -153,6 +157,7 @@ class OrderDocumentGeneratorHolderTest {
                 put(C44A_LEAVE_TO_CHANGE_A_SURNAME, c44aLeaveToChangeTheSurnameOrderParameterGenerator);
                 put(C34A_CONTACT_WITH_A_CHILD_IN_CARE, c34AContactWithAChildInCareOrderDocumentParameterGenerator);
                 put(C63A_DECLARATION_OF_PARENTAGE, c63aDeclarationOfParentageDocumentParameterGenerator);
+                put(C42_FAMILY_ASSISTANCE_ORDER, c42FamilyAssistanceOrderDocumentParameterGenerator);
             }
         };
 

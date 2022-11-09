@@ -11,6 +11,10 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
     @Test
     void calculate() {
         assertThat(underTest.calculate()).containsExactlyInAnyOrder(
+            "manageOrdersPartyToBeBefriended1",
+            "manageOrdersPartyToBeBefriended2",
+            "manageOrdersPartyToBeBefriended3",
+            "manageOrdersFamilyAssistanceEndDate",
             "manageOrdersAllowedContact1",
             "manageOrdersAllowedContact2",
             "manageOrdersAllowedContact3",
