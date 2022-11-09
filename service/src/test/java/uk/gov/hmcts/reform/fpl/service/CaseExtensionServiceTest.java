@@ -272,8 +272,9 @@ class CaseExtensionServiceTest {
 
         List<Element<Child>> selectedChildren = service.updateAllSelectedChildrenExtension(caseData);
 
+
         assertThat(selectedChildren).contains(
-            element(id1, getChild(of(2031, 9, 12), "Daisy", "French")),
+            element(id1, getChild(of(2024, 2, 2), "Daisy", "French")),
             element(id2, getChild(of(2031, 9, 12), "Archie", "Turner")),
             element(id3, getChild(of(2031, 9, 12), "Julie", "Jane"))
         );
