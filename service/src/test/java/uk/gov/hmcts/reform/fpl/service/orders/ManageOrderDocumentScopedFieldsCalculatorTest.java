@@ -122,7 +122,12 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersSupervisionOrderEndDate",
             "manageOrdersOrderCreatedDate",
             "manageOrdersPartyGrantedLeave",
-            "manageOrdersChildNewSurname"
+            "manageOrdersChildNewSurname",
+            "manageOrdersParentageApplicant",
+            "manageOrdersHearingParty1",
+            "manageOrdersHearingParty2",
+            "manageOrdersPersonWhoseParenthoodIs",
+            "manageOrdersParentageAction"
         );
     }
 }

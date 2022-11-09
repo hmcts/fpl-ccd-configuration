@@ -40,6 +40,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C43_CHILD_ARRANGEMENTS_S
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C44A_LEAVE_TO_CHANGE_A_SURNAME;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C45A_PARENTAL_RESPONSIBILITY_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C63A_DECLARATION_OF_PARENTAGE;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -94,6 +95,9 @@ class OrderDocumentGeneratorHolderTest {
     @Mock
     private C45aParentalResponsibilityOrderDocumentParameterGenerator
         c45aParentalResponsibilityOrderDocumentParameterGenerator;
+    @Mock
+    private C63aDeclarationOfParentageDocumentParameterGenerator
+        c63aDeclarationOfParentageDocumentParameterGenerator;
 
     // Additional Document Collectors
     @Mock
@@ -119,7 +123,8 @@ class OrderDocumentGeneratorHolderTest {
             c39ChildAssessmentOrderParameterGenerator, c43ChildArrangementOrderDocumentParameterGenerator,
             c43aSGODocumentParameterGenerator, c45aParentalResponsibilityOrderDocumentParameterGenerator,
             c34BAuthorityToRefuseContactOrderParameterGenerator, c44aLeaveToChangeTheSurnameOrderParameterGenerator,
-            c34AContactWithAChildInCareOrderDocumentParameterGenerator
+            c34AContactWithAChildInCareOrderDocumentParameterGenerator,
+            c63aDeclarationOfParentageDocumentParameterGenerator
         );
         collectors = List.of(c23EPOAdditionalDocumentsCollector);
 
@@ -147,6 +152,7 @@ class OrderDocumentGeneratorHolderTest {
                 put(C34B_AUTHORITY_TO_REFUSE_CONTACT, c34BAuthorityToRefuseContactOrderParameterGenerator);
                 put(C44A_LEAVE_TO_CHANGE_A_SURNAME, c44aLeaveToChangeTheSurnameOrderParameterGenerator);
                 put(C34A_CONTACT_WITH_A_CHILD_IN_CARE, c34AContactWithAChildInCareOrderDocumentParameterGenerator);
+                put(C63A_DECLARATION_OF_PARENTAGE, c63aDeclarationOfParentageDocumentParameterGenerator);
             }
         };
 
