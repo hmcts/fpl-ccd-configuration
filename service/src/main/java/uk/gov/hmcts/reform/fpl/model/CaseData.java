@@ -664,7 +664,8 @@ public class CaseData extends CaseDataParent {
     private final CaseExtensionTime caseExtensionTimeList;
     private final CaseExtensionTime caseExtensionTimeConfirmationList;
     @JsonUnwrapped
-    private final ChildExtensionEventData childExtensionEventData;
+    @Builder.Default
+    private final ChildExtensionEventData childExtensionEventData = ChildExtensionEventData.builder().build();
 
     private final CloseCase closeCase;
     private final String deprivationOfLiberty;
