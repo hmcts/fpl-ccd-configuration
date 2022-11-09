@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
+import uk.gov.hmcts.reform.fpl.model.event.ChildExtensionEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
@@ -218,6 +219,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
             // required due to the json unwrapping
             .uploadDraftOrdersEventData(UploadDraftOrdersData.builder().build())
             .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
+            .childExtensionEventData(ChildExtensionEventData.builder().build())
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));

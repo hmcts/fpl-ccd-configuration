@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
+import uk.gov.hmcts.reform.fpl.model.event.ChildExtensionEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadTranslationsEventData;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
@@ -100,8 +101,8 @@ class UploadTranslationsControllerAboutToSubmitTest extends AbstractCallbackTest
                     .filename("noticeo_c6a.pdf")
                     .build())
                 .translationRequirements(ENGLISH_TO_WELSH)
-                .build()
-            ))).build());
+                .build())))
+            .childExtensionEventData(ChildExtensionEventData.builder().build()).build());
 
         assertThat(response.getData().get("documentViewLA")).isNotNull();
         assertThat(response.getData().get("documentViewHMCTS")).isNotNull();
