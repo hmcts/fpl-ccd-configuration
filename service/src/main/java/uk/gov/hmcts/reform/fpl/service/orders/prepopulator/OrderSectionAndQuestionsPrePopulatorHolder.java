@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDate
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApproverBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ChildPlacementOrderPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.CloseCaseBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.DeclarationOfParentagePrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.EPOTypeAndPreventRemovalBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.FamilyAssistancePrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkApplicationBlockPrePopulator;
@@ -56,6 +57,7 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
     private final WhichOthersBlockPrePopulator whichOthersBlockPrePopulator;
     private final AmendOrderToDownloadPrePopulator amendOrderToDownloadPrePopulator;
     private final ParentalResponsibilityPrePopulator parentalResponsibilityPrePopulator;
+    private final DeclarationOfParentagePrePopulator declarationOfParentagePrePopulator;
     private final ChildPlacementOrderPrePopulator childPlacementOrderPrePopulator;
     private final AllowedContactPrePopulator allowedContactPrePopulator;
     private final FamilyAssistancePrePopulator familyAssistancePrePopulator;
@@ -93,6 +95,7 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
             amendOrderToDownloadPrePopulator,
             parentalResponsibilityPrePopulator,
             allowedContactPrePopulator,
+            declarationOfParentagePrePopulator,
             familyAssistancePrePopulator
         ).stream().collect(Collectors.toMap(
             QuestionBlockOrderPrePopulator::accept,

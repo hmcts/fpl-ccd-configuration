@@ -20,6 +20,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_ASSES
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_PLACEMENT;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_PLACEMENT_APPLICATIONS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CLOSE_CASE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DECLARATION_OF_PARENTAGE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DISCHARGE_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EDUCATION_SUPERVISION;
@@ -510,6 +511,22 @@ public enum Order {
         "Refusal to transfer proceedings (C50)",
         IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C63A_DECLARATION_OF_PARENTAGE(
+        DIGITAL,
+        "Declaration of parentage (C63A)",
+        "Section 55A of the Family Law Act 1986",
+        "Declaration of parentage (C63A)",
+        IsFinalOrder.YES,
+        List.of(
+            LINKED_TO_HEARING,
+            LINK_APPLICATION,
+            APPROVER,
+            APPROVAL_DATE,
+            SELECT_SINGLE_CHILD,
+            DECLARATION_OF_PARENTAGE,
+            REVIEW_DRAFT_ORDER
+        )
     ),
     FL406_POWER_OF_ARREST(
         MANUAL_UPLOAD,
