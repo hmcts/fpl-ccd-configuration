@@ -129,6 +129,11 @@ public class ManageOrdersEventData {
     DynamicList manageOrdersAllowedContact2;
     DynamicList manageOrdersAllowedContact3;
     String manageOrdersConditionsOfContact;
+    DynamicList manageOrdersParentageApplicant;
+    DynamicList manageOrdersHearingParty1;
+    DynamicList manageOrdersHearingParty2;
+    DynamicList manageOrdersPersonWhoseParenthoodIs;
+    DynamicList manageOrdersParentageAction;
 
     @JsonIgnore
     public LocalDateTime getManageOrdersApprovalDateOrDateTime() {
