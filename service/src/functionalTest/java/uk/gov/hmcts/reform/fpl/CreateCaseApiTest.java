@@ -11,6 +11,7 @@ public class CreateCaseApiTest extends AbstractApiTest {
 
     @Test
     public void shouldCreateAndShareCase() {
+
         CaseData caseData = caseService.createCase(LA_WILTSHIRE_USER_1);
 
         assertThat(caseData.getId()).isNotNull();
@@ -27,5 +28,4 @@ public class CreateCaseApiTest extends AbstractApiTest {
         assertThat(caseService.hasCaseAccess(LA_WILTSHIRE_USER_2, caseData)).isTrue();
         assertThat(caseService.hasCaseAccess(LA_SWANSEA_USER_1, caseData)).isFalse();
     }
-
 }
