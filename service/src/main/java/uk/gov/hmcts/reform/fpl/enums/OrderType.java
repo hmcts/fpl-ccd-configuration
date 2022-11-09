@@ -16,7 +16,10 @@ public enum OrderType {
     // TODO welshLabel
     SECURE_ACCOMMODATION_ORDER("Secure Accommodation order", ""),
     // TODO welshLabel
-    REFUSE_CONTACT_WITH_CHILD("Authority to refuse contact with a child in care", "");
+    REFUSE_CONTACT_WITH_CHILD("Authority to refuse contact with a child in care", ""),
+    // TODO welshLabel
+    CHILD_RECOVERY_ORDER("Child Recovery Order", ""),
+    CONTACT_WITH_CHILD_IN_CARE("Contact with child in care", "Cyswllt â phlentyn mewn gofal");
 
     private final String label;
     private final String welshLabel;

@@ -34,6 +34,26 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CaseSummary",
+    "ListElementCode": "documentAcknowledgeLabel",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Presentational only - used to display a warning label in the event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseSummary",
+    "ListElementCode": "documentAcknowledge",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DocumentAcknowledge",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseSummary",
     "ListElementCode": "hasConfidentialAddressLabel",
     "FieldType": "Label",
     "ElementLabel": " ",

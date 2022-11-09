@@ -114,6 +114,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "groundsForContactWithChild",
+    "Label": "How are there grounds for a contact with a child in care application?",
+    "FieldType": "GroundsForContactWithChild",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearing",
     "Label": "Hearing needed",
     "FieldType": "Hearing",
@@ -2072,6 +2081,24 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "groundsForChildRecoveryOrder",
+    "Label": "How are there grounds for a child recovery order?",
+    "FieldType": "GroundsForChildRecoveryOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "contactWithChildInCareOrderType",
+    "Label": " ",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "placementRespondentsSectionHeader",
     "FieldType": "Label",
     "Label": "## Confirm recipients",
@@ -2105,6 +2132,16 @@
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "placementIdToBeSealed",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Temporary field. The ID of the application document to be sealed in submitted stage"
   },
   {
     "LiveFrom": "01/01/2017",
