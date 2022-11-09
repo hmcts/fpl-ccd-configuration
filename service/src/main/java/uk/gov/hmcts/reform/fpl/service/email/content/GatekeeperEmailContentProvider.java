@@ -20,7 +20,9 @@ public class GatekeeperEmailContentProvider extends SharedNotifyContentProvider 
         if (!caseData.getCaseLocalAuthority().isEmpty()) {
             template.setLocalAuthority(config.getLocalAuthorityName(caseData.getCaseLocalAuthority()));
         } else {
-            template.setLocalAuthority(config.getLocalAuthorityName(caseData.getLocalAuthorities().get(0).getValue().getName()));
+            template.setLocalAuthority(config.getLocalAuthorityName(
+                caseData.getLocalAuthorities().get(0).getValue().getName())
+            );
         }
 
         return template;
