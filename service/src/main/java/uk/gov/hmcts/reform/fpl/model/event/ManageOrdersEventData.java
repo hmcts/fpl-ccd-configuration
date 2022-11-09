@@ -134,6 +134,10 @@ public class ManageOrdersEventData {
     DynamicList manageOrdersHearingParty2;
     DynamicList manageOrdersPersonWhoseParenthoodIs;
     DynamicList manageOrdersParentageAction;
+    DynamicList manageOrdersPartyToBeBefriended1;
+    DynamicList manageOrdersPartyToBeBefriended2;
+    DynamicList manageOrdersPartyToBeBefriended3;
+    LocalDate manageOrdersFamilyAssistanceEndDate;
 
     @JsonIgnore
     public LocalDateTime getManageOrdersApprovalDateOrDateTime() {

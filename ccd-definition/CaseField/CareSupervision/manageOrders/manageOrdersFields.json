@@ -1009,5 +1009,41 @@
     "Label": "Action",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersPartyToBeBefriended1",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "DynamicList",
+    "Label": "First party to be befriended",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersPartyToBeBefriended2",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "DynamicList",
+    "Label": "Second party to be befriended",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersPartyToBeBefriended3",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "DynamicList",
+    "Label": "Third party to be befriended",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersFamilyAssistanceEndDate",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Date",
+    "Label": "End date",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
   }
 ]
