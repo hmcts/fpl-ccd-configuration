@@ -43,7 +43,6 @@ import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContent
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 import static uk.gov.hmcts.reform.fpl.service.search.SearchService.ES_DEFAULT_SIZE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 
 @Slf4j
@@ -70,7 +69,7 @@ public class ResendCafcassEmails implements Job {
 
         try {
             for (Long caseId : resendCafcassEmailService.getAllCaseIds()) {
-                CaseDetails caseDetails = coreCaseDataService.findCaseDetailsById(caseId.toString());
+                CaseDetails caseDetails = coreCaseDataService.findCaseDetailsByIdNonUser(caseId.toString());
                 try {
                     log.debug("Job '{}' resending email on case {}", jobName, caseId);
                     CaseData caseData = converter.convert(caseDetails);

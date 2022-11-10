@@ -80,6 +80,12 @@ public class CoreCaseDataService {
         return coreCaseDataApi.getCase(requestData.authorisation(), authTokenGenerator.generate(), caseId);
     }
 
+    public CaseDetails findCaseDetailsByIdNonUser(final String caseId) {
+        String userToken = systemUserService.getSysUserToken();
+
+        return coreCaseDataApi.getCase(userToken, authTokenGenerator.generate(), caseId);
+    }
+
     public SearchResult searchCases(String caseType, String query) {
         String userToken = systemUserService.getSysUserToken();
 

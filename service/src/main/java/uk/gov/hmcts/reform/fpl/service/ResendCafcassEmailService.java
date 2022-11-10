@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
@@ -26,6 +27,8 @@ public class ResendCafcassEmailService {
     public ResendCafcassEmailService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         loadResendConfig();
+
+        log.info("We will be resending emails on {} cases", casesToResend.keySet().size());
     }
 
     private void loadResendConfig() {
@@ -53,6 +56,9 @@ public class ResendCafcassEmailService {
 
 @Data
 class ResendData {
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/MM/yyyy", timezone="GMT")
     private List<LocalDate> orders;
+
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/MM/yyyy HH:mm", timezone="GMT")
     private List<LocalDateTime> hearings;
 }
