@@ -2,15 +2,22 @@ const { I } = inject();
 
 module.exports = {
   fields: {
-    eightWeekExtensionOption: '#caseExtensionTimeList-EightWeekExtension',
-    timetableForChildReason: '#caseExtensionReasonList-TimetableForChild',
-    caseExtensionComment: '#extensionComments',
-    caseExtensionTimeConfirmation: '#caseExtensionTimeConfirmationList-OtherExtension',
-    caseExtensionDate: {
-      day: '#eightWeeksExtensionDateOther-day',
-      month: '#eightWeeksExtensionDateOther-month',
-      year: '#eightWeeksExtensionDateOther-year',
-    },
+    extendsForAllChildren_Yes: '#extensionForAllChildren_Yes',
+    extendsForAllChildren_No: '#extensionForAllChildren_No',
+    sameExtensionForAllChildren_Yes: '#sameExtensionForAllChildren_Yes',
+    sameExtensionForAllChildren_No: '#sameExtensionForAllChildren_No',
+    eightWeekExtensionOption: '#childExtensionAll_caseExtensionTimeList-EightWeekExtension',
+    timetableForChildReason: '#childExtensionAll_caseExtensionReasonList-TIMETABLE_FOR_CHILD',
+  },
+
+  async selectExtendsForAllChildren() {
+    await I.runAccessibilityTest();
+    I.click(this.fields.extendsForAllChildren_Yes);
+  },
+
+  async selectSameExtensionForAllChildren() {
+    await I.runAccessibilityTest();
+    I.click(this.fields.sameExtensionForAllChildren_Yes);
   },
 
   async selectEightWeekExtensionTime() {
@@ -20,21 +27,5 @@ module.exports = {
 
   selectTimetableForChildExtensionReason() {
     I.click(this.fields.timetableForChildReason);
-  },
-
-  addExtensionComment(comment) {
-    I.fillField(this.fields.caseExtensionComment, comment);
-  },
-
-  async addCaseExtensionTimeConfirmation(){
-    await I.runAccessibilityTest();
-    I.click(this.fields.caseExtensionTimeConfirmation);
-  },
-
-  async addCaseExtensionDate(){
-    await I.runAccessibilityTest();
-    I.fillField(this.fields.caseExtensionDate.day, '10');
-    I.fillField(this.fields.caseExtensionDate.month, '10');
-    I.fillField(this.fields.caseExtensionDate.year, '2030');
   },
 };
