@@ -43,6 +43,7 @@ import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContent
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 import static uk.gov.hmcts.reform.fpl.service.search.SearchService.ES_DEFAULT_SIZE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 
 @Slf4j
@@ -120,8 +121,8 @@ public class ResendCafcassEmails implements Job {
             return 0;
         }
         List<Element<GeneratedOrder>> ordersToSend = caseData.getOrderCollection().stream()
-            .filter(el -> datesToResend.contains(el.getValue().getApprovalDate()))
-            // todo - add the other date condition
+            .filter(el -> checkDateSafely(el.getValue().getApprovalDate(), datesToResend)
+                || checkStringDateSafely(el.getValue().getDateOfIssue(), datesToResend))
             .collect(Collectors.toList());
 
         int resentEmails = 0;
@@ -131,7 +132,8 @@ public class ResendCafcassEmails implements Job {
                 order.getValue().getDocument(),
                 LanguageTranslationRequirement.NO,
                 order.getValue().getTitle(),
-                order.getValue().getApprovalDate() // todo other date
+                !isEmpty(order.getValue().getApprovalDate()) ? order.getValue().getApprovalDate()
+                    : labelToDate(order.getValue().getDateOfIssue())
             );
 
             if (featureToggleService.isResendCafcassEmailsEnabled()) {
@@ -210,8 +212,7 @@ public class ResendCafcassEmails implements Job {
 
             // find the hearing this CMO is for (if there is one)
             String[] splits = cmo.getValue().getHearing().split(", ");
-            LocalDate hearingDate = LocalDate.parse(splits[splits.length-1],
-                DateTimeFormatter.ofPattern(DATE, Locale.UK));
+            LocalDate hearingDate = labelToDate(splits[splits.length - 1]);
 
             Optional<HearingBooking> hearing = caseData.getAllHearings().stream()
                 .filter(el -> el.getValue().getStartDate().toLocalDate().equals(hearingDate))
@@ -267,6 +268,21 @@ public class ResendCafcassEmails implements Job {
             resentEmails++;
         }
         return resentEmails;
+    }
+
+    private LocalDate labelToDate(String label) {
+        if (label != null) {
+            return LocalDate.parse(label, DateTimeFormatter.ofPattern(DATE, Locale.UK));
+        }
+        return null;
+    }
+
+    private boolean checkDateSafely(LocalDate date, List<LocalDate> dates) {
+        return !isEmpty(date) && dates.contains(date);
+    }
+
+    private boolean checkStringDateSafely(String date, List<LocalDate> dates) {
+        return !isEmpty(date) && dates.contains(labelToDate(date));
     }
 
 }
