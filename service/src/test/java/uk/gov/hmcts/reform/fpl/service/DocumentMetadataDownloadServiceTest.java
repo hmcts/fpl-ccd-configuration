@@ -47,6 +47,8 @@ class DocumentMetadataDownloadServiceTest {
     private SecureDocStoreService secureDocStoreService;
     @Mock
     private FeatureToggleService featureToggleService;
+    @Mock
+    private SystemUserService systemUserService;
 
     private DocumentMetadataDownloadService documentMetadataDownloadService;
 
@@ -68,7 +70,8 @@ class DocumentMetadataDownloadServiceTest {
                 idamClient,
                 requestData,
                 featureToggleService,
-                secureDocStoreService);
+                secureDocStoreService,
+                systemUserService);
     }
 
     @Test

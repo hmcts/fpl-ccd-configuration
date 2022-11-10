@@ -52,6 +52,9 @@ class DocumentDownloadServiceTest {
     private FeatureToggleService featureToggleService;
 
     @Mock
+    private SystemUserService systemUserService;
+
+    @Mock
     private ResponseEntity<Resource> resourceResponseEntity;
 
     @Mock
@@ -80,7 +83,8 @@ class DocumentDownloadServiceTest {
             idamClient,
             requestData,
             secureDocStoreService,
-            featureToggleService);
+            featureToggleService,
+            systemUserService);
     }
 
     @Test

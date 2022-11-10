@@ -115,12 +115,12 @@ class ResendCafcassEmailsTest {
         when(resendCafcassEmailService.getOrderDates(longThat(arg -> !casesWithOrders.contains(arg))))
             .thenReturn(List.of());
 
-        when(coreCaseDataService.findCaseDetailsById("1")).thenReturn(case1);
-        when(coreCaseDataService.findCaseDetailsById("2")).thenReturn(case2);
-        when(coreCaseDataService.findCaseDetailsById("3")).thenReturn(case3);
-        when(coreCaseDataService.findCaseDetailsById("4")).thenReturn(case4);
-        when(coreCaseDataService.findCaseDetailsById("5")).thenReturn(case5);
-        when(coreCaseDataService.findCaseDetailsById("6")).thenReturn(case6);
+        when(coreCaseDataService.findCaseDetailsByIdNonUser("1")).thenReturn(case1);
+        when(coreCaseDataService.findCaseDetailsByIdNonUser("2")).thenReturn(case2);
+        when(coreCaseDataService.findCaseDetailsByIdNonUser("3")).thenReturn(case3);
+        when(coreCaseDataService.findCaseDetailsByIdNonUser("4")).thenReturn(case4);
+        when(coreCaseDataService.findCaseDetailsByIdNonUser("5")).thenReturn(case5);
+        when(coreCaseDataService.findCaseDetailsByIdNonUser("6")).thenReturn(case6);
     }
 
     @Test
@@ -278,10 +278,10 @@ class ResendCafcassEmailsTest {
     }
 
     private CaseDetails asCaseDetails(CaseData caseData) {
-            return CaseDetails.builder()
-                .id(caseData.getId())
-                .state(Optional.ofNullable(caseData.getState()).map(State::getValue).orElse(null))
-                .data(mapper.convertValue(caseData, MAP_TYPE))
-                .build();
+        return CaseDetails.builder()
+            .id(caseData.getId())
+            .state(Optional.ofNullable(caseData.getState()).map(State::getValue).orElse(null))
+            .data(mapper.convertValue(caseData, MAP_TYPE))
+            .build();
     }
 }

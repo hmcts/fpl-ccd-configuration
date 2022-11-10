@@ -52,13 +52,12 @@ public class ResendCafcassEmailService {
         return this.casesToResend.keySet();
     }
 
-}
+    @Data
+    class ResendData {
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "GMT")
+        private List<LocalDate> orders;
 
-@Data
-class ResendData {
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/MM/yyyy", timezone="GMT")
-    private List<LocalDate> orders;
-
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/MM/yyyy HH:mm", timezone="GMT")
-    private List<LocalDateTime> hearings;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm", timezone = "GMT")
+        private List<LocalDateTime> hearings;
+    }
 }
