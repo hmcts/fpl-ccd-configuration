@@ -53,7 +53,7 @@ public class ResendCafcassEmailService {
     }
 
     @Data
-    class ResendData {
+    static class ResendData {
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "GMT")
         private List<LocalDate> orders;
 
