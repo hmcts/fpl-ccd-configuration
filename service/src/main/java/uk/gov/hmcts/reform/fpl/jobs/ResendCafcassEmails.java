@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.jobs;
 
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -58,6 +60,7 @@ public class ResendCafcassEmails implements Job {
     private final CoreCaseDataService coreCaseDataService;
     private final ResendCafcassEmailService resendCafcassEmailService;
 
+    @SneakyThrows
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
         final String jobName = jobExecutionContext.getJobDetail().getKey().getName();
@@ -106,6 +109,10 @@ public class ResendCafcassEmails implements Job {
                 }
             }
         } catch (Exception e) {
+            if (Thread.interrupted()) {
+                // if this exception was on Thread.sleep rather than get case details
+                throw e;
+            }
             log.error("Job '{}' could not search for cases due to {}", jobName, e.getMessage(), e);
             failed += ES_DEFAULT_SIZE;
         }
