@@ -1,0 +1,50 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GroundsForContactWithChild",
+    "ListElementCode": "relationshipToChildrenHeader",
+    "FieldType": "Label",
+    "ElementLabel": "<h2>Your relationship to the child(ren)</h2>",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GroundsForContactWithChild",
+    "ListElementCode": "parentOrGuardian",
+    "FieldType": "TextArea",
+    "ElementLabel": "Please state whether you are a parent or a guardian",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GroundsForContactWithChild",
+    "ListElementCode": "residenceOrder",
+    "FieldType": "TextArea",
+    "ElementLabel": "Please state whether you hold a residence order which was in force immediately before the care order was made (Section 34(1)(c) Children Act 1989)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GroundsForContactWithChild",
+    "ListElementCode": "hadCareOfChildrenBeforeCareOrder",
+    "FieldType": "TextArea",
+    "ElementLabel": "Please state whether you had care of the child(ren) through an order which was in force immediately before the care order was made (Section 34(1)(d) Children Act 1989)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GroundsForContactWithChild",
+    "ListElementCode": "reasonsForApplicationHeader",
+    "FieldType": "Label",
+    "ElementLabel": "<h2>The order applied for and your reason(s) for the application</h2>",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GroundsForContactWithChild",
+    "ListElementCode": "reasonsForApplication",
+    "FieldType": "TextArea",
+    "ElementLabel": "If you are relying on a report or other documentary evidence state the date(s) and author(s) and enclose a copy in the upload documents section",
+    "SecurityClassification": "Public"
+  }
+]
