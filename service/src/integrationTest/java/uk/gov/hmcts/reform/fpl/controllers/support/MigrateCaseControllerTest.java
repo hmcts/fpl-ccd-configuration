@@ -15,7 +15,11 @@ import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
+import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -68,6 +72,145 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             .getRootCause()
             .isInstanceOf(NoSuchElementException.class)
             .hasMessage("No migration mapped to " + INVALID_MIGRATION_ID);
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl1008 {
+        private static final long invalidCaseId = 1643728359576136L;
+        private static final long validCaseId = 1660824566934016L;
+        private static final String migrationId = "DFPL-1008";
+
+        private final UUID caseSummaryId = UUID.fromString("21024215-e4e0-498d-ad30-7a6441af92e6");
+        private final UUID positionStatementChildId = UUID.fromString("613ade45-451a-41c5-8cf5-25b00bcc7731");
+        private final UUID positionStatementRespondentId = UUID.fromString("050b3b4b-8c6c-4976-8c3f-3802a215ae72");
+
+        private final Element<CaseSummary> caseSummary = element(caseSummaryId, CaseSummary.builder().build());
+        private final Element<PositionStatementChild> positionStatementChild = element(
+            positionStatementChildId, PositionStatementChild.builder().build());
+        private final Element<PositionStatementRespondent> positionStatementRespondent = element(
+            positionStatementRespondentId, PositionStatementRespondent.builder().build());
+
+        @Test
+        void shouldRemoveCaseSummary() {
+            CaseData caseData = prepareValidCaseData();
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+            assertThat(responseData.getHearingDocuments().getCaseSummaryList()).doesNotContain(caseSummary);
+        }
+
+        @Test
+        void shouldRemovePositionStatementChild() {
+            CaseData caseData = prepareValidCaseData();
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+            assertThat(responseData.getHearingDocuments().getPositionStatementChildListV2())
+                .doesNotContain(positionStatementChild);
+        }
+
+        @Test
+        void shouldRemovePositionStatementRespondent() {
+            CaseData caseData = prepareValidCaseData();
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+            assertThat(responseData.getHearingDocuments().getPositionStatementRespondentListV2())
+                .doesNotContain(positionStatementRespondent);
+        }
+
+        @Test
+        void shouldThrowExceptionIfWrongCase() {
+            CaseData caseData = CaseData.builder().id(invalidCaseId).build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format("Migration {id = %s, case reference = 1643728359576136}, expected case id %d",
+                    migrationId, validCaseId));
+        }
+
+        @Test
+        void shouldThrowExceptionIfWrongCaseSummary() {
+            CaseData caseData = CaseData.builder().id(validCaseId)
+                .hearingDocuments(HearingDocuments.builder()
+                    .caseSummaryList(List.of(element(CaseSummary.builder().build())))
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format("Migration {id = %s, case reference = %s}, invalid case summary",
+                    migrationId, validCaseId));
+        }
+
+        @Test
+        void shouldThrowExceptionIfWrongPositionStatementChild() {
+            CaseData caseData = CaseData.builder().id(validCaseId)
+                .hearingDocuments(HearingDocuments.builder()
+                    .caseSummaryList(List.of(caseSummary))
+                    .positionStatementChildListV2(List.of(
+                        element(UUID.randomUUID(), PositionStatementChild.builder().build()))
+                    )
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format("Migration {id = %s, case reference = %s}, invalid position statement child",
+                    migrationId, validCaseId));
+        }
+
+        @Test
+        void shouldThrowExceptionIfWrongPositionStatementRespondent() {
+            CaseData caseData = CaseData.builder().id(validCaseId)
+                .hearingDocuments(HearingDocuments.builder()
+                    .caseSummaryList(List.of(caseSummary))
+                    .positionStatementChildListV2(List.of(positionStatementChild))
+                    .positionStatementRespondentListV2(List.of(
+                        element(UUID.randomUUID(), PositionStatementRespondent.builder().build()))
+                    )
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format("Migration {id = %s, case reference = %s}, invalid position statement "
+                        + "respondent",
+                    migrationId, validCaseId));
+        }
+
+
+        private CaseData prepareValidCaseData() {
+            return CaseData.builder()
+                .id(validCaseId)
+                .hearingDocuments(HearingDocuments.builder()
+                    .caseSummaryList(List.of(
+                        caseSummary
+                    ))
+                    .positionStatementChildListV2(List.of(
+                        element(UUID.randomUUID(), PositionStatementChild.builder().build()),
+                        positionStatementChild
+                    ))
+                    .positionStatementRespondentListV2(List.of(
+                        element(UUID.randomUUID(), PositionStatementRespondent.builder().build()),
+                        element(UUID.randomUUID(), PositionStatementRespondent.builder().build()),
+                        positionStatementRespondent
+                    ))
+                    .build())
+                .build();
+        }
+
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)

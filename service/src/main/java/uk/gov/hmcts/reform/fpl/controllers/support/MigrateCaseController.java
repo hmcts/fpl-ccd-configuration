@@ -14,7 +14,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
+import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
@@ -45,7 +48,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-776", this::run776,
         "DFPL-826", this::run826,
         "DFPL-810", this::run810,
-        "DFPL-828", this::run828
+        "DFPL-828", this::run828,
+        "DFPL-1008", this::run1008
     );
 
     @PostMapping("/about-to-submit")
@@ -180,6 +184,63 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().put("judicialMessages", resultJudicialMessages);
     }
+
+    private void run1008(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-1008";
+        CaseData caseData = getCaseData(caseDetails);
+        final Long caseId = caseData.getId();
+        final Long expectedCaseId = 1660824566934016L;
+
+        if (!expectedCaseId.equals(caseId)) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId
+            ));
+        }
+
+        List<Element<CaseSummary>> caseSummaryListResult = caseData.getHearingDocuments().getCaseSummaryList()
+            .stream()
+            .filter(el -> !el.getId().equals(UUID.fromString("21024215-e4e0-498d-ad30-7a6441af92e6")))
+            .collect(toList());
+
+        if (caseSummaryListResult.size() != caseData.getHearingDocuments().getCaseSummaryList().size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, invalid case summary",
+                migrationId, caseId
+            ));
+        }
+
+        List<Element<PositionStatementChild>> positionStatementChildListResult = caseData.getHearingDocuments()
+            .getPositionStatementChildListV2().stream()
+            .filter(el -> !el.getId().equals(UUID.fromString("613ade45-451a-41c5-8cf5-25b00bcc7731")))
+            .collect(toList());
+
+        if (positionStatementChildListResult.size() != caseData.getHearingDocuments()
+                .getPositionStatementChildListV2().size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, invalid position statement child",
+                migrationId, caseId
+            ));
+        }
+
+        List<Element<PositionStatementRespondent>> positionStatementRespondentListResult = caseData
+            .getHearingDocuments().getPositionStatementRespondentListV2().stream()
+            .filter(el -> !el.getId().equals(UUID.fromString("050b3b4b-8c6c-4976-8c3f-3802a215ae72")))
+            .collect(toList());
+
+        if (positionStatementRespondentListResult.size() != caseData.getHearingDocuments()
+            .getPositionStatementRespondentListV2().size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, invalid position statement respondent",
+                migrationId, caseId
+            ));
+        }
+
+        caseDetails.getData().put("caseSummaryList", caseSummaryListResult);
+        caseDetails.getData().put("positionStatementChildListV2", positionStatementChildListResult);
+        caseDetails.getData().put("positionStatementRespondentListV2", positionStatementRespondentListResult);
+    }
+
 
     private void run826(CaseDetails caseDetails) {
         final String migrationId = "DFPL-826";
