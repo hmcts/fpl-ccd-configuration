@@ -20,6 +20,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_ASSES
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_PLACEMENT;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_PLACEMENT_APPLICATIONS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CLOSE_CASE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DECLARATION_OF_PARENTAGE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DISCHARGE_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EDUCATION_SUPERVISION;
@@ -27,6 +28,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_CHILDRE
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_INCLUDE_PHRASE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE_AND_PREVENT_REMOVAL;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.FAMILY_ASSISTANCE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.FURTHER_DIRECTIONS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ICO_EXCLUSION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.IS_CHILD_REPRESENTED;
@@ -378,12 +380,21 @@ public enum Order {
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C42_FAMILY_ASSISTANCE_ORDER(
-        MANUAL_UPLOAD,
+        DIGITAL,
         "Family assistance order (C42)",
-        "",
+        "Section 16 Children Act 1989",
         "Family assistance order (C42)",
-        IsFinalOrder.NO,
-        Constants.MANUAL_UPLOAD_QUESTIONS
+        IsFinalOrder.YES,
+        List.of(
+            APPROVER,
+            APPROVAL_DATE,
+            WHICH_CHILDREN,
+            FAMILY_ASSISTANCE_ORDER,
+            FURTHER_DIRECTIONS,
+            ORDER_BY_CONSENT,
+            REVIEW_DRAFT_ORDER,
+            CLOSE_CASE
+        )
     ),
     C44A_LEAVE_TO_CHANGE_SURNAME(
         MANUAL_UPLOAD,
@@ -500,6 +511,22 @@ public enum Order {
         "Refusal to transfer proceedings (C50)",
         IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C63A_DECLARATION_OF_PARENTAGE(
+        DIGITAL,
+        "Declaration of parentage (C63A)",
+        "Section 55A of the Family Law Act 1986",
+        "Declaration of parentage (C63A)",
+        IsFinalOrder.YES,
+        List.of(
+            LINKED_TO_HEARING,
+            LINK_APPLICATION,
+            APPROVER,
+            APPROVAL_DATE,
+            SELECT_SINGLE_CHILD,
+            DECLARATION_OF_PARENTAGE,
+            REVIEW_DRAFT_ORDER
+        )
     ),
     FL406_POWER_OF_ARREST(
         MANUAL_UPLOAD,
