@@ -16,7 +16,7 @@
     "mocha-multi": "^1.1.3",
     "mochawesome": "^6.2.2",
     "moment": "2.29.1",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^3.3.0",
     "puppeteer": "12.0.1",
     "webdriverio": "^7.12.5"
   },
