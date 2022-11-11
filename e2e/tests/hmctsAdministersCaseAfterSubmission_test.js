@@ -333,10 +333,15 @@ Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, ad
   caseViewPage.selectTab(caseViewPage.tabs.summary);
   I.seeInTab('Date of issue', dateFormat(Date.now(), 'd mmm yyyy'));
   I.seeInTab('26-week timeline date', dateFormat(new Date().setDate(new Date().getDate() + 26 * 7), 'd mmm yyyy'));
-  // TODO
-  // I.seeInTab('Extended timeline date', '10 Oct 2030');
-  // I.seeInTab('Extended timeline', 'Timothy Jones -');
-}).retry(1);
+
+  let extendedDate = dateFormat(new Date().setDate(new Date().getDate() + 26 * 7 + 8 * 7), 'd mmm yyyy');
+  I.seeInTab('Extended timeline date', extendedDate);
+  I.assertValueInTab('Extended timeline:',
+    'Timothy Jones - ' + extendedDate + ' - Timetable for child\n' +
+    'John Black - ' + extendedDate + ' - Timetable for child\n' +
+    'William Black - ' + extendedDate + ' - Timetable for child\n' +
+    'Sarah Black - ' + extendedDate + ' - Timetable for child');
+}).retry(0);
 
 Scenario('HMCTS admin closes the case', async ({I, caseViewPage, recordFinalDecisionsEventPage}) => {
   await setupScenario(I);
