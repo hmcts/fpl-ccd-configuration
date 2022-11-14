@@ -36,6 +36,7 @@ public class DocumentMetadataDownloadService {
             userRoles = join(",", idamClient.getUserInfo(requestData.authorisation()).getRoles());
         } catch (IllegalStateException e) {
             log.info("Outside of a request, use system user");
+            // TODO - Remove this after cafcass resend job
             useSystemUser = true;
         }
 
