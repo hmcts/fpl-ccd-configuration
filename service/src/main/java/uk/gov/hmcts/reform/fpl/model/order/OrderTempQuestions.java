@@ -52,4 +52,5 @@ public class OrderTempQuestions {
     String leaveToChangeChildSurname;
     String partyAllowedContactsAndConditions;
     String declarationOfParentage;
+    String familyAssistanceOrder;
 }
