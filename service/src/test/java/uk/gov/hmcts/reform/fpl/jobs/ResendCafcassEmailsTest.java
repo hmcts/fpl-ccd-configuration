@@ -75,7 +75,7 @@ class ResendCafcassEmailsTest {
     public ResendCafcassEmails underTest;
 
     private List<Long> casesWithHearings = List.of(3L, 4L);
-    private List<Long> casesWithOrders = List.of(1L, 2L, 4L, 5L, 6L);
+    private List<Long> casesWithOrders = List.of(1L, 2L, 4L, 5L, 6L, 7L, 8L);
 
     @BeforeEach
     void init() {
@@ -98,6 +98,8 @@ class ResendCafcassEmailsTest {
         CaseDetails case4 = buildCaseWithAllIssues(4L);
         CaseDetails case5 = buildCaseWithSealedCMO(5L);
         CaseDetails case6 = buildCaseWithDraftOrder(6L);
+        CaseDetails case7 = buildCaseWithGeneratedOrderDateTime(7L, "Order title");
+        CaseDetails case8 = buildCaseWithGeneratedOrderDateOfIssue(8L, "Order title");
 
         // mock cases with hearings
         when(resendCafcassEmailService.getNoticeOfHearingDateTimes(longThat(arg -> !casesWithHearings.contains(arg))))
@@ -121,6 +123,8 @@ class ResendCafcassEmailsTest {
         when(coreCaseDataService.findCaseDetailsByIdNonUser("4")).thenReturn(case4);
         when(coreCaseDataService.findCaseDetailsByIdNonUser("5")).thenReturn(case5);
         when(coreCaseDataService.findCaseDetailsByIdNonUser("6")).thenReturn(case6);
+        when(coreCaseDataService.findCaseDetailsByIdNonUser("7")).thenReturn(case7);
+        when(coreCaseDataService.findCaseDetailsByIdNonUser("8")).thenReturn(case8);
     }
 
     @Test
@@ -130,6 +134,22 @@ class ResendCafcassEmailsTest {
         underTest.execute(executionContext);
 
         verify(cafcassNotificationService, times(2)).sendEmail(any(), any(), any(), any());
+    }
+
+    @Test
+    void shouldResendGeneratedOrderWithDateTime() {
+        when(resendCafcassEmailService.getAllCaseIds()).thenReturn(Set.of(7L));
+
+        underTest.execute(executionContext);
+        verify(cafcassNotificationService, times(1)).sendEmail(any(), any(), any(), any());
+    }
+
+    @Test
+    void shouldResendGeneratedOrderWithDateOfIssue() {
+        when(resendCafcassEmailService.getAllCaseIds()).thenReturn(Set.of(8L));
+
+        underTest.execute(executionContext);
+        verify(cafcassNotificationService, times(1)).sendEmail(any(), any(), any(), any());
     }
 
     @Test
@@ -184,6 +204,36 @@ class ResendCafcassEmailsTest {
                         .approvalDate(LocalDate.of(2022, 1, 10))
                         .build()
                 )
+            ))
+            .build();
+        return asCaseDetails(caseData);
+    }
+
+    private CaseDetails buildCaseWithGeneratedOrderDateTime(Long caseId, String orderTitle) {
+        CaseData caseData = CaseData.builder()
+            .id(caseId)
+            .state(State.CASE_MANAGEMENT)
+            .orderCollection(List.of(element(
+                    GeneratedOrder.builder()
+                        .document(testDocumentReference())
+                        .title(orderTitle)
+                        .approvalDateTime(LocalDateTime.of(2022, 1, 1, 10, 30))
+                        .build())
+            ))
+            .build();
+        return asCaseDetails(caseData);
+    }
+
+    private CaseDetails buildCaseWithGeneratedOrderDateOfIssue(Long caseId, String orderTitle) {
+        CaseData caseData = CaseData.builder()
+            .id(caseId)
+            .state(State.CASE_MANAGEMENT)
+            .orderCollection(List.of(element(
+                    GeneratedOrder.builder()
+                        .document(testDocumentReference())
+                        .title(orderTitle)
+                        .dateOfIssue("1 January 2022")
+                        .build())
             ))
             .build();
         return asCaseDetails(caseData);
