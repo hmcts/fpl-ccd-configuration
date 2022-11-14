@@ -126,8 +126,7 @@ public class ResendCafcassEmails implements Job {
             return 0;
         }
         List<Element<GeneratedOrder>> ordersToSend = caseData.getOrderCollection().stream()
-            .filter(el -> checkDateSafely(el.getValue().getApprovalDate(), datesToResend)
-                || checkStringDateSafely(el.getValue().getDateOfIssue(), datesToResend))
+            .filter(el -> checkOrderDate(el, datesToResend))
             .collect(Collectors.toList());
 
         int resentEmails = 0;
@@ -137,8 +136,7 @@ public class ResendCafcassEmails implements Job {
                 order.getValue().getDocument(),
                 LanguageTranslationRequirement.NO,
                 order.getValue().getTitle(),
-                !isEmpty(order.getValue().getApprovalDate()) ? order.getValue().getApprovalDate()
-                    : labelToDate(order.getValue().getDateOfIssue())
+                getOrderDate(order)
             );
 
             if (featureToggleService.isResendCafcassEmailsEnabled()) {
@@ -282,12 +280,26 @@ public class ResendCafcassEmails implements Job {
         return null;
     }
 
-    private boolean checkDateSafely(LocalDate date, List<LocalDate> dates) {
-        return !isEmpty(date) && dates.contains(date);
+    private boolean checkOrderDate(Element<GeneratedOrder> order, List<LocalDate> dates) {
+        if (!isEmpty(order.getValue().getApprovalDate())) {
+            return dates.contains(order.getValue().getApprovalDate());
+        } else if (!isEmpty(order.getValue().getApprovalDateTime())) {
+            return dates.contains(order.getValue().getApprovalDateTime().toLocalDate());
+        } else if (!isEmpty(order.getValue().getDateOfIssue())) {
+            return dates.contains(labelToDate(order.getValue().getDateOfIssue()));
+        }
+        return false;
     }
 
-    private boolean checkStringDateSafely(String date, List<LocalDate> dates) {
-        return !isEmpty(date) && dates.contains(labelToDate(date));
+    private LocalDate getOrderDate(Element<GeneratedOrder> order) {
+        if (!isEmpty(order.getValue().getApprovalDate())) {
+            return order.getValue().getApprovalDate();
+        } else if (!isEmpty(order.getValue().getApprovalDateTime())) {
+            return order.getValue().getApprovalDateTime().toLocalDate();
+        } else if (!isEmpty(order.getValue().getDateOfIssue())) {
+            return labelToDate(order.getValue().getDateOfIssue());
+        }
+        return LocalDate.now();
     }
 
 }
