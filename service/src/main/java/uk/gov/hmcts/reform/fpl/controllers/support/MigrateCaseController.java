@@ -181,6 +181,7 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put("judicialMessages", resultJudicialMessages);
     }
 
+
     private void run1001(CaseDetails caseDetails) {
         removeHearingBooking("DFPL-1001", 1649335087796806L, caseDetails,
             "9cc3f847-3f2c-4d19-bf32-ed1377866ffe");
@@ -188,6 +189,7 @@ public class MigrateCaseController extends CallbackController {
 
     private void removeHearingBooking(final String migrationId, final Long expectedCaseId,
                                       final CaseDetails caseDetails, final String hearingIdToBeRemoved) {
+
         CaseData caseData = getCaseData(caseDetails);
         final Long caseId = caseData.getId();
         final UUID expectedHearingId = UUID.fromString(hearingIdToBeRemoved);
@@ -242,9 +244,9 @@ public class MigrateCaseController extends CallbackController {
     }
 
     private void removeDocumentSentToParty(CaseDetails caseDetails, long expectedCaseId,
-                                          String migrationId,
-                                          String expectedDocumentsSentToPartiesId,
-                                          List<String> docIdsToBeRemoved) {
+                                           String migrationId,
+                                           String expectedDocumentsSentToPartiesId,
+                                           List<String> docIdsToBeRemoved) {
         CaseData caseData = getCaseData(caseDetails);
         Long caseId = caseData.getId();
 
@@ -266,7 +268,7 @@ public class MigrateCaseController extends CallbackController {
 
         docUuidsToBeRemoved.stream().forEach(docIdToBeRemoved -> {
                 if (ElementUtils.findElement(docIdToBeRemoved,
-                        targetDocumentsSentToParties.getValue().getDocumentsSentToParty()).isEmpty()) {
+                    targetDocumentsSentToParties.getValue().getDocumentsSentToParty()).isEmpty()) {
                     throw new AssertionError(format(
                         "Migration {id = %s, case reference = %s}, document Id not found",
                         migrationId, caseId));
