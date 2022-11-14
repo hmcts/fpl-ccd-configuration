@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.SystemUserService;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
 
 import java.util.Map;
 
@@ -83,7 +84,8 @@ public class CoreCaseDataService {
     public CaseDetails findCaseDetailsByIdNonUser(final String caseId) {
         String userToken = systemUserService.getSysUserToken();
 
-        return coreCaseDataApi.getCase(userToken, authTokenGenerator.generate(), caseId);
+        return coreCaseDataApi.searchCases(userToken, authTokenGenerator.generate(), CASE_TYPE,
+            new MatchQuery("reference", caseId).toQueryContext(1, 0).toString()).getCases().get(0);
     }
 
     public SearchResult searchCases(String caseType, String query) {
