@@ -44,7 +44,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-802", this::run802,
         "DFPL-776", this::run776,
         "DFPL-1001", this::run1001,
-        "DFPL-810", this::run810,
+        "DFPL-979", this::run979,
         "DFPL-828", this::run828
     );
 
@@ -114,10 +114,11 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put("submittedForm", null);
     }
 
-    private void run810(CaseDetails caseDetails) {
-        var migrationId = "DFPL-810";
-        var expectedCaseId = 1639481593478877L;
-        var expectedCaseNotesId = List.of("2824e43b-3250-485a-b069-6fd06390ce83");
+    private void run979(CaseDetails caseDetails) {
+        var migrationId = "DFPL-979";
+        var expectedCaseId = 1648556593632182L;
+        var expectedCaseNotesId = List.of("c0c0c620-055e-488c-a6a9-d5e7ec35c210",
+            "0a202483-b7e6-44a1-a28b-8c9342f67967");
 
         removeCaseNote(caseDetails, migrationId, expectedCaseId, expectedCaseNotesId);
     }
