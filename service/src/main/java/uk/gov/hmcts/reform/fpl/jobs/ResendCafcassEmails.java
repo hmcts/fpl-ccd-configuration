@@ -98,6 +98,7 @@ public class ResendCafcassEmails implements Job {
                     }
 
                     resent++;
+                    log.info("Job '{}' number of emails sent on case {}: {}", jobName, caseId, resentEmailsCount);
                     totalResentEmails += resentEmailsCount;
 
                 } catch (Exception e) {
