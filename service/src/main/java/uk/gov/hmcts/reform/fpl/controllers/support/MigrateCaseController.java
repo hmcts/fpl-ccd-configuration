@@ -43,7 +43,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-798", this::run798,
         "DFPL-802", this::run802,
         "DFPL-776", this::run776,
-        "DFPL-826", this::run826,
+        "DFPL-1001", this::run1001,
         "DFPL-810", this::run810,
         "DFPL-828", this::run828
     );
@@ -181,12 +181,17 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put("judicialMessages", resultJudicialMessages);
     }
 
-    private void run826(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-826";
+    private void run1001(CaseDetails caseDetails) {
+        removeHearingBooking("DFPL-1001", 1649335087796806L, caseDetails,
+            "9cc3f847-3f2c-4d19-bf32-ed1377866ffe");
+    }
+
+    private void removeHearingBooking(final String migrationId, final Long expectedCaseId,
+                                      final CaseDetails caseDetails, final String hearingIdToBeRemoved) {
+
         CaseData caseData = getCaseData(caseDetails);
         final Long caseId = caseData.getId();
-        final Long expectedCaseId = 1660300177298257L;
-        final UUID expectedHearingId = UUID.fromString("d76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0");
+        final UUID expectedHearingId = UUID.fromString(hearingIdToBeRemoved);
 
         if (!expectedCaseId.equals(caseId)) {
             throw new AssertionError(format(
@@ -238,9 +243,9 @@ public class MigrateCaseController extends CallbackController {
     }
 
     private void removeDocumentSentToParty(CaseDetails caseDetails, long expectedCaseId,
-                                          String migrationId,
-                                          String expectedDocumentsSentToPartiesId,
-                                          List<String> docIdsToBeRemoved) {
+                                           String migrationId,
+                                           String expectedDocumentsSentToPartiesId,
+                                           List<String> docIdsToBeRemoved) {
         CaseData caseData = getCaseData(caseDetails);
         Long caseId = caseData.getId();
 
@@ -262,7 +267,7 @@ public class MigrateCaseController extends CallbackController {
 
         docUuidsToBeRemoved.stream().forEach(docIdToBeRemoved -> {
                 if (ElementUtils.findElement(docIdToBeRemoved,
-                        targetDocumentsSentToParties.getValue().getDocumentsSentToParty()).isEmpty()) {
+                    targetDocumentsSentToParties.getValue().getDocumentsSentToParty()).isEmpty()) {
                     throw new AssertionError(format(
                         "Migration {id = %s, case reference = %s}, document Id not found",
                         migrationId, caseId));
