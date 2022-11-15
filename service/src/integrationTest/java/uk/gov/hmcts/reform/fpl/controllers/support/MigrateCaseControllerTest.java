@@ -287,10 +287,10 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Dfpl826 {
-        final String migrationId = "DFPL-826";
-        final Long caseId = 1660300177298257L;
-        final UUID hearingId = UUID.fromString("d76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0");
+    class Dfpl1001 {
+        final String migrationId = "DFPL-1001";
+        final Long caseId = 1649335087796806L;
+        final UUID hearingId = UUID.fromString("9cc3f847-3f2c-4d19-bf32-ed1377866ffe");
 
         final Element<HearingBooking> hearingToBeRemoved = element(hearingId, HearingBooking.builder()
             .type(CASE_MANAGEMENT)
@@ -336,8 +336,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-826, case reference = 1660300177298257},"
-                    + " hearing details not found");
+                .hasMessage(String.format("Migration {id = %s, case reference = %s},"
+                    + " hearing details not found", migrationId, caseId));
         }
 
         @Test
@@ -350,8 +350,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-826, case reference = 1111111111111111},"
-                    + " expected case id 1660300177298257");
+                .hasMessage(String.format("Migration {id = %s, case reference = 1111111111111111},"
+                    + " expected case id %s", migrationId, caseId));
         }
 
         @Test
@@ -364,8 +364,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-826, case reference = 1660300177298257},"
-                    + " hearing booking d76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0 not found");
+                .hasMessage(String.format("Migration {id = %s, case reference = %s},"
+                    + " hearing booking %s not found", migrationId, caseId, hearingId));
         }
 
         @Test
@@ -378,8 +378,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-826, case reference = 1660300177298257},"
-                    + " more than one hearing booking d76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0 found");
+                .hasMessage(String.format("Migration {id = %s, case reference = %s},"
+                    + " more than one hearing booking %s found", migrationId, caseId, hearingId));
         }
     }
 
