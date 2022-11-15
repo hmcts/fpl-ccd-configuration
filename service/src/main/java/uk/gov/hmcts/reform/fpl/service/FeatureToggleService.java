@@ -50,6 +50,10 @@ public class FeatureToggleService {
         return ldClient.boolVariation("summary-tab-first-run", createLDUser(), false);
     }
 
+    public boolean isResendCafcassEmailsEnabled() {
+        return ldClient.boolVariation("resend-cafcass-emails-job", createLDUser(), false);
+    }
+
     public boolean isFeeAndPayCaseTypeEnabled() {
         return ldClient.boolVariation("fee-and-pay-case-type", createLDUser(), false);
     }

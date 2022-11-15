@@ -32,22 +32,34 @@ public class DocumentDownloadService {
 
     private final SecureDocStoreService secureDocStoreService;
     private final FeatureToggleService featureToggleService;
+    private final SystemUserService systemUserService;
 
     public byte[] downloadDocument(final String documentUrlString) {
 
         if (featureToggleService.isSecureDocstoreEnabled()) {
             return secureDocStoreService.downloadDocument(documentUrlString);
         } else {
-            final String userRoles = join(",", idamClient.getUserInfo(requestData.authorisation()).getRoles());
+            String userRoles = "caseworker-publiclaw-systemupdate";
+            boolean useSystemUser = false;
+            try {
+                userRoles = join(",", idamClient.getUserInfo(requestData.authorisation()).getRoles());
+            } catch (IllegalStateException e) {
+                // TODO - Remove this after cafcass resend job
+                log.info("Outside of a request, use system user");
+                useSystemUser = true;
+            }
 
-            log.info("Download document {} by user {} with roles {}", documentUrlString, requestData.userId(),
+            String auth = useSystemUser ? systemUserService.getSysUserToken() : requestData.authorisation();
+            String userId = useSystemUser ? systemUserService.getUserId(auth) : requestData.userId();
+
+            log.info("Download document {} by user {} with roles {}", documentUrlString, userId,
                 userRoles);
 
             ResponseEntity<Resource> documentDownloadResponse =
-                documentDownloadClient.downloadBinary(requestData.authorisation(),
+                documentDownloadClient.downloadBinary(auth,
                     authTokenGenerator.generate(),
                     userRoles,
-                    requestData.userId(),
+                    userId,
                     URI.create(documentUrlString).getPath());
 
             if (isNotEmpty(documentDownloadResponse) && HttpStatus.OK == documentDownloadResponse.getStatusCode()) {
