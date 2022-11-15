@@ -40,16 +40,14 @@ public class UpdateCMOHearing {
     }
 
     public boolean hearingLinkedToCMOIsCancelled(CaseData caseData,
-                                                 Element<HearingOrder> cmoElement) {
-        HearingBooking hearingToUnlink = getHearingToUnlink(
-            caseData,
-            cmoElement.getId(),
-            cmoElement.getValue());
-
-        return caseData.getCancelledHearingDetails().stream()
-            .map(Element::getValue)
-            .collect(Collectors.toList())
-            .contains(hearingToUnlink);
+                                                 HearingBooking hearingToUnlink) {
+        if (caseData.getCancelledHearingDetails() != null) {
+            return caseData.getCancelledHearingDetails().stream()
+                .map(Element::getValue)
+                .collect(Collectors.toList())
+                .contains(hearingToUnlink);
+        }
+        return false;
     }
 
     public List<Element<HearingBooking>> removeHearingLinkedToCMO(CaseData caseData,
@@ -62,7 +60,7 @@ public class UpdateCMOHearing {
         // this will still be the same reference as the one in the case data list so just update it
         hearingToUnlink.setCaseManagementOrderId(null);
 
-        if (hearingLinkedToCMOIsCancelled(caseData, cmoElement)) {
+        if (hearingLinkedToCMOIsCancelled(caseData, hearingToUnlink)) {
             return caseData.getCancelledHearingDetails();
         }
         return caseData.getHearingDetails();

@@ -113,7 +113,10 @@ public class DraftCMORemovalAction implements OrderRemovalAction {
         List<Element<HearingBooking>> updatedHearingBookings = updateCmoHearing.removeHearingLinkedToCMO(caseData,
             cmoElement);
 
-        if (updateCmoHearing.hearingLinkedToCMOIsCancelled(caseData, cmoElement)) {
+        boolean removedFromCancelledHearings = updateCmoHearing.hearingLinkedToCMOIsCancelled(caseData,
+            updatedHearingBookings.get(0).getValue());
+
+        if (removedFromCancelledHearings) {
             data.put("cancelledHearingDetails", updatedHearingBookings);
         } else {
             data.put("hearingDetails", updatedHearingBookings);

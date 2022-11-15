@@ -360,7 +360,7 @@ class DraftCMORemovalActionTest {
 
         when(updateCMOHearing.removeHearingLinkedToCMO(caseData, element(TO_REMOVE_ORDER_ID, draftCMO)))
             .thenReturn(updatedCancelledHearings);
-        when(updateCMOHearing.hearingLinkedToCMOIsCancelled(caseData, element(TO_REMOVE_ORDER_ID, draftCMO)))
+        when(updateCMOHearing.hearingLinkedToCMOIsCancelled(caseData, updatedCancelledHearings.get(0).getValue()))
             .thenReturn(true);
 
         underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, draftCMO);
@@ -437,7 +437,7 @@ class DraftCMORemovalActionTest {
 
         when(updateCMOHearing.removeHearingLinkedToCMO(caseData, element(TO_REMOVE_ORDER_ID, draftCMO)))
             .thenReturn(updatedCancelledHearings);
-        when(updateCMOHearing.hearingLinkedToCMOIsCancelled(caseData, element(TO_REMOVE_ORDER_ID, draftCMO)))
+        when(updateCMOHearing.hearingLinkedToCMOIsCancelled(caseData, updatedCancelledHearings.get(0).getValue()))
             .thenReturn(true);
 
         underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, draftCMO);
