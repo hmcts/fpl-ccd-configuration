@@ -14,10 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
-import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
-import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
@@ -46,10 +43,9 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-798", this::run798,
         "DFPL-802", this::run802,
         "DFPL-776", this::run776,
-        "DFPL-826", this::run826,
+        "DFPL-1001", this::run1001,
         "DFPL-810", this::run810,
-        "DFPL-980", this::run980,
-        "DFPL-1008", this::run1008
+        "DFPL-980", this::run980
     );
 
     @PostMapping("/about-to-submit")
@@ -185,69 +181,17 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put("judicialMessages", resultJudicialMessages);
     }
 
-    private void run1008(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-1008";
-        CaseData caseData = getCaseData(caseDetails);
-        final Long caseId = caseData.getId();
-        final Long expectedCaseId = 1660824566934016L;
-
-        if (!expectedCaseId.equals(caseId)) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, expected case id %d",
-                migrationId, caseId, expectedCaseId
-            ));
-        }
-
-        List<Element<CaseSummary>> caseSummaryListResult = caseData.getHearingDocuments().getCaseSummaryList()
-            .stream()
-            .filter(el -> !el.getId().equals(UUID.fromString("21024215-e4e0-498d-ad30-7a6441af92e6")))
-            .collect(toList());
-
-        if (caseSummaryListResult.size() != caseData.getHearingDocuments().getCaseSummaryList().size() - 1) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, invalid case summary",
-                migrationId, caseId
-            ));
-        }
-
-        List<Element<PositionStatementChild>> positionStatementChildListResult = caseData.getHearingDocuments()
-            .getPositionStatementChildListV2().stream()
-            .filter(el -> !el.getId().equals(UUID.fromString("613ade45-451a-41c5-8cf5-25b00bcc7731")))
-            .collect(toList());
-
-        if (positionStatementChildListResult.size() != caseData.getHearingDocuments()
-                .getPositionStatementChildListV2().size() - 1) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, invalid position statement child",
-                migrationId, caseId
-            ));
-        }
-
-        List<Element<PositionStatementRespondent>> positionStatementRespondentListResult = caseData
-            .getHearingDocuments().getPositionStatementRespondentListV2().stream()
-            .filter(el -> !el.getId().equals(UUID.fromString("050b3b4b-8c6c-4976-8c3f-3802a215ae72")))
-            .collect(toList());
-
-        if (positionStatementRespondentListResult.size() != caseData.getHearingDocuments()
-            .getPositionStatementRespondentListV2().size() - 1) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, invalid position statement respondent",
-                migrationId, caseId
-            ));
-        }
-
-        caseDetails.getData().put("caseSummaryList", caseSummaryListResult);
-        caseDetails.getData().put("positionStatementChildListV2", positionStatementChildListResult);
-        caseDetails.getData().put("positionStatementRespondentListV2", positionStatementRespondentListResult);
+    private void run1001(CaseDetails caseDetails) {
+        removeHearingBooking("DFPL-1001", 1649335087796806L, caseDetails,
+            "9cc3f847-3f2c-4d19-bf32-ed1377866ffe");
     }
 
+    private void removeHearingBooking(final String migrationId, final Long expectedCaseId,
+                                      final CaseDetails caseDetails, final String hearingIdToBeRemoved) {
 
-    private void run826(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-826";
         CaseData caseData = getCaseData(caseDetails);
         final Long caseId = caseData.getId();
-        final Long expectedCaseId = 1660300177298257L;
-        final UUID expectedHearingId = UUID.fromString("d76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0");
+        final UUID expectedHearingId = UUID.fromString(hearingIdToBeRemoved);
 
         if (!expectedCaseId.equals(caseId)) {
             throw new AssertionError(format(
@@ -296,9 +240,9 @@ public class MigrateCaseController extends CallbackController {
     }
 
     private void removeDocumentSentToParty(CaseDetails caseDetails, long expectedCaseId,
-                                          String migrationId,
-                                          String expectedDocumentsSentToPartiesId,
-                                          List<String> docIdsToBeRemoved) {
+                                           String migrationId,
+                                           String expectedDocumentsSentToPartiesId,
+                                           List<String> docIdsToBeRemoved) {
         CaseData caseData = getCaseData(caseDetails);
         Long caseId = caseData.getId();
 
@@ -320,7 +264,7 @@ public class MigrateCaseController extends CallbackController {
 
         docUuidsToBeRemoved.stream().forEach(docIdToBeRemoved -> {
                 if (ElementUtils.findElement(docIdToBeRemoved,
-                        targetDocumentsSentToParties.getValue().getDocumentsSentToParty()).isEmpty()) {
+                    targetDocumentsSentToParties.getValue().getDocumentsSentToParty()).isEmpty()) {
                     throw new AssertionError(format(
                         "Migration {id = %s, case reference = %s}, document Id not found",
                         migrationId, caseId));
