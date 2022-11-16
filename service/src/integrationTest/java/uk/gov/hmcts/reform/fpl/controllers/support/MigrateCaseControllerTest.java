@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.group.C110A;
@@ -35,6 +36,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
@@ -217,6 +219,93 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .date(LocalDate.of(2022, 6, 14))
                 .note("Testing Note")
                 .build());
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class DfplRemoveConfidentialTab {
+        private final long invalidCaseId = 1643728359986136L;
+
+        private Stream<Arguments> provideMigrationTestData() {
+            return Stream.of(
+                Arguments.of("DFPL-809a", 1651569615587841L),
+                Arguments.of("DFPL-809b", 1651755091217652L)
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("provideMigrationTestData")
+        void shouldPerformMigrationWhenDocIdMatches(String migrationId, Long validCaseId) {
+
+            List<Element<SupportingEvidenceBundle>> correspondenceDocuments =
+                wrapElements(
+                    SupportingEvidenceBundle.builder()
+                        .name("bundle1")
+                        .confidential(List.of("CONFIDENTIAL"))
+                        .hasConfidentialAddress("No")
+                        .build(),
+                    SupportingEvidenceBundle.builder()
+                        .name("bundle2")
+                        .confidential(List.of("CONFIDENTIAL"))
+                        .hasConfidentialAddress("Yes")
+                        .build(),
+                    SupportingEvidenceBundle.builder()
+                        .name("bundle3")
+                        .hasConfidentialAddress("No")
+                        .build()
+                );
+
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .correspondenceDocuments(correspondenceDocuments)
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getCorrespondenceDocuments().get(0).getValue().getConfidential())
+                .isEqualTo(emptyList());
+            assertThat(responseData.getCorrespondenceDocuments().get(1).getValue().getConfidential())
+                .isEqualTo(List.of("CONFIDENTIAL"));
+            assertThat(responseData.getCorrespondenceDocuments().get(2).getValue().getConfidential())
+                .isEqualTo(null);
+        }
+
+        @ParameterizedTest
+        @MethodSource("provideMigrationTestData")
+        void shouldThrowAssersionErrorWhenCaseIdIsInvalid(String migrationId, Long validCaseId) {
+            List<Element<SupportingEvidenceBundle>> correspondenceDocuments =
+                wrapElements(
+                    SupportingEvidenceBundle.builder()
+                        .name("bundle1")
+                        .confidential(List.of("CONFIDENTIAL"))
+                        .hasConfidentialAddress("No")
+                        .build(),
+                    SupportingEvidenceBundle.builder()
+                        .name("bundle2")
+                        .confidential(List.of("CONFIDENTIAL"))
+                        .hasConfidentialAddress("Yes")
+                        .build(),
+                    SupportingEvidenceBundle.builder()
+                        .name("bundle3")
+                        .hasConfidentialAddress("No")
+                        .build()
+                );
+
+            CaseData caseData = CaseData.builder()
+                .id(invalidCaseId)
+                .correspondenceDocuments(correspondenceDocuments)
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format("Migration {id = %s, case reference = 1643728359986136}, expected case id %d",
+                    migrationId, validCaseId));
         }
     }
 
