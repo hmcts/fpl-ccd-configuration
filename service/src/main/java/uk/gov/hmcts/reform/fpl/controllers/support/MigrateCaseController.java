@@ -48,10 +48,10 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-802", this::run802,
         "DFPL-776", this::run776,
         "DFPL-1001", this::run1001,
-        "DFPL-828", this::run828,
         "DFPL-809a", this::run809a,
         "DFPL-809b", this::run809b,
-        "DFPL-979", this::run979
+        "DFPL-979", this::run979,
+        "DFPL-980", this::run980
     );
 
     @PostMapping("/about-to-submit")
@@ -292,13 +292,10 @@ public class MigrateCaseController extends CallbackController {
         }
     }
 
-    private void run828(CaseDetails caseDetails) {
-        removeDocumentSentToParty(caseDetails, 1651850415891595L, "DFPL-828",
-            "f3264cc6-61b7-4cf7-ab37-c9eb35a13e03",
-            List.of("6fcc6eb4-942d-40e1-bfa6-befd70254f7f",
-                "fbea9e67-8244-43b8-97c5-265da7b9b6c7",
-                "518a9339-786c-4b68-bce9-a064616ac47f",
-                "61733660-67ed-4ea7-8711-2fe80e15af68"));
+    private void run980(CaseDetails caseDetails) {
+        removeDocumentSentToParty(caseDetails, 1638275557117971L, "DFPL-980",
+            "85869ff5-8b1c-421f-8b0d-d86d2c73de12",
+            List.of("dfee2cca-c820-4909-ae1d-98e29430f6d5"));
     }
 
     private void removeDocumentSentToParty(CaseDetails caseDetails, long expectedCaseId,
