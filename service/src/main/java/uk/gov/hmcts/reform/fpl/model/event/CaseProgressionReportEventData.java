@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.event;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
@@ -120,6 +121,7 @@ public class CaseProgressionReportEventData {
     @Temp
     private String nationalArea;
 
+    @JsonIgnore
     public List<String> getDFJCourts() {
         ArrayList<String> dfgCourts = new ArrayList<>();
         dfgCourts.add(centralLondonDFJCourts);
@@ -165,7 +167,7 @@ public class CaseProgressionReportEventData {
         dfgCourts.add(northWalesDFJCourts);
         dfgCourts.add(southEastWalesDFJCourts);
         dfgCourts.add(swanseaDFJCourts);
-        
+
         return dfgCourts;
     }
 }
