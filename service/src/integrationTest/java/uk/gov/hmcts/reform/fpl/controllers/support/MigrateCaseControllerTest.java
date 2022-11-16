@@ -153,8 +153,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     class DfplRemoveCaseNotes {
         private Stream<Arguments> provideMigrationTestData() {
             return Stream.of(
-                Arguments.of("DFPL-810", 1639481593478877L,
-                    List.of(UUID.fromString("2824e43b-3250-485a-b069-6fd06390ce83")))
+                Arguments.of("DFPL-979", 1648556593632182L,
+                    List.of(UUID.fromString("c0c0c620-055e-488c-a6a9-d5e7ec35c210"),
+                        UUID.fromString("0a202483-b7e6-44a1-a28b-8c9342f67967")))
             );
         }
 
