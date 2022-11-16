@@ -565,6 +565,100 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
     }
 
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl982 {
+        final String migrationId = "DFPL-982";
+        final long expectedCaseId = 1661249570230673L;
+        final UUID expectedPartyId = UUID.fromString("52a06d8d-283b-446a-b4e8-64bba3a54f7f");
+        final List<UUID> expectedDocId = List.of("f6d74661-e3d8-4d0d-9ee3-09bdf0068dd2",
+                "a3755cb6-4e12-4670-8779-c07e00ec669e")
+            .stream().map(UUID::fromString).collect(Collectors.toList());
+
+        UUID[] otherDocIds = new UUID[]{UUID.randomUUID(), UUID.randomUUID()};
+        UUID otherPartyId = UUID.randomUUID();
+
+        Element<SentDocuments> targetDocumentSentToParties = element(expectedPartyId, SentDocuments.builder()
+            .documentsSentToParty(List.of(element(expectedDocId.get(0), SentDocument.builder().build()),
+                element(expectedDocId.get(1), SentDocument.builder().build()),
+                element(otherDocIds[0], SentDocument.builder().build()),
+                element(otherDocIds[1], SentDocument.builder().build())))
+            .build());
+
+        Element<SentDocuments> otherDocumentSentToParties = element(otherPartyId, SentDocuments.builder()
+            .documentsSentToParty(List.of(element(SentDocument.builder().build()),
+                element(SentDocument.builder().build()))).build());
+
+        @Test
+        void shouldRemoveDocumentLinked() {
+
+            CaseData caseData = CaseData.builder()
+                .id(expectedCaseId)
+                .documentsSentToParties(List.of(targetDocumentSentToParties, otherDocumentSentToParties))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getDocumentsSentToParties().size()).isEqualTo(2);
+            assertThat(responseData.getDocumentsSentToParties().stream()
+                .map(Element::getId).collect(Collectors.toList()))
+                .containsExactly(expectedPartyId, otherPartyId);
+
+            assertThat(ElementUtils.getElement(expectedPartyId, responseData.getDocumentsSentToParties()).getValue()
+                .getDocumentsSentToParty().stream().map(Element::getId).collect(Collectors.toList()))
+                .doesNotContainAnyElementsOf(expectedDocId)
+                .containsExactly(otherDocIds);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenCaseIdInvalid() {
+            CaseData caseData = CaseData.builder().id(1L).build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format("Migration {id = %s, case reference = %s}, expected case id %d",
+                    migrationId, 1, expectedCaseId));
+        }
+
+        @Test
+        void shouldThrowExceptionWhenPartyIdInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(expectedCaseId)
+                .documentsSentToParties(List.of(otherDocumentSentToParties))
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format(
+                    "Migration {id = %s, case reference = %s}, party Id not found",
+                    migrationId, expectedCaseId));
+        }
+
+        @Test
+        void shouldThrowExceptionWhenDocIdInvalid() {
+            CaseData caseData = CaseData.builder()
+                .id(expectedCaseId)
+                .documentsSentToParties(List.of(element(expectedPartyId, SentDocuments.builder()
+                    .documentsSentToParty(List.of(
+                        element(otherDocIds[0], SentDocument.builder().build()),
+                        element(otherDocIds[1], SentDocument.builder().build()))).build())))
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format(
+                    "Migration {id = %s, case reference = %s}, document Id not found",
+                    migrationId, expectedCaseId));
+        }
+    }
+
     private CaseDetails buildCaseDetails(CaseData caseData, String migrationId) {
         CaseDetails caseDetails = asCaseDetails(caseData);
         caseDetails.getData().put("migrationId", migrationId);
