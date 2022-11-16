@@ -254,22 +254,27 @@ public class ResendCafcassEmails implements Job {
         int resentEmails = 0;
         for (Element<HearingBooking> booking : hearings) {
 
-            NoticeOfHearingCafcassData noticeOfHearingCafcassData =
-                noticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotificationCafcassData(
-                    caseData,
-                    booking.getValue()
-                );
+            if (!isEmpty(booking.getValue().getNoticeOfHearing())) {
+                NoticeOfHearingCafcassData noticeOfHearingCafcassData =
+                    noticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotificationCafcassData(
+                        caseData,
+                        booking.getValue()
+                    );
 
-            if (featureToggleService.isResendCafcassEmailsEnabled()) {
-                cafcassNotificationService.sendEmail(caseData,
-                    of(booking.getValue().getNoticeOfHearing()),
-                    NOTICE_OF_HEARING,
-                    noticeOfHearingCafcassData);
+                if (featureToggleService.isResendCafcassEmailsEnabled()) {
+                    cafcassNotificationService.sendEmail(caseData,
+                        of(booking.getValue().getNoticeOfHearing()),
+                        NOTICE_OF_HEARING,
+                        noticeOfHearingCafcassData);
+                } else {
+                    log.info("Would have resent notice of hearing email about {}, {}", caseData.getId(),
+                        booking.getValue().getStartDate().format(DATE_FORMATTER));
+                }
+                resentEmails++;
             } else {
-                log.info("Would have resent notice of hearing email about {}, {}", caseData.getId(),
-                    booking.getValue().getStartDate().format(DATE_FORMATTER));
+                log.info("Skipping notice of hearing email for {}, {} as notice document no longer present",
+                    caseData.getId(), booking.getValue().getStartDate().format(DATE_FORMATTER));
             }
-            resentEmails++;
         }
         return resentEmails;
     }

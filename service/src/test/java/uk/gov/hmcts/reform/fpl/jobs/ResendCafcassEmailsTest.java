@@ -40,6 +40,7 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.longThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -74,7 +75,7 @@ class ResendCafcassEmailsTest {
 
     public ResendCafcassEmails underTest;
 
-    private List<Long> casesWithHearings = List.of(3L, 4L);
+    private List<Long> casesWithHearings = List.of(3L, 4L, 9L);
     private List<Long> casesWithOrders = List.of(1L, 2L, 4L, 5L, 6L, 7L, 8L);
 
     @BeforeEach
@@ -100,6 +101,7 @@ class ResendCafcassEmailsTest {
         CaseDetails case6 = buildCaseWithDraftOrder(6L);
         CaseDetails case7 = buildCaseWithGeneratedOrderDateTime(7L, "Order title");
         CaseDetails case8 = buildCaseWithGeneratedOrderDateOfIssue(8L, "Order title");
+        CaseDetails case9 = buildHearingResentCaseMissingNotice(9L);
 
         // mock cases with hearings
         when(resendCafcassEmailService.getNoticeOfHearingDateTimes(longThat(arg -> !casesWithHearings.contains(arg))))
@@ -125,6 +127,7 @@ class ResendCafcassEmailsTest {
         when(coreCaseDataService.findCaseDetailsByIdNonUser("6")).thenReturn(case6);
         when(coreCaseDataService.findCaseDetailsByIdNonUser("7")).thenReturn(case7);
         when(coreCaseDataService.findCaseDetailsByIdNonUser("8")).thenReturn(case8);
+        when(coreCaseDataService.findCaseDetailsByIdNonUser("9")).thenReturn(case9);
     }
 
     @Test
@@ -159,6 +162,15 @@ class ResendCafcassEmailsTest {
         underTest.execute(executionContext);
 
         verify(cafcassNotificationService, times(1)).sendEmail(any(), any(), any(), any());
+    }
+
+    @Test
+    void shouldNotResendNoticeOfHearingsIfMissingDocument() {
+        when(resendCafcassEmailService.getAllCaseIds()).thenReturn(Set.of(9L));
+
+        underTest.execute(executionContext);
+
+        verify(cafcassNotificationService, never()).sendEmail(any(), any(), any(), any());
     }
 
     @Test
@@ -247,6 +259,19 @@ class ResendCafcassEmailsTest {
                 HearingBooking.builder()
                     .startDate(LocalDateTime.of(2022, 1, 1, 10, 30))
                     .noticeOfHearing(testDocumentReference())
+                    .build()
+            )))
+            .build();
+        return asCaseDetails(caseData);
+    }
+
+    private CaseDetails buildHearingResentCaseMissingNotice(Long caseId) {
+        CaseData caseData = CaseData.builder()
+            .id(caseId)
+            .state(State.CASE_MANAGEMENT)
+            .hearingDetails(List.of(element(
+                HearingBooking.builder()
+                    .startDate(LocalDateTime.of(2022, 1, 1, 10, 30))
                     .build()
             )))
             .build();
