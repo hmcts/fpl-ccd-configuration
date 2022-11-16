@@ -482,7 +482,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         final List<UUID> expectedDocId = List.of("dfee2cca-c820-4909-ae1d-98e29430f6d5")
             .stream().map(UUID::fromString).collect(Collectors.toList());
 
-        UUID[] otherDocIds = new UUID[]{UUID.randomUUID(), UUID.randomUUID()};
+        UUID[] otherDocIds = new UUID[] {UUID.randomUUID(), UUID.randomUUID()};
         UUID otherPartyId = UUID.randomUUID();
 
         Element<SentDocuments> targetDocumentSentToParties = element(expectedPartyId, SentDocuments.builder()
@@ -551,9 +551,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             CaseData caseData = CaseData.builder()
                 .id(expectedCaseId)
                 .documentsSentToParties(List.of(element(expectedPartyId, SentDocuments.builder()
-                        .documentsSentToParty(List.of(
-                            element(otherDocIds[0], SentDocument.builder().build()),
-                            element(otherDocIds[1], SentDocument.builder().build()))).build())))
+                    .documentsSentToParty(List.of(
+                        element(otherDocIds[0], SentDocument.builder().build()),
+                        element(otherDocIds[1], SentDocument.builder().build()))).build())))
                 .build();
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
@@ -575,7 +575,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 "a3755cb6-4e12-4670-8779-c07e00ec669e")
             .stream().map(UUID::fromString).collect(Collectors.toList());
 
-        UUID[] otherDocIds = new UUID[]{UUID.randomUUID(), UUID.randomUUID()};
+        UUID[] otherDocIds = new UUID[] {UUID.randomUUID(), UUID.randomUUID()};
         UUID otherPartyId = UUID.randomUUID();
 
         Element<SentDocuments> targetDocumentSentToParties = element(expectedPartyId, SentDocuments.builder()
