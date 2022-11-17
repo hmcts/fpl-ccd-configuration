@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.List;
@@ -39,13 +40,16 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
 
+    private final MigrateCaseService migrateCaseService;
+
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-798", this::run798,
         "DFPL-802", this::run802,
         "DFPL-776", this::run776,
         "DFPL-826", this::run826,
         "DFPL-810", this::run810,
-        "DFPL-828", this::run828
+        "DFPL-828", this::run828,
+        "DFPL-969", this::run969
     );
 
     @PostMapping("/about-to-submit")
@@ -285,4 +289,15 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().put("documentsSentToParties", resultDocumentsSentToParties);
     }
+
+    private void run969(CaseDetails caseDetails) {
+        var migrationId = "DFPL-969";
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1654525609722908L, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removeHearingOrderBundleDraft(getCaseData(caseDetails),
+            migrationId, UUID.fromString("4f20eca8-d255-4339-bb09-23a1e2ba7d80"),
+            UUID.fromString("84573155-34ac-4ff4-b616-54ac4cc369cb")));
+    }
+
 }
