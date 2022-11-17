@@ -280,7 +280,7 @@ scheduler:
       cronGroup: "NIGHTLY_CRON"
       description: 'Resend selected order emails to cafcass'
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.ResendCafcassEmails'
-      cron: 0 0 20 ? * * *
+      cron: 0 30 20 ? * * *
 
 testing:
   support:
