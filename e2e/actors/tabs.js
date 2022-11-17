@@ -1,4 +1,4 @@
-const assert = require("assert");
+const assert = require('assert');
 const TAB_CLASS_SELECTOR = '//mat-tab-body';
 
 function tabFieldSelector(pathToField) {
