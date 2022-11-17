@@ -8,6 +8,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyGatekeeperTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.SharedNotifyContentProvider;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class GatekeeperEmailContentProvider extends SharedNotifyContentProvider {
@@ -17,7 +19,7 @@ public class GatekeeperEmailContentProvider extends SharedNotifyContentProvider 
         NotifyGatekeeperTemplate template = buildNotifyTemplate(NotifyGatekeeperTemplate.builder().build(), caseData);
 
         // Check if local authority has a value otherwise use 3rd party
-        if (caseData.getCaseLocalAuthority() != null && !caseData.getCaseLocalAuthority().isEmpty()) {
+        if (!isEmpty(caseData.getCaseLocalAuthority())) {
             template.setLocalAuthority(config.getLocalAuthorityName(caseData.getCaseLocalAuthority()));
         } else {
             template.setLocalAuthority(
