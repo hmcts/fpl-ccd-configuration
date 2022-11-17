@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import org.apache.tomcat.jni.Local;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
