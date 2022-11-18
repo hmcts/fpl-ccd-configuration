@@ -177,9 +177,9 @@ task smoke(type: Test) {
   include "uk/gov/hmcts/reform/fpl/smoke/**"
 }
 
-task smoke(description: 'Runs the smoke tests.') {
-  dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runSmokeTests))
-}
+//task smoke(description: 'Runs the smoke tests.') {
+//  dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runSmokeTests))
+//}
 
 task functional(description: 'Runs the functional tests.') {
   dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runApiTests, runBrowserTests))
