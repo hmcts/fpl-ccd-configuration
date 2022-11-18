@@ -1,4 +1,5 @@
 package uk.gov.hmcts.reform.fpl.smoke;
+
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
