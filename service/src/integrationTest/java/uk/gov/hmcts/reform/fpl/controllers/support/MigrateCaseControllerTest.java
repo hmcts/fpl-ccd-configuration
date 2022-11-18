@@ -75,8 +75,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             .hasMessage("No migration mapped to " + INVALID_MIGRATION_ID);
     }
 
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
+    // @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    // @Nested
     class DfplRemoveC110a {
         private final long invalidCaseId = 1643728359576136L;
         private final UUID invalidDocId = UUID.randomUUID();
@@ -313,8 +313,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
     }
 
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
+    // @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    // @Nested
     class Dfpl776 {
         final String migrationId = "DFPL-776";
         final long expectedCaseId = 1646318196381762L;
@@ -378,8 +378,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
     }
 
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
+    //@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    //@Nested
     class Dfpl1001 {
         final String migrationId = "DFPL-1001";
         final Long caseId = 1649335087796806L;
