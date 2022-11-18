@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.AllowedContactPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.AmendOrderToDownloadPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.AppointedGuardianBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDateBlockPrePopulator;
@@ -15,7 +16,9 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDate
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApproverBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ChildPlacementOrderPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.CloseCaseBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.DeclarationOfParentagePrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.EPOTypeAndPreventRemovalBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.FamilyAssistancePrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkApplicationBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkedToHearingBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ParentalResponsibilityPrePopulator;
@@ -44,11 +47,14 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DA
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_PLACEMENT_APPLICATIONS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CLOSE_CASE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DECLARATION_OF_PARENTAGE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE_AND_PREVENT_REMOVAL;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.FAMILY_ASSISTANCE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINKED_TO_HEARING;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINK_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_TO_AMEND;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.PARENTAL_RESPONSIBILITY;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.PARTY_ALLOWED_CONTACTS_AND_CONDITIONS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.RESPONDENTS_REFUSED;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SELECT_SINGLE_CHILD;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TRANSLATION_REQUIREMENTS;
@@ -88,6 +94,10 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
     @Mock
     private ParentalResponsibilityPrePopulator parentalResponsibilityPrePopulator;
     @Mock
+    private AllowedContactPrePopulator allowedContactPrePopulator;
+    @Mock
+    private DeclarationOfParentagePrePopulator declarationOfParentagePrePopulator;
+    @Mock
     private ChildPlacementOrderPrePopulator childPlacementOrderPrePopulator;
     @Mock
     private RespondentsRefusedBlockPrePopulator respondentsRefusedBlockPrePopulator;
@@ -107,6 +117,8 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
     private CloseCaseBlockPrePopulator closeCaseBlockPrePopulator;
     @Mock
     private TranslationRequirementsBlockPrePopulator translationRequirementsBlockPrePopulator;
+    @Mock
+    private FamilyAssistancePrePopulator familyAssistancePrePopulator;
 
     @InjectMocks
     private OrderSectionAndQuestionsPrePopulatorHolder underTest;
@@ -135,9 +147,13 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             respondentsRefusedBlockPrePopulator,
             whichOthersBlockPrePopulator,
             amendOrderToDownloadPrePopulator,
-            parentalResponsibilityPrePopulator
+            parentalResponsibilityPrePopulator,
+            allowedContactPrePopulator,
+            declarationOfParentagePrePopulator,
+            familyAssistancePrePopulator
         );
         questionBlockPrepopulatorMapping = Map.ofEntries(
+            Map.entry(PARTY_ALLOWED_CONTACTS_AND_CONDITIONS, allowedContactPrePopulator),
             Map.entry(LINKED_TO_HEARING, linkedToHearingBlockPrePopulator),
             Map.entry(LINK_APPLICATION, linkApplicationBlockPrePopulator),
             Map.entry(CHILD_PLACEMENT_APPLICATIONS, childPlacementOrderPrePopulator),
@@ -153,7 +169,9 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             Map.entry(TRANSLATION_REQUIREMENTS, translationRequirementsBlockPrePopulator),
             Map.entry(WHICH_OTHERS, whichOthersBlockPrePopulator),
             Map.entry(ORDER_TO_AMEND, amendOrderToDownloadPrePopulator),
-            Map.entry(PARENTAL_RESPONSIBILITY, parentalResponsibilityPrePopulator)
+            Map.entry(PARENTAL_RESPONSIBILITY, parentalResponsibilityPrePopulator),
+            Map.entry(DECLARATION_OF_PARENTAGE, declarationOfParentagePrePopulator),
+            Map.entry(FAMILY_ASSISTANCE_ORDER, familyAssistancePrePopulator)
         );
 
         sectionPrepopulatorMapping = Map.of(

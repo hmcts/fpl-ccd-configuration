@@ -11,15 +11,14 @@ import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
-import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
@@ -46,7 +45,6 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
@@ -56,7 +54,6 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.SECONDARY_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ADDITIONAL_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -83,7 +80,7 @@ public class AdditionalApplicationsUploadedEventHandler {
         AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
         final List<DocumentReference> documents = getApplicationDocuments(uploadedBundle);
 
-        Set<Recipient> recipientsToNotify = getRecipientsToNotifyByPost(caseData, uploadedBundle);
+        Set<Recipient> recipientsToNotify = getRecipientsToNotifyByPost(caseData);
         sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(recipientsToNotify));
     }
 
@@ -124,23 +121,8 @@ public class AdditionalApplicationsUploadedEventHandler {
         }
     }
 
-    private Set<Recipient> getRecipientsToNotifyByPost(CaseData caseData, AdditionalApplicationsBundle uploadedBundle) {
-        Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
-
-        List<Element<Other>> selectedOthers = getOthersSelected(uploadedBundle);
-        List<Element<Respondent>> selectedRespondents = getRespondentsSelected(uploadedBundle);
-
-        allRecipients.removeAll(otherRecipientsInbox.getNonSelectedRecipients(
-            POST, caseData, selectedOthers, Element::getValue
-        ));
-        allRecipients.removeAll(representativesInbox.getNonSelectedRespondentRecipientsByPost(
-            caseData, selectedRespondents
-        ));
-
-        allRecipients.addAll(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(selectedOthers));
-        allRecipients.addAll(representativesInbox.getSelectedRecipientsWithNoRepresentation(selectedRespondents));
-
-        return allRecipients;
+    private Set<Recipient> getRecipientsToNotifyByPost(CaseData caseData) {
+        return new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
     }
 
     @EventListener
@@ -168,15 +150,21 @@ public class AdditionalApplicationsUploadedEventHandler {
             .caseData(caseData).build()));
 
         if (applicant.getType() != LOCAL_AUTHORITY && applicant.getType() != SECONDARY_LOCAL_AUTHORITY) {
-            final Map<String, String> respondentsEmails = getRespondentsEmails(caseData);
-            if (isNotEmpty(respondentsEmails.get(applicant.getName()))) {
-                recipients.add(respondentsEmails.get(applicant.getName()));
+            final Map<String, String> emails = getRespondentAndChildEmails(caseData);
+            if (isNotEmpty(emails.get(applicant.getName()))) {
+                recipients.add(emails.get(applicant.getName()));
             }
         }
 
         if (isNotEmpty(recipients)) {
             sendNotification(caseData, recipients);
         }
+    }
+
+    private Map<String, String> getRespondentAndChildEmails(CaseData caseData) {
+        Map<String, String> emails = getRespondentsEmails(caseData);
+        emails.putAll(getChildrenEmails(caseData));
+        return emails;
     }
 
     private Map<String, String> getRespondentsEmails(CaseData caseData) {
@@ -188,7 +176,16 @@ public class AdditionalApplicationsUploadedEventHandler {
             ));
     }
 
-    private boolean hasNoSolicitorEmail(Element<Respondent> respondent) {
+    private Map<String, String> getChildrenEmails(CaseData caseData) {
+        return caseData.getAllChildren().stream()
+            .collect(Collectors.toMap(
+                child -> child.getValue().getParty().getFullName(),
+                child -> hasNoSolicitorEmail(child) ? EMPTY
+                    : child.getValue().getSolicitor().getEmail()
+            ));
+    }
+
+    private boolean hasNoSolicitorEmail(Element<? extends WithSolicitor> respondent) {
         return isNull(respondent.getValue().getSolicitor()) || isEmpty(respondent.getValue().getSolicitor().getEmail());
     }
 
@@ -219,22 +216,14 @@ public class AdditionalApplicationsUploadedEventHandler {
 
     private Set<String> getRepresentativesEmails(CaseData caseData,
                                                  RepresentativeServingPreferences servingPreference) {
-        AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
-
-        List<Element<Other>> othersSelected = getOthersSelected(uploadedBundle);
-        List<Element<Respondent>> respondentsSelected = getRespondentsSelected(uploadedBundle);
-
         Set<String> digitalRepresentatives = representativesInbox.getEmailsByPreference(caseData, servingPreference);
 
+        // Using this to ensure all others are removed, this will be deprecated once other flows
+        // are updated to not notify others.
         Set<String> nonSelectedOthers = otherRecipientsInbox.getNonSelectedRecipients(
-            servingPreference, caseData, othersSelected, element -> element.getValue().getEmail()
+            servingPreference, caseData, new ArrayList<>(), element -> element.getValue().getEmail()
         );
         digitalRepresentatives.removeAll(nonSelectedOthers);
-
-        Set<String> nonSelectedRespondentsRepresentatives = representativesInbox.getNonSelectedRespondentRecipients(
-            servingPreference, caseData, respondentsSelected, element -> element.getValue().getEmail()
-        );
-        digitalRepresentatives.removeAll(nonSelectedRespondentsRepresentatives);
 
         return digitalRepresentatives;
     }
@@ -306,21 +295,5 @@ public class AdditionalApplicationsUploadedEventHandler {
         }
 
         return documents;
-    }
-
-    private List<Element<Other>> getOthersSelected(final AdditionalApplicationsBundle lastBundle) {
-        if (lastBundle.getC2DocumentBundle() != null) {
-            return defaultIfNull(lastBundle.getC2DocumentBundle().getOthers(), List.of());
-        }
-
-        return defaultIfNull(lastBundle.getOtherApplicationsBundle().getOthers(), List.of());
-    }
-
-    private List<Element<Respondent>> getRespondentsSelected(final AdditionalApplicationsBundle lastBundle) {
-        if (lastBundle.getC2DocumentBundle() != null) {
-            return defaultIfNull(lastBundle.getC2DocumentBundle().getRespondents(), List.of());
-        }
-
-        return defaultIfNull(lastBundle.getOtherApplicationsBundle().getRespondents(), List.of());
     }
 }

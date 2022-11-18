@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.documentview.DocumentContainerView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentFolderView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
+import uk.gov.hmcts.reform.fpl.service.DocumentService;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -28,11 +29,14 @@ class DocumentsListRenderer {
 
     private final String imagesBaseUrl;
     private final CaseUrlService caseUrlService;
+    private final DocumentService documentService;
 
     public DocumentsListRenderer(@Value("${resources.images.baseUrl}") String imagesBaseUrl,
-                                 CaseUrlService caseUrlService) {
+                                 CaseUrlService caseUrlService,
+                                 DocumentService documentService) {
         this.imagesBaseUrl = imagesBaseUrl;
         this.caseUrlService = caseUrlService;
+        this.documentService = documentService;
     }
 
     public String render(List<DocumentContainerView> documents) {
@@ -85,6 +89,10 @@ class DocumentsListRenderer {
 
         if (documentView.isIncludeSWETField() && isNotEmpty(documentView.getIncludedInSWET())) {
             documentFields.add(Pair.of("Included in SWET", documentView.getIncludedInSWET()));
+        }
+
+        if (isNotEmpty(documentView.getExpertReportType())) {
+            documentFields.add(Pair.of("Expert report type", documentView.getExpertReportType()));
         }
 
         if (documentView.isIncludeDocumentName() && isNotEmpty(documentView.getDocumentName())) {
@@ -147,7 +155,7 @@ class DocumentsListRenderer {
     }
 
     private String getDocumentUrl(DocumentReference document) {
-        String binaryUrl = document.getBinaryUrl();
+        String binaryUrl = documentService.getDocumentBinaryUrl(document);
         try {
             var uri = new URI(binaryUrl);
             return caseUrlService.getBaseUrl() + uri.getPath();

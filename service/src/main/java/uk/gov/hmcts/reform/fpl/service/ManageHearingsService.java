@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.HearingDuration;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
@@ -286,13 +286,13 @@ public class ManageHearingsService {
             caseFields.put(HEARING_END_DATE_TIME, hearingBooking.getEndDate());
         }
 
-        if (hearingBooking.getPreviousHearingVenue() == null
-            || hearingBooking.getPreviousHearingVenue().getPreviousVenue() == null) {
-            caseFields.put("hearingVenue", hearingBooking.getVenue());
-            caseFields.put("hearingVenueCustom", hearingBooking.getVenueCustomAddress());
-        } else {
+        if (hearingBooking.getPreviousHearingVenue() != null
+            && hearingBooking.getPreviousHearingVenue().getPreviousVenue() != null) {
             caseFields.put(PREVIOUS_HEARING_VENUE_KEY, hearingBooking.getPreviousHearingVenue());
         }
+
+        caseFields.put("hearingVenue", hearingBooking.getVenue());
+        caseFields.put("hearingVenueCustom", hearingBooking.getVenueCustomAddress());
 
         return caseFields;
     }
@@ -467,7 +467,7 @@ public class ManageHearingsService {
                 formatLocalDateTimeBaseUsingFormat(caseData.getHearingEndDateTime(), DateFormatterHelper.DATE_TIME));
         } else if (DAYS.getType().equals(caseData.getHearingDuration())) {
             LocalDateTime endDateTime = caseData.getHearingStartDate()
-                .plusDays(caseData.getHearingDays());
+                .plusDays(caseData.getHearingDays().longValue() - 1);
             populateFields.accept(endDateTime, getHearingDays(caseData.getHearingDays()));
         } else if (HOURS_MINS.getType().equals(caseData.getHearingDuration())) {
             LocalDateTime startDate = caseData.getHearingStartDate();

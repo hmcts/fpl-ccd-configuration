@@ -173,5 +173,25 @@
     "ElementLabel": "Sent for translation",
     "SecurityClassification": "Public",
     "FieldShowCondition": "needTranslation=\"YES\" AND translatedOrder!=\"*\" AND status=\"APPROVED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
+    "ListElementCode": "documentAcknowledgeLabel",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Presentational only - used to display a warning label in the event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
+    "ListElementCode": "documentAcknowledge",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DocumentAcknowledge",
+    "ElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

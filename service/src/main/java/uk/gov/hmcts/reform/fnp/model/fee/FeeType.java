@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderSection;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,6 +18,7 @@ import java.util.Optional;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.CHANGE_SURNAME_OR_REMOVE_JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.TERMINATION_OF_APPOINTMENT_OF_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C100_CHILD_ARRANGEMENTS;
@@ -56,17 +58,25 @@ public enum FeeType {
     PARENTAL_RESPONSIBILITY_FATHER,
     PARENTAL_RESPONSIBILITY_FEMALE_PARENT,
     SECURE_ACCOMMODATION_WALES,
-    DECLARATION_OF_PARENTAGE;
+    DECLARATION_OF_PARENTAGE,
+    REFUSE_CONTACT_WITH_CHILD,
+    CHILD_RECOVERY_ORDER;
 
-    private static final Map<OrderType, FeeType> orderToFeeMap = Map.of(
-        OrderType.CARE_ORDER, CARE_ORDER,
-        OrderType.EDUCATION_SUPERVISION_ORDER, EDUCATION_SUPERVISION_ORDER,
-        OrderType.EMERGENCY_PROTECTION_ORDER, EMERGENCY_PROTECTION_ORDER,
-        OrderType.INTERIM_CARE_ORDER, INTERIM_CARE_ORDER,
-        OrderType.INTERIM_SUPERVISION_ORDER, INTERIM_SUPERVISION_ORDER,
-        OrderType.SUPERVISION_ORDER, SUPERVISION_ORDER,
-        OrderType.OTHER, OTHER,
-        OrderType.CHILD_ASSESSMENT_ORDER, CHILD_ASSESSMENT_ORDER);
+    private static final Map<OrderType, FeeType> orderToFeeMap;
+    static {
+        orderToFeeMap = new HashMap<>();
+        orderToFeeMap.put(OrderType.CARE_ORDER, CARE_ORDER);
+        orderToFeeMap.put(OrderType.EDUCATION_SUPERVISION_ORDER, EDUCATION_SUPERVISION_ORDER);
+        orderToFeeMap.put(OrderType.EMERGENCY_PROTECTION_ORDER, EMERGENCY_PROTECTION_ORDER);
+        orderToFeeMap.put(OrderType.INTERIM_CARE_ORDER, INTERIM_CARE_ORDER);
+        orderToFeeMap.put(OrderType.INTERIM_SUPERVISION_ORDER, INTERIM_SUPERVISION_ORDER);
+        orderToFeeMap.put(OrderType.SUPERVISION_ORDER, SUPERVISION_ORDER);
+        orderToFeeMap.put(OrderType.OTHER, OTHER);
+        orderToFeeMap.put(OrderType.CHILD_ASSESSMENT_ORDER, CHILD_ASSESSMENT_ORDER);
+        orderToFeeMap.put(OrderType.REFUSE_CONTACT_WITH_CHILD, REFUSE_CONTACT_WITH_CHILD);
+        orderToFeeMap.put(OrderType.CHILD_RECOVERY_ORDER, CHILD_RECOVERY_ORDER);
+        orderToFeeMap.put(OrderType.CONTACT_WITH_CHILD_IN_CARE, CONTACT_WITH_CHILD_IN_CARE);
+    }
 
     private static final Map<SupplementType, FeeType> supplementToFeeMap = Map.of(
         SupplementType.C13A_SPECIAL_GUARDIANSHIP, SPECIAL_GUARDIANSHIP,
@@ -115,6 +125,7 @@ public enum FeeType {
         }
 
         return c2OrdersRequestedList.stream()
+            .filter(el -> !el.equals(REQUESTING_ADJOURNMENT)) // no fee code - it removes the fees entirely
             .map(c2AdditionalOrdersToFeesMap::get)
             .collect(toUnmodifiableList());
     }

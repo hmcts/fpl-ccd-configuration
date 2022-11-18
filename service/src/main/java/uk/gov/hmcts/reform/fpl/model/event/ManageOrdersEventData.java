@@ -123,6 +123,21 @@ public class ManageOrdersEventData {
     LocalDate manageOrdersSupervisionOrderApprovalDate;
     LocalDate manageOrdersSupervisionOrderEndDate;
     ChildArrangementsOrderType manageOrdersChildArrangementsOrderType;
+    String manageOrdersPartyGrantedLeave;
+    String manageOrdersChildNewSurname;
+    DynamicList manageOrdersAllowedContact1;
+    DynamicList manageOrdersAllowedContact2;
+    DynamicList manageOrdersAllowedContact3;
+    String manageOrdersConditionsOfContact;
+    DynamicList manageOrdersParentageApplicant;
+    DynamicList manageOrdersHearingParty1;
+    DynamicList manageOrdersHearingParty2;
+    DynamicList manageOrdersPersonWhoseParenthoodIs;
+    DynamicList manageOrdersParentageAction;
+    DynamicList manageOrdersPartyToBeBefriended1;
+    DynamicList manageOrdersPartyToBeBefriended2;
+    DynamicList manageOrdersPartyToBeBefriended3;
+    LocalDate manageOrdersFamilyAssistanceEndDate;
 
     @JsonIgnore
     public LocalDateTime getManageOrdersApprovalDateOrDateTime() {

@@ -5,7 +5,9 @@ import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForChildAssessmentOrder;
+import uk.gov.hmcts.reform.fpl.model.GroundsForContactWithChild;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
+import uk.gov.hmcts.reform.fpl.model.GroundsForRefuseContactWithChild;
 import uk.gov.hmcts.reform.fpl.model.GroundsForSecureAccommodationOrder;
 import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
@@ -31,6 +33,12 @@ public class GroundsChecker extends PropertiesChecker {
         } else if (hasSecureAccommodationOrder(caseData)) {
             return super.validate(caseData, List.of("groundsForSecureAccommodationOrder"),
                 SecureAccommodationGroup.class);
+        } else if (caseData.isRefuseContactWithChildApplication()) {
+            return super.validate(caseData, List.of("groundsForRefuseContactWithChild"));
+        } else if (hasChildRecoveryOrder(caseData)) {
+            return super.validate(caseData, List.of("groundsForChildRecoveryOrder"));
+        } else if (caseData.isContactWithChildInCareApplication()) {
+            return super.validate(caseData, List.of("groundsForContactWithChild"));
         } else {
             return super.validate(caseData, List.of("grounds"));
         }
@@ -41,13 +49,19 @@ public class GroundsChecker extends PropertiesChecker {
         return isGroundsStarted(caseData.getGrounds())
             || isEPOGroundsStarted(caseData.getGroundsForEPO())
             || isChildAssessmentOrderGroundsStarted(caseData.getGroundsForChildAssessmentOrder())
-            || isSecureAccommodationOrderGroundsStarted(caseData.getGroundsForSecureAccommodationOrder());
+            || isSecureAccommodationOrderGroundsStarted(caseData.getGroundsForSecureAccommodationOrder())
+            || isRefuseContactWithChildGroundsStarted(caseData.getGroundsForRefuseContactWithChild())
+            || isContactWithChildGroundsStarted(caseData.getGroundsForContactWithChild());
     }
 
     @Override
     public boolean isCompleted(CaseData caseData) {
         if (hasSecureAccommodationOrder(caseData)) {
             return isSecureAccommodationOrderGroundsCompleted(caseData.getGroundsForSecureAccommodationOrder());
+        } else if (caseData.isRefuseContactWithChildApplication()) {
+            return isRefuseContactWithChildGroundsCompleted(caseData.getGroundsForRefuseContactWithChild());
+        } else if (caseData.isContactWithChildInCareApplication()) {
+            return isContactWithChildGroundsCompleted(caseData.getGroundsForContactWithChild());
         }
         return super.isCompleted(caseData);
     }
@@ -60,6 +74,11 @@ public class GroundsChecker extends PropertiesChecker {
     private boolean hasSecureAccommodationOrder(CaseData caseData) {
         return caseData.getOrders() != null && caseData.getOrders().getOrderType() != null
                && caseData.getOrders().getOrderType().contains(OrderType.SECURE_ACCOMMODATION_ORDER);
+    }
+
+    private boolean hasChildRecoveryOrder(CaseData caseData) {
+        return caseData.getOrders() != null && caseData.getOrders().getOrderType() != null
+               && caseData.getOrders().getOrderType().contains(OrderType.CHILD_RECOVERY_ORDER);
     }
 
     private static boolean isGroundsStarted(Grounds grounds) {
@@ -82,6 +101,37 @@ public class GroundsChecker extends PropertiesChecker {
 
     private static boolean isChildAssessmentOrderGroundsStarted(GroundsForChildAssessmentOrder grounds) {
         return isNotEmpty(grounds) && isNotEmpty(grounds.getThresholdDetails());
+    }
+
+    private static boolean isRefuseContactWithChildGroundsStarted(GroundsForRefuseContactWithChild grounds) {
+        return isNotEmpty(grounds)
+               && (isNotEmpty(grounds.getLaHasRefusedContact())
+                   || isNotEmpty(grounds.getPersonsBeingRefusedContactWithChild())
+                   || isNotEmpty(grounds.getPersonHasContactAndCurrentArrangement())
+                   || isNotEmpty(grounds.getReasonsOfApplication()));
+    }
+
+    private static boolean isRefuseContactWithChildGroundsCompleted(GroundsForRefuseContactWithChild grounds) {
+        return isNotEmpty(grounds) && isNotEmpty(grounds.getLaHasRefusedContact())
+               && isNotEmpty(grounds.getPersonsBeingRefusedContactWithChild())
+               && isNotEmpty(grounds.getPersonHasContactAndCurrentArrangement())
+               && isNotEmpty(grounds.getReasonsOfApplication());
+    }
+
+    private static boolean isContactWithChildGroundsStarted(GroundsForContactWithChild grounds) {
+        return isNotEmpty(grounds)
+            && (isNotEmpty(grounds.getParentOrGuardian())
+                || isNotEmpty(grounds.getResidenceOrder())
+                || isNotEmpty(grounds.getHadCareOfChildrenBeforeCareOrder())
+                || isNotEmpty(grounds.getReasonsForApplication()));
+    }
+
+    private static boolean isContactWithChildGroundsCompleted(GroundsForContactWithChild grounds) {
+        return isNotEmpty(grounds)
+            && (isNotEmpty(grounds.getParentOrGuardian())
+                && isNotEmpty(grounds.getResidenceOrder())
+                && isNotEmpty(grounds.getHadCareOfChildrenBeforeCareOrder())
+                && isNotEmpty(grounds.getReasonsForApplication()));
     }
 
     @Override

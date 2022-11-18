@@ -47,9 +47,9 @@ public class SealedCMORemovalAction implements OrderRemovalAction {
             throw new CMONotFoundException(format("Failed to find order matching id %s", removedOrderId));
         }
 
-        caseManagementOrder.setRemovalReason(caseData.getReasonToRemoveOrder());
+        caseManagementOrder.setRemovalReason(caseData.getRemovalToolData().getReasonToRemoveOrder());
 
-        List<Element<HearingOrder>> hiddenCMOs = caseData.getHiddenCMOs();
+        List<Element<HearingOrder>> hiddenCMOs = caseData.getRemovalToolData().getHiddenCMOs();
         hiddenCMOs.add(cmoElement);
 
         data.put("hiddenCaseManagementOrders", hiddenCMOs);

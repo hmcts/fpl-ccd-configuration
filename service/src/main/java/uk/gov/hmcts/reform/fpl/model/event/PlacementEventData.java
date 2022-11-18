@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
@@ -35,7 +36,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PlacementEventData {
 
-    public static final String NOTICE_GROUP = "Notice";
     public static final String PLACEMENT_GROUP = "Placement";
     public static final String HEARING_GROUP = "Hearing";
 
@@ -84,120 +84,6 @@ public class PlacementEventData {
     }
 
     @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    @JsonDeserialize(using = YesNoDeserializer.class)
-    private YesNo placementNoticeForLocalAuthorityRequired;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    private DocumentReference placementNoticeForLocalAuthority;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    private String placementNoticeForLocalAuthorityDescription;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    @JsonDeserialize(using = YesNoDeserializer.class)
-    private YesNo placementNoticeResponseFromLocalAuthorityReceived;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    private DocumentReference placementNoticeResponseFromLocalAuthority;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    private String placementNoticeResponseFromLocalAuthorityDescription;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    @JsonDeserialize(using = YesNoDeserializer.class)
-    private YesNo placementNoticeForCafcassRequired;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    private DocumentReference placementNoticeForCafcass;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    private String placementNoticeForCafcassDescription;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    @JsonDeserialize(using = YesNoDeserializer.class)
-    private YesNo placementNoticeResponseFromCafcassReceived;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    private DocumentReference placementNoticeResponseFromCafcass;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    private String placementNoticeResponseFromCafcassDescription;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    @JsonDeserialize(using = YesNoDeserializer.class)
-    private YesNo placementNoticeForFirstParentRequired;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    private DocumentReference placementNoticeForFirstParent;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    private String placementNoticeForFirstParentDescription;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    @JsonDeserialize(using = DynamicListDeserializer.class)
-    private DynamicList placementNoticeForFirstParentParentsList;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    @JsonDeserialize(using = YesNoDeserializer.class)
-    private YesNo placementNoticeResponseFromFirstParentReceived;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    private DocumentReference placementNoticeResponseFromFirstParent;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    private String placementNoticeResponseFromFirstParentDescription;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    @JsonDeserialize(using = YesNoDeserializer.class)
-    private YesNo placementNoticeForSecondParentRequired;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    private DocumentReference placementNoticeForSecondParent;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    private String placementNoticeForSecondParentDescription;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    @JsonDeserialize(using = DynamicListDeserializer.class)
-    private DynamicList placementNoticeForSecondParentParentsList;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    @JsonDeserialize(using = YesNoDeserializer.class)
-    private YesNo placementNoticeResponseFromSecondParentReceived;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    private DocumentReference placementNoticeResponseFromSecondParent;
-
-    @Temp
-    @FieldsGroup(NOTICE_GROUP)
-    private String placementNoticeResponseFromSecondParentDescription;
-
-    @Temp
     @FieldsGroup(HEARING_GROUP)
     private DocumentReference placementNotice;
 
@@ -219,11 +105,13 @@ public class PlacementEventData {
     private final String placementNoticeVenue;
 
     @Temp
-    @FieldsGroup(NOTICE_GROUP)
+    @FieldsGroup(HEARING_GROUP)
     private List<Element<Respondent>> placementRespondentsToNotify;
 
     @Temp
-    @FieldsGroup(NOTICE_GROUP)
+    @FieldsGroup(HEARING_GROUP)
     @JsonDeserialize(using = YesNoDeserializer.class)
     private YesNo sendPlacementNoticeToAllRespondents;
+
+    private UUID placementIdToBeSealed;
 }

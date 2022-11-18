@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import static java.lang.String.join;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -32,9 +33,14 @@ class DocumentDownloadServiceTest {
     private static final String AUTH_TOKEN = "token";
     private static final String SERVICE_AUTH_TOKEN = "service-token";
     private static final String USER_ID = "8a0a7c46-631c-4a55-9b81-4cc9fb9798f4";
+    private static final String SYSTEM_USER_TOKEN = "system-user-token";
+    private static final String SYSTEM_USER_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
 
     @Mock
     private DocumentDownloadClientApi documentDownloadClient;
+
+    @Mock
+    private SecureDocStoreService secureDocStoreService;
 
     @Mock
     private AuthTokenGenerator authTokenGenerator;
@@ -46,6 +52,12 @@ class DocumentDownloadServiceTest {
     private RequestData requestData;
 
     @Mock
+    private FeatureToggleService featureToggleService;
+
+    @Mock
+    private SystemUserService systemUserService;
+
+    @Mock
     private ResponseEntity<Resource> resourceResponseEntity;
 
     @Mock
@@ -53,7 +65,7 @@ class DocumentDownloadServiceTest {
 
     private DocumentDownloadService documentDownloadService;
 
-    private Document document = document();
+    private final Document document = document();
 
     @BeforeEach
     void setup() {
@@ -67,11 +79,17 @@ class DocumentDownloadServiceTest {
         given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(userInfo);
         given(requestData.authorisation()).willReturn(AUTH_TOKEN);
         given(requestData.userId()).willReturn(USER_ID);
+        given(featureToggleService.isSecureDocstoreEnabled()).willReturn(false);
+        given(systemUserService.getSysUserToken()).willReturn(SYSTEM_USER_TOKEN);
+        given(systemUserService.getUserId(any())).willReturn(SYSTEM_USER_ID);
 
         documentDownloadService = new DocumentDownloadService(authTokenGenerator,
             documentDownloadClient,
             idamClient,
-            requestData);
+            requestData,
+            secureDocStoreService,
+            featureToggleService,
+            systemUserService);
     }
 
     @Test
@@ -126,4 +144,33 @@ class DocumentDownloadServiceTest {
         assertThat(exceptionThrown.getMessage()).isEqualTo("File cannot be empty");
     }
 
+    @Test
+    void shouldUseSystemUpdateUserIfNotInRequest() {
+        given(requestData.authorisation()).willThrow(new IllegalStateException());
+
+        Document document = document();
+        byte[] expectedDocumentContents = "test".getBytes();
+
+        ResponseEntity<Resource> expectedResponse = ResponseEntity.ok(new ByteArrayResource(expectedDocumentContents));
+        given(resourceResponseEntity.getStatusCode())
+            .willReturn(expectedResponse.getStatusCode());
+
+        given(resourceResponseEntity.getBody())
+            .willReturn(expectedResponse.getBody());
+
+        given(documentDownloadClient.downloadBinary(anyString(), anyString(),
+            anyString(), anyString(), anyString()))
+            .willReturn(resourceResponseEntity);
+
+        byte[] documentContents = documentDownloadService.downloadDocument(document.links.binary.href);
+
+        assertThat(documentContents).isEqualTo(expectedDocumentContents);
+
+        verify(documentDownloadClient).downloadBinary(SYSTEM_USER_TOKEN,
+            SERVICE_AUTH_TOKEN,
+            "caseworker-publiclaw-systemupdate",
+            SYSTEM_USER_ID,
+            "/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary");
+
+    }
 }

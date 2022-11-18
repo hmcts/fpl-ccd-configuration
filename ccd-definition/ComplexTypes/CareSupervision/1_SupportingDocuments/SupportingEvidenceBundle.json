@@ -68,6 +68,26 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "SupportingEvidenceBundle",
+    "ListElementCode": "documentAcknowledgeLabel",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Presentational only - used to display a warning label in the event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupportingEvidenceBundle",
+    "ListElementCode": "documentAcknowledge",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DocumentAcknowledge",
+    "ElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupportingEvidenceBundle",
     "ListElementCode": "confidentialWarningLabel",
     "FieldType": "Label",
     "ElementLabel": " ",
@@ -108,6 +128,18 @@
     "FieldShowCondition": "confidential=\"DO_NOT_SHOW\"",
     "Searchable": "N",
     "Comment": "Not shown in tab"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupportingEvidenceBundle",
+    "ListElementCode": "expertReportType",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "ExpertReportList",
+    "ElementLabel": "Choose an expert report type",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"EXPERT_REPORTS\"",
+    "Searchable": "N",
+    "Comment": "Only shown + populated if this is an expert report"
   },
   {
     "LiveFrom": "01/01/2017",
