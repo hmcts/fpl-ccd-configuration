@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers.support;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,11 +16,16 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
+import java.beans.PropertyDescriptor;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -40,6 +46,8 @@ public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
+        "DFPL-985", this::run985,
+        "DFPL-1012", this::run1012,
         "DFPL-798", this::run798,
         "DFPL-802", this::run802,
         "DFPL-776", this::run776,
@@ -289,5 +297,77 @@ public class MigrateCaseController extends CallbackController {
             }).collect(Collectors.toList());
 
         caseDetails.getData().put("documentsSentToParties", resultDocumentsSentToParties);
+    }
+
+    private final DocumentListService documentListService;
+
+    private void removeRespondentStatementList(CaseDetails caseDetails, long expectedCaseId,
+                                               String migrationId,
+                                               String expectedRespondentStatementId) {
+        CaseData caseData = getCaseData(caseDetails);
+        final Long caseId = caseData.getId();
+
+        if (caseId != expectedCaseId) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId));
+        }
+
+        List<Element<RespondentStatement>> respondentStatementsResult =
+            caseData.getRespondentStatements().stream()
+                .filter(el -> !el.getId().equals(UUID.fromString(expectedRespondentStatementId)))
+                .collect(toList());
+
+        if (respondentStatementsResult.size() !=
+            caseData.getRespondentStatements().size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, invalid respondent statements",
+                migrationId, caseId));
+        }
+
+        caseDetails.getData().put("respondentStatements", respondentStatementsResult);
+        // refreshing the document view
+        caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
+    }
+
+    private void removePositionStatementRespondentList(CaseDetails caseDetails, long expectedCaseId,
+                                                       String migrationId,
+                                                       String expectedPositionStatementId) {
+        CaseData caseData = getCaseData(caseDetails);
+        final Long caseId = caseData.getId();
+
+        if (caseId != expectedCaseId) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId));
+        }
+
+        List<Element<PositionStatementRespondent>> positionStatementRespondentListResult =
+            caseData.getHearingDocuments().getPositionStatementRespondentListV2().stream()
+                .filter(el -> !el.getId().equals(UUID.fromString(expectedPositionStatementId)))
+                .collect(toList());
+
+        if (positionStatementRespondentListResult.size() !=
+            caseData.getHearingDocuments().getPositionStatementRespondentListV2().size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, invalid position statement respondent",
+                migrationId, caseId));
+        }
+
+        caseDetails.getData().put("positionStatementRespondentListV2", positionStatementRespondentListResult);
+    }
+
+    private void run985(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-985";
+        final Long expectedCaseId = 1648203424556112L;
+        removeRespondentStatementList(caseDetails, expectedCaseId, migrationId,
+            "4b88563e-c6b3-4780-90b6-531e1db65b7e");
+    }
+
+    private void run1012(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-1012";
+        final Long expectedCaseId = 1661877618161045L;
+        removePositionStatementRespondentList(caseDetails, expectedCaseId, migrationId,
+            "b8da3a48-441f-4210-a21c-7008d256aa32");
     }
 }
