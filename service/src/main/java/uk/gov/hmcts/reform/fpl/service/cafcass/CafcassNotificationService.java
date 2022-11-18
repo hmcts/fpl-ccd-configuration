@@ -58,7 +58,7 @@ public class CafcassNotificationService {
     private static final long  MEGABYTE = 1024L * 1024L;
     private static final String SUBJECT_DELIMITER = "|";
     private static final String VALUE_TO_REPLACE = String.join("",SUBJECT_DELIMITER,"null");
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @Autowired
