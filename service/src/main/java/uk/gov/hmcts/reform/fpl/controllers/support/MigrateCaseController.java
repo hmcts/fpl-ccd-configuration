@@ -394,8 +394,7 @@ public class MigrateCaseController extends CallbackController {
                 .filter(el -> !el.getId().equals(UUID.fromString(expectedRespondentStatementId)))
                 .collect(toList());
 
-        if (respondentStatementsResult.size() !=
-            caseData.getRespondentStatements().size() - 1) {
+        if (respondentStatementsResult.size() != caseData.getRespondentStatements().size() - 1) {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, invalid respondent statements",
                 migrationId, caseId));
@@ -423,8 +422,8 @@ public class MigrateCaseController extends CallbackController {
                 .filter(el -> !el.getId().equals(UUID.fromString(expectedPositionStatementId)))
                 .collect(toList());
 
-        if (positionStatementRespondentListResult.size() !=
-            caseData.getHearingDocuments().getPositionStatementRespondentListV2().size() - 1) {
+        if (positionStatementRespondentListResult.size() != caseData.getHearingDocuments()
+            .getPositionStatementRespondentListV2().size() - 1) {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, invalid position statement respondent",
                 migrationId, caseId));
