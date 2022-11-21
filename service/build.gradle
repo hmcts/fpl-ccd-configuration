@@ -1,4 +1,4 @@
-buildscript {
+ buildscript {
   repositories {
     mavenCentral()
   }
@@ -172,7 +172,6 @@ def static inStrictOrder(Task... tasks) {
 }
 
 task smoke(type: Test, description: 'Runs smoke test.', group: 'Verification') {
-  description = "Runs Smoke Tests"
   testLogging.showStandardStreams = true
   testClassesDirs = sourceSets.functionalTest.output.classesDirs
   classpath = sourceSets.functionalTest.runtimeClasspath
