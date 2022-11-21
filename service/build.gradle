@@ -171,10 +171,13 @@ def static inStrictOrder(Task... tasks) {
   return tasks
 }
 
-task smoke(type: Test) {
+task smoke(type: Test, description: 'Runs smoke test.', group: 'Verification') {
   description = "Runs Smoke Tests"
-  setClasspath(sourceSets.functionalTest.runtimeClasspath)
+  testLogging.showStandardStreams = true
+  testClassesDirs = sourceSets.functionalTest.output.classesDirs
+  classpath = sourceSets.functionalTest.runtimeClasspath
   include "uk/gov/hmcts/reform/fpl/smoke/**"
+  finalizedBy aggregate
 }
 
 //task smoke(description: 'Runs the smoke tests.') {
