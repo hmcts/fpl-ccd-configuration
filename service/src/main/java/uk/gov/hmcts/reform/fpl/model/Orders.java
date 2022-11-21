@@ -69,6 +69,6 @@ public class Orders {
     }
 
     public boolean isRefuseContactWithChildApplication() {
-        return this.getOrderType().contains(REFUSE_CONTACT_WITH_CHILD);
+        return isNotEmpty(orderType) && this.getOrderType().contains(REFUSE_CONTACT_WITH_CHILD);
     }
 }
