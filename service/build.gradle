@@ -180,9 +180,9 @@ task smoke(type: Test, description: 'Runs smoke test.', group: 'Verification') {
   finalizedBy aggregate
 }
 
-//task smoke(description: 'Runs the smoke tests.') {
-//  dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runSmokeTests))
-//}
+task runCodeceptSmokeTest(type: Test, description: 'Runs the old codecept smoke test.', group: 'Verification') {
+  dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runSmokeTests))
+}
 
 task functional(description: 'Runs the functional tests.') {
   dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runApiTests, runBrowserTests))
