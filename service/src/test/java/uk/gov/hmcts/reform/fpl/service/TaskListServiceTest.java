@@ -81,7 +81,7 @@ class TaskListServiceTest {
 
             final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
             final List<Task> expectedTasks = getTasks(IN_PROGRESS, additionalContactsEnabled, false, false, false,
-                false);
+                false, false);
 
             assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
 
@@ -97,7 +97,7 @@ class TaskListServiceTest {
 
             final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
             final List<Task> expectedTasks = getTasks(COMPLETED_TASK_STATE, additionalContactsEnabled,
-                false, false, false, false);
+                false, false, false, false, false);
 
             assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
 
@@ -114,7 +114,7 @@ class TaskListServiceTest {
 
             final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
             final List<Task> expectedTasks = getTasks(NOT_AVAILABLE, additionalContactsEnabled, false, false, false,
-                false);
+                false, false);
 
             verify(eventsChecker, never()).completedState(any(Event.class));
             assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
@@ -143,7 +143,7 @@ class TaskListServiceTest {
 
             final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
             final List<Task> expectedTasks = getTasks(IN_PROGRESS, true, multiCourts, false, false,
-                false);
+                false, false);
 
             assertThat(tasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
 
@@ -164,7 +164,7 @@ class TaskListServiceTest {
 
             final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
             final List<Task> expectedTasks = getTasks(COMPLETED_TASK_STATE, true, multiCourts, false, false,
-                false);
+                false, false);
 
             assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
 
@@ -212,7 +212,7 @@ class TaskListServiceTest {
 
             final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
             final List<Task> expectedTask = getTasks(IN_PROGRESS, true, false, dischargeOfCare, false,
-                false);
+                false, false);
 
             assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTask);
 
@@ -228,7 +228,7 @@ class TaskListServiceTest {
 
             final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
             final List<Task> expectedTasks = getTasks(COMPLETED_TASK_STATE, true, false, dischargeOfCare, false,
-                false);
+                false, false);
 
             assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
 
@@ -246,7 +246,7 @@ class TaskListServiceTest {
 
             final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
             final List<Task> expectedTasks = getTasks(NOT_AVAILABLE, true, false, dischargeOfCare, false,
-                false);
+                false, false);
 
             assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
 
@@ -271,7 +271,7 @@ class TaskListServiceTest {
 
             final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
             final List<Task> expectedTask = getTasks(IN_PROGRESS, true, false, false, isSecureAccommodationOrder,
-                false);
+                false, false);
 
             assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTask);
 
@@ -287,7 +287,7 @@ class TaskListServiceTest {
 
             final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
             final List<Task> expectedTasks = getTasks(COMPLETED_TASK_STATE, true, false,
-                false, isSecureAccommodationOrder, false);
+                false, isSecureAccommodationOrder, false, false);
 
             assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
 
@@ -304,7 +304,7 @@ class TaskListServiceTest {
 
             final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
             final List<Task> expectedTasks = getTasks(NOT_AVAILABLE, true, false, false, isSecureAccommodationOrder,
-                false);
+                false, false);
 
             assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
 
@@ -330,7 +330,7 @@ class TaskListServiceTest {
 
             final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
             final List<Task> expectedTask = getTasks(IN_PROGRESS, true, false, false, false,
-                isAuthorityRefuseContactWithChildApplication);
+                isAuthorityRefuseContactWithChildApplication, false);
 
             assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTask);
 
@@ -347,7 +347,7 @@ class TaskListServiceTest {
 
             final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
             final List<Task> expectedTasks = getTasks(COMPLETED_TASK_STATE, true, false,
-                false, false, isAuthorityRefuseContactWithChildApplication);
+                false, false, isAuthorityRefuseContactWithChildApplication, false);
 
             assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
 
@@ -365,7 +365,68 @@ class TaskListServiceTest {
 
             final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
             final List<Task> expectedTasks = getTasks(NOT_AVAILABLE, true, false, false, false,
-                isAuthorityRefuseContactWithChildApplication);
+                isAuthorityRefuseContactWithChildApplication, false);
+
+            assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
+
+            verify(eventsChecker, never()).completedState(any(Event.class));
+        }
+    }
+
+    @Nested
+    class ContactWithChildInCareApplication {
+
+        @BeforeEach
+        void init() {
+            when(featureToggles.isApplicantAdditionalContactsEnabled()).thenReturn(true);
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldReturnTasksInProgress(boolean isContactWithChildInCareApplication) {
+            when(caseData.isContactWithChildInCareApplication())
+                .thenReturn(isContactWithChildInCareApplication);
+            when(eventsChecker.isInProgress(any(Event.class), eq(caseData))).thenReturn(true);
+            when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
+
+            final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
+            final List<Task> expectedTask = getTasks(IN_PROGRESS, true, false, false, false, false,
+                isContactWithChildInCareApplication);
+
+            assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTask);
+
+            verify(eventsChecker, never()).isAvailable(any(), any());
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldReturnCompletedTasks(boolean isContactWithChildInCareApplication) {
+            when(caseData.isContactWithChildInCareApplication())
+                .thenReturn(isContactWithChildInCareApplication);
+            when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(true);
+            when(eventsChecker.completedState(any(Event.class))).thenReturn(COMPLETED_TASK_STATE);
+
+            final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
+            final List<Task> expectedTasks = getTasks(COMPLETED_TASK_STATE, true, false,
+                false, false, false, isContactWithChildInCareApplication);
+
+            assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
+
+            verify(eventsChecker, never()).isAvailable(any(), any());
+            verify(eventsChecker, never()).isInProgress(any(), any());
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldReturnNotAvailableTasks(boolean isContactWithChildInCareApplication) {
+            when(caseData.isContactWithChildInCareApplication())
+                .thenReturn(isContactWithChildInCareApplication);
+            when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
+            when(eventsChecker.isAvailable(any(Event.class), eq(caseData))).thenReturn(false);
+
+            final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
+            final List<Task> expectedTasks = getTasks(NOT_AVAILABLE, true, false, false,
+                false, false, isContactWithChildInCareApplication);
 
             assertThat(actualTasks).containsExactlyInAnyOrderElementsOf(expectedTasks);
 
@@ -405,7 +466,7 @@ class TaskListServiceTest {
 
     private List<Task> getTasks(TaskState state, boolean additionalContacts, boolean multipleCourts,
                                 boolean dischargeOfCare, boolean isSecureAccommodationOrder,
-                                boolean isRefuseContactApplication) {
+                                boolean isRefuseContactApplication, boolean isContactWithChildInCareApplication) {
 
         final List<Event> events = new ArrayList<>(List.of(
             ORDERS_SOUGHT,
@@ -428,7 +489,10 @@ class TaskListServiceTest {
             events.add(SELECT_COURT);
         }
 
-        if (!isSecureAccommodationOrder && !dischargeOfCare && !isRefuseContactApplication) {
+        if (!isSecureAccommodationOrder
+                && !dischargeOfCare
+                && !isRefuseContactApplication
+                && !isContactWithChildInCareApplication) {
             events.add(RISK_AND_HARM);
             events.add(FACTORS_AFFECTING_PARENTING);
         }

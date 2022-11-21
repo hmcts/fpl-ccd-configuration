@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
+import uk.gov.hmcts.reform.fpl.utils.GrammarHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,14 +31,14 @@ public class ManageOrderDocumentService {
     }
 
     public String getChildGrammar(int numOfChildren) {
-        return (numOfChildren == 1) ? "child" : "children";
+        return GrammarHelper.getChildGrammar(numOfChildren);
     }
 
     private String getChildIsOrAreGrammar(int numOfChildren) {
-        return (numOfChildren == 1) ? "is" : "are";
+        return GrammarHelper.getIsOrAreGrammar(numOfChildren);
     }
 
     private String getChildWasOrWereGrammar(int numOfChildren) {
-        return (numOfChildren == 1) ? "was" : "were";
+        return GrammarHelper.getWasOrWereGrammar(numOfChildren);
     }
 }

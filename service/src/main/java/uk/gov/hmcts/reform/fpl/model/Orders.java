@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsTy
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.ParticularsOfChildren;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderSection;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEPOAddress;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEPOType;
@@ -18,6 +19,8 @@ import javax.validation.constraints.Size;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CHILD_ASSESSMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.CHILD_RECOVERY_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.CONTACT_WITH_CHILD_IN_CARE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.REFUSE_CONTACT_WITH_CHILD;
@@ -47,6 +50,9 @@ public class Orders {
     private final String court;
     private final String childAssessmentOrderAssessmentDirections;
     private final String childAssessmentOrderContactDirections;
+    private final String childRecoveryOrderDirectionsAppliedFor;
+    private final List<ParticularsOfChildren> particularsOfChildren;
+    private final String particularsOfChildrenDetails;
 
     public boolean orderContainsEPO() {
         return isNotEmpty(orderType) && this.getOrderType().contains(EMERGENCY_PROTECTION_ORDER);
@@ -55,7 +61,9 @@ public class Orders {
     public boolean isC1Order() {
         return isNotEmpty(orderType) && (this.getOrderType().contains(CHILD_ASSESSMENT_ORDER)
                 || isSecureAccommodationOrder()
-                || isRefuseContactWithChildApplication());
+                || isRefuseContactWithChildApplication()
+                || isChildRecoveryOrder()
+                || isContactWithChildInCareOrder());
     }
 
     public boolean isDischargeOfCareOrder() {
@@ -68,5 +76,13 @@ public class Orders {
 
     public boolean isRefuseContactWithChildApplication() {
         return this.getOrderType().contains(REFUSE_CONTACT_WITH_CHILD);
+    }
+
+    public boolean isChildRecoveryOrder() {
+        return isNotEmpty(orderType) && this.getOrderType().contains(CHILD_RECOVERY_ORDER);
+    }
+
+    public boolean isContactWithChildInCareOrder() {
+        return isNotEmpty(orderType) && orderType.size() == 1 && orderType.contains(CONTACT_WITH_CHILD_IN_CARE);
     }
 }
