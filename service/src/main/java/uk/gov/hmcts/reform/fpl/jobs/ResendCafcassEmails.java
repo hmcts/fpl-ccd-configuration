@@ -71,8 +71,8 @@ public class ResendCafcassEmails implements Job {
 
         try {
             for (Long caseId : resendCafcassEmailService.getAllCaseIds()) {
-                CaseDetails caseDetails = coreCaseDataService.findCaseDetailsByIdNonUser(caseId.toString());
                 try {
+                    CaseDetails caseDetails = coreCaseDataService.findCaseDetailsByIdNonUser(caseId.toString());
                     log.debug("Job '{}' resending email on case {}", jobName, caseId);
                     CaseData caseData = converter.convert(caseDetails);
 
