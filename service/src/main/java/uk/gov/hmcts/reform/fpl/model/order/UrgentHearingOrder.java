@@ -42,7 +42,7 @@ public class UrgentHearingOrder implements AmendableOrder, TranslatableItem {
 
     @Override
     public String asLabel() {
-        return "Urgent hearing order - " + formatLocalDateToString(dateAdded, DATE);
+        return "Urgent hearing order - " + (dateAdded == null ? "N/A" : formatLocalDateToString(dateAdded, DATE));
     }
 
     @Override

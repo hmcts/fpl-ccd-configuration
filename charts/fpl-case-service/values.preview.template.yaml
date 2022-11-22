@@ -190,6 +190,9 @@ ccd:
         enabled: false
   ccd-definition-store-api:
     java:
+      devmemoryRequests: '1024Mi'
+      devmemoryLimits: '2048Mi'
+      devcpuRequests: '900m'
       autoscaling:
         enabled: false
       imagePullPolicy: Always
