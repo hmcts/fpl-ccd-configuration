@@ -26,5 +26,12 @@
     "ListElementCode": "POSITION_STATEMENT_RESPONDENT",
     "ListElement": "Position statement respondent",
     "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingDocumentType",
+    "ListElementCode": "SKELETON_ARGUMENT",
+    "ListElement": "Skeleton argument",
+    "DisplayOrder": 5
   }
 ]
