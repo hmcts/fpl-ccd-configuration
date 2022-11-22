@@ -8,6 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -96,6 +97,41 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
         CaseData caseData = CaseData.builder()
             .id(Long.valueOf(CASE_REFERENCE))
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .children1(wrapElements(mock(Child.class)))
+            .respondents1(wrapElements(Respondent.builder()
+                .party(RespondentParty.builder().lastName(RESPONDENT_LAST_NAME).build())
+                .build()))
+            .orders(Orders.builder().orderType(List.of(CARE_ORDER)).build())
+            .hearing(Hearing.builder()
+                .timeFrame("Two days")
+                .build())
+            .build();
+
+        assertThat(underTest.buildGatekeeperNotification(caseData)).isEqualTo(gatekeeperNotificationTemplate);
+    }
+
+    @Test
+    void shouldUseLocalAuthorityListWhenLocalAuthorityOnCaseNotSet() {
+        NotifyGatekeeperTemplate gatekeeperNotificationTemplate = NotifyGatekeeperTemplate.builder()
+            .localAuthority(LOCAL_AUTHORITY_NAME)
+            .dataPresent(YES.getValue())
+            .fullStop(NO.getValue())
+            .ordersAndDirections(List.of("Care order"))
+            .timeFramePresent(YES.getValue())
+            .timeFrameValue("two days")
+            .urgentHearing(NO.getValue())
+            .nonUrgentHearing(YES.getValue())
+            .firstRespondentName(RESPONDENT_LAST_NAME)
+            .childLastName(CHILD_LAST_NAME)
+            .reference(CASE_REFERENCE)
+            .caseUrl(caseUrl(CASE_REFERENCE))
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(Long.valueOf(CASE_REFERENCE))
+            .localAuthorities(wrapElements(LocalAuthority.builder()
+                .name(LOCAL_AUTHORITY_NAME)
+                .build()))
             .children1(wrapElements(mock(Child.class)))
             .respondents1(wrapElements(Respondent.builder()
                 .party(RespondentParty.builder().lastName(RESPONDENT_LAST_NAME).build())
