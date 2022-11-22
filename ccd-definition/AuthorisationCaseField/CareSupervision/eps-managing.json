@@ -1556,6 +1556,48 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "furtherEvidenceDocumentsNC",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "furtherEvidenceDocumentsLA",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "furtherEvidenceDocumentsLANC",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "CU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "correspondenceDocumentsNC",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "correspondenceDocumentsLA",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "correspondenceDocumentsLANC",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "CU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "additionalApplicationType",
     "UserRole": "[EPSMANAGING]",
     "CRUD": "CRU"
