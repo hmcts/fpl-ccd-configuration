@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
@@ -122,7 +123,10 @@ class RemoveOrderServiceTest {
         Element<HearingOrder> draftCMOTwo = element(buildPastHearingOrder(DRAFT_CMO));
         Element<HearingOrder> agreedCMO = element(buildPastHearingOrder(AGREED_CMO));
         Element<HearingOrder> draftOrder = element(
-            HearingOrder.builder().type(C21).dateSent(NOW.minusDays(1)).build());
+            HearingOrder.builder().type(C21)
+                .title("test order")
+                .order(DocumentReference.builder().filename("order.doc").build())
+                .dateSent(NOW.minusDays(1)).build());
 
         CaseData caseData = CaseData.builder()
             .state(state)
@@ -147,14 +151,19 @@ class RemoveOrderServiceTest {
                 buildListElement(sealedCaseManagementOrders.get(0).getId(),
                     format("Sealed case management order issued on %s",
                         formatLocalDateToString(NOW, "d MMMM yyyy"))),
-                buildListElement(draftCMOOne.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
-                buildListElement(draftCMOTwo.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
-                buildListElement(draftOrder.getId(), format("Draft order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
-                buildListElement(agreedCMO.getId(), format("Agreed case management order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy")))))
+                buildListElement(draftCMOOne.getId(), format("Draft case management order sent on %s, %s",
+                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"),
+                    draftCMOOne.getValue().getDocument().getFilename())),
+                buildListElement(draftCMOTwo.getId(), format("Draft case management order sent on %s, %s",
+                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"),
+                    draftCMOTwo.getValue().getDocument().getFilename())),
+                buildListElement(draftOrder.getId(), format("Draft order sent on %s for %s, %s",
+                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"),
+                    draftOrder.getValue().getTitle(),
+                    draftOrder.getValue().getDocument().getFilename())),
+                buildListElement(agreedCMO.getId(), format("Agreed case management order sent on %s, %s",
+                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"),
+                    agreedCMO.getValue().getDocument().getFilename()))))
             .build();
 
         assertThat(listOfOrders).isEqualTo(expectedList);
@@ -171,9 +180,15 @@ class RemoveOrderServiceTest {
 
         Element<HearingOrder> draftCMOOne = element(buildPastHearingOrder(DRAFT_CMO));
         Element<HearingOrder> draftCMOTwo = element(buildPastHearingOrder(DRAFT_CMO));
-        Element<HearingOrder> legacyDraftCMO = element(HearingOrder.builder().dateSent(NOW.minusDays(1)).build());
+        Element<HearingOrder> legacyDraftCMO = element(HearingOrder.builder()
+            .title("test order")
+            .order(DocumentReference.builder().filename("order.doc").build())
+            .dateSent(NOW.minusDays(1)).build());
         Element<HearingOrder> draftOrder =
-            element(HearingOrder.builder().type(C21).dateSent(NOW.minusDays(1)).build());
+            element(HearingOrder.builder().type(C21)
+                .title("test order")
+                .order(DocumentReference.builder().filename("order.doc").build())
+                .dateSent(NOW.minusDays(1)).build());
 
         CaseData caseData = CaseData.builder()
             .state(state)
@@ -194,14 +209,19 @@ class RemoveOrderServiceTest {
                 buildListElement(sealedCaseManagementOrders.get(0).getId(),
                     format("Sealed case management order issued on %s",
                         formatLocalDateToString(NOW, "d MMMM yyyy"))),
-                buildListElement(draftCMOOne.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
-                buildListElement(draftCMOTwo.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
-                buildListElement(draftOrder.getId(), format("Draft order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
-                buildListElement(legacyDraftCMO.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy")))))
+                buildListElement(draftCMOOne.getId(), format("Draft case management order sent on %s, %s",
+                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"),
+                    draftCMOOne.getValue().getDocument().getFilename())),
+                buildListElement(draftCMOTwo.getId(), format("Draft case management order sent on %s, %s",
+                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"),
+                    draftCMOTwo.getValue().getDocument().getFilename())),
+                buildListElement(draftOrder.getId(), format("Draft order sent on %s for %s, %s",
+                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"),
+                    draftOrder.getValue().getTitle(),
+                    draftOrder.getValue().getDocument().getFilename())),
+                buildListElement(legacyDraftCMO.getId(), format("Draft case management order sent on %s, %s",
+                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"),
+                    legacyDraftCMO.getValue().getDocument().getFilename()))))
             .build();
 
         assertThat(listOfOrders).isEqualTo(expectedList);
@@ -243,12 +263,17 @@ class RemoveOrderServiceTest {
                 buildListElement(sealedCaseManagementOrders.get(0).getId(),
                     format("Sealed case management order issued on %s",
                         formatLocalDateToString(NOW, "d MMMM yyyy"))),
-                buildListElement(draftCMO.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
-                buildListElement(draftOrder.getId(), format("Draft order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
-                buildListElement(agreedCMO.getId(), format("Agreed case management order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy")))))
+                buildListElement(draftCMO.getId(),
+                    format("Draft case management order sent on %s, %s",
+                        formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"),
+                        draftCMO.getValue().getDocument().getFilename())),
+                buildListElement(draftOrder.getId(), format("Draft order sent on %s for %s, %s",
+                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"),
+                    draftOrder.getValue().getTitle(),
+                    draftOrder.getValue().getDocument().getFilename())),
+                buildListElement(agreedCMO.getId(), format("Agreed case management order sent on %s, %s",
+                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"),
+                    agreedCMO.getValue().getDocument().getFilename()))))
             .build();
 
         assertThat(listOfOrders).isEqualTo(expectedList);
@@ -405,6 +430,8 @@ class RemoveOrderServiceTest {
         return List.of(
             element(HearingOrder.builder()
                 .type(AGREED_CMO)
+                .title("test order")
+                .order(DocumentReference.builder().filename("order.doc").build())
                 .status(APPROVED)
                 .dateIssued(NOW)
                 .build()));
@@ -413,6 +440,8 @@ class RemoveOrderServiceTest {
     private HearingOrder buildPastHearingOrder(HearingOrderType type) {
         return HearingOrder.builder()
             .type(type)
+            .title("test order")
+            .order(DocumentReference.builder().filename("order.doc").build())
             .status((type == AGREED_CMO || type == C21) ? SEND_TO_JUDGE : DRAFT)
             .dateIssued((type == AGREED_CMO || type == C21) ? NOW : null)
             .dateSent(NOW.minusDays(1))

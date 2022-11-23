@@ -1,4 +1,4 @@
-buildscript {
+ buildscript {
   repositories {
     mavenCentral()
   }
@@ -172,7 +172,15 @@ def static inStrictOrder(Task... tasks) {
   return tasks
 }
 
-task smoke(description: 'Runs the smoke tests.') {
+task smoke(type: Test, description: 'Runs smoke test.', group: 'Verification') {
+  testLogging.showStandardStreams = true
+  testClassesDirs = sourceSets.functionalTest.output.classesDirs
+  classpath = sourceSets.functionalTest.runtimeClasspath
+  include "uk/gov/hmcts/reform/fpl/smoke/**"
+  finalizedBy aggregate
+}
+
+task runCodeceptSmokeTest(type: Test, description: 'Runs the old codecept smoke test.', group: 'Verification') {
   dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runSmokeTests))
 }
 
