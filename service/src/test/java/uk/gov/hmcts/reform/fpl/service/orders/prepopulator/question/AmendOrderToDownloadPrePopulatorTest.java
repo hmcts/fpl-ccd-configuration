@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.exceptions.NoDocumentException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -154,5 +155,28 @@ class AmendOrderToDownloadPrePopulatorTest {
         assertThatThrownBy(() -> underTest.prePopulate(caseData))
             .isInstanceOf(NoSuchElementException.class)
             .hasMessage("Could not find amendable order with id \"44444444-4444-4444-4444-444444444444\"");
+    }
+
+    @Test
+    void shouldThrowNoDocumentException() {
+        DynamicList amendedOrderList = mock(DynamicList.class);
+
+        ManageOrdersEventData eventData = ManageOrdersEventData.builder()
+            .manageOrdersAmendmentList(amendedOrderList)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(eventData)
+            .standardDirectionOrder(sdo)
+            .urgentHearingOrder(uho)
+            .orderCollection(List.of(element(ORDER_ID, order)))
+            .sealedCMOs(List.of(element(CMO_ID, cmo)))
+            .build();
+
+        when(amendedOrderList.getValueCodeAsUUID()).thenReturn(CMO_ID);
+        when(order.getDocument()).thenReturn(null);
+        assertThatThrownBy(() -> underTest.prePopulate(caseData))
+            .isInstanceOf(NoDocumentException.class)
+            .hasMessage("Document with id " + CMO_ID + " not found");
     }
 }
