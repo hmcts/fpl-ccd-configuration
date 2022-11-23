@@ -19,13 +19,10 @@ import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -52,9 +49,9 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-809a", this::run809a,
         "DFPL-809b", this::run809b,
         "DFPL-979", this::run979,
-        "DFPL-980", this::run980,
         "DFPL-982", this::run982,
-        "DFPL-1006", this::run1006
+        "DFPL-1006", this::run1006,
+        "DFPL-1029", this::run1029
     );
 
     @PostMapping("/about-to-submit")
@@ -312,10 +309,22 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put("state", CASE_MANAGEMENT);
     }
 
-    private void run980(CaseDetails caseDetails) {
-        removeDocumentSentToParty(caseDetails, 1638275557117971L, "DFPL-980",
-            "85869ff5-8b1c-421f-8b0d-d86d2c73de12",
-            List.of("dfee2cca-c820-4909-ae1d-98e29430f6d5"));
+    private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
+
+    private void run1029(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1029";
+        var expectedCaseId = 1650359065299290L;
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        Long caseId = caseData.getId();
+        if (caseId != expectedCaseId) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId
+            ));
+        }
+        fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
     }
 
     private void run982(CaseDetails caseDetails) {
