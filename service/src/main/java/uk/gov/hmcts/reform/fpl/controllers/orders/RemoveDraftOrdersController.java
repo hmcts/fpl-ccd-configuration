@@ -84,7 +84,7 @@ public class RemoveDraftOrdersController extends CallbackController {
             caseDetailsMap,
             "removableOrderList",
             "orderToBeRemoved",
-            "orderTitleToBeRemoved",
+            "AorderTitleToBeRemoved",
             "showRemoveCMOFieldsFlag",
             "showReasonFieldFlag"
         );

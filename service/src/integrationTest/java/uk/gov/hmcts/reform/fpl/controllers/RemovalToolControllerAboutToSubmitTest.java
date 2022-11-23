@@ -119,6 +119,11 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
         fields.put("showRemoveSDOWarningFlag", DUMMY_DATA);
         fields.put("showReasonFieldFlag", DUMMY_DATA);
         fields.put("reasonToRemoveApplicationForm", DUMMY_DATA);
+        fields.put("partyNameToBeRemoved", DUMMY_DATA);
+        fields.put("sentAtToBeRemoved", DUMMY_DATA);
+        fields.put("letterIdToBeRemoved", DUMMY_DATA);
+        fields.put("sentDocumentToBeRemoved", DUMMY_DATA);
+        fields.put("reasonToRemoveSentDocument", DUMMY_DATA);
 
         CaseDetails caseDetails = asCaseDetails(buildCaseData(selectedOrder));
 
@@ -144,7 +149,12 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
             "showRemoveCMOFieldsFlag",
             "showRemoveSDOWarningFlag",
             "showReasonFieldFlag",
-            "reasonToRemoveApplicationForm"
+            "reasonToRemoveApplicationForm",
+            "partyNameToBeRemoved",
+            "sentAtToBeRemoved",
+            "letterIdToBeRemoved",
+            "sentDocumentToBeRemoved",
+            "reasonToRemoveSentDocument"
         );
     }
 
