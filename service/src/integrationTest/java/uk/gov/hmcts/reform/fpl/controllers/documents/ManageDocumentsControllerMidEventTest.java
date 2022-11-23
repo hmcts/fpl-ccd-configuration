@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
+import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -559,6 +560,14 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
             "initialise-manage-document-collections", USER_ROLES))
             .getManageDocumentsPositionStatementRespondent())
             .isEqualTo(PositionStatementRespondent.builder().hearing(selectedHearingBooking.toLabel())
+                .hearingId(selectedHearingId).build());
+
+        assertThat(extractCaseData(postMidEvent(
+            caseData.toBuilder()
+                .manageDocumentsHearingDocumentType(HearingDocumentType.SKELETON_ARGUMENT).build(),
+            "initialise-manage-document-collections", USER_ROLES))
+            .getManageDocumentsSkeletonArgument())
+            .isEqualTo(SkeletonArgument.builder().hearing(selectedHearingBooking.toLabel())
                 .hearingId(selectedHearingId).build());
     }
 
