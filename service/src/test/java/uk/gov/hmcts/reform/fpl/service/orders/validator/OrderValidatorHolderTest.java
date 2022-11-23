@@ -18,6 +18,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DA
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DISCHARGE_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_DATE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.FAMILY_ASSISTANCE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_PLACED_CHILD_IN_CUSTODY;
@@ -46,6 +47,8 @@ class OrderValidatorHolderTest {
     private ManageOrderEndDateWithEndOfProceedingsValidator manageOrderEndDateWithEndOfProceedingsValidator;
     @Mock
     private OrderMadeDateValidator orderMadeDateValidator;
+    @Mock
+    private FamilyAssistanceBefriendValidator familyAssistanceBefriendValidator;
 
     @InjectMocks
     private OrderValidatorHolder underTest;
@@ -60,7 +63,8 @@ class OrderValidatorHolderTest {
             epoEndDateValidator,
             manageOrderEndDateValidator,
             manageOrderEndDateWithEndOfProceedingsValidator,
-            orderMadeDateValidator
+            orderMadeDateValidator,
+            familyAssistanceBefriendValidator
         );
 
         orderQuestionBlockValidators = Map.of(
@@ -71,7 +75,8 @@ class OrderValidatorHolderTest {
             EPO_EXPIRY_DATE, epoEndDateValidator,
             MANAGE_ORDER_END_DATE_WITH_MONTH, manageOrderEndDateValidator,
             MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS, manageOrderEndDateWithEndOfProceedingsValidator,
-            ORDER_PLACED_CHILD_IN_CUSTODY, orderMadeDateValidator
+            ORDER_PLACED_CHILD_IN_CUSTODY, orderMadeDateValidator,
+            FAMILY_ASSISTANCE_ORDER, familyAssistanceBefriendValidator
         );
 
         validators.forEach(validator -> when(validator.accept()).thenCallRealMethod());

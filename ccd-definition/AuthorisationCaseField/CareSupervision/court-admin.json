@@ -4156,5 +4156,68 @@
     "CaseFieldID": "manageOrdersConditionsOfContact",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersParentageApplicant",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersHearingParty1",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersHearingParty2",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersPersonWhoseParenthoodIs",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersParentageAction",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersPartyToBeBefriended1",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersPartyToBeBefriended2",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersPartyToBeBefriended3",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersFamilyAssistanceEndDate",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
   }
 ]
