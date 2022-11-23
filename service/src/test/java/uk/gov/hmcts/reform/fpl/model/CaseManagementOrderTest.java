@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 
 import java.time.LocalDate;
@@ -36,8 +37,11 @@ class CaseManagementOrderTest {
     void shouldFormatDraftCaseManagementOrderAsLabelWithDateSent() {
         LocalDate dateSent = LocalDate.of(2021, Month.JANUARY, 10);
 
-        HearingOrder caseManagementOrder = HearingOrder.builder().status(DRAFT).dateSent(dateSent).build();
+        HearingOrder caseManagementOrder = HearingOrder.builder().status(DRAFT)
+            .order(DocumentReference.builder().filename("order.doc").build())
+            .dateSent(dateSent).build();
 
-        assertThat(caseManagementOrder.asLabel()).isEqualTo("Draft case management order sent on 10 January 2021");
+        assertThat(caseManagementOrder.asLabel())
+            .isEqualTo("Draft case management order sent on 10 January 2021, order.doc");
     }
 }
