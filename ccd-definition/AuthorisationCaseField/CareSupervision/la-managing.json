@@ -79,6 +79,27 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageDocumentsPlacementList",
+    "UserRole": "[LAMANAGING]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "placementNoticeResponses",
+    "UserRole": "[LAMANAGING]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageDocumentsNoPlacementNoticesLabel",
+    "UserRole": "[LAMANAGING]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "childrenHaveRepresentation",
     "UserRole": "[LAMANAGING]",
     "CRUD": "CRU"
