@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
+import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
@@ -45,9 +46,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
 
+    private final MigrateCaseService migrateCaseService;
+
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-798", this::run798,
-        "DFPL-802", this::run802,
         "DFPL-776", this::run776,
         "DFPL-1001", this::run1001,
         "DFPL-809a", this::run809a,
@@ -55,7 +56,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-979", this::run979,
         "DFPL-982", this::run982,
         "DFPL-1006", this::run1006,
-        "DFPL-1029", this::run1029
+        "DFPL-1029", this::run1029,
+        "DFPL-969", this::run969
     );
 
     @PostMapping("/about-to-submit")
@@ -78,30 +80,6 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    /**
-     * Removes a C110A Generated PDF document from the case.
-     * Make sure to update:
-     *  - expectedCaseId
-     *  - expectedDocId
-     *  - migrationId
-     * @param caseDetails - the caseDetails to update
-     */
-    private void run798(CaseDetails caseDetails) {
-        var migrationId = "DFPL-798";
-        var expectedCaseId = 1654765774567742L;
-        var expectedDocId = UUID.fromString("1756656b-6931-467e-8dfe-ac9f152351fe");
-
-        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
-    }
-
-    private void run802(CaseDetails caseDetails) {
-        var migrationId = "DFPL-802";
-        var expectedCaseId = 1659528630126722L;
-        var expectedDocId = UUID.fromString("dcd016c6-a0de-4ed2-91ce-5582a6acaf25");
-
-        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
-    }
-
     private void run809a(CaseDetails caseDetails) {
         var migrationId = "DFPL-809a";
         var expectedCaseId = 1651569615587841L;
@@ -114,28 +92,6 @@ public class MigrateCaseController extends CallbackController {
         var expectedCaseId = 1651755091217652L;
 
         removeConfidentialTab(caseDetails, migrationId, expectedCaseId);
-    }
-
-    private void removeC110a(CaseDetails caseDetails, String migrationId, long expectedCaseId, UUID expectedDocId) {
-        CaseData caseData = getCaseData(caseDetails);
-        var caseId = caseData.getId();
-
-        if (caseId != expectedCaseId) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, expected case id %d",
-                migrationId, caseId, expectedCaseId
-            ));
-        }
-
-        var documentUrl = caseData.getC110A().getDocument().getUrl();
-        var docId = UUID.fromString(documentUrl.substring(documentUrl.length() - 36));
-        if (!docId.equals(expectedDocId)) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, expected c110a document id %s",
-                migrationId, caseId, expectedDocId
-            ));
-        }
-        caseDetails.getData().put("submittedForm", null);
     }
 
     private void removeConfidentialTab(CaseDetails caseDetails, String migrationId, long expectedCaseId) {
@@ -386,4 +342,15 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().put("documentsSentToParties", resultDocumentsSentToParties);
     }
+
+    private void run969(CaseDetails caseDetails) {
+        var migrationId = "DFPL-969";
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1654525609722908L, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removeHearingOrderBundleDraft(getCaseData(caseDetails),
+            migrationId, UUID.fromString("4f20eca8-d255-4339-bb09-23a1e2ba7d80"),
+            UUID.fromString("84573155-34ac-4ff4-b616-54ac4cc369cb")));
+    }
+
 }
