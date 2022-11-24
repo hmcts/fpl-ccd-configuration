@@ -301,8 +301,8 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1654525609722908L, migrationId);
 
         caseDetails.getData().putAll(migrateCaseService.removeHearingOrderBundleDraft(getCaseData(caseDetails),
-            migrationId, fromString("4f20eca8-d255-4339-bb09-23a1e2ba7d80"),
-            fromString("84573155-34ac-4ff4-b616-54ac4cc369cb")));
+            migrationId, UUID.fromString("4f20eca8-d255-4339-bb09-23a1e2ba7d80"),
+            UUID.fromString("84573155-34ac-4ff4-b616-54ac4cc369cb")));
     }
 
 }
