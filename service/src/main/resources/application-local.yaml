@@ -103,11 +103,11 @@ fpl:
   local_authority_code_to_shared_inbox:
     mapping: 'SA=>FamilyPublicLaw+sa@gmail.com;HN=>FamilyPublicLaw+hn@gmail.com;SW=>FamilyPublicLaw+sn@gmail.com;SNW=>FamilyPublicLaw+sn@gmail.com'
   local_authority_code_to_org_id:
-    mapping: 'SA=>ORGSA;HN=>ORGHN;SW=>ORGSW;SNW=>ORGSNW'
+    mapping: 'SA=>W9V61CP;HN=>Y3CSW9I;SW=>ORGSW;SNW=>11VOC93'
   eps_to_local_authorities:
-    mapping: 'ORGEXT=>SA|HN'
+    mapping: 'D25VR7V=>SA|HN'
   mla_to_local_authorities:
-    mapping: 'ORGSNW=>SA|SW'
+    mapping: '11VOC93=>SA|HN'
   local_authority_fallback_inbox: 'FamilyPublicLaw+PublicLawEmail@gmail.com'
   system_update:
     username: 'fpl-system-update@mailnesia.com'

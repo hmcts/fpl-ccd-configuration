@@ -108,7 +108,7 @@ public class RemoveOrderService {
         return orders;
     }
 
-    private List<Element<HearingOrder>> getDraftHearingOrders(CaseData caseData) {
+    public List<Element<HearingOrder>> getDraftHearingOrders(CaseData caseData) {
         List<Element<HearingOrder>> draftHearingOrders = caseData.getOrdersFromHearingOrderDraftsBundles();
         caseData.getDraftUploadedCMOs().forEach(
             draftCMO -> {

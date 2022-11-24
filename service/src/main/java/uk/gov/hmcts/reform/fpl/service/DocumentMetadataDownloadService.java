@@ -27,12 +27,25 @@ public class DocumentMetadataDownloadService {
 
     private final FeatureToggleService featureToggleService;
     private final SecureDocStoreService secureDocStoreService;
+    private final SystemUserService systemUserService;
 
     public DocumentReference getDocumentMetadata(final String documentUrlString) {
-        final String userRoles = join(",", idamClient.getUserInfo(requestData.authorisation()).getRoles());
+        boolean useSystemUser = false;
+        String userRoles = "caseworker-publiclaw-systemupdate";
+        try {
+            userRoles = join(",", idamClient.getUserInfo(requestData.authorisation()).getRoles());
+        } catch (IllegalStateException e) {
+            log.info("Outside of a request, use system user");
+            // TODO - Remove this after cafcass resend job
+            useSystemUser = true;
+        }
+
+        String authorisation = useSystemUser ? systemUserService.getSysUserToken() : requestData.authorisation();
+        String userId = useSystemUser ? systemUserService.getUserId(authorisation) : requestData.userId();
+
         log.info("Download metadata for document  {} by user {} with roles {}",
                 documentUrlString,
-                requestData.userId(),
+                userId,
                 userRoles);
 
         if (featureToggleService.isSecureDocstoreEnabled()) {
@@ -51,10 +64,10 @@ public class DocumentMetadataDownloadService {
                 );
         } else {
             uk.gov.hmcts.reform.document.domain.Document document = documentMetadataDownloadClient.getDocumentMetadata(
-                requestData.authorisation(),
+                authorisation,
                 authTokenGenerator.generate(),
                 userRoles,
-                requestData.userId(),
+                userId,
                 URI.create(documentUrlString).getPath()
             );
 

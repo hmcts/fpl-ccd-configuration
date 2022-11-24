@@ -20,6 +20,7 @@ import java.util.Map;
 import static java.lang.String.join;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -34,6 +35,8 @@ class DocumentMetadataDownloadServiceTest {
     private static final String AUTH_TOKEN = "token";
     private static final String SERVICE_AUTH_TOKEN = "service-token";
     private static final String USER_ID = "8a0a7c46-631c-4a55-9b81-4cc9fb9798f4";
+    private static final String SYSTEM_USER_TOKEN = "system-user-token";
+    private static final String SYSTEM_USER_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
 
     @Mock
     private DocumentMetadataDownloadClientApi documentMetadataDownloadClient;
@@ -47,6 +50,8 @@ class DocumentMetadataDownloadServiceTest {
     private SecureDocStoreService secureDocStoreService;
     @Mock
     private FeatureToggleService featureToggleService;
+    @Mock
+    private SystemUserService systemUserService;
 
     private DocumentMetadataDownloadService documentMetadataDownloadService;
 
@@ -62,13 +67,16 @@ class DocumentMetadataDownloadServiceTest {
         given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(userInfo);
         given(requestData.authorisation()).willReturn(AUTH_TOKEN);
         given(requestData.userId()).willReturn(USER_ID);
+        given(systemUserService.getSysUserToken()).willReturn(SYSTEM_USER_TOKEN);
+        given(systemUserService.getUserId(any())).willReturn(SYSTEM_USER_ID);
 
         documentMetadataDownloadService = new DocumentMetadataDownloadService(authTokenGenerator,
                 documentMetadataDownloadClient,
                 idamClient,
                 requestData,
                 featureToggleService,
-                secureDocStoreService);
+                secureDocStoreService,
+                systemUserService);
     }
 
     @Test
@@ -148,5 +156,28 @@ class DocumentMetadataDownloadServiceTest {
 
         verify(secureDocStoreService).getDocumentMetadata(document.links.self.href);
         verifyNoInteractions(documentMetadataDownloadClient);
+    }
+
+    @Test
+    void shouldUseSystemUserIfNotInRequest() {
+        given(requestData.authorisation()).willThrow(new IllegalStateException());
+
+        Document document = document();
+
+        given(documentMetadataDownloadClient.getDocumentMetadata(anyString(), anyString(),
+            eq("caseworker-publiclaw-systemupdate"), anyString(), anyString()))
+            .willReturn(document);
+
+        DocumentReference documentReference = documentMetadataDownloadService.getDocumentMetadata(
+            document.links.self.href
+        );
+
+        assertThat(documentReference.getSize()).isEqualTo(document.size);
+
+        verify(documentMetadataDownloadClient).getDocumentMetadata(SYSTEM_USER_TOKEN,
+            SERVICE_AUTH_TOKEN,
+            "caseworker-publiclaw-systemupdate",
+            SYSTEM_USER_ID,
+            "/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
     }
 }
