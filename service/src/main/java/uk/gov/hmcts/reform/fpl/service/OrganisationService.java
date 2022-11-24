@@ -107,6 +107,15 @@ public class OrganisationService {
         return localAuthorityUserLookupConfiguration.getUserIds(localAuthorityCode);
     }
 
+    public List<OrganisationUser> getUsersFromSameOrganisationBasedOnReferenceDataAllInfo() {
+        return organisationApi
+            .findUsersInCurrentUserOrganisation(requestData.authorisation(), authTokenGenerator.generate(),
+                Status.ACTIVE, false)
+            .getUsers()
+            .stream()
+            .collect(toList());
+    }
+
     private List<String> getUsersFromSameOrganisationBasedOnReferenceData(String authorisation) {
         return organisationApi
             .findUsersInCurrentUserOrganisation(authorisation, authTokenGenerator.generate(), Status.ACTIVE, false)

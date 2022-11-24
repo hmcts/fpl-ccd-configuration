@@ -181,6 +181,8 @@ public class CaseData extends CaseDataParent {
         this.pastCourtList = pastCourtList;
     }
 
+    private YesNo shouldShareWithOrganisationUsers;
+
     private YesNo multiCourts;
 
     private final Risks risks;
