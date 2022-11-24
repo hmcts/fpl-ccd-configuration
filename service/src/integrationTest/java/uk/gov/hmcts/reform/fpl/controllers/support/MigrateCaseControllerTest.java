@@ -19,9 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.group.C110A;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
@@ -70,82 +68,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             .getRootCause()
             .isInstanceOf(NoSuchElementException.class)
             .hasMessage("No migration mapped to " + INVALID_MIGRATION_ID);
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class DfplRemoveC110a {
-        private final long invalidCaseId = 1643728359576136L;
-        private final UUID invalidDocId = UUID.randomUUID();
-
-        private Stream<Arguments> provideMigrationTestData() {
-            return Stream.of(
-                Arguments.of("DFPL-798", 1654765774567742L, UUID.fromString("1756656b-6931-467e-8dfe-ac9f152351fe")),
-                Arguments.of("DFPL-802", 1659528630126722L, UUID.fromString("dcd016c6-a0de-4ed2-91ce-5582a6acaf25"))
-            );
-        }
-
-        @ParameterizedTest
-        @MethodSource("provideMigrationTestData")
-        void shouldPerformMigrationWhenDocIdMatches(String migrationId, Long validCaseId, UUID validDocId) {
-
-            CaseData caseData = CaseData.builder()
-                .id(validCaseId)
-                .c110A(C110A.builder()
-                    .submittedForm(DocumentReference.builder()
-                        .url(String.format("http://test.com/%s", validDocId))
-                        .build())
-                    .build())
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId)
-            );
-
-            CaseData responseData = extractCaseData(response);
-
-            assertThat(responseData.getC110A().getSubmittedForm()).isNull();
-        }
-
-        @ParameterizedTest
-        @MethodSource("provideMigrationTestData")
-        void shouldThrowAssersionErrorWhenCaseIdIsInvalid(String migrationId, Long validCaseId, UUID validDocId) {
-            CaseData caseData = CaseData.builder()
-                .id(invalidCaseId)
-                .state(State.SUBMITTED)
-                .c110A(C110A.builder()
-                    .submittedForm(DocumentReference.builder()
-                        .url(String.format("http://test.com/%s", validDocId))
-                        .build())
-                    .build())
-                .build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format("Migration {id = %s, case reference = 1643728359576136}, expected case id %d",
-                    migrationId, validCaseId));
-        }
-
-        @ParameterizedTest
-        @MethodSource("provideMigrationTestData")
-        void shouldThrowAssersionErrorWhenDocumentIdIsInvalid(String migrationId, Long validCaseId, UUID validDocId) {
-            CaseData caseData = CaseData.builder()
-                .id(validCaseId)
-                .state(State.SUBMITTED)
-                .c110A(C110A.builder()
-                    .submittedForm(DocumentReference.builder()
-                        .url(String.format("http://test.com/%s", invalidDocId))
-                        .build())
-                    .build())
-                .build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format("Migration {id = %s, case reference = %d}, expected c110a document id %s",
-                    migrationId, validCaseId, validDocId));
-        }
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
