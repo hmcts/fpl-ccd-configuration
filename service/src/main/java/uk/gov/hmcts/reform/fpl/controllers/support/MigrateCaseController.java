@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
+import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,8 +53,9 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-809b", this::run809b,
         "DFPL-979", this::run979,
         "DFPL-1006", this::run1006,
+        "DFPL-1029", this::run1029,
         "DFPL-969", this::run969,
-        "DFPL-1034", this::run1034
+        "DFPL-969", this::run1034
     );
 
     @PostMapping("/about-to-submit")
@@ -273,6 +275,24 @@ public class MigrateCaseController extends CallbackController {
             migrationId,
             fromString("a1ba061a-2982-4ce3-9881-b74c37aa9b4f"),
             List.of(fromString("0e133c81-51aa-4bd3-b5aa-7689224ad28a"))));
+    }
+
+    private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
+
+    private void run1029(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1029";
+        var expectedCaseId = 1650359065299290L;
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        Long caseId = caseData.getId();
+        if (caseId != expectedCaseId) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId
+            ));
+        }
+        fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
     }
 
     private void run969(CaseDetails caseDetails) {
