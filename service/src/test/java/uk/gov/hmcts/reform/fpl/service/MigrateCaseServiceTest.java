@@ -9,6 +9,8 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.SentDocument;
+import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
@@ -118,4 +120,98 @@ class MigrateCaseServiceTest {
 
     }
 
+    @Nested
+    class RemoveDocumentsSentToParties {
+
+        private final UUID partyId = UUID.randomUUID();
+        private final UUID docIdToRemove = UUID.randomUUID();
+        private final UUID docIdToKeep = UUID.randomUUID();
+
+        private final Element<SentDocument> docToRemove = element(docIdToRemove, SentDocument.builder()
+            .partyName("REMOVE")
+            .build());
+
+        private final Element<SentDocument> docToKeep = element(docIdToKeep, SentDocument.builder()
+            .partyName("KEEP")
+            .build());
+
+        @Test
+        void shouldClearDocumentsSentToPartiesWithNoDocumentsPostMigration() {
+            List<Element<SentDocument>> orders = new ArrayList<>();
+            orders.add(docToRemove);
+            CaseData caseData = CaseData.builder()
+                .documentsSentToParties(List.of(
+                    element(partyId, SentDocuments.builder()
+                        .documentsSentToParty(List.of(docToRemove))
+                        .build())
+                ))
+                .build();
+
+            Map<String, Object> fields = underTest.removeDocumentsSentToParties(caseData, MIGRATION_ID,
+                partyId, List.of(docIdToRemove));
+
+            assertThat(fields.get("documentsSentToParties")).isEqualTo(
+                List.of(element(partyId, SentDocuments.builder().documentsSentToParty(List.of()).build())));
+        }
+
+        @Test
+        @SuppressWarnings("unchecked")
+        void shouldLeaveOtherDocsIntact() {
+            List<Element<SentDocument>> documents = new ArrayList<>();
+            documents.add(docToKeep);
+            documents.add(docToRemove);
+
+            CaseData caseData = CaseData.builder()
+                .documentsSentToParties(List.of(
+                    element(partyId, SentDocuments.builder()
+                        .documentsSentToParty(documents)
+                        .build())
+                ))
+                .build();
+
+            Map<String, Object> fields = underTest.removeDocumentsSentToParties(caseData, MIGRATION_ID,
+                partyId, List.of(docIdToRemove));
+
+            List<Element<SentDocuments>> resultDocumentsSentToParties = (List<Element<SentDocuments>>)
+                fields.get("documentsSentToParties");
+
+            assertThat(resultDocumentsSentToParties).hasSize(1);
+            assertThat(resultDocumentsSentToParties.get(0).getValue().getDocumentsSentToParty())
+                .containsExactly(docToKeep);
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoDocumentFound() {
+            CaseData caseData = CaseData.builder()
+                .documentsSentToParties(List.of(element(partyId,
+                    SentDocuments.builder()
+                        .documentsSentToParty(List.of(element(UUID.randomUUID(),
+                            SentDocument.builder().build()
+                        )))
+                        .build()
+                )))
+                .build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.removeDocumentsSentToParties(caseData, MIGRATION_ID, partyId,
+                    List.of(docIdToRemove)));
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoPartyFound() {
+            CaseData caseData = CaseData.builder()
+                .documentsSentToParties(List.of(element(UUID.randomUUID(),
+                    SentDocuments.builder()
+                        .documentsSentToParty(List.of(element(
+                            SentDocument.builder().build()
+                        )))
+                        .build()
+                )))
+                .build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.removeDocumentsSentToParties(caseData, MIGRATION_ID, partyId,
+                    List.of(docIdToRemove)));
+        }
+    }
 }
