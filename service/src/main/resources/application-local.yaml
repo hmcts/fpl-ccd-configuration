@@ -52,8 +52,8 @@ case-assignment:
 
 docmosis:
   tornado:
-    url: http://localhost:5433
-    key: ACCESS_KEY
+    url: ${DOCMOSIS_TORNADO_URL:http://localhost:5433}
+    key: ${DOCMOSIS_TORNADO_KEY:ACCESS_KEY}
 
 document_management:
   url: ${DOCUMENT_MANAGEMENT_URL:http://localhost:3453}
@@ -103,11 +103,11 @@ fpl:
   local_authority_code_to_shared_inbox:
     mapping: 'SA=>FamilyPublicLaw+sa@gmail.com;HN=>FamilyPublicLaw+hn@gmail.com;SW=>FamilyPublicLaw+sn@gmail.com;SNW=>FamilyPublicLaw+sn@gmail.com'
   local_authority_code_to_org_id:
-    mapping: 'SA=>ORGSA;HN=>ORGHN;SW=>ORGSW;SNW=>ORGSNW'
+    mapping: 'SA=>W9V61CP;HN=>Y3CSW9I;SW=>ORGSW;SNW=>11VOC93'
   eps_to_local_authorities:
-    mapping: 'ORGEXT=>SA|HN'
+    mapping: 'D25VR7V=>SA|HN'
   mla_to_local_authorities:
-    mapping: 'ORGSNW=>SA|SW'
+    mapping: '11VOC93=>SA|HN'
   local_authority_fallback_inbox: 'FamilyPublicLaw+PublicLawEmail@gmail.com'
   system_update:
     username: 'fpl-system-update@mailnesia.com'
@@ -116,6 +116,9 @@ fpl:
   ctsc_team_lead_inbox: 'FamilyPublicLaw+ctsc-team-lead@gmail.com'
   rcj_family_high_court_inbox: 'FamilyPublicLaw+rcjfamilyhighcourt@gmail.com'
   env: 'localhost'
+
+ld:
+  sdk_key: ${LD_SDK_KEY:AAAAAAAAAAAAAAA}
 
 robotics:
   notification:
