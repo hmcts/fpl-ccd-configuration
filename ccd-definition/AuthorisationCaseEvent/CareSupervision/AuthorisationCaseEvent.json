@@ -544,13 +544,13 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-judiciary"
         ],
         "CRUD": "CRUD"
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-magistrate"
         ],
