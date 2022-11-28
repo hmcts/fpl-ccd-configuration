@@ -393,7 +393,7 @@ public class ManageDocumentService {
             case COURT_BUNDLE :
                 List<Element<HearingCourtBundle>> courtBundles = buildCourtBundleList(caseData, selectedHearingId);
                 map.put(COURT_BUNDLE_LIST_KEY, courtBundles);
-                map.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
+                addConfidentialDocumentIfNotEmpty(map,
                     getDocumentsWithConfidentialAddressFromCourtBundles(caseData,
                         caseData.getHearingDocuments().getCourtBundleListV2(), courtBundles));
                 break;
@@ -401,7 +401,7 @@ public class ManageDocumentService {
                 List<Element<CaseSummary>> caseSummaries = buildHearingDocumentsList(caseData, selectedHearingId,
                     caseData.getHearingDocuments().getCaseSummaryList(), caseData.getManageDocumentsCaseSummary());
                 map.put(CASE_SUMMARY_LIST_KEY, caseSummaries);
-                map.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
+                addConfidentialDocumentIfNotEmpty(map,
                     getDocumentsWithConfidentialAddressFromHearingDocuments(caseData,
                         caseData.getHearingDocuments().getCaseSummaryList(), caseSummaries));
                 break;
@@ -415,7 +415,7 @@ public class ManageDocumentService {
                             .build());
                 map.put(POSITION_STATEMENT_CHILD_LIST_KEY, positionStatementChildList);
                 map.put(POSITION_STATEMENT_CHILD_LIST_KEY_DEPRECATED, null);
-                map.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
+                addConfidentialDocumentIfNotEmpty(map,
                     getDocumentsWithConfidentialAddressFromHearingDocuments(caseData,
                         caseData.getHearingDocuments().getPositionStatementChildListV2(),
                         positionStatementChildList));
@@ -430,7 +430,7 @@ public class ManageDocumentService {
                             .build());
                 map.put(POSITION_STATEMENT_RESPONDENT_LIST_KEY, positionStatementRespondentList);
                 map.put(POSITION_STATEMENT_RESPONDENT_LIST_KEY_DEPRECATED, null);
-                map.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
+                addConfidentialDocumentIfNotEmpty(map,
                     getDocumentsWithConfidentialAddressFromHearingDocuments(caseData,
                         caseData.getHearingDocuments().getPositionStatementRespondentListV2(),
                         positionStatementRespondentList));
@@ -446,7 +446,7 @@ public class ManageDocumentService {
                             .dateTimeUploaded(time.now())
                             .build());
                 map.put(SKELETON_ARGUMENT_LIST_KEY, skeletonArgumentList);
-                map.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
+                addConfidentialDocumentIfNotEmpty(map,
                     getDocumentsWithConfidentialAddressFromHearingDocuments(caseData,
                         caseData.getHearingDocuments().getSkeletonArgumentList(),
                         skeletonArgumentList));
@@ -802,6 +802,14 @@ public class ManageDocumentService {
                     .name(getHearingDocumentName(hearingDocument.getValue()))
                     .document(hearingDocument.getValue().getDocument()).build()))
             .collect(Collectors.toList());
+    }
+
+    public void addConfidentialDocumentIfNotEmpty(
+                    Map<String, Object> hashMap,
+                    List<Element<DocumentWithConfidentialAddress>> confidentialDocuments) {
+        if (!isEmpty(confidentialDocuments)) {
+            hashMap.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,confidentialDocuments);
+        }
     }
 
     private String getHearingDocumentName(HearingDocument doc) {

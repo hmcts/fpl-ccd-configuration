@@ -16,14 +16,12 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -32,8 +30,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-import static java.util.Collections.emptyList;
-import static java.util.Objects.nonNull;
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -51,8 +48,7 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-776", this::run776,
         "DFPL-1001", this::run1001,
-        "DFPL-809a", this::run809a,
-        "DFPL-809b", this::run809b,
+        "DFPL-809", this::run809,
         "DFPL-979", this::run979,
         "DFPL-982", this::run982,
         "DFPL-1006", this::run1006,
@@ -80,16 +76,9 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private void run809a(CaseDetails caseDetails) {
-        var migrationId = "DFPL-809a";
+    private void run809(CaseDetails caseDetails) {
+        var migrationId = "DFPL-809";
         var expectedCaseId = 1651569615587841L;
-
-        removeConfidentialTab(caseDetails, migrationId, expectedCaseId);
-    }
-
-    private void run809b(CaseDetails caseDetails) {
-        var migrationId = "DFPL-809b";
-        var expectedCaseId = 1651755091217652L;
 
         removeConfidentialTab(caseDetails, migrationId, expectedCaseId);
     }
@@ -104,33 +93,9 @@ public class MigrateCaseController extends CallbackController {
                 migrationId, caseId, expectedCaseId
             ));
         }
-
-        List<Element<SupportingEvidenceBundle>> correspondenceDocuments = caseData.getCorrespondenceDocuments();
-        List<Element<SupportingEvidenceBundle>> newCorrespondenceDocuments = new ArrayList<>();
-
-        for (Element<SupportingEvidenceBundle> bundle : correspondenceDocuments) {
-            List<String> confidentialTag = bundle.getValue().getConfidential();
-            String hasConfidentialAddress = bundle.getValue().getHasConfidentialAddress();
-
-            if (nonNull(confidentialTag)) {
-                if (confidentialTag.contains("CONFIDENTIAL") && hasConfidentialAddress.equals("No")) {
-                    newCorrespondenceDocuments.add(element(SupportingEvidenceBundle.builder()
-                        .name(bundle.getValue().getName())
-                        .document(bundle.getValue().getDocument())
-                        .uploadedBy(bundle.getValue().getUploadedBy())
-                        .confidential(emptyList())
-                        .dateTimeUploaded(bundle.getValue().getDateTimeUploaded())
-                        .hasConfidentialAddress(bundle.getValue().getHasConfidentialAddress())
-                        .build()));
-                } else {
-                    newCorrespondenceDocuments.add(bundle);
-                }
-            } else {
-                newCorrespondenceDocuments.add(bundle);
-            }
+        if (!isNull(caseDetails.getData().get("documentsWithConfidentialAddress"))) {
+            caseDetails.getData().remove("documentsWithConfidentialAddress");
         }
-
-        caseDetails.getData().put("correspondenceDocuments", newCorrespondenceDocuments);
     }
 
     private void run979(CaseDetails caseDetails) {
