@@ -56,7 +56,7 @@ class ManageLegalRepresentativeAboutToSubmitControllerTest extends AbstractCallb
         CaseDetails caseDetails = buildCaseData(List.of(element(LEGAL_REPRESENTATIVE)));
         givenFplService();
         given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, REPRESENTATIVE_EMAIL))
-            .willReturn(new OrganisationUser(USER_ID));
+            .willReturn(OrganisationUser.builder().userIdentifier(USER_ID).build());
 
         CallbackRequest callbackRequest = buildCallbackRequest(caseDetailsBefore, caseDetails);
 

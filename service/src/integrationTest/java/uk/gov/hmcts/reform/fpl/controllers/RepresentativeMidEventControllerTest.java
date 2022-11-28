@@ -80,7 +80,9 @@ class RepresentativeMidEventControllerTest extends AbstractCallbackTest {
 
         givenFplService();
         given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, representativeEmail))
-            .willReturn(new OrganisationUser(RandomStringUtils.randomAlphanumeric(10)));
+            .willReturn(OrganisationUser.builder()
+                .userIdentifier(RandomStringUtils.randomAlphanumeric(10))
+                .build());
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 

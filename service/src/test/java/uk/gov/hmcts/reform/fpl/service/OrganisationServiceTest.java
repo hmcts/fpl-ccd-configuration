@@ -124,7 +124,9 @@ class OrganisationServiceTest {
 
         @Test
         void shouldFindUser() {
-            OrganisationUser user = new OrganisationUser(RandomStringUtils.randomAlphanumeric(10));
+            OrganisationUser user = OrganisationUser.builder()
+                .userIdentifier(RandomStringUtils.randomAlphanumeric(10))
+                .build();
 
             when(organisationApi.findUserByEmail(AUTH_TOKEN, SERVICE_AUTH_TOKEN, USER_EMAIL)).thenReturn(user);
 

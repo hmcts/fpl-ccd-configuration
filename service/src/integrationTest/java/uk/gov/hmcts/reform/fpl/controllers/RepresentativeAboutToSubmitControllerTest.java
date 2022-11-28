@@ -73,7 +73,7 @@ class RepresentativeAboutToSubmitControllerTest extends AbstractCallbackTest {
 
         givenFplService();
         given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, representative.getEmail()))
-            .willReturn(new OrganisationUser(userId));
+            .willReturn(OrganisationUser.builder().userIdentifier(USER_ID).build());
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
 
