@@ -9,8 +9,17 @@ Feature('HMCTS super user removes orders');
 let caseId;
 
 async function setupScenario(I) {
-  if (!caseId) { caseId = await I.submitNewCaseWithData(finalHearingCaseData); }
+  let testCaseData = finalHearingCaseData;
+  testCaseData.caseData.caseName += ' - Superuser removal tool';
+  if (!caseId) { caseId = await I.submitNewCaseWithData(testCaseData); }
   await I.navigateToCaseDetailsAs(config.hmctsSuperUser, caseId);
+}
+
+async function setupScenarioWithApplication(I) {
+  let testCaseData = caseDataWithApplication;
+  testCaseData.caseData.caseName += ' - Superuser removal tool';
+  let newCaseId = await I.submitNewCaseWithData(testCaseData);
+  await I.navigateToCaseDetailsAs(config.hmctsSuperUser, newCaseId);
 }
 
 Scenario('HMCTS super user removes a generated order through \'Create or upload an order - legacy\' from a case', async ({I, caseViewPage, removalToolEventPage}) => {
@@ -80,7 +89,9 @@ Scenario('HMCTS super user removes a sdo from a case', async ({I, caseViewPage, 
 Scenario('HMCTS super user removes a draft cmo from a case', async ({I, caseViewPage, removalToolEventPage}) => {
   await setupScenario(I);
   const orderToRemove = finalHearingCaseData.caseData.hearingOrdersBundlesDrafts[0].value.orders[0].value;
-  const labelToSelect = 'Draft case management order sent on ' + moment(orderToRemove.dateSent).format('D MMMM YYYY');
+  const labelToSelect = 'Draft case management order sent on '
+    + moment(orderToRemove.dateSent).format('D MMMM YYYY')
+    + ', ' + orderToRemove.order.document_filename;
 
   await removeOrder(I, caseViewPage, removalToolEventPage, labelToSelect, false);
 
@@ -92,8 +103,10 @@ Scenario('HMCTS super user removes a draft cmo from a case', async ({I, caseView
 
 Scenario('HMCTS super user removes an agreed cmo from a case', async ({I, caseViewPage, removalToolEventPage}) => {
   await setupScenario(I);
-  const orderToRemove = finalHearingCaseData.caseData.hearingOrdersBundlesDrafts[0].value.orders[0].value;
-  const labelToSelect = 'Agreed case management order sent on ' + moment(orderToRemove.dateSent).format('D MMMM YYYY');
+  const orderToRemove = finalHearingCaseData.caseData.hearingOrdersBundlesDrafts[1].value.orders[0].value;
+  const labelToSelect = 'Agreed case management order sent on '
+    + moment(orderToRemove.dateSent).format('D MMMM YYYY')
+    + ', ' + orderToRemove.order.document_filename;
 
   await removeOrder(I, caseViewPage, removalToolEventPage, labelToSelect, false);
 
@@ -106,22 +119,23 @@ Scenario('HMCTS super user removes an agreed cmo from a case', async ({I, caseVi
 
 Scenario('HMCTS super user removes a draft order from a case', async ({I, caseViewPage, removalToolEventPage}) => {
   await setupScenario(I);
-  const orderToRemove = finalHearingCaseData.caseData.hearingOrdersBundlesDrafts[0].value.orders[0].value;
-  const labelToSelect = 'Draft order sent on ' + moment(orderToRemove.dateSent).format('D MMMM YYYY');
+  const orderToRemove = finalHearingCaseData.caseData.hearingOrdersBundlesDrafts[1].value.orders[1].value;
+  const labelToSelect = 'Draft order sent on '
+    + moment(orderToRemove.dateSent).format('D MMMM YYYY')
+    + ' for ' + orderToRemove.title + ', ' + orderToRemove.order.document_filename;
 
   await removeOrder(I, caseViewPage, removalToolEventPage, labelToSelect, false);
   caseViewPage.checkTabIsNotPresent(caseViewPage.tabs.draftOrders);
 });
 
-Scenario('HMCTS super user removes an application from the case', async ({I, caseViewPage, removalToolEventPage}) => {
-  const newCaseId = await I.submitNewCaseWithData(caseDataWithApplication);
-  await I.navigateToCaseDetailsAs(config.hmctsSuperUser, newCaseId);
+Scenario('HMCTS super user removes an additional application from the case', async ({I, caseViewPage, removalToolEventPage}) => {
+  await setupScenarioWithApplication(I);
 
   const applicationToRemove = caseDataWithApplication.caseData.additionalApplicationsBundle[0].value;
   const labelToSelect = 'C2, ' + applicationToRemove.uploadedDateTime;
 
   await caseViewPage.goToNewActions(config.superUserActions.removeOrdersAndApplications);
-  removalToolEventPage.selectApplicationToRemove(labelToSelect);
+  removalToolEventPage.selectAdditionalApplicationToRemove(labelToSelect);
   await I.runAccessibilityTest();
   await I.goToNextPage();
 
@@ -146,6 +160,5 @@ const removeOrder = async (I, caseViewPage, removalToolEventPage, labelToSelect,
   }
   await I.runAccessibilityTest();
   await I.completeEvent('Submit');
-  I.seeEventSubmissionConfirmation(config.superUserActions.removeOrdersAndApplications);
 };
 

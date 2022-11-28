@@ -4,6 +4,7 @@ module.exports = {
   fields: {
     selection: {
       order: '#removableType-ORDER',
+      additional_application: '#removableType-ADDITIONAL_APPLICATION',
       application: '#removableType-APPLICATION',
     },
     orderReason: '#reasonToRemoveOrder',
@@ -19,8 +20,8 @@ module.exports = {
     I.selectOption(this.fields.orderList, option);
   },
 
-  selectApplicationToRemove(option) {
-    I.click(this.fields.selection.application);
+  selectAdditionalApplicationToRemove(option) {
+    I.click(this.fields.selection.additional_application);
     I.waitForElement(this.fields.applicationList);
     I.selectOption(this.fields.applicationList, option);
   },
