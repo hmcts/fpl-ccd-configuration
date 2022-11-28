@@ -299,10 +299,10 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Dfpl1001 {
-        final String migrationId = "DFPL-1001";
-        final Long caseId = 1649335087796806L;
-        final UUID hearingId = UUID.fromString("9cc3f847-3f2c-4d19-bf32-ed1377866ffe");
+    class Dfpl1015 {
+        final String migrationId = "DFPL-1015";
+        final Long caseId = 1641373238062313L;
+        final UUID hearingId = UUID.fromString("894fa026-e403-45e8-a2fe-105e8135ee5b");
 
         final Element<HearingBooking> hearingToBeRemoved = element(hearingId, HearingBooking.builder()
             .type(CASE_MANAGEMENT)

@@ -50,7 +50,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-776", this::run776,
-        "DFPL-1001", this::run1001,
+        "DFPL-1015", this::run1015,
         "DFPL-809a", this::run809a,
         "DFPL-809b", this::run809b,
         "DFPL-979", this::run979,
@@ -200,9 +200,9 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put("judicialMessages", resultJudicialMessages);
     }
 
-    private void run1001(CaseDetails caseDetails) {
-        removeHearingBooking("DFPL-1001", 1649335087796806L, caseDetails,
-            "9cc3f847-3f2c-4d19-bf32-ed1377866ffe");
+    private void run1015(CaseDetails caseDetails) {
+        removeHearingBooking("DFPL-1015", 1641373238062313L, caseDetails,
+            "894fa026-e403-45e8-a2fe-105e8135ee5b");
     }
 
     private void removeHearingBooking(final String migrationId, final Long expectedCaseId,
