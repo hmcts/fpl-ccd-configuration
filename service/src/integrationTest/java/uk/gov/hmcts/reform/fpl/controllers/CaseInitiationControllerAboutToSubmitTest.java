@@ -180,6 +180,22 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(updatedCaseData.getCourt()).isNull();
     }
 
+    @Test
+    void shouldRemoveTemporaryFields() {
+        final Organisation organisation = testOrganisation();
+
+        given(organisationApi.findUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN)).willReturn(organisation);
+
+        CaseData caseData = CaseData.builder()
+            .caseName("name")
+            .build();
+
+        Map<String, Object> caseDetails = postAboutToSubmitEvent(caseData).getData();
+
+        assertThat(caseDetails).extracting("outsourcingType", "outsourcingLAs", "sharingWithUsers",
+            "isOutsourcedCase").containsOnlyNulls();
+    }
+
     private Map<String, Object> orgPolicy(String id, String role) {
         return Map.of("Organisation", Map.of("OrganisationID", id), "OrgPolicyCaseAssignedRole", role);
     }
