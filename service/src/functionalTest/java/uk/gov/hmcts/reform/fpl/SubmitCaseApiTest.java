@@ -44,7 +44,7 @@ public class SubmitCaseApiTest extends AbstractApiTest {
         caseData = callAboutToStart(caseData);
         caseData = callMidEvent(caseData);
         caseData = callAboutToSubmit(caseData);
-        callSubmitted(caseData);
+        // callSubmitted(caseData);
     }
 
     public CaseData callAboutToStart(CaseData caseData) {

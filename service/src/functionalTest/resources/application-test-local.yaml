@@ -1,6 +1,6 @@
 test-conf:
-  idam-url: http://localhost:5000
-  fpl-url: http://localhost:4000
+  idam-url: https://idam-api.aat.platform.hmcts.net
+  fpl-url: http://localhost:4013
   placeholders:
-    SwanseaOrganisationID: ORGSA
-    WiltshireOrganisationID: ORGSNW
+    SwanseaOrganisationID: W9V61CP
+    WiltshireOrganisationID: 11VOC93

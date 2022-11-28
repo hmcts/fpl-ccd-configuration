@@ -16,10 +16,14 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
+import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -28,7 +32,10 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static java.util.Collections.emptyList;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
+import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Api
@@ -39,13 +46,18 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
 
+    private final MigrateCaseService migrateCaseService;
+
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-798", this::run798,
-        "DFPL-802", this::run802,
         "DFPL-776", this::run776,
-        "DFPL-826", this::run826,
-        "DFPL-810", this::run810,
-        "DFPL-828", this::run828
+        "DFPL-1001", this::run1001,
+        "DFPL-809a", this::run809a,
+        "DFPL-809b", this::run809b,
+        "DFPL-979", this::run979,
+        "DFPL-982", this::run982,
+        "DFPL-1006", this::run1006,
+        "DFPL-1029", this::run1029,
+        "DFPL-969", this::run969
     );
 
     @PostMapping("/about-to-submit")
@@ -68,31 +80,21 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    /**
-     * Removes a C110A Generated PDF document from the case.
-     * Make sure to update:
-     *  - expectedCaseId
-     *  - expectedDocId
-     *  - migrationId
-     * @param caseDetails - the caseDetails to update
-     */
-    private void run798(CaseDetails caseDetails) {
-        var migrationId = "DFPL-798";
-        var expectedCaseId = 1654765774567742L;
-        var expectedDocId = UUID.fromString("1756656b-6931-467e-8dfe-ac9f152351fe");
+    private void run809a(CaseDetails caseDetails) {
+        var migrationId = "DFPL-809a";
+        var expectedCaseId = 1651569615587841L;
 
-        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
+        removeConfidentialTab(caseDetails, migrationId, expectedCaseId);
     }
 
-    private void run802(CaseDetails caseDetails) {
-        var migrationId = "DFPL-802";
-        var expectedCaseId = 1659528630126722L;
-        var expectedDocId = UUID.fromString("dcd016c6-a0de-4ed2-91ce-5582a6acaf25");
+    private void run809b(CaseDetails caseDetails) {
+        var migrationId = "DFPL-809b";
+        var expectedCaseId = 1651755091217652L;
 
-        removeC110a(caseDetails, migrationId, expectedCaseId, expectedDocId);
+        removeConfidentialTab(caseDetails, migrationId, expectedCaseId);
     }
 
-    private void removeC110a(CaseDetails caseDetails, String migrationId, long expectedCaseId, UUID expectedDocId) {
+    private void removeConfidentialTab(CaseDetails caseDetails, String migrationId, long expectedCaseId) {
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();
 
@@ -103,22 +105,39 @@ public class MigrateCaseController extends CallbackController {
             ));
         }
 
-        var documentUrl = caseData.getC110A().getDocument().getUrl();
-        var docId = UUID.fromString(documentUrl.substring(documentUrl.length() - 36));
-        if (!docId.equals(expectedDocId)) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, expected c110a document id %s",
-                migrationId, caseId, expectedDocId
-            ));
+        List<Element<SupportingEvidenceBundle>> correspondenceDocuments = caseData.getCorrespondenceDocuments();
+        List<Element<SupportingEvidenceBundle>> newCorrespondenceDocuments = new ArrayList<>();
+
+        for (Element<SupportingEvidenceBundle> bundle : correspondenceDocuments) {
+            List<String> confidentialTag = bundle.getValue().getConfidential();
+            String hasConfidentialAddress = bundle.getValue().getHasConfidentialAddress();
+
+            if (nonNull(confidentialTag)) {
+                if (confidentialTag.contains("CONFIDENTIAL") && hasConfidentialAddress.equals("No")) {
+                    newCorrespondenceDocuments.add(element(SupportingEvidenceBundle.builder()
+                        .name(bundle.getValue().getName())
+                        .document(bundle.getValue().getDocument())
+                        .uploadedBy(bundle.getValue().getUploadedBy())
+                        .confidential(emptyList())
+                        .dateTimeUploaded(bundle.getValue().getDateTimeUploaded())
+                        .hasConfidentialAddress(bundle.getValue().getHasConfidentialAddress())
+                        .build()));
+                } else {
+                    newCorrespondenceDocuments.add(bundle);
+                }
+            } else {
+                newCorrespondenceDocuments.add(bundle);
+            }
         }
-        caseDetails.getData().put("submittedForm", null);
+
+        caseDetails.getData().put("correspondenceDocuments", newCorrespondenceDocuments);
     }
 
-    private void run810(CaseDetails caseDetails) {
-        var migrationId = "DFPL-810";
-        var expectedCaseId = 1639481593478877L;
-        var expectedCaseNotesId = List.of("2824e43b-3250-485a-b069-6fd06390ce83");
-
+    private void run979(CaseDetails caseDetails) {
+        var migrationId = "DFPL-979";
+        var expectedCaseId = 1648556593632182L;
+        var expectedCaseNotesId = List.of("c0c0c620-055e-488c-a6a9-d5e7ec35c210",
+            "0a202483-b7e6-44a1-a28b-8c9342f67967");
         removeCaseNote(caseDetails, migrationId, expectedCaseId, expectedCaseNotesId);
     }
 
@@ -181,12 +200,17 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put("judicialMessages", resultJudicialMessages);
     }
 
-    private void run826(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-826";
+    private void run1001(CaseDetails caseDetails) {
+        removeHearingBooking("DFPL-1001", 1649335087796806L, caseDetails,
+            "9cc3f847-3f2c-4d19-bf32-ed1377866ffe");
+    }
+
+    private void removeHearingBooking(final String migrationId, final Long expectedCaseId,
+                                      final CaseDetails caseDetails, final String hearingIdToBeRemoved) {
+
         CaseData caseData = getCaseData(caseDetails);
         final Long caseId = caseData.getId();
-        final Long expectedCaseId = 1660300177298257L;
-        final UUID expectedHearingId = UUID.fromString("d76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0");
+        final UUID expectedHearingId = UUID.fromString(hearingIdToBeRemoved);
 
         if (!expectedCaseId.equals(caseId)) {
             throw new AssertionError(format(
@@ -228,19 +252,52 @@ public class MigrateCaseController extends CallbackController {
         }
     }
 
-    private void run828(CaseDetails caseDetails) {
-        removeDocumentSentToParty(caseDetails, 1651850415891595L, "DFPL-828",
-            "f3264cc6-61b7-4cf7-ab37-c9eb35a13e03",
-            List.of("6fcc6eb4-942d-40e1-bfa6-befd70254f7f",
-                "fbea9e67-8244-43b8-97c5-265da7b9b6c7",
-                "518a9339-786c-4b68-bce9-a064616ac47f",
-                "61733660-67ed-4ea7-8711-2fe80e15af68"));
+    private void run1006(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1006";
+        var expectedCaseId = 1664880596046318L;
+
+        CaseData caseData = getCaseData(caseDetails);
+        Long caseId = caseData.getId();
+
+        if (caseId != expectedCaseId) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId
+            ));
+        }
+
+        caseDetails.getData().put("state", CASE_MANAGEMENT);
+    }
+
+    private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
+
+    private void run1029(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1029";
+        var expectedCaseId = 1650359065299290L;
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        Long caseId = caseData.getId();
+        if (caseId != expectedCaseId) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId
+            ));
+        }
+        fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
+    }
+
+    private void run982(CaseDetails caseDetails) {
+        removeDocumentSentToParty(caseDetails, 1661249570230673L, "DFPL-982",
+            "52a06d8d-283b-446a-b4e8-64bba3a54f7f",
+            List.of("f6d74661-e3d8-4d0d-9ee3-09bdf0068dd2",
+                "a3755cb6-4e12-4670-8779-c07e00ec669e"));
     }
 
     private void removeDocumentSentToParty(CaseDetails caseDetails, long expectedCaseId,
-                                          String migrationId,
-                                          String expectedDocumentsSentToPartiesId,
-                                          List<String> docIdsToBeRemoved) {
+                                           String migrationId,
+                                           String expectedDocumentsSentToPartiesId,
+                                           List<String> docIdsToBeRemoved) {
         CaseData caseData = getCaseData(caseDetails);
         Long caseId = caseData.getId();
 
@@ -262,7 +319,7 @@ public class MigrateCaseController extends CallbackController {
 
         docUuidsToBeRemoved.stream().forEach(docIdToBeRemoved -> {
                 if (ElementUtils.findElement(docIdToBeRemoved,
-                        targetDocumentsSentToParties.getValue().getDocumentsSentToParty()).isEmpty()) {
+                    targetDocumentsSentToParties.getValue().getDocumentsSentToParty()).isEmpty()) {
                     throw new AssertionError(format(
                         "Migration {id = %s, case reference = %s}, document Id not found",
                         migrationId, caseId));
@@ -285,4 +342,15 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().put("documentsSentToParties", resultDocumentsSentToParties);
     }
+
+    private void run969(CaseDetails caseDetails) {
+        var migrationId = "DFPL-969";
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1654525609722908L, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removeHearingOrderBundleDraft(getCaseData(caseDetails),
+            migrationId, UUID.fromString("4f20eca8-d255-4339-bb09-23a1e2ba7d80"),
+            UUID.fromString("84573155-34ac-4ff4-b616-54ac4cc369cb")));
+    }
+
 }
