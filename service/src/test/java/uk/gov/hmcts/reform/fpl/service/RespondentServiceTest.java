@@ -578,6 +578,17 @@ class RespondentServiceTest {
             Collections.unmodifiableList(respondentsBefore))).isFalse();
     }
 
+    @Test
+    void shouldReturnTrueWhenAfterAddressIsNull() {
+        List<Element<Respondent>> respondentsBefore = wrapElements(Respondent.builder()
+            .party(RespondentParty.builder().address(Address.builder().addressLine1("33 Testing Court")
+                .addressLine2("Testing").postcode("XX1 BBB").build()).build()).build());
+        List<Element<Respondent>> respondentsAfter = wrapElements(Respondent.builder()
+            .party(RespondentParty.builder().address(null).build()).build());
+        assertThat(service.hasAddressChange(Collections.unmodifiableList(respondentsAfter),
+            Collections.unmodifiableList(respondentsBefore))).isTrue();
+    }
+
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void shouldTransformOtherToRespondent(boolean hasRepresentative) {
