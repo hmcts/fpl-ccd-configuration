@@ -48,7 +48,7 @@
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "shareCaseWarningMessage",
-    "Label": "These users will gain access to the case when it is created: <br/> ${sharingWithUsers} <br/> If this does not look right, choose No and share the case manually when created.",
+    "Label": "These users will gain access to the case when it is created: <br/> ${sharingWithUsers} <br/> If this does not look right, select No and share the case manually when created.",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
