@@ -115,7 +115,8 @@ class OrganisationServiceTest {
                 .thenReturn(usersInAnOrganisation);
 
 
-            List<OrganisationUser> users = organisationService.getUsersFromSameOrganisationBasedOnReferenceDataAllInfo();
+            List<OrganisationUser> users = organisationService
+                .getUsersFromSameOrganisationBasedOnReferenceDataAllInfo();
 
             assertThat(users).isEqualTo(usersInAnOrganisation.getUsers());
         }
