@@ -673,8 +673,7 @@
           "[LASOLICITOR]",
           "[LASHARED]",
           "[EPSMANAGING]",
-          "[LAMANAGING]",
-          "caseworker-publiclaw-cafcass"
+          "[LAMANAGING]"
         ],
         "CRUD": "CR"
       },
@@ -1383,8 +1382,7 @@
           "[CHILDSOLICITORO]",
           "[CAFCASSSOLICITOR]",
           "[BARRISTER]",
-          "[LABARRISTER]",
-          "caseworker-publiclaw-cafcass"
+          "[LABARRISTER]"
         ],
         "CRUD": "CR"
       }
