@@ -203,7 +203,15 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
                 .list("C2 (With notice)")
                 .list("C1 - With supplement")
                 .line()
-                .end("To review the application, sign in to " + caseDetailsUrl(CASE_ID, OTHER_APPLICATIONS))
+                .line("To review the application, sign in to " + caseDetailsUrl(CASE_ID, OTHER_APPLICATIONS))
+                .line()
+                .line("For local authority guidance navigate to this link:")
+                .line("https://www.gov.uk/government/publications/"
+                    + "myhmcts-how-to-apply-for-a-family-public-law-order")
+                .line()
+                .line("For legal representation guidance navigate to this link:")
+                .end("https://www.gov.uk/government/publications/"
+                    + "myhmcts-how-to-respond-to-a-family-public-law-order-application")
             );
     }
 }
