@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -339,33 +338,6 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
     }
 
-    private void removePositionStatementRespondentList(CaseDetails caseDetails, long expectedCaseId,
-                                                       String migrationId,
-                                                       String expectedPositionStatementId) {
-        CaseData caseData = getCaseData(caseDetails);
-        final Long caseId = caseData.getId();
-
-        if (caseId != expectedCaseId) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, expected case id %d",
-                migrationId, caseId, expectedCaseId));
-        }
-
-        List<Element<PositionStatementRespondent>> positionStatementRespondentListResult =
-            caseData.getHearingDocuments().getPositionStatementRespondentListV2().stream()
-                .filter(el -> !el.getId().equals(UUID.fromString(expectedPositionStatementId)))
-                .collect(toList());
-
-        if (positionStatementRespondentListResult.size() != caseData.getHearingDocuments()
-            .getPositionStatementRespondentListV2().size() - 1) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, invalid position statement respondent",
-                migrationId, caseId));
-        }
-
-        caseDetails.getData().put("positionStatementRespondentListV2", positionStatementRespondentListResult);
-    }
-
     private void run985(CaseDetails caseDetails) {
         final String migrationId = "DFPL-985";
         final Long expectedCaseId = 1648203424556112L;
@@ -374,9 +346,10 @@ public class MigrateCaseController extends CallbackController {
     }
 
     private void run1012(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-1012";
-        final Long expectedCaseId = 1661877618161045L;
-        removePositionStatementRespondentList(caseDetails, expectedCaseId, migrationId,
-            "b8da3a48-441f-4210-a21c-7008d256aa32");
+        var migrationId = "DFPL-1012";
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1661877618161045L, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removePositionStatementChildList(getCaseData(caseDetails),
+            migrationId, UUID.fromString("b8da3a48-441f-4210-a21c-7008d256aa32")));
     }
 }
