@@ -236,6 +236,14 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
             .line()
             .line("HM Courts & Tribunals Service")
             .line()
+            .line("For local authority guidance navigate to this link:")
+            .line("https://www.gov.uk/government/publications/"
+                + "myhmcts-how-to-apply-for-a-family-public-law-order")
+            .line()
+            .line("For legal representation guidance navigate to this link:")
+            .line("https://www.gov.uk/government/publications/"
+                + "myhmcts-how-to-respond-to-a-family-public-law-order-application")
+            .line()
             .end("Do not reply to this email."
                 + " If you need to contact us, call 0330 808 4424 or email contactfpl@justice.gov.uk");
     }
