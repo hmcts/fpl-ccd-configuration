@@ -649,7 +649,8 @@
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper"
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "CR"
       },
@@ -672,7 +673,8 @@
           "[LASOLICITOR]",
           "[LASHARED]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
+          "[LAMANAGING]",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "CR"
       },
@@ -1381,7 +1383,8 @@
           "[CHILDSOLICITORO]",
           "[CAFCASSSOLICITOR]",
           "[BARRISTER]",
-          "[LABARRISTER]"
+          "[LABARRISTER]",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "CR"
       }
