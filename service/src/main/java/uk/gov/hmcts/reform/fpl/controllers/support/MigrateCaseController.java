@@ -349,7 +349,7 @@ public class MigrateCaseController extends CallbackController {
         var migrationId = "DFPL-1012";
         migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1661877618161045L, migrationId);
 
-        caseDetails.getData().putAll(migrateCaseService.removePositionStatementChildList(getCaseData(caseDetails),
+        caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(getCaseData(caseDetails),
             migrationId, UUID.fromString("b8da3a48-441f-4210-a21c-7008d256aa32")));
     }
 }

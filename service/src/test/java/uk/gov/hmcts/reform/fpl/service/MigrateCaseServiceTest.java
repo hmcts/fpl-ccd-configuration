@@ -242,7 +242,7 @@ class MigrateCaseServiceTest {
                     .build())
                 .build();
 
-            Map<String, Object> fields = underTest.removePositionStatementChildList(caseData, MIGRATION_ID,
+            Map<String, Object> fields = underTest.removePositionStatementChild(caseData, MIGRATION_ID,
                 docIdToRemove);
 
             assertThat(fields.get("positionStatementChildListV2")).isEqualTo(List.of());
@@ -261,7 +261,7 @@ class MigrateCaseServiceTest {
                     .build())
                 .build();
 
-            Map<String, Object> fields = underTest.removePositionStatementChildList(caseData, MIGRATION_ID,
+            Map<String, Object> fields = underTest.removePositionStatementChild(caseData, MIGRATION_ID,
                 docIdToRemove);
 
             List<Element<PositionStatementChild>> resultsPositionStatements =
@@ -280,7 +280,7 @@ class MigrateCaseServiceTest {
                 .build();
 
             assertThrows(AssertionError.class, () ->
-                underTest.removePositionStatementChildList(caseData, MIGRATION_ID,
+                underTest.removePositionStatementChild(caseData, MIGRATION_ID,
                     docIdToRemove));
         }
     }
@@ -309,7 +309,7 @@ class MigrateCaseServiceTest {
                     .build())
                 .build();
 
-            Map<String, Object> fields = underTest.removePositionStatementRespondentList(caseData, MIGRATION_ID,
+            Map<String, Object> fields = underTest.removePositionStatementRespondent(caseData, MIGRATION_ID,
                 docIdToRemove);
 
             assertThat(fields.get("positionStatementRespondentListV2")).isEqualTo(List.of());
@@ -328,7 +328,7 @@ class MigrateCaseServiceTest {
                     .build())
                 .build();
 
-            Map<String, Object> fields = underTest.removePositionStatementRespondentList(caseData, MIGRATION_ID,
+            Map<String, Object> fields = underTest.removePositionStatementRespondent(caseData, MIGRATION_ID,
                 docIdToRemove);
 
             List<Element<PositionStatementRespondent>> resultsPositionStatements =
@@ -347,7 +347,7 @@ class MigrateCaseServiceTest {
                 .build();
 
             assertThrows(AssertionError.class, () ->
-                underTest.removePositionStatementRespondentList(caseData, MIGRATION_ID,
+                underTest.removePositionStatementRespondent(caseData, MIGRATION_ID,
                     docIdToRemove));
         }
     }

@@ -101,9 +101,9 @@ public class MigrateCaseService {
         return Map.of("documentsSentToParties", resultDocumentsSentToParties);
     }
 
-    public Map<String, Object>  removePositionStatementChildList(CaseData caseData,
-                                                      String migrationId,
-                                                      UUID expectedPositionStatementId) {
+    public Map<String, Object> removePositionStatementChild(CaseData caseData,
+                                                            String migrationId,
+                                                            UUID expectedPositionStatementId) {
         Long caseId = caseData.getId();
         List<Element<PositionStatementChild>> positionStatementChildListResult =
             caseData.getHearingDocuments().getPositionStatementChildListV2().stream()
@@ -119,9 +119,9 @@ public class MigrateCaseService {
         return Map.of("positionStatementChildListV2", positionStatementChildListResult);
     }
 
-    public Map<String, Object>  removePositionStatementRespondentList(CaseData caseData,
-                                                                      String migrationId,
-                                                                      UUID expectedPositionStatementId) {
+    public Map<String, Object> removePositionStatementRespondent(CaseData caseData,
+                                                                 String migrationId,
+                                                                 UUID expectedPositionStatementId) {
         Long caseId = caseData.getId();
         List<Element<PositionStatementRespondent>> positionStatementRespondentListResult =
             caseData.getHearingDocuments().getPositionStatementRespondentListV2().stream()
