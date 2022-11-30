@@ -117,6 +117,11 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
                 .list("using this link http://fake-url/binary/url")
                 .line()
                 .line("HM Courts & Tribunals Service")
+                .line()
+                .line("For local authority guidance navigate to this link:")
+                .line("https://www.gov.uk/government/publications/"
+                    + "myhmcts-how-to-apply-for-a-family-public-law-order")
+                .line()
                 .end("Please do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                     + "contactfpl@justice.gov.uk")
             );
@@ -148,6 +153,11 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
                 .list("using this link http://fake-url/binary/url")
                 .line()
                 .line("HM Courts & Tribunals Service")
+                .line()
+                .line("For local authority guidance navigate to this link:")
+                .line("https://www.gov.uk/government/publications/"
+                    + "myhmcts-how-to-apply-for-a-family-public-law-order")
+                .line()
                 .end("Please do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                     + "contactfpl@justice.gov.uk")
             );
@@ -179,6 +189,11 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
                 .list("using this link " + GOV_NOTIFY_DOC_URL)
                 .line()
                 .line("HM Courts & Tribunals Service")
+                .line()
+                .line("For local authority guidance navigate to this link:")
+                .line("https://www.gov.uk/government/publications/"
+                    + "myhmcts-how-to-apply-for-a-family-public-law-order")
+                .line()
                 .end("Please do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                     + "contactfpl@justice.gov.uk")
             );

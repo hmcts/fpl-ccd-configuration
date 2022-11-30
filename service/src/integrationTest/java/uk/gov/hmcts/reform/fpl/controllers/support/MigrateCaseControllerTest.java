@@ -12,19 +12,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
-import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.SentDocument;
-import uk.gov.hmcts.reform.fpl.model.SentDocuments;
+import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -232,8 +231,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
     }
 
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
+    // @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    // @Nested
     class Dfpl776 {
         final String migrationId = "DFPL-776";
         final long expectedCaseId = 1646318196381762L;
@@ -299,10 +298,10 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Dfpl1001 {
-        final String migrationId = "DFPL-1001";
-        final Long caseId = 1649335087796806L;
-        final UUID hearingId = UUID.fromString("9cc3f847-3f2c-4d19-bf32-ed1377866ffe");
+    class Dfpl1015 {
+        final String migrationId = "DFPL-1015";
+        final Long caseId = 1641373238062313L;
+        final UUID hearingId = UUID.fromString("894fa026-e403-45e8-a2fe-105e8135ee5b");
 
         final Element<HearingBooking> hearingToBeRemoved = element(hearingId, HearingBooking.builder()
             .type(CASE_MANAGEMENT)
@@ -395,133 +394,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
     }
 
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class Dfpl982 {
-        final String migrationId = "DFPL-982";
-        final long expectedCaseId = 1661249570230673L;
-        final UUID expectedPartyId = UUID.fromString("52a06d8d-283b-446a-b4e8-64bba3a54f7f");
-        final List<UUID> expectedDocId = List.of("f6d74661-e3d8-4d0d-9ee3-09bdf0068dd2",
-                "a3755cb6-4e12-4670-8779-c07e00ec669e")
-            .stream().map(UUID::fromString).collect(Collectors.toList());
-
-        UUID[] otherDocIds = new UUID[] {UUID.randomUUID(), UUID.randomUUID()};
-        UUID otherPartyId = UUID.randomUUID();
-
-        Element<SentDocuments> targetDocumentSentToParties = element(expectedPartyId, SentDocuments.builder()
-            .documentsSentToParty(List.of(element(expectedDocId.get(0), SentDocument.builder().build()),
-                element(expectedDocId.get(1), SentDocument.builder().build()),
-                element(otherDocIds[0], SentDocument.builder().build()),
-                element(otherDocIds[1], SentDocument.builder().build())))
-            .build());
-
-        Element<SentDocuments> otherDocumentSentToParties = element(otherPartyId, SentDocuments.builder()
-            .documentsSentToParty(List.of(element(SentDocument.builder().build()),
-                element(SentDocument.builder().build()))).build());
-
-        @Test
-        void shouldRemoveDocumentLinked() {
-
-            CaseData caseData = CaseData.builder()
-                .id(expectedCaseId)
-                .documentsSentToParties(List.of(targetDocumentSentToParties, otherDocumentSentToParties))
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId)
-            );
-
-            CaseData responseData = extractCaseData(response);
-
-            assertThat(responseData.getDocumentsSentToParties().size()).isEqualTo(2);
-            assertThat(responseData.getDocumentsSentToParties().stream()
-                .map(Element::getId).collect(Collectors.toList()))
-                .containsExactly(expectedPartyId, otherPartyId);
-
-            assertThat(ElementUtils.getElement(expectedPartyId, responseData.getDocumentsSentToParties()).getValue()
-                .getDocumentsSentToParty().stream().map(Element::getId).collect(Collectors.toList()))
-                .doesNotContainAnyElementsOf(expectedDocId)
-                .containsExactly(otherDocIds);
-        }
-
-        @Test
-        void shouldThrowExceptionWhenCaseIdInvalid() {
-            CaseData caseData = CaseData.builder().id(1L).build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format("Migration {id = %s, case reference = %s}, expected case id %d",
-                    migrationId, 1, expectedCaseId));
-        }
-
-        @Test
-        void shouldThrowExceptionWhenPartyIdInvalid() {
-            CaseData caseData = CaseData.builder()
-                .id(expectedCaseId)
-                .documentsSentToParties(List.of(otherDocumentSentToParties))
-                .build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format(
-                    "Migration {id = %s, case reference = %s}, party Id not found",
-                    migrationId, expectedCaseId));
-        }
-
-        @Test
-        void shouldThrowExceptionWhenDocIdInvalid() {
-            CaseData caseData = CaseData.builder()
-                .id(expectedCaseId)
-                .documentsSentToParties(List.of(element(expectedPartyId, SentDocuments.builder()
-                    .documentsSentToParty(List.of(
-                        element(otherDocIds[0], SentDocument.builder().build()),
-                        element(otherDocIds[1], SentDocument.builder().build()))).build())))
-                .build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format(
-                    "Migration {id = %s, case reference = %s}, document Id not found",
-                    migrationId, expectedCaseId));
-        }
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class Dfpl1006 {
-
-        final String migrationId = "DFPL-1006";
-        final long expectedCaseId = 1664880596046318L;
-        final long incorrectCaseId = 111111111111111L;
-
-        @Test
-        void shouldThrowExceptionWhenIncorrectCaseId() {
-            CaseData caseData = CaseData.builder().id(incorrectCaseId).build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format("Migration {id = %s, case reference = %s}, expected case id %d",
-                    migrationId, incorrectCaseId, expectedCaseId));
-        }
-
-        @Test
-        void shouldSetCaseStateToCaseManagement() {
-            CaseData caseData = CaseData.builder().id(expectedCaseId).state(State.GATEKEEPING).build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(buildCaseDetails(caseData,
-                migrationId));
-
-            assertThat(response.getData()).extracting("state").isEqualTo(State.CASE_MANAGEMENT.getValue());
-        }
-
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
+    // @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    // @Nested
     class Dfpl1029 {
 
         final String migrationId = "DFPL-1029";
@@ -558,6 +432,132 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThat(response.getData()).extracting("manageOrdersCafcassRegion").isNull();
         }
 
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl1012 {
+        private static final long invalidCaseId = 8888888888888888L;
+        private static final long validCaseId = 1661877618161045L;
+        private static final String migrationId = "DFPL-1012";
+
+        private final UUID positionStatementRespondentId = UUID.fromString("b8da3a48-441f-4210-a21c-7008d256aa32");
+
+        private final Element<PositionStatementRespondent> positionStatementRespondent = element(
+            positionStatementRespondentId, PositionStatementRespondent.builder().build());
+
+        @Test
+        void shouldRemovePositionStatementRespondent() {
+            CaseData caseData = prepareValidCaseData();
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+            assertThat(responseData.getHearingDocuments().getPositionStatementRespondentListV2())
+                .doesNotContain(positionStatementRespondent);
+        }
+
+        @Test
+        void shouldThrowExceptionIfWrongCase() {
+            CaseData caseData = CaseData.builder().id(invalidCaseId).build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format("Migration {id = %s, case reference = 8888888888888888}, expected case id %d",
+                    migrationId, validCaseId));
+        }
+
+        @Test
+        void shouldThrowExceptionIfWrongPositionStatementRespondent() {
+            CaseData caseData = CaseData.builder().id(validCaseId)
+                .hearingDocuments(HearingDocuments.builder()
+                    .positionStatementRespondentListV2(List.of(
+                        element(UUID.randomUUID(), PositionStatementRespondent.builder().build()))
+                    )
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format("Migration {id = %s, case reference = %s}, invalid position statement "
+                        + "respondent",
+                    migrationId, validCaseId));
+        }
+
+        private CaseData prepareValidCaseData() {
+            return CaseData.builder()
+                .id(validCaseId)
+                .hearingDocuments(HearingDocuments.builder().build().builder()
+                    .positionStatementRespondentListV2(List.of(
+                        element(UUID.randomUUID(), PositionStatementRespondent.builder().build()),
+                        element(UUID.randomUUID(), PositionStatementRespondent.builder().build()),
+                        positionStatementRespondent
+                    ))
+                    .build())
+                .build();
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl985 {
+        private static final long invalidCaseId = 8888888888888888L;
+        private static final long validCaseId = 1648203424556112L;
+        private static final String migrationId = "DFPL-985";
+
+        private final UUID respondentStatementId = UUID.fromString("4b88563e-c6b3-4780-90b6-531e1db65b7e");
+
+        private final Element<RespondentStatement> respondentStatementElement = element(
+            respondentStatementId, RespondentStatement.builder().build());
+
+        @Test
+        void shouldRemoveRespondentStatement() {
+            CaseData caseData = prepareValidCaseData();
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+            assertThat(responseData.getRespondentStatements()).doesNotContain(respondentStatementElement);
+        }
+
+        @Test
+        void shouldThrowExceptionIfWrongCase() {
+            CaseData caseData = CaseData.builder().id(invalidCaseId).build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format("Migration {id = %s, case reference = 8888888888888888}, expected case id %d",
+                    migrationId, validCaseId));
+        }
+
+        @Test
+        void shouldThrowExceptionIfWrongRespondentStatement() {
+            CaseData caseData = CaseData.builder().id(validCaseId)
+                .respondentStatements(List.of(
+                    element(UUID.randomUUID(), RespondentStatement.builder().build()))
+                ).build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format("Migration {id = %s, case reference = %s}, invalid respondent statements",
+                    migrationId, validCaseId));
+        }
+
+        private CaseData prepareValidCaseData() {
+            return CaseData.builder()
+                .id(validCaseId)
+                .respondentStatements(List.of(
+                    element(UUID.randomUUID(), RespondentStatement.builder().respondentId(UUID.randomUUID()).build()),
+                    element(UUID.randomUUID(), RespondentStatement.builder().respondentId(UUID.randomUUID()).build()),
+                    respondentStatementElement
+                )).build();
+        }
     }
 
     private CaseDetails buildCaseDetails(CaseData caseData, String migrationId) {
