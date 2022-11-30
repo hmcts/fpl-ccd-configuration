@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.model;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ExpertReportType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import java.time.LocalDateTime;
@@ -81,5 +82,59 @@ class SupportingEvidenceBundleTest {
             assertThat(underTest.sentForTranslation()).isFalse();
         }
     }
+
+    @Nested
+    class ExpertReport {
+
+        @Test
+        void getDefaultTypeForExpertReport() {
+            underTest = SupportingEvidenceBundle.builder()
+                .type(FurtherEvidenceType.EXPERT_REPORTS)
+                .build();
+
+            assertThat(underTest.getExpertReportType()).isEqualTo(ExpertReportType.OTHER_EXPERT_REPORT);
+        }
+
+        @Test
+        void getExpertReportTypeIfSet() {
+            underTest = SupportingEvidenceBundle.builder()
+                .type(FurtherEvidenceType.EXPERT_REPORTS)
+                .expertReportType(ExpertReportType.TOXICOLOGY_REPORT)
+                .build();
+
+            assertThat(underTest.getExpertReportType()).isEqualTo(ExpertReportType.TOXICOLOGY_REPORT);
+
+        }
+
+        @Test
+        void shouldNotHaveExpertReportTypeIfApplicantStatement() {
+            underTest = SupportingEvidenceBundle.builder()
+                .type(FurtherEvidenceType.APPLICANT_STATEMENT)
+                .build();
+
+            assertThat(underTest.getExpertReportType()).isNull();
+        }
+
+        @Test
+        void shouldNotHaveExpertReportTypeIfGuardianReport() {
+            underTest = SupportingEvidenceBundle.builder()
+                .type(FurtherEvidenceType.GUARDIAN_REPORTS)
+                .build();
+
+            assertThat(underTest.getExpertReportType()).isNull();
+        }
+
+        @Test
+        void shouldNotHaveExpertReportTypeIfOtherReport() {
+            underTest = SupportingEvidenceBundle.builder()
+                .type(FurtherEvidenceType.OTHER_REPORTS)
+                .build();
+
+            assertThat(underTest.getExpertReportType()).isNull();
+        }
+
+    }
+
+
 
 }

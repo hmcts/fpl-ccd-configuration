@@ -436,5 +436,14 @@
     "Label": "Case summary or supporting documents",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "isOutsourcingLA",
+    "Label": "Are you a solicitor creating a case on behalf of a local authority?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

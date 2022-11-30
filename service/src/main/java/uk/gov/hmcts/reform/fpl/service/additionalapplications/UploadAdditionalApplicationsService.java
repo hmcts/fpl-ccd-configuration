@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -18,12 +18,12 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +39,7 @@ import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
@@ -52,7 +53,6 @@ public class UploadAdditionalApplicationsService {
     private final UserService user;
     private final DocumentUploadHelper documentUploadHelper;
     private final DocumentConversionService documentConversionService;
-    private final PeopleInCaseService peopleInCaseService;
 
     public List<ApplicationType> getApplicationTypes(AdditionalApplicationsBundle bundle) {
         List<ApplicationType> applicationTypes = new ArrayList<>();
@@ -75,11 +75,7 @@ public class UploadAdditionalApplicationsService {
         final String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
         final LocalDateTime now = time.now();
 
-        List<Element<Other>> selectedOthers = peopleInCaseService.getSelectedOthers(caseData);
-        List<Element<Respondent>> selectedRespondents = peopleInCaseService.getSelectedRespondents(caseData);
-        String othersNotified = peopleInCaseService.getPeopleNotified(
-            caseData.getRepresentatives(), selectedRespondents, selectedOthers
-        );
+        List<Element<Respondent>> respondentsInCase = caseData.getAllRespondents();
 
         AdditionalApplicationsBundleBuilder additionalApplicationsBundleBuilder = AdditionalApplicationsBundle.builder()
             .pbaPayment(caseData.getTemporaryPbaPayment())
@@ -90,13 +86,13 @@ public class UploadAdditionalApplicationsService {
         List<AdditionalApplicationType> additionalApplicationTypeList = caseData.getAdditionalApplicationType();
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.C2_ORDER)) {
             additionalApplicationsBundleBuilder.c2DocumentBundle(buildC2DocumentBundle(
-                caseData, applicantName, selectedOthers, selectedRespondents, othersNotified, uploadedBy, now
+                caseData, applicantName, respondentsInCase, uploadedBy, now
             ));
         }
 
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.OTHER_ORDER)) {
             additionalApplicationsBundleBuilder.otherApplicationsBundle(buildOtherApplicationsBundle(
-                caseData, applicantName, selectedOthers, selectedRespondents, othersNotified, uploadedBy, now
+                caseData, applicantName, respondentsInCase, uploadedBy, now
             ));
         }
 
@@ -125,9 +121,7 @@ public class UploadAdditionalApplicationsService {
 
     private C2DocumentBundle buildC2DocumentBundle(CaseData caseData,
                                                    String applicantName,
-                                                   List<Element<Other>> selectedOthers,
-                                                   List<Element<Respondent>> selectedRespondents,
-                                                   String othersNotified,
+                                                   List<Element<Respondent>> respondentsInCase,
                                                    String uploadedBy,
                                                    LocalDateTime uploadedTime) {
         C2DocumentBundle temporaryC2Document = caseData.getTemporaryC2Document();
@@ -150,17 +144,13 @@ public class UploadAdditionalApplicationsService {
             .supplementsBundle(updatedSupplementsBundle)
             .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
             .type(caseData.getC2Type())
-            .respondents(selectedRespondents)
-            .others(selectedOthers)
-            .othersNotified(othersNotified)
+            .respondents(respondentsInCase)
             .build();
     }
 
     private OtherApplicationsBundle buildOtherApplicationsBundle(CaseData caseData,
                                                                  String applicantName,
-                                                                 List<Element<Other>> selectedOthers,
-                                                                 List<Element<Respondent>> selectedRespondents,
-                                                                 String othersNotified,
+                                                                 List<Element<Respondent>> respondentsInCase,
                                                                  String uploadedBy,
                                                                  LocalDateTime uploadedTime) {
         OtherApplicationsBundle temporaryOtherApplicationsBundle = caseData.getTemporaryOtherApplicationsBundle();
@@ -182,9 +172,7 @@ public class UploadAdditionalApplicationsService {
             .document(getDocumentToStore(temporaryOtherApplicationsBundle.getDocument()))
             .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
             .supplementsBundle(updatedSupplementsBundle)
-            .respondents(selectedRespondents)
-            .others(selectedOthers)
-            .othersNotified(othersNotified)
+            .respondents(respondentsInCase)
             .build();
     }
 
@@ -220,5 +208,29 @@ public class UploadAdditionalApplicationsService {
 
     private DocumentReference getDocumentToStore(DocumentReference originalDoc) {
         return documentConversionService.convertToPdf(originalDoc);
+    }
+
+    private boolean onlyApplyingForC2(CaseData caseData) {
+        return caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.C2_ORDER)
+            && caseData.getAdditionalApplicationType().size() == 1;
+    }
+
+    public boolean onlyApplyingForAnAdjournment(CaseData caseData, C2DocumentBundle temporaryC2Bundle) {
+        return onlyApplyingForC2(caseData)
+            && temporaryC2Bundle.getC2AdditionalOrdersRequested().size() == 1
+            && temporaryC2Bundle.getC2AdditionalOrdersRequested().contains(REQUESTING_ADJOURNMENT);
+    }
+
+    /** Only skip the payment if the hearing we are asking to adjourn is >= 14 days away,
+     * AND we're not applying for an 'other order (C1/C100/supplement)' at the same time,
+     * AND we aren't applying for other C2 things (surname, guardian appt, etc).
+     * @param caseData - CaseData at current callback
+     * @param hearing - the selected hearing that the user is applying to adjourn
+     * @param temporaryC2Bundle - the current C2 bundle as amended during the callback
+     * @return - boolean for whether we should skip the payments or not
+     */
+    public boolean shouldSkipPayments(CaseData caseData, HearingBooking hearing, C2DocumentBundle temporaryC2Bundle) {
+        return (Duration.between(LocalDateTime.now(), hearing.getStartDate()).toDays() >= 14L)
+            && onlyApplyingForAnAdjournment(caseData, temporaryC2Bundle);
     }
 }

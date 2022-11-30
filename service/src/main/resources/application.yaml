@@ -8,6 +8,9 @@ management:
   endpoint:
     health:
       show-details: "always"
+  health:
+    case-document-am-api:
+      enabled: true
 
 spring:
   application:
@@ -216,6 +219,20 @@ fees-register:
       jurisdiction2: family court
       keyword: ${DECLARATION_OF_PARENTAGE:JKL}
       service: other
+    REFUSE_CONTACT_WITH_CHILD:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: ContactChild
+      service: private law
+    CHILD_RECOVERY_ORDER:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: Recovery
+      service: private law
 
 payment:
   site_id: ABA3
@@ -303,3 +320,8 @@ cafcass:
       correspondence: CORRESPONDENCE
       additionalDocument: APPLICATION
       newApplication: APPLICATION
+
+case_document_am:
+  url: ${CASE_DOCUMENT_AM_URL:http://localhost:4455}
+  health:
+    url: ${case_document_am.url}/health

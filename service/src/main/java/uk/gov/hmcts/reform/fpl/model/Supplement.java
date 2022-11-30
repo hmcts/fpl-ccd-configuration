@@ -9,6 +9,10 @@ import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 
 @Data
 @Builder(toBuilder = true)
@@ -21,4 +25,15 @@ public class Supplement {
     private LocalDateTime dateTimeUploaded;
     private final DocumentReference document;
     private String uploadedBy;
+    private List<String> documentAcknowledge;
+
+    public List<String> getDocumentAcknowledge() {
+        if (this.documentAcknowledge == null) {
+            this.documentAcknowledge = new ArrayList<>();
+        }
+        if (document != null && !this.documentAcknowledge.contains(DOCUMENT_ACKNOWLEDGEMENT_KEY)) {
+            this.documentAcknowledge.add(DOCUMENT_ACKNOWLEDGEMENT_KEY);
+        }
+        return this.documentAcknowledge;
+    }
 }

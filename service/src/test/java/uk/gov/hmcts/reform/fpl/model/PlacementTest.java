@@ -33,16 +33,12 @@ class PlacementTest {
 
         private final PlacementNoticeDocument noticeDocument1 = PlacementNoticeDocument.builder()
             .type(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
-            .notice(testDocumentReference())
-            .noticeDescription("Notice description")
             .response(testDocumentReference())
             .responseDescription("Response description")
             .build();
 
         private final PlacementNoticeDocument noticeDocument2 = PlacementNoticeDocument.builder()
             .type(PlacementNoticeDocument.RecipientType.CAFCASS)
-            .notice(testDocumentReference())
-            .noticeDescription("Cafcass description")
             .build();
 
         @Test

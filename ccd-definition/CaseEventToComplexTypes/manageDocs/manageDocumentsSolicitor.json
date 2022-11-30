@@ -78,8 +78,28 @@
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocumentsSolicitor",
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
-    "ListElementCode": "type",
+    "ListElementCode": "documentAcknowledgeLabel",
     "FieldDisplayOrder": 5,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsSolicitor",
+    "CaseFieldID": "supportingEvidenceDocumentsTemp",
+    "ListElementCode": "documentAcknowledge",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsSolicitor",
+    "CaseFieldID": "supportingEvidenceDocumentsTemp",
+    "ListElementCode": "type",
+    "FieldDisplayOrder": 7,
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "manageDocument.type=\"FURTHER_EVIDENCE_DOCUMENTS\" AND manageDocumentSubtypeList!=\"RESPONDENT_STATEMENT\""
   },
@@ -88,8 +108,18 @@
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocumentsSolicitor",
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
+    "ListElementCode": "expertReportType",
+    "FieldDisplayOrder": 8,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "manageDocument.type=\"FURTHER_EVIDENCE_DOCUMENTS\" AND manageDocumentSubtypeList!=\"RESPONDENT_STATEMENT\" AND supportingEvidenceDocumentsTemp.type=\"EXPERT_REPORTS\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsSolicitor",
+    "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "uploadedBy",
-    "FieldDisplayOrder": 6,
+    "FieldDisplayOrder": 9,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "manageDocument.type=\"DO_NOT_SHOW\""
   },
@@ -99,7 +129,7 @@
     "CaseEventID": "manageDocumentsSolicitor",
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "dateTimeUploaded",
-    "FieldDisplayOrder": 7,
+    "FieldDisplayOrder": 10,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "manageDocument.type=\"DO_NOT_SHOW\""
   },
@@ -112,6 +142,26 @@
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Attach court bundle"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsSolicitor",
+    "CaseFieldID": "manageDocumentsCourtBundle",
+    "ListElementCode": "documentAcknowledgeLabel",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsSolicitor",
+    "CaseFieldID": "manageDocumentsCourtBundle",
+    "ListElementCode": "documentAcknowledge",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -136,6 +186,26 @@
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocumentsSolicitor",
+    "CaseFieldID": "manageDocumentsCaseSummary",
+    "ListElementCode": "documentAcknowledgeLabel",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsSolicitor",
+    "CaseFieldID": "manageDocumentsCaseSummary",
+    "ListElementCode": "documentAcknowledge",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsSolicitor",
     "CaseFieldID": "manageDocumentsPositionStatementChild",
     "ListElementCode": "hearing",
     "FieldDisplayOrder": 1,
@@ -155,6 +225,26 @@
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocumentsSolicitor",
+    "CaseFieldID": "manageDocumentsPositionStatementChild",
+    "ListElementCode": "documentAcknowledgeLabel",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsSolicitor",
+    "CaseFieldID": "manageDocumentsPositionStatementChild",
+    "ListElementCode": "documentAcknowledge",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsSolicitor",
     "CaseFieldID": "manageDocumentsPositionStatementRespondent",
     "ListElementCode": "hearing",
     "FieldDisplayOrder": 1,
@@ -169,5 +259,25 @@
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Attach position statement respondent"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsSolicitor",
+    "CaseFieldID": "manageDocumentsPositionStatementRespondent",
+    "ListElementCode": "documentAcknowledgeLabel",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsSolicitor",
+    "CaseFieldID": "manageDocumentsPositionStatementRespondent",
+    "ListElementCode": "documentAcknowledge",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
   }
 ]

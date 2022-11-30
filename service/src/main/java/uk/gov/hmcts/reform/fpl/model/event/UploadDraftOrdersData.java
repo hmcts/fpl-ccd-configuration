@@ -107,6 +107,8 @@ public class UploadDraftOrdersData {
     YesNo showCMOsSentToJudge;
     @Temp
     YesNo showReplacementCMO;
+    @Temp
+    List<String> uploadCMOMessageAcknowledge;
 
     @JsonIgnore
     public boolean isCmoAgreed() {

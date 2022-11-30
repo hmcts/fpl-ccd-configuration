@@ -18,8 +18,9 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ApplicantType;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
-import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -46,7 +47,6 @@ import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -68,12 +68,12 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.CHILD;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
@@ -97,9 +97,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     private static final String DIGITAL_REP_1 = "digital-rep1@test.com";
     private static final String DIGITAL_REP_2 = "digital-rep2@test.com";
     private static final Set<String> DIGITAL_REPS = new HashSet<>(Set.of(DIGITAL_REP_1, DIGITAL_REP_2));
-    private static final List<Element<Other>> NO_RECIPIENTS = Collections.emptyList();
-    private static final List<Element<Other>> SELECTED_OTHERS = List.of(element(mock(Other.class)));
-    private static final List<Element<Respondent>> SELECTED_RESPONDENTS = List.of(element(mock(Respondent.class)));
+    private static final List<Element<Respondent>> RESPONDENTS = List.of(element(mock(Respondent.class)));
     private static final DocumentReference C2_DOCUMENT = testDocumentReference();
     private static final DocumentReference OTHER_APPLICATION_DOCUMENT = testDocumentReference();
     private static final DocumentReference SUPPLEMENT_1 = testDocumentReference();
@@ -158,18 +156,11 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .c2DocumentBundle(C2DocumentBundle.builder()
                     .document(TEST_DOCUMENT)
                     .respondents(emptyList())
-                    .others(emptyList())
                     .build())
                 .build()
         ));
 
         given(representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE)).willReturn(DIGITAL_REPS);
-        given(otherRecipientsInbox.getNonSelectedRecipients(
-            eq(DIGITAL_SERVICE), eq(caseData), eq(NO_RECIPIENTS), any()
-        )).willReturn(Collections.emptySet());
-        given(representativesInbox.getNonSelectedRespondentRecipients(
-            eq(DIGITAL_SERVICE), eq(caseData), eq(emptyList()), any()
-        )).willReturn(Collections.emptySet());
 
         underTest.notifyDigitalRepresentatives(
             new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA)
@@ -187,16 +178,11 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .c2DocumentBundle(C2DocumentBundle.builder()
                     .document(TEST_DOCUMENT)
                     .respondents(emptyList())
-                    .others(emptyList())
                     .build())
                 .build()
         ));
 
         given(representativesInbox.getEmailsByPreference(caseData, EMAIL)).willReturn(EMAIL_REPS);
-        given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL), eq(caseData), eq(NO_RECIPIENTS), any()))
-            .willReturn(Collections.emptySet());
-        given(representativesInbox.getNonSelectedRespondentRecipients(eq(EMAIL), eq(caseData), eq(emptyList()), any()))
-            .willReturn(Collections.emptySet());
 
         underTest.notifyEmailServedRepresentatives(
             new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA)
@@ -268,7 +254,6 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .c2DocumentBundle(C2DocumentBundle.builder()
                     .document(TEST_DOCUMENT)
                     .applicantName(respondent1FullName)
-                    .others(emptyList())
                     .build())
                 .build()
         ));
@@ -284,6 +269,47 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     }
 
     @Test
+    void shouldNotifyAllLAsAndChildWhenApplicantIsChild() {
+        final String child1FirstName = "Jack";
+        final String child1LastName = "Smith";
+        final String child1FullName = child1FirstName + " " + child1LastName;
+        final String child1EmailAddress = "child1@test.com";
+        List<Element<Child>> children = wrapElements(
+            Child.builder()
+                .party(ChildParty.builder().firstName(child1FirstName).lastName(child1LastName)
+                    .build())
+                .solicitor(RespondentSolicitor.builder().email(child1EmailAddress).build())
+                .build(),
+            Child.builder()
+                .party(ChildParty.builder().firstName("Ross").lastName("Bob").build())
+                .solicitor(RespondentSolicitor.builder().build())
+                .build()
+        );
+
+        given(localAuthorityRecipients.getRecipients(
+            RecipientsRequest.builder().caseData(caseData).build()))
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS, SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS));
+        given(caseData.getAllChildren()).willReturn(children);
+        given(caseData.getAdditionalApplicationsBundle()).willReturn(wrapElements(
+            AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .document(TEST_DOCUMENT)
+                    .applicantName(child1FullName)
+                    .build())
+                .build()
+        ));
+
+        OrderApplicant applicant = OrderApplicant.builder().name(child1FullName).type(CHILD).build();
+        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, applicant));
+
+        verify(notificationService).sendEmail(
+            INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS,
+                SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS, child1EmailAddress),
+            notifyData, CASE_ID.toString()
+        );
+    }
+
+    @Test
     void shouldNotNotifyApplicantWhenApplicantsEmailAddressIsEmpty() {
         final String applicantName = "someone";
         given(caseData.getAdditionalApplicationsBundle()).willReturn(wrapElements(
@@ -291,7 +317,6 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .c2DocumentBundle(C2DocumentBundle.builder()
                     .document(TEST_DOCUMENT)
                     .applicantName(applicantName)
-                    .others(emptyList())
                     .build())
                 .build()
         ));
@@ -311,7 +336,6 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .c2DocumentBundle(C2DocumentBundle.builder()
                     .document(TEST_DOCUMENT)
                     .applicantName(applicantName)
-                    .others(emptyList())
                     .build())
                 .build()
         ));
@@ -349,7 +373,6 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .c2DocumentBundle(C2DocumentBundle.builder()
                     .document(TEST_DOCUMENT)
                     .applicantName("John Smith")
-                    .others(emptyList())
                     .build())
                 .build()
         ));
@@ -368,13 +391,11 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(caseData.getAdditionalApplicationsBundle()).willReturn(wrapElements(
             AdditionalApplicationsBundle.builder()
                 .otherApplicationsBundle(
-                    OtherApplicationsBundle.builder().document(TEST_DOCUMENT).others(SELECTED_OTHERS).build())
+                    OtherApplicationsBundle.builder().document(TEST_DOCUMENT).build())
                 .build()
         ));
 
         given(representativesInbox.getEmailsByPreference(caseData, EMAIL)).willReturn(emptySet());
-        given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL), eq(caseData), eq(SELECTED_OTHERS), any()))
-            .willReturn(Collections.emptySet());
 
         underTest.notifyEmailServedRepresentatives(
             new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA)
@@ -390,25 +411,17 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         final Representative representative1 = mock(Representative.class);
         final Representative representative2 = mock(Representative.class);
         final Representative representative3 = mock(Representative.class);
-        final RespondentParty otherRespondent = mock(RespondentParty.class);
 
         given(caseData.getAdditionalApplicationsBundle()).willReturn(wrapElements(additionalApplicationsBundle));
         given(sendDocumentService.getStandardRecipients(caseData))
             .willReturn(List.of(representative1, representative2, representative3));
-        given(otherRecipientsInbox.getNonSelectedRecipients(eq(POST), eq(caseData), eq(SELECTED_OTHERS), any()))
-            .willReturn(Set.of(representative1));
-        given(representativesInbox.getNonSelectedRespondentRecipientsByPost(eq(caseData), eq(SELECTED_RESPONDENTS)))
-            .willReturn(Set.of(representative3));
-        given(otherRecipientsInbox.getSelectedRecipientsWithNoRepresentation(SELECTED_OTHERS))
-            .willReturn(Set.of(otherRespondent));
-        given(representativesInbox.getSelectedRecipientsWithNoRepresentation(SELECTED_RESPONDENTS))
-            .willReturn(Set.of(representative2));
 
         underTest.sendAdditionalApplicationsByPost(
             new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA)
         );
 
-        verify(sendDocumentService).sendDocuments(caseData, documents, List.of(representative2, otherRespondent));
+        verify(sendDocumentService).sendDocuments(caseData, documents,
+            List.of(representative1, representative2, representative3));
         verifyNoInteractions(notificationService);
     }
 
@@ -557,8 +570,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             .supportingEvidenceBundle(wrapElements(
                 SupportingEvidenceBundle.builder().document(SUPPORTING_DOCUMENT_1).build()
             ))
-            .others(SELECTED_OTHERS)
-            .respondents(SELECTED_RESPONDENTS)
+            .respondents(RESPONDENTS)
             .build();
 
         OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
@@ -567,8 +579,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             .supportingEvidenceBundle(wrapElements(
                 SupportingEvidenceBundle.builder().document(SUPPORTING_DOCUMENT_2).build()
             ))
-            .others(SELECTED_OTHERS)
-            .respondents(SELECTED_RESPONDENTS)
+            .respondents(RESPONDENTS)
             .build();
 
         return Stream.of(

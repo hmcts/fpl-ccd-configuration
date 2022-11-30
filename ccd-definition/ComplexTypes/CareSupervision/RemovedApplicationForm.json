@@ -1,0 +1,26 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RemovedApplicationForm",
+    "ListElementCode": "submittedForm",
+    "FieldType": "Document",
+    "ElementLabel": "Application form",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RemovedApplicationForm",
+    "ListElementCode": "submittedSupplement",
+    "FieldType": "Document",
+    "ElementLabel": "Supplement",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RemovedApplicationForm",
+    "ListElementCode": "removalReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Removal reason",
+    "SecurityClassification": "Public"
+  }
+]

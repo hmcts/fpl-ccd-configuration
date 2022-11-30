@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
+import uk.gov.hmcts.reform.fpl.model.order.OrderSourceType;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 
 import java.util.Map;
@@ -28,7 +29,12 @@ public class DraftOrderPreviewSectionPrePopulator implements OrderSectionPrePopu
 
     @Override
     public Map<String, Object> prePopulate(CaseData caseData) {
-        DocumentReference orderPreview = orderCreationService.createOrderDocument(caseData, DRAFT, PDF);
-        return Map.of(ORDER_PREVIEW_FIELD, orderPreview);
+        OrderSourceType orderSourceType = caseData.getManageOrdersEventData().getManageOrdersType().getSourceType();
+        if (OrderSourceType.MANUAL_UPLOAD == orderSourceType) {
+            return Map.of(ORDER_PREVIEW_FIELD, caseData.getManageOrdersEventData().getManageOrdersUploadOrderFile());
+        } else {
+            DocumentReference orderPreview = orderCreationService.createOrderDocument(caseData, DRAFT, PDF);
+            return Map.of(ORDER_PREVIEW_FIELD, orderPreview);
+        }
     }
 }

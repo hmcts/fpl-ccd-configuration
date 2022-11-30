@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.casesubmission;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -57,6 +57,15 @@ public class CaseSubmissionService {
         if (caseData.isSecureAccommodationOrderType()) {
             return generateSupplementPDF(caseData, isDraft, DocmosisTemplates.C20_SUPPLEMENT,
                 documentGenerationService.getC20SupplementData(caseData, isDraft));
+        } else if (caseData.isRefuseContactWithChildApplication()) {
+            return generateSupplementPDF(caseData, isDraft, DocmosisTemplates.C14_SUPPLEMENT,
+                documentGenerationService.getC14SupplementData(caseData, isDraft));
+        } else if (caseData.isChildRecoveryOrder()) {
+            return generateSupplementPDF(caseData, isDraft, DocmosisTemplates.C18_SUPPLEMENT,
+                documentGenerationService.getC18SupplementData(caseData, isDraft));
+        } else if (caseData.isContactWithChildInCareApplication()) {
+            return generateSupplementPDF(caseData, isDraft, DocmosisTemplates.C15_SUPPLEMENT,
+                documentGenerationService.getC15SupplementData(caseData, isDraft));
         } else {
             return generateSupplementPDF(caseData, isDraft, DocmosisTemplates.C16_SUPPLEMENT,
                 documentGenerationService.getC16SupplementData(caseData, isDraft));

@@ -14,6 +14,7 @@ java:
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI: https://idam-api.aat.platform.hmcts.net/o/jwks
     CCD_UI_BASE_URL: https://case-management-web-${SERVICE_FQDN}
     MANAGE_CASE_UI_BASE_URL: https://xui-${SERVICE_FQDN}
+    CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-cdam
     LD_USER_KEY: FPLA_PREVIEW
     SCHEDULER_ENABLED: false
     TESTING_SUPPORT_ENABLED: true
@@ -83,6 +84,10 @@ xui-webapp:
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
     image: hmctspublic.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
+    devcpuRequests: 500m
+    devmemoryRequests: 512Mi
+    devcpuLimits: 1
+    devmemoryLimits: 1Gi
     readinessPeriod: 5
     livenessPeriod: 3
     livenessDelay: 10
@@ -94,9 +99,7 @@ xui-webapp:
       SERVICES_CCD_COMPONENT_API: http://${SERVICE_NAME}-ccd-api-gw
       SERVICES_CCD_DATA_STORE_API: http://${SERVICE_NAME}-ccd-data-store-api
       SERVICES_DOCUMENTS_API_V2: http://${SERVICE_NAME}-cdam
-#      SERVICES_DOCUMENTS_API_V2: https://ccd-case-document-am-api-${SERVICE_FQDN}
       SERVICES_CCD_CASE_ASSIGNMENT_API: http://${SERVICE_NAME}-aac
-#      SERVICES_CCD_CASE_ASSIGNMENT_API: https://aac-${SERVICE_FQDN}
       SERVICES_TERMS_AND_CONDITIONS: https://xui-terms-and-conditions-${SERVICE_FQDN}
       JURISDICTIONS: PUBLICLAW
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
@@ -188,6 +191,9 @@ ccd:
         enabled: false
   ccd-definition-store-api:
     java:
+      devmemoryRequests: '1024Mi'
+      devmemoryLimits: '2048Mi'
+      devcpuRequests: '900m'
       autoscaling:
         enabled: false
       imagePullPolicy: Always

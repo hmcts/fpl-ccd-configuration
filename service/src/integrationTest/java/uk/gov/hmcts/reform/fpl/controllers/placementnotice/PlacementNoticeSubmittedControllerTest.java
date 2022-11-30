@@ -8,7 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.controllers.PlacementNoticeController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -26,6 +26,7 @@ import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
@@ -139,8 +140,8 @@ class PlacementNoticeSubmittedControllerTest extends AbstractPlacementNoticeCont
             .thenReturn(PLACEMENT_NOTIFY_DATA);
         when(placementContentProvider.getNoticeChangedData(any(), any()))
             .thenReturn(PLACEMENT_NOTIFY_DATA);
-        when(cafcassLookupConfiguration.getCafcass(any())).thenReturn(
-            new CafcassLookupConfiguration.Cafcass("test", DEFAULT_CAFCASS_EMAIL));
+        when(cafcassLookupConfiguration.getCafcassWelsh(any())).thenReturn(
+            Optional.of(new CafcassLookupConfiguration.Cafcass("test", DEFAULT_CAFCASS_EMAIL)));
         when(localAuthorityRecipientsService.getRecipients(any()))
             .thenReturn(newHashSet(LOCAL_AUTHORITY_1_COURT_EMAIL));
 

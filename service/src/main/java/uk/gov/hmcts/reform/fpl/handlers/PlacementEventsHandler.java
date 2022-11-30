@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.cafcass.PlacementApplicationCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
@@ -26,8 +27,10 @@ import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementContentProvider;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -36,15 +39,20 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static java.util.Objects.nonNull;
+import static java.util.Set.of;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_NOTICE_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.HMCTS;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.A50_PLACEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.PLACEMENT_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.PLACEMENT_NOTICE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.nullifyTemporaryFields;
 
 @Slf4j
@@ -63,6 +71,9 @@ public class PlacementEventsHandler {
     private final SendDocumentService sendDocumentService;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final LocalAuthorityRecipientsService localAuthorityRecipients;
+    private final CafcassNotificationService cafcassNotificationService;
+    private final RepresentativesInbox representativesInbox;
+
 
     @EventListener
     public void takeApplicationPayment(PlacementApplicationSubmitted event) {
@@ -85,6 +96,46 @@ public class PlacementEventsHandler {
 
                 updateCase(caseData);
             }
+        }
+    }
+
+    @Async
+    @EventListener
+    public void notifyCafcassOfNewApplicationSendGrid(final PlacementApplicationSubmitted event) {
+        final CaseData caseData = event.getCaseData();
+        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
+            cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
+
+        if (recipientIsEngland.isPresent()) {
+            PlacementApplicationCafcassData placementApplicationCafcassData =
+                contentProvider.buildNewPlacementApplicationNotificationCafcassData(
+                    caseData,
+                    event.getPlacement()
+                );
+
+            cafcassNotificationService.sendEmail(caseData,
+                of(event.getPlacement().getApplication()),
+                PLACEMENT_APPLICATION,
+                placementApplicationCafcassData);
+        }
+    }
+
+    @Async
+    @EventListener
+    public void notifyCafcassOfNewApplicationGovNotify(final PlacementApplicationSubmitted event) {
+        final CaseData caseData = event.getCaseData();
+        final Placement placement = event.getPlacement();
+
+        Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
+            .map(CafcassLookupConfiguration.Cafcass::getEmail);
+
+        if (recipientIsWelsh.isPresent()) {
+            log.info("Send email to cafcass about {} new placement application", placement.getChildName());
+
+            final NotifyData notifyData = contentProvider.getApplicationChangedCourtData(caseData, placement);
+
+            notificationService.sendEmail(PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE, recipientIsWelsh.get(),
+                notifyData, caseData.getId());
         }
     }
 
@@ -114,14 +165,40 @@ public class PlacementEventsHandler {
         final CaseData caseData = event.getCaseData();
         final Placement placement = event.getPlacement();
 
-        log.info("Send email to cafcass about {} child placement notice", placement.getChildName());
+        Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
+            .map(CafcassLookupConfiguration.Cafcass::getEmail);
 
-        final NotifyData notifyData = contentProvider.getNoticeChangedCafcassData(caseData, placement);
+        if (recipientIsWelsh.isPresent()) {
 
-        final String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
+            log.info("Send email to cafcass about {} child placement notice", placement.getChildName());
 
-        notificationService
-            .sendEmail(PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE, recipient, notifyData, caseData.getId());
+            final NotifyData notifyData = contentProvider.getNoticeChangedCafcassData(caseData, placement);
+
+            notificationService.sendEmail(PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE, recipientIsWelsh.get(),
+                notifyData, caseData.getId());
+        }
+    }
+
+    @Async
+    @EventListener
+    public void notifyCafcassOfNewNoticeSendGrid(PlacementNoticeAdded event) {
+        final CaseData caseData = event.getCaseData();
+
+        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
+            cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
+
+        if (recipientIsEngland.isPresent()) {
+            PlacementApplicationCafcassData placementApplicationCafcassData =
+                contentProvider.buildNewPlacementApplicationNotificationCafcassData(
+                    caseData,
+                    event.getPlacement()
+                );
+
+            cafcassNotificationService.sendEmail(caseData,
+                of(event.getPlacement().getPlacementNotice()),
+                PLACEMENT_NOTICE,
+                placementApplicationCafcassData);
+        }
     }
 
     @Async
@@ -138,6 +215,21 @@ public class PlacementEventsHandler {
                 resp.ifPresent(respondentElement -> notifyRespondent(
                     caseData, placement, respondentElement.getValue()));
             }
+        }
+    }
+
+    @Async
+    @EventListener
+    public void notifyChildSolicitorsOfNewNotice(PlacementNoticeAdded event) {
+        final CaseData caseData = event.getCaseData();
+        final Placement placement = event.getPlacement();
+
+        final Set<String> recipients = representativesInbox.getChildrenSolicitorEmails(caseData, DIGITAL_SERVICE);
+        if (!recipients.isEmpty()) {
+            final NotifyData notifyData = contentProvider.getNoticeChangedData(caseData, placement);
+
+            notificationService.sendEmail(PLACEMENT_NOTICE_UPLOADED_TEMPLATE, recipients, notifyData,
+                caseData.getId());
         }
     }
 

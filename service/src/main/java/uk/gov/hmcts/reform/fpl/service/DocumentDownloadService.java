@@ -30,26 +30,48 @@ public class DocumentDownloadService {
     private final IdamClient idamClient;
     private final RequestData requestData;
 
+    private final SecureDocStoreService secureDocStoreService;
+    private final FeatureToggleService featureToggleService;
+    private final SystemUserService systemUserService;
+
     public byte[] downloadDocument(final String documentUrlString) {
-        final String userRoles = join(",", idamClient.getUserInfo(requestData.authorisation()).getRoles());
 
-        log.info("Download document {} by user {} with roles {}", documentUrlString, requestData.userId(), userRoles);
+        if (featureToggleService.isSecureDocstoreEnabled()) {
+            return secureDocStoreService.downloadDocument(documentUrlString);
+        } else {
+            String userRoles = "caseworker-publiclaw-systemupdate";
+            boolean useSystemUser = false;
+            try {
+                userRoles = join(",", idamClient.getUserInfo(requestData.authorisation()).getRoles());
+            } catch (IllegalStateException e) {
+                // TODO - Remove this after cafcass resend job
+                log.info("Outside of a request, use system user");
+                useSystemUser = true;
+            }
 
-        ResponseEntity<Resource> documentDownloadResponse =
-            documentDownloadClient.downloadBinary(requestData.authorisation(),
-                authTokenGenerator.generate(),
-                userRoles,
-                requestData.userId(),
-                URI.create(documentUrlString).getPath());
+            String auth = useSystemUser ? systemUserService.getSysUserToken() : requestData.authorisation();
+            String userId = useSystemUser ? systemUserService.getUserId(auth) : requestData.userId();
 
-        if (isNotEmpty(documentDownloadResponse) && HttpStatus.OK == documentDownloadResponse.getStatusCode()) {
-            return Optional.of(documentDownloadResponse)
-                .map(HttpEntity::getBody)
-                .map(ByteArrayResource.class::cast)
-                .map(ByteArrayResource::getByteArray)
-                .orElseThrow(EmptyFileException::new);
+            log.info("Download document {} by user {} with roles {}", documentUrlString, userId,
+                userRoles);
+
+            ResponseEntity<Resource> documentDownloadResponse =
+                documentDownloadClient.downloadBinary(auth,
+                    authTokenGenerator.generate(),
+                    userRoles,
+                    userId,
+                    URI.create(documentUrlString).getPath());
+
+            if (isNotEmpty(documentDownloadResponse) && HttpStatus.OK == documentDownloadResponse.getStatusCode()) {
+                return Optional.of(documentDownloadResponse)
+                    .map(HttpEntity::getBody)
+                    .map(ByteArrayResource.class::cast)
+                    .map(ByteArrayResource::getByteArray)
+                    .orElseThrow(EmptyFileException::new);
+            }
+            throw new IllegalArgumentException(String.format("Download of document from %s unsuccessful.",
+                documentUrlString));
+
         }
-        throw new IllegalArgumentException(String.format("Download of document from %s unsuccessful.",
-            documentUrlString));
     }
 }

@@ -43,10 +43,10 @@ public class GeneratedOrderRemovalAction implements OrderRemovalAction {
 
         generatedRemovableOrder = generatedRemovableOrder.toBuilder()
             .judgeAndLegalAdvisor(null)
-            .removalReason(caseData.getReasonToRemoveOrder())
+            .removalReason(caseData.getRemovalToolData().getReasonToRemoveOrder())
             .build();
 
-        List<Element<GeneratedOrder>> hiddenGeneratedOrders = caseData.getHiddenOrders();
+        List<Element<GeneratedOrder>> hiddenGeneratedOrders = caseData.getRemovalToolData().getHiddenOrders();
         hiddenGeneratedOrders.add(element(removedOrderId, generatedRemovableOrder));
 
         data.put("children1", removeFinalOrderPropertiesFromChildren(caseData, generatedRemovableOrder));

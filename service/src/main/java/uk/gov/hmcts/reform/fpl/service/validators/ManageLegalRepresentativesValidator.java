@@ -52,7 +52,7 @@ public class ManageLegalRepresentativesValidator {
 
     private String validationMessageForInvalidEmail(long currentRepresentativeIdx, int sizeOfRepresentatives) {
         return String.format(
-            "Email address for Legal representative%s is not registered on the system. "
+            "Email address for LA counsel/External solicitor%s is not registered on the system. "
                 + "They can register at "
                 + "https://manage-org.platform.hmcts.net/register-org/register",
             addNumericIfMultipleElements(currentRepresentativeIdx, sizeOfRepresentatives));

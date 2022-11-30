@@ -12,25 +12,26 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
-import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.group.C110A;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
@@ -68,99 +69,25 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class DfplRemoveC110a {
-        private final long invalidCaseId = 1643728359576136L;
-        private final UUID invalidDocId = UUID.randomUUID();
-
+    class DfplRemoveCaseNotes {
         private Stream<Arguments> provideMigrationTestData() {
             return Stream.of(
-                Arguments.of("DFPL-794", 1657104996768754L, UUID.fromString("5da7ae0a-0d53-427f-a538-2cb8c9ea82b6")),
-                Arguments.of("DFPL-797", 1657816793771026L, UUID.fromString("2cfd676a-665b-4d15-ae9e-5ad2930f75cb")),
-                Arguments.of("DFPL-798", 1654765774567742L, UUID.fromString("1756656b-6931-467e-8dfe-ac9f152351fe")),
-                Arguments.of("DFPL-802", 1659528630126722L, UUID.fromString("dcd016c6-a0de-4ed2-91ce-5582a6acaf25"))
+                Arguments.of("DFPL-979", 1648556593632182L,
+                    List.of(UUID.fromString("c0c0c620-055e-488c-a6a9-d5e7ec35c210"),
+                        UUID.fromString("0a202483-b7e6-44a1-a28b-8c9342f67967")))
             );
         }
 
         @ParameterizedTest
         @MethodSource("provideMigrationTestData")
-        void shouldPerformMigrationWhenDocIdMatches(String migrationId, Long validCaseId, UUID validDocId) {
-
-            CaseData caseData = CaseData.builder()
-                .id(validCaseId)
-                .c110A(C110A.builder()
-                    .submittedForm(DocumentReference.builder()
-                        .url(String.format("http://test.com/%s", validDocId))
-                        .build())
-                    .build())
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId)
-            );
-
-            CaseData responseData = extractCaseData(response);
-
-            assertThat(responseData.getC110A().getSubmittedForm()).isNull();
-        }
-
-        @ParameterizedTest
-        @MethodSource("provideMigrationTestData")
-        void shouldThrowAssersionErrorWhenCaseIdIsInvalid(String migrationId, Long validCaseId, UUID validDocId) {
-            CaseData caseData = CaseData.builder()
-                .id(invalidCaseId)
-                .state(State.SUBMITTED)
-                .c110A(C110A.builder()
-                    .submittedForm(DocumentReference.builder()
-                        .url(String.format("http://test.com/%s", validDocId))
-                        .build())
-                    .build())
-                .build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format("Migration {id = %s, case reference = 1643728359576136}, expected case id %d",
-                    migrationId, validCaseId));
-        }
-
-        @ParameterizedTest
-        @MethodSource("provideMigrationTestData")
-        void shouldThrowAssersionErrorWhenDocumentIdIsInvalid(String migrationId, Long validCaseId, UUID validDocId) {
-            CaseData caseData = CaseData.builder()
-                .id(validCaseId)
-                .state(State.SUBMITTED)
-                .c110A(C110A.builder()
-                    .submittedForm(DocumentReference.builder()
-                        .url(String.format("http://test.com/%s", invalidDocId))
-                        .build())
-                    .build())
-                .build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format("Migration {id = %s, case reference = %d}, expected c110a document id %s",
-                    migrationId, validCaseId, validDocId));
-        }
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class Dfpl692 {
-        final String migrationId = "DFPL-692";
-        final long expectedCaseId = 1641905747009846L;
-        final UUID expectedNotesIdOne = UUID.fromString("7dd3c2ac-d49f-4119-8299-a19a62f1d6db");
-        final UUID expectedNotesIdTwo = UUID.fromString("66fb7c25-7860-4a5c-98d4-dd2ff575eb28");
-
-        @Test
-        void shouldRemoveNotes() {
+        void shouldRemoveCaseNotes(String migrationId, Long expectedCaseId, List<UUID> validNoteId) {
             UUID otherNoteId = UUID.randomUUID();
+            List<UUID> testNoteId = new ArrayList<>(validNoteId);
+            testNoteId.add(otherNoteId);
 
             CaseData caseData = CaseData.builder()
                 .id(expectedCaseId)
-                .caseNotes(List.of(buildMockCaseNotes(expectedNotesIdOne),
-                    buildMockCaseNotes(expectedNotesIdTwo),
-                    buildMockCaseNotes(otherNoteId)))
+                .caseNotes(testNoteId.stream().map(this::buildMockCaseNotes).collect(Collectors.toList()))
                 .build();
 
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
@@ -171,13 +98,14 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             assertThat(responseData.getCaseNotes().size()).isEqualTo(1);
             assertThat(responseData.getCaseNotes().stream().map(Element::getId).collect(Collectors.toList()))
-                .doesNotContain(expectedNotesIdOne, expectedNotesIdTwo)
+                .doesNotContainAnyElementsOf(validNoteId)
                 .contains(otherNoteId);
 
         }
 
-        @Test
-        void shouldThrowExceptionWhenCaseIdInvalid() {
+        @ParameterizedTest
+        @MethodSource("provideMigrationTestData")
+        void shouldThrowExceptionWhenCaseIdInvalid(String migrationId, Long expectedCaseId, List<UUID> validNoteId) {
             CaseData caseData = CaseData.builder().id(1L).build();
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
@@ -187,27 +115,13 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                     migrationId, 1, expectedCaseId));
         }
 
-        @Test
-        void shouldThrowExceptionWhenCasNotesIdInvalid() {
+        @ParameterizedTest
+        @MethodSource("provideMigrationTestData")
+        void shouldThrowExceptionWhenCasNotesIdInvalid(String migrationId, Long expectedCaseId,
+                                                       List<UUID> validNoteId) {
             CaseData caseData = CaseData.builder()
                 .id(expectedCaseId)
                 .caseNotes(List.of(buildMockCaseNotes(UUID.randomUUID()),
-                    buildMockCaseNotes(UUID.randomUUID()),
-                    buildMockCaseNotes(UUID.randomUUID()))).build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format(
-                    "Migration {id = %s, case reference = %s}, expected caseNotes id not found",
-                    migrationId, expectedCaseId));
-        }
-
-        @Test
-        void shouldThrowExceptionWhenOneCasNotesIdInvalid() {
-            CaseData caseData = CaseData.builder()
-                .id(expectedCaseId)
-                .caseNotes(List.of(buildMockCaseNotes(expectedNotesIdOne),
                     buildMockCaseNotes(UUID.randomUUID()),
                     buildMockCaseNotes(UUID.randomUUID()))).build();
 
@@ -230,6 +144,93 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
+    class DfplRemoveConfidentialTab {
+        private final long invalidCaseId = 1643728359986136L;
+
+        private Stream<Arguments> provideMigrationTestData() {
+            return Stream.of(
+                Arguments.of("DFPL-809a", 1651569615587841L),
+                Arguments.of("DFPL-809b", 1651755091217652L)
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("provideMigrationTestData")
+        void shouldPerformMigrationWhenDocIdMatches(String migrationId, Long validCaseId) {
+
+            List<Element<SupportingEvidenceBundle>> correspondenceDocuments =
+                wrapElements(
+                    SupportingEvidenceBundle.builder()
+                        .name("bundle1")
+                        .confidential(List.of("CONFIDENTIAL"))
+                        .hasConfidentialAddress("No")
+                        .build(),
+                    SupportingEvidenceBundle.builder()
+                        .name("bundle2")
+                        .confidential(List.of("CONFIDENTIAL"))
+                        .hasConfidentialAddress("Yes")
+                        .build(),
+                    SupportingEvidenceBundle.builder()
+                        .name("bundle3")
+                        .hasConfidentialAddress("No")
+                        .build()
+                );
+
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .correspondenceDocuments(correspondenceDocuments)
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getCorrespondenceDocuments().get(0).getValue().getConfidential())
+                .isEqualTo(emptyList());
+            assertThat(responseData.getCorrespondenceDocuments().get(1).getValue().getConfidential())
+                .isEqualTo(List.of("CONFIDENTIAL"));
+            assertThat(responseData.getCorrespondenceDocuments().get(2).getValue().getConfidential())
+                .isEqualTo(null);
+        }
+
+        @ParameterizedTest
+        @MethodSource("provideMigrationTestData")
+        void shouldThrowAssersionErrorWhenCaseIdIsInvalid(String migrationId, Long validCaseId) {
+            List<Element<SupportingEvidenceBundle>> correspondenceDocuments =
+                wrapElements(
+                    SupportingEvidenceBundle.builder()
+                        .name("bundle1")
+                        .confidential(List.of("CONFIDENTIAL"))
+                        .hasConfidentialAddress("No")
+                        .build(),
+                    SupportingEvidenceBundle.builder()
+                        .name("bundle2")
+                        .confidential(List.of("CONFIDENTIAL"))
+                        .hasConfidentialAddress("Yes")
+                        .build(),
+                    SupportingEvidenceBundle.builder()
+                        .name("bundle3")
+                        .hasConfidentialAddress("No")
+                        .build()
+                );
+
+            CaseData caseData = CaseData.builder()
+                .id(invalidCaseId)
+                .correspondenceDocuments(correspondenceDocuments)
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format("Migration {id = %s, case reference = 1643728359986136}, expected case id %d",
+                    migrationId, validCaseId));
+        }
+    }
+
+    // @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    // @Nested
     class Dfpl776 {
         final String migrationId = "DFPL-776";
         final long expectedCaseId = 1646318196381762L;
@@ -295,10 +296,10 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Dfpl826 {
-        final String migrationId = "DFPL-826";
-        final Long caseId = 1660300177298257L;
-        final UUID hearingId = UUID.fromString("d76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0");
+    class Dfpl1015 {
+        final String migrationId = "DFPL-1015";
+        final Long caseId = 1641373238062313L;
+        final UUID hearingId = UUID.fromString("894fa026-e403-45e8-a2fe-105e8135ee5b");
 
         final Element<HearingBooking> hearingToBeRemoved = element(hearingId, HearingBooking.builder()
             .type(CASE_MANAGEMENT)
@@ -344,8 +345,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-826, case reference = 1660300177298257},"
-                    + " hearing details not found");
+                .hasMessage(String.format("Migration {id = %s, case reference = %s},"
+                    + " hearing details not found", migrationId, caseId));
         }
 
         @Test
@@ -358,8 +359,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-826, case reference = 1111111111111111},"
-                    + " expected case id 1660300177298257");
+                .hasMessage(String.format("Migration {id = %s, case reference = 1111111111111111},"
+                    + " expected case id %s", migrationId, caseId));
         }
 
         @Test
@@ -372,8 +373,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-826, case reference = 1660300177298257},"
-                    + " hearing booking d76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0 not found");
+                .hasMessage(String.format("Migration {id = %s, case reference = %s},"
+                    + " hearing booking %s not found", migrationId, caseId, hearingId));
         }
 
         @Test
@@ -386,8 +387,107 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = DFPL-826, case reference = 1660300177298257},"
-                    + " more than one hearing booking d76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0 found");
+                .hasMessage(String.format("Migration {id = %s, case reference = %s},"
+                    + " more than one hearing booking %s found", migrationId, caseId, hearingId));
+        }
+    }
+
+    // @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    // @Nested
+    class Dfpl1029 {
+
+        final String migrationId = "DFPL-1029";
+        final long expectedCaseId = 1650359065299290L;
+        final long incorrectCaseId = 111111111111111L;
+
+        @Test
+        void shouldThrowExceptionWhenIncorrectCaseId() {
+            CaseData caseData = CaseData.builder().id(incorrectCaseId).build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format("Migration {id = %s, case reference = %s}, expected case id %d",
+                    migrationId, incorrectCaseId, expectedCaseId));
+        }
+
+        @Test
+        void shouldSetCaseStateToCaseManagement() {
+            CaseData caseData = CaseData.builder().id(expectedCaseId).build();
+
+            CaseDetails caseDetails = buildCaseDetails(caseData, migrationId);
+
+            // pick a few of the temp fields from ManageOrderDocumentScopedFieldsCalculator and set on CaseDetails
+            caseDetails.getData().put("others_label", "test");
+            caseDetails.getData().put("appointedGuardians_label", "test");
+            caseDetails.getData().put("manageOrdersCafcassRegion", "test");
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+
+            // check that the migration has successfully removed them
+            assertThat(response.getData()).extracting("others_label").isNull();
+            assertThat(response.getData()).extracting("appointedGuardians_label").isNull();
+            assertThat(response.getData()).extracting("manageOrdersCafcassRegion").isNull();
+        }
+
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl985 {
+        private static final long invalidCaseId = 8888888888888888L;
+        private static final long validCaseId = 1648203424556112L;
+        private static final String migrationId = "DFPL-985";
+
+        private final UUID respondentStatementId = UUID.fromString("4b88563e-c6b3-4780-90b6-531e1db65b7e");
+
+        private final Element<RespondentStatement> respondentStatementElement = element(
+            respondentStatementId, RespondentStatement.builder().build());
+
+        @Test
+        void shouldRemoveRespondentStatement() {
+            CaseData caseData = prepareValidCaseData();
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+            assertThat(responseData.getRespondentStatements()).doesNotContain(respondentStatementElement);
+        }
+
+        @Test
+        void shouldThrowExceptionIfWrongCase() {
+            CaseData caseData = CaseData.builder().id(invalidCaseId).build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format("Migration {id = %s, case reference = 8888888888888888}, expected case id %d",
+                    migrationId, validCaseId));
+        }
+
+        @Test
+        void shouldThrowExceptionIfWrongRespondentStatement() {
+            CaseData caseData = CaseData.builder().id(validCaseId)
+                .respondentStatements(List.of(
+                    element(UUID.randomUUID(), RespondentStatement.builder().build()))
+                ).build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format("Migration {id = %s, case reference = %s}, invalid respondent statements",
+                    migrationId, validCaseId));
+        }
+
+        private CaseData prepareValidCaseData() {
+            return CaseData.builder()
+                .id(validCaseId)
+                .respondentStatements(List.of(
+                    element(UUID.randomUUID(), RespondentStatement.builder().respondentId(UUID.randomUUID()).build()),
+                    element(UUID.randomUUID(), RespondentStatement.builder().respondentId(UUID.randomUUID()).build()),
+                    respondentStatementElement
+                )).build();
         }
     }
 

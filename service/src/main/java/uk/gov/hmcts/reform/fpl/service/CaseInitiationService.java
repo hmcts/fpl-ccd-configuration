@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
@@ -17,16 +18,20 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CHILDSOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CREATOR;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.EPS;
 import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.MLA;
 
@@ -92,27 +97,35 @@ public class CaseInitiationService {
         }
     }
 
+    public boolean isUserLocalAuthority() {
+        Optional<String> userLA = localAuthorities.getLocalAuthorityCode();
+
+        return userLA.isPresent();
+    }
+
     public List<String> checkUserAllowedToCreateCase(CaseData caseData) {
 
         Optional<Organisation> userOrg = organisationService.findOrganisation();
         Optional<String> outsourcingLA = dynamicLists.getSelectedValue(caseData.getOutsourcingLAs());
         Optional<String> userLA = localAuthorities.getLocalAuthorityCode();
         Optional<String> caseLA = outsourcingLA.isPresent() ? outsourcingLA : userLA;
+        RepresentativeType representativeType = nonNull(caseData.getRepresentativeType())
+            ? caseData.getRepresentativeType() : RepresentativeType.LOCAL_AUTHORITY;
 
         boolean userInMO = userOrg.isPresent();
         boolean userInLA = userLA.isPresent();
         boolean caseOutsourced = outsourcingLA.isPresent() && !outsourcingLA.equals(userLA);
+        boolean isLocalAuthority = representativeType.equals(RepresentativeType.LOCAL_AUTHORITY);
 
         log.info("userOrg: {}, userLA: {} and outsourcingLA: {}",
             userOrg.map(Organisation::getOrganisationIdentifier).orElse(NOT_PRESENT),
             userLA.orElse(NOT_PRESENT),
             outsourcingLA.orElse(NOT_PRESENT));
 
-        if (userInMO && !userInLA && !caseOutsourced) {
+        if (userInMO && !userInLA && !caseOutsourced && isLocalAuthority) {
             return List.of(
-                "Email not recognised.",
-                "Your email is not associated with a local authority or authorised legal firm.",
-                "Email MyHMCTSsupport@justice.gov.uk for further guidance.");
+                "You do not have permission to proceed as a local authority.",
+                "Email FamilyPublicLawServiceTeam@justice.gov.uk for further guidance.");
         }
 
         if (!userInMO) {
@@ -171,6 +184,7 @@ public class CaseInitiationService {
                 .localAuthorityPolicy(organisationPolicy(outsourcingOrgId, outsourcingOrgName, LASOLICITOR))
                 .caseLocalAuthority(outsourcingLocalAuthority.get())
                 .caseLocalAuthorityName(localAuthorities.getLocalAuthorityName(outsourcingLocalAuthority.get()))
+                .representativeType(RepresentativeType.LOCAL_AUTHORITY)
                 .build();
 
             return addCourtDetails(updatedCaseData);
@@ -182,15 +196,41 @@ public class CaseInitiationService {
                     organisationPolicy(currentUserOrganisationId, currentUserOrganisationName, LASOLICITOR))
                 .caseLocalAuthority(userLocalAuthority.get())
                 .caseLocalAuthorityName(localAuthorities.getLocalAuthorityName(userLocalAuthority.get()))
+                .representativeType(RepresentativeType.LOCAL_AUTHORITY)
                 .build();
 
             return addCourtDetails(updatedCaseData);
         }
 
-        throw new IllegalStateException("Cannot determine local authority for a case");
+        if (nonNull(caseData.getRepresentativeType())) {
+            boolean isRespondentSolicitor = Objects.equals(caseData.getRepresentativeType().toString(),
+                "RESPONDENT_SOLICITOR");
+            boolean isChildSolicitor = Objects.equals(caseData.getRepresentativeType().toString(),
+                "CHILD_SOLICITOR");
+
+            if (isRespondentSolicitor || isChildSolicitor) {
+                CaseData updatedCaseData = caseData.toBuilder()
+                    .outsourcingPolicy(organisationPolicy(
+                        currentUserOrganisationId,
+                        currentUserOrganisationName,
+                        isRespondentSolicitor ? SOLICITORA : CHILDSOLICITORA))
+                    .representativeType(caseData.getRepresentativeType())
+                    .build();
+
+                return addCourtDetails(updatedCaseData);
+            }
+        }
+
+        return caseData;
     }
 
     private CaseData addCourtDetails(CaseData caseData) {
+        if (isEmpty(caseData.getCaseLocalAuthorityName())) {
+            return caseData.toBuilder().court(
+                Court.builder().build()
+            ).build();
+        }
+
         final List<Court> courts = courtLookup.getCourts(caseData.getCaseLocalAuthority());
 
         if (isNotEmpty(courts)) {

@@ -46,6 +46,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
     "ListElementCode": "othersNotified",
+    "Comment": "Deprecated",
     "FieldType": "Text",
     "ElementLabel": "People notified",
     "SecurityClassification": "Public"
@@ -170,6 +171,34 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
+    "ListElementCode": "hearingList",
+    "ElementLabel": "Which hearing?",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "requestedHearingToAdjourn",
+    "ElementLabel": "Requested hearing to adjourn",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "urgencyTimeFrameType",
+    "ElementLabel": "Please state how soon you want the judge to consider your application?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "UrgencyTimeFrameType",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
     "ListElementCode": "id",
     "FieldType": "Text",
     "ElementLabel": " ",
@@ -180,6 +209,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
     "ListElementCode": "others",
+    "Comment": "Deprecated",
     "FieldType": "Collection",
     "FieldTypeParameter": "Others",
     "ElementLabel": " ",
@@ -196,6 +226,26 @@
     "ElementLabel": " ",
     "SecurityClassification": "Public",
     "FieldShowCondition": "type=\"DO NOT SHOW\"",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "documentAcknowledgeLabel",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Presentational only - used to display a warning label in the event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "documentAcknowledge",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DocumentAcknowledge",
+    "ElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   }
 ]

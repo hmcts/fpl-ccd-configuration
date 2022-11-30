@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.exceptions.NoDocumentException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -24,11 +25,19 @@ public class AmendOrderToDownloadPrePopulator implements QuestionBlockOrderPrePo
 
     @Override
     public Map<String, Object> prePopulate(CaseData caseData) {
-        return Map.of("manageOrdersOrderToAmend", getSelectedOrder(caseData));
+        DocumentReference documentReference = getSelectedOrder(caseData);
+        if (documentReference == null) {
+            throw new NoDocumentException(getSelectedOrderId(caseData));
+        }
+        return Map.of("manageOrdersOrderToAmend", documentReference);
+    }
+
+    private UUID getSelectedOrderId(CaseData caseData) {
+        return caseData.getManageOrdersEventData().getManageOrdersAmendmentList().getValueCodeAsUUID();
     }
 
     private DocumentReference getSelectedOrder(CaseData caseData) {
-        UUID selectedOrderId = caseData.getManageOrdersEventData().getManageOrdersAmendmentList().getValueCodeAsUUID();
+        UUID selectedOrderId = getSelectedOrderId(caseData);
 
         if (StandardDirectionOrder.COLLECTION_ID.equals(selectedOrderId)) {
             return caseData.getStandardDirectionOrder().getOrderDoc();

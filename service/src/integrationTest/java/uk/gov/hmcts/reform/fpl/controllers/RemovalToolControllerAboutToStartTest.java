@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -114,18 +115,26 @@ class RemovalToolControllerAboutToStartTest extends AbstractCallbackTest {
                 buildListElement(sealedCaseManagementOrders.get(0).getId(),
                     String.format("Sealed case management order issued on %s",
                         formatLocalDateToString(dateNow(), "d MMMM yyyy"))),
-                buildListElement(draftCMOOne.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"))),
-                buildListElement(draftOrderOne.getId(), format("Draft order sent on %s",
-                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"))),
-                buildListElement(draftCMOTwo.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"))),
-                buildListElement(agreedCMO.getId(), format("Agreed case management order sent on %s",
-                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"))),
-                buildListElement(draftOrderTwo.getId(), format("Draft order sent on %s",
-                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"))),
-                buildListElement(draftCMOThree.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy")))))
+                buildListElement(draftCMOOne.getId(), format("Draft case management order sent on %s, %s",
+                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"),
+                    draftCMOOne.getValue().getDocument().getFilename())),
+                buildListElement(draftOrderOne.getId(), format("Draft order sent on %s for %s, %s",
+                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"),
+                    draftOrderOne.getValue().getTitle(),
+                    draftOrderOne.getValue().getDocument().getFilename())),
+                buildListElement(draftCMOTwo.getId(), format("Draft case management order sent on %s, %s",
+                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"),
+                    draftCMOTwo.getValue().getDocument().getFilename())),
+                buildListElement(agreedCMO.getId(), format("Agreed case management order sent on %s, %s",
+                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"),
+                    agreedCMO.getValue().getDocument().getFilename())),
+                buildListElement(draftOrderTwo.getId(), format("Draft order sent on %s for %s, %s",
+                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"),
+                    draftOrderTwo.getValue().getTitle(),
+                    draftOrderTwo.getValue().getDocument().getFilename())),
+                buildListElement(draftCMOThree.getId(), format("Draft case management order sent on %s, %s",
+                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"),
+                    draftCMOThree.getValue().getDocument().getFilename()))))
             .build();
 
         assertThat(builtDynamicList).isEqualTo(expectedList);
@@ -213,6 +222,8 @@ class RemovalToolControllerAboutToStartTest extends AbstractCallbackTest {
     private HearingOrder buildPastHearingOrder(HearingOrderType type) {
         return HearingOrder.builder()
             .type(type)
+            .title("test order")
+            .order(DocumentReference.builder().filename("order.doc").build())
             .status((type == AGREED_CMO || type == C21) ? SEND_TO_JUDGE : DRAFT)
             .dateSent(dateNow().minusDays(1))
             .dateIssued(dateNow())

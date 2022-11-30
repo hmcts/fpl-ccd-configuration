@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
-import uk.gov.hmcts.reform.fpl.enums.ApplicationRemovalReason;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
@@ -28,13 +27,12 @@ import uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
-import uk.gov.hmcts.reform.fpl.enums.RemovableType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
-import uk.gov.hmcts.reform.fpl.exceptions.LocalAuthorityNotFound;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -169,6 +167,8 @@ public class CaseData extends CaseDataParent {
     private OrganisationPolicy outsourcingPolicy;
     private OrganisationPolicy sharedLocalAuthorityPolicy;
     private OutsourcingType outsourcingType;
+    private RepresentativeType representativeType;
+    private YesNo isLocalAuthority;
     private Object outsourcingLAs;
     private Court court;
     private List<Element<Court>> pastCourtList;
@@ -187,6 +187,7 @@ public class CaseData extends CaseDataParent {
     @NotNull(message = "Add the orders and directions sought")
     @Valid
     private final Orders orders;
+    private final Orders ordersSolicitor;
     @NotNull(message = "Add the grounds for the application")
     @Valid
     private final Grounds grounds;
@@ -201,7 +202,8 @@ public class CaseData extends CaseDataParent {
     @Deprecated
     private final List<@NotNull(message = "Add applicant's details") Element<Applicant>> applicants;
 
-    private List<@NotNull(message = "Add local authority's details") Element<LocalAuthority>> localAuthorities;
+    // This holds all applicants, not just LA's
+    private List<@NotNull(message = "Add applicant's details") Element<LocalAuthority>> localAuthorities;
 
     @Valid
     @NotEmpty(message = "Add the respondents' details")
@@ -231,11 +233,6 @@ public class CaseData extends CaseDataParent {
 
     private final StandardDirectionOrder standardDirectionOrder;
     private final UrgentHearingOrder urgentHearingOrder;
-    private final List<Element<StandardDirectionOrder>> hiddenStandardDirectionOrders;
-
-    public List<Element<StandardDirectionOrder>> getHiddenStandardDirectionOrders() {
-        return defaultIfNull(hiddenStandardDirectionOrders, new ArrayList<>());
-    }
 
     private GatekeepingOrderRoute sdoRouter;
     private GatekeepingOrderRoute gatekeepingOrderRouter;
@@ -302,9 +299,17 @@ public class CaseData extends CaseDataParent {
         return respondents1 != null ? respondents1 : new ArrayList<>();
     }
 
+    public RepresentativeType getRepresentativeType() {
+        return representativeType != null ? representativeType : RepresentativeType.LOCAL_AUTHORITY;
+    }
+
     @JsonIgnore
     public List<Element<Child>> getAllChildren() {
         return children1 != null ? children1 : new ArrayList<>();
+    }
+
+    public Orders getOrders() {
+        return ordersSolicitor != null && ordersSolicitor.getOrderType() != null ? ordersSolicitor : orders;
     }
 
     //TODO add null-checker getter for hearingDetails during refactor/removal of legacy code (FPLA-2280)
@@ -338,7 +343,6 @@ public class CaseData extends CaseDataParent {
     private final PBAPayment temporaryPbaPayment;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
     private final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle;
-    private final List<Element<AdditionalApplicationsBundle>> hiddenApplicationsBundle;
     private final DynamicList applicantsList;
     private final String otherApplicant;
 
@@ -348,9 +352,7 @@ public class CaseData extends CaseDataParent {
     // Transient field
     private YesNo caseFlagValueUpdated;
 
-    public List<Element<AdditionalApplicationsBundle>> getHiddenApplicationsBundle() {
-        return defaultIfNull(hiddenApplicationsBundle, new ArrayList<>());
-    }
+
 
     @JsonIgnore
     public boolean hasC2DocumentBundle() {
@@ -483,17 +485,9 @@ public class CaseData extends CaseDataParent {
         return orderCollection != null ? orderCollection : new ArrayList<>();
     }
 
-    private final Object removableOrderList;
-    private final Object removableApplicationList;
-    private final String reasonToRemoveOrder;
-    private final List<Element<GeneratedOrder>> hiddenOrders;
-    private final RemovableType removableType;
-    private final ApplicationRemovalReason reasonToRemoveApplication;
-    private final String applicationRemovalDetails;
-
-    public List<Element<GeneratedOrder>> getHiddenOrders() {
-        return defaultIfNull(hiddenOrders, new ArrayList<>());
-    }
+    @JsonUnwrapped
+    @Builder.Default
+    private final RemovalToolData removalToolData = RemovalToolData.builder().build();
 
     private final Others others;
 
@@ -700,8 +694,10 @@ public class CaseData extends CaseDataParent {
     private final CaseSummary manageDocumentsCaseSummary;
     private final PositionStatementChild manageDocumentsPositionStatementChild;
     private final PositionStatementRespondent manageDocumentsPositionStatementRespondent;
+    private final SkeletonArgument manageDocumentsSkeletonArgument;
     private final DynamicList manageDocumentsChildrenList;
     private final DynamicList hearingDocumentsRespondentList;
+    private final DynamicList hearingDocumentsPartyList;
 
     @JsonUnwrapped
     @Builder.Default
@@ -963,12 +959,6 @@ public class CaseData extends CaseDataParent {
             .min(comparing(HearingBooking::getStartDate));
     }
 
-    private final List<Element<HearingOrder>> hiddenCaseManagementOrders;
-
-    @JsonIgnore
-    public List<Element<HearingOrder>> getHiddenCMOs() {
-        return defaultIfNull(hiddenCaseManagementOrders, new ArrayList<>());
-    }
 
     private String sendToCtsc;
     private String displayAmountToPay;
@@ -1136,7 +1126,7 @@ public class CaseData extends CaseDataParent {
             .map(Element::getValue)
             .filter(la -> YesNo.YES.getValue().equals(la.getDesignated()))
             .findFirst()
-            .orElseThrow(() -> new LocalAuthorityNotFound("Designated local authority not found for case " + id));
+            .orElse(null);
     }
 
     @JsonIgnore
@@ -1162,11 +1152,21 @@ public class CaseData extends CaseDataParent {
 
     private final DynamicList placementList;
 
+    private final List<Element<PlacementNoticeDocument>> placementNoticeResponses;
+
     @JsonIgnore
     public boolean isDischargeOfCareApplication() {
 
         return ofNullable(getOrders())
             .map(Orders::isDischargeOfCareOrder)
+            .orElse(false);
+    }
+
+    @JsonIgnore
+    public boolean isContactWithChildInCareApplication() {
+
+        return ofNullable(getOrders())
+            .map(Orders::isContactWithChildInCareOrder)
             .orElse(false);
     }
 
@@ -1184,9 +1184,29 @@ public class CaseData extends CaseDataParent {
             .orElse(false);
     }
 
+    @JsonIgnore
+    public boolean isChildRecoveryOrder() {
+        return ofNullable(getOrders())
+            .map(Orders::isChildRecoveryOrder)
+            .orElse(false);
+    }
+
     private List<Element<DocumentWithConfidentialAddress>> documentsWithConfidentialAddress;
 
     @JsonUnwrapped
     @Builder.Default
     private final OtherToRespondentEventData otherToRespondentEventData = OtherToRespondentEventData.builder().build();
+
+    private List<Element<Colleague>> colleaguesToNotify;
+
+    public List<Element<Colleague>> getColleaguesToNotify() {
+        return colleaguesToNotify != null ? colleaguesToNotify : new ArrayList<>();
+    }
+
+    @JsonIgnore
+    public boolean isRefuseContactWithChildApplication() {
+        return ofNullable(getOrders())
+            .map(Orders::isRefuseContactWithChildApplication)
+            .orElse(false);
+    }
 }

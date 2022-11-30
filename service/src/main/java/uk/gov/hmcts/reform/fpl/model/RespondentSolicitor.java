@@ -5,7 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.util.List;
 import javax.validation.Valid;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
@@ -22,6 +24,7 @@ public class RespondentSolicitor {
     private Organisation organisation;
     private Address regionalOfficeAddress;
     private UnregisteredOrganisation unregisteredOrganisation;
+    private List<Element<Colleague>> colleaguesToBeNotified;
 
     @JsonIgnore
     public String getFullName() {

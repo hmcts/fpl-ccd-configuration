@@ -5,8 +5,14 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
@@ -22,11 +28,14 @@ import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
+import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
+import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -35,6 +44,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
@@ -59,8 +69,11 @@ import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
@@ -79,11 +92,14 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEA
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_DOCUMENT_RESPONDENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENT_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.PLACEMENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_CHILD_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_CHILD_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_RESPONDENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_RESPONDENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.RESPONDENTS_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SKELETON_ARGUMENT_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SKELETON_ARGUMENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
@@ -97,24 +113,76 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRespondent;
 
 @SuppressWarnings("unchecked")
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = LENIENT)
 class ManageDocumentServiceTest {
     private static final String USER = "HMCTS";
     public static final boolean NOT_SOLICITOR = false;
     public static final boolean IS_SOLICITOR = true;
 
+
+
+    @Spy
     private final Time time = new FixedTimeConfiguration().stoppedTime();
-    private final DocumentUploadHelper documentUploadHelper = mock(DocumentUploadHelper.class);
-    private final UserService userService = mock(UserService.class);
+
+    @Spy
     private final LocalDateTime futureDate = time.now().plusDays(1);
 
+    @Spy
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Mock
+    private DocumentUploadHelper documentUploadHelper;
+
+    @Mock
+    private PlacementService placementService;
+
+    @Mock
+    private UserService userService;
+
+    @InjectMocks
     private ManageDocumentService underTest;
 
     @BeforeEach
     void before() {
-        underTest = new ManageDocumentService(new ObjectMapper(), time, documentUploadHelper, userService);
-
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn("HMCTS");
         given(userService.isHmctsUser()).willReturn(true);
+    }
+
+    @Test
+    void shouldPopulateFieldsWhenPlacementNoticesArePresentOnCaseData() {
+        Placement placement = Placement.builder()
+            .childName("Test Child")
+            .placementNotice(testDocumentReference())
+            .build();
+
+        List<Element<Placement>> placements = wrapElements(placement);
+
+        CaseData caseData = CaseData.builder()
+            .placementEventData(PlacementEventData.builder()
+                .placements(placements)
+                .build())
+            .build();
+
+        Map<String, Object> updates = underTest.baseEventData(caseData);
+
+        ManageDocument expectedManageDocument = ManageDocument.builder()
+            .hasHearings(NO.getValue())
+            .hasC2s(NO.getValue())
+            .hasPlacementNotices(YES.getValue())
+            .hasConfidentialAddress(NO.getValue())
+            .build();
+
+        DynamicList expectedPlacementList = asDynamicList(placements, null, Placement::getChildName);
+
+        assertThat(updates)
+            .extracting(MANAGE_DOCUMENT_KEY)
+            .isEqualTo(expectedManageDocument);
+
+        assertThat(updates)
+            .extracting(PLACEMENT_LIST_KEY)
+            .isEqualTo(expectedPlacementList);
+
     }
 
     @Test
@@ -167,6 +235,7 @@ class ManageDocumentServiceTest {
             .hasHearings(YES.getValue())
             .hasC2s(YES.getValue())
             .hasConfidentialAddress(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
             .build();
 
         Map<String, Object> updates = underTest.baseEventData(caseData);
@@ -209,6 +278,7 @@ class ManageDocumentServiceTest {
             .hasHearings(NO.getValue())
             .hasC2s(NO.getValue())
             .hasConfidentialAddress(NO.getValue())
+            .hasPlacementNotices(NO.getValue())
             .build();
 
         Map<String, Object> updates = underTest.baseEventData(caseData);
@@ -1940,6 +2010,14 @@ class ManageDocumentServiceTest {
             .isEqualTo(PositionStatementRespondent.builder()
                 .hearing(selectedHearingBooking.toLabel())
                 .hearingId(selectedHearingId).build());
+
+        assertThat((SkeletonArgument) underTest
+            .initialiseHearingDocumentFields(caseData.toBuilder()
+                .manageDocumentsHearingDocumentType(HearingDocumentType.SKELETON_ARGUMENT).build())
+            .get(SKELETON_ARGUMENT_KEY))
+            .isEqualTo(SkeletonArgument.builder()
+                .hearing(selectedHearingBooking.toLabel())
+                .hearingId(selectedHearingId).build());
     }
 
     @Test
@@ -2045,7 +2123,7 @@ class ManageDocumentServiceTest {
     }
 
     @Test
-    void shouldReturnNewPositionStatementChildListWhenExistingListPresentForOtherHearing() {
+    void shouldReturnCombinedPositionStatementChildListWhenExistingListPresentForOtherHearing() {
         UUID selectedHearingId = randomUUID();
         LocalDateTime today = LocalDateTime.now();
 
@@ -2088,7 +2166,7 @@ class ManageDocumentServiceTest {
         assertThat(
             unwrapElements((List<Element<PositionStatementChild>>)
                 underTest.buildHearingDocumentList(caseData).get(POSITION_STATEMENT_CHILD_LIST_KEY)))
-            .isEqualTo(List.of(caseData.getManageDocumentsPositionStatementChild()));
+            .containsExactlyInAnyOrder(positionStatementChild, positionStatementChildTwo);
     }
 
     @Test
@@ -2221,8 +2299,140 @@ class ManageDocumentServiceTest {
         assertThat(
             unwrapElements((List<Element<PositionStatementRespondent>>) underTest
                 .buildHearingDocumentList(caseData).get(POSITION_STATEMENT_RESPONDENT_LIST_KEY)))
-            .isEqualTo(List.of(caseData.getManageDocumentsPositionStatementRespondent()));
+            .containsExactlyInAnyOrder(positionStatementRespondent, positionStatementRespondentTwo);
     }
+
+    @Test
+    void shouldReplaceCaseSummaryIfSameHearing() {
+        UUID hearingOne = randomUUID();
+        UUID hearingTwo = randomUUID();
+        String hearingOneLabel = "Hearing one";
+        String hearingTwoLabel = "Hearing two";
+
+        LocalDateTime today = LocalDateTime.now();
+        HearingBooking hearingBookingOne = createHearingBooking(today, today.plusDays(3));
+        HearingBooking hearingBookingTwo = createHearingBooking(today, today.plusDays(5));
+        List<Element<HearingBooking>> hearingBookings = List.of(element(hearingOne, hearingBookingOne),
+            element(hearingTwo, hearingBookingTwo));
+
+        CaseSummary existingHearingOne = CaseSummary.builder().hearing(hearingOneLabel).build();
+        CaseSummary existingHearingTwo = CaseSummary.builder().hearing(hearingTwoLabel).build();
+        CaseSummary newHearingTwo = CaseSummary.builder().hearing(hearingTwoLabel).build();
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsHearingDocumentType(HearingDocumentType.CASE_SUMMARY)
+            .hearingDetails(hearingBookings)
+            .manageDocumentsCaseSummary(newHearingTwo)
+            .hearingDocumentsHearingList(hearingTwo.toString())
+            .hearingDocuments(HearingDocuments.builder()
+                .caseSummaryList(List.of(element(hearingOne, existingHearingOne),
+                    element(hearingTwo, existingHearingTwo)))
+                .build())
+            .build();
+
+        assertThat(unwrapElements((List<Element<CaseSummary>>) underTest.buildHearingDocumentList(caseData)
+            .get(CASE_SUMMARY_LIST_KEY))).containsExactlyInAnyOrder(existingHearingOne, newHearingTwo);
+    }
+
+    @Test
+    void shouldAddNewSkeletonArgument() {
+        UUID selectedHearingId = randomUUID();
+        LocalDateTime today = LocalDateTime.now();
+        UUID childId = randomUUID();
+        final String PARTY_NAME = "Tom Smith";
+        final String USER = "HMCTS";
+
+        DynamicList partyDynamicList = TestDataHelper.buildDynamicList(0,
+            Pair.of(childId, PARTY_NAME)
+        );
+
+        SkeletonArgument skeletonArgument =
+            SkeletonArgument.builder()
+                .hearing("Test hearing")
+                .hearingId(selectedHearingId)
+                .partyId(childId)
+                .partyName(PARTY_NAME)
+                .build();
+
+        HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
+        List<Element<HearingBooking>> hearingBookings = List.of(element(selectedHearingId, selectedHearingBooking));
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsSkeletonArgument(skeletonArgument)
+            .hearingDocumentsHearingList(selectedHearingId.toString())
+            .hearingDocumentsPartyList(partyDynamicList)
+            .manageDocumentsHearingDocumentType(HearingDocumentType.SKELETON_ARGUMENT)
+            .hearingDetails(hearingBookings)
+            .build();
+
+        List<Element<SkeletonArgument>> skeletonArgumentUnderTest = (List<Element<SkeletonArgument>>) underTest
+            .buildHearingDocumentList(caseData).get(SKELETON_ARGUMENT_LIST_KEY);
+
+        assertThat(unwrapElements(skeletonArgumentUnderTest)).hasSize(1)
+            .first()
+            .extracting(SkeletonArgument::getDateTimeUploaded, SkeletonArgument::getUploadedBy,
+                        SkeletonArgument::getPartyName, SkeletonArgument::getPartyId)
+            .containsExactly(time.now(), USER, PARTY_NAME, childId);
+    }
+
+    @Test
+    void shouldUpdatePlacementNoticesForLA() {
+        final DocumentReference laResponseRef = testDocumentReference();
+
+        final PlacementNoticeDocument laResponse = PlacementNoticeDocument.builder()
+            .response(laResponseRef)
+            .responseDescription("LA response")
+            .type(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
+            .build();
+
+        final Placement placement = Placement.builder()
+            .placementNotice(testDocumentReference())
+            .childName("Test Child")
+            .noticeDocuments(wrapElements(laResponse))
+            .build();
+
+        final PlacementEventData uploadLAData = PlacementEventData.builder()
+            .placements(wrapElements(placement))
+            .placement(placement)
+            .build();
+
+        when(placementService.savePlacementNoticeResponses(any(),
+            eq(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)))
+            .thenReturn(uploadLAData);
+
+
+        Placement placementBefore = Placement.builder()
+            .placementNotice(placement.getPlacementNotice())
+            .childName("Test Child")
+            .build();
+
+        PlacementNoticeDocument toAdd = PlacementNoticeDocument.builder()
+            .response(laResponseRef)
+            .responseDescription("LA response")
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .placementEventData(PlacementEventData.builder()
+                .placements(wrapElements(placementBefore))
+                .placement(placementBefore)
+                .build())
+            .placementNoticeResponses(wrapElements(toAdd))
+            .build();
+
+        PlacementEventData after = underTest.updatePlacementNoticesLA(caseData);
+
+        Placement updated = after.getPlacements().get(0).getValue();
+        PlacementNoticeDocument updatedNoticeDocument = updated.getNoticeDocuments().get(0).getValue();
+
+        assertThat(after.getPlacements()).hasSize(1);
+        assertThat(updated.getChildName()).contains("Test Child");
+        assertThat(updated.getNoticeDocuments()).hasSize(1);
+        assertThat(updatedNoticeDocument.getType()).isEqualTo(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY);
+        assertThat(updatedNoticeDocument.getResponse()).isEqualTo(laResponseRef);
+        assertThat(updatedNoticeDocument.getResponseDescription()).isEqualTo("LA response");
+    }
+
+
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
         return wrapElements(SupportingEvidenceBundle.builder()

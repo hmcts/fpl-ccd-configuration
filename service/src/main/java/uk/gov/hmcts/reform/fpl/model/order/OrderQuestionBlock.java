@@ -115,9 +115,20 @@ public enum OrderQuestionBlock {
     REFUSE_CONTACT_ORDER("refuseContactQuestions", OrderSection.ORDER_DETAILS, Collections.emptyList()),
     RESPONDENTS_REFUSED("respondentsRefused", OrderSection.ORDER_DETAILS,
                        List.of("respondentsRefused_label", "respondentsRefusedSelector")),
+    DECLARATION_OF_PARENTAGE("declarationOfParentage", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersParentageApplicant", "manageOrdersHearingParty1",
+            "manageOrdersHearingParty2", "manageOrdersPersonWhoseParenthoodIs", "manageOrdersParentageAction")),
     ORDER_PLACED_CHILD_IN_CUSTODY("orderPlacedChildInCustody", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersPlacedUnderOrder", "manageOrdersOrderCreatedDate", "manageOrdersActionsPermitted",
-            "manageOrdersIsExParte"));
+            "manageOrdersIsExParte")),
+    LEAVE_TO_CHANGE_CHILD_SURNAME("leaveToChangeChildSurname", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersPartyGrantedLeave", "manageOrdersChildNewSurname")),
+    PARTY_ALLOWED_CONTACTS_AND_CONDITIONS("partyAllowedContactsAndConditions", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersAllowedContact1", "manageOrdersAllowedContact2", "manageOrdersAllowedContact3",
+            "manageOrdersConditionsOfContact")),
+    FAMILY_ASSISTANCE_ORDER("familyAssistanceOrder", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersPartyToBeBefriended1", "manageOrdersPartyToBeBefriended2",
+            "manageOrdersPartyToBeBefriended3", "manageOrdersFamilyAssistanceEndDate"));
 
     private final String showHideField;
     private final OrderSection section;

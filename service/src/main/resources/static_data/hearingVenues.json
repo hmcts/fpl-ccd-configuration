@@ -2451,20 +2451,20 @@
   },
   {
     "hearingVenueId": 311,
-    "venue": "Newcastle upon Tyne MC",
+    "venue": "Newcastle Upon Tyne Crown Court and Magistrates Court",
     "address": {
-      "AddressLine1": "Newcastle upon Tyne Magistrates' Court, Newcastle-upon-Tyne",
-      "AddressLine2": "Market Street",
-      "PostTown": "Newcastle-upon-Tyne",
-      "PostCode": "NE1 6XA"
+      "AddressLine1": "Newcastle Upon Tyne Crown Court and Magistrates Court",
+      "AddressLine2": "The Law Courts, The Quayside",
+      "PostTown": "Newcastle Upon Tyne",
+      "PostCode": "NE1 3LA"
     }
   },
   {
     "hearingVenueId": 67,
     "venue": "Newport County Court and Family Court",
     "address": {
-      "AddressLine1": "Newport (South Wales) County Court and Family Court, Clarence House",
-      "AddressLine2": "5th Floor",
+      "AddressLine1": "Newport Civil & Family Court, The Concourse, Clarence House",
+      "AddressLine2": "Clarence Place",
       "PostTown": "Newport",
       "PostCode": "NP19 7AA"
     }
@@ -3961,7 +3961,7 @@
   },
   {
     "hearingVenueId": 431,
-    "venue": "York Family Court",
+    "venue": "York Family Court (CLOSED)",
     "address": {
       "AddressLine1": "York Hilton",
       "AddressLine2": "1 Tower Street",

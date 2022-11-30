@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.RemovalToolData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
@@ -83,9 +84,11 @@ class SealedCMORemovalActionTest {
         LocalDateTime differentStartDate = HEARING_START_DATE.plusDays(3);
         HearingOrder cmoToRemove = cmo(differentStartDate);
         CaseData caseData = CaseData.builder()
-            .reasonToRemoveOrder(REASON)
+            .removalToolData(RemovalToolData.builder()
+                .reasonToRemoveOrder(REASON)
+                .hiddenCaseManagementOrders(newArrayList(element(ALREADY_REMOVED_ORDER_ID, cmo())))
+                .build())
             .sealedCMOs(newArrayList(element(TO_REMOVE_ORDER_ID, cmoToRemove)))
-            .hiddenCaseManagementOrders(newArrayList(element(ALREADY_REMOVED_ORDER_ID, cmo())))
             .hearingDetails(List.of(
                 element(HEARING_ID, hearing(CASE_MANAGEMENT_ORDER_ID, differentStartDate)),
                 element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID))
@@ -121,12 +124,14 @@ class SealedCMORemovalActionTest {
 
         Element<HearingBooking> hearingToUpdate = element(HEARING_ID, hearing(TO_REMOVE_ORDER_ID));
         CaseData caseData = CaseData.builder()
-            .reasonToRemoveOrder(REASON)
+            .removalToolData(RemovalToolData.builder()
+                .reasonToRemoveOrder(REASON)
+                .hiddenCaseManagementOrders(null)
+                .build())
             .sealedCMOs(newArrayList(
                 cmoToRemove,
                 element(ANOTHER_CASE_MANAGEMENT_ORDER_ID, cmo())
             ))
-            .hiddenCaseManagementOrders(null)
             .hearingDetails(newArrayList(
                 hearingToUpdate,
                 element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID))
@@ -159,9 +164,11 @@ class SealedCMORemovalActionTest {
     void shouldRemoveHearingAssociationWithARemovedCaseManagementOrder() {
         Element<HearingOrder> cmoToRemove = element(TO_REMOVE_ORDER_ID, cmo());
         CaseData caseData = CaseData.builder()
-            .reasonToRemoveOrder(REASON)
+            .removalToolData(RemovalToolData.builder()
+                .reasonToRemoveOrder(REASON)
+                .hiddenCaseManagementOrders(newArrayList(element(ALREADY_REMOVED_ORDER_ID, cmo())))
+                .build())
             .sealedCMOs(newArrayList(cmoToRemove))
-            .hiddenCaseManagementOrders(newArrayList(element(ALREADY_REMOVED_ORDER_ID, cmo())))
             .hearingDetails(List.of(
                 element(HEARING_ID, hearing(CASE_MANAGEMENT_ORDER_ID)),
                 element(ANOTHER_HEARING_ID, hearing(TO_REMOVE_ORDER_ID))))
@@ -194,7 +201,9 @@ class SealedCMORemovalActionTest {
         HearingOrder emptyCaseManagementOrder = cmo();
 
         CaseData caseData = CaseData.builder()
-            .reasonToRemoveOrder(REASON)
+            .removalToolData(RemovalToolData.builder()
+                .reasonToRemoveOrder(REASON)
+                .build())
             .sealedCMOs(newArrayList(element(TO_REMOVE_ORDER_ID, emptyCaseManagementOrder)))
             .build();
 
@@ -217,7 +226,9 @@ class SealedCMORemovalActionTest {
 
         Element<HearingBooking> hearing = element(HEARING_ID, hearing(ANOTHER_HEARING_ID));
         CaseData caseData = CaseData.builder()
-            .reasonToRemoveOrder(REASON)
+            .removalToolData(RemovalToolData.builder()
+                .reasonToRemoveOrder(REASON)
+                .build())
             .sealedCMOs(newArrayList(element(TO_REMOVE_ORDER_ID, removedOrder)))
             .hearingDetails(List.of(
                 hearing, element(UUID.randomUUID(), hearingToBeUnlinked)
@@ -253,7 +264,9 @@ class SealedCMORemovalActionTest {
 
         HearingBooking hearing = hearing();
         CaseData caseData = CaseData.builder()
-            .reasonToRemoveOrder(REASON)
+            .removalToolData(RemovalToolData.builder()
+                .reasonToRemoveOrder(REASON)
+                .build())
             .sealedCMOs(newArrayList(element(TO_REMOVE_ORDER_ID, removedOrder)))
             .hearingDetails(List.of(
                 element(HEARING_ID, hearing),

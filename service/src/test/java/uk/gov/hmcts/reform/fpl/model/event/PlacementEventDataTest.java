@@ -60,7 +60,6 @@ class PlacementEventDataTest {
 
         private final PlacementNoticeDocument noticeDocument = PlacementNoticeDocument.builder()
             .type(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
-            .notice(testDocumentReference())
             .response(testDocumentReference())
             .build();
 

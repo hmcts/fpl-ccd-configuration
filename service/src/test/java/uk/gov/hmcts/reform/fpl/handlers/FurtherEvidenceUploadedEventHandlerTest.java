@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
+import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
@@ -107,6 +108,7 @@ import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContent
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NEW_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.POSITION_STATEMENT_CHILD;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.POSITION_STATEMENT_RESPONDENT;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.SKELETON_ARGUMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -865,7 +867,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
             any(),
             any());
     }
-    
+
     @Test
     void shouldEmailCafcassWhenAdditionalBundleIsUploadedByLA() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
@@ -1318,11 +1320,15 @@ class FurtherEvidenceUploadedEventHandlerTest {
         final List<Element<PositionStatementRespondent>> positionStatementRespondentList = wrapElements(
             PositionStatementRespondent.builder()
                 .document(TestDataHelper.testDocumentReference("PositionStatementRespondent.pdf")).build());
+        final List<Element<SkeletonArgument>> skeletonArgumentList = wrapElements(
+            SkeletonArgument.builder()
+                .document(TestDataHelper.testDocumentReference("SkeletonArgument.pdf")).build());
 
         CaseData caseDataBefore = buildSubmittedCaseData();
         CaseData caseData = buildSubmittedCaseData().toBuilder()
             .hearingDocuments(HearingDocuments.builder()
                 .caseSummaryList(caseSummaryList)
+                .skeletonArgumentList(skeletonArgumentList)
                 .positionStatementChildList(positionStatementChildList)
                 .positionStatementRespondentList(positionStatementRespondentList).build())
             .build();
@@ -1350,7 +1356,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         List<String> expectedNewDocumentName =
             List.of("CaseSummary 1.pdf", "CaseSummary 2.pdf", "PositionStatementChild.pdf",
-                "PositionStatementRespondent.pdf");
+                "PositionStatementRespondent.pdf", "SkeletonArgument.pdf");
 
         verify(furtherEvidenceNotificationService)
             .sendNotification(caseData, expectedRecipients, userDetails.getFullName(), expectedNewDocumentName);
@@ -1372,6 +1378,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
             TestDataHelper.testDocumentReference("PositionStatementChild.pdf");
         final DocumentReference positionStatementRespondentDoc =
             TestDataHelper.testDocumentReference("PositionStatementRespondent.pdf");
+        final DocumentReference skeletonArgumentDoc =
+            TestDataHelper.testDocumentReference("SkeletonArgument.pdf");
 
         final List<Element<CaseSummary>> caseSummaryList = wrapElements(
             CaseSummary.builder().hearing(hearing).document(caseSummaryDoc1).build(),
@@ -1380,11 +1388,14 @@ class FurtherEvidenceUploadedEventHandlerTest {
             PositionStatementChild.builder().hearing(hearing).document(positionStatementChildDoc).build());
         final List<Element<PositionStatementRespondent>> positionStatementRespondentList = wrapElements(
             PositionStatementRespondent.builder().hearing(hearing).document(positionStatementRespondentDoc).build());
+        final List<Element<SkeletonArgument>> skeletonArgumentList = wrapElements(
+            SkeletonArgument.builder().hearing(hearing).document(skeletonArgumentDoc).build());
 
         CaseData caseDataBefore = buildSubmittedCaseData();
         CaseData caseData = buildSubmittedCaseData().toBuilder()
             .hearingDocuments(HearingDocuments.builder()
                 .caseSummaryList(caseSummaryList)
+                .skeletonArgumentList(skeletonArgumentList)
                 .positionStatementChildList(positionStatementChildList)
                 .positionStatementRespondentList(positionStatementRespondentList).build())
             .build();
@@ -1406,6 +1417,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
             POSITION_STATEMENT_CHILD, expectedCourtBundleData);
         verify(cafcassNotificationService).sendEmail(caseData, Set.of(positionStatementRespondentDoc),
             POSITION_STATEMENT_RESPONDENT, expectedCourtBundleData);
+        verify(cafcassNotificationService).sendEmail(caseData, Set.of(skeletonArgumentDoc),
+            SKELETON_ARGUMENT, expectedCourtBundleData);
     }
 
     @Test
@@ -1424,6 +1437,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
             TestDataHelper.testDocumentReference("PositionStatementChild.pdf");
         final DocumentReference positionStatementRespondentDoc =
             TestDataHelper.testDocumentReference("PositionStatementRespondent.pdf");
+        final DocumentReference skeletonArgumentDoc =
+            TestDataHelper.testDocumentReference("SkeletonArgument.pdf");
 
         final List<Element<CaseSummary>> caseSummaryList = wrapElements(
             CaseSummary.builder().hearing(hearing).document(caseSummaryDoc1).build(),
@@ -1432,15 +1447,19 @@ class FurtherEvidenceUploadedEventHandlerTest {
             PositionStatementChild.builder().hearing(hearing).document(positionStatementChildDoc).build());
         final List<Element<PositionStatementRespondent>> positionStatementRespondentList = wrapElements(
             PositionStatementRespondent.builder().hearing(hearing).document(positionStatementRespondentDoc).build());
+        final List<Element<SkeletonArgument>> skeletonArgumentList = wrapElements(
+            SkeletonArgument.builder().hearing(hearing).document(skeletonArgumentDoc).build());
 
         CaseData caseDataBefore = buildSubmittedCaseData().toBuilder()
             .hearingDocuments(HearingDocuments.builder()
                 .caseSummaryList(caseSummaryList)
+                .skeletonArgumentList(skeletonArgumentList)
                 .positionStatementChildList(positionStatementChildList)
                 .positionStatementRespondentList(positionStatementRespondentList).build())
             .build();
         CaseData caseData = buildSubmittedCaseData().toBuilder()
             .hearingDocuments(HearingDocuments.builder()
+                .skeletonArgumentList(skeletonArgumentList)
                 .caseSummaryList(caseSummaryList)
                 .positionStatementChildList(positionStatementChildList)
                 .positionStatementRespondentList(positionStatementRespondentList).build())
@@ -1466,6 +1485,10 @@ class FurtherEvidenceUploadedEventHandlerTest {
         verify(cafcassNotificationService, never()).sendEmail(eq(caseData),
             any(),
             eq(POSITION_STATEMENT_RESPONDENT),
+            any());
+        verify(cafcassNotificationService, never()).sendEmail(eq(caseData),
+            any(),
+            eq(SKELETON_ARGUMENT),
             any());
     }
 

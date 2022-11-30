@@ -54,11 +54,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static org.skyscreamer.jsonassert.JSONAssert.assertNotEquals;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.CHILD_ASSESSMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.INTERIM_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.SECURE_ACCOMMODATION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.service.robotics.SampleRoboticsTestDataHelper.expectedRoboticsData;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
@@ -731,6 +733,24 @@ class RoboticsDataServiceTest {
         }
 
         @Test
+        void shouldReturnChildAssessmentOrderLabelAsApplicationType() {
+            CaseData caseData = prepareCaseDataWithOrderType(CHILD_ASSESSMENT_ORDER);
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getApplicationType()).isEqualTo(CHILD_ASSESSMENT_ORDER.getLabel());
+        }
+
+        @Test
+        void shouldReturnSecureAccommodationOrderLabelAsApplicationType() {
+            CaseData caseData = prepareCaseDataWithOrderType(SECURE_ACCOMMODATION_ORDER);
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getApplicationType()).isEqualTo(SECURE_ACCOMMODATION_ORDER.getLabel());
+        }
+
+        @Test
         void shouldReturnCommaSeparatedApplicationTypeWhenMoreThanOneOrderTypeSelected() {
             CaseData caseData = prepareCaseDataWithOrderType(CARE_ORDER, EDUCATION_SUPERVISION_ORDER,
                 EMERGENCY_PROTECTION_ORDER, OTHER);
@@ -745,13 +765,15 @@ class RoboticsDataServiceTest {
         @Test
         void shouldReturnNonDuplicatedCommaSeparatedApplicationTypeWhenMoreThanOneOrderTypeSelected() {
             CaseData caseData = prepareCaseDataWithOrderType(CARE_ORDER, INTERIM_CARE_ORDER,
-                INTERIM_SUPERVISION_ORDER, EDUCATION_SUPERVISION_ORDER, EMERGENCY_PROTECTION_ORDER, OTHER);
+                INTERIM_SUPERVISION_ORDER, EDUCATION_SUPERVISION_ORDER, EMERGENCY_PROTECTION_ORDER, OTHER,
+                CHILD_ASSESSMENT_ORDER, SECURE_ACCOMMODATION_ORDER);
 
             RoboticsData preparedRoboticsData = roboticsDataService.prepareRoboticsData(caseData);
 
             assertThat(preparedRoboticsData.getApplicationType()).isEqualTo(
                 "Care Order,Supervision Order,Education Supervision Order,Emergency Protection Order,"
-                    + "Discharge of a Care Order");
+                    + "Discharge of a Care Order," + CHILD_ASSESSMENT_ORDER.getLabel() + ","
+                    + SECURE_ACCOMMODATION_ORDER.getLabel());
         }
     }
 

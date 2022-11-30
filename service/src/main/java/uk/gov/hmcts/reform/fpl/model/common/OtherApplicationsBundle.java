@@ -9,7 +9,7 @@ import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
-import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -32,6 +32,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public class OtherApplicationsBundle implements ApplicationsBundle {
     private final UUID id;
     private final OtherApplicationType applicationType;
+    private final UrgencyTimeFrameType urgencyTimeFrameType;
     private final ParentalResponsibilityType parentalResponsibilityType;
     private final DocumentReference document;
     private final String uploadedDateTime;
@@ -39,8 +40,6 @@ public class OtherApplicationsBundle implements ApplicationsBundle {
     private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
     private final List<Element<Supplement>> supplementsBundle;
     private final String applicantName;
-    private final String othersNotified;
-    private final List<Element<Other>> others;
     private final List<Element<Respondent>> respondents;
 
     public String toLabel() {

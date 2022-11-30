@@ -60,6 +60,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "OtherApplicationsBundle",
     "ListElementCode": "othersNotified",
+    "Comment": "Deprecated",
     "FieldType": "Text",
     "ElementLabel": "People notified",
     "SecurityClassification": "Public"
@@ -116,7 +117,18 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherApplicationsBundle",
+    "ListElementCode": "urgencyTimeFrameType",
+    "ElementLabel": "Please state how soon you want the judge to consider your application?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "UrgencyTimeFrameType",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationsBundle",
     "ListElementCode": "others",
+    "Comment": "Deprecated",
     "FieldType": "Collection",
     "FieldTypeParameter": "Others",
     "ElementLabel": " ",
@@ -132,6 +144,26 @@
     "ElementLabel": " ",
     "SecurityClassification": "Public",
     "FieldShowCondition": "applicationType=\"DO NOT SHOW\"",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationsBundle",
+    "ListElementCode": "documentAcknowledgeLabel",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Presentational only - used to display a warning label in the event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationsBundle",
+    "ListElementCode": "documentAcknowledge",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DocumentAcknowledge",
+    "ElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   }
 ]

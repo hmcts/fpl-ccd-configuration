@@ -9,6 +9,11 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentMetaData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
@@ -17,6 +22,7 @@ public class HearingDocument extends DocumentMetaData {
     protected String hearing;
     protected DocumentReference document;
     protected String hasConfidentialAddress;
+    protected List<String> documentAcknowledge;
 
     public String getHasConfidentialAddress() {
         return (document != null && (!YesNo.isYesOrNo(hasConfidentialAddress)))
@@ -29,4 +35,13 @@ public class HearingDocument extends DocumentMetaData {
         return document;
     }
 
+    public List<String> getDocumentAcknowledge() {
+        if (this.documentAcknowledge == null) {
+            this.documentAcknowledge = new ArrayList<>();
+        }
+        if (document != null && !this.documentAcknowledge.contains(DOCUMENT_ACKNOWLEDGEMENT_KEY)) {
+            this.documentAcknowledge.add(DOCUMENT_ACKNOWLEDGEMENT_KEY);
+        }
+        return this.documentAcknowledge;
+    }
 }

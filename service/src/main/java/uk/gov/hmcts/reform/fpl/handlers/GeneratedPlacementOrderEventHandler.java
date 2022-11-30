@@ -9,10 +9,10 @@ import uk.gov.hmcts.reform.fpl.events.order.GeneratedPlacementOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.cafcass.OrderCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
@@ -33,8 +34,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.util.Set.of;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_ORDER_GENERATED_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument.RecipientType.PARENT_TYPES;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 
 @Slf4j
@@ -49,6 +51,7 @@ public class GeneratedPlacementOrderEventHandler {
     private final CourtService courtService;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final SendDocumentService sendDocumentService;
+    private final CafcassNotificationService cafcassNotificationService;
 
     @EventListener
     public void sendPlacementOrderEmail(final GeneratedPlacementOrderEvent orderEvent) {
@@ -59,6 +62,24 @@ public class GeneratedPlacementOrderEventHandler {
             orderEvent.getOrderDocument(), lastGeneratedOrder.getChildren().get(0).getValue());
 
         sendOrderByEmail(caseData, notifyData);
+    }
+
+    @EventListener
+    public void sendPlacementOrderEmailToCafcassEngland(final GeneratedPlacementOrderEvent orderEvent) {
+        CaseData caseData = orderEvent.getCaseData();
+
+        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
+            cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
+
+        if (recipientIsEngland.isPresent()) {
+            cafcassNotificationService.sendEmail(caseData,
+                of(orderEvent.getOrderDocument(), orderEvent.getOrderNotificationDocument()),
+                ORDER,
+                OrderCafcassData.builder()
+                    .documentName(orderEvent.getOrderDocument().getFilename())
+                    .build()
+            );
+        }
     }
 
     @EventListener
@@ -74,22 +95,18 @@ public class GeneratedPlacementOrderEventHandler {
             .map(Element::getValue)
             .orElseThrow();
 
-        List<Respondent> parents = childPlacement.getNoticeDocuments().stream()
-            .map(Element::getValue)
-            .filter(noticeDoc -> PARENT_TYPES.contains(noticeDoc.getType()))
-            .map(PlacementNoticeDocument::getRespondentId)
-            .map(respondentId -> caseData.findRespondent(respondentId).orElseThrow())
+        List<Respondent> respondentsToNotify = childPlacement.getPlacementRespondentsToNotify().stream()
             .map(Element::getValue)
             .collect(Collectors.toList());
 
         Set<String> emailRecipients = new HashSet<>();
         List<Recipient> postRecipients = new ArrayList<>();
-        for (Respondent parent : parents) {
-            boolean parentNotRepresented = Objects.isNull(parent.getSolicitor());
-            if (parentNotRepresented && !parent.isDeceasedOrNFA()) {
-                postRecipients.add(parent.getParty());
+        for (Respondent respondent : respondentsToNotify) {
+            boolean respondentNotRepresented = Objects.isNull(respondent.getSolicitor());
+            if (respondentNotRepresented && !respondent.isDeceasedOrNFA()) {
+                postRecipients.add(respondent.getParty());
             } else {
-                emailRecipients.add(parent.getSolicitor().getEmail());
+                emailRecipients.add(respondent.getSolicitor().getEmail());
             }
         }
 
@@ -120,9 +137,11 @@ public class GeneratedPlacementOrderEventHandler {
         //Admin
         recipients.add(courtService.getCourtEmail(caseData));
 
-        //CAFCASS
-        recipients.add(cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail());
+        //CAFCASS (WALES ONLY)
+        Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
+            .map(CafcassLookupConfiguration.Cafcass::getEmail);
 
+        recipientIsWelsh.ifPresent(recipients::add);
         sendEmail(notifyData, recipients, caseData.getId());
     }
 

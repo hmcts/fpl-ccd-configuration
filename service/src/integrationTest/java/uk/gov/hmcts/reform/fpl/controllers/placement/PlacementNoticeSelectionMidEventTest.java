@@ -51,8 +51,6 @@ class PlacementNoticeSelectionMidEventTest extends AbstractPlacementControllerTe
                 .supportingDocuments(wrapElements(birthCertificate, statementOfFacts))
                 .confidentialDocuments(wrapElements(annexB))
                 .build())
-            .placementNoticeForFirstParentParentsList(parentList1)
-            .placementNoticeForSecondParentParentsList(parentList2)
             .build();
 
         final CaseData caseData = CaseData.builder()
@@ -91,8 +89,6 @@ class PlacementNoticeSelectionMidEventTest extends AbstractPlacementControllerTe
                 .supportingDocuments(wrapElements(birthCertificate, statementOfFacts))
                 .confidentialDocuments(wrapElements(annexB))
                 .build())
-            .placementNoticeForFirstParentParentsList(parentList1)
-            .placementNoticeForSecondParentParentsList(parentList2)
             .placementRespondentsToNotify(Collections.emptyList())
             .build();
 

@@ -79,4 +79,8 @@ public interface CafcassData {
     default LocalDate getOrderApprovalDate()   {
         throw new UnsupportedOperationException();
     }
+
+    default String getPlacementChildName() {
+        throw new UnsupportedOperationException();
+    }
 }

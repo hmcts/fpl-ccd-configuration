@@ -60,6 +60,15 @@ public enum SolicitorRole {
             .collect(Collectors.toList());
     }
 
+    public Optional<Element<WithSolicitor>> getRepresentedPerson(CaseData caseData) {
+        List<Element<WithSolicitor>> parties = this.representing.target.apply(caseData);
+        if (this.index < parties.size()) {
+            return Optional.of(parties.get(this.index));
+        } else {
+            return Optional.empty();
+        }
+    }
+
     @SuppressWarnings({"unchecked", "rawtypes"})
     public enum Representing {
         RESPONDENT(caseData -> (List) caseData.getAllRespondents(),

@@ -83,6 +83,17 @@ public enum CafcassRequestEmailContentProvider {
         CafcassEmailConfiguration::getRecipientForCourtBundle,
         true),
 
+    SKELETON_ARGUMENT("Skeleton Argument",
+        (caseData, cafcassData) -> String.format(getSubject(),
+            caseData.getFamilyManCaseNumber(),
+            "new skeleton argument"),
+        (caseData, cafcassData) ->
+            String.format("A skeleton argument for this case was uploaded to the "
+                    + "Public Law Portal entitled %s",
+                cafcassData.getHearingDetails()),
+        CafcassEmailConfiguration::getRecipientForCourtBundle,
+        true),
+
     NEW_APPLICATION("New application",
         CafcassRequestEmailContentProvider::getNewApplicationSubject,
         CafcassRequestEmailContentProvider::getNewApplicationMessage,
@@ -127,7 +138,24 @@ public enum CafcassRequestEmailContentProvider {
         getHearingDetails(caseData, cafcassData)),
         CafcassRequestEmailContentProvider::getNoticeOfHearingMessage,
         CafcassEmailConfiguration::getRecipientForNoticeOfHearing,
+            true),
+
+    PLACEMENT_APPLICATION("Placement Application",
+        (caseData, cafcassData) ->  String.format(getSubject(),
+            caseData.getFamilyManCaseNumber(),
+            "Placement Application"),
+        CafcassRequestEmailContentProvider::getPlacementApplicationMessage,
+        CafcassEmailConfiguration::getRecipientForNewApplication,
+            true),
+
+    PLACEMENT_NOTICE("Notice of Placement",
+        (caseData, cafcassData) ->  String.format(getSubject(),
+            caseData.getFamilyManCaseNumber(),
+            "Notice of Placement"),
+        CafcassRequestEmailContentProvider::getPlacementNoticeMessage,
+        CafcassEmailConfiguration::getRecipientForNoticeOfHearing,
             true);
+
 
     private final String label;
     private final BiFunction<CaseData, CafcassData, String> type;
@@ -205,6 +233,25 @@ public enum CafcassRequestEmailContentProvider {
                 "Hearing time:", cafcassData.getHearingTime()
         );
     }
+
+    private static String getPlacementApplicationMessage(CaseData caseData, CafcassData cafcassData) {
+        return String.join(" ",
+            "There's a new Placement Application for:",
+            System.lineSeparator(),
+            cafcassData.getFirstRespondentName(), caseData.getFamilyManCaseNumber(),
+            System.lineSeparator(), System.lineSeparator(),
+            "Child name:", cafcassData.getPlacementChildName());
+    }
+
+    private static String getPlacementNoticeMessage(CaseData caseData, CafcassData cafcassData) {
+        return String.join(" ",
+            "There's a new notice of placement for:",
+            System.lineSeparator(),
+            cafcassData.getFirstRespondentName(), caseData.getFamilyManCaseNumber(),
+            System.lineSeparator(), System.lineSeparator(),
+            "Child name:", cafcassData.getPlacementChildName());
+    }
+
 
     private static String getSubject() {
         return "Court Ref. %s.- %s";

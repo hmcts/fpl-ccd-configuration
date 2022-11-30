@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.submission.EventValidationErrors;
@@ -38,7 +39,9 @@ public class CaseEventHandler {
 
             final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
             final List<EventValidationErrors> eventErrors = caseSubmissionChecker.validateAsGroups(caseData);
-            final String taskList = taskListRenderer.render(tasks, eventErrors, getApplicationType(caseData));
+            final Map<Event, String> taskHintsMap = taskListService.getTaskHints(caseData);
+            final String taskList = taskListRenderer.render(tasks, eventErrors, getApplicationType(caseData),
+                Optional.of(taskHintsMap));
 
             coreCaseDataService.triggerEvent(
                 JURISDICTION,

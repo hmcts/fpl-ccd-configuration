@@ -115,7 +115,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "ExpertReportList",
     "ListElementCode": "opthamologist",
-    "ListElement": "Othamologist",
+    "ListElement": "Ophthalmologist",
     "DisplayOrder": 17
   },
   {
@@ -159,5 +159,12 @@
     "ListElementCode": "professionalOther",
     "ListElement": "Professional: Other",
     "DisplayOrder": 23
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ExpertReportList",
+    "ListElementCode": "toxicologyReport",
+    "ListElement": "Toxicology report/statement",
+    "DisplayOrder": 24
   }
 ]

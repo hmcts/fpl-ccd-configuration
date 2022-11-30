@@ -47,6 +47,9 @@ public class FurtherEvidenceDocumentsTransformer {
                 .confidential(doc.isConfidentialDocument())
                 .title(doc.getName())
                 .includeDocumentName(asList(APPLICANT_STATEMENT, OTHER).contains(doc.getType()))
+                .expertReportType(FurtherEvidenceType.EXPERT_REPORTS.equals(doc.getType())
+                    ? doc.getExpertReportType().getLabel()
+                    : null)
                 .build())
             .collect(Collectors.toUnmodifiableList());
     }

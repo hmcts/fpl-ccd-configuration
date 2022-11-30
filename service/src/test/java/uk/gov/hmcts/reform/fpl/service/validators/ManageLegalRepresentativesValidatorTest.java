@@ -66,7 +66,7 @@ class ManageLegalRepresentativesValidatorTest {
             .build())));
 
         assertThat(actualErrors).containsExactly(
-            "Email address for Legal representative is not registered on the system. "
+            "Email address for LA counsel/External solicitor is not registered on the system. "
                 + "They can register at "
                 + "https://manage-org.platform.hmcts.net/register-org/register"
         );
@@ -86,10 +86,10 @@ class ManageLegalRepresentativesValidatorTest {
         )));
 
         assertThat(actualErrors).containsExactly(
-            "Email address for Legal representative 1 is not registered on the system. "
+            "Email address for LA counsel/External solicitor 1 is not registered on the system. "
                 + "They can register at "
                 + "https://manage-org.platform.hmcts.net/register-org/register",
-            "Email address for Legal representative 2 is not registered on the system. "
+            "Email address for LA counsel/External solicitor 2 is not registered on the system. "
                 + "They can register at "
                 + "https://manage-org.platform.hmcts.net/register-org/register"
         );

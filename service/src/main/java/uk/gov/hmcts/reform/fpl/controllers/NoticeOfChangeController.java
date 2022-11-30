@@ -82,4 +82,10 @@ public class NoticeOfChangeController extends CallbackController {
                 }
             );
     }
+
+    @PostMapping("/update-respondents")
+    public CallbackResponse handleRespondentUpdate(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        return caseAssignmentService.applyDecisionAsSystemUser(caseDetails);
+    }
 }

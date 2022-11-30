@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.exceptions.removaltool.RemovableOrderOrApplicationNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.RemovalToolData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -143,7 +144,9 @@ class RemoveApplicationServiceTest {
             .build());
         CaseData caseData = CaseData.builder()
             .additionalApplicationsBundle(applications)
-            .reasonToRemoveApplication(WRONG_CASE)
+            .removalToolData(RemovalToolData.builder()
+                .reasonToRemoveApplication(WRONG_CASE)
+                .build())
             .build();
 
         underTest.removeApplicationFromCase(caseData, caseDetailsMap, id);
@@ -166,8 +169,10 @@ class RemoveApplicationServiceTest {
             .build());
         CaseData caseData = CaseData.builder()
             .additionalApplicationsBundle(applications)
-            .reasonToRemoveApplication(OTHER)
-            .applicationRemovalDetails("Custom reason")
+            .removalToolData(RemovalToolData.builder()
+                .reasonToRemoveApplication(OTHER)
+                .applicationRemovalDetails("Custom reason")
+                .build())
             .build();
 
         underTest.removeApplicationFromCase(caseData, caseDetailsMap, id);
@@ -195,7 +200,9 @@ class RemoveApplicationServiceTest {
             .build());
         CaseData caseData = CaseData.builder()
             .additionalApplicationsBundle(applications)
-            .reasonToRemoveApplication(WRONG_CASE)
+            .removalToolData(RemovalToolData.builder()
+                .reasonToRemoveApplication(WRONG_CASE)
+                .build())
             .build();
 
         underTest.removeApplicationFromCase(caseData, caseDetailsMap, id);
