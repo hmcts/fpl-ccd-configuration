@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
@@ -97,5 +99,41 @@ public class MigrateCaseService {
             }).collect(Collectors.toList());
 
         return Map.of("documentsSentToParties", resultDocumentsSentToParties);
+    }
+
+    public Map<String, Object> removePositionStatementChild(CaseData caseData,
+                                                            String migrationId,
+                                                            UUID expectedPositionStatementId) {
+        Long caseId = caseData.getId();
+        List<Element<PositionStatementChild>> positionStatementChildListResult =
+            caseData.getHearingDocuments().getPositionStatementChildListV2().stream()
+                .filter(el -> !el.getId().equals(expectedPositionStatementId))
+                .collect(toList());
+
+        if (positionStatementChildListResult.size() != caseData.getHearingDocuments()
+            .getPositionStatementChildListV2().size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, invalid position statement child",
+                migrationId, caseId));
+        }
+        return Map.of("positionStatementChildListV2", positionStatementChildListResult);
+    }
+
+    public Map<String, Object> removePositionStatementRespondent(CaseData caseData,
+                                                                 String migrationId,
+                                                                 UUID expectedPositionStatementId) {
+        Long caseId = caseData.getId();
+        List<Element<PositionStatementRespondent>> positionStatementRespondentListResult =
+            caseData.getHearingDocuments().getPositionStatementRespondentListV2().stream()
+                .filter(el -> !el.getId().equals(expectedPositionStatementId))
+                .collect(toList());
+
+        if (positionStatementRespondentListResult.size() != caseData.getHearingDocuments()
+            .getPositionStatementRespondentListV2().size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, invalid position statement respondent",
+                migrationId, caseId));
+        }
+        return Map.of("positionStatementRespondentListV2", positionStatementRespondentListResult);
     }
 }
