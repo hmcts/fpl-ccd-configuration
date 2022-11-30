@@ -128,7 +128,9 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     @Override
     public String asLabel() {
         if (type == C21) {
-            return format("Draft order sent on %s", formatLocalDateToString(dateSent, DATE));
+            return format("Draft order sent on %s for %s, %s", formatLocalDateToString(dateSent, DATE),
+                getTitle(),
+                getDocument().getFilename());
         } else {
             if (APPROVED.equals(status)) {
                 return format("Sealed case management order issued on %s",
@@ -136,12 +138,14 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
             }
 
             if (SEND_TO_JUDGE.equals(status)) {
-                return format("Agreed case management order sent on %s",
-                    formatLocalDateToString(dateSent, DATE));
+                return format("Agreed case management order sent on %s, %s",
+                    formatLocalDateToString(dateSent, DATE),
+                    getDocument().getFilename());
             }
 
-            return format("Draft case management order sent on %s",
-                formatLocalDateToString(dateSent, DATE));
+            return format("Draft case management order sent on %s, %s",
+                formatLocalDateToString(dateSent, DATE),
+                getDocument().getFilename());
         }
     }
 

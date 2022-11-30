@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.ParticularsOfChildren;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderSection;
+import uk.gov.hmcts.reform.fpl.validation.groups.SecureAccommodationGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEPOAddress;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEPOType;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEnteredEPOExcluded;
@@ -46,6 +47,7 @@ public class Orders {
     private final EPOType epoType;
     private final String excluded;
     private final Address address;
+    @NotNull(message = "Select under which section are you applying", groups = SecureAccommodationGroup.class)
     private final SecureAccommodationOrderSection secureAccommodationOrderSection;
     private final String court;
     private final String childAssessmentOrderAssessmentDirections;
@@ -71,11 +73,11 @@ public class Orders {
     }
 
     public boolean isSecureAccommodationOrder() {
-        return this.getOrderType().contains(SECURE_ACCOMMODATION_ORDER);
+        return isNotEmpty(orderType) && this.getOrderType().contains(SECURE_ACCOMMODATION_ORDER);
     }
 
     public boolean isRefuseContactWithChildApplication() {
-        return this.getOrderType().contains(REFUSE_CONTACT_WITH_CHILD);
+        return isNotEmpty(orderType) && this.getOrderType().contains(REFUSE_CONTACT_WITH_CHILD);
     }
 
     public boolean isChildRecoveryOrder() {
