@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.model.Organisation;
+import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 
 import java.util.Arrays;
 import java.util.List;
@@ -37,6 +39,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CHILDSOLICITORA;
@@ -605,6 +608,41 @@ class CaseInitiationServiceTest {
             List<String> errors = underTest.checkUserAllowedToCreateCase(caseData);
 
             assertThat(errors).isEmpty();
+        }
+    }
+
+    @Nested
+    class OrganisationUserListHtml {
+
+        @Test
+        void shouldGetOrganisationUserListHtml() {
+            given(organisationService.findOrganisation()).willReturn(
+                Optional.of(Organisation.builder().organisationIdentifier("abcde").build()));
+            given(caseRoleService.getLocalAuthorityUsersAllInfo()).willReturn(List.of(OrganisationUser.builder()
+                .userIdentifier("1")
+                .firstName("John")
+                .lastName("Smith")
+                .email("john.smith@test.com")
+                .build()
+            ));
+
+            assertThat(underTest.getOrganisationUsers()).isEqualTo("<ul><li>John Smith (john.smith@test.com)</li></ul>");
+        }
+
+        @Test
+        void shouldReturnNoUserFoundMessageIfNoOrg() {
+            given(organisationService.findOrganisation()).willReturn(Optional.empty());
+
+            assertThat(underTest.getOrganisationUsers()).isEqualTo("No users found");
+        }
+
+        @Test
+        void shouldReturnNoUserFoundMessageIfExceptionWhenGettingUsers() {
+            given(organisationService.findOrganisation()).willReturn(
+                Optional.of(Organisation.builder().organisationIdentifier("abcde").build()));
+            given(caseRoleService.getLocalAuthorityUsersAllInfo()).willThrow(mock(FeignException.BadRequest.class));
+
+            assertThat(underTest.getOrganisationUsers()).isEqualTo("No users found");
         }
     }
 

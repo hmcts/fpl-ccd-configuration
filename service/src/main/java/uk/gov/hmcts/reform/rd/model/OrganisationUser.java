@@ -21,6 +21,6 @@ public class OrganisationUser {
 
     @JsonIgnore
     public String getUserString() {
-        return "<li>" + getFullName() + " (" + email + ") </li>";
+        return "<li>" + getFullName() + " (" + email + ")</li>";
     }
 }
