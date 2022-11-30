@@ -9,6 +9,9 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -212,6 +215,140 @@ class MigrateCaseServiceTest {
             assertThrows(AssertionError.class, () ->
                 underTest.removeDocumentsSentToParties(caseData, MIGRATION_ID, partyId,
                     List.of(docIdToRemove)));
+        }
+    }
+
+    @Nested
+    class RemovePositionStatementChild {
+
+        private final UUID docIdToRemove = UUID.randomUUID();
+        private final UUID docIdToKeep = UUID.randomUUID();
+
+        private final Element<PositionStatementChild> docToRemove = element(docIdToRemove,
+            PositionStatementChild.builder()
+                .build());
+
+        private final Element<PositionStatementChild> docToKeep = element(docIdToKeep,
+            PositionStatementChild.builder()
+                .build());
+
+        @Test
+        void shouldClearPositionStatementChildWithNoDocumentsPostMigration() {
+            List<Element<PositionStatementChild>> positionStatementChilds = new ArrayList<>();
+            positionStatementChilds.add(docToRemove);
+            CaseData caseData = CaseData.builder()
+                .hearingDocuments(HearingDocuments.builder()
+                    .positionStatementChildListV2(List.of(docToRemove))
+                    .build())
+                .build();
+
+            Map<String, Object> fields = underTest.removePositionStatementChild(caseData, MIGRATION_ID,
+                docIdToRemove);
+
+            assertThat(fields.get("positionStatementChildListV2")).isEqualTo(List.of());
+        }
+
+        @Test
+        @SuppressWarnings("unchecked")
+        void shouldLeaveOtherDocsIntact() {
+            List<Element<PositionStatementChild>> positionStatements = new ArrayList<>();
+            positionStatements.add(docToKeep);
+            positionStatements.add(docToRemove);
+
+            CaseData caseData = CaseData.builder()
+                .hearingDocuments(HearingDocuments.builder()
+                    .positionStatementChildListV2(positionStatements)
+                    .build())
+                .build();
+
+            Map<String, Object> fields = underTest.removePositionStatementChild(caseData, MIGRATION_ID,
+                docIdToRemove);
+
+            List<Element<PositionStatementChild>> resultsPositionStatements =
+                (List<Element<PositionStatementChild>>) fields.get("positionStatementChildListV2");
+
+            assertThat(resultsPositionStatements).hasSize(1);
+            assertThat(resultsPositionStatements).containsExactly(docToKeep);
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoDocumentFound() {
+            CaseData caseData = CaseData.builder()
+                .hearingDocuments(HearingDocuments.builder()
+                    .positionStatementChildListV2(List.of(element(PositionStatementChild.builder().build())))
+                    .build())
+                .build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.removePositionStatementChild(caseData, MIGRATION_ID,
+                    docIdToRemove));
+        }
+    }
+
+    @Nested
+    class RemovePositionStatementRespondent {
+
+        private final UUID docIdToRemove = UUID.randomUUID();
+        private final UUID docIdToKeep = UUID.randomUUID();
+
+        private final Element<PositionStatementRespondent> docToRemove = element(docIdToRemove,
+            PositionStatementRespondent.builder()
+                .build());
+
+        private final Element<PositionStatementRespondent> docToKeep = element(docIdToKeep,
+            PositionStatementRespondent.builder()
+                .build());
+
+        @Test
+        void shouldClearPositionStatementRespondentWithNoDocumentsPostMigration() {
+            List<Element<PositionStatementRespondent>> positionStatementRespondents = new ArrayList<>();
+            positionStatementRespondents.add(docToRemove);
+            CaseData caseData = CaseData.builder()
+                .hearingDocuments(HearingDocuments.builder()
+                    .positionStatementRespondentListV2(List.of(docToRemove))
+                    .build())
+                .build();
+
+            Map<String, Object> fields = underTest.removePositionStatementRespondent(caseData, MIGRATION_ID,
+                docIdToRemove);
+
+            assertThat(fields.get("positionStatementRespondentListV2")).isEqualTo(List.of());
+        }
+
+        @Test
+        @SuppressWarnings("unchecked")
+        void shouldLeaveOtherDocsIntact() {
+            List<Element<PositionStatementRespondent>> positionStatements = new ArrayList<>();
+            positionStatements.add(docToKeep);
+            positionStatements.add(docToRemove);
+
+            CaseData caseData = CaseData.builder()
+                .hearingDocuments(HearingDocuments.builder()
+                    .positionStatementRespondentListV2(positionStatements)
+                    .build())
+                .build();
+
+            Map<String, Object> fields = underTest.removePositionStatementRespondent(caseData, MIGRATION_ID,
+                docIdToRemove);
+
+            List<Element<PositionStatementRespondent>> resultsPositionStatements =
+                (List<Element<PositionStatementRespondent>>) fields.get("positionStatementRespondentListV2");
+
+            assertThat(resultsPositionStatements).hasSize(1);
+            assertThat(resultsPositionStatements).containsExactly(docToKeep);
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoDocumentFound() {
+            CaseData caseData = CaseData.builder()
+                .hearingDocuments(HearingDocuments.builder()
+                    .positionStatementRespondentListV2(List.of(element(PositionStatementRespondent.builder().build())))
+                    .build())
+                .build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.removePositionStatementRespondent(caseData, MIGRATION_ID,
+                    docIdToRemove));
         }
     }
 }
