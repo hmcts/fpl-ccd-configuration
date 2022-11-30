@@ -626,7 +626,8 @@ class CaseInitiationServiceTest {
                 .build()
             ));
 
-            assertThat(underTest.getOrganisationUsers()).isEqualTo("<ul><li>John Smith (john.smith@test.com)</li></ul>");
+            assertThat(underTest.getOrganisationUsers())
+                .isEqualTo("<ul><li>John Smith (john.smith@test.com)</li></ul>");
         }
 
         @Test
