@@ -19,29 +19,29 @@ Scenario('Gatekeeping judge drafts gatekeeping order', async ({I, caseViewPage, 
   await I.runAccessibilityTest();
   await I.goToNextPage();
 
-  I.see('Request permission for expert evidence');
-  I.see('Request help to take part in proceedings');
-  I.see('Ask for disclosure');
-  I.see('Attend the pre-hearing and hearing');
-  I.see('Contact alternative carers');
+  I.waitForText('Request permission for expert evidence');
+  I.waitForText('Request help to take part in proceedings');
+  I.waitForText('Ask for disclosure');
+  I.waitForText('Attend the pre-hearing and hearing');
+  I.waitForText('Contact alternative carers');
 
-  I.see('Send documents to all parties');
-  I.see('Send missing annex documents to the court and all parties');
-  I.see('Identify alternative carers');
-  I.see('Send translated case documents to respondents');
-  I.see('Lodge a bundle');
-  I.see('Send case summary to all parties');
-  I.see('Urgently consider jurisdiction and invite any representations');
+  I.waitForText('Send documents to all parties');
+  I.waitForText('Send missing annex documents to the court and all parties');
+  I.waitForText('Identify alternative carers');
+  I.waitForText('Send translated case documents to respondents');
+  I.waitForText('Lodge a bundle');
+  I.waitForText('Send case summary to all parties');
+  I.waitForText('Urgently consider jurisdiction and invite any representations');
 
-  I.see('Send response to threshold statement to all parties');
+  I.waitForText('Send response to threshold statement to all parties');
 
-  I.see('Arrange an advocates\' meeting');
-  I.see('Send the guardian\'s analysis to all parties');
-  I.see('Appoint a children\'s guardian');
+  I.waitForText('Arrange an advocates\' meeting');
+  I.waitForText('Send the guardian\'s analysis to all parties');
+  I.waitForText('Appoint a children\'s guardian');
 
-  I.see('Object to a request for disclosure');
+  I.waitForText('Object to a request for disclosure');
 
-  I.see('Arrange interpreters');
+  I.waitForText('Arrange interpreters');
 
   I.click('Request permission for expert evidence');
   I.click('Ask for disclosure');
@@ -53,15 +53,15 @@ Scenario('Gatekeeping judge drafts gatekeeping order', async ({I, caseViewPage, 
 
   I.see(hearingDate);
 
-  I.see('All parties');
-  I.see('Request permission for expert evidence');
+  I.waitForText('All parties');
+  I.waitForText('Request permission for expert evidence');
   I.dontSee('Request help to take part in proceedings');
-  I.see('Ask for disclosure');
+  I.waitForText('Ask for disclosure');
   I.dontSee('Attend the pre-hearing and hearing');
   I.dontSee('Contact alternative carers');
 
-  I.see('Local authority');
-  I.see('Send documents to all parties');
+  I.waitForText('Local authority');
+  I.waitForText('Send documents to all parties');
   I.dontSee('Send missing annex documents to the court and all parties');
   I.dontSee('Identify alternative carers');
   I.dontSee('Send translated case documents to respondents');

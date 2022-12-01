@@ -64,11 +64,11 @@ module.exports = {
   },
 
   async clickDateAndTime(directionName) {
-    await within(this.fields.standardDirection(directionName), () => I.click('Date and time'));
+    await within(this.fields.standardDirection(directionName) + '/..', () => I.click('Date and time'));
   },
 
   async clickNumberOfDaysBeforeHearing(directionName) {
-    await within(this.fields.standardDirection(directionName), () => I.click('Number of working days before hearing'));
+    await within(this.fields.standardDirection(directionName) + '/..', () => I.click('Number of working days before hearing'));
   },
 
   async seeDate(directionName, date, format = 'YYYY-MM-DD HH:mm:ss') {
@@ -98,12 +98,12 @@ module.exports = {
   },
 
   async seeDays(directionName, days) {
-    let actualDays = parseInt(await I.grabValueFrom(`${this.fields.standardDirection(directionName)}//span[text()='Number of days']/../../input`));
+    let actualDays = parseInt(await I.grabValueFrom(`${this.fields.standardDirection(directionName)}/..//span[text()='Number of days']/../../input`));
     assert.strictEqual(actualDays, days);
   },
 
   async seeDetails(directionName, details) {
-    let actualDetails = await I.grabValueFrom(`${this.fields.standardDirection(directionName)}//textarea`);
+    let actualDetails = await I.grabValueFrom(`${this.fields.standardDirection(directionName)}/..//textarea`);
     assert.strictEqual(actualDetails, details);
   },
 
@@ -113,6 +113,7 @@ module.exports = {
 
   async markAsFinal(issueDate) {
     I.click(this.fields.statusRadioGroup.sealed);
-    await I.fillDate(issueDate);
+    I.waitForText('Order issue date');
+    await I.fillDate(issueDate, '.form-date');
   },
 };

@@ -329,22 +329,22 @@ module.exports = {
     return caseId;
   },
 
-  async goToNextPage(label = 'Continue', maxNumberOfTries = maxRetries) {
+  async goToNextPage(label = 'Continue', maxNumberOfTries = maxRetries, pause = 1) {
     const originalUrl = await this.grabCurrentUrl();
 
     for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
       this.click(label);
       //Caused by https://tools.hmcts.net/jira/browse/EUI-2498
-      for (let attempt = 0; attempt < 20; attempt++) {
+      for (let attempt = 0; attempt < 10; attempt++) {
         let currentUrl = await this.grabCurrentUrl();
         if (currentUrl !== originalUrl) {
           if (attempt > 5) {
-            output.print(`Page changed in try ${tryNumber} in ${attempt} sec - (${originalUrl} -> ${currentUrl})`);
+            output.print(`Page changed in try ${tryNumber} in ${attempt*pause} sec - (${originalUrl} -> ${currentUrl})`);
           }
           return;
         } else {
           // @todo flaky
-          this.wait(1);
+          this.wait(pause);
         }
       }
 
