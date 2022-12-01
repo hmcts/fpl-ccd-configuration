@@ -1,6 +1,5 @@
 const { I } = inject();
 const assert = require('assert');
-const output = require('codeceptjs').output;
 
 module.exports = {
 
@@ -49,20 +48,10 @@ module.exports = {
   },
 
   async goToNewActions(actionSelected) {
-    const currentUrl = await I.grabCurrentUrl();
-    await I.retryUntilExists(async () => {
-      if(await I.waitForSelector(this.actionsDropdown, 30) != null) {
-        await I.scrollToElement(this.actionsDropdown);
-        I.selectOption(this.actionsDropdown, actionSelected);
-        I.click(this.goButton);
-      } else {
-        const newUrl = await I.grabCurrentUrl();
-        if(newUrl === currentUrl || !newUrl.includes('http')){
-          output.print('Page refresh');
-          I.refreshPage();
-        }
-      }
-    }, 'ccd-case-event-trigger', false);
+    await I.grabCurrentUrl();
+    I.waitForElement(locate(this.actionsDropdown), 15);
+    I.selectOption(locate(this.actionsDropdown), actionSelected);
+    await I.retryUntilExists(() => I.click(this.goButton), 'ccd-case-event-trigger');
   },
 
   async checkActionsAreAvailable(actions) {

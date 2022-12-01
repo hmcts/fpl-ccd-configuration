@@ -74,7 +74,7 @@ Scenario('local authority changes case name @create-case-with-mandatory-sections
   await caseViewPage.checkTaskIsFinished(config.applicationActions.changeCaseName);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.changeCaseName);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
-});
+}).retry(1);
 
 Scenario('Local authority request discharge of order @cross-browser', async ({I, caseViewPage, enterOrdersAndDirectionsNeededEventPage}) => {
   // Run in a new case, so it does not affect the execution of next scenario
@@ -158,7 +158,7 @@ Scenario('local authority enters orders and directions @create-case-with-mandato
     'Add the child\'s details in the Child\'s details',
     'Add the respondents\' details in the Respondents\' details',
     'Add the allocation proposal in the Allocation proposal']);
-});
+}).retry(1);
 
 Scenario('local authority enters hearing @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, enterHearingNeededEventPage}) => {
   await setupScenario(I);
@@ -191,7 +191,7 @@ Scenario('local authority enters hearing @create-case-with-mandatory-sections-on
     'Add the child\'s details in the Child\'s details',
     'Add the respondents\' details in the Respondents\' details',
     'Add the allocation proposal in the Allocation proposal']);
-});
+}).retry(1);
 
 Scenario('local authority enters children @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, enterChildrenEventPage}) => {
   await setupScenario(I);
@@ -287,7 +287,7 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
     'Add applicant\'s details in the Applicant\'s details',
     'Add the respondents\' details in the Respondents\' details',
     'Add the allocation proposal in the Allocation proposal']);
-});
+}).retry(1);
 
 Scenario('local authority enters respondents @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterRespondentsEventPage}) => {
   await setupScenario(I);
@@ -389,7 +389,7 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
     'Add the grounds for the application in the Grounds for the application',
     'Add applicant\'s details in the Applicant\'s details',
     'Add the allocation proposal in the Allocation proposal']);
-});
+}).retry(1);
 
 Scenario('local authority enters its details @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterLocalAuthorityEventPage}) => {
   await setupScenario(I);
@@ -448,7 +448,7 @@ Scenario('local authority enters its details @create-case-with-mandatory-section
   await caseViewPage.checkTasksHaveErrors([
     'Add the grounds for the application in the Grounds for the application',
     'Add the allocation proposal in the Allocation proposal']);
-});
+}).retry(1);
 
 // @flaky?
 Scenario('local authority enters others to be given notice', async ({I, caseViewPage, enterOthersEventPage}) => {
@@ -528,7 +528,7 @@ Scenario('local authority enters grounds for application @create-case-with-manda
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
   I.wait(2);
   await caseViewPage.checkTasksHaveErrors(['Add the allocation proposal in the Allocation proposal']);
-});
+}).retry(1);
 
 Scenario('local authority enters risk and harm to children', async ({I, caseViewPage, enterRiskAndHarmToChildrenEventPage}) => {
   await setupScenario(I);
@@ -664,7 +664,7 @@ Scenario('local authority enters allocation proposal @create-case-with-mandatory
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterAllocationProposal);
 
   await caseViewPage.checkTasksHaveNoErrors();
-});
+}).retry(1);
 
 Scenario('local authority enters attending hearing', async ({I, caseViewPage, enterAttendingHearingEventPage}) => {
   await setupScenario(I);
@@ -741,7 +741,7 @@ Scenario('local authority submits application @create-case-with-mandatory-sectio
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
   caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
   I.see('New_case_name.pdf');
-});
+}).retry(1);
 
 Scenario('HMCTS admin check the payment', async ({I, caseViewPage, paymentHistoryPage}) => {
   await setupScenario(I);
