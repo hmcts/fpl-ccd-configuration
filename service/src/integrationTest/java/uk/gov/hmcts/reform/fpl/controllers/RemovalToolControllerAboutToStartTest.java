@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.SentDocument;
+import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -45,6 +47,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @WebMvcTest(RemovalToolController.class)
@@ -200,6 +203,99 @@ class RemovalToolControllerAboutToStartTest extends AbstractCallbackTest {
         DynamicList expectedList = DynamicList.builder()
             .value(DynamicListElement.EMPTY)
             .listItems(List.of(buildListElement(applications.get(0).getId(), "C2, C1, 6 May 2020"))).build();
+
+        assertThat(builtDynamicList).isEqualTo(expectedList);
+    }
+
+    @Test
+    void shouldBuildListOfSentDocumentsForOneParty() {
+        String partyOneName = "Person One";
+        List<Element<SentDocument>> partyOneDocs = List.of(element(SentDocument.builder()
+            .sentAt("11 Nov 2022 2pm")
+            .partyName(partyOneName)
+            .letterId("11111111-1111-1111-1111-111111111111")
+            .document(DocumentReference.builder().filename("Doc1.doc").build())
+            .coversheet(DocumentReference.builder().filename("CoverSheet.doc").build())
+            .build()));
+        CaseData caseData = CaseData.builder()
+            .documentsSentToParties(List.of(
+                // party 1
+                element(SentDocuments.builder()
+                    .partyName(partyOneName)
+                    .documentsSentToParty(partyOneDocs)
+                    .build())
+            ))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(asCaseDetails(caseData));
+        DynamicList builtDynamicList = mapper.convertValue(
+            response.getData().get("removableSentDocumentList"), DynamicList.class);
+        DynamicList expectedList = DynamicList.builder()
+            .value(DynamicListElement.EMPTY)
+            .listItems(
+                List.of(
+                    buildListElement(partyOneDocs.get(0).getId(), "Person One - Doc1.doc (11 Nov 2022 2pm)")
+                ))
+            .build();
+
+        assertThat(builtDynamicList).isEqualTo(expectedList);
+    }
+
+    @Test
+    void shouldBuildListOfSentDocumentsForTwoParties() {
+        String partyOneName = "Person One";
+        String partyTwoName = "Person Two";
+        List<Element<SentDocument>> partyOneDocs = List.of(
+            element(SentDocument.builder()
+                .sentAt("11 Nov 2022 2pm")
+                .partyName(partyOneName)
+                .letterId("11111111-1111-1111-1111-111111111111")
+                .document(DocumentReference.builder().filename("Doc1.doc").build())
+                .coversheet(DocumentReference.builder().filename("CoverSheet.doc").build())
+                .build()),
+            element(SentDocument.builder()
+                .sentAt("12 Nov 2022 2pm")
+                .partyName(partyOneName)
+                .letterId("11111111-1111-1111-1111-111111111112")
+                .document(DocumentReference.builder().filename("Doc2.doc").build())
+                .coversheet(DocumentReference.builder().filename("CoverSheet.doc").build())
+                .build()));
+        List<Element<SentDocument>> partyTwoDocs = List.of(
+            element(SentDocument.builder()
+                .sentAt("11 Nov 2022 2pm")
+                .partyName(partyTwoName)
+                .letterId("11111111-1111-1111-1111-111111111113")
+                .document(DocumentReference.builder().filename("2Doc1.doc").build())
+                .coversheet(DocumentReference.builder().filename("CoverSheet.doc").build())
+                .build()));
+
+        CaseData caseData = CaseData.builder()
+            .documentsSentToParties(List.of(
+                // party 1
+                element(SentDocuments.builder()
+                    .partyName(partyOneName)
+                    .documentsSentToParty(partyOneDocs)
+                    .build()),
+                // party 2
+                element(SentDocuments.builder()
+                    .partyName(partyTwoName)
+                    .documentsSentToParty(partyTwoDocs)
+                    .build())
+            ))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(asCaseDetails(caseData));
+        DynamicList builtDynamicList = mapper.convertValue(
+            response.getData().get("removableSentDocumentList"), DynamicList.class);
+        DynamicList expectedList = DynamicList.builder()
+            .value(DynamicListElement.EMPTY)
+            .listItems(
+                List.of(
+                    buildListElement(partyOneDocs.get(0).getId(), "Person One - Doc1.doc (11 Nov 2022 2pm)"),
+                    buildListElement(partyOneDocs.get(1).getId(), "Person One - Doc2.doc (12 Nov 2022 2pm)"),
+                    buildListElement(partyTwoDocs.get(0).getId(), "Person Two - 2Doc1.doc (11 Nov 2022 2pm)")
+                ))
+            .build();
 
         assertThat(builtDynamicList).isEqualTo(expectedList);
     }
