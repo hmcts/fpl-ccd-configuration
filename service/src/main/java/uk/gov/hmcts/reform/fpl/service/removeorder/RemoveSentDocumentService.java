@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.enums.ApplicationRemovalReason.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -73,22 +72,23 @@ public class RemoveSentDocumentService {
     public void removeSentDocumentFromCase(CaseData caseData, CaseDetailsMap caseDetailsMap,
                                            UUID removedDocId) {
         Element<SentDocument> removedSentDocument = getRemovedSentDocumentById(caseData, removedDocId);
-        Element<SentDocuments>  removedSentDocuments = caseData.getDocumentsSentToParties().stream()
-            .filter(s -> s.getValue().getDocumentsSentToParty().stream().filter(e -> e.equals(removedSentDocument))
-                .findFirst().isPresent())
-            .findFirst().get();
 
         caseData.getDocumentsSentToParties().stream().filter(p ->
                 p.getValue().getDocumentsSentToParty().contains(removedSentDocument))
             .findFirst()
             .orElseThrow(() -> new RemovableSentDocumentNotFoundException(removedDocId)).getValue()
             .getDocumentsSentToParty().remove(removedSentDocument);
-
         caseDetailsMap.putIfNotEmpty("documentsSentToParties", caseData.getDocumentsSentToParties());
 
         removedSentDocument.getValue().setRemovalReason(getReasonToRemove(caseData));
         List<Element<SentDocuments>> hiddenDocumentsSentToParties = caseData.getRemovalToolData()
                 .getHiddenDocumentsSentToParties();
+
+        Element<SentDocuments>  removedSentDocuments = caseData.getDocumentsSentToParties().stream()
+            .filter(s -> s.getValue().getDocumentsSentToParty().stream().filter(e -> e.equals(removedSentDocument))
+                .findFirst().isPresent())
+            .findFirst().get();
+
         Optional<Element<SentDocuments>> existingHiddenSentDocuments =
             ElementUtils.findElement(removedSentDocuments.getId(), hiddenDocumentsSentToParties);
         if (!existingHiddenSentDocuments.isPresent()) {
