@@ -213,7 +213,7 @@
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
     "ListElementCode": "secureAccommodationOrderSection",
-    "EventElementLabel": "Under which section are you applying?",
+    "EventElementLabel": "*Under which section are you applying?",
     "DisplayContext": "OPTIONAL"
   },
   {

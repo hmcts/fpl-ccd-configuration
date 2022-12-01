@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.config.HighCourtAdminEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CustomDirection;
 import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
@@ -65,7 +66,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, JsonOrdersLookupService.class, HearingVenueLookUpService.class,
     LookupTestConfig.class, GatekeepingOrderGenerationService.class, CaseDataExtractionService.class,
-    FixedTimeConfiguration.class, CourtService.class
+    FixedTimeConfiguration.class, CourtService.class, HighCourtAdminEmailLookupConfiguration.class
 })
 class GatekeepingOrderGenerationServiceTest {
 

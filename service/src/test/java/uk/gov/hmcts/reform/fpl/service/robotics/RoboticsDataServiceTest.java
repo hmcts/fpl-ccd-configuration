@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.config.HighCourtAdminEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ColleagueRole;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
@@ -69,7 +70,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {RoboticsDataService.class, JacksonAutoConfiguration.class, LookupTestConfig.class,
-    CourtService.class})
+    CourtService.class, HighCourtAdminEmailLookupConfiguration.class})
 class RoboticsDataServiceTest {
 
     @Autowired

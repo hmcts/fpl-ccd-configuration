@@ -168,7 +168,7 @@
     "ListElementCode": "secureAccommodationOrderSection",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "SecureAccommodationOrderSections",
-    "ElementLabel": "Under which section are you applying?",
+    "ElementLabel": "*Under which section are you applying?",
     "FieldShowCondition": "orderType CONTAINS \"SECURE_ACCOMMODATION_ORDER\"",
     "SecurityClassification": "Public"
   },

@@ -89,7 +89,8 @@ public class PeopleInCaseHelper {
         for (Element<? extends ConfidentialParty> a : after) {
             Address beforeAddress = beforeChildAddresses.get(a.getId());
             if (beforeAddress != null) {
-                if (!a.getValue().toParty().getAddress().equals(beforeAddress)) {
+                if (a.getValue().toParty().getAddress() == null
+                    || !a.getValue().toParty().getAddress().equals(beforeAddress)) {
                     return true;
                 }
             }
