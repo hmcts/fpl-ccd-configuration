@@ -77,7 +77,7 @@ module.exports = {
 
   dontSeeTagInTab: function (pathToTag) {
     const fieldSelector = tabTagSelector(pathToTag);
-    this.waitForFunction(() => this.dontSeeElement(locate(fieldSelector)));
+    this.dontSeeElement(locate(fieldSelector));
   },
 
   seeLabelInTab: function (pathToTag) {
@@ -87,7 +87,7 @@ module.exports = {
 
   dontSeeLabelInTab: function (pathToTag) {
     const fieldSelector = tabLabelSelector(pathToTag);
-    this.waitForFunction(() => this.dontSeeElement(locate(fieldSelector)));
+    this.dontSeeElement(locate(fieldSelector));
   },
 
   seeOrganisationInTab(pathToField, fieldValue) {
@@ -108,7 +108,7 @@ module.exports = {
   },
 
   dontSeeInTab(pathToField) {
-    this.waitForFunction(() => this.dontSeeElement(locate(tabFieldSelector(pathToField))));
+    this.dontSeeElement(locate(tabFieldSelector(pathToField)));
   },
 
   seeInExpandedDocument(title, uploadedBy, dateTimeUploaded) {
@@ -179,15 +179,15 @@ module.exports = {
   },
 
   dontSeeDocumentSection(documentSection, documentTitle) {
-    this.waitForFunction(() => this.dontSeeElement(locate('summary').withAttr({class: 'govuk-details__summary'}).withText(documentTitle)
-      .inside(locate('details').withChild(locate('summary').withText(documentSection)))));
+    this.dontSeeElement(locate('summary').withAttr({class: 'govuk-details__summary'}).withText(documentTitle)
+      .inside(locate('details').withChild(locate('summary').withText(documentSection))));
   },
 
   dontSeeConfidentialInExpandedDocument(documentSection, documentTitle) {
-    this.waitForFunction(() => this.dontSeeElement(locate('summary').withAttr({class: 'govuk-details__summary'})
+    this.dontSeeElement(locate('summary').withAttr({class: 'govuk-details__summary'})
       .withText(documentTitle).withChild(locate('div'))
       .withChild(locate('img'))
-      .inside(locate('details').withChild(locate('summary').withText(documentSection)))));
+      .inside(locate('details').withChild(locate('summary').withText(documentSection))));
   },
 
   expandDocumentSection(documentSection, documentTitle) {
@@ -217,6 +217,6 @@ module.exports = {
   },
 
   async dontSeeTab(tab){
-    this.waitForFunction(() => this.dontSeeElement(getTabSelector(tab)));
+    this.dontSeeElement(getTabSelector(tab));
   },
 };
