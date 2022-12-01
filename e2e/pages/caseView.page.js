@@ -173,4 +173,10 @@ module.exports = {
   seeInCaseTitle(titleValue) {
     I.seeElement(locate(this.caseTitle).withText(titleValue));
   },
+
+  seeCCDCaseNumber(ccdCaseNumberPrefix, ccdCaseNumber) {
+    I.see(ccdCaseNumberPrefix);
+    I.see(I.uiFormatted(ccdCaseNumber));
+  },
+
 };
