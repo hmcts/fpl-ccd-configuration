@@ -212,7 +212,7 @@ Scenario('HMCTS admin share case with representatives', async ({I, caseViewPage,
   I.seeInTab(['Representatives 2', 'Who are they?'], representative2.role);
 
   await I.navigateToCaseDetailsAs({email: representative1.email, password: config.localAuthorityPassword}, caseId);
-  I.see(caseId);
+  I.see(I.uiFormatted(caseId));
 });
 
 Scenario('HMCTS admin revoke case access from representative', async ({I, caseViewPage, caseListPage}) => {

@@ -374,10 +374,8 @@ module.exports = {
    * @param maxNumberOfTries - maximum number of attempts to retry
    * @returns {Promise<void>} - promise holding no result if resolved or error if rejected
    */
-  async retryUntilExists(action, locator, checkUrlChanged = true, maxNumberOfTries = maxRetries) {
+  async retryUntilExists(action, locator, checkUrlChanged = true, maxNumberOfTries = 3) {
     const originalUrl = await this.grabCurrentUrl();
-    // override this for now
-    maxNumberOfTries = 1;
 
     for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
       output.log(`retryUntilExists(${locator}): starting try #${tryNumber}`);
