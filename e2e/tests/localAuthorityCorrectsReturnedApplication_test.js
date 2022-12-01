@@ -46,7 +46,7 @@ Scenario('LA makes corrections to the application', async ({I, caseViewPage, ent
   I.seeEventSubmissionConfirmation(config.applicationActions.enterLocalAuthority);
 
   caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
-  I.seeInTab(['Local authority 1', 'PBA number'], newPbaNumber);
+  I.seeInTab(['Applicant 1', 'PBA number'], newPbaNumber);
 
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationEventPage.seeDraftApplicationFile();

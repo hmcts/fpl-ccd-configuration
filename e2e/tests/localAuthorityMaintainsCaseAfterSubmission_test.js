@@ -43,7 +43,7 @@ Scenario('local authority update its details', async ({ I, caseViewPage, enterLo
   I.seeEventSubmissionConfirmation(config.applicationActions.enterLocalAuthority);
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-  I.seeInTab(['Local authority 1', 'Colleague 1', 'Email address'], solicitorEmail);
+  I.seeInTab(['Applicant 1', 'Colleague 1', 'Email address'], solicitorEmail);
 });
 
 Scenario('local authority provides a statements of service', async ({ I, caseViewPage, addStatementOfServiceEventPage }) => {

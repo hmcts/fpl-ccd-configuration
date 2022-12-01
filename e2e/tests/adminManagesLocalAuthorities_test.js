@@ -51,13 +51,13 @@ Scenario('HMCTS admin adds secondary local authority', async ({I, caseViewPage, 
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 
-  I.seeInTab(['Local authority 1', 'Name'], swanseaLocalAuthority.name);
-  I.seeTagInTab(['Local authority 1', 'Designated local authority']);
+  I.seeInTab(['Applicant 1', 'Name'], swanseaLocalAuthority.name);
+  I.seeTagInTab(['Applicant 1', 'Designated local authority']);
 
-  I.seeInTab(['Local authority 2', 'Name'], hillingdonLocalAuthority.name);
-  I.seeInTab(['Local authority 2', 'Group email address'], hillingdonLocalAuthority.email);
-  I.dontSeeTagInTab(['Local authority 2', 'Designated local authority']);
-  I.dontSeeInTab('Local authority 2', 'Colleague 1');
+  I.seeInTab(['Applicant 2', 'Name'], hillingdonLocalAuthority.name);
+  I.seeInTab(['Applicant 2', 'Group email address'], hillingdonLocalAuthority.email);
+  I.dontSeeTagInTab(['Applicant 2', 'Designated local authority']);
+  I.dontSeeInTab('Applicant 2', 'Colleague 1');
 });
 
 Scenario('Designated local authority solicitor can see all local authorities but updates only his own', async ({I, caseViewPage, enterLocalAuthorityEventPage}) => {
@@ -67,11 +67,11 @@ Scenario('Designated local authority solicitor can see all local authorities but
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 
-  I.seeInTab(['Local authority 1', 'Name'], swanseaLocalAuthority.name);
-  I.seeTagInTab(['Local authority 1', 'Designated local authority']);
+  I.seeInTab(['Applicant 1', 'Name'], swanseaLocalAuthority.name);
+  I.seeTagInTab(['Applicant 1', 'Designated local authority']);
 
-  I.seeInTab(['Local authority 2', 'Name'], hillingdonLocalAuthority.name);
-  I.dontSeeTagInTab(['Local authority 2', 'Designated local authority']);
+  I.seeInTab(['Applicant 2', 'Name'], hillingdonLocalAuthority.name);
+  I.dontSeeTagInTab(['Applicant 2', 'Designated local authority']);
 
   await caseViewPage.goToNewActions(config.applicationActions.enterLocalAuthority);
 
@@ -119,22 +119,22 @@ Scenario('Secondary local authority solicitor can see all local authorities but 
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 
-  I.seeInTab(['Local authority 1', 'Name'], swanseaLocalAuthority.name);
-  I.seeTagInTab(['Local authority 1', 'Designated local authority']);
-  I.seeInTab(['Local authority 1', 'Colleague 1', 'Full name'], 'Alex Brown');
-  I.seeTagInTab(['Local authority 1', 'Colleague 1', 'Main contact']);
+  I.seeInTab(['Applicant 1', 'Name'], swanseaLocalAuthority.name);
+  I.seeTagInTab(['Applicant 1', 'Designated local authority']);
+  I.seeInTab(['Applicant 1', 'Colleague 1', 'Full name'], 'Alex Brown');
+  I.seeTagInTab(['Applicant 1', 'Colleague 1', 'Main contact']);
 
-  I.seeInTab(['Local authority 2', 'Name'], hillingdonLocalAuthority.name);
-  I.seeInTab(['Local authority 2', 'Group email address'], hillingdonLocalAuthority.email);
-  I.seeInTab(['Local authority 2', 'PBA number'], hillingdonLocalAuthorityUpdates.pbaNumber);
-  I.seeInTab(['Local authority 2', 'Phone number'], hillingdonLocalAuthorityUpdates.phone);
-  I.dontSeeTagInTab(['Local authority 2', 'Designated local authority']);
+  I.seeInTab(['Applicant 2', 'Name'], hillingdonLocalAuthority.name);
+  I.seeInTab(['Applicant 2', 'Group email address'], hillingdonLocalAuthority.email);
+  I.seeInTab(['Applicant 2', 'PBA number'], hillingdonLocalAuthorityUpdates.pbaNumber);
+  I.seeInTab(['Applicant 2', 'Phone number'], hillingdonLocalAuthorityUpdates.phone);
+  I.dontSeeTagInTab(['Applicant 2', 'Designated local authority']);
 
-  I.seeInTab(['Local authority 2', 'Colleague 1', 'Role'], hillingdonColleague.role);
-  I.seeInTab(['Local authority 2', 'Colleague 1', 'Full name'], hillingdonColleague.fullName);
-  I.seeInTab(['Local authority 2', 'Colleague 1', 'Email address'], hillingdonColleague.email);
-  I.seeInTab(['Local authority 2', 'Colleague 1', 'Send them case update notifications?'], hillingdonColleague.notificationRecipient);
-  I.seeTagInTab(['Local authority 2', 'Colleague 1', 'Main contact']);
+  I.seeInTab(['Applicant 2', 'Colleague 1', 'Role'], hillingdonColleague.role);
+  I.seeInTab(['Applicant 2', 'Colleague 1', 'Full name'], hillingdonColleague.fullName);
+  I.seeInTab(['Applicant 2', 'Colleague 1', 'Email address'], hillingdonColleague.email);
+  I.seeInTab(['Applicant 2', 'Colleague 1', 'Send them case update notifications?'], hillingdonColleague.notificationRecipient);
+  I.seeTagInTab(['Applicant 2', 'Colleague 1', 'Main contact']);
 });
 
 Scenario('HMCTS admin removes secondary local authority', async ({I, caseViewPage, caseListPage, manageLocalAuthoritiesEventPage}) => {
@@ -152,10 +152,10 @@ Scenario('HMCTS admin removes secondary local authority', async ({I, caseViewPag
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 
-  I.seeInTab(['Local authority 1', 'Name'], swanseaLocalAuthority.name);
-  I.seeTagInTab(['Local authority 1', 'Designated local authority']);
+  I.seeInTab(['Applicant 1', 'Name'], swanseaLocalAuthority.name);
+  I.seeTagInTab(['Applicant 1', 'Designated local authority']);
 
-  I.dontSeeInTab(['Local authority 2', 'Name'], hillingdonLocalAuthority.name);
+  I.dontSeeInTab(['Applicant 2', 'Name'], hillingdonLocalAuthority.name);
 
   await I.signIn(config.hillingdonLocalAuthorityUserOne);
 
@@ -186,13 +186,13 @@ Scenario('HMCTS admin transfer case to new local authority', async ({I, caseView
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 
-  I.seeInTab(['Local authority 1', 'Name'], hillingdonLocalAuthority.name);
-  I.seeTagInTab(['Local authority 1', 'Designated local authority']);
-  I.seeInTab(['Local authority 1', 'Colleague 1', 'Full name'], transferredLocalAuthoritySolicitor.name);
-  I.seeInTab(['Local authority 1', 'Colleague 1', 'Email address'], transferredLocalAuthoritySolicitor.email);
-  I.seeTagInTab(['Local authority 1', 'Colleague 1', 'Main contact']);
+  I.seeInTab(['Applicant 1', 'Name'], hillingdonLocalAuthority.name);
+  I.seeTagInTab(['Applicant 1', 'Designated local authority']);
+  I.seeInTab(['Applicant 1', 'Colleague 1', 'Full name'], transferredLocalAuthoritySolicitor.name);
+  I.seeInTab(['Applicant 1', 'Colleague 1', 'Email address'], transferredLocalAuthoritySolicitor.email);
+  I.seeTagInTab(['Applicant 1', 'Colleague 1', 'Main contact']);
 
-  I.dontSeeInTab(['Local authority 2', 'Name']);
+  I.dontSeeInTab(['Applicant 2', 'Name']);
 
   caseViewPage.selectTab(caseViewPage.tabs.summary);
   I.seeInTab(['Court to issue'], hillingdonLocalAuthority.court);
@@ -235,13 +235,13 @@ Scenario('HMCTS admin transfer case to secondary local authority @flaky', async 
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 
-  I.seeInTab(['Local authority 1', 'Name'], swanseaLocalAuthority.name);
-  I.seeTagInTab(['Local authority 1', 'Designated local authority']);
-  I.seeInTab(['Local authority 1', 'Colleague 1', 'Full name'], transferredLocalAuthoritySolicitor.name);
-  I.seeInTab(['Local authority 1', 'Colleague 1', 'Email address'], transferredLocalAuthoritySolicitor.email);
-  I.seeTagInTab(['Local authority 1', 'Colleague 1', 'Main contact']);
+  I.seeInTab(['Applicant 1', 'Name'], swanseaLocalAuthority.name);
+  I.seeTagInTab(['Applicant 1', 'Designated local authority']);
+  I.seeInTab(['Applicant 1', 'Colleague 1', 'Full name'], transferredLocalAuthoritySolicitor.name);
+  I.seeInTab(['Applicant 1', 'Colleague 1', 'Email address'], transferredLocalAuthoritySolicitor.email);
+  I.seeTagInTab(['Applicant 1', 'Colleague 1', 'Main contact']);
 
-  I.dontSeeInTab(['Local authority 2', 'Name']);
+  I.dontSeeInTab(['Applicant 2', 'Name']);
 
   caseViewPage.selectTab(caseViewPage.tabs.summary);
   I.seeInTab(['Court to issue'], hillingdonLocalAuthority.court);
