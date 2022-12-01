@@ -54,7 +54,7 @@ Scenario('local authority sees task list', async ({I, caseViewPage}) => {
     'Add the orders and directions sought in the Orders and directions sought',
     'Add the hearing urgency details in the Hearing urgency',
     'Add the grounds for the application in the Grounds for the application',
-    'Add local authority\'s details in the Local authority\'s details',
+    'Add applicant\'s details in the Applicant\'s details',
     'Add the child\'s details in the Child\'s details',
     'Add the respondents\' details in the Respondents\' details',
     'Add the allocation proposal in the Allocation proposal']);
@@ -95,7 +95,7 @@ Scenario('Local authority request discharge of order @cross-browser', async ({I,
   I.wait(1);
   await caseViewPage.checkTasksHaveErrors([
     'Add the hearing urgency details in the Hearing urgency',
-    'Add local authority\'s details in the Local authority\'s details',
+    'Add applicant\'s details in the Applicant\'s details',
     'Add the child\'s details in the Child\'s details',
     'Add the respondents\' details in the Respondents\' details',
     'Add the allocation proposal in the Allocation proposal']);
@@ -112,7 +112,7 @@ Scenario('local authority enters orders and directions @create-case-with-mandato
   enterOrdersAndDirectionsNeededEventPage.checkEmergencyProtectionOrder();
   enterOrdersAndDirectionsNeededEventPage.selectPreventRemovalFromAddressEPOType();
   await enterOrdersAndDirectionsNeededEventPage.enterAddress(ordersAndDirectionsNeeded.address);
-  enterOrdersAndDirectionsNeededEventPage.checkOtherOrder();
+  // enterOrdersAndDirectionsNeededEventPage.checkOtherOrder();
   enterOrdersAndDirectionsNeededEventPage.checkWhereabouts();
   enterOrdersAndDirectionsNeededEventPage.checkEntry();
   enterOrdersAndDirectionsNeededEventPage.checkSearch();
@@ -133,14 +133,14 @@ Scenario('local authority enters orders and directions @create-case-with-mandato
 
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOrdersAndDirectionsNeeded);
   caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
-  I.seeInTab(['Orders and directions needed', 'Which orders do you need?'], ['Care order', 'Interim care order', 'Supervision order', 'Interim supervision order', 'Education supervision order', 'Emergency protection order', 'Variation or discharge of care or supervision order']);
+  I.seeInTab(['Orders and directions needed', 'Which orders do you need?'], ['Care order', 'Interim care order', 'Supervision order', 'Interim supervision order', 'Education supervision order', 'Emergency protection order']);
   I.seeInTab(['Orders and directions needed', 'What type of EPO are you requesting?'], 'Prevent removal from an address');
   I.seeInTab(['Orders and directions needed', 'Do you need any of these related orders?'], ['Information on the whereabouts of the child', 'Authorisation for entry of premises', 'Authorisation to search for another child on the premises', 'Other order under section 48 of the Children Act 1989']);
   I.seeInTab(['Orders and directions needed', 'Give details'], 'Test');
   I.seeInTab(['Orders and directions needed', 'Do you need any of these directions?'], ['Contact with any named person', 'A medical or psychiatric examination, or another assessment of the child', 'To be accompanied by a registered medical practitioner, nurse or midwife', 'An exclusion requirement', 'Other direction relating to an emergency protection order']);
   I.seeInTab(['Orders and directions needed', 'Who\'s excluded?'], 'John Doe');
   I.seeInTab(['Orders and directions needed', 'Give details'], 'Test');
-  I.seeInTab(['Orders and directions needed', 'Which order do you need?'], 'Test');
+  // I.seeInTab(['Orders and directions needed', 'Which order do you need?'], 'Test'); unneeded as DoC isn't requested
   I.seeInTab(['Orders and directions needed', 'Do you need any other directions?'], 'Yes');
   I.seeInTab(['Orders and directions needed', 'Give details'], 'Test');
   I.seeInTab(['Orders and directions needed', 'Which court are you issuing for?'], 'Barnet');
@@ -154,7 +154,7 @@ Scenario('local authority enters orders and directions @create-case-with-mandato
   await caseViewPage.checkTasksHaveErrors([
     'Add the hearing urgency details in the Hearing urgency',
     'Add the grounds for the application in the Grounds for the application',
-    'Add local authority\'s details in the Local authority\'s details',
+    'Add applicant\'s details in the Applicant\'s details',
     'Add the child\'s details in the Child\'s details',
     'Add the respondents\' details in the Respondents\' details',
     'Add the allocation proposal in the Allocation proposal']);
@@ -187,7 +187,7 @@ Scenario('local authority enters hearing @create-case-with-mandatory-sections-on
   I.wait(1);
   await caseViewPage.checkTasksHaveErrors([
     'Add the grounds for the application in the Grounds for the application',
-    'Add local authority\'s details in the Local authority\'s details',
+    'Add applicant\'s details in the Applicant\'s details',
     'Add the child\'s details in the Child\'s details',
     'Add the respondents\' details in the Respondents\' details',
     'Add the allocation proposal in the Allocation proposal']);
@@ -284,7 +284,7 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
   I.wait(1);
   await caseViewPage.checkTasksHaveErrors([
     'Add the grounds for the application in the Grounds for the application',
-    'Add local authority\'s details in the Local authority\'s details',
+    'Add applicant\'s details in the Applicant\'s details',
     'Add the respondents\' details in the Respondents\' details',
     'Add the allocation proposal in the Allocation proposal']);
 });
@@ -387,7 +387,7 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   I.wait(1);
   await caseViewPage.checkTasksHaveErrors([
     'Add the grounds for the application in the Grounds for the application',
-    'Add local authority\'s details in the Local authority\'s details',
+    'Add applicant\'s details in the Applicant\'s details',
     'Add the allocation proposal in the Allocation proposal']);
 });
 
@@ -408,36 +408,36 @@ Scenario('local authority enters its details @create-case-with-mandatory-section
 
   caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
 
-  I.seeInTab(['Local authority 1', 'Name'], localAuthority.name);
-  I.seeInTab(['Local authority 1', 'Group email address'], localAuthority.email);
-  I.seeInTab(['Local authority 1', 'Legal team manager\'s name and last name'], localAuthority.legalTeamManager);
-  I.seeInTab(['Local authority 1', 'PBA number'], localAuthority.pbaNumber);
-  I.seeInTab(['Local authority 1', 'Customer reference'], localAuthority.customerReference);
-  I.seeInTab(['Local authority 1', 'Client code'], localAuthority.clientCode);
-  I.seeInTab(['Local authority 1', 'Address', 'Building and Street'], localAuthority.address.buildingAndStreet.lineOne);
-  I.seeInTab(['Local authority 1', 'Address', 'Address Line 2'], localAuthority.address.buildingAndStreet.lineTwo);
-  I.seeInTab(['Local authority 1', 'Address', 'Address Line 3'], localAuthority.address.buildingAndStreet.lineThree);
-  I.seeInTab(['Local authority 1', 'Address', 'Town or City'], localAuthority.address.townCity);
-  I.seeInTab(['Local authority 1', 'Address', 'County'], localAuthority.address.county);
-  I.seeInTab(['Local authority 1', 'Address', 'Postcode/Zipcode'], localAuthority.address.postcode);
-  I.seeInTab(['Local authority 1', 'Address', 'Country'], localAuthority.address.country);
-  I.seeInTab(['Local authority 1', 'Phone number'], localAuthority.phone);
+  I.seeInTab(['Applicant 1', 'Name'], localAuthority.name);
+  I.seeInTab(['Applicant 1', 'Group email address'], localAuthority.email);
+  I.seeInTab(['Applicant 1', 'Legal team manager\'s name and last name'], localAuthority.legalTeamManager);
+  I.seeInTab(['Applicant 1', 'PBA number'], localAuthority.pbaNumber);
+  I.seeInTab(['Applicant 1', 'Customer reference'], localAuthority.customerReference);
+  I.seeInTab(['Applicant 1', 'Client code'], localAuthority.clientCode);
+  I.seeInTab(['Applicant 1', 'Address', 'Building and Street'], localAuthority.address.buildingAndStreet.lineOne);
+  I.seeInTab(['Applicant 1', 'Address', 'Address Line 2'], localAuthority.address.buildingAndStreet.lineTwo);
+  I.seeInTab(['Applicant 1', 'Address', 'Address Line 3'], localAuthority.address.buildingAndStreet.lineThree);
+  I.seeInTab(['Applicant 1', 'Address', 'Town or City'], localAuthority.address.townCity);
+  I.seeInTab(['Applicant 1', 'Address', 'County'], localAuthority.address.county);
+  I.seeInTab(['Applicant 1', 'Address', 'Postcode/Zipcode'], localAuthority.address.postcode);
+  I.seeInTab(['Applicant 1', 'Address', 'Country'], localAuthority.address.country);
+  I.seeInTab(['Applicant 1', 'Phone number'], localAuthority.phone);
 
-  I.seeInTab(['Local authority 1', 'Colleague 1', 'Role'], localAuthority.colleagues[0].role);
-  I.seeInTab(['Local authority 1', 'Colleague 1', 'Full name'], localAuthority.colleagues[0].fullName);
-  I.seeInTab(['Local authority 1', 'Colleague 1', 'Email address'], localAuthority.colleagues[0].email);
-  I.seeInTab(['Local authority 1', 'Colleague 1', 'DX code'], localAuthority.colleagues[0].dx);
-  I.seeInTab(['Local authority 1', 'Colleague 1', 'Solicitor reference'], localAuthority.colleagues[0].reference);
-  I.seeInTab(['Local authority 1', 'Colleague 1', 'Phone number'], localAuthority.colleagues[0].phone);
-  I.seeInTab(['Local authority 1', 'Colleague 1', 'Send them case update notifications?'], localAuthority.colleagues[0].notificationRecipient);
-  I.seeTagInTab(['Local authority 1', 'Colleague 1', 'Main contact']);
+  I.seeInTab(['Applicant 1', 'Colleague 1', 'Role'], localAuthority.colleagues[0].role);
+  I.seeInTab(['Applicant 1', 'Colleague 1', 'Full name'], localAuthority.colleagues[0].fullName);
+  I.seeInTab(['Applicant 1', 'Colleague 1', 'Email address'], localAuthority.colleagues[0].email);
+  I.seeInTab(['Applicant 1', 'Colleague 1', 'DX code'], localAuthority.colleagues[0].dx);
+  I.seeInTab(['Applicant 1', 'Colleague 1', 'Solicitor reference'], localAuthority.colleagues[0].reference);
+  I.seeInTab(['Applicant 1', 'Colleague 1', 'Phone number'], localAuthority.colleagues[0].phone);
+  I.seeInTab(['Applicant 1', 'Colleague 1', 'Send them case update notifications?'], localAuthority.colleagues[0].notificationRecipient);
+  I.seeTagInTab(['Applicant 1', 'Colleague 1', 'Main contact']);
 
-  I.seeInTab(['Local authority 1', 'Colleague 2', 'Role'], localAuthority.colleagues[1].role);
-  I.seeInTab(['Local authority 1', 'Colleague 2', 'Title'], localAuthority.colleagues[1].title);
-  I.seeInTab(['Local authority 1', 'Colleague 2', 'Full name'], localAuthority.colleagues[1].fullName);
-  I.seeInTab(['Local authority 1', 'Colleague 2', 'Email address'], localAuthority.colleagues[1].email);
-  I.seeInTab(['Local authority 1', 'Colleague 2', 'Send them case update notifications?'], localAuthority.colleagues[1].notificationRecipient);
-  I.dontSeeTagInTab(['Local authority 1', 'Colleague 2', 'Main contact']);
+  I.seeInTab(['Applicant 1', 'Colleague 2', 'Role'], localAuthority.colleagues[1].role);
+  I.seeInTab(['Applicant 1', 'Colleague 2', 'Title'], localAuthority.colleagues[1].title);
+  I.seeInTab(['Applicant 1', 'Colleague 2', 'Full name'], localAuthority.colleagues[1].fullName);
+  I.seeInTab(['Applicant 1', 'Colleague 2', 'Email address'], localAuthority.colleagues[1].email);
+  I.seeInTab(['Applicant 1', 'Colleague 2', 'Send them case update notifications?'], localAuthority.colleagues[1].notificationRecipient);
+  I.dontSeeTagInTab(['Applicant 1', 'Colleague 2', 'Main contact']);
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   I.wait(2);

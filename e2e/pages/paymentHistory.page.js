@@ -1,7 +1,7 @@
 const {I} = inject();
 const config = require('../config');
 
-const paymentsLocator = '//span[text()="Processed payments"]';
+const paymentsLocator = '//span[text()="Payments"]';
 
 const buildPaymentLocator = amount => config.mockedPayment ? `${paymentsLocator}/../table//tr[.//td[text()="Success"]]` : `${paymentsLocator}/../table//tr[.//td[text()="${amount}"] and .//td[text()="Success"]]`;
 

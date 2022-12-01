@@ -183,11 +183,11 @@ module.exports = {
   },
 
   seeFamilyManNumber(familyManNumber) {
-    this.seeElement(`//*[@class="markdown"]//h2/strong[text()='FamilyMan ID: ${familyManNumber}']`);
+    this.waitForElement(`//*[@class="markdown"]//h2/strong[text()='FamilyMan ID: ${familyManNumber}']`);
   },
 
   seeCaseInSearchResult(caseId) {
-    this.seeElement(caseListPage.locateCase(normalizeCaseId(caseId)));
+    this.waitForElement(caseListPage.locateCase(normalizeCaseId(caseId)));
   },
 
   dontSeeCaseInSearchResult(caseId) {
@@ -196,7 +196,7 @@ module.exports = {
 
   seeEndStateForEvent(eventName, state) {
     this.click(`//table[@class="EventLogTable"]//tr[td[contains(., "${eventName}")]][1]`);
-    this.seeElement(`//table[@class="EventLogDetails"]//tr[.//span[text()="End state"] and .//span[text()="${state}"]]`);
+    this.waitForElement(`//table[@class="EventLogDetails"]//tr[.//span[text()="End state"] and .//span[text()="${state}"]]`);
   },
 
   async navigateToCaseDetails(caseId) {

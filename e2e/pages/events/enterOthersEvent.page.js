@@ -8,6 +8,10 @@ module.exports = {
       gender: `#others_${index}_gender`,
       DOB: `(//*[@id="DOB"])[${index}]`,
       birthPlace: `#others_${index}_birthPlace`,
+      currentAddressKnown: {
+        yes: `#others_${index}_addressKnow_Yes`,
+        no: `#others_${index}_addressKnow_No`,
+      },
       address: `#others_${index}_address_address`,
       telephoneNumber: `#others_${index}_telephone`,
       relationshipToChild: `#others_${index}_childInformation`,
@@ -35,6 +39,7 @@ module.exports = {
     I.fillDate(other.DOB, this.fields(elementIndex).DOB);
     I.selectOption(this.fields(elementSelector).gender, other.gender);
     I.fillField(this.fields(elementSelector).birthPlace, other.birthPlace);
+    I.click(this.fields(elementSelector).currentAddressKnown.yes);
     await within(this.fields(elementSelector).address, async () => {
       await postcodeLookup.enterAddressManually(other.address);
     });

@@ -63,31 +63,31 @@ module.exports = {
 
     if (Array.isArray(fieldValue)) {
       fieldValue.forEach((value, index) => {
-        this.seeElement(locate(`${fieldSelector}//tr[${index + 1}]`).withText(value));
+        this.waitForElement(locate(`${fieldSelector}//tr[${index + 1}]`).withText(value));
       });
     } else {
-      this.seeElement(locate(fieldSelector).withText(fieldValue));
+      this.waitForElement(locate(fieldSelector).withText(fieldValue));
     }
   },
 
   seeTagInTab: function (pathToTag) {
     const fieldSelector = tabTagSelector(pathToTag);
-    this.seeElement(locate(fieldSelector));
+    this.waitForElement(locate(fieldSelector));
   },
 
   dontSeeTagInTab: function (pathToTag) {
     const fieldSelector = tabTagSelector(pathToTag);
-    this.dontSeeElement(locate(fieldSelector));
+    this.waitForFunction(() => this.dontSeeElement(locate(fieldSelector)));
   },
 
   seeLabelInTab: function (pathToTag) {
     const fieldSelector = tabLabelSelector(pathToTag);
-    this.seeElement(locate(fieldSelector));
+    this.waitForElement(locate(fieldSelector));
   },
 
   dontSeeLabelInTab: function (pathToTag) {
     const fieldSelector = tabLabelSelector(pathToTag);
-    this.dontSeeElement(locate(fieldSelector));
+    this.waitForFunction(() => this.dontSeeElement(locate(fieldSelector)));
   },
 
   seeOrganisationInTab(pathToField, fieldValue) {
@@ -95,25 +95,25 @@ module.exports = {
 
     if (Array.isArray(fieldValue)) {
       fieldValue.forEach((value) => {
-        this.seeElement(locate(`${fieldSelector}//tr[1]`).withText(value));
+        this.waitForElement(locate(`${fieldSelector}//tr[1]`).withText(value));
       });
     } else {
-      this.seeElement(locate(fieldSelector).withText(fieldValue));
+      this.waitForElement(locate(fieldSelector).withText(fieldValue));
     }
   },
 
   seeTextInTab(pathToField) {
     const fieldSelector = tabFieldSelector(pathToField);
-    this.seeElement(locate(fieldSelector));
+    this.waitForElement(locate(fieldSelector));
   },
 
   dontSeeInTab(pathToField) {
-    this.dontSeeElement(locate(tabFieldSelector(pathToField)));
+    this.waitForFunction(() => this.dontSeeElement(locate(tabFieldSelector(pathToField))));
   },
 
   seeInExpandedDocument(title, uploadedBy, dateTimeUploaded) {
     if(uploadedBy == null) {
-      this.seeElement(locate('details').withAttr({open})
+      this.waitForElement(locate('details').withAttr({open})
         .withChild(locate('summary')
           .withText(title))
         .withChild(locate('div'))
@@ -122,7 +122,7 @@ module.exports = {
         .withText('Document')
         .withText('mockFile.txt'));
     } else {
-      this.seeElement(locate('details').withAttr({open})
+      this.waitForElement(locate('details').withAttr({open})
         .withChild(locate('summary')
           .withText(title))
         .withChild(locate('div'))
@@ -136,7 +136,7 @@ module.exports = {
   },
 
   seeInExpandedConfidentialDocument(title, uploadedBy, dateTimeUploaded) {
-    this.seeElement(locate('details').withAttr({open})
+    this.waitForElement(locate('details').withAttr({open})
       .withChild(locate('summary')
         .withText(title))
       .withChild(locate('div'))
@@ -179,15 +179,15 @@ module.exports = {
   },
 
   dontSeeDocumentSection(documentSection, documentTitle) {
-    this.dontSeeElement(locate('summary').withAttr({class: 'govuk-details__summary'}).withText(documentTitle)
-      .inside(locate('details').withChild(locate('summary').withText(documentSection))));
+    this.waitForFunction(() => this.dontSeeElement(locate('summary').withAttr({class: 'govuk-details__summary'}).withText(documentTitle)
+      .inside(locate('details').withChild(locate('summary').withText(documentSection)))));
   },
 
   dontSeeConfidentialInExpandedDocument(documentSection, documentTitle) {
-    this.dontSeeElement(locate('summary').withAttr({class: 'govuk-details__summary'})
+    this.waitForFunction(() => this.dontSeeElement(locate('summary').withAttr({class: 'govuk-details__summary'})
       .withText(documentTitle).withChild(locate('div'))
       .withChild(locate('img'))
-      .inside(locate('details').withChild(locate('summary').withText(documentSection))));
+      .inside(locate('details').withChild(locate('summary').withText(documentSection)))));
   },
 
   expandDocumentSection(documentSection, documentTitle) {
@@ -217,6 +217,6 @@ module.exports = {
   },
 
   async dontSeeTab(tab){
-    this.dontSeeElement(getTabSelector(tab));
+    this.waitForFunction(() => this.dontSeeElement(getTabSelector(tab)));
   },
 };
