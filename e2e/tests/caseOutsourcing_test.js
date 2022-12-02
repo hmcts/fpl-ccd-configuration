@@ -4,19 +4,17 @@ const mandatorySubmissionFields = require('../fixtures/caseData/mandatorySubmiss
 
 Feature('Case outsourcing');
 
-Scenario('Private solicitor creates case on behalf of local authority ', async ({I, caseListPage}) => {
+Scenario('Private solicitor creates case on behalf of local authority', async ({I, caseListPage, login}) => {
   const localAuthority = 'Swansea City Council';
   const caseName = `On behalf of ${localAuthority}`;
 
-  const caseId = await I.logInAndCreateCase(config.privateSolicitorOne, caseName, localAuthority);
+  const caseId = await I.logInAndCreateCase(config.privateSolicitorOne, caseName, localAuthority, true);
   await caseListPage.verifyCaseIsShareable(caseId);
 
-  await I.signIn(config.privateSolicitorTwo);
-  I.grabCurrentUrl();
+  await login('privateSolicitorTwo');
   caseListPage.verifyCaseIsNotAccessible(caseId);
 
-  await I.signIn(config.swanseaLocalAuthorityUserOne);
-  I.grabCurrentUrl();
+  await login('swanseaLocalAuthorityUserOne');
   caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
@@ -45,7 +43,7 @@ Scenario('Local authority creates case for its own', async ({I, caseListPage}) =
   await caseListPage.verifyCaseIsShareable(caseId);
 });
 
-Scenario('Local authority revokes access from managing organisation', async ({I, caseListPage, caseViewPage}) => {
+Scenario('Local authority revokes access from managing organisation', async ({I, caseListPage, caseViewPage, login}) => {
   const localAuthority = 'Swansea City Council';
   const managingLocalAuthority = 'Wiltshire County Council';
   const caseName = `On behalf of ${localAuthority}`;
@@ -56,7 +54,8 @@ Scenario('Local authority revokes access from managing organisation', async ({I,
   await submitCase(caseId);
   await grantAccessToManagedLocalAuthority(caseId, config.swanseaLocalAuthorityUserOne);
 
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await login('swanseaLocalAuthorityUserOne');
+  await I.navigateToCaseDetails(caseId);
   await I.seeEvent(config.applicationActions.removeManagingOrganisation);
   await caseViewPage.goToNewActions(config.applicationActions.removeManagingOrganisation);
   I.see(managingLocalAuthority);
@@ -64,7 +63,7 @@ Scenario('Local authority revokes access from managing organisation', async ({I,
   I.seeEventSubmissionConfirmation(config.applicationActions.removeManagingOrganisation);
   await I.dontSeeEvent(config.applicationActions.removeManagingOrganisation);
 
-  await I.signIn(config.wiltshireLocalAuthorityUserOne);
+  await login('wiltshireLocalAuthorityUserOne');
   caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 

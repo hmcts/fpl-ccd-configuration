@@ -8,6 +8,11 @@ module.exports = {
     caseType: '#cc-case-type',
     event: '#cc-event',
     outsourcingLAs: '#outsourcingLAs',
+    selectRepresenting: {
+      localAuthority: '#representativeType-LOCAL_AUTHORITY',
+      respondent: '#representativeType-RESPONDENT_SOLICITOR',
+      child: '#representativeType-CHILD_SOLICITOR',
+    },
   },
   enterCaseNamePage: {
     caseName: '#caseName',
@@ -15,7 +20,7 @@ module.exports = {
   startButton: 'Start',
   continueButton: 'Continue',
 
-  populateForm(caseName, outsourcingLA) {
+  populateForm(caseName, outsourcingLA, privateSols = false) {
     // wait until the dropdown is populated
     I.runAccessibilityTest();
     I.waitForElement(`${this.fields.jurisdiction} > option[value="${config.definition.jurisdiction}"]`, 30);
@@ -27,18 +32,19 @@ module.exports = {
     I.waitForElement(`${this.fields.event} > option[value="openCase"]`, 30);
     I.selectOption(this.fields.event, 'Start application');
     I.grabCurrentUrl();
+    I.click(this.startButton);
+    if(privateSols) {
+      I.waitForSelector(this.fields.selectRepresenting.localAuthority);
+      I.click(this.fields.selectRepresenting.localAuthority);
+      I.click('Continue');
+    }
     if(outsourcingLA) {
-      I.click(this.startButton);
       I.waitForSelector(this.fields.outsourcingLAs);
       I.selectOption(this.fields.outsourcingLAs, outsourcingLA);
       I.click('Continue');
-      I.grabCurrentUrl();
-      I.waitForSelector(this.enterCaseNamePage.caseName);
-    } else {
-      I.click(this.startButton);
-      I.grabCurrentUrl();
-      I.waitForSelector(this.enterCaseNamePage.caseName);
     }
+    I.grabCurrentUrl();
+    I.waitForSelector(this.enterCaseNamePage.caseName);
     this.enterCaseName(caseName);
   },
 

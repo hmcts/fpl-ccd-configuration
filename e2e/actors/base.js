@@ -106,16 +106,17 @@ module.exports = {
     }
   },
 
-  async logInAndCreateCase(user, caseName, outsourcingLA) {
+  async logInAndCreateCase(user, caseName, outsourcingLA, privateSols = false) {
     await this.signIn(user);
     await this.waitForSelector('ccd-search-result');
     await this.waitForSelector('a[href="/cases/case-filter"]');
     await this.retryUntilExists(() => this.click('a[href="/cases/case-filter"]'), openApplicationEventPage.fields.jurisdiction, true, 10);
 
-    await openApplicationEventPage.populateForm(caseName, outsourcingLA);
+    await openApplicationEventPage.populateForm(caseName, outsourcingLA, privateSols);
     await this.completeEvent('Save and continue');
-    this.waitForElement('.alert-message', 60);
-    const caseId = normalizeCaseId(await this.grabTextFrom('.alert-message'));
+    let url = (await this.grabCurrentUrl()).split('/');
+    let lastBit = url[url.length-1].split('#');
+    let caseId = lastBit[0];
     output.print(`Case created #${caseId}`);
     return caseId;
   },
