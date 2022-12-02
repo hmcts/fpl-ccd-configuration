@@ -4,17 +4,21 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
@@ -99,6 +103,27 @@ class RemoveSentDocumentServiceTest {
             .build();
 
         assertThat(listOfApplications).isEqualTo(expectedList);
+    }
+
+    @Test
+    void shouldPopulateSentDocumentFields() {
+        DocumentReference doc = testDocumentReference();
+
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(Map.of());
+        underTest.populateSentDocumentFields(caseDetailsMap, SentDocument.builder()
+                .letterId("11111111-1111-1111-1111-111111111111")
+                .partyName("Party Name")
+                .sentAt("15 October 2020 4pm")
+                .document(doc)
+            .build());
+
+        HashMap<String, Object> expectedMap = new HashMap<>();
+        expectedMap.put("partyNameToBeRemoved", "Party Name");
+        expectedMap.put("sentDocumentToBeRemoved", doc);
+        expectedMap.put("sentAtToBeRemoved", "15 October 2020 4pm");
+        expectedMap.put("letterIdToBeRemoved", "11111111-1111-1111-1111-111111111111");
+
+        assertThat(caseDetailsMap).isEqualTo(expectedMap);
     }
 
     private SentDocuments buildSentDocuments(String partyName, Map... fileInfos) {
