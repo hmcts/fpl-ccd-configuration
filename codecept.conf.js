@@ -163,6 +163,7 @@ exports.config = {
         cafcassUser: config.cafcassUser,
         gateKeeperUser: config.gateKeeperUser,
         judicaryUser: config.judicaryUser,
+        magistrateUser: config.magistrateUser,
         systemUpdateUser: config.systemUpdateUser,
         smokeTestUser: config.smokeTestUser,
         hmctsUser: config.hmctsUser,

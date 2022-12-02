@@ -17,7 +17,7 @@ Scenario('Different user in the same local authority can see case created', asyn
 
 Scenario('Different user in a different local authority cannot see case created', async ({I, caseListPage, login}) => {
   await setupScenario(I);
-  await login('hillingdonLocalAuthorityUserTwo');
+  await login('hillingdonLocalAuthorityUserOne');
   caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
@@ -52,6 +52,7 @@ Scenario('Judiciary user can see the case', async ({I, login}) => {
 Scenario('Magistrate user can see the case', async ({I, login}) => {
   await setupScenario(I);
   await login('magistrateUser');
+  await I.navigateToCaseDetails(caseId);
   I.see(I.uiFormatted(caseId));
   await I.seeAvailableEvents([config.administrationActions.manageDocuments, config.administrationActions.addCaseFlag]);
 });
