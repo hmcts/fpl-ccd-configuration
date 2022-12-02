@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure@fpl-longer-ft-timeout")
+@Library("Infrastructure@skip-tests")
 import uk.gov.hmcts.contino.AppPipelineConfig
 import uk.gov.hmcts.contino.AppPipelineDsl
 

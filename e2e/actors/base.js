@@ -346,7 +346,7 @@ module.exports = {
     return caseId;
   },
 
-  async goToNextPage(label = 'Continue', maxNumberOfTries = maxRetries, pause = 1) {
+  async goToNextPageOld(label = 'Continue', maxNumberOfTries = maxRetries, pause = 1) {
     const originalUrl = await this.grabCurrentUrl();
 
     for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
@@ -367,6 +367,18 @@ module.exports = {
 
       output.print(`Page change failed (${originalUrl})`);
     }
+  },
+
+  async goToNextPage(label = 'Continue', retries = 3, timeout = 5) {
+    let currentUrl = await this.grabCurrentUrl();
+    await this.retry(retries).changePage(currentUrl, label, timeout);
+  },
+
+  async changePage(originalUrl, label = 'Continue', timeout = 5) {
+    this.click(label);
+    this.waitForFunction(async function (url) {
+      return window.location.href !== url;
+    }, originalUrl, timeout);
   },
 
   async goToPreviousPage() {
