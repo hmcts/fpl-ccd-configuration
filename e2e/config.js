@@ -10,7 +10,7 @@ module.exports = {
     login: async function(I) { await I.signIn(this); },
     check: async function(I) { await I.checkLoggedIn(); },
     fetch: (I) => I.grabCookie(),
-    restore: (I, cookie) => { I.setCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
+    restore: (I, cookie) => { I.clearCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
   },
   swanseaLocalAuthorityUserTwo: {
     email: 'damian@swansea.gov.uk',
@@ -20,7 +20,7 @@ module.exports = {
     login: async function(I) { await I.signIn(this); },
     check: async function(I) { await I.checkLoggedIn(); },
     fetch: (I) => I.grabCookie(),
-    restore: (I, cookie) => { I.setCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
+    restore: (I, cookie) => { I.clearCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
   },
   hillingdonLocalAuthorityUserOne: {
     email: 'sam@hillingdon.gov.uk',
@@ -30,7 +30,7 @@ module.exports = {
     login: async function(I) { await I.signIn(this); },
     check: async function(I) { await I.checkLoggedIn(); },
     fetch: (I) => I.grabCookie(),
-    restore: (I, cookie) => { I.setCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
+    restore: (I, cookie) => { I.clearCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
   },
   hillingdonLocalAuthorityUserTwo: {
     email: 'siva@hillingdon.gov.uk',
@@ -40,7 +40,7 @@ module.exports = {
     login: async function(I) { await I.signIn(this); },
     check: async function(I) { await I.checkLoggedIn(); },
     fetch: (I) => I.grabCookie(),
-    restore: (I, cookie) => { I.setCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
+    restore: (I, cookie) => { I.clearCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
   },
   wiltshireLocalAuthorityUserOne: {
     email: 'raghu@wiltshire.gov.uk',
@@ -50,7 +50,7 @@ module.exports = {
     login: async function(I) { await I.signIn(this); },
     check: async function(I) { await I.checkLoggedIn(); },
     fetch: (I) => I.grabCookie(),
-    restore: (I, cookie) => { I.setCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
+    restore: (I, cookie) => { I.clearCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
   },
   wiltshireLocalAuthorityUserTwo: {
     email: 'sam@wiltshire.gov.uk',
@@ -60,7 +60,7 @@ module.exports = {
     login: async function(I) { await I.signIn(this); },
     check: async function(I) { await I.checkLoggedIn(); },
     fetch: (I) => I.grabCookie(),
-    restore: (I, cookie) => { I.setCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
+    restore: (I, cookie) => { I.clearCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
   },
   localAuthorityBarristerUserOne: {
     email: 'la-barrister@mailnesia.com',
@@ -70,7 +70,7 @@ module.exports = {
     login: async function(I) { await I.signIn(this); },
     check: async function(I) { await I.checkLoggedIn(); },
     fetch: (I) => I.grabCookie(),
-    restore: (I, cookie) => { I.setCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
+    restore: (I, cookie) => { I.clearCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
   },
   hmctsAdminUser: {
     email: 'hmcts-admin@example.com',
@@ -78,7 +78,7 @@ module.exports = {
     login: async function(I) { await I.signIn(this); },
     check: async function(I) { await I.checkLoggedIn(); },
     fetch: (I) => I.grabCookie(),
-    restore: (I, cookie) => { I.setCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
+    restore: (I, cookie) => { I.clearCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
   },
   hmctsSuperUser: {
     email: 'hmcts-superuser@mailnesia.com',
@@ -86,7 +86,7 @@ module.exports = {
     login: async function(I) { await I.signIn(this); },
     check: async function(I) { await I.checkLoggedIn(); },
     fetch: (I) => I.grabCookie(),
-    restore: (I, cookie) => { I.setCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
+    restore: (I, cookie) => { I.clearCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
   },
   cafcassUser: {
     email: 'cafcass@example.com',
@@ -94,7 +94,7 @@ module.exports = {
     login: async function(I) { await I.signIn(this); },
     check: async function(I) { await I.checkLoggedIn(); },
     fetch: (I) => I.grabCookie(),
-    restore: (I, cookie) => { I.setCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
+    restore: (I, cookie) => { I.clearCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
   },
   gateKeeperUser: {
     email: 'gatekeeper-only@mailnesia.com',
@@ -102,7 +102,7 @@ module.exports = {
     login: async function(I) { await I.signIn(this); },
     check: async function(I) { await I.checkLoggedIn(); },
     fetch: (I) => I.grabCookie(),
-    restore: (I, cookie) => { I.setCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
+    restore: (I, cookie) => { I.clearCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
   },
   judicaryUser: {
     email: 'judiciary-only@mailnesia.com',
@@ -110,7 +110,7 @@ module.exports = {
     login: async function(I) { await I.signIn(this); },
     check: async function(I) { await I.checkLoggedIn(); },
     fetch: (I) => I.grabCookie(),
-    restore: (I, cookie) => { I.setCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
+    restore: (I, cookie) => { I.clearCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
   },
   magistrateUser: {
     email: 'magistrate@mailnesia.com',
@@ -118,7 +118,7 @@ module.exports = {
     login: async function(I) { await I.signIn(this); },
     check: async function(I) { await I.checkLoggedIn(); },
     fetch: (I) => I.grabCookie(),
-    restore: (I, cookie) => { I.setCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
+    restore: (I, cookie) => { I.clearCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
   },
   systemUpdateUser: {
     email: process.env.SYSTEM_UPDATE_USER_USERNAME || 'fpl-system-update@mailnesia.com',
@@ -126,7 +126,7 @@ module.exports = {
     login: async function(I) { await I.signIn(this); },
     check: async function(I) { await I.checkLoggedIn(); },
     fetch: (I) => I.grabCookie(),
-    restore: (I, cookie) => { I.setCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
+    restore: (I, cookie) => { I.clearCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
   },
   smokeTestUser: {
     email: process.env.SMOKE_TEST_LA_USER_USERNAME || 'james@swansea.gov.uk',
@@ -134,7 +134,7 @@ module.exports = {
     login: async function(I) { await I.signIn(this); },
     check: async function(I) { await I.checkLoggedIn(); },
     fetch: (I) => I.grabCookie(),
-    restore: (I, cookie) => { I.setCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
+    restore: (I, cookie) => { I.clearCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
   },
   hmctsUser: {
     email: process.env.HMCTS_USER_USERNAME,
@@ -142,7 +142,7 @@ module.exports = {
     login: async function(I) { await I.signIn(this); },
     check: async function(I) { await I.checkLoggedIn(); },
     fetch: (I) => I.grabCookie(),
-    restore: (I, cookie) => { I.setCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
+    restore: (I, cookie) => { I.clearCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
   },
   privateSolicitorOne: {
     email: 'solicitor1@solicitors.uk',
@@ -150,7 +150,7 @@ module.exports = {
     login: async function(I) { await I.signIn(this); },
     check: async function(I) { await I.checkLoggedIn(); },
     fetch: (I) => I.grabCookie(),
-    restore: (I, cookie) => { I.setCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
+    restore: (I, cookie) => { I.clearCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
   },
   privateSolicitorTwo: {
     email: 'solicitor2@solicitors.uk',
@@ -158,7 +158,7 @@ module.exports = {
     login: async function(I) { await I.signIn(this); },
     check: async function(I) { await I.checkLoggedIn(); },
     fetch: (I) => I.grabCookie(),
-    restore: (I, cookie) => { I.setCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
+    restore: (I, cookie) => { I.clearCookie(); I.amOnPage(baseUrl); I.setCookie(cookie); },
   },
   localAuthorityPassword: process.env.LA_USER_PASSWORD || defaultPassword,
   baseUrl: baseUrl,
