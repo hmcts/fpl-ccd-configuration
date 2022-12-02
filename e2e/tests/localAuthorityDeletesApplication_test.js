@@ -10,9 +10,10 @@ async function setupScenario(I) {
   if (!caseId) { caseId = await I.submitNewCase(config.swanseaLocalAuthorityUserOne, caseName); }
 }
 
-Scenario('local authority deletes application', async ({I, caseViewPage, deleteApplicationEventPage, caseListPage}) => {
+Scenario('local authority deletes application', async ({I, caseViewPage, deleteApplicationEventPage, caseListPage, login}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await login('swanseaLocalAuthorityUserOne');
+  await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.applicationActions.deleteApplication);
   await deleteApplicationEventPage.tickDeletionConsent();
   // I.completeEvent() tries to search for the success alert, this can sometimes disappear to quickly as the user is

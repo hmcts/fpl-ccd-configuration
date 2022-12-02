@@ -7,13 +7,14 @@ let caseId;
 
 Feature('Generated gatekeeping order');
 
-async function setupScenario(I) {
+async function setupScenario(I, login) {
   if (!caseId) { caseId = await I.submitNewCaseWithData(gatekeepingCaseData); }
-  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
+  await login('judicaryUser');
+  await I.navigateToCaseDetails(caseId);
 }
 
-Scenario('Gatekeeping judge drafts gatekeeping order', async ({I, caseViewPage, addGatekeepingOrderEventPage}) => {
-  await setupScenario(I);
+Scenario('Gatekeeping judge drafts gatekeeping order', async ({I, caseViewPage, addGatekeepingOrderEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
   addGatekeepingOrderEventPage.createGatekeepingOrderThroughService();
   await I.runAccessibilityTest();
@@ -119,8 +120,8 @@ Scenario('Gatekeeping judge drafts gatekeeping order', async ({I, caseViewPage, 
   I.seeInTab(['Gatekeeping order', 'File'], 'draft-standard-directions-order.pdf');
 });
 
-Scenario('Gatekeeping judge adds allocated judge', async ({I, caseViewPage, allocatedJudgeEventPage}) => {
-  await setupScenario(I);
+Scenario('Gatekeeping judge adds allocated judge', async ({I, caseViewPage, allocatedJudgeEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
   await allocatedJudgeEventPage.enterAllocatedJudge('Moley', 'moley@example.com');
   await I.completeEvent('Save and continue');
@@ -131,8 +132,8 @@ Scenario('Gatekeeping judge adds allocated judge', async ({I, caseViewPage, allo
   I.seeInTab(['Allocated Judge', 'Email Address'], 'moley@example.com');
 });
 
-Scenario('Gatekeeping judge seals gatekeeping order', async ({I, caseViewPage, addGatekeepingOrderEventPage}) => {
-  await setupScenario(I);
+Scenario('Gatekeeping judge seals gatekeeping order', async ({I, caseViewPage, addGatekeepingOrderEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
 
   I.seeCheckboxIsChecked('Request permission for expert evidence');

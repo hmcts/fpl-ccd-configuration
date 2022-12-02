@@ -13,9 +13,10 @@ async function setupScenario(I) {
   if (!caseId) { caseId = await I.submitNewCaseWithData(mandatoryWithAdditionalApplicationsBundle); }
 }
 
-Scenario('HMCTS admin messages the judge @cross-browser', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
+Scenario('HMCTS admin messages the judge @cross-browser', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage, login}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
   messageJudgeOrLegalAdviserEventPage.selectMessageRelatedToAdditionalApplication();
   await messageJudgeOrLegalAdviserEventPage.selectAdditionalApplication();
@@ -40,9 +41,10 @@ Scenario('HMCTS admin messages the judge @cross-browser', async ({I, caseViewPag
   I.dontSeeInTab(['Closed messages']);
 });
 
-Scenario('Judge replies to HMCTS admin', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
+Scenario('Judge replies to HMCTS admin', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage, login}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
+  await login('judicaryUser');
+  await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
   messageJudgeOrLegalAdviserEventPage.selectReplyToMessage();
   await messageJudgeOrLegalAdviserEventPage.selectJudicialMessage();
@@ -65,9 +67,10 @@ Scenario('Judge replies to HMCTS admin', async ({I, caseViewPage, messageJudgeOr
   I.dontSeeInTab(['Closed messages']);
 });
 
-Scenario('HMCTS admin closes the message', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
+Scenario('HMCTS admin closes the message', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage, login}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
   messageJudgeOrLegalAdviserEventPage.selectReplyToMessage();
   await messageJudgeOrLegalAdviserEventPage.selectJudicialMessage();
@@ -89,9 +92,10 @@ Scenario('HMCTS admin closes the message', async ({I, caseViewPage, messageJudge
   I.seeInTab(['Message 1', 'Message history'], messageHistoryReply);
 });
 
-Scenario('Judge messages court admin', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
+Scenario('Judge messages court admin', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage, login}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
+  await login('judicaryUser');
+  await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
   messageJudgeOrLegalAdviserEventPage.selectMessageNotRelatedToAdditionalApplication();
   messageJudgeOrLegalAdviserEventPage.enterSubject('Judge subject');

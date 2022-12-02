@@ -7,18 +7,19 @@ let caseId;
 
 Feature('Case administration by super user');
 
-async function setupScenario(I) {
+async function setupScenario(I, login) {
   if (!caseId) { caseId = await I.submitNewCaseWithData(caseManagementCaseData); }
-  await I.navigateToCaseDetailsAs(config.hmctsSuperUser, caseId);
+  await login('hmctsSuperUser');
+  await I.navigateToCaseDetails(caseId);
 }
 
-Scenario('HMCTS super user can add gatekeeping order', async ({I, caseViewPage}) => {
-  await setupScenario(I);
+Scenario('HMCTS super user can add gatekeeping order', async ({I, caseViewPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.checkActionsAreAvailable([config.administrationActions.addGatekeepingOrder]);
 });
 
-Scenario('HMCTS super user updates case name', async ({I, caseViewPage, changeCaseNameEventPage}) => {
-  await setupScenario(I);
+Scenario('HMCTS super user updates case name', async ({I, caseViewPage, changeCaseNameEventPage, login}) => {
+  await setupScenario(I, login);
   caseViewPage.seeInCaseTitle('e2e test case');
 
   await caseViewPage.goToNewActions(config.administrationActions.changeCaseName);
@@ -29,8 +30,8 @@ Scenario('HMCTS super user updates case name', async ({I, caseViewPage, changeCa
   caseViewPage.seeInCaseTitle('e2e test case updated by superuser');
 });
 
-Scenario('HMCTS super user updates FamilyMan reference number', async ({I, caseViewPage, enterFamilyManCaseNumberEventPage}) => {
-  await setupScenario(I);
+Scenario('HMCTS super user updates FamilyMan reference number', async ({I, caseViewPage, enterFamilyManCaseNumberEventPage, login}) => {
+  await setupScenario(I, login);
   I.seeFamilyManNumber('mockcaseID');
 
   await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
@@ -41,8 +42,8 @@ Scenario('HMCTS super user updates FamilyMan reference number', async ({I, caseV
   I.seeFamilyManNumber('newMockCaseID');
 });
 
-Scenario('HMCTS super user changes state from case management to final hearing', async ({I, caseViewPage, changeCaseStateEventPage}) => {
-  await setupScenario(I);
+Scenario('HMCTS super user changes state from case management to final hearing', async ({I, caseViewPage, changeCaseStateEventPage, login}) => {
+  await setupScenario(I, login);
 
   await caseViewPage.goToNewActions(config.superUserActions.changeCaseState);
   await changeCaseStateEventPage.seeAsCurrentState('Case management');
@@ -54,9 +55,10 @@ Scenario('HMCTS super user changes state from case management to final hearing',
   I.seeEndStateForEvent(config.superUserActions.changeCaseState, 'Final hearing');
 });
 
-Scenario('HMCTS super user changes state from closed to final hearing', async ({I, caseViewPage, changeCaseStateEventPage}) => {
+Scenario('HMCTS super user changes state from closed to final hearing', async ({I, caseViewPage, changeCaseStateEventPage, login}) => {
   const newCaseId = await I.submitNewCaseWithData(closedCaseData);
-  await I.navigateToCaseDetailsAs(config.hmctsSuperUser, newCaseId);
+  await login('hmctsSuperUser');
+  await I.navigateToCaseDetails(newCaseId);
 
   await caseViewPage.goToNewActions(config.superUserActions.changeCaseState);
   await changeCaseStateEventPage.seeAsCurrentState('Closed');

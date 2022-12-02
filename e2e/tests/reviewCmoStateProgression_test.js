@@ -6,9 +6,9 @@ let caseId;
 
 Feature('Review CMO state progression');
 
-Scenario('Judge transitions CMO to final hearing case state', async ({I, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage}) => {
+Scenario('Judge transitions CMO to final hearing case state', async ({I, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage, login}) => {
   caseId = await I.submitNewCaseWithData(finalHearing);
-  await cmoHelper.judgeSendsReviewedCmoToAllParties(I, caseId, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage);
+  await cmoHelper.judgeSendsReviewedCmoToAllParties(I, caseId, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage, login);
   caseViewPage.selectTab(caseViewPage.tabs.history);
   I.seeEndStateForEvent(config.applicationActions.approveOrders, 'Final hearing');
 });

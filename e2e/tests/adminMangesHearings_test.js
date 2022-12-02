@@ -19,16 +19,17 @@ let correctedHearingEndDate;
 
 Feature('Hearing administration');
 
-async function setupScenario(I) {
+async function setupScenario(I, login) {
   if (!caseId) {
     caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
     submittedAt = new Date();
   }
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
 }
 
-Scenario('HMCTS admin creates first hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
-  await setupScenario(I);
+Scenario('HMCTS admin creates first hearings', async ({I, caseViewPage, manageHearingsEventPage, login}) => {
+  await setupScenario(I, login);
   hearingStartDate = moment().add(5,'m').toDate();
   hearingEndDate = moment(hearingStartDate).add(5,'m').toDate();
 
@@ -69,8 +70,8 @@ Scenario('HMCTS admin creates first hearings', async ({I, caseViewPage, manageHe
   await api.pollLastEvent(caseId, config.internalActions.updateCase);
 });
 
-Scenario('HMCTS admin creates subsequent hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
-  await setupScenario(I);
+Scenario('HMCTS admin creates subsequent hearings', async ({I, caseViewPage, manageHearingsEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectAddNewHearing();
   await I.goToNextPage();
@@ -96,8 +97,8 @@ Scenario('HMCTS admin creates subsequent hearings', async ({I, caseViewPage, man
   I.seeInTab(['Hearing 2', 'Allocated judge or magistrate'], 'Her Honour Judge Moley');
 });
 
-Scenario('HMCTS admin edits a future hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
-  await setupScenario(I);
+Scenario('HMCTS admin edits a future hearing', async ({I, caseViewPage, manageHearingsEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectEditFutureHearing('Case management hearing, 1 January 2060');
   await I.goToNextPage();
@@ -131,8 +132,8 @@ Scenario('HMCTS admin edits a future hearing', async ({I, caseViewPage, manageHe
   await api.pollLastEvent(caseId, config.internalActions.updateCase);
 });
 
-Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, caseViewPage, manageDocumentsEventPage}) => {
-  await setupScenario(I);
+Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, caseViewPage, manageDocumentsEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
   manageDocumentsEventPage.selectFurtherEvidence();
   await I.goToNextPage();
@@ -169,8 +170,8 @@ Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, ca
   I.seeInExpandedDocument('Document 3', 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
 });
 
-Scenario('HMCTS admin adjourns and re-lists a hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
-  await setupScenario(I);
+Scenario('HMCTS admin adjourns and re-lists a hearing', async ({I, caseViewPage, manageHearingsEventPage, login}) => {
+  await setupScenario(I, login);
   const reListedHearingJudgeName = 'Brown';
 
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
@@ -213,8 +214,8 @@ Scenario('HMCTS admin adjourns and re-lists a hearing', async ({I, caseViewPage,
 
 });
 
-Scenario('HMCTS admin vacates and re-lists a hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
-  await setupScenario(I);
+Scenario('HMCTS admin vacates and re-lists a hearing', async ({I, caseViewPage, manageHearingsEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectVacateHearing('Case management hearing, 1 January 2060');
   manageHearingsEventPage.enterVacatedDate({day: 1, month: 12, year: 2059});
@@ -251,8 +252,8 @@ Scenario('HMCTS admin vacates and re-lists a hearing', async ({I, caseViewPage, 
   I.seeInExpandedDocument('Document 3', 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
 });
 
-Scenario('HMCTS admin cancels and re-lists hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
-  await setupScenario(I);
+Scenario('HMCTS admin cancels and re-lists hearing', async ({I, caseViewPage, manageHearingsEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectVacateHearing('Case management hearing, 1 January 2060');
   manageHearingsEventPage.enterVacatedDate({day: 1, month: 12, year: 2059});
@@ -298,8 +299,8 @@ Scenario('HMCTS admin cancels and re-lists hearing', async ({I, caseViewPage, ma
   I.seeInExpandedDocument('Document 3', 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
 });
 
-Scenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
-  await setupScenario(I);
+Scenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearingsEventPage, login}) => {
+  await setupScenario(I, login);
   hearingStartDate = moment().subtract(10,'m').toDate();
   hearingEndDate = moment(hearingStartDate).add(5,'m').toDate();
 
@@ -343,8 +344,8 @@ Scenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearing
   I.seeInTab(['Hearing 3', 'Others notified'], 'Noah King');
 });
 
-Scenario('HMCTS admin updates past hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
-  await setupScenario(I);
+Scenario('HMCTS admin updates past hearing', async ({I, caseViewPage, manageHearingsEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectEditPastHearing(`Case management hearing, ${formatHearingDate(correctedHearingStartDate)}`);
   await I.goToNextPage();

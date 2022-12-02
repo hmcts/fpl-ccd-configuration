@@ -38,42 +38,43 @@ let caseId;
 
 Feature('HMCTS Admin amends orders');
 
-async function setupScenario(I, data = caseData) {
+async function setupScenario(I, login, data = caseData) {
   if (!caseId || 'CLOSED' === data.state) {
     caseId = await I.submitNewCaseWithData(data);
   }
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
 }
 
-Scenario('Amend generated order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
-  await setupScenario(I);
+Scenario('HMCTS Admin amends generated order', async ({ I, caseViewPage, manageOrdersEventPage, login }) => {
+  await setupScenario(I, login);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.generated);
   assertAmendment(I, caseViewPage, orders.generated);
   await api.pollLastEvent(caseId, config.internalActions.updateCase);
 });
 
-Scenario('Amend standard directions order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
-  await setupScenario(I);
+Scenario('HMCTS Admin amends standard directions order', async ({ I, caseViewPage, manageOrdersEventPage, login }) => {
+  await setupScenario(I, login);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.standardDirectionOrder);
   assertAmendment(I, caseViewPage, orders.standardDirectionOrder);
 });
 
-Scenario('Amend urgent hearing order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
-  await setupScenario(I);
+Scenario('HMCTS Admin amends urgent hearing order', async ({ I, caseViewPage, manageOrdersEventPage, login }) => {
+  await setupScenario(I, login);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.urgentHearingOrder);
   assertAmendment(I, caseViewPage, orders.urgentHearingOrder);
   await api.pollLastEvent(caseId, config.internalActions.updateCase);
 });
 
-Scenario('Amend case management order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
-  await setupScenario(I);
+Scenario('HMCTS Admin amends case management order', async ({ I, caseViewPage, manageOrdersEventPage, login }) => {
+  await setupScenario(I, login);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.caseManagementOrder);
   assertAmendment(I, caseViewPage, orders.caseManagementOrder);
   await api.pollLastEvent(caseId, config.internalActions.updateCase);
 });
 
-Scenario('Amend generated order (closed)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
-  await setupScenario(I, closedCaseData);
+Scenario('HMCTS Admin amends generated order (closed)', async ({ I, caseViewPage, manageOrdersEventPage, login }) => {
+  await setupScenario(I, login, closedCaseData);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.generated, manageOrdersEventPage.selectOperationInClosedState);
   assertAmendment(I, caseViewPage, orders.generated);
 });

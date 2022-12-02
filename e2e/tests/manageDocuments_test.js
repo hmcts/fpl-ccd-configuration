@@ -12,7 +12,6 @@ const respondent = 'Joe Bloggs';
 const respondent1StatementsSection = 'Joe Bloggs statements';
 const expertReportsSection = 'Expert reports';
 const otherReportsSection = 'Other reports';
-const solicitor = config.privateSolicitorOne;
 
 let caseId;
 let submittedAt;
@@ -21,17 +20,18 @@ const hearingEndDate = moment(hearingStartDate).add(5,'m').toDate();
 
 Feature('Manage documents');
 
-async function setupScenario(I) {
+async function setupScenario(I, login) {
   if (!caseId) {
     caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
     await api.grantCaseAccess(caseId, config.hillingdonLocalAuthorityUserOne, '[SOLICITOR]');
     await api.grantCaseAccess(caseId, config.privateSolicitorOne, '[SOLICITORA]');
   }
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
 }
 
-Scenario('HMCTS Admin and LA upload confidential and non confidential further evidence documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
-  await setupScenario(I);
+Scenario('HMCTS Admin and LA upload confidential and non confidential further evidence documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
   manageDocumentsEventPage.selectFurtherEvidence();
@@ -86,8 +86,8 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential further ev
   I.seeInExpandedDocument(supportingEvidenceDocuments[3].name, config.swanseaLocalAuthorityUserOne.email, dateFormat(submittedAt, 'd mmm yyyy'));
 });
 
-Scenario('HMCTS Admin and LA upload confidential and non confidential respondent statement', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
-  await setupScenario(I);
+Scenario('HMCTS Admin and LA upload confidential and non confidential respondent statement', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
 
   manageDocumentsEventPage.selectFurtherEvidence();
@@ -101,7 +101,8 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential respondent
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
 
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await login('swanseaLocalAuthorityUserOne');
+  await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
   await manageDocumentsLAEventPage.selectFurtherEvidence();
@@ -130,7 +131,8 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential respondent
 
   I.dontSeeDocumentSection(respondent1StatementsSection, supportingEvidenceDocuments[0].name);
 
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
   caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
   I.expandDocumentSection(respondent1StatementsSection, supportingEvidenceDocuments[2].name);
   I.seeInExpandedConfidentialDocument(supportingEvidenceDocuments[2].name, config.swanseaLocalAuthorityUserOne.email, dateFormat(submittedAt, 'd mmm yyyy'));
@@ -146,7 +148,8 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential respondent
   I.seeInExpandedDocument(supportingEvidenceDocuments[1].name, 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
   I.dontSeeConfidentialInExpandedDocument(respondent1StatementsSection, supportingEvidenceDocuments[1].name);
 
-  await I.navigateToCaseDetailsAs(config.hillingdonLocalAuthorityUserOne, caseId);
+  await login('hillingdonLocalAuthorityUserOne');
+  await I.navigateToCaseDetails(caseId);
   caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
 
   I.expandDocumentSection(respondent1StatementsSection, supportingEvidenceDocuments[3].name);
@@ -161,8 +164,8 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential respondent
 });
 
 // @flaky?
-Scenario('HMCTS Admin and LA upload confidential and non confidential correspondence documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
-  await setupScenario(I);
+Scenario('HMCTS Admin and LA upload confidential and non confidential correspondence documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
   manageDocumentsEventPage.selectCorrespondence();
@@ -173,7 +176,8 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential correspond
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
 
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await login('swanseaLocalAuthorityUserOne');
+  await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
   await manageDocumentsLAEventPage.selectCorrespondence();
@@ -192,7 +196,8 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential correspond
   assertCorrespondence(I, 'local authority', 1, 'C2 supporting document', 'Supports the C2 application');
   assertConfidentialCorrespondence(I, 'local authority',2, 'Correspondence document', 'Test notes');
 
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
   caseViewPage.selectTab(caseViewPage.tabs.correspondence);
 
   assertCorrespondence(I, 'HMCTS', 1, 'Email with evidence attached', 'Case evidence included');
@@ -202,8 +207,8 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential correspond
   assertConfidentialCorrespondence(I, 'local authority', 2, 'Correspondence document', 'Test notes');
 });
 
-Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadAdditionalApplicationsEventPage}) => {
-  await setupScenario(I);
+Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadAdditionalApplicationsEventPage, login}) => {
+  await setupScenario(I, login);
   await manageDocumentsForLAHelper.uploadC2(I, caseViewPage, uploadAdditionalApplicationsEventPage);
 
   await api.pollLastEvent(caseId, config.internalActions.updateCase);
@@ -224,7 +229,8 @@ Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async
   assertConfidentialC2SupportingDocuments(I, 'C2 application', 1, 'Email to say evidence will be late', 'Evidence will be late');
   assertC2SupportingDocuments(I, 'C2 application', 2, 'Email with evidence attached', 'Case evidence included');
 
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await login('swanseaLocalAuthorityUserOne');
+  await I.navigateToCaseDetails(caseId);
   caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
 
   I.dontSeeInTab(['Email to say evidence will be late']);
@@ -247,7 +253,8 @@ Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async
   assertConfidentialC2SupportingDocuments(I, 'C2 application', 2, 'Correspondence document', 'Test notes');
   assertC2SupportingDocuments(I, 'C2 application', 3, 'C2 supporting document', 'Supports the C2 application');
 
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
   caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
 
   assertConfidentialC2SupportingDocuments(I, 'C2 application', 1, 'Email to say evidence will be late', 'Evidence will be late');
@@ -256,8 +263,8 @@ Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async
   assertC2SupportingDocuments(I, 'C2 application', 4, 'C2 supporting document', 'Supports the C2 application');
 });
 
-Scenario('HMCTS Admin and LA upload confidential Other applications supporting documents @flaky', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadAdditionalApplicationsEventPage}) => {
-  await setupScenario(I);
+Scenario('HMCTS Admin and LA upload confidential Other applications supporting documents @flaky', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadAdditionalApplicationsEventPage, login}) => {
+  await setupScenario(I, login);
   await manageDocumentsForLAHelper.uploadOtherApplications(I, caseViewPage, uploadAdditionalApplicationsEventPage);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
@@ -275,7 +282,8 @@ Scenario('HMCTS Admin and LA upload confidential Other applications supporting d
   assertConfidentialC2SupportingDocuments(I, 'Other applications', 1, 'Email to say evidence will be late', 'Evidence will be late');
   assertC2SupportingDocuments(I, 'Other applications', 2, 'Email with evidence attached', 'Case evidence included');
 
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await login('swanseaLocalAuthorityUserOne');
+  await I.navigateToCaseDetails(caseId);
   caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
 
   I.dontSeeInTab(['Email to say evidence will be late']);
@@ -298,7 +306,8 @@ Scenario('HMCTS Admin and LA upload confidential Other applications supporting d
   assertConfidentialC2SupportingDocuments(I, 'Other applications', 2, 'Correspondence document', 'Test notes');
   assertC2SupportingDocuments(I, 'Other applications', 3, 'C2 supporting document', 'Supports the C2 application');
 
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
   caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
 
   assertConfidentialC2SupportingDocuments(I, 'Other applications', 1, 'Email to say evidence will be late', 'Evidence will be late');
@@ -307,9 +316,11 @@ Scenario('HMCTS Admin and LA upload confidential Other applications supporting d
   assertC2SupportingDocuments(I, 'Other applications', 4, 'C2 supporting document', 'Supports the C2 application');
 });
 
-Scenario('Solicitor with access uploads documents', async ({I, manageDocumentsEventPage, caseViewPage}) => {
-  await setupScenario(I);
-  await I.navigateToCaseDetailsAs(solicitor, caseId);
+Scenario('Solicitor with access uploads documents', async ({I, manageDocumentsEventPage, caseViewPage, login}) => {
+  await setupScenario(I, login);
+  await login('privateSolicitorOne');
+  await I.navigateToCaseDetails(caseId);
+
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
 
   manageDocumentsEventPage.selectFurtherEvidence();
@@ -338,12 +349,13 @@ Scenario('Solicitor with access uploads documents', async ({I, manageDocumentsEv
 
 });
 
-Scenario('LA upload confidential and non confidential court bundle documents for a hearing', async ({I, caseViewPage, manageHearingsEventPage, manageDocumentsLAEventPage}) => {
-  await setupScenario(I);
+Scenario('LA upload confidential and non confidential court bundle documents for a hearing', async ({I, caseViewPage, manageHearingsEventPage, manageDocumentsLAEventPage, login}) => {
+  await setupScenario(I, login);
   await setupHearing(I, caseViewPage, manageHearingsEventPage);
 
   // Update a confidential and a non-confidential document for the court bundle
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await login('swanseaLocalAuthorityUserOne');
+  await I.navigateToCaseDetails(caseId);
   await uploadDocumentsToCourtBundleEvent(I, caseViewPage, manageDocumentsLAEventPage);
 
   // Assert local authority can see both confidential and non-confidential documents on Court bundle tab
@@ -351,12 +363,14 @@ Scenario('LA upload confidential and non confidential court bundle documents for
   assertCourtBundleTabForHMCTSAndLA(I);
 
   // Assert HMCTS users can see both confidential and non-confidential documents on Court bundle tab
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
   caseViewPage.selectTab(caseViewPage.tabs.courtBundle);
   assertCourtBundleTabForHMCTSAndLA(I);
 
   // Assert solicitor can see the non-confidential document only on Court bundle tab
-  await I.navigateToCaseDetailsAs(config.privateSolicitorOne, caseId);
+  await login('privateSolicitorOne');
+  await I.navigateToCaseDetails(caseId);
   caseViewPage.selectTab(caseViewPage.tabs.courtBundle);
   assertCourtBundleTabForSolicitor(I);
 });

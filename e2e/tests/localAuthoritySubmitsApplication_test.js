@@ -12,7 +12,7 @@ let caseId;
 
 Feature('Local authority creates application');
 
-async function setupScenario(I, reuse = true) {
+async function setupScenario(I, login, reuse = true) {
   let navigateCaseId;
   if (reuse == false) {
     navigateCaseId = await I.submitNewCase(config.swanseaLocalAuthorityUserOne);
@@ -22,11 +22,12 @@ async function setupScenario(I, reuse = true) {
     }
     navigateCaseId = caseId;
   }
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, navigateCaseId);
+  await login('swanseaLocalAuthorityUserOne');
+  await I.navigateToCaseDetails(navigateCaseId);
 }
 
-Scenario('local authority sees task list', async ({I, caseViewPage}) => {
-  await setupScenario(I);
+Scenario('local authority sees task list', async ({I, caseViewPage, login}) => {
+  await setupScenario(I, login);
 
   I.dontSeeEvent(config.applicationActions.selectCourt);
 
@@ -60,8 +61,8 @@ Scenario('local authority sees task list', async ({I, caseViewPage}) => {
     'Add the allocation proposal in the Allocation proposal']);
 });
 
-Scenario('local authority changes case name @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, changeCaseNameEventPage}) => {
-  await setupScenario(I);
+Scenario('local authority changes case name @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, changeCaseNameEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.applicationActions.changeCaseName);
   await changeCaseNameEventPage.changeCaseName('New case name');
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
@@ -76,9 +77,9 @@ Scenario('local authority changes case name @create-case-with-mandatory-sections
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 }).retry(1);
 
-Scenario('Local authority request discharge of order @cross-browser', async ({I, caseViewPage, enterOrdersAndDirectionsNeededEventPage}) => {
+Scenario('Local authority request discharge of order @cross-browser', async ({I, caseViewPage, enterOrdersAndDirectionsNeededEventPage, login}) => {
   // Run in a new case, so it does not affect the execution of next scenario
-  await setupScenario(I, false);
+  await setupScenario(I, login, false);
   await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
   enterOrdersAndDirectionsNeededEventPage.checkOtherOrder();
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
@@ -101,8 +102,8 @@ Scenario('Local authority request discharge of order @cross-browser', async ({I,
     'Add the allocation proposal in the Allocation proposal']);
 });
 
-Scenario('local authority enters orders and directions @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, enterOrdersAndDirectionsNeededEventPage}) => {
-  await setupScenario(I);
+Scenario('local authority enters orders and directions @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, enterOrdersAndDirectionsNeededEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
   await enterOrdersAndDirectionsNeededEventPage.checkCareOrder();
   enterOrdersAndDirectionsNeededEventPage.checkInterimCareOrder();
@@ -160,8 +161,8 @@ Scenario('local authority enters orders and directions @create-case-with-mandato
     'Add the allocation proposal in the Allocation proposal']);
 }).retry(1);
 
-Scenario('local authority enters hearing @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, enterHearingNeededEventPage}) => {
-  await setupScenario(I);
+Scenario('local authority enters hearing @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, enterHearingNeededEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.applicationActions.enterHearingNeeded);
   await enterHearingNeededEventPage.enterTimeFrame();
   enterHearingNeededEventPage.enterHearingType();
@@ -193,8 +194,8 @@ Scenario('local authority enters hearing @create-case-with-mandatory-sections-on
     'Add the allocation proposal in the Allocation proposal']);
 }).retry(1);
 
-Scenario('local authority enters children @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, enterChildrenEventPage}) => {
-  await setupScenario(I);
+Scenario('local authority enters children @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, enterChildrenEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.applicationActions.enterChildren);
   await enterChildrenEventPage.enterChildDetails('Bran', 'Stark', '01', '08', '2015');
   await enterChildrenEventPage.defineChildSituation('01', '11', '2017');
@@ -289,8 +290,8 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
     'Add the allocation proposal in the Allocation proposal']);
 }).retry(1);
 
-Scenario('local authority enters respondents @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterRespondentsEventPage}) => {
-  await setupScenario(I);
+Scenario('local authority enters respondents @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterRespondentsEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
   await enterRespondentsEventPage.enterRespondent(respondents[0]);
   await enterRespondentsEventPage.enterContactDetailsHidden('No', 'mock reason');
@@ -391,8 +392,8 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
     'Add the allocation proposal in the Allocation proposal']);
 }).retry(1);
 
-Scenario('local authority enters its details @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterLocalAuthorityEventPage}) => {
-  await setupScenario(I);
+Scenario('local authority enters its details @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterLocalAuthorityEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.applicationActions.enterLocalAuthority);
   await enterLocalAuthorityEventPage.enterDetails(localAuthority);
   await I.goToNextPage();
@@ -451,8 +452,8 @@ Scenario('local authority enters its details @create-case-with-mandatory-section
 }).retry(1);
 
 // @flaky?
-Scenario('local authority enters others to be given notice', async ({I, caseViewPage, enterOthersEventPage}) => {
-  await setupScenario(I);
+Scenario('local authority enters others to be given notice', async ({I, caseViewPage, enterOthersEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.applicationActions.enterOthers);
   await enterOthersEventPage.enterOtherDetails(others[0]);
   await enterOthersEventPage.enterRelationshipToChild('Tim Smith');
@@ -509,8 +510,8 @@ Scenario('local authority enters others to be given notice', async ({I, caseView
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
-Scenario('local authority enters grounds for application @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterGroundsForApplicationEventPage}) => {
-  await setupScenario(I);
+Scenario('local authority enters grounds for application @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterGroundsForApplicationEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
   await enterGroundsForApplicationEventPage.enterThresholdCriteriaDetails();
   await enterGroundsForApplicationEventPage.enterGroundsForEmergencyProtectionOrder();
@@ -530,8 +531,8 @@ Scenario('local authority enters grounds for application @create-case-with-manda
   await caseViewPage.checkTasksHaveErrors(['Add the allocation proposal in the Allocation proposal']);
 }).retry(1);
 
-Scenario('local authority enters risk and harm to children', async ({I, caseViewPage, enterRiskAndHarmToChildrenEventPage}) => {
-  await setupScenario(I);
+Scenario('local authority enters risk and harm to children', async ({I, caseViewPage, enterRiskAndHarmToChildrenEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.applicationActions.enterRiskAndHarmToChildren);
   await enterRiskAndHarmToChildrenEventPage.completePhysicalHarm();
   enterRiskAndHarmToChildrenEventPage.completeEmotionalHarm();
@@ -554,8 +555,8 @@ Scenario('local authority enters risk and harm to children', async ({I, caseView
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
-Scenario('local authority enters factors affecting parenting', async ({I, caseViewPage, enterFactorsAffectingParentingEventPage}) => {
-  await setupScenario(I);
+Scenario('local authority enters factors affecting parenting', async ({I, caseViewPage, enterFactorsAffectingParentingEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.applicationActions.enterFactorsAffectingParenting);
   await enterFactorsAffectingParentingEventPage.completeAlcoholOrDrugAbuse();
   enterFactorsAffectingParentingEventPage.completeDomesticViolence();
@@ -577,8 +578,8 @@ Scenario('local authority enters factors affecting parenting', async ({I, caseVi
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
-Scenario('local authority enters international element', async ({I, caseViewPage, enterInternationalElementEventPage}) => {
-  await setupScenario(I);
+Scenario('local authority enters international element', async ({I, caseViewPage, enterInternationalElementEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.applicationActions.enterInternationalElement);
   await enterInternationalElementEventPage.fillForm();
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
@@ -601,8 +602,8 @@ Scenario('local authority enters international element', async ({I, caseViewPage
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
-Scenario('local authority enters other proceedings', async ({I, caseViewPage, enterOtherProceedingsEventPage}) => {
-  await setupScenario(I);
+Scenario('local authority enters other proceedings', async ({I, caseViewPage, enterOtherProceedingsEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.applicationActions.enterOtherProceedings);
   enterOtherProceedingsEventPage.selectYesForProceeding();
   await enterOtherProceedingsEventPage.enterProceedingInformation(otherProceedings[0]);
@@ -638,8 +639,8 @@ Scenario('local authority enters other proceedings', async ({I, caseViewPage, en
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
-Scenario('local authority enters language requirement', async ({I, caseViewPage, enterLanguageRequirementsEventPage}) => {
-  await setupScenario(I);
+Scenario('local authority enters language requirement', async ({I, caseViewPage, enterLanguageRequirementsEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.applicationActions.languageRequirement);
   await enterLanguageRequirementsEventPage.disableLanguageRequirement();
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
@@ -651,8 +652,8 @@ Scenario('local authority enters language requirement', async ({I, caseViewPage,
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
-Scenario('local authority enters allocation proposal @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterAllocationProposalEventPage}) => {
-  await setupScenario(I);
+Scenario('local authority enters allocation proposal @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterAllocationProposalEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
   await enterAllocationProposalEventPage.selectAllocationProposal('Magistrate');
   await enterAllocationProposalEventPage.enterProposalReason('test');
@@ -666,8 +667,8 @@ Scenario('local authority enters allocation proposal @create-case-with-mandatory
   await caseViewPage.checkTasksHaveNoErrors();
 }).retry(1);
 
-Scenario('local authority enters attending hearing', async ({I, caseViewPage, enterAttendingHearingEventPage}) => {
-  await setupScenario(I);
+Scenario('local authority enters attending hearing', async ({I, caseViewPage, enterAttendingHearingEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.applicationActions.enterAttendingHearing);
   await enterAttendingHearingEventPage.enterInterpreter();
   enterAttendingHearingEventPage.enterWelshProceedings();
@@ -695,8 +696,8 @@ Scenario('local authority enters attending hearing', async ({I, caseViewPage, en
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterAttendingHearing);
 });
 
-Scenario('local authority adds multiple application documents @cross-browser', async ({I, caseViewPage, addApplicationDocumentsEventPage}) => {
-  await setupScenario(I);
+Scenario('local authority adds multiple application documents @cross-browser', async ({I, caseViewPage, addApplicationDocumentsEventPage, login}) => {
+  await setupScenario(I, login);
   const browser = await I.getBrowser();
   // Both edge and safari fail to upload files in Saucelabs. Excluded for now.
   if (browser !== 'MicrosoftEdge' && browser !== 'safari') {
@@ -728,8 +729,8 @@ Scenario('local authority adds multiple application documents @cross-browser', a
 
 let feeToPay = '2055'; //Need to remember this between tests.. default in case the test below fails
 
-Scenario('local authority submits application @create-case-with-mandatory-sections-only', async ({I, caseViewPage, submitApplicationEventPage}) => {
-  await setupScenario(I);
+Scenario('local authority submits application @create-case-with-mandatory-sections-only', async ({I, caseViewPage, submitApplicationEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   await caseViewPage.startTask(config.applicationActions.submitCase);
 
@@ -743,9 +744,10 @@ Scenario('local authority submits application @create-case-with-mandatory-sectio
   I.see('New_case_name.pdf');
 }).retry(1);
 
-Scenario('HMCTS admin check the payment', async ({I, caseViewPage, paymentHistoryPage}) => {
-  await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+Scenario('HMCTS admin check the payment', async ({I, caseViewPage, paymentHistoryPage, login}) => {
+  await setupScenario(I, login);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
   caseViewPage.selectTab(caseViewPage.tabs.paymentHistory);
   await paymentHistoryPage.checkPayment(feeToPay, applicant.pbaNumber);
 }).retry(1); // retry due to async nature of the payment and the payment could be still processing..

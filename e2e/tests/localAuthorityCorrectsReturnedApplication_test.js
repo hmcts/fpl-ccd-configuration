@@ -10,9 +10,10 @@ async function setupScenario(I) {
   if (!caseId) { caseId = await I.submitNewCaseWithData(mandatorySubmissionWithApplicationDocuments); }
 }
 
-Scenario('Admin returns application to the LA', async ({I, caseViewPage, returnApplicationEventPage}) => {
+Scenario('Admin returns application to the LA', async ({I, caseViewPage, returnApplicationEventPage, login}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
 
   await caseViewPage.goToNewActions(config.administrationActions.returnApplication);
   await returnApplicationEventPage.selectApplicationIncorrect();
@@ -22,13 +23,14 @@ Scenario('Admin returns application to the LA', async ({I, caseViewPage, returnA
   I.seeEventSubmissionConfirmation(config.administrationActions.returnApplication);
 });
 
-Scenario('LA makes corrections to the application', async ({I, caseViewPage, enterLocalAuthorityEventPage, submitApplicationEventPage}) => {
+Scenario('LA makes corrections to the application', async ({I, caseViewPage, enterLocalAuthorityEventPage, submitApplicationEventPage, login}) => {
   const now = new Date();
   const formattedDate = dateFormat(now, 'd mmmm yyyy');
   const newPbaNumber = 'PBA0082848';
 
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await login('swanseaLocalAuthorityUserOne');
+  await I.navigateToCaseDetails(caseId);
 
   caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   I.dontSee('c110a.pdf');

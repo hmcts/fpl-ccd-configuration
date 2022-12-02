@@ -6,13 +6,14 @@ let caseId;
 
 Feature('Local authority select court');
 
-async function setupScenario(I) {
+async function setupScenario(I, login) {
   if (!caseId) { caseId = await I.submitNewCase(config.hillingdonLocalAuthorityUserOne); }
-  await I.navigateToCaseDetailsAs(config.hillingdonLocalAuthorityUserOne, caseId);
+  await login('hillingdonLocalAuthorityUserOne');
+  await I.navigateToCaseDetails(caseId);
 }
 
-Scenario('Local authority select court to issue', async ({I, caseViewPage, selectCourtEventPage}) => {
-  await setupScenario(I);
+Scenario('Local authority select court to issue', async ({I, caseViewPage, selectCourtEventPage, login}) => {
+  await setupScenario(I, login);
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   caseViewPage.checkTaskIsNotStarted(config.applicationActions.selectCourt);

@@ -125,15 +125,16 @@ let caseId;
 
 Feature('HMCTS Request and upload translations');
 
-async function setupScenario(I, data = caseData) {
+async function setupScenario(I, login, data = caseData) {
   if (!caseId || 'CLOSED' === data.state) {
     caseId = await I.submitNewCaseWithData(data);
   }
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
 }
 
-Scenario('Can upload translation only if language requirement is set', async ({ I, caseViewPage, enterLanguageRequirementsEventPage }) => {
-  await setupScenario(I);
+Scenario('Can upload translation only if language requirement is set', async ({ I, caseViewPage, enterLanguageRequirementsEventPage, login }) => {
+  await setupScenario(I, login);
   await caseViewPage.checkActionsAreNotAvailable([config.administrationActions.uploadWelshTranslations]);
 
   await caseViewPage.goToNewActions(config.administrationActions.languageRequirement);
@@ -149,15 +150,16 @@ Scenario('Can upload translation only if language requirement is set', async ({ 
   await caseViewPage.checkActionsAreAvailable([config.administrationActions.uploadWelshTranslations]);
 });
 
-Scenario('Upload translation for generated order', async ({ I, caseViewPage, uploadWelshTranslationsPage }) => {
-  await setupScenario(I);
+Scenario('Upload translation for generated order', async ({ I, caseViewPage, uploadWelshTranslationsPage, login }) => {
+  await setupScenario(I, login);
   await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.generated);
   assertTranslation(I, caseViewPage, orders.generated);
 });
 
-Scenario('Request and upload translation for C110A', async ({ I, caseViewPage, uploadWelshTranslationsPage, enterLanguageRequirementsEventPage, submitApplicationEventPage }) => {
+Scenario('Request and upload translation for C110A', async ({ I, caseViewPage, uploadWelshTranslationsPage, enterLanguageRequirementsEventPage, submitApplicationEventPage, login }) => {
   let caseId = await I.submitNewCaseWithData(mandatoryWithMultipleRespondents);
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await login('swanseaLocalAuthorityUserOne');
+  await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.applicationActions.languageRequirement);
   await enterLanguageRequirementsEventPage.enterLanguageRequirement();
   enterLanguageRequirementsEventPage.selectApplicationLanguage('WELSH');
@@ -172,7 +174,9 @@ Scenario('Request and upload translation for C110A', async ({ I, caseViewPage, u
   caseViewPage.selectTab(orders.c11a.tabName);
   I.waitForText('Sent for translation');
 
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  I.clearCookie();
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
   await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.c11a);
 
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadWelshTranslations);
@@ -181,9 +185,10 @@ Scenario('Request and upload translation for C110A', async ({ I, caseViewPage, u
   I.dontSee('Sent for translation');
 });
 
-Scenario('Request and upload translation for uploaded order', async ({ I, caseViewPage, uploadWelshTranslationsPage, manageOrdersEventPage }) => {
+Scenario('Request and upload translation for uploaded order', async ({ I, caseViewPage, uploadWelshTranslationsPage, manageOrdersEventPage, login }) => {
   let caseId = await I.submitNewCaseWithData(caseDataGatekeepingWithLanguage);
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.upload);
   await I.goToNextPage();
@@ -207,9 +212,10 @@ Scenario('Request and upload translation for uploaded order', async ({ I, caseVi
   assertTranslation(I, caseViewPage, orders.uploadedOrder);
 });
 
-Scenario('Request and upload translation for standard directions order', async ({ I, caseViewPage, uploadWelshTranslationsPage, draftStandardDirectionsEventPage }) => {
+Scenario('Request and upload translation for standard directions order', async ({ I, caseViewPage, uploadWelshTranslationsPage, draftStandardDirectionsEventPage, login }) => {
   let caseId = await I.submitNewCaseWithData(caseDataGatekeepingWithLanguage);
-  await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
+  await login('gateKeeperUser');
+  await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
   I.click('Upload a prepared gatekeeping order');
   await I.goToNextPage();
@@ -226,26 +232,28 @@ Scenario('Request and upload translation for standard directions order', async (
 
   I.seeEventSubmissionConfirmation(config.administrationActions.addGatekeepingOrder);
   assertSentToTranslation(I, caseViewPage, orders.standardDirectionOrder);
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
   await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.standardDirectionOrder);
   assertTranslation(I, caseViewPage, orders.standardDirectionOrder);
 });
 
-Scenario('Upload translation for notice of proceedings (C36)', async ({ I, caseViewPage, uploadWelshTranslationsPage }) => {
-  await setupScenario(I);
+Scenario('Upload translation for notice of proceedings (C36)', async ({ I, caseViewPage, uploadWelshTranslationsPage, login }) => {
+  await setupScenario(I, login);
   await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.noticeOfProceedingsC6);
   assertTranslation(I, caseViewPage, orders.noticeOfProceedingsC6);
 });
 
-Scenario('Upload translation for notice of proceedings - others (C36A)', async ({ I, caseViewPage, uploadWelshTranslationsPage }) => {
-  await setupScenario(I);
+Scenario('Upload translation for notice of proceedings - others (C36A)', async ({ I, caseViewPage, uploadWelshTranslationsPage, login }) => {
+  await setupScenario(I, login);
   await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.noticeOfProceedingsC6A);
   assertTranslation(I, caseViewPage, orders.noticeOfProceedingsC6A);
 });
 
-Scenario('Request and upload translation for urgent hearing order', async ({ I, caseViewPage, uploadWelshTranslationsPage, draftStandardDirectionsEventPage }) => {
+Scenario('Request and upload translation for urgent hearing order', async ({ I, caseViewPage, uploadWelshTranslationsPage, draftStandardDirectionsEventPage, login }) => {
   let caseId = await I.submitNewCaseWithData(caseDataGatekeepingWithLanguage);
-  await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
+  await login('gateKeeperUser');
+  await I.navigateToCaseDetails(caseId);
   const allocationDecisionFields = draftStandardDirectionsEventPage.fields.allocationDecision;
   await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
   I.click('Upload an urgent hearing order');
@@ -261,21 +269,26 @@ Scenario('Request and upload translation for urgent hearing order', async ({ I, 
   I.seeEventSubmissionConfirmation(config.administrationActions.addGatekeepingOrder);
   assertSentToTranslation(I, caseViewPage, orders.urgentHearingOrder);
 
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  I.clearCookie();
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
   await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.urgentHearingOrder);
   assertTranslation(I, caseViewPage, orders.urgentHearingOrder);
 });
 
-Scenario('Request and upload translation for case management order', async ({ I, caseViewPage, uploadWelshTranslationsPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage }) => {
+Scenario('Request and upload translation for case management order', async ({ I, caseViewPage, uploadWelshTranslationsPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage, login }) => {
   const hearing1 = 'Case management hearing, 1 January 2020';
 
   let caseId = await I.submitNewCaseWithData(caseDataCaseManagementWithLanguage);
   // Local authority upload and request translation
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await login('swanseaLocalAuthorityUserOne');
+  await I.navigateToCaseDetails(caseId);
   await draftOrdersHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing1,null, orders.draftOrder,'ENGLISH_TO_WELSH');
 
   // Judge approves and send to translation
-  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
+  I.clearCookie();
+  await login('judicaryUser');
+  await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
   I.waitForText('mockFile.docx');
   await reviewAgreedCaseManagementOrderEventPage.selectSealCmo();
@@ -289,6 +302,8 @@ Scenario('Request and upload translation for case management order', async ({ I,
   assertSentToTranslation(I, caseViewPage, orders.caseManagementOrder);
 
   // Upload the translated orders
+  I.clearCookie();
+  await login('hmctsAdminUser');
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 
   await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.draftOrder);
@@ -300,15 +315,17 @@ Scenario('Request and upload translation for case management order', async ({ I,
   assertTranslation(I, caseViewPage, orders.caseManagementOrder);
 });
 
-Scenario('Upload translation for generated order (closed)', async ({ I, caseViewPage, uploadWelshTranslationsPage }) => {
-  await setupScenario(I, closedCaseData);
+Scenario('Upload translation for generated order (closed)', async ({ I, caseViewPage, uploadWelshTranslationsPage, login }) => {
+  await setupScenario(I, login, closedCaseData);
   await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.generated);
   assertTranslation(I, caseViewPage, orders.generated);
 });
 
-Scenario('Request and upload translation for notice of hearing', async ({ I, caseViewPage, uploadWelshTranslationsPage, manageHearingsEventPage }) => {
+Scenario('Request and upload translation for notice of hearing', async ({ I, caseViewPage, uploadWelshTranslationsPage, manageHearingsEventPage, login }) => {
   let caseId = await I.submitNewCaseWithData(caseDataCaseManagementWithLanguage);
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
   let hearingStartDate = moment().set({'year':2012,'month':3,'date':9,'hour':10,'minutes':30,'seconds':15,'milliseconds':0}).toDate();
   let hearingEndDate = moment(hearingStartDate).add(5,'m').toDate();
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
@@ -337,9 +354,11 @@ Scenario('Request and upload translation for notice of hearing', async ({ I, cas
   assertTranslation(I, caseViewPage, orders.noticeOfHearing);
 });
 
-Scenario('Request and upload translation for HMCTS further evidence documents', async ({ I, caseViewPage, uploadWelshTranslationsPage, manageDocumentsEventPage }) => {
+Scenario('Request and upload translation for HMCTS further evidence documents', async ({ I, caseViewPage, uploadWelshTranslationsPage, manageDocumentsEventPage, login }) => {
   let caseId = await I.submitNewCaseWithData(caseDataCaseManagementWithLanguage);
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
   manageDocumentsEventPage.selectFurtherEvidence();
   await I.goToNextPage();

@@ -5,13 +5,14 @@ let caseId;
 
 Feature('Urgent and uploaded gatekeeping order');
 
-async function setupScenario(I) {
+async function setupScenario(I, login) {
   if (!caseId) { caseId = await I.submitNewCaseWithData(require('../fixtures/caseData/gatekeepingFullDetails.json')); }
-  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
+  await login('judicaryUser');
+  await I.navigateToCaseDetails(caseId);
 }
 
-Scenario('Gatekeeping judge uploads urgent hearing order', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
-  await setupScenario(I);
+Scenario('Gatekeeping judge uploads urgent hearing order', async ({I, caseViewPage, draftStandardDirectionsEventPage, login}) => {
+  await setupScenario(I, login);
   const allocationDecisionFields = draftStandardDirectionsEventPage.fields.allocationDecision;
   await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
   I.click('Upload an urgent hearing order');
@@ -35,8 +36,8 @@ Scenario('Gatekeeping judge uploads urgent hearing order', async ({I, caseViewPa
   I.seeInTab(['Notice of proceedings 1', 'File name'], 'Notice_of_proceedings_c6.pdf');
 });
 
-Scenario('Gatekeeping judge uploads draft gatekeeping order', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
-  await setupScenario(I);
+Scenario('Gatekeeping judge uploads draft gatekeeping order', async ({I, caseViewPage, draftStandardDirectionsEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
   I.click('Upload a prepared gatekeeping order');
   await I.goToNextPage();
@@ -56,8 +57,8 @@ Scenario('Gatekeeping judge uploads draft gatekeeping order', async ({I, caseVie
   I.seeInTab(['Gatekeeping order', 'Uploaded by'], 'Uploaded by');
 });
 
-Scenario('Gatekeeping judge uploads final standard directions', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
-  await setupScenario(I);
+Scenario('Gatekeeping judge uploads final standard directions', async ({I, caseViewPage, draftStandardDirectionsEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
   I.see('mockFile.docx');
   await draftStandardDirectionsEventPage.uploadReplacementSDO(config.testWordFile);

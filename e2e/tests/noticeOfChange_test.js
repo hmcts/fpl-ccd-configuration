@@ -28,12 +28,12 @@ async function setupScenario() {
   }
 }
 
-Scenario('Solicitor can request representation of a respondent @flaky', async ({I, caseListPage, caseViewPage, submitApplicationEventPage, noticeOfChangePage, enterRespondentsEventPage}) => {
+Scenario('Solicitor can request representation of a respondent @flaky', async ({I, caseListPage, caseViewPage, submitApplicationEventPage, noticeOfChangePage, enterRespondentsEventPage, login}) => {
   await setupScenario();
   let caseId = await I.submitNewCaseWithData(mandatoryWithMultipleRespondents);
 
   I.say('Checking Solicitor can request representation only after case submission...');
-  await I.signIn(solicitor1);
+  await login('privateSolicitorOne');
   caseListPage.verifyCaseIsNotAccessible(caseId);
   await noticeOfChangePage.navigate();
   await noticeOfChangePage.enterCaseReference(caseId);
@@ -43,7 +43,7 @@ Scenario('Solicitor can request representation of a respondent @flaky', async ({
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
   await submitApplicationEventPage.giveConsent();
   await I.completeEvent('Submit', null, true);
-  await I.signIn(solicitor1);
+  await login('privateSolicitorOne');
   await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', 'Joe', 'Bloggs');
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   assertRepresentative(I, solicitor1.details, 'Private solicitors');
@@ -52,7 +52,7 @@ Scenario('Solicitor can request representation of a respondent @flaky', async ({
 
 
   I.say('Checking Solicitor can request representation of second unrepresented respondent...');
-  await I.signIn(solicitor2);
+  await login('hillingdonLocalAuthorityUserOne');
   caseListPage.verifyCaseIsNotAccessible(caseId);
   await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', 'Emma', 'White');
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
@@ -62,14 +62,14 @@ Scenario('Solicitor can request representation of a respondent @flaky', async ({
 
 
   I.say('Checking Solicitor can request representation of represented respondent...');
-  await I.signIn(solicitor3);
+  await login('wiltshireLocalAuthorityUserOne');
   caseListPage.verifyCaseIsNotAccessible(caseId);
   await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', 'Joe', 'Bloggs');
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   assertRepresentative(I, solicitor3.details, 'Wiltshire County Council');
   caseViewPage.selectTab(caseViewPage.tabs.changeOfRepresentatives);
   assertChangeOfRepresentative(I, 3, 'Notice of change', 'Joe Bloggs', solicitor3.details.email, { addedUser: solicitor3.details, removedUser: solicitor1.details });
-  await I.signIn(solicitor1);
+  await login('privateSolicitorOne');
   caseListPage.verifyCaseIsNotAccessible(caseId);
 
 
@@ -81,7 +81,7 @@ Scenario('Solicitor can request representation of a respondent @flaky', async ({
   I.seeEventSubmissionConfirmation(config.administrationActions.amendRespondents);
   caseViewPage.selectTab(caseViewPage.tabs.changeOfRepresentatives);
   assertChangeOfRepresentative(I, 4, 'FPL', 'Emma White', 'HMCTS', { addedUser: { ...solicitor2.details, organisation: 'Swansea City Council'}, removedUser: solicitor2.details });
-  await I.signIn(solicitor2);
+  await login('hillingdonLocalAuthorityUserOne');
   caseListPage.verifyCaseIsNotAccessible(caseId);
 
 
@@ -93,7 +93,7 @@ Scenario('Solicitor can request representation of a respondent @flaky', async ({
   I.seeEventSubmissionConfirmation(config.administrationActions.amendRespondents);
   caseViewPage.selectTab(caseViewPage.tabs.changeOfRepresentatives);
   assertChangeOfRepresentative(I, 5, 'FPL', 'Joe Bloggs', 'HMCTS', {removedUser: solicitor3.details });
-  await I.signIn(solicitor3);
+  await login('wiltshireLocalAuthorityUserOne');
   caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 

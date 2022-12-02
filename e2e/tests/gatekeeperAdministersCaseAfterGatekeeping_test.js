@@ -5,21 +5,22 @@ let caseId;
 
 Feature('Gatekeeper Case administration after gatekeeping');
 
-async function setupScenario(I) {
+async function setupScenario(I, login) {
   if (!caseId) { caseId = await I.submitNewCaseWithData(gatekeepingCaseData); }
-  await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
+  await login('gateKeeperUser');
+  await I.navigateToCaseDetails(caseId);
 }
 
-Scenario('Gatekeeper notifies another gatekeeper with a link to the case', async ({I, caseViewPage, notifyGatekeeperEventPage}) => {
-  await setupScenario(I);
+Scenario('Gatekeeper notifies another gatekeeper with a link to the case', async ({I, caseViewPage, notifyGatekeeperEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.administrationActions.notifyGatekeeper);
   await notifyGatekeeperEventPage.enterEmail('gatekeeper@mailnesia.com');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.notifyGatekeeper);
 });
 
-Scenario('Gatekeeper adds allocated judge', async ({I, caseViewPage, allocatedJudgeEventPage}) => {
-  await setupScenario(I);
+Scenario('Gatekeeper adds allocated judge', async ({I, caseViewPage, allocatedJudgeEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
   await allocatedJudgeEventPage.enterAllocatedJudge('Moley', 'moley@example.com');
   await I.completeEvent('Save and continue');
@@ -30,8 +31,8 @@ Scenario('Gatekeeper adds allocated judge', async ({I, caseViewPage, allocatedJu
   I.seeInTab(['Allocated Judge', 'Email Address'], 'moley@example.com');
 });
 
-Scenario('Gatekeeper make allocation decision based on proposal', async ({I, caseViewPage, enterAllocationDecisionEventPage}) => {
-  await setupScenario(I);
+Scenario('Gatekeeper make allocation decision based on proposal', async ({I, caseViewPage, enterAllocationDecisionEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
   enterAllocationDecisionEventPage.selectCorrectLevelOfJudge('Yes');
   await I.completeEvent('Save and continue');
@@ -41,8 +42,8 @@ Scenario('Gatekeeper make allocation decision based on proposal', async ({I, cas
   I.seeInTab(['Allocation decision', 'Which level of judge is needed for this case?'], 'District Judge');
 });
 
-Scenario('Gatekeeper enters allocation decision', async ({I, caseViewPage, enterAllocationDecisionEventPage}) => {
-  await setupScenario(I);
+Scenario('Gatekeeper enters allocation decision', async ({I, caseViewPage, enterAllocationDecisionEventPage, login}) => {
+  await setupScenario(I, login);
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
   enterAllocationDecisionEventPage.selectCorrectLevelOfJudge('No');
   await enterAllocationDecisionEventPage.selectAllocationDecision('Magistrate');

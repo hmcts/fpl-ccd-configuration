@@ -31,12 +31,13 @@ async function setupScenario(I) {
   if (!caseId) {
     caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
   }
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 }
 
-Scenario('HMCTS admin adds secondary local authority', async ({I, caseViewPage, manageLocalAuthoritiesEventPage}) => {
-
+Scenario('HMCTS admin adds secondary local authority', async ({I, caseViewPage, manageLocalAuthoritiesEventPage, login}) => {
   await setupScenario(I);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
+
   await caseViewPage.goToNewActions(config.administrationActions.manageLocalAuthorities);
   manageLocalAuthoritiesEventPage.selectAddLocalAuthority();
   await manageLocalAuthoritiesEventPage.selectLocalAuthority(hillingdonLocalAuthority.name);
@@ -60,10 +61,10 @@ Scenario('HMCTS admin adds secondary local authority', async ({I, caseViewPage, 
   I.dontSeeInTab('Applicant 2', 'Colleague 1');
 });
 
-Scenario('Designated local authority solicitor can see all local authorities but updates only his own', async ({I, caseViewPage, enterLocalAuthorityEventPage}) => {
-
+Scenario('Designated local authority solicitor can see all local authorities but updates only his own', async ({I, caseViewPage, enterLocalAuthorityEventPage, login}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await login('swanseaLocalAuthorityUserOne');
+  await I.navigateToCaseDetails(caseId);
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 
@@ -79,7 +80,7 @@ Scenario('Designated local authority solicitor can see all local authorities but
   assert.strictEqual(await enterLocalAuthorityEventPage.getLocalAuthorityEmail(), swanseaLocalAuthority.email);
 });
 
-Scenario('Secondary local authority solicitor can see all local authorities but updates only his own @flaky', async ({I, caseViewPage, enterLocalAuthorityEventPage}) => {
+Scenario('Secondary local authority solicitor can see all local authorities but updates only his own @flaky', async ({I, caseViewPage, enterLocalAuthorityEventPage, login}) => {
 
   const hillingdonLocalAuthorityUpdates = {
     pbaNumber: 'PBA1234567',
@@ -94,10 +95,10 @@ Scenario('Secondary local authority solicitor can see all local authorities but 
   };
 
   await setupScenario(I);
-
   await organisationAdminGrantAccess(config.hillingdonLocalAuthorityUserOne, SHARED_LA_ROLE);
+  await login('hillingdonLocalAuthorityUserOne');
 
-  await I.navigateToCaseDetailsAs(config.hillingdonLocalAuthorityUserOne, caseId);
+  await I.navigateToCaseDetails(caseId);
 
   await I.seeAvailableEvents([
     config.applicationActions.enterLocalAuthority,
@@ -137,9 +138,10 @@ Scenario('Secondary local authority solicitor can see all local authorities but 
   I.seeTagInTab(['Applicant 2', 'Colleague 1', 'Main contact']);
 });
 
-Scenario('HMCTS admin removes secondary local authority', async ({I, caseViewPage, caseListPage, manageLocalAuthoritiesEventPage}) => {
-
+Scenario('HMCTS admin removes secondary local authority', async ({I, caseViewPage, caseListPage, manageLocalAuthoritiesEventPage, login}) => {
   await setupScenario(I);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
 
   await caseViewPage.goToNewActions(config.administrationActions.manageLocalAuthorities);
   manageLocalAuthoritiesEventPage.selectRemoveLocalAuthority();
@@ -162,9 +164,10 @@ Scenario('HMCTS admin removes secondary local authority', async ({I, caseViewPag
   caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
-Scenario('HMCTS admin transfer case to new local authority', async ({I, caseViewPage, caseListPage, manageLocalAuthoritiesEventPage}) => {
-
+Scenario('HMCTS admin transfer case to new local authority', async ({I, caseViewPage, manageLocalAuthoritiesEventPage, login}) => {
   await setupScenario(I);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
 
   await caseViewPage.goToNewActions(config.administrationActions.manageLocalAuthorities);
 
@@ -196,15 +199,18 @@ Scenario('HMCTS admin transfer case to new local authority', async ({I, caseView
 
   caseViewPage.selectTab(caseViewPage.tabs.summary);
   I.seeInTab(['Court to issue'], hillingdonLocalAuthority.court);
+});
 
-  await I.signIn(config.swanseaLocalAuthorityUserOne);
-
+Scenario('Old LA can not seen transferred case', async ({I, caseListPage, login}) => {
+  await setupScenario(I);
+  await login('swanseaLocalAuthorityUserOne');
   caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
-Scenario('HMCTS admin transfer case to secondary local authority @flaky', async ({I, caseViewPage, caseListPage, manageLocalAuthoritiesEventPage}) => {
-
+Scenario('HMCTS admin transfer case to secondary local authority @flaky', async ({I, caseViewPage, manageLocalAuthoritiesEventPage, login}) => {
   await setupScenario(I);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
 
   await caseViewPage.goToNewActions(config.administrationActions.manageLocalAuthorities);
   manageLocalAuthoritiesEventPage.selectAddLocalAuthority();
@@ -245,15 +251,18 @@ Scenario('HMCTS admin transfer case to secondary local authority @flaky', async 
 
   caseViewPage.selectTab(caseViewPage.tabs.summary);
   I.seeInTab(['Court to issue'], hillingdonLocalAuthority.court);
+});
 
-  await I.signIn(config.hillingdonLocalAuthorityUserOne);
-
+Scenario('Original LA cannot see case when transferred to secondary LA', async ({I, caseListPage, login}) => {
+  await setupScenario(I);
+  await login('hillingdonLocalAuthorityUserOne');
   caseListPage.verifyCaseIsNotAccessible(caseId);
+});
 
-  await I.signIn(config.swanseaLocalAuthorityUserOne);
-
+Scenario('Secondary LA can see case after transfer', async ({I, login}) => {
+  await setupScenario(I);
+  await login('swanseaLocalAuthorityUserOne');
   I.seeCaseInSearchResult(caseId);
-
 });
 
 async function organisationAdminGrantAccess(user, role) {

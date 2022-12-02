@@ -28,10 +28,10 @@ async function setupScenario(I) {
   }
 }
 
-Scenario('LA Solicitor adds secondary local authority and can update only his own local authority ', async ({I, caseViewPage, manageLocalAuthoritiesEventPage, enterLocalAuthorityEventPage}) => {
-
+Scenario('LA Solicitor adds secondary local authority and can update only his own local authority ', async ({I, caseViewPage, manageLocalAuthoritiesEventPage, enterLocalAuthorityEventPage, login}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await login('swanseaLocalAuthorityUserOne');
+  await I.navigateToCaseDetails(caseId);
 
   await caseViewPage.goToNewActions(config.administrationActions.manageLocalAuthorities);
   manageLocalAuthoritiesEventPage.selectAddLocalAuthorityForLASolicitor();
@@ -61,7 +61,7 @@ Scenario('LA Solicitor adds secondary local authority and can update only his ow
   assert.strictEqual(await enterLocalAuthorityEventPage.getLocalAuthorityEmail(), swanseaLocalAuthority.email);
 });
 
-Scenario('Secondary LA solicitor can see all local authorities but updates only his own @flaky', async ({I, caseViewPage, enterLocalAuthorityEventPage}) => {
+Scenario('Secondary LA solicitor can see all local authorities but updates only his own @flaky', async ({I, caseViewPage, enterLocalAuthorityEventPage, login}) => {
 
   const hillingdonLocalAuthorityUpdates = {
     pbaNumber: 'PBA1234567',
@@ -79,7 +79,8 @@ Scenario('Secondary LA solicitor can see all local authorities but updates only 
 
   await organisationAdminGrantAccess(config.hillingdonLocalAuthorityUserOne, SHARED_LA_ROLE);
 
-  await I.navigateToCaseDetailsAs(config.hillingdonLocalAuthorityUserOne, caseId);
+  await login('hillingdonLocalAuthorityUserOne');
+  await I.navigateToCaseDetails(caseId);
 
   await I.seeAvailableEvents([
     config.applicationActions.enterLocalAuthority,
@@ -119,11 +120,12 @@ Scenario('Secondary LA solicitor can see all local authorities but updates only 
   I.seeTagInTab(['Applicant 2', 'Colleague 1', 'Main contact']);
 });
 
-Scenario('Designated LA Solicitor removes secondary local authority', async ({I, caseViewPage, caseListPage, manageLocalAuthoritiesEventPage}) => {
+Scenario('Designated LA Solicitor removes secondary local authority', async ({I, caseViewPage, caseListPage, manageLocalAuthoritiesEventPage, login}) => {
 
   await setupScenario(I);
 
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await login('swanseaLocalAuthorityUserOne');
+  await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.administrationActions.manageLocalAuthorities);
   manageLocalAuthoritiesEventPage.selectRemoveLocalAuthorityForLASolicitor();
 
@@ -140,7 +142,7 @@ Scenario('Designated LA Solicitor removes secondary local authority', async ({I,
 
   I.dontSeeInTab(['Applicant 2', 'Name'], hillingdonLocalAuthority.name);
 
-  await I.signIn(config.hillingdonLocalAuthorityUserOne);
+  await login('hillingdonLocalAuthorityUserOne');
 
   caseListPage.verifyCaseIsNotAccessible(caseId);
 });

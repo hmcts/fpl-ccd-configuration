@@ -9,12 +9,13 @@ async function setupScenario(I) {
   if (!caseId) {
     caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
   }
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 }
 
-Scenario('HMCTS Admin adds case flag and then removes case flag', async ({I, caseViewPage, addCaseFlagEventPage}) => {
-
+Scenario('HMCTS Admin adds case flag and then removes case flag', async ({I, caseViewPage, addCaseFlagEventPage, login}) => {
   await setupScenario(I);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
+
   await caseViewPage.goToNewActions(config.administrationActions.addCaseFlag);
 
   // Add case flag and upload red dot form

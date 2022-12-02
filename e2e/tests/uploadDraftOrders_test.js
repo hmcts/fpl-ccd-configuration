@@ -55,9 +55,10 @@ async function setupScenario(I) {
   }
 }
 
-async function localAuthorityUploadsDocuments(I, caseViewPage, uploadCaseManagementOrderEventPage) {
+async function localAuthorityUploadsDocuments(I, caseViewPage, uploadCaseManagementOrderEventPage, login) {
   if (!caseManagementDocumentsUploaded) {
-    await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+    await login('swanseaLocalAuthorityUserOne');
+    await I.navigateToCaseDetails(caseId);
 
     await draftOrdersHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing1,null, draftOrder1);
     await draftOrdersHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing2, supportingDoc);
@@ -68,9 +69,9 @@ async function localAuthorityUploadsDocuments(I, caseViewPage, uploadCaseManagem
   }
 }
 
-Scenario('Local authority uploads draft orders', async ({I, caseViewPage, uploadCaseManagementOrderEventPage}) => {
+Scenario('Local authority uploads draft orders', async ({I, caseViewPage, uploadCaseManagementOrderEventPage, login}) => {
   await setupScenario(I);
-  await localAuthorityUploadsDocuments(I, caseViewPage, uploadCaseManagementOrderEventPage);
+  await localAuthorityUploadsDocuments(I, caseViewPage, uploadCaseManagementOrderEventPage, login);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
 
@@ -91,9 +92,10 @@ Scenario('Local authority uploads draft orders', async ({I, caseViewPage, upload
   I.seeInExpandedDocument(supportingDoc.name, config.swanseaLocalAuthorityUserOne.email, dateFormat(date, 'd mmm yyyy'));
 });
 
-Scenario('Respondent solicitor uploads draft orders', async ({I, caseViewPage, enterRepresentativesEventPage, uploadCaseManagementOrderEventPage}) => {
+Scenario('Respondent solicitor uploads draft orders', async ({I, caseViewPage, enterRepresentativesEventPage, uploadCaseManagementOrderEventPage, login}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
 
   const representative = representatives.servedByDigitalService;
 
@@ -104,7 +106,9 @@ Scenario('Respondent solicitor uploads draft orders', async ({I, caseViewPage, e
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.amendRepresentatives);
 
-  await I.navigateToCaseDetailsAs(config.privateSolicitorOne, caseId);
+  I.clearCookie();
+  await login('privateSolicitorOne');
+  await I.navigateToCaseDetails(caseId);
   await draftOrdersHelper.localAuthorityUploadsC21(I, caseViewPage, uploadCaseManagementOrderEventPage, draftOrder3);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
@@ -113,9 +117,10 @@ Scenario('Respondent solicitor uploads draft orders', async ({I, caseViewPage, e
   ]);
 });
 
-Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
+Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage, login}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
+  await login('judicaryUser');
+  await I.navigateToCaseDetails(caseId);
 
   await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
   await reviewAgreedCaseManagementOrderEventPage.selectCMOToReview(hearing2);
@@ -136,11 +141,12 @@ Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage,
   I.dontSeeInTab(hearing2);
 });
 
-Scenario('Judge sends draft orders to the local authority', async ({I, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage}) => {
+Scenario('Judge sends draft orders to the local authority', async ({I, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage, login}) => {
   await setupScenario(I);
-  await localAuthorityUploadsDocuments(I, caseViewPage, uploadCaseManagementOrderEventPage);
+  await localAuthorityUploadsDocuments(I, caseViewPage, uploadCaseManagementOrderEventPage, login);
 
-  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
+  await login('judicaryUser');
+  await I.navigateToCaseDetails(caseId);
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
   await reviewAgreedCaseManagementOrderEventPage.selectCMOToReview(hearing1);
@@ -162,9 +168,10 @@ Scenario('Judge sends draft orders to the local authority', async ({I, caseViewP
   I.seeInTab(['Refused Order 2', 'Changes requested by judge'], 'note2');
 });
 
-Scenario('Local authority makes changes requested by the judge', async ({I, caseViewPage, uploadCaseManagementOrderEventPage}) => {
+Scenario('Local authority makes changes requested by the judge', async ({I, caseViewPage, uploadCaseManagementOrderEventPage, login}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await login('swanseaLocalAuthorityUserOne');
+  await I.navigateToCaseDetails(caseId);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   assertDraftOrders(I, 1, hearing1, [
@@ -184,9 +191,10 @@ Scenario('Local authority makes changes requested by the judge', async ({I, case
   I.dontSee(linkLabel);
 });
 
-Scenario('Judge seals and sends draft orders for no hearing to parties', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
+Scenario('Judge seals and sends draft orders for no hearing to parties', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage, login}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
+  await login('judicaryUser');
+  await I.navigateToCaseDetails(caseId);
 
   await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
 
@@ -210,9 +218,10 @@ Scenario('Judge seals and sends draft orders for no hearing to parties', async (
   assertDocumentSentToParties(I);
 });
 
-Scenario('Judge seals and sends draft orders for hearing to parties', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
+Scenario('Judge seals and sends draft orders for hearing to parties', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage, login}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
+  await login('judicaryUser');
+  await I.navigateToCaseDetails(caseId);
 
   await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
 

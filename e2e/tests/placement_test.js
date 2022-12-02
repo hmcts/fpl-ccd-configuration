@@ -8,9 +8,10 @@ const childName = 'Timothy Jones';
 
 Feature('Placement');
 
-async function setupScenario(I) {
+async function setupScenario(I, login) {
   if (!caseId) { caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren); }
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  login('swanseaLocalAuthorityUserOne');
+  await I.navigateToCaseDetails(caseId);
 }
 
 async function createPlacementApplication(I, placementEventPage, caseViewPage) {
@@ -57,8 +58,9 @@ async function createPlacementApplication(I, placementEventPage, caseViewPage) {
   I.seeTagInTab(['Child 1', 'Confidential document 1', 'Confidential']);
 }
 
-async function createPlacementNoticeOfHearing(I, placementHearingEventPage, caseViewPage) {
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+async function createPlacementNoticeOfHearing(I, placementHearingEventPage, caseViewPage, login) {
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.administrationActions.placementHearing);
 
   await placementHearingEventPage.selectPlacementApplication(childName);
@@ -82,23 +84,24 @@ async function createPlacementNoticeOfHearing(I, placementHearingEventPage, case
 
 }
 
-Scenario('Local authority creates a placement application', async ({I, placementEventPage, caseViewPage}) => {
-  await setupScenario(I);
+Scenario('Local authority creates a placement application', async ({I, placementEventPage, caseViewPage, login}) => {
+  await setupScenario(I, login);
   await createPlacementApplication(I, placementEventPage, caseViewPage);
 });
 
-Scenario('Admin issues a notice of hearing for placement', async({I, placementEventPage, placementHearingEventPage, caseViewPage}) => {
-  await setupScenario(I);
+Scenario('Admin issues a notice of hearing for placement', async({I, placementEventPage, placementHearingEventPage, caseViewPage, login}) => {
+  await setupScenario(I, login);
   await createPlacementApplication(I, placementEventPage, caseViewPage);
-  await createPlacementNoticeOfHearing(I, placementHearingEventPage, caseViewPage);
+  await createPlacementNoticeOfHearing(I, placementHearingEventPage, caseViewPage, login);
 });
 
-Scenario('LA uploads response to notice of placement', async({I, placementEventPage, placementHearingEventPage, caseViewPage, manageDocumentsLAEventPage}) => {
-  await setupScenario(I);
+Scenario('LA uploads response to notice of placement', async({I, placementEventPage, placementHearingEventPage, caseViewPage, manageDocumentsLAEventPage, login}) => {
+  await setupScenario(I, login);
   await createPlacementApplication(I, placementEventPage, caseViewPage);
-  await createPlacementNoticeOfHearing(I, placementHearingEventPage, caseViewPage);
+  await createPlacementNoticeOfHearing(I, placementHearingEventPage, caseViewPage, login);
 
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await login('swanseaLocalAuthorityUserOne');
+  await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
   await manageDocumentsLAEventPage.selectPlacementResponses();

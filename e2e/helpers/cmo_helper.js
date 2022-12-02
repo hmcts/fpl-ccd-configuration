@@ -18,11 +18,14 @@ const localAuthorityUploadsC21 = async (I, caseViewPage, uploadCMOEventPage, c21
   await uploadC21(I, caseViewPage, uploadCMOEventPage, c21s, hearing);
 };
 
-const judgeSendsReviewedCmoToAllParties = async (I, caseId, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage) => {
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+const judgeSendsReviewedCmoToAllParties = async (I, caseId, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage, login) => {
+  await login('swanseaLocalAuthorityUserOne');
+  await I.navigateToCaseDetails(caseId);
   await localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, 'Case management hearing, 1 January 2020');
   await localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, 'Final hearing, 1 March 2020');
-  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
+
+  await login('judicaryUser');
+  await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
   await reviewAgreedCaseManagementOrderEventPage.selectCMOToReview('Case management hearing, 1 January 2020');
   await I.goToNextPage();
