@@ -209,8 +209,25 @@ module.exports = {
   },
 
   async navigateToCaseDetailsAs(user, caseId) {
-    await this.signIn(user);
-    await this.navigateToCaseDetails(caseId);
+    for (let i = 0; i < 5; i++) {
+      await this.signIn(user);
+      this.wait(1);
+      if (!(await this.canSee('#username'))) {
+        break; // we aren't still on the login page
+      }
+    }
+
+    let currentUrl = await this.grabCurrentUrl();
+    if (!currentUrl.replace(/#.+/g, '').endsWith(caseId)) {
+      await this.retryUntilExists(async () => {
+        await this.goToPage(`${baseUrl}/cases/case-details/${caseId}`);
+        this.wait(1);
+        if (await this.canSee('#username')) {
+          await this.signIn(user); // we are somehow back on the login page?!
+        }
+      }, '#next-step');
+    }
+
   },
 
   navigateToCaseList() {
@@ -335,7 +352,7 @@ module.exports = {
     for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
       this.click(label);
       //Caused by https://tools.hmcts.net/jira/browse/EUI-2498
-      for (let attempt = 0; attempt < 10; attempt++) {
+      for (let attempt = 0; attempt < 5; attempt++) {
         let currentUrl = await this.grabCurrentUrl();
         if (currentUrl !== originalUrl) {
           if (attempt > 5) {
