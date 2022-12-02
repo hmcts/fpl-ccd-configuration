@@ -100,8 +100,8 @@ public class RemoveSentDocumentService {
         existingHiddenSentDocuments.ifPresentOrElse((a) -> {
             a.getValue().getDocumentsSentToParty().add(removedSentDocument);
         }, () -> {
-            throw new IllegalStateException("It should be created if it does not present.");
-        });
+                throw new IllegalStateException("It should be created if it does not present.");
+            });
         caseDetailsMap.put("hiddenDocumentsSentToParties", hiddenDocumentsSentToParties);
     }
 
