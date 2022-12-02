@@ -209,7 +209,7 @@ module.exports = {
       if((await this.canClick(tabSelector))){
         break;
       }
-      console.log(`Scrolling to tab '${tab}'`);
+      //console.log(`Scrolling to tab '${tab}'`);
       this.click('.mat-tab-header-pagination-after');
     }
 

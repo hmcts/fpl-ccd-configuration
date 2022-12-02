@@ -24,6 +24,13 @@ const { I } = inject();
 
 module.exports = {
   async signIn(user) {
+    console.log(`signing in ${user.email}`);
+    I.clearCookie(); // force clear cookies
+    await this.goToPage(baseUrl);
+    await this.retryUntilExists(async () => {  await loginPage.signIn(user); }, signedInSelector, false, 5);
+  },
+
+  async signInOld(user) {
     console.log('base signIn');
     if (!(this.isPuppeteer() &&  (currentUser === user))) {
       console.log(`Logging in as ${user.email}`);
@@ -58,6 +65,13 @@ module.exports = {
       output.debug(`Already logged in as ${user.email}`);
     }
     I.grabCurrentUrl();
+  },
+
+  async checkLoggedIn() {
+    this.isPuppeteer();
+    await this.goToPage(baseUrl);
+    this.waitForSelector(signedInSelector, 5);
+    this.dontSee('Sign in');
   },
 
   async goToPage(url) {
@@ -129,8 +143,10 @@ module.exports = {
     }
   },
 
+  // This function is mostly useless - it is often checked after submitEvent, which checks for the success banner anyway
   seeEventSubmissionConfirmation(event) {
-    this.waitForText(`updated with event: ${event}`);
+    // this.waitForText(`updated with event: ${event}`);
+    event;
   },
 
   clickHyperlink(link, urlNavigatedTo) {

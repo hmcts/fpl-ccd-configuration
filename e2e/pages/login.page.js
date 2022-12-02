@@ -9,7 +9,7 @@ module.exports = {
   submitButton: 'input[value="Sign in"]',
 
   async signIn(user) {
-    console.log('login page signIn');
+    // console.log('login page signIn');
     await I.waitForSelector(this.fields.username);
     await I.grabCurrentUrl();
     I.fillField(this.fields.username, user.email);

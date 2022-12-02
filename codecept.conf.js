@@ -1,5 +1,6 @@
 require('./e2e/helpers/event_listener');
 const lodash = require('lodash');
+const config = require('./e2e/config');
 
 exports.config = {
   output: './output',
@@ -42,7 +43,7 @@ exports.config = {
     Puppeteer: {
       show: process.env.SHOW_BROWSER_WINDOW || false,
       restart: false,
-      keepCookies: true,
+      keepCookies: false,
       keepBrowserState: true,
       waitForTimeout: parseInt(process.env.WAIT_FOR_TIMEOUT || '20000'),
       chrome: {
@@ -144,6 +145,30 @@ exports.config = {
     screenshotOnFail: {
       enabled: true,
       fullPageScreenshots: true,
+    },
+    autoLogin: {
+      enabled: true,
+      saveToFile: true,
+      inject: 'login',
+      users: {
+        hmctsAdminUser: config.hmctsAdminUser,
+        swanseaLocalAuthorityUserOne: config.swanseaLocalAuthorityUserOne,
+        swanseaLocalAuthorityUserTwo: config.swanseaLocalAuthorityUserTwo,
+        hillingdonLocalAuthorityUserOne: config.hillingdonLocalAuthorityUserOne,
+        hillingdonLocalAuthorityUserTwo: config.hillingdonLocalAuthorityUserTwo,
+        wiltshireLocalAuthorityUserOne: config.wiltshireLocalAuthorityUserOne,
+        wiltshireLocalAuthorityUserTwo: config.wiltshireLocalAuthorityUserTwo,
+        localAuthorityBarristerUserOne: config.localAuthorityBarristerUserOne,
+        hmctsSuperUser: config.hmctsSuperUser,
+        cafcassUser: config.cafcassUser,
+        gateKeeperUser: config.gateKeeperUser,
+        judicaryUser: config.judicaryUser,
+        systemUpdateUser: config.systemUpdateUser,
+        smokeTestUser: config.smokeTestUser,
+        hmctsUser: config.hmctsUser,
+        privateSolicitorOne: config.privateSolicitorOne,
+        privateSolicitorTwo: config.privateSolicitorTwo,
+      },
     },
   },
   tests: './e2e/tests/*_test.js',

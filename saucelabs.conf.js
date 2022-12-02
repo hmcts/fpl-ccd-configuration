@@ -45,7 +45,7 @@ const setupConfig = {
     WebDriver: {
       url: testConfig.baseUrl,
       restart: false,
-      keepCookies: true,
+      keepCookies: false,
       browser,
       smartWait,
       waitForTimeout,

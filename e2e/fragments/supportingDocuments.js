@@ -13,6 +13,7 @@ module.exports = {
         other: `#${document}_${index}_type-OTHER_REPORTS`,
       },
       translationRequirement: request =>  `#${document}_${index}_translationRequirements-${request}`,
+      acknowledge: `#${document}_${index}_documentAcknowledge-ACK_RELATED_TO_CASE`,
     };
   },
 };
