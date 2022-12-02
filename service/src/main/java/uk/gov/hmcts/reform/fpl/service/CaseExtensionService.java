@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildExtension;
@@ -194,7 +195,8 @@ public class CaseExtensionService {
                     childParty.getFullName(),
                     formatLocalDateToString(Optional.ofNullable(childParty.getCompletionDate())
                             .orElse(caseData.getDefaultCompletionDate()), DATE),
-                    childParty.getExtensionReason().getLabel()
+                    Optional.ofNullable(childParty.getExtensionReason()).orElse(CaseExtensionReasonList.NO_EXTENSION)
+                        .getLabel()
                 )
             )
             .collect(joining(System.lineSeparator()));
