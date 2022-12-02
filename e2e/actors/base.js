@@ -386,12 +386,12 @@ module.exports = {
     }
   },
 
-  async goToNextPage(label = 'Continue', retries = 3, timeout = 5) {
+  async goToNextPage(label = 'Continue', retries = 2, timeout = 15) {
     let currentUrl = await this.grabCurrentUrl();
     await this.retry(retries).changePage(currentUrl, label, timeout);
   },
 
-  async changePage(originalUrl, label = 'Continue', timeout = 5) {
+  async changePage(originalUrl, label = 'Continue', timeout = 15) {
     this.click(label);
     this.waitForFunction(async function (url) {
       return window.location.href !== url;
