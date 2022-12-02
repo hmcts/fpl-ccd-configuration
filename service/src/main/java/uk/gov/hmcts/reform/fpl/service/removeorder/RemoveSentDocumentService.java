@@ -72,6 +72,10 @@ public class RemoveSentDocumentService {
     public void removeSentDocumentFromCase(CaseData caseData, CaseDetailsMap caseDetailsMap,
                                            UUID removedDocId) {
         Element<SentDocument> removedSentDocument = getRemovedSentDocumentById(caseData, removedDocId);
+        final Element<SentDocuments> removedSentDocuments = caseData.getDocumentsSentToParties().stream()
+            .filter(s -> s.getValue().getDocumentsSentToParty().stream().filter(e -> e.equals(removedSentDocument))
+                .findFirst().isPresent())
+            .findFirst().orElseThrow();
 
         caseData.getDocumentsSentToParties().stream().filter(p ->
                 p.getValue().getDocumentsSentToParty().contains(removedSentDocument))
@@ -83,11 +87,6 @@ public class RemoveSentDocumentService {
         removedSentDocument.getValue().setRemovalReason(getReasonToRemove(caseData));
         List<Element<SentDocuments>> hiddenDocumentsSentToParties = caseData.getRemovalToolData()
                 .getHiddenDocumentsSentToParties();
-
-        Element<SentDocuments> removedSentDocuments = caseData.getDocumentsSentToParties().stream()
-            .filter(s -> s.getValue().getDocumentsSentToParty().stream().filter(e -> e.equals(removedSentDocument))
-                .findFirst().isPresent())
-            .findFirst().orElseThrow();
 
         Optional<Element<SentDocuments>> existingHiddenSentDocuments =
             ElementUtils.findElement(removedSentDocuments.getId(), hiddenDocumentsSentToParties);
