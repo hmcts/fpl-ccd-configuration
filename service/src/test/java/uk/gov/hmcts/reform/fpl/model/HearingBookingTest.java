@@ -419,4 +419,58 @@ class HearingBookingTest {
             assertThat(hearingBooking.isRemote()).isTrue();
         }
     }
+
+    @Nested
+    class HearingDays {
+
+        @Test
+        void shouldReturnOneHearingDayForSingleDayHearing() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .startDate(LocalDateTime.of(2022, 11, 28, 0, 0, 0)) //Monday Week 1
+                .endDate(LocalDateTime.of(2022, 11, 29, 0, 0, 0)) //Monday Week 1
+                .build();
+
+            assertThat(hearingBooking.getHearingDays()).isEqualTo(1);
+        }
+
+        @Test
+        void shouldReturnCorrectHearingDaysWithNoWeekend() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .startDate(LocalDateTime.of(2022, 11, 28, 0, 0, 0)) //Monday Week 1
+                .endDate(LocalDateTime.of(2022, 12, 2, 0, 0, 0)) //Friday Week 1
+                .build();
+
+            assertThat(hearingBooking.getHearingDays()).isEqualTo(5);
+        }
+
+        @Test
+        void shouldReturnCorrectHearingDaysWithOneWeekend() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .startDate(LocalDateTime.of(2022, 12, 7, 0, 0, 0)) //Wednesday Week 1
+                .endDate(LocalDateTime.of(2022, 12, 14, 0, 0, 0)) //Wednesday Week 2
+                .build();
+
+            assertThat(hearingBooking.getHearingDays()).isEqualTo(6);
+        }
+
+        @Test
+        void shouldReturnCorrectHearingDaysWithThreeWeekends() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .startDate(LocalDateTime.of(2022, 11, 22, 0, 0, 0)) //Tuesday Week 1
+                .endDate(LocalDateTime.of(2022, 12, 14, 0, 0, 0)) //Wednesday Week 4
+                .build();
+
+            assertThat(hearingBooking.getHearingDays()).isEqualTo(17);
+        }
+
+        @Test
+        void shouldReturnNullHearingDaysWhenHearingIsOnSameDay() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .startDate(LocalDateTime.of(2022, 11, 22, 0, 0, 0)) //Tuesday Week 1
+                .endDate(LocalDateTime.of(2022, 11, 22, 10, 0, 0)) //Tuesday Week 1
+                .build();
+
+            assertThat(hearingBooking.getHearingDays()).isNull();
+        }
+    }
 }
