@@ -126,6 +126,55 @@ class RemoveSentDocumentServiceTest {
         assertThat(caseDetailsMap).isEqualTo(expectedMap);
     }
 
+    @Test
+    void shouldGetRemovedSentDocumentById() {
+        UUID id = UUID.randomUUID();
+        List<Element<SentDocument>> sentDocuments = new ArrayList<>();
+        sentDocuments.add(element(SentDocument.builder().build()));
+        sentDocuments.add(element(id, SentDocument.builder().build()));
+        sentDocuments.add(element(SentDocument.builder().build()));
+
+        CaseData caseData = CaseData.builder()
+            .documentsSentToParties(List.of(
+                element(SentDocuments.builder()
+                    .documentsSentToParty(sentDocuments)
+                    .build())
+            ))
+            .build();
+        Element<SentDocument> application = underTest.getRemovedSentDocumentById(caseData, id);
+
+        assertThat(application).isEqualTo(sentDocuments.get(1));
+    }
+
+    @Test
+    void shouldGetRemovedSentDocumentByIdWithTwoParties() {
+        final UUID id = UUID.randomUUID();
+
+        List<Element<SentDocument>> sentDocumentsForPartyOne = new ArrayList<>();
+        sentDocumentsForPartyOne.add(element(SentDocument.builder().build()));
+        sentDocumentsForPartyOne.add(element(SentDocument.builder().build()));
+        sentDocumentsForPartyOne.add(element(SentDocument.builder().build()));
+
+        List<Element<SentDocument>> sentDocumentsForPartyTwo = new ArrayList<>();
+        sentDocumentsForPartyTwo.add(element(SentDocument.builder().build()));
+        sentDocumentsForPartyTwo.add(element(id, SentDocument.builder().build()));
+        sentDocumentsForPartyTwo.add(element(SentDocument.builder().build()));
+
+        CaseData caseData = CaseData.builder()
+            .documentsSentToParties(List.of(
+                element(SentDocuments.builder()
+                    .documentsSentToParty(sentDocumentsForPartyOne)
+                    .build()),
+                element(SentDocuments.builder()
+                    .documentsSentToParty(sentDocumentsForPartyTwo)
+                    .build())
+            ))
+            .build();
+        Element<SentDocument> application = underTest.getRemovedSentDocumentById(caseData, id);
+
+        assertThat(application).isEqualTo(sentDocumentsForPartyTwo.get(1));
+    }
+
     private SentDocuments buildSentDocuments(String partyName, Map... fileInfos) {
         List<Element<SentDocument>> documentsSentToParty = new ArrayList<>();
 
