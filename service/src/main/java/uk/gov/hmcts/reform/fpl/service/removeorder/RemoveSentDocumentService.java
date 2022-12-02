@@ -73,8 +73,7 @@ public class RemoveSentDocumentService {
                                            UUID removedDocId) {
         Element<SentDocument> removedSentDocument = getRemovedSentDocumentById(caseData, removedDocId);
         final Element<SentDocuments> removedSentDocuments = caseData.getDocumentsSentToParties().stream()
-            .filter(s -> s.getValue().getDocumentsSentToParty().stream().filter(e -> e.equals(removedSentDocument))
-                .findFirst().isPresent())
+            .filter(s -> s.getValue().getDocumentsSentToParty().stream().anyMatch(e -> e.equals(removedSentDocument)))
             .findFirst().orElseThrow();
 
         caseData.getDocumentsSentToParties().stream().filter(p ->
@@ -96,9 +95,9 @@ public class RemoveSentDocumentService {
             existingHiddenSentDocuments =
                 ElementUtils.findElement(removedSentDocuments.getId(), hiddenDocumentsSentToParties);
         }
-        existingHiddenSentDocuments.ifPresentOrElse((a) -> {
-            a.getValue().getDocumentsSentToParty().add(removedSentDocument);
-        }, () -> {
+        existingHiddenSentDocuments.ifPresentOrElse(
+            a -> a.getValue().getDocumentsSentToParty().add(removedSentDocument),
+            () -> {
                 throw new IllegalStateException("It should be created if it does not present.");
             });
         caseDetailsMap.put("hiddenDocumentsSentToParties", hiddenDocumentsSentToParties);
