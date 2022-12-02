@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -26,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList.INTERNATIONAL_ASPECT;
+import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList.NO_EXTENSION;
 import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.EIGHT_WEEK_EXTENSION;
 import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.OTHER_EXTENSION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -365,7 +367,7 @@ class CaseExtensionServiceTest {
     void shouldReturnCaseSummaryExtensionDetails() {
         List<Child> children = List.of(
             getChild(of(2024, 2, 2), "Daisy", "French"),
-            getChild(null, "Archie", "Turner"),
+            getChild(null, "Archie", "Turner", NO_EXTENSION),
             getChild(of(2025, 4, 8), "Julie", "Jane")
         );
         CaseData caseData = CaseData.builder()
@@ -376,7 +378,7 @@ class CaseExtensionServiceTest {
         String caseSummaryExtensionDetails = service.getCaseSummaryExtensionDetails(caseData, wrapElements(children));
         String expectedLabel = String.join(System.lineSeparator(),
                 "Daisy French - 2 February 2024 - International Aspect",
-                "Archie Turner - 1 April 2024 - International Aspect",
+                "Archie Turner - 1 April 2024 - No extension for child",
                 "Julie Jane - 8 April 2025 - International Aspect");
 
         assertThat(caseSummaryExtensionDetails).isEqualTo(expectedLabel);
@@ -481,14 +483,21 @@ class CaseExtensionServiceTest {
     private Child getChild(LocalDate completionDate,
                            String firstName,
                            String lastName) {
+        return getChild(completionDate, firstName, lastName, INTERNATIONAL_ASPECT);
+    }
+
+    private Child getChild(LocalDate completionDate,
+                           String firstName,
+                           String lastName,
+                           CaseExtensionReasonList extensionReason) {
         ChildParty childParty = ChildParty.builder()
-                .completionDate(completionDate)
-                .extensionReason(INTERNATIONAL_ASPECT)
-                .firstName(firstName)
-                .lastName(lastName)
-                .build();
+            .completionDate(completionDate)
+            .extensionReason(extensionReason)
+            .firstName(firstName)
+            .lastName(lastName)
+            .build();
         return Child.builder()
-                .party(childParty)
-                .build();
+            .party(childParty)
+            .build();
     }
 }
