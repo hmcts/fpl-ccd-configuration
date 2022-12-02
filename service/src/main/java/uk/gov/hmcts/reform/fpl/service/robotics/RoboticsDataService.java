@@ -86,26 +86,24 @@ public class RoboticsDataService {
     }
 
     private Applicant populateApplicant(final CaseData caseData) {
-        if (isNotEmpty(caseData.getLocalAuthorities())) {
-            final LocalAuthority localAuthority = caseData.getDesignatedLocalAuthority();
-            if (isNotEmpty(localAuthority)) {
-                final Optional<Colleague> mainContact = localAuthority.getMainContact();
+        final LocalAuthority localAuthority = caseData.getDesignatedLocalAuthority();
+        if (isNotEmpty(localAuthority)) {
+            final Optional<Colleague> mainContact = localAuthority.getMainContact();
 
-                return Applicant.builder()
-                    .name(localAuthority.getName())
-                    .contactName(mainContact.map(Colleague::getFullName).orElse(null))
-                    .jobTitle(mainContact.map(Colleague::getJobTitle).orElse(null))
-                    .address(convertAddress(localAuthority.getAddress()).orElse(null))
-                    .mobileNumber(mainContact
-                        .map(Colleague::getPhone)
-                        .map(this::formatContactNumber)
-                        .orElse(null))
-                    .telephoneNumber(ofNullable(localAuthority.getPhone())
-                        .map(this::formatContactNumber)
-                        .orElse(null))
-                    .email(localAuthority.getEmail())
-                    .build();
-            }
+            return Applicant.builder()
+                .name(localAuthority.getName())
+                .contactName(mainContact.map(Colleague::getFullName).orElse(null))
+                .jobTitle(mainContact.map(Colleague::getJobTitle).orElse(null))
+                .address(convertAddress(localAuthority.getAddress()).orElse(null))
+                .mobileNumber(mainContact
+                    .map(Colleague::getPhone)
+                    .map(this::formatContactNumber)
+                    .orElse(null))
+                .telephoneNumber(ofNullable(localAuthority.getPhone())
+                    .map(this::formatContactNumber)
+                    .orElse(null))
+                .email(localAuthority.getEmail())
+                .build();
         }
 
         if (isNotEmpty(caseData.getAllApplicants())) {
@@ -171,11 +169,11 @@ public class RoboticsDataService {
     }
 
     private Optional<String> getSolicitorName(CaseData caseData) {
-        if (isNotEmpty(caseData.getLocalAuthorities())) {
-            LocalAuthority designatedLA = caseData.getDesignatedLocalAuthority();
-            if (isNotEmpty(designatedLA)) {
-                return designatedLA.getFirstSolicitor().map(Colleague::getFullName);
-            }
+        LocalAuthority designatedLA = caseData.getDesignatedLocalAuthority();
+        if (isNotEmpty(designatedLA)) {
+            return designatedLA
+                .getFirstSolicitor()
+                .map(Colleague::getFullName);
         }
         return ofNullable(caseData.getSolicitor())
             .map(uk.gov.hmcts.reform.fpl.model.Solicitor::getName);
