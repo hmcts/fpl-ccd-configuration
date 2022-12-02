@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service.removeorder;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.RemovalToolData;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -18,6 +21,7 @@ import java.util.UUID;
 
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationRemovalReason.WRONG_CASE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
@@ -173,6 +177,56 @@ class RemoveSentDocumentServiceTest {
         Element<SentDocument> application = underTest.getRemovedSentDocumentById(caseData, id);
 
         assertThat(application).isEqualTo(sentDocumentsForPartyTwo.get(1));
+    }
+
+    @Test
+    public void shouldRemoveSentDocumentFromCase() {
+        final UUID id = UUID.randomUUID();
+
+        Element<SentDocument> removedTarget = element(id, SentDocument.builder().build());
+
+        List<Element<SentDocument>> sentDocumentsForPartyOne = new ArrayList<>();
+        sentDocumentsForPartyOne.add(element(SentDocument.builder().build()));
+        sentDocumentsForPartyOne.add(element(SentDocument.builder().build()));
+        sentDocumentsForPartyOne.add(element(SentDocument.builder().build()));
+
+        List<Element<SentDocument>> sentDocumentsForPartyTwo = new ArrayList<>();
+        sentDocumentsForPartyTwo.add(element(SentDocument.builder().build()));
+        sentDocumentsForPartyTwo.add(removedTarget);
+        sentDocumentsForPartyTwo.add(element(SentDocument.builder().build()));
+
+        List<Element<SentDocuments>> documentsSentToParties = List.of(
+            element(SentDocuments.builder()
+                .documentsSentToParty(sentDocumentsForPartyOne)
+                .build()),
+            element(SentDocuments.builder()
+                .documentsSentToParty(sentDocumentsForPartyTwo)
+                .build())
+        );
+
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of("documentsSentToParties", documentsSentToParties))
+            .build());
+        CaseData caseData = CaseData.builder()
+            .documentsSentToParties(documentsSentToParties)
+            .removalToolData(RemovalToolData.builder()
+                .reasonToRemoveSentDocument("This is the reason.")
+                .build())
+            .build();
+
+        underTest.removeSentDocumentFromCase(caseData, caseDetailsMap, id);
+
+        documentsSentToParties.get(0).getValue().getDocumentsSentToParty().remove(removedTarget);
+
+        assertThat(caseDetailsMap.get("documentsSentToParties")).isEqualTo(documentsSentToParties);
+
+        List<Element<SentDocuments>> hiddenDocumentsSentToParties = List.of(
+            element(documentsSentToParties.get(1).getId(), SentDocuments.builder()
+                .documentsSentToParty(List.of(element(removedTarget.getId(),
+                    SentDocument.builder().removalReason("This is the reason.").build())))
+                .build())
+        );
+       assertThat(caseDetailsMap.get("hiddenDocumentsSentToParties")).isEqualTo(hiddenDocumentsSentToParties);
     }
 
     private SentDocuments buildSentDocuments(String partyName, Map... fileInfos) {
