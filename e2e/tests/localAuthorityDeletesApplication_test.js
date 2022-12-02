@@ -20,7 +20,8 @@ Scenario('local authority deletes application', async ({I, caseViewPage, deleteA
   // redirected to the case list due to losing permissions to view the case.
   // As such a manual completion of the event is required here
   await I.goToNextPage();
-  await I.retryUntilExists(() => I.click('Delete application'), '.search-block');
+  I.click('Delete application');
+  I.waitForSelector('.search-block', 20);
   caseListPage.searchForCasesWithName(caseName);
   I.grabCurrentUrl();
   I.see('No cases found.');
