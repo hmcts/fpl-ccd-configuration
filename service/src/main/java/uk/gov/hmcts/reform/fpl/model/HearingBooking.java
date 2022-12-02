@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
+import org.joda.time.Days;
 import uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
@@ -19,10 +20,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasEndDateAfterStartDate;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -103,6 +101,29 @@ public class HearingBooking implements TranslatableItem {
 
     public boolean hasDatesOnSameDay() {
         return this.startDate.toLocalDate().isEqual(this.endDate.toLocalDate());
+    }
+
+    public Integer getHearingDays() {
+        LocalDateTime date = this.startDate;
+        Integer days = 1;
+
+        if (hasDatesOnSameDay()) {
+            return null;
+        }
+
+        while (date.toEpochSecond(ZoneOffset.UTC) < this.endDate.toEpochSecond(ZoneOffset.UTC)) {
+            if (date.getDayOfWeek().toString().contains("SATURDAY")
+                || date.getDayOfWeek().toString().contains("SUNDAY")) {
+                date = date.plusDays(1);
+
+                continue;
+            }
+
+            date = date.plusDays(1);
+            days++;
+        }
+
+        return days;
     }
 
     public boolean startsAfterToday() {
