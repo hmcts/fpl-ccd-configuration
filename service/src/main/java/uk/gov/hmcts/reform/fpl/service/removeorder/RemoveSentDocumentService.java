@@ -84,10 +84,10 @@ public class RemoveSentDocumentService {
         List<Element<SentDocuments>> hiddenDocumentsSentToParties = caseData.getRemovalToolData()
                 .getHiddenDocumentsSentToParties();
 
-        Element<SentDocuments>  removedSentDocuments = caseData.getDocumentsSentToParties().stream()
+        Element<SentDocuments> removedSentDocuments = caseData.getDocumentsSentToParties().stream()
             .filter(s -> s.getValue().getDocumentsSentToParty().stream().filter(e -> e.equals(removedSentDocument))
                 .findFirst().isPresent())
-            .findFirst().get();
+            .findFirst().orElseThrow();
 
         Optional<Element<SentDocuments>> existingHiddenSentDocuments =
             ElementUtils.findElement(removedSentDocuments.getId(), hiddenDocumentsSentToParties);
@@ -97,7 +97,11 @@ public class RemoveSentDocumentService {
             existingHiddenSentDocuments =
                 ElementUtils.findElement(removedSentDocuments.getId(), hiddenDocumentsSentToParties);
         }
-        existingHiddenSentDocuments.get().getValue().getDocumentsSentToParty().add(removedSentDocument);
+        existingHiddenSentDocuments.ifPresentOrElse((a) -> {
+            a.getValue().getDocumentsSentToParty().add(removedSentDocument);
+        }, () -> {
+            throw new IllegalStateException("It should be created if it does not present.");
+        });
         caseDetailsMap.put("hiddenDocumentsSentToParties", hiddenDocumentsSentToParties);
     }
 
