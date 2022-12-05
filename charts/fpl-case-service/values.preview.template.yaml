@@ -80,7 +80,7 @@ xui-webapp:
     architecture: replication
   nodejs:
     imagePullPolicy: Always
-    replicas: 2
+    replicas: 1
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
     image: hmctspublic.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
