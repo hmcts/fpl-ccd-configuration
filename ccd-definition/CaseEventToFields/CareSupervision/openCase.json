@@ -90,7 +90,7 @@
     "CaseEventID": "openCase",
     "CaseFieldID": "sharingWithUsers",
     "PageFieldDisplayOrder": 2,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "READONLY",
     "PageID": "checkSharing",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
