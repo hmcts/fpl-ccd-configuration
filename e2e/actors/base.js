@@ -26,8 +26,10 @@ module.exports = {
   async signIn(user) {
     console.log(`signing in ${user.email}`);
     I.clearCookie(); // force clear cookies
-    await this.goToPage(baseUrl);
-    await this.retryUntilExists(async () => {  await loginPage.signIn(user); }, signedInSelector, false, 5);
+    await this.retryUntilExists(async () => {
+      await this.goToPage(baseUrl);
+      await loginPage.signIn(user);
+    }, signedInSelector, false, 5);
   },
 
   async signInOld(user) {
