@@ -44,31 +44,31 @@ module.exports = {
       await this.retryUntilExists(async () => {
         //To mitigate situation when idam response with blank page
         await this.goToPage(baseUrl);
-        I.grabCurrentUrl();
+        await I.grabCurrentUrl();
 
         if (await this.waitForAnySelector([signedOutSelector, signedInSelector], 30) == null) {
           await this.refreshPage();
-          I.grabCurrentUrl();
+          await I.grabCurrentUrl();
         }
 
         if (await this.hasSelector(signedInSelector)) {
           await this.retryUntilExists(() => this.click('Sign out'), signedOutSelector, false, 10);
-          I.grabCurrentUrl();
+          await I.grabCurrentUrl();
         }
 
         await this.retryUntilExists(() =>  loginPage.signIn(user), signedInSelector, false, 10);
-        I.grabCurrentUrl();
+        await I.grabCurrentUrl();
 
       }, signedInSelector, false, 10);
       await this.rejectCookies();
-      I.grabCurrentUrl();
+      await I.grabCurrentUrl();
       output.debug(`Logged in as ${user.email}`);
       currentUser = user;
     } else {
       console.log(`Already logged in as ${user.email}`);
       output.debug(`Already logged in as ${user.email}`);
     }
-    I.grabCurrentUrl();
+    await I.grabCurrentUrl();
   },
 
   async checkLoggedIn() {
@@ -250,8 +250,8 @@ module.exports = {
 
   },
 
-  navigateToCaseList() {
-    caseListPage.navigate();
+  async navigateToCaseList() {
+    await this.goToPage(baseUrl);
   },
 
   async fillDate(date, sectionId = 'form') {
@@ -423,7 +423,7 @@ module.exports = {
    * @param maxNumberOfTries - maximum number of attempts to retry
    * @returns {Promise<void>} - promise holding no result if resolved or error if rejected
    */
-  async retryUntilExists(action, locator, checkUrlChanged = true, maxNumberOfTries = 3) {
+  async retryUntilExists(action, locator, checkUrlChanged = true, maxNumberOfTries = 10) {
     const originalUrl = await this.grabCurrentUrl();
     await this.retry(maxNumberOfTries).doRetry(action, locator, originalUrl, checkUrlChanged, 3);
   },

@@ -12,10 +12,10 @@ Scenario('Private solicitor creates case on behalf of local authority', async ({
   await caseListPage.verifyCaseIsShareable(caseId);
 
   await login('privateSolicitorTwo');
-  caseListPage.verifyCaseIsNotAccessible(caseId);
+  await caseListPage.verifyCaseIsNotAccessible(caseId);
 
   await login('swanseaLocalAuthorityUserOne');
-  caseListPage.verifyCaseIsNotAccessible(caseId);
+  await caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
 Scenario('Local authority creates case on behalf of other local authority', async ({I, caseListPage}) => {
@@ -26,10 +26,10 @@ Scenario('Local authority creates case on behalf of other local authority', asyn
   await caseListPage.verifyCaseIsShareable(caseId);
 
   await I.signIn(config.wiltshireLocalAuthorityUserTwo);
-  caseListPage.verifyCaseIsNotAccessible(caseId);
+  await caseListPage.verifyCaseIsNotAccessible(caseId);
 
   await I.signIn(config.swanseaLocalAuthorityUserOne);
-  caseListPage.verifyCaseIsNotAccessible(caseId);
+  await caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
 Scenario('Local authority creates case for its own', async ({I, caseListPage}) => {
@@ -64,7 +64,7 @@ Scenario('Local authority revokes access from managing organisation', async ({I,
   await I.dontSeeEvent(config.applicationActions.removeManagingOrganisation);
 
   await login('wiltshireLocalAuthorityUserOne');
-  caseListPage.verifyCaseIsNotAccessible(caseId);
+  await caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
 const submitCase = async (caseId) => {

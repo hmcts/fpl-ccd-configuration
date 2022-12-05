@@ -49,13 +49,12 @@ module.exports = {
 
   async goToNewActions(actionSelected) {
     await I.grabCurrentUrl();
-    I.waitForElement(locate(this.actionsDropdown), 15);
     I.selectOption(locate(this.actionsDropdown), actionSelected);
     await I.retryUntilExists(() => I.click(this.goButton), 'ccd-case-event-trigger');
   },
 
   async checkActionsAreAvailable(actions) {
-    I.waitForElement(this.actionsDropdown, 10);
+    I.waitForSelector(this.actionsDropdown, 10);
     await within(this.actionsDropdown, () => {
       for (const action of actions) {
         I.seeElementInDOM(`//option[text()="${action}"]`);

@@ -9,11 +9,11 @@ Scenario('Sign in as local authority and create a case', async ({I, caseListPage
   await I.goToPage(config.baseUrl);
   const caseName = `Smoke test case (${moment().format('YYYY-MM-DD HH:MM')})`;
   const caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne, caseName);
-  I.navigateToCaseList();
-  I.grabCurrentUrl();
+  await I.navigateToCaseList();
+  await I.grabCurrentUrl();
   caseListPage.searchForCasesWithName(caseName, 'Open');
-  I.grabCurrentUrl();
+  await I.grabCurrentUrl();
   I.waitForElement(`//ccd-search-result/table/tbody//tr//td//a[contains(@href,'/cases/case-details/${caseId}')]`, 60);
-  I.grabCurrentUrl();
+  await I.grabCurrentUrl();
   I.seeCaseInSearchResult(caseId);
 });

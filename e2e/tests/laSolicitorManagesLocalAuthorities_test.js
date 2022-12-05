@@ -144,7 +144,7 @@ Scenario('Designated LA Solicitor removes secondary local authority', async ({I,
 
   await login('hillingdonLocalAuthorityUserOne');
 
-  caseListPage.verifyCaseIsNotAccessible(caseId);
+  await caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
 async function organisationAdminGrantAccess(user, role) {

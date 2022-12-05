@@ -56,7 +56,7 @@ async function setupScenario(I) {
 Scenario('Solicitor cannot request representation before case submission and Cafcass solicitor is set @flaky', async ({I, caseListPage, caseViewPage, submitApplicationEventPage, noticeOfChangePage, login}) => {
   await setupScenario(I);
   await login('privateSolicitorOne');
-  caseListPage.verifyCaseIsNotAccessible(caseId);
+  await caseListPage.verifyCaseIsNotAccessible(caseId);
 
   await noticeOfChangePage.navigate();
   await noticeOfChangePage.enterCaseReference(caseId);
@@ -148,7 +148,7 @@ Scenario('Solicitor can request representation via NOC only after case submissio
   await setupScenario(I);
   await login('wiltshireLocalAuthorityUserOne');
 
-  caseListPage.verifyCaseIsNotAccessible(caseId);
+  await caseListPage.verifyCaseIsNotAccessible(caseId);
 
   await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', children[11].value.party.firstName, children[11].value.party.lastName);
 

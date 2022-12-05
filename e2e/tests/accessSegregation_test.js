@@ -18,7 +18,7 @@ Scenario('Different user in the same local authority can see case created', asyn
 Scenario('Different user in a different local authority cannot see case created', async ({I, caseListPage, login}) => {
   await setupScenario(I);
   await login('hillingdonLocalAuthorityUserOne');
-  caseListPage.verifyCaseIsNotAccessible(caseId);
+  await caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
 Scenario('HMCTS admin user can see the case', async ({I, login}) => {

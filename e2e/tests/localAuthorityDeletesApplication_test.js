@@ -23,6 +23,6 @@ Scenario('local authority deletes application', async ({I, caseViewPage, deleteA
   I.click('Delete application');
   I.waitForSelector('.search-block', 20);
   caseListPage.searchForCasesWithName(caseName);
-  I.grabCurrentUrl();
+  await I.grabCurrentUrl();
   I.see('No cases found.');
 });

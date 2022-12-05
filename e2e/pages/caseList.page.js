@@ -17,6 +17,7 @@ module.exports = {
   },
 
   navigate() {
+    I.waitForText(this.fields.caseList, 30);
     I.click(this.fields.caseList);
   },
 
@@ -33,13 +34,13 @@ module.exports = {
     I.click(this.fields.search);
   },
 
-  searchForCasesWithId(caseId, state = 'Any') {
+  async searchForCasesWithId(caseId, state = 'Any') {
     this.setInitialSearchFields(state);
-    I.grabCurrentUrl();
+    await I.grabCurrentUrl();
     I.fillField(this.fields.caseId, caseId);
-    I.grabCurrentUrl();
+    await I.grabCurrentUrl();
     I.click(this.fields.search);
-    I.grabCurrentUrl();
+    await I.grabCurrentUrl();
   },
 
   searchForCasesWithUnhandledEvidences() {
@@ -75,17 +76,17 @@ module.exports = {
   },
 
   async verifyCaseIsShareable(caseId) {
-    I.navigateToCaseList();
-    await I.retryUntilExists(() => this.searchForCasesWithId(caseId), this.locateCase(caseId), false);
+    await I.navigateToCaseList();
+    await I.retryUntilExists(async () => await this.searchForCasesWithId(caseId), this.locateCase(caseId), false);
     I.seeElement(`#select-${caseId}:not(:disabled)`);
   },
 
-  verifyCaseIsNotAccessible(caseId) {
-    I.navigateToCaseList();
-    I.grabCurrentUrl();
-    this.searchForCasesWithId(caseId);
+  async verifyCaseIsNotAccessible(caseId) {
+    await I.navigateToCaseList();
+    await I.grabCurrentUrl();
+    await this.searchForCasesWithId(caseId);
     I.waitForInvisible(this.fields.spinner, 30);
-    I.grabCurrentUrl();
+    await I.grabCurrentUrl();
     I.see('No cases found. Try using different filters.');
   },
 

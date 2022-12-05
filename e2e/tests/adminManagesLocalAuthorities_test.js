@@ -162,7 +162,7 @@ Scenario('HMCTS admin removes secondary local authority', async ({I, caseViewPag
 
   await I.signIn(config.hillingdonLocalAuthorityUserOne);
 
-  caseListPage.verifyCaseIsNotAccessible(caseId);
+  await caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
 Scenario('HMCTS admin transfer case to new local authority @broken', async ({I, caseViewPage, manageLocalAuthoritiesEventPage, login}) => {
@@ -205,7 +205,7 @@ Scenario('HMCTS admin transfer case to new local authority @broken', async ({I, 
 Scenario('Old LA can not seen transferred case @broken @relies-on-previous', async ({I, caseListPage, login}) => {
   await setupScenario(I);
   await login('swanseaLocalAuthorityUserOne');
-  caseListPage.verifyCaseIsNotAccessible(caseId);
+  await caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
 Scenario('HMCTS admin transfer case to secondary local authority @flaky', async ({I, caseViewPage, manageLocalAuthoritiesEventPage, login}) => {
@@ -257,7 +257,7 @@ Scenario('HMCTS admin transfer case to secondary local authority @flaky', async 
 Scenario('Original LA cannot see case when transferred to secondary LA', async ({I, caseListPage, login}) => {
   await setupScenario(I);
   await login('hillingdonLocalAuthorityUserOne');
-  caseListPage.verifyCaseIsNotAccessible(caseId);
+  await caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
 Scenario('Secondary LA can see case after transfer', async ({I, login}) => {
