@@ -124,9 +124,9 @@ public class ManageOrdersEventData {
     String manageOrdersSupervisionOrderCourtDirection;
     LocalDate manageOrdersSupervisionOrderApprovalDate;
     LocalDate manageOrdersSupervisionOrderEndDate;
-    /**
-     * @deprecated Changed to Multiselect list
-     */
+    /*
+        @deprecated - use manageOrdersChildArrangementsOrderTypes instead
+    */
     @Deprecated(since = "DFPL-1060")
     ChildArrangementsOrderType manageOrdersChildArrangementsOrderType;
     List<ChildArrangementsOrderType> manageOrdersChildArrangementsOrderTypes;
