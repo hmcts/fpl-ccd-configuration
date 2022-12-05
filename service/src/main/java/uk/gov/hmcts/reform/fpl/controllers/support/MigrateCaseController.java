@@ -12,8 +12,10 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -23,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +38,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Objects.nonNull;
 import static java.util.UUID.fromString;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -53,8 +57,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1012", this::run1012,
         "DFPL-776", this::run776,
         "DFPL-1015", this::run1015,
-        "DFPL-809a", this::run809a,
-        "DFPL-809b", this::run809b,
+        "DFPL-872", this::run872,
         "DFPL-979", this::run979,
         "DFPL-1006", this::run1006,
         "DFPL-969", this::run969,
@@ -81,57 +84,59 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private void run809a(CaseDetails caseDetails) {
-        var migrationId = "DFPL-809a";
-        var expectedCaseId = 1651569615587841L;
 
-        removeConfidentialTab(caseDetails, migrationId, expectedCaseId);
-    }
-
-    private void run809b(CaseDetails caseDetails) {
-        var migrationId = "DFPL-809b";
-        var expectedCaseId = 1651755091217652L;
-
-        removeConfidentialTab(caseDetails, migrationId, expectedCaseId);
-    }
-
-    private void removeConfidentialTab(CaseDetails caseDetails, String migrationId, long expectedCaseId) {
+    private void run872(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();
+        List<Element<Child>> childrenInCase = caseData.getAllChildren();
+        LocalDate oldEightWeeksExtensionDate = caseData.getCaseCompletionDate();
+        CaseExtensionReasonList oldReason = caseData.getCaseExtensionReasonList();
+        Map<String, Object> caseDetailsData = caseDetails.getData();
 
-        if (caseId != expectedCaseId) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, expected case id %d",
-                migrationId, caseId, expectedCaseId
-            ));
+        if (isNotEmpty(childrenInCase) && oldReason != null) {
+            log.info("Migration {id = DFPL-872, case reference = {}} extension date migration", caseId);
+
+            List<Element<Child>> children = childrenInCase.stream()
+                .map(element -> element(element.getId(),
+                    element.getValue().toBuilder()
+                        .party(element.getValue().getParty().toBuilder()
+                            .completionDate(oldEightWeeksExtensionDate)
+                            .extensionReason(oldReason)
+                            .build())
+                        .build())
+                ).collect(toList());
+
+            caseDetailsData.put("children1", children);
+            log.info("Migration {id = DFPL-872, case reference = {}} children extension date finish", caseId);
+        } else {
+            log.warn("Migration {id = DFPL-872, case reference = {}, case state = {}} doesn't have an extension ",
+                caseId, caseData.getState().getValue());
         }
+    }
 
-        List<Element<SupportingEvidenceBundle>> correspondenceDocuments = caseData.getCorrespondenceDocuments();
-        List<Element<SupportingEvidenceBundle>> newCorrespondenceDocuments = new ArrayList<>();
+    private void run872Rollback(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        var caseId = caseData.getId();
+        List<Element<Child>> childrenInCase = caseData.getAllChildren();
 
-        for (Element<SupportingEvidenceBundle> bundle : correspondenceDocuments) {
-            List<String> confidentialTag = bundle.getValue().getConfidential();
-            String hasConfidentialAddress = bundle.getValue().getHasConfidentialAddress();
+        Map<String, Object> caseDetailsData = caseDetails.getData();
+        if (isNotEmpty(childrenInCase)) {
+            log.info("Migration {id = DFPL-872-Rollback, case reference = {}} remove child extension fields", caseId);
 
-            if (nonNull(confidentialTag)) {
-                if (confidentialTag.contains("CONFIDENTIAL") && hasConfidentialAddress.equals("No")) {
-                    newCorrespondenceDocuments.add(element(SupportingEvidenceBundle.builder()
-                        .name(bundle.getValue().getName())
-                        .document(bundle.getValue().getDocument())
-                        .uploadedBy(bundle.getValue().getUploadedBy())
-                        .confidential(emptyList())
-                        .dateTimeUploaded(bundle.getValue().getDateTimeUploaded())
-                        .hasConfidentialAddress(bundle.getValue().getHasConfidentialAddress())
-                        .build()));
-                } else {
-                    newCorrespondenceDocuments.add(bundle);
-                }
-            } else {
-                newCorrespondenceDocuments.add(bundle);
-            }
+            List<Element<Child>> children = childrenInCase.stream()
+                .map(element -> element(element.getId(),
+                    element.getValue().toBuilder()
+                        .party(element.getValue().getParty().toBuilder()
+                            .build())
+                        .build())
+                ).collect(toList());
+
+            caseDetailsData.put("children1", children);
+            log.info("Migration {id = DFPL-872-rollback, case reference = {}} removed child extension fields", caseId);
+        } else {
+            log.warn("Migration {id = DFPL-872-rollback, case reference = {}, case state = {}} doesn't have children ",
+                caseId, caseData.getState().getValue());
         }
-
-        caseDetails.getData().put("correspondenceDocuments", newCorrespondenceDocuments);
     }
 
     private void run979(CaseDetails caseDetails) {

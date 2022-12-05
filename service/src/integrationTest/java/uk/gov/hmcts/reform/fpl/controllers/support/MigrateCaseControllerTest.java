@@ -12,6 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -142,158 +143,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .date(LocalDate.of(2022, 6, 14))
                 .note("Testing Note")
                 .build());
-        }
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class DfplRemoveConfidentialTab {
-        private final long invalidCaseId = 1643728359986136L;
-
-        private Stream<Arguments> provideMigrationTestData() {
-            return Stream.of(
-                Arguments.of("DFPL-809a", 1651569615587841L),
-                Arguments.of("DFPL-809b", 1651755091217652L)
-            );
-        }
-
-        @ParameterizedTest
-        @MethodSource("provideMigrationTestData")
-        void shouldPerformMigrationWhenDocIdMatches(String migrationId, Long validCaseId) {
-
-            List<Element<SupportingEvidenceBundle>> correspondenceDocuments =
-                wrapElements(
-                    SupportingEvidenceBundle.builder()
-                        .name("bundle1")
-                        .confidential(List.of("CONFIDENTIAL"))
-                        .hasConfidentialAddress("No")
-                        .build(),
-                    SupportingEvidenceBundle.builder()
-                        .name("bundle2")
-                        .confidential(List.of("CONFIDENTIAL"))
-                        .hasConfidentialAddress("Yes")
-                        .build(),
-                    SupportingEvidenceBundle.builder()
-                        .name("bundle3")
-                        .hasConfidentialAddress("No")
-                        .build()
-                );
-
-            CaseData caseData = CaseData.builder()
-                .id(validCaseId)
-                .correspondenceDocuments(correspondenceDocuments)
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId)
-            );
-
-            CaseData responseData = extractCaseData(response);
-
-            assertThat(responseData.getCorrespondenceDocuments().get(0).getValue().getConfidential())
-                .isEqualTo(emptyList());
-            assertThat(responseData.getCorrespondenceDocuments().get(1).getValue().getConfidential())
-                .isEqualTo(List.of("CONFIDENTIAL"));
-            assertThat(responseData.getCorrespondenceDocuments().get(2).getValue().getConfidential())
-                .isEqualTo(null);
-        }
-
-        @ParameterizedTest
-        @MethodSource("provideMigrationTestData")
-        void shouldThrowAssersionErrorWhenCaseIdIsInvalid(String migrationId, Long validCaseId) {
-            List<Element<SupportingEvidenceBundle>> correspondenceDocuments =
-                wrapElements(
-                    SupportingEvidenceBundle.builder()
-                        .name("bundle1")
-                        .confidential(List.of("CONFIDENTIAL"))
-                        .hasConfidentialAddress("No")
-                        .build(),
-                    SupportingEvidenceBundle.builder()
-                        .name("bundle2")
-                        .confidential(List.of("CONFIDENTIAL"))
-                        .hasConfidentialAddress("Yes")
-                        .build(),
-                    SupportingEvidenceBundle.builder()
-                        .name("bundle3")
-                        .hasConfidentialAddress("No")
-                        .build()
-                );
-
-            CaseData caseData = CaseData.builder()
-                .id(invalidCaseId)
-                .correspondenceDocuments(correspondenceDocuments)
-                .build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format("Migration {id = %s, case reference = 1643728359986136}, expected case id %d",
-                    migrationId, validCaseId));
-        }
-    }
-
-    // @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    // @Nested
-    class Dfpl776 {
-        final String migrationId = "DFPL-776";
-        final long expectedCaseId = 1646318196381762L;
-        final UUID expectedMsgId = UUID.fromString("878a2dd7-8d50-46b1-88d3-a5c6fe9a39ba");
-
-        @Test
-        void shouldRemoveMsg() {
-            UUID otherMsgId = UUID.randomUUID();
-
-            CaseData caseData = CaseData.builder()
-                .id(expectedCaseId)
-                .judicialMessages(List.of(
-                    element(otherMsgId, JudicialMessage.builder()
-                        .dateSent("19 May 2022 at 10:16am")
-                        .latestMessage("Test Message").build()),
-                    element(expectedMsgId, JudicialMessage.builder()
-                        .dateSent("19 May 2022 at 11:16am")
-                        .latestMessage("Test Message to be removed").build())
-                ))
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId)
-            );
-
-            CaseData responseData = extractCaseData(response);
-
-            assertThat(responseData.getJudicialMessages().size()).isEqualTo(1);
-            assertThat(responseData.getJudicialMessages().stream().map(Element::getId).collect(Collectors.toList()))
-                .doesNotContain(expectedMsgId)
-                .contains(otherMsgId);
-        }
-
-        @Test
-        void shouldThrowExceptionWhenCaseIdInvalid() {
-            CaseData caseData = CaseData.builder().id(1L).build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format("Migration {id = %s, case reference = %s}, expected case id %d",
-                    migrationId, 1, expectedCaseId));
-        }
-
-        @Test
-        void shouldThrowExceptionWhenMsgIdInvalid() {
-            CaseData caseData = CaseData.builder()
-                .id(expectedCaseId)
-                .judicialMessages(wrapElements(
-                    JudicialMessage.builder()
-                        .dateSent("19 May 2022 at 10:16am")
-                        .latestMessage("Test Message").build()))
-                .build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format(
-                    "Migration {id = %s, case reference = %s}, invalid JudicialMessage ID",
-                    migrationId, expectedCaseId));
         }
     }
 
@@ -530,12 +379,14 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .extensionReason(TIMETABLE_FOR_PROCEEDINGS)
                 .build())
             .build());
+
         @Test
         void shouldAddAdditionalFieldsToChildren() {
             CaseData caseData = CaseData.builder()
                 .id(caseId)
                 .state(State.CASE_MANAGEMENT)
-                .eightWeeksExtensionDateOther(extensionDate)
+                .caseCompletionDate(extensionDate)
+                .caseExtensionReasonList(TIMETABLE_FOR_PROCEEDINGS)
                 .children1(List.of(childToBeUpdated1, childToBeUpdated2))
                 .build();
 
@@ -547,7 +398,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             List<Element<Child>> expectedChildren = List.of(expectedChild1,expectedChild2);
 
             assertThat(responseData.getAllChildren()).isEqualTo(expectedChildren);
-            //assertThat(responseData.getSelectedHearingId()).isIn(hearingBooking1.getId(), hearingBooking2.getId());
         }
 
         @Test
