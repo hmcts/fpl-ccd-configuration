@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +32,8 @@ import javax.validation.constraints.Future;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -106,27 +107,25 @@ public class HearingBooking implements TranslatableItem {
         return this.startDate.toLocalDate().isEqual(this.endDate.toLocalDate());
     }
 
-    public Integer getHearingDays() {
+    public LocalDateTime getEndDate() {
         LocalDateTime date = this.startDate;
-        Integer days = 1;
+        Integer hearingDays = nonNull(this.hearingDays) ? this.hearingDays : null;
 
-        if (hasDatesOnSameDay()) {
-            return null;
+        if (isNull(hearingDays)) {
+            return this.endDate;
         }
 
-        while (date.toEpochSecond(ZoneOffset.UTC) < this.endDate.toEpochSecond(ZoneOffset.UTC)) {
+        for (int i = 0; i < hearingDays; i++) {
             if (date.getDayOfWeek().toString().contains("SATURDAY")
                 || date.getDayOfWeek().toString().contains("SUNDAY")) {
-                date = date.plusDays(1);
 
                 continue;
             }
 
             date = date.plusDays(1);
-            days++;
         }
 
-        return days;
+        return date;
     }
 
     public boolean startsAfterToday() {
