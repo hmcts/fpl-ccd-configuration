@@ -134,6 +134,11 @@ module.exports = {
     I.attachFile(this.fields.supportingDocuments(elementIndex).document, document);
   },
 
+  async selectRelated() {
+    const elementIndex = await this.getActiveElementIndex();
+    I.click(this.fields.supportingDocuments(elementIndex).acknowledge);
+  },
+
   async uploadPlacementResponseDocument(document) {
     const elementIndex = await this.getActiveElementIndex();
     I.attachFile(this.fields.placementNoticeResponses(elementIndex).document, document);
@@ -149,6 +154,7 @@ module.exports = {
     switch (type) {
       case 'Expert reports':
         I.checkOption(this.fields.supportingDocuments(elementIndex).type.expert);
+        I.selectOption(this.fields.supportingDocuments(elementIndex).expertReportType, 'Pediatric');
         break;
       case 'Other reports':
         I.checkOption(this.fields.supportingDocuments(elementIndex).type.other);
@@ -172,6 +178,7 @@ module.exports = {
     await this.enterDocumentName(supportingEvidenceDocument.name);
     await this.enterDocumentNotes(supportingEvidenceDocument.notes);
     await this.uploadDocument(supportingEvidenceDocument.document);
+    await this.selectRelated();
     if(selectEvidenceType) {
       await this.selectFurtherEvidenceType(supportingEvidenceDocument.type);
     }

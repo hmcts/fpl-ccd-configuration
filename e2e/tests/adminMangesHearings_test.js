@@ -68,7 +68,7 @@ Scenario('HMCTS admin creates first hearings', async ({I, caseViewPage, manageHe
   I.seeInTab(['Hearing 1', 'Others notified'], 'Noah King');
 
   await api.pollLastEvent(caseId, config.internalActions.updateCase);
-});
+}).retry(1);
 
 Scenario('HMCTS admin creates subsequent hearings', async ({I, caseViewPage, manageHearingsEventPage, login}) => {
   await setupScenario(I, login);
@@ -102,7 +102,7 @@ Scenario('HMCTS admin edits a future hearing', async ({I, caseViewPage, manageHe
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectEditFutureHearing('Case management hearing, 1 January 2060');
   await I.goToNextPage();
-  await manageHearingsEventPage.enterNewVenue(hearingDetails[1]);
+  await manageHearingsEventPage.enterVenue(hearingDetails[1]);
   await I.goToNextPage();
   manageHearingsEventPage.selectedAllocatedJudge();
   await I.goToNextPage();
@@ -177,8 +177,8 @@ Scenario('HMCTS admin adjourns and re-lists a hearing', async ({I, caseViewPage,
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectAdjournHearing(`Case management hearing, ${formatHearingDate(hearingStartDate)}`);
   await I.goToNextPage();
-  manageHearingsEventPage.selectCancellationReasonType('Other lawyers');
-  manageHearingsEventPage.selectCancellationReason('No key issue analysis');
+  I.wait(1);
+  manageHearingsEventPage.selectAdjournmentReason('Lawyers', 'No key issue analysis');
   await I.goToNextPage();
   manageHearingsEventPage.selectCancellationAction('Yes - and I can add the new date now');
   await I.goToNextPage();
@@ -222,8 +222,8 @@ Scenario('HMCTS admin vacates and re-lists a hearing', async ({I, caseViewPage, 
   await I.goToNextPage();
   manageHearingsEventPage.selectCancellationAction('#hearingReListOption-RE_LIST_NOW');
   await I.goToNextPage();
-  manageHearingsEventPage.selectCancellationReasonType('Other lawyers');
-  manageHearingsEventPage.selectCancellationReason('No key issue analysis');
+  I.wait(1);
+  manageHearingsEventPage.selectVacatedReason('Lawyers', 'No key issue analysis');
   await I.goToNextPage();
   await manageHearingsEventPage.enterHearingDetails(hearingDetails[1]);
   await manageHearingsEventPage.selectHearingDuration(hearingDetails[1]);
@@ -260,8 +260,9 @@ Scenario('HMCTS admin cancels and re-lists hearing', async ({I, caseViewPage, ma
   await I.goToNextPage();
   manageHearingsEventPage.selectCancellationAction('#hearingReListOption-RE_LIST_LATER');
   await I.goToNextPage();
-  manageHearingsEventPage.selectCancellationReasonType('Other lawyers');
-  manageHearingsEventPage.selectCancellationReason('No key issue analysis');
+  I.wait(1);
+  manageHearingsEventPage.selectVacatedReason('Lawyers', 'No key issue analysis');
+
   await I.completeEvent('Save and continue');
 
   caseViewPage.selectTab(caseViewPage.tabs.hearings);

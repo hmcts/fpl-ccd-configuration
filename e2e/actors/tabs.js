@@ -201,6 +201,7 @@ module.exports = {
   },
 
   async selectTab(tab){
+    this.wait(1);
     const tabSelector = getTabSelector(tab);
 
     const numberOfElements = await this.grabNumberOfVisibleElements('//*[@role="tab"]');

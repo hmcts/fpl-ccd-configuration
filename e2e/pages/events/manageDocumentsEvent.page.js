@@ -90,10 +90,15 @@ module.exports = {
     I.attachFile(this.fields.supportingDocuments(index).document, document);
   },
 
+  selectRelated(index = 0) {
+    I.click(this.fields.supportingDocuments(index).acknowledge);
+  },
+
   async selectFurtherEvidenceType(type, index = 0) {
     switch (type) {
       case 'Expert reports':
         I.checkOption(this.fields.supportingDocuments(index).type.expert);
+        I.selectOption(this.fields.supportingDocuments(index).expertReportType, 'Pediatric');
         break;
       case 'Other reports':
         I.checkOption(this.fields.supportingDocuments(index).type.other);
@@ -108,10 +113,12 @@ module.exports = {
   },
 
   async uploadSupportingEvidenceDocument(supportingEvidenceDocument, selectEvidenceType = false) {
+    I.waitForText('Supporting documents');
     const index = await I.getActiveElementIndex();
     this.enterDocumentName(supportingEvidenceDocument.name, index);
     this.enterDocumentNotes(supportingEvidenceDocument.notes, index);
     this.uploadDocument(supportingEvidenceDocument.document, index);
+    this.selectRelated(index);
     if(selectEvidenceType) {
       this.selectFurtherEvidenceType(supportingEvidenceDocument.type, index);
     }

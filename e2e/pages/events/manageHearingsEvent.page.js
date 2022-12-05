@@ -32,7 +32,7 @@ module.exports = {
     usePreviousHearingVenue: '#previousHearingVenue_usePreviousVenue_Yes',
     dontUsePreviousHearingVenue: '#previousHearingVenue_usePreviousVenue_No',
     newVenue: '#previousHearingVenue_newVenue',
-    newVenueCustomAddress: '#previousHearingVenue_newVenueCustomAddress_newVenueCustomAddress',
+    newVenueCustomAddress: '#hearingVenueCustom_hearingVenueCustom',
     startDate: '#hearingStartDate',
     endDate: '#hearingEndDateTime',
     sendNotice: '#sendNoticeOfHearing_Yes',
@@ -55,6 +55,18 @@ module.exports = {
     },
     correctedStartDate: '#hearingStartDateConfirmation',
     correctedEndDate: '#hearingEndDateConfirmation',
+    adjournmentReason: (type) => {
+      return {
+        type: `#adjournmentReason_type-${type}`,
+        reason: `#adjournmentReason_reason-${type}`,
+      };
+    },
+    vacatedReason: (type) => {
+      return {
+        type: `#vacatedReason_type-${type}`,
+        reason: `#vacatedReason_reason-${type}`,
+      };
+    },
   },
 
   selectAddNewHearing() {
@@ -90,12 +102,16 @@ module.exports = {
     I.fillDate(date, this.fields.vacatedDate);
   },
 
-  selectCancellationReasonType(type) {
-    I.click(type);
+  selectAdjournmentReason(type, reason) {
+    I.waitForElement(locate(this.fields.adjournmentReason(type).type));
+    I.checkOption(this.fields.adjournmentReason(type).type);
+    I.selectOption(this.fields.adjournmentReason(type).reason, reason);
   },
 
-  selectCancellationReason(reason) {
-    I.selectOption('//select[not(@disabled)]', reason);
+  selectVacatedReason(type, reason) {
+    I.waitForElement(locate(this.fields.vacatedReason(type).type));
+    I.checkOption(this.fields.vacatedReason(type).type);
+    I.selectOption(this.fields.vacatedReason(type).reason, reason);
   },
 
   selectCancellationAction(action) {
@@ -120,8 +136,14 @@ module.exports = {
     }
   },
 
-  enterVenue(hearingDetails) {
+  async enterVenue(hearingDetails) {
     I.selectOption(this.fields.hearingVenue, hearingDetails.venue);
+
+    if (hearingDetails.venue === 'Other') {
+      await within(this.fields.newVenueCustomAddress, async () => {
+        await postcodeLookup.enterAddressManually(hearingDetails.venueCustomAddress);
+      });
+    }
   },
 
   selectPreviousVenue() {
