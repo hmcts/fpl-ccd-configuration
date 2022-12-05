@@ -60,7 +60,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
         List<C43OrderType> c43OrderTypes = List.of(C43OrderType.CHILD_ARRANGEMENT_ORDER,
             C43OrderType.SPECIFIC_ISSUE_ORDER, C43OrderType.PROHIBITED_STEPS_ORDER);
 
-        CaseData caseData = buildCaseData(c43OrderTypes, CHILD_LIVE);
+        CaseData caseData = buildCaseData(c43OrderTypes, List.of(CHILD_LIVE));
 
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
@@ -95,7 +95,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
         List<C43OrderType> c43OrderTypes = List.of(C43OrderType.CHILD_ARRANGEMENT_ORDER,
             C43OrderType.SPECIFIC_ISSUE_ORDER, C43OrderType.PROHIBITED_STEPS_ORDER);
 
-        CaseData caseData = buildCaseData(c43OrderTypes, CHILD_LIVE);
+        CaseData caseData = buildCaseData(c43OrderTypes, List.of(CHILD_LIVE));
 
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
@@ -111,7 +111,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
         List<C43OrderType> c43OrderTypes = List.of(C43OrderType.CHILD_ARRANGEMENT_ORDER,
             C43OrderType.SPECIFIC_ISSUE_ORDER, C43OrderType.PROHIBITED_STEPS_ORDER);
 
-        CaseData caseData = buildCaseData(c43OrderTypes, CHILD_CONTACT);
+        CaseData caseData = buildCaseData(c43OrderTypes, List.of(CHILD_CONTACT));
 
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
@@ -127,7 +127,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
         assertThat(underTest.template()).isEqualTo(DocmosisTemplates.ORDER_V2);
     }
 
-    private CaseData buildCaseData(List<C43OrderType> c43OrderTypes, ChildArrangementsOrderType childArrOrderType) {
+    private CaseData buildCaseData(List<C43OrderType> c43OrderTypes, List<ChildArrangementsOrderType> childArrOrderType) {
         return CaseData.builder()
             .caseLocalAuthority(LA_CODE)
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -137,7 +137,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
                 .manageOrdersRecitalsAndPreambles(RECITALS_AND_PREAMBLES)
                 .manageOrdersDirections(DIRECTIONS)
                 .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
-                .manageOrdersChildArrangementsOrderType(childArrOrderType)
+                .manageOrdersChildArrangementsOrderTypes(childArrOrderType)
                 .build())
             .build();
     }
