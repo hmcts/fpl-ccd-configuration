@@ -67,7 +67,7 @@
     "CaseFieldID": "isOutsourcedCase",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
-    "PageID": "checkSharing",
+    "PageID": "provideCaseName",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "FieldShowCondition": "outsourcingType = \"DO_NOT_SHOW\""
