@@ -28,7 +28,9 @@ module.exports = {
     I.clearCookie(); // force clear cookies
     await this.retryUntilExists(async () => {
       await this.goToPage(baseUrl);
-      await loginPage.signIn(user);
+      if ((await this.grabCurrentUrl()).includes('/login')) {
+        await loginPage.signIn(user);
+      }
     }, signedInSelector, false, 5);
   },
 
