@@ -59,6 +59,7 @@ exports.config = {
       keepCookies: false,
       keepBrowserState: true,
       waitForTimeout: parseInt(process.env.WAIT_FOR_TIMEOUT || '20000'),
+      getPageTimeout: 60000,
       ignoreHTTPSErrors: true,
       chrome: {
         ignoreHTTPSErrors: true,
