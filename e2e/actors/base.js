@@ -23,6 +23,11 @@ const { I } = inject();
 'use strict';
 
 module.exports = {
+  async waitThenClick(selector, timeout = 1) {
+    this.waitForSelector(selector, timeout);
+    this.click(selector);
+  },
+
   async signIn(user) {
     console.log(`signing in ${user.email}`);
     I.clearCookie(); // force clear cookies
@@ -226,7 +231,7 @@ module.exports = {
     if (!currentUrl.replace(/#.+/g, '').endsWith(caseId)) {
       await this.retryUntilExists(async () => {
         await this.goToPage(`${baseUrl}/cases/case-details/${caseId}`);
-      }, '#next-step');
+      }, '#next-step', false, 10);
     }
   },
 
@@ -426,6 +431,20 @@ module.exports = {
    * @returns {Promise<void>} - promise holding no result if resolved or error if rejected
    */
   async retryUntilExists(action, locator, checkUrlChanged = true, maxNumberOfTries = 3) {
+    const originalUrl = await this.grabCurrentUrl();
+    await this.retry(maxNumberOfTries).doRetry(action, locator, originalUrl, checkUrlChanged, 3);
+  },
+
+  async doRetry(action, locator, originalUrl, checkUrlChanged = true, timeToWait = 1) {
+    if (checkUrlChanged && (originalUrl !== await this.grabCurrentUrl())) {
+      output.print('Url changed, action skipped');
+    } else {
+      await action();
+    }
+    this.waitForSelector(locator, timeToWait);
+  },
+
+  async retryUntilExistsOld(action, locator, checkUrlChanged = true, maxNumberOfTries = 3) {
     const originalUrl = await this.grabCurrentUrl();
 
     for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {

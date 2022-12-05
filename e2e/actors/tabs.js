@@ -57,6 +57,10 @@ function getTabSelector(tab){
   return `//*[@role="tab"]/div[text() = "${tab}"]`;
 }
 
+function getActiveTabSelector(tab) {
+  return `//*[@role="tab"]/div.mat-tab-label-active[text() = "${tab}"]`;
+}
+
 module.exports = {
   seeInTab: function (pathToField, fieldValue) {
     const fieldSelector = tabFieldSelector(pathToField);
@@ -214,7 +218,7 @@ module.exports = {
       this.click('.mat-tab-header-pagination-after');
     }
 
-    return this.click(tabSelector);
+    await this.retryUntilExists(() => this.click(tabSelector), getActiveTabSelector(tab), false, 3);
   },
 
   async dontSeeTab(tab){
