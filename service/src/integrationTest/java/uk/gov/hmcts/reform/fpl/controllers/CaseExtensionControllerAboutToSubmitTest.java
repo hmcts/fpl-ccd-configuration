@@ -229,7 +229,7 @@ class CaseExtensionControllerAboutToSubmitTest extends AbstractCallbackTest {
                         "firstName", firstName,
                         "lastName", lastName,
                         "completionDate", completionDate,
-                        "extensionReason", "INTERNATIONAL_ASPECT")));
+                        "extensionReason", "InternationalAspect")));
         return child1;
     }
 
