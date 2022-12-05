@@ -145,7 +145,8 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
         assertThat(underTest.template()).isEqualTo(DocmosisTemplates.ORDER_V2);
     }
 
-    private CaseData buildCaseData(List<C43OrderType> c43OrderTypes, List<ChildArrangementsOrderType> childArrOrderType) {
+    private CaseData buildCaseData(List<C43OrderType> c43OrderTypes,
+                                   List<ChildArrangementsOrderType> childArrOrderType) {
         return CaseData.builder()
             .caseLocalAuthority(LA_CODE)
             .manageOrdersEventData(ManageOrdersEventData.builder()
