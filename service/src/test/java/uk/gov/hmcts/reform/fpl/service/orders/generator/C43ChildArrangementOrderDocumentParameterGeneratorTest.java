@@ -35,6 +35,8 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
     private static final String CHILD_LIVE_TEXT = "The Child Arrangement Order is for the child to live with.\n\n";
     private static final String CHILD_CONTACT_TEXT =
         "The Child Arrangement Order is for the child to have contact with.\n\n";
+    private static final String BOTH_ARRANGEMENT_TEXT =
+        "The Child Arrangement Order is for the child to live with and have contact with.\n\n";
     private static final ChildArrangementsOrderType CHILD_LIVE = ChildArrangementsOrderType.CHILD_LIVE;
     private static final ChildArrangementsOrderType CHILD_CONTACT = ChildArrangementsOrderType.CHILD_CONTACT;
 
@@ -120,6 +122,22 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
         DocmosisParameters generatedParameters = underTest.generate(caseData);
 
         assertThat(generatedParameters.toString()).contains(CHILD_CONTACT_TEXT);
+    }
+
+    @Test
+    void shouldContainCorrectTextWhenBothArrangementOrderTypeSelected() {
+        List<C43OrderType> c43OrderTypes = List.of(C43OrderType.CHILD_ARRANGEMENT_ORDER,
+            C43OrderType.SPECIFIC_ISSUE_ORDER, C43OrderType.PROHIBITED_STEPS_ORDER);
+
+        CaseData caseData = buildCaseData(c43OrderTypes, List.of(CHILD_LIVE, CHILD_CONTACT));
+
+        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
+        when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
+        when(c43ChildArrangementOrderTitleGenerator.getOrderTitle(any())).thenReturn(ORDER_TITLE);
+
+        DocmosisParameters generatedParameters = underTest.generate(caseData);
+
+        assertThat(generatedParameters.toString()).contains(BOTH_ARRANGEMENT_TEXT);
     }
 
     @Test
