@@ -15,8 +15,6 @@ import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
-import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -432,73 +430,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThat(response.getData()).extracting("manageOrdersCafcassRegion").isNull();
         }
 
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class Dfpl1012 {
-        private static final long invalidCaseId = 8888888888888888L;
-        private static final long validCaseId = 1661877618161045L;
-        private static final String migrationId = "DFPL-1012";
-
-        private final UUID positionStatementRespondentId = UUID.fromString("b8da3a48-441f-4210-a21c-7008d256aa32");
-
-        private final Element<PositionStatementRespondent> positionStatementRespondent = element(
-            positionStatementRespondentId, PositionStatementRespondent.builder().build());
-
-        @Test
-        void shouldRemovePositionStatementRespondent() {
-            CaseData caseData = prepareValidCaseData();
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId)
-            );
-
-            CaseData responseData = extractCaseData(response);
-            assertThat(responseData.getHearingDocuments().getPositionStatementRespondentListV2())
-                .doesNotContain(positionStatementRespondent);
-        }
-
-        @Test
-        void shouldThrowExceptionIfWrongCase() {
-            CaseData caseData = CaseData.builder().id(invalidCaseId).build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format("Migration {id = %s, case reference = 8888888888888888}, expected case id %d",
-                    migrationId, validCaseId));
-        }
-
-        @Test
-        void shouldThrowExceptionIfWrongPositionStatementRespondent() {
-            CaseData caseData = CaseData.builder().id(validCaseId)
-                .hearingDocuments(HearingDocuments.builder()
-                    .positionStatementRespondentListV2(List.of(
-                        element(UUID.randomUUID(), PositionStatementRespondent.builder().build()))
-                    )
-                    .build())
-                .build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format("Migration {id = %s, case reference = %s}, invalid position statement "
-                        + "respondent",
-                    migrationId, validCaseId));
-        }
-
-        private CaseData prepareValidCaseData() {
-            return CaseData.builder()
-                .id(validCaseId)
-                .hearingDocuments(HearingDocuments.builder().build().builder()
-                    .positionStatementRespondentListV2(List.of(
-                        element(UUID.randomUUID(), PositionStatementRespondent.builder().build()),
-                        element(UUID.randomUUID(), PositionStatementRespondent.builder().build()),
-                        positionStatementRespondent
-                    ))
-                    .build())
-                .build();
-        }
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
