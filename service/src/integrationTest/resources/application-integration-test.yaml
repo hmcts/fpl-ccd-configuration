@@ -154,3 +154,8 @@ survey:
 resources:
   images:
     baseUrl: 'https://fake.images.url'
+
+case_document_am:
+  url: http://localhost:4455
+  health:
+    url: ${case_document_am.url}/health

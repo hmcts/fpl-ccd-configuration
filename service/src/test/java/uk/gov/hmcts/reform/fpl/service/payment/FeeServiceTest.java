@@ -48,6 +48,7 @@ import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.CARE_ORDER_KEYWORD
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.CHANGE_SURNAME_KEYWORD;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.CHANNEL;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.CHILD_ASSESSMENT_KEYWORD;
+import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.CONTACT_WITH_CHILD_IN_CARE_KEYWORD;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.EVENT;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.JURISDICTION_1;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.JURISDICTION_2;
@@ -151,6 +152,7 @@ class FeeServiceTest {
         private static final String SECURE_ACCOMMODATION_ORDER_ENG_CODE = "FEE0331";
         private static final String SECURE_ACCOMMODATION_ORDER_WALES_CODE = "FEE0503";
         private static final String REFUSE_CONTACT_WITH_CHILD_CODE = "FEE0329";
+        private static final String CONTACT_WITH_CHILD_IN_CARE_CODE = "FEE0329";
 
         @BeforeEach
         void setup() {
@@ -184,6 +186,12 @@ class FeeServiceTest {
                 JURISDICTION_2,
                 REFUSE_CONTACT_WITH_CHILD_KEYWORD,
                 SERVICE)).thenReturn(buildFeeResponse(REFUSE_CONTACT_WITH_CHILD_CODE, BigDecimal.TEN));
+            when(feesRegisterApi.findFee(CHANNEL,
+                EVENT,
+                JURISDICTION_1,
+                JURISDICTION_2,
+                CONTACT_WITH_CHILD_IN_CARE_KEYWORD,
+                SERVICE)).thenReturn(buildFeeResponse(CONTACT_WITH_CHILD_IN_CARE_CODE, BigDecimal.TEN));
         }
 
         @Test

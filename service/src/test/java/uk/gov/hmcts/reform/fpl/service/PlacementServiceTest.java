@@ -72,6 +72,7 @@ import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.PAR
 import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.STATEMENT_OF_FACTS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
@@ -810,7 +811,7 @@ class PlacementServiceTest {
         }
 
         @Test
-        void shouldSealApplicationAndAddNewPlacementToListOfExistingPlacements() {
+        void shouldSaveApplicationAndAddNewPlacementToListOfExistingPlacements() {
 
             final Placement existingPlacement = Placement.builder()
                 .childId(child1.getId())
@@ -835,15 +836,17 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .build();
 
-            final PlacementEventData expectedPlacementData = PlacementEventData.builder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(existingPlacement, currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+            assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
+            assertThat(unwrapElements(actualPlacementData.getPlacements()))
+                .containsAll(List.of(existingPlacement, currentPlacement));
+            assertThat(actualPlacementData.getPlacementIdToBeSealed())
+                .isEqualTo(actualPlacementData.getPlacements().stream()
+                    .filter(elm -> application.getBinaryUrl().equals(elm.getValue().getApplication().getBinaryUrl()))
+                    .map(Element::getId)
+                    .findFirst().orElse(null));
         }
 
         @Test
@@ -900,12 +903,9 @@ class PlacementServiceTest {
 
             final PlacementEventData actualPlacementData = underTest.savePlacement(caseData);
 
-            final PlacementEventData expectedPlacementData = PlacementEventData.builder()
-                .placement(currentPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+            assertThat(actualPlacementData.getPlacement()).isEqualTo(currentPlacement);
+            assertThat(unwrapElements(actualPlacementData.getPlacements())).containsAll(List.of(currentPlacement));
+            assertThat(actualPlacementData.getPlacementIdToBeSealed()).isNull();
 
             verifyNoInteractions(sealingService, time);
         }
@@ -914,7 +914,7 @@ class PlacementServiceTest {
         void shouldAddLocalAuthorityPlacementNoticeResponse() {
 
             final Placement currentPlacement = Placement.builder()
-                .application(sealedApplication)
+                .application(application)
                 .noticeDocuments(emptyList())
                 .build();
 
@@ -940,7 +940,7 @@ class PlacementServiceTest {
                 caseData, LOCAL_AUTHORITY);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(LOCAL_AUTHORITY)
                     .response(laResponseDocument)
@@ -948,19 +948,15 @@ class PlacementServiceTest {
                     .build()))
                 .build();
 
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+            assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
+            assertThat(unwrapElements(actualPlacementData.getPlacements())).containsAll(List.of(currentPlacement));
         }
 
         @Test
         void shouldAddCafcassPlacementNoticeResponse() {
 
             final Placement currentPlacement = Placement.builder()
-                .application(sealedApplication)
+                .application(application)
                 .build();
 
             final DocumentReference cafcassNoticeDocument = testDocumentReference();
@@ -984,7 +980,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacementNoticeResponsesAdmin(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(CAFCASS)
                     .response(cafcassNoticeDocument)
@@ -992,19 +988,15 @@ class PlacementServiceTest {
                     .build()))
                 .build();
 
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+            assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
+            assertThat(unwrapElements(actualPlacementData.getPlacements())).containsAll(List.of(currentPlacement));
         }
 
         @Test
         void shouldAddFirstParentPlacementNoticeWithResponse() {
 
             final Placement currentPlacement = Placement.builder()
-                .application(sealedApplication)
+                .application(application)
                 .build();
 
             final DocumentReference respondentResponseDocument = testDocumentReference();
@@ -1027,7 +1019,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacementNoticeResponses(caseData, RESPONDENT);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .noticeDocuments(wrapElements(PlacementNoticeDocument.builder()
                     .type(RESPONDENT)
                     .response(respondentResponseDocument)
@@ -1035,19 +1027,15 @@ class PlacementServiceTest {
                     .build()))
                 .build();
 
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+            assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
+            assertThat(unwrapElements(actualPlacementData.getPlacements())).containsAll(List.of(currentPlacement));
         }
 
         @Test
         void shouldAddMultipleNoticeOfPlacementResponses() {
 
             final Placement currentPlacement = Placement.builder()
-                .application(sealedApplication)
+                .application(application)
                 .build();
 
             final DocumentReference localAuthorityNoticeResponse = testDocumentReference();
@@ -1084,7 +1072,7 @@ class PlacementServiceTest {
             final PlacementEventData actualPlacementData = underTest.savePlacementNoticeResponsesAdmin(caseData);
 
             final Placement expectedPlacement = currentPlacement.toBuilder()
-                .application(sealedApplication)
+                .application(application)
                 .noticeDocuments(wrapElements(
                     PlacementNoticeDocument.builder()
                         .type(LOCAL_AUTHORITY)
@@ -1103,12 +1091,8 @@ class PlacementServiceTest {
                         .build()))
                 .build();
 
-            final PlacementEventData expectedPlacementData = placementEventData.toBuilder()
-                .placement(expectedPlacement)
-                .placements(wrapElements(currentPlacement))
-                .build();
-
-            assertThat(actualPlacementData).isEqualTo(expectedPlacementData);
+            assertThat(actualPlacementData.getPlacement()).isEqualTo(expectedPlacement);
+            assertThat(unwrapElements(actualPlacementData.getPlacements())).containsAll(List.of(currentPlacement));
         }
 
         @Test
@@ -1130,6 +1114,29 @@ class PlacementServiceTest {
                 .hasMessage("Missing placement application document");
         }
 
+        @Test
+        void shouldSealPlacementApplication() {
+            final UUID uuid = randomUUID();
+            final Placement currentPlacement = Placement.builder()
+                .application(application)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .court(court)
+                .placementEventData(PlacementEventData.builder()
+                    .placements(List.of(element(uuid, currentPlacement)))
+                    .placement(currentPlacement)
+                    .placementIdToBeSealed(uuid)
+                    .build())
+                .build();
+
+            PlacementEventData sealedResult = underTest.sealPlacementApplicationAfterEventSubmitted(caseData);
+
+            final Placement expectedPlacement = Placement.builder().application(sealedApplication).build();
+
+            assertThat(sealedResult.getPlacement()).isEqualTo(expectedPlacement);
+            assertThat(sealedResult.getPlacements()).isEqualTo(List.of(element(uuid, expectedPlacement)));
+        }
     }
 
     @Nested

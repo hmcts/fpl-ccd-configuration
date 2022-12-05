@@ -161,7 +161,9 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         /* This is a workaround as the 'hearingList' has set itself to the UUID of the selected hearing, NOT the
          * actual DynamicList data structure anymore so cannot deserialize properly (so we just throw it out, as we
          * don't need it at this stage anyway). */
-        ((LinkedHashMap) caseDetails.getData().get(TEMPORARY_C2_DOCUMENT)).put("hearingList", null);
+        if (isNotEmpty(caseDetails.getData().get(TEMPORARY_C2_DOCUMENT))) {
+            ((LinkedHashMap) caseDetails.getData().get(TEMPORARY_C2_DOCUMENT)).put("hearingList", null);
+        }
         CaseData caseData = getCaseData(caseDetails);
 
         if (!isNull(caseData.getTemporaryC2Document())

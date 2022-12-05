@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.document;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -9,6 +10,10 @@ import uk.gov.hmcts.reform.fpl.model.documentview.DocumentContainerView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentFolderView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
+import uk.gov.hmcts.reform.fpl.service.DocumentService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 
 import java.util.List;
 
@@ -25,7 +30,18 @@ class DocumentsListRendererTest {
 
     private final CaseUrlService caseUrlService = mock(CaseUrlService.class);
 
-    private final DocumentsListRenderer underTest = new DocumentsListRenderer(IMAGE_BASE_URL, caseUrlService);
+    private FeatureToggleService featureToggleService = mock(FeatureToggleService.class);
+
+    private DocumentService documentService = new DocumentService(mock(DocmosisDocumentGeneratorService.class),
+        mock(UploadDocumentService.class), featureToggleService);
+
+    private final DocumentsListRenderer underTest = new DocumentsListRenderer(IMAGE_BASE_URL, caseUrlService,
+        documentService);
+
+    @BeforeEach
+    void init() {
+        when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(true);
+    }
 
     @Test
     void shouldRenderEmptyDocumentBundles() {
@@ -47,7 +63,7 @@ class DocumentsListRendererTest {
                 .name("SWET")
                 .documents(List.of(DocumentView.builder()
                     .document(DocumentReference.builder()
-                        .filename("swet-doc.docx").url("fake-url.com").binaryUrl("test.com").build())
+                        .filename("swet-doc.docx").url("fake-url.com").binaryUrl("test.com/documents/docId").build())
                     .title("swet-doc.docx")
                     .build()))
                 .build()))

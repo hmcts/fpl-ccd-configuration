@@ -9,10 +9,12 @@ import uk.gov.hmcts.reform.fpl.model.order.OrderOperation;
 import uk.gov.hmcts.reform.fpl.service.orders.amendment.AmendOrderService;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderOperation.AMEND;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderOperation.UPLOAD;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -25,6 +27,19 @@ public class OrderProcessingService {
         OrderOperation operation = defaultIfNull(
             eventData.getManageOrdersOperation(), eventData.getManageOrdersOperationClosedState()
         );
-        return AMEND == operation ? amendOrderService.updateOrder(caseData) : historyService.generate(caseData);
+        return AMEND == operation ? new HashMap<>() : historyService.generate(caseData);
+    }
+
+    public Map<String, Object> postProcessDocument(CaseData caseData) {
+        ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
+        OrderOperation operation = defaultIfNull(
+            eventData.getManageOrdersOperation(), eventData.getManageOrdersOperationClosedState()
+        );
+        if (AMEND == operation) {
+            return amendOrderService.updateOrder(caseData);
+        } else if (UPLOAD == operation) {
+            return historyService.processUploadedOrder(caseData);
+        }
+        return new HashMap<>();
     }
 }

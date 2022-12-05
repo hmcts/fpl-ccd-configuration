@@ -60,6 +60,36 @@ public class UrgentGatekeepingOrderService {
         }
 
         final UrgentHearingOrder order = UrgentHearingOrder.builder()
+            .order(orderDocument)
+            .unsealedOrder(orderDocument)
+            .dateAdded(time.now().toLocalDate())
+            .translationRequirements(eventData.getUrgentGatekeepingTranslationRequirements())
+            .allocation(allocation)
+            .build();
+
+        returnedData.put("urgentHearingOrder", order);
+
+        return returnedData;
+    }
+
+    public Map<String, Object> finaliseAndSeal(CaseData caseData) {
+        final GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
+        final DocumentReference orderDocument = eventData.getUrgentHearingOrderDocument();
+        final Map<String, Object> returnedData = new HashMap<>();
+
+        String allocation = null;
+
+        if (noPreExistingAllocationDecision(caseData)) {
+            Allocation allocationDecision = allocationService.setAllocationDecisionIfNull(
+                caseData, eventData.getUrgentHearingAllocation()
+            );
+
+            allocation = allocationDecision.getProposal();
+
+            returnedData.put("allocationDecision", allocationDecision);
+        }
+
+        final UrgentHearingOrder order = UrgentHearingOrder.builder()
             .order(sealingService.sealDocument(orderDocument, caseData.getCourt(), caseData.getSealType()))
             .unsealedOrder(orderDocument)
             .dateAdded(time.now().toLocalDate())
@@ -82,6 +112,22 @@ public class UrgentGatekeepingOrderService {
         }
 
         return templates;
+    }
+
+    public Map<String, Object> sealDocumentAfterEventSubmitted(CaseData caseData) {
+        Map<String, Object> updates = new HashMap<>();
+        final UrgentHearingOrder urgentHearingOrder = caseData.getUrgentHearingOrder();
+        final UrgentHearingOrder sealedOrder = UrgentHearingOrder.builder()
+            .order(sealingService.sealDocument(urgentHearingOrder.getUnsealedOrder(),
+                caseData.getCourt(), caseData.getSealType()))
+            .unsealedOrder(urgentHearingOrder.getUnsealedOrder())
+            .dateAdded(urgentHearingOrder.getDateAdded())
+            .translationRequirements(urgentHearingOrder.getTranslationRequirements())
+            .allocation(urgentHearingOrder.getAllocation())
+            .build();
+
+        updates.put("urgentHearingOrder", sealedOrder);
+        return updates;
     }
 
     private boolean noPreExistingAllocationDecision(CaseData caseData) {

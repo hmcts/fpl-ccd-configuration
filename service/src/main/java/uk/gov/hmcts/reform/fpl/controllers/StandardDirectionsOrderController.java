@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
@@ -256,7 +256,7 @@ public class StandardDirectionsOrderController extends CallbackController {
         StandardDirectionOrder order = StandardDirectionOrder.builder().build();
         switch (sdoRouter) {
             case URGENT:
-                caseDetails.getData().putAll(urgentOrderService.finalise(caseData));
+                caseDetails.getData().putAll(urgentOrderService.finaliseAndSeal(caseData));
                 break;
             case SERVICE:
                 JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(

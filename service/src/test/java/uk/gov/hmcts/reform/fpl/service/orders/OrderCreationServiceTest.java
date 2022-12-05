@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.orders;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;

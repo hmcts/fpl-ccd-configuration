@@ -2790,13 +2790,13 @@
     "ID": "HearingVenue",
     "ListElementCode": "429",
     "ListElement": "York Magistrates' C&F Court",
-    "DisplayOrder": 399
+    "DisplayOrder": 398
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "430",
     "ListElement": "York Probate Sub-Registry",
-    "DisplayOrder": 400
+    "DisplayOrder": 399
   }
 ]

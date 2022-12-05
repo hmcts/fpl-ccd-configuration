@@ -482,5 +482,65 @@
     "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "manageDocument.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsSkeletonArgument",
+    "ListElementCode": "hearing",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsSkeletonArgument",
+    "ListElementCode": "document",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Attach Skeleton Argument"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsSkeletonArgument",
+    "ListElementCode": "documentAcknowledgeLabel",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsSkeletonArgument",
+    "ListElementCode": "documentAcknowledge",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsSkeletonArgument",
+    "ListElementCode": "hasConfidentialAddressLabel",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>There is a confidential address on this case. Please check and confirm your document doesn't contain a confidential address before proceeding</strong></div>",
+    "FieldShowCondition": "manageDocument.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsSkeletonArgument",
+    "ListElementCode": "hasConfidentialAddress",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "manageDocument.hasConfidentialAddress=\"Yes\" OR hasConfidentialAddress=\"*\""
   }
 ]

@@ -25,4 +25,5 @@ public class ChildExtension {
     LocalDate extensionDateOther;
     String label;
     UUID id;
+    String index;
 }

@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
@@ -41,6 +41,7 @@ import uk.gov.hmcts.reform.fpl.service.GatekeepingOrderService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.GatekeepingOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
@@ -114,6 +115,9 @@ class GatekeepingOrderServiceTest {
 
     @MockBean
     private GatekeepingOrderGenerationService gatekeepingOrderGenerationService;
+
+    @MockBean
+    private CoreCaseDataService coreCaseDataService;
 
     @Autowired
     private GatekeepingOrderService underTest;
@@ -902,7 +906,13 @@ class GatekeepingOrderServiceTest {
 
             assertThat(actualOrder).isEqualTo(expectedOrder);
 
+            final CaseData caseDataWithOrderAttached = caseData.toBuilder()
+                .standardDirectionOrder(actualOrder)
+                .build();
+            underTest.sealDocumentAfterEventSubmitted(caseDataWithOrderAttached);
+
             verifyNoInteractions(sealingService);
+            verifyNoInteractions(coreCaseDataService);
         }
 
         @Test
@@ -926,12 +936,16 @@ class GatekeepingOrderServiceTest {
                 .orderStatus(SEALED)
                 .dateOfUpload(time.now().toLocalDate())
                 .uploader(userName)
-                .orderDoc(sealedOrder)
-                .lastUploadedOrder(uploadedOrder)
+                .orderDoc(uploadedOrder)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
                 .build();
 
             assertThat(actualOrder).isEqualTo(expectedOrder);
+
+            final CaseData caseDataWithOrderAttached = caseData.toBuilder()
+                .standardDirectionOrder(actualOrder)
+                .build();
+            underTest.sealDocumentAfterEventSubmitted(caseDataWithOrderAttached);
 
             verify(sealingService).sealDocument(uploadedOrder, court, SealType.ENGLISH);
         }
@@ -958,13 +972,17 @@ class GatekeepingOrderServiceTest {
                 .orderStatus(SEALED)
                 .dateOfUpload(time.now().toLocalDate())
                 .uploader(userName)
-                .orderDoc(sealedOrder)
-                .lastUploadedOrder(uploadedOrder)
+                .orderDoc(uploadedOrder)
                 .translationRequirements(ENGLISH_TO_WELSH)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
                 .build();
 
             assertThat(actualOrder).isEqualTo(expectedOrder);
+
+            final CaseData caseDataWithOrderAttached = caseData.toBuilder()
+                .standardDirectionOrder(actualOrder)
+                .build();
+            underTest.sealDocumentAfterEventSubmitted(caseDataWithOrderAttached);
 
             verify(sealingService).sealDocument(uploadedOrder, court, SealType.ENGLISH);
         }

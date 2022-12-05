@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildExtension;
@@ -36,11 +37,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getElement;
 public class CaseExtensionService {
     private final ValidateGroupService validateGroupService;
 
-
-    public LocalDate getCaseShouldBeCompletedByDate(CaseData caseData) {
-        return Optional.ofNullable(caseData.getCaseCompletionDate()).orElse(caseData.getDateSubmitted().plusWeeks(26));
-    }
-
     private String buildChildCaseCompletionDateLabel(CaseData caseData) {
         List<Child> children = ElementUtils.unwrapElements(caseData.getChildren1());
 
@@ -52,7 +48,10 @@ public class CaseExtensionService {
                     Optional.ofNullable(childParty.getCompletionDate())
                             .orElseGet(caseData::getDefaultCompletionDate),
                     DATE);
-                return String.format("Child %d: %s: %s", counter[0]++, childParty.getFullName(), childCaseCompletionDate);
+                return String.format("Child %d: %s: %s",
+                        counter[0]++,
+                        childParty.getFullName(),
+                        childCaseCompletionDate);
             })
             .collect(joining(System.lineSeparator()));
     }
@@ -63,8 +62,11 @@ public class CaseExtensionService {
 
         return Map.of(
             "childSelectorForExtension", childSelector,
-            "childCaseCompletionDateLabel", this.buildChildCaseCompletionDateLabel(caseData),
-            "shouldBeCompletedByDate", formatLocalDateToString(getCaseShouldBeCompletedByDate(caseData), DATE)
+            "childCaseCompletionDateLabel", buildChildCaseCompletionDateLabel(caseData),
+            "shouldBeCompletedByDate", formatLocalDateToString(
+                    getMaxExtendedTimeLine(caseData, caseData.getChildren1()),
+                    DATE
+                )
         );
     }
 
@@ -99,6 +101,7 @@ public class CaseExtensionService {
             ChildExtension.builder()
                 .label(children.get(value).getValue().getParty().getFullName())
                 .id(children.get(value).getId())
+                .index(String.valueOf(++value))
                 .build());
     }
 
@@ -171,14 +174,16 @@ public class CaseExtensionService {
 
     public List<String> validateChildExtensionDate(CaseData caseData) {
         ChildExtensionEventData childExtensionEventData = caseData.getChildExtensionEventData();
-        int[] index = {0};
+        String[] location = {"0"};
 
         return childExtensionEventData.getAllChildExtension().stream()
-                .peek(data -> index[0]++)
                 .filter(Objects::nonNull)
-                .map(childExtension -> validateGroupService.validateGroup(childExtension, CaseExtensionGroup.class))
+                .map(childExtension -> {
+                    location[0] = childExtension.getIndex();
+                    return validateGroupService.validateGroup(childExtension, CaseExtensionGroup.class);
+                })
                 .flatMap(List::stream)
-                .map(error -> String.join(" ",  error, "for child", String.valueOf(index[0])))
+                .map(error -> String.join(" ",  error, "for child", location[0]))
                 .collect(Collectors.toList());
     }
 
@@ -186,11 +191,12 @@ public class CaseExtensionService {
         return ElementUtils.unwrapElements(children1).stream()
             .map(Child::getParty)
             .map(childParty ->
-                    String.join(" - ",
-                        childParty.getFullName(),
-                        formatLocalDateToString(Optional.ofNullable(childParty.getCompletionDate())
-                                .orElse(caseData.getDefaultCompletionDate()), DATE),
-                        childParty.getExtensionReason().getLabel()
+                String.join(" - ",
+                    childParty.getFullName(),
+                    formatLocalDateToString(Optional.ofNullable(childParty.getCompletionDate())
+                            .orElse(caseData.getDefaultCompletionDate()), DATE),
+                    Optional.ofNullable(childParty.getExtensionReason()).orElse(CaseExtensionReasonList.NO_EXTENSION)
+                        .getLabel()
                 )
             )
             .collect(joining(System.lineSeparator()));

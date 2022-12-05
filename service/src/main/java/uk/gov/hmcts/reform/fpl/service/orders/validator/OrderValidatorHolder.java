@@ -22,6 +22,7 @@ public class OrderValidatorHolder {
     private final ManageOrderEndDateWithMonthValidator manageOrderEndDateWithMonthValidator;
     private final ManageOrderEndDateWithEndOfProceedingsValidator manageOrderEndDateWithEndOfProceedingsValidator;
     private final OrderMadeDateValidator orderMadeDateValidator;
+    private final FamilyAssistanceBefriendValidator familyAssistanceBefriendValidator;
 
     private Map<OrderQuestionBlock, QuestionBlockOrderValidator> blockToValidator;
 
@@ -37,7 +38,8 @@ public class OrderValidatorHolder {
             epoEndDateValidator,
             manageOrderEndDateWithMonthValidator,
             manageOrderEndDateWithEndOfProceedingsValidator,
-            orderMadeDateValidator
+            orderMadeDateValidator,
+            familyAssistanceBefriendValidator
         ).collect(Collectors.toMap(QuestionBlockOrderValidator::accept, Function.identity()));
 
         return blockToValidator;

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Api
 @RestController
@@ -29,6 +30,13 @@ import java.util.Optional;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OrdersNeededController extends CallbackController {
 
+    public static final String ORDERS = "orders";
+    public static final List<OrderType> STANDALONE_ORDER_TYPE = List.of(OrderType.CHILD_ASSESSMENT_ORDER,
+        OrderType.CONTACT_WITH_CHILD_IN_CARE,
+        OrderType.OTHER,
+        OrderType.CHILD_RECOVERY_ORDER);
+    public static final List<String> STANDALONE_ORDER_TYPE_NAME = STANDALONE_ORDER_TYPE.stream().map(OrderType::name)
+        .collect(Collectors.toList());
     private final HmctsCourtLookupConfiguration courtLookup;
 
     @PostMapping("/mid-event")
@@ -45,8 +53,8 @@ public class OrdersNeededController extends CallbackController {
         Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get(ordersFieldName))
             .map(orders -> (List<String>) orders.get("orderType"));
 
-        if (orderType.isPresent()
-            && orderType.get().contains(OrderType.CHILD_ASSESSMENT_ORDER.name()) && orderType.get().size() > 1) {
+        if (orderType.isPresent() && orderType.get().size() > 1
+            && orderType.get().stream().anyMatch(STANDALONE_ORDER_TYPE_NAME::contains)) {
             return respond(caseDetails, List.of("You have selected a standalone order, "
                 + "this cannot be applied for alongside other orders."));
         }
@@ -85,6 +93,10 @@ public class OrdersNeededController extends CallbackController {
                 } else {
                     data.put("secureAccommodationOrderType", YesNo.YES);
                 }
+
+                if (!orderTypes.contains(OrderType.CHILD_RECOVERY_ORDER.name())) {
+                    data.remove("groundsForChildRecoveryOrder");
+                }
             });
 
         } else {
@@ -93,14 +105,21 @@ public class OrdersNeededController extends CallbackController {
             removeSecureAccommodationOrderFields(data, ordersFieldName);
         }
 
-        if (isRefuseContactWithChildOrder(orderType)) {
+        if (caseData.isRefuseContactWithChildApplication()) {
             data.put("refuseContactWithChildOrderType", YesNo.YES);
         } else {
             data.remove("groundsForRefuseContactWithChild");
             data.remove("refuseContactWithChildOrderType");
         }
 
-        if (isDischargeOfCareOrder(orderType)) {
+        if (caseData.isContactWithChildInCareApplication()) {
+            data.put("contactWithChildInCareOrderType", "YES");
+        } else {
+            data.remove("groundsForContactWithChild");
+            data.remove("contactWithChildInCareOrderType");
+        }
+
+        if (caseData.isDischargeOfCareApplication()) {
             data.put("otherOrderType", "YES");
         } else {
             data.put("otherOrderType", "NO");
@@ -136,16 +155,5 @@ public class OrdersNeededController extends CallbackController {
 
     private Court getCourtSelection(String courtID) {
         return courtLookup.getCourtByCode(courtID).orElse(null);
-    }
-
-    private boolean isDischargeOfCareOrder(Optional<List<String>> orderType) {
-        return orderType.isPresent()
-            && orderType.get().size() == 1
-            && orderType.get().contains(OrderType.OTHER.name());
-    }
-
-    private boolean isRefuseContactWithChildOrder(Optional<List<String>> orderType) {
-        return orderType.isPresent()
-            && orderType.get().contains(OrderType.REFUSE_CONTACT_WITH_CHILD.name());
     }
 }
