@@ -124,12 +124,11 @@ public class ManageOrdersEventData {
     String manageOrdersSupervisionOrderCourtDirection;
     LocalDate manageOrdersSupervisionOrderApprovalDate;
     LocalDate manageOrdersSupervisionOrderEndDate;
-    /*
-        @deprecated - use manageOrdersChildArrangementsOrderTypes instead
-    */
-    @Deprecated(since = "DFPL-1060")
+
+    //deprecated since DFPL-1060 - use manageOrdersChildArrangementsOrderTypes instead
     ChildArrangementsOrderType manageOrdersChildArrangementsOrderType;
     List<ChildArrangementsOrderType> manageOrdersChildArrangementsOrderTypes;
+
     String manageOrdersPartyGrantedLeave;
     String manageOrdersChildNewSurname;
     DynamicList manageOrdersAllowedContact1;
