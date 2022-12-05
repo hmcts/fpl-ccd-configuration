@@ -15,13 +15,13 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.SentDocuments;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
+import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,11 +29,11 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.nonNull;
+import static java.util.UUID.fromString;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -49,15 +49,16 @@ public class MigrateCaseController extends CallbackController {
     private final MigrateCaseService migrateCaseService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
+        "DFPL-985", this::run985,
+        "DFPL-1012", this::run1012,
         "DFPL-776", this::run776,
-        "DFPL-1001", this::run1001,
+        "DFPL-1015", this::run1015,
         "DFPL-809a", this::run809a,
         "DFPL-809b", this::run809b,
         "DFPL-979", this::run979,
-        "DFPL-982", this::run982,
         "DFPL-1006", this::run1006,
-        "DFPL-1029", this::run1029,
-        "DFPL-969", this::run969
+        "DFPL-969", this::run969,
+        "DFPL-1034", this::run1034
     );
 
     @PostMapping("/about-to-submit")
@@ -200,9 +201,9 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put("judicialMessages", resultJudicialMessages);
     }
 
-    private void run1001(CaseDetails caseDetails) {
-        removeHearingBooking("DFPL-1001", 1649335087796806L, caseDetails,
-            "9cc3f847-3f2c-4d19-bf32-ed1377866ffe");
+    private void run1015(CaseDetails caseDetails) {
+        removeHearingBooking("DFPL-1015", 1641373238062313L, caseDetails,
+            "894fa026-e403-45e8-a2fe-105e8135ee5b");
     }
 
     private void removeHearingBooking(final String migrationId, final Long expectedCaseId,
@@ -269,6 +270,16 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put("state", CASE_MANAGEMENT);
     }
 
+    private void run1034(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1034";
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1667917072654848L, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removeDocumentsSentToParties(getCaseData(caseDetails),
+            migrationId,
+            fromString("a1ba061a-2982-4ce3-9881-b74c37aa9b4f"),
+            List.of(fromString("0e133c81-51aa-4bd3-b5aa-7689224ad28a"))));
+    }
+
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private void run1029(CaseDetails caseDetails) {
@@ -287,62 +298,6 @@ public class MigrateCaseController extends CallbackController {
         fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
     }
 
-    private void run982(CaseDetails caseDetails) {
-        removeDocumentSentToParty(caseDetails, 1661249570230673L, "DFPL-982",
-            "52a06d8d-283b-446a-b4e8-64bba3a54f7f",
-            List.of("f6d74661-e3d8-4d0d-9ee3-09bdf0068dd2",
-                "a3755cb6-4e12-4670-8779-c07e00ec669e"));
-    }
-
-    private void removeDocumentSentToParty(CaseDetails caseDetails, long expectedCaseId,
-                                           String migrationId,
-                                           String expectedDocumentsSentToPartiesId,
-                                           List<String> docIdsToBeRemoved) {
-        CaseData caseData = getCaseData(caseDetails);
-        Long caseId = caseData.getId();
-
-        if (caseId != expectedCaseId) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, expected case id %d",
-                migrationId, caseId, expectedCaseId
-            ));
-        }
-
-        final UUID expectedPartyUuid = UUID.fromString(expectedDocumentsSentToPartiesId);
-        final List<UUID> docUuidsToBeRemoved = docIdsToBeRemoved.stream().map(UUID::fromString).collect(toList());
-
-        final Element<SentDocuments> targetDocumentsSentToParties = ElementUtils.findElement(expectedPartyUuid,
-                caseData.getDocumentsSentToParties())
-            .orElseThrow(() -> new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, party Id not found",
-                migrationId, caseId)));
-
-        docUuidsToBeRemoved.stream().forEach(docIdToBeRemoved -> {
-                if (ElementUtils.findElement(docIdToBeRemoved,
-                    targetDocumentsSentToParties.getValue().getDocumentsSentToParty()).isEmpty()) {
-                    throw new AssertionError(format(
-                        "Migration {id = %s, case reference = %s}, document Id not found",
-                        migrationId, caseId));
-                }
-            }
-        );
-
-        final List<Element<SentDocuments>> resultDocumentsSentToParties = caseData.getDocumentsSentToParties().stream()
-            .map(documentsSentToParty -> {
-                if (!expectedPartyUuid.equals(documentsSentToParty.getId())) {
-                    return documentsSentToParty;
-                } else {
-                    return element(documentsSentToParty.getId(),
-                        documentsSentToParty.getValue().toBuilder()
-                            .documentsSentToParty(documentsSentToParty.getValue().getDocumentsSentToParty().stream()
-                                .filter(documentSent -> !docUuidsToBeRemoved.contains(documentSent.getId()))
-                                .collect(Collectors.toList())).build());
-                }
-            }).collect(Collectors.toList());
-
-        caseDetails.getData().put("documentsSentToParties", resultDocumentsSentToParties);
-    }
-
     private void run969(CaseDetails caseDetails) {
         var migrationId = "DFPL-969";
 
@@ -353,4 +308,48 @@ public class MigrateCaseController extends CallbackController {
             UUID.fromString("84573155-34ac-4ff4-b616-54ac4cc369cb")));
     }
 
+    private final DocumentListService documentListService;
+
+    private void removeRespondentStatementList(CaseDetails caseDetails, long expectedCaseId,
+                                               String migrationId,
+                                               String expectedRespondentStatementId) {
+        CaseData caseData = getCaseData(caseDetails);
+        final Long caseId = caseData.getId();
+
+        if (caseId != expectedCaseId) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId));
+        }
+
+        List<Element<RespondentStatement>> respondentStatementsResult =
+            caseData.getRespondentStatements().stream()
+                .filter(el -> !el.getId().equals(UUID.fromString(expectedRespondentStatementId)))
+                .collect(toList());
+
+        if (respondentStatementsResult.size() != caseData.getRespondentStatements().size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, invalid respondent statements",
+                migrationId, caseId));
+        }
+
+        caseDetails.getData().put("respondentStatements", respondentStatementsResult);
+        // refreshing the document view
+        caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
+    }
+
+    private void run985(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-985";
+        final Long expectedCaseId = 1648203424556112L;
+        removeRespondentStatementList(caseDetails, expectedCaseId, migrationId,
+            "4b88563e-c6b3-4780-90b6-531e1db65b7e");
+    }
+
+    private void run1012(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1012";
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1661877618161045L, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(getCaseData(caseDetails),
+            migrationId, fromString("b8da3a48-441f-4210-a21c-7008d256aa32")));
+    }
 }

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
+import uk.gov.hmcts.reform.fpl.config.HighCourtAdminEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -83,7 +84,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
     @MockBean(SealedOrderHistoryFinalMarker.class), @MockBean(OrderNotificationDocumentService.class),
     @MockBean(FeeService.class), @MockBean(PbaNumberService.class), @MockBean(DocumentSealingService.class),
     @MockBean(RespondentService.class), @MockBean(DocmosisDocumentGeneratorService.class),
-    @MockBean(UploadDocumentService.class), @MockBean(HearingVenueLookUpService.class)
+    @MockBean(UploadDocumentService.class), @MockBean(HearingVenueLookUpService.class),
+    @MockBean(HighCourtAdminEmailLookupConfiguration.class)
 })
 class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
