@@ -13,7 +13,6 @@ module.exports = {
     await I.runAccessibilityTest();
     I.selectOption(this.fields.reportList, expertReportLog.reportList.value);
 
-    I.wait(0.5);
     I.fillDate(expertReportLog.reportRequestDate, this.fields.reportRequestDate);
     I.click(this.fields.reportApproval);
     I.fillDate(expertReportLog.reportApprovalDate, this.fields.reportApprovalDate);

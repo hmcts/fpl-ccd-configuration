@@ -9,7 +9,7 @@ const retryableErrors = [
 
 module.exports = class HooksHelpers extends Helper {
   getHelper() {
-    return this.helpers['Puppeteer'] || this.helpers['WebDriver'];
+    return this.helpers['Puppeteer'] || this.helpers['WebDriver'] || this.helpers['Playwright'];
   }
 
   _test(test) {

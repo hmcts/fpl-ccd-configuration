@@ -177,7 +177,6 @@ Scenario('HMCTS admin adjourns and re-lists a hearing', async ({I, caseViewPage,
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectAdjournHearing(`Case management hearing, ${formatHearingDate(hearingStartDate)}`);
   await I.goToNextPage();
-  I.wait(1);
   manageHearingsEventPage.selectAdjournmentReason('Lawyers', 'No key issue analysis');
   await I.goToNextPage();
   manageHearingsEventPage.selectCancellationAction('Yes - and I can add the new date now');
@@ -222,7 +221,6 @@ Scenario('HMCTS admin vacates and re-lists a hearing', async ({I, caseViewPage, 
   await I.goToNextPage();
   manageHearingsEventPage.selectCancellationAction('#hearingReListOption-RE_LIST_NOW');
   await I.goToNextPage();
-  I.wait(1);
   manageHearingsEventPage.selectVacatedReason('Lawyers', 'No key issue analysis');
   await I.goToNextPage();
   await manageHearingsEventPage.enterHearingDetails(hearingDetails[1]);
@@ -260,7 +258,6 @@ Scenario('HMCTS admin cancels and re-lists hearing', async ({I, caseViewPage, ma
   await I.goToNextPage();
   manageHearingsEventPage.selectCancellationAction('#hearingReListOption-RE_LIST_LATER');
   await I.goToNextPage();
-  I.wait(1);
   manageHearingsEventPage.selectVacatedReason('Lawyers', 'No key issue analysis');
 
   await I.completeEvent('Save and continue');

@@ -4,11 +4,15 @@ const {runAccessibility} = require('./accessibility/runner');
 module.exports = class BrowserHelpers extends Helper {
 
   getHelper() {
-    return this.helpers['Puppeteer'] || this.helpers['WebDriver'];
+    return this.helpers['Puppeteer'] || this.helpers['WebDriver'] || this.helpers['Playwright'];
   }
 
   isPuppeteer() {
     return this.helpers['Puppeteer'];
+  }
+
+  isPlaywright() {
+    return this.helpers['Playwright'];
   }
 
   async getBrowser() {
@@ -73,7 +77,7 @@ module.exports = class BrowserHelpers extends Helper {
     for (let tryNumber = 0; tryNumber <= numberOfRetries; tryNumber++) {
       // console.log('waitForSelector ' + locator + ' try number ' + (tryNumber+1));
       try {
-        if (this.isPuppeteer()) {
+        if (this.isPuppeteer() || this.isPlaywright()) {
           const context = await helper._getContext();
           result = await context.waitForSelector(locator, {timeout: retryInterval * 1000});
         } else {

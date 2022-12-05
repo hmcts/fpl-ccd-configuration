@@ -23,11 +23,6 @@ const { I } = inject();
 'use strict';
 
 module.exports = {
-  async waitThenClick(selector, timeout = 1) {
-    this.waitForSelector(selector, timeout);
-    this.click(selector);
-  },
-
   async signIn(user) {
     console.log(`signing in ${user.email}`);
     I.clearCookie(); // force clear cookies
@@ -77,7 +72,6 @@ module.exports = {
   },
 
   async checkLoggedIn() {
-    this.isPuppeteer();
     await this.goToPage(baseUrl);
     this.waitForSelector(signedInSelector, 5);
     this.dontSee('Sign in');
@@ -150,7 +144,6 @@ module.exports = {
     } else {
       await eventSummaryPage.submit(button, '#confirmation-body');
       await this.retryUntilExists(() => this.click('Close and Return to case details'), '.hmcts-banner--success');
-      I.wait(2);
     }
   },
 

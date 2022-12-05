@@ -28,7 +28,7 @@ function stringify(value) {
 
 module.exports = class HooksHelpers extends Helper {
   async _failed(test) {
-    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
+    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'] || this.helpers['Playwright'];
     let logs = await helper.grabBrowserLogs();
     if (logs !== undefined) {
       logs = logs.map(log => {
