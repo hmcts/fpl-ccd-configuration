@@ -304,7 +304,7 @@ Scenario('Request and upload translation for case management order', async ({ I,
   // Upload the translated orders
   I.clearCookie();
   await login('hmctsAdminUser');
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await I.navigateToCaseDetails(caseId);
 
   await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.draftOrder);
   assertTranslation(I, caseViewPage, orders.draftOrder);

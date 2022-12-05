@@ -44,7 +44,8 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential further ev
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
 
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await login('swanseaLocalAuthorityUserOne');
+  await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
   await manageDocumentsLAEventPage.selectFurtherEvidence();
@@ -70,7 +71,8 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential further ev
   I.expandDocumentSection(expertReportsSection, supportingEvidenceDocuments[2].name);
   I.seeInExpandedConfidentialDocument(supportingEvidenceDocuments[2].name, config.swanseaLocalAuthorityUserOne.email, dateFormat(submittedAt, 'd mmm yyyy'));
 
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
   caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
 
   I.expandDocumentSection(expertReportsSection, supportingEvidenceDocuments[0].name);

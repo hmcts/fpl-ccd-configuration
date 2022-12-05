@@ -13,7 +13,7 @@ async function setupScenario(I, login) {
     caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
   }
   await login('swanseaLocalAuthorityUserOne');
-  await I.navigateToCaseDetailsAs(caseId);
+  await I.navigateToCaseDetails(caseId);
 }
 
 Scenario('local authority add an external barrister as a legal representative for the case', async ({ I, caseViewPage, manageLegalRepresentativesEventPage, login }) => {
@@ -180,7 +180,9 @@ Scenario('local authority upload placement application and court admin make orde
 
   I.say('Respondent solicitor can not see confidential documents');
   await api.grantCaseAccess(caseId, config.privateSolicitorOne, '[SOLICITORA]');
-  await I.navigateToCaseDetailsAs(config.privateSolicitorOne, caseId);
+
+  await login('privateSolicitorOne');
+  await I.navigateToCaseDetails(caseId);
   caseViewPage.selectTab(caseViewPage.tabs.placement);
 
   I.seeInTab(['Child 1', 'Name'], 'Timothy Jones');
@@ -238,7 +240,8 @@ Scenario('local authority upload placement application and court admin make orde
 
   I.say('Admin generates placement order');
 
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();

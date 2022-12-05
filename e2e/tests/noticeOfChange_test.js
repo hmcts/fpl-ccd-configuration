@@ -39,7 +39,9 @@ Scenario('Solicitor can request representation of a respondent @flaky', async ({
   await noticeOfChangePage.enterCaseReference(caseId);
   I.click('Continue');
   I.waitForText('Your notice of change request has not been submitted');
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+
+  await login('swanseaLocalAuthorityUserOne');
+  await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
   await submitApplicationEventPage.giveConsent();
   await I.completeEvent('Submit', null, true);
@@ -74,7 +76,8 @@ Scenario('Solicitor can request representation of a respondent @flaky', async ({
 
 
   I.say('Checking Hmcts admin can replace respondent solicitor...');
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.administrationActions.amendRespondents);
   await enterRespondentsEventPage.updateRegisteredOrganisation('Swansea City Council', 1);
   await I.completeEvent('Save and continue');
@@ -86,7 +89,8 @@ Scenario('Solicitor can request representation of a respondent @flaky', async ({
 
 
   I.say('Checking Hmcts admin can remove respondent solicitor...');
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await login('hmctsAdminUser');
+  await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.administrationActions.amendRespondents);
   await enterRespondentsEventPage.enterRepresentationDetails('No', {}, 0);
   await I.completeEvent('Save and continue');

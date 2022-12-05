@@ -141,6 +141,7 @@ module.exports = {
     } else {
       await eventSummaryPage.submit(button, '#confirmation-body');
       await this.retryUntilExists(() => this.click('Close and Return to case details'), '.hmcts-banner--success');
+      I.wait(2);
     }
   },
 
