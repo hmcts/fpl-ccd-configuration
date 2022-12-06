@@ -392,8 +392,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
     }
 
-     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-     @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
     class Dfpl1029 {
 
         final String migrationId = "DFPL-1029";
