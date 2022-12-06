@@ -251,6 +251,73 @@ class RemoveSentDocumentServiceTest {
                 "hiddenDocumentsSentToParties", hiddenDocumentsSentToParties));
     }
 
+    @Test
+    void shouldRemoveSentDocumentFromCaseIfHiddenSentDocumentsExists() {
+        final UUID id = UUID.randomUUID();
+        final UUID docPartyId = UUID.randomUUID();
+
+        final Element<SentDocument> removedTarget = element(id, SentDocument.builder().build());
+
+        List<Element<SentDocument>> sentDocumentsForPartyOne = new ArrayList<>();
+        sentDocumentsForPartyOne.add(element(SentDocument.builder().build()));
+        sentDocumentsForPartyOne.add(element(SentDocument.builder().build()));
+        sentDocumentsForPartyOne.add(element(SentDocument.builder().build()));
+
+        List<Element<SentDocument>> sentDocumentsForPartyTwo = new ArrayList<>();
+        sentDocumentsForPartyTwo.add(element(SentDocument.builder().build()));
+        sentDocumentsForPartyTwo.add(removedTarget);
+        sentDocumentsForPartyTwo.add(element(SentDocument.builder().build()));
+
+        List<Element<SentDocuments>> documentsSentToParties = List.of(
+            element(SentDocuments.builder()
+                .documentsSentToParty(sentDocumentsForPartyOne)
+                .build()),
+            element(docPartyId, SentDocuments.builder()
+                .partyName("Alan Smith")
+                .documentsSentToParty(sentDocumentsForPartyTwo)
+                .build())
+        );
+        Element<SentDocument> existingHiddenSentDocument = element(
+            SentDocument.builder()
+                .partyName("Alan Smith")
+                .letterId("11111111-1111-1111-1111-111111111111")
+                .removalReason("previous removed document")
+                .build()
+        );
+        List<Element<SentDocuments>> hiddenDocumentsSentToParties = new ArrayList<>();
+        hiddenDocumentsSentToParties.addAll(List.of(
+            element(docPartyId, SentDocuments.builder()
+                .partyName("Alan Smith")
+                .documentsSentToParty(new ArrayList<>(List.of(existingHiddenSentDocument)))
+                .build())
+        ));
+
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of("documentsSentToParties", documentsSentToParties))
+            .build());
+        CaseData caseData = CaseData.builder()
+            .documentsSentToParties(documentsSentToParties)
+            .removalToolData(RemovalToolData.builder()
+                .reasonToRemoveSentDocument("This is the reason.")
+                .hiddenDocumentsSentToParties(hiddenDocumentsSentToParties)
+                .build())
+            .build();
+
+        underTest.removeSentDocumentFromCase(caseData, caseDetailsMap, id);
+
+        documentsSentToParties.get(0).getValue().getDocumentsSentToParty().remove(removedTarget);
+        hiddenDocumentsSentToParties.add(
+            element(documentsSentToParties.get(1).getId(), SentDocuments.builder()
+                .documentsSentToParty(List.of(element(removedTarget.getId(),
+                    SentDocument.builder().removalReason("This is the reason.").build())))
+                .build())
+        );
+
+        assertThat(caseDetailsMap).containsAllEntriesOf(
+            Map.of("documentsSentToParties", documentsSentToParties,
+                "hiddenDocumentsSentToParties", hiddenDocumentsSentToParties));
+    }
+
     private SentDocuments buildSentDocuments(String partyName, Map... fileInfos) {
         List<Element<SentDocument>> documentsSentToParty = new ArrayList<>();
 
