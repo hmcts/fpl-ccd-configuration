@@ -270,16 +270,6 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put("state", CASE_MANAGEMENT);
     }
 
-    private void run1034(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1034";
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1667917072654848L, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.removeDocumentsSentToParties(getCaseData(caseDetails),
-            migrationId,
-            fromString("a1ba061a-2982-4ce3-9881-b74c37aa9b4f"),
-            List.of(fromString("0e133c81-51aa-4bd3-b5aa-7689224ad28a"))));
-    }
-
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private void run1029(CaseDetails caseDetails) {

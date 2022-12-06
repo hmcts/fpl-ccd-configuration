@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.modifier.ManageOrders
 import uk.gov.hmcts.reform.fpl.service.orders.validator.OrderValidator;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +37,7 @@ import static org.apache.commons.io.FilenameUtils.getExtension;
 @RestController
 @RequestMapping("/callback/manage-orders")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
+@Slf4j
 public class ManageOrdersController extends CallbackController {
     private final OrderValidator orderValidator;
     private final OrderShowHideQuestionsCalculator showHideQuestionsCalculator;
@@ -143,12 +146,18 @@ public class ManageOrdersController extends CallbackController {
         CaseData fixedCaseData = manageOrdersCaseDataFixer.fix(getCaseData(updatedDetails));
 
         CaseData caseData;
-        Map<String, Object> updates = orderProcessing.postProcessDocument(fixedCaseData);
+        Map<String, Object> updates = new HashMap<>();
+        try {
+            updates = orderProcessing.postProcessDocument(fixedCaseData);
+        } catch (Exception exception) {
+            log.error("Error while processing manage orders document for case id {}.",
+                caseDetails.getId(), exception.toString());
+        }
+
         if (updates.isEmpty()) {
             caseData = getCaseData(callbackRequest);
         } else {
             data.putAll(updates);
-
             caseData = getCaseData(updatedDetails);
         }
         coreCaseDataService.triggerEvent(caseData.getId(),
