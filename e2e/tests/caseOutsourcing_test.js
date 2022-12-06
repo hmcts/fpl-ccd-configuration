@@ -3,7 +3,7 @@ const api = require('../helpers/api_helper');
 const mandatorySubmissionFields = require('../fixtures/caseData/mandatorySubmissionFields.json');
 
 Feature('Case outsourcing');
-
+// todo - maybe filter out some of these now they've been fixed
 Scenario('Private solicitor creates case on behalf of local authority', async ({I, caseListPage, login}) => {
   const localAuthority = 'Swansea City Council';
   const caseName = `On behalf of ${localAuthority}`;

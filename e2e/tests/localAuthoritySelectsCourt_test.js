@@ -27,4 +27,4 @@ Scenario('Local authority select court to issue', async ({I, caseViewPage, selec
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   await caseViewPage.checkTaskIsFinished(config.applicationActions.selectCourt);
   await caseViewPage.checkTasksDoesNotContainError(selectCourtError);
-});
+}).tag('@nightly-only');

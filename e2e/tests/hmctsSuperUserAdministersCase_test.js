@@ -16,7 +16,7 @@ async function setupScenario(I, login) {
 Scenario('HMCTS super user can add gatekeeping order', async ({I, caseViewPage, login}) => {
   await setupScenario(I, login);
   await caseViewPage.checkActionsAreAvailable([config.administrationActions.addGatekeepingOrder]);
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS super user updates case name', async ({I, caseViewPage, changeCaseNameEventPage, login}) => {
   await setupScenario(I, login);
@@ -40,7 +40,7 @@ Scenario('HMCTS super user updates FamilyMan reference number', async ({I, caseV
   I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
 
   I.seeFamilyManNumber('newMockCaseID');
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS super user changes state from case management to final hearing', async ({I, caseViewPage, changeCaseStateEventPage, login}) => {
   await setupScenario(I, login);

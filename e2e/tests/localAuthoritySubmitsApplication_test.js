@@ -508,7 +508,7 @@ Scenario('local authority enters others to be given notice', async ({I, caseView
   caseViewPage.checkTaskIsInProgress(config.applicationActions.enterOthers);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterOthers);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
-});
+}).tag('@nightly-only');
 
 Scenario('local authority enters grounds for application @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterGroundsForApplicationEventPage, login}) => {
   await setupScenario(I, login);
@@ -553,7 +553,7 @@ Scenario('local authority enters risk and harm to children', async ({I, caseView
   caseViewPage.checkTaskIsFinished(config.applicationActions.enterRiskAndHarmToChildren);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterRiskAndHarmToChildren);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
-});
+}).tag('@nightly-only');
 
 Scenario('local authority enters factors affecting parenting', async ({I, caseViewPage, enterFactorsAffectingParentingEventPage, login}) => {
   await setupScenario(I, login);
@@ -576,7 +576,7 @@ Scenario('local authority enters factors affecting parenting', async ({I, caseVi
   caseViewPage.checkTaskIsFinished(config.applicationActions.enterFactorsAffectingParenting);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterFactorsAffectingParenting);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
-});
+}).tag('@nightly-only');
 
 Scenario('local authority enters international element', async ({I, caseViewPage, enterInternationalElementEventPage, login}) => {
   await setupScenario(I, login);
@@ -600,7 +600,7 @@ Scenario('local authority enters international element', async ({I, caseViewPage
   caseViewPage.checkTaskIsFinished(config.applicationActions.enterInternationalElement);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterInternationalElement);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
-});
+}).tag('@nightly-only');
 
 Scenario('local authority enters other proceedings', async ({I, caseViewPage, enterOtherProceedingsEventPage, login}) => {
   await setupScenario(I, login);
@@ -637,7 +637,7 @@ Scenario('local authority enters other proceedings', async ({I, caseViewPage, en
   caseViewPage.checkTaskIsFinished(config.applicationActions.enterOtherProceedings);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterOtherProceedings);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
-});
+}).tag('@nightly-only');
 
 Scenario('local authority enters language requirement', async ({I, caseViewPage, enterLanguageRequirementsEventPage, login}) => {
   await setupScenario(I, login);
@@ -650,7 +650,7 @@ Scenario('local authority enters language requirement', async ({I, caseViewPage,
   caseViewPage.checkTaskIsFinished(config.applicationActions.languageRequirement);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.languageRequirement);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
-});
+}).tag('@nightly-only');
 
 Scenario('local authority enters allocation proposal @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterAllocationProposalEventPage, login}) => {
   await setupScenario(I, login);
@@ -694,7 +694,7 @@ Scenario('local authority enters attending hearing', async ({I, caseViewPage, en
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   caseViewPage.checkTaskIsFinished(config.applicationActions.enterAttendingHearing);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterAttendingHearing);
-});
+}).tag('@nightly-only');
 
 Scenario('local authority adds multiple application documents @cross-browser', async ({I, caseViewPage, addApplicationDocumentsEventPage, login}) => {
   await setupScenario(I, login);
@@ -725,7 +725,7 @@ Scenario('local authority adds multiple application documents @cross-browser', a
     caseViewPage.selectTab(caseViewPage.tabs.startApplication);
     caseViewPage.checkTaskIsInProgress(config.applicationActions.uploadDocuments);
   }
-});
+}).tag('@nightly-only');
 
 let feeToPay = '2055'; //Need to remember this between tests.. default in case the test below fails
 

@@ -89,7 +89,7 @@ Scenario('Create 32b discharge of care order @flaky', async ({ I, caseViewPage, 
     orderType: 'Discharge of care order (C32B)',
     approvalDate: approvalDate,
   });
-});
+}).tag('@nightly-only');
 
 Scenario('Create EPO order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   const newCaseId = await I.submitNewCaseWithData(caseData);
@@ -164,7 +164,7 @@ Scenario('Create EPO Prevent removal order', async ({ I, caseViewPage, manageOrd
     approvalDateTime: today,
     others: 'John Doe',
   });
-}); // todo
+}).tag('@nightly-only'); // todo
 
 Scenario('Create C21 blank order', async ({ I, caseViewPage, manageOrdersEventPage, login }) => {
   await setupScenario(I, caseViewPage, login);
@@ -229,7 +229,7 @@ Scenario('Create C21 blank order in closed case', async ({ I, caseViewPage, mana
     approvalDate: approvalDate,
     others: 'John Doe',
   });
-}); // todo
+}).tag('@nightly-only'); // todo
 
 Scenario('Create Recovery of a child (C29)', async ({ I, caseViewPage, manageOrdersEventPage, login }) => {
   await setupScenario(I, caseViewPage, login);
@@ -269,7 +269,7 @@ Scenario('Create Recovery of a child (C29)', async ({ I, caseViewPage, manageOrd
     approvalDate: approvalDate,
     others: 'John Doe',
   });
-});
+}).tag('@nightly-only');
 
 Scenario('Create C35a Supervision order', async ({ I, caseViewPage, manageOrdersEventPage, login }) => {
   await setupScenario(I, caseViewPage, login);
@@ -301,7 +301,7 @@ Scenario('Create C35a Supervision order', async ({ I, caseViewPage, manageOrders
     approvalDate: approvalDate,
     others: 'John Doe',
   });
-});
+}).tag('@nightly-only');
 
 Scenario('Create Interim care order  (C33)', async ({ I, caseViewPage, manageOrdersEventPage, login }) => {
   await setupScenario(I, caseViewPage, login);
@@ -333,7 +333,7 @@ Scenario('Create Interim care order  (C33)', async ({ I, caseViewPage, manageOrd
     approvalDate: approvalDate,
     others: 'John Doe',
   });
-});
+}).tag('@nightly-only');
 
 Scenario('Interim supervision order (C35B)', async ({ I, caseViewPage, manageOrdersEventPage, login }) => {
   await setupScenario(I, caseViewPage, login);
@@ -363,7 +363,7 @@ Scenario('Interim supervision order (C35B)', async ({ I, caseViewPage, manageOrd
     approvalDate: approvalDate,
     others: 'John Doe',
   });
-});
+}).tag('@nightly-only');
 
 Scenario('Create C43a special guardianship order', async ({I, caseViewPage, manageOrdersEventPage, login}) => {
   await setupScenario(I, caseViewPage, login);
@@ -395,7 +395,7 @@ Scenario('Create C43a special guardianship order', async ({I, caseViewPage, mana
     approvalDate: approvalDate,
     specialGuardian: 'Joe Bloggs',
   });
-});
+}).tag('@nightly-only');
 
 Scenario('Create Child arrangements, Specific issue, Prohibited steps (C43)', async ({I, caseViewPage, manageOrdersEventPage, login}) => {
   await setupScenario(I, caseViewPage, login);
@@ -430,7 +430,7 @@ Scenario('Create Child arrangements, Specific issue, Prohibited steps (C43)', as
     approvalDate: approvalDate,
     others: 'John Doe',
   });
-});
+}).tag('@nightly-only');
 
 Scenario('Create C47A appointment of a Children\'s Guardian', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   const newCaseId = await I.submitNewCaseWithData(caseDataWithApplication);
@@ -465,7 +465,7 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({ I, caseVi
     approvalDate: approvalDate,
     others: 'John Doe',
   });
-}); // todo
+}).tag('@nightly-only'); // todo
 
 Scenario('Upload Manual order (other order)', async ({ I, caseViewPage, manageOrdersEventPage, login }) => {
   await setupScenario(I, caseViewPage, login);
@@ -494,7 +494,7 @@ Scenario('Upload Manual order (other order)', async ({ I, caseViewPage, manageOr
     orderTitle: 'Order F789s',
     approvalDate: approvalDate,
   });
-});
+}).tag('@nightly-only');
 
 Scenario('Create (C26) Secure accommodation order (deprivation of liberty)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   const newCaseId = await I.submitNewCaseWithData(caseDataWithApplication);
@@ -539,7 +539,7 @@ Scenario('Create (C26) Secure accommodation order (deprivation of liberty)', asy
     documentName: 'c26_secure_accommodation_order.pdf',
     others: 'John Doe',
   });
-}); // todo
+}).tag('@nightly-only'); // todo
 
 Scenario('Create Parental responsibility order (C45A)', async ({ I, caseViewPage, manageOrdersEventPage, login }) => {
   await setupScenario(I, caseViewPage, login);
@@ -573,7 +573,7 @@ Scenario('Create Parental responsibility order (C45A)', async ({ I, caseViewPage
     approvalDate: approvalDate,
     others: 'John Doe',
   });
-});
+}).tag('@nightly-only');
 
 function assertOrder(I, caseViewPage, order) {
   const orderElement = `Order ${order.orderIndex}`;

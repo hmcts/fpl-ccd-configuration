@@ -57,27 +57,27 @@ Scenario('HMCTS Admin amends standard directions order', async ({ I, caseViewPag
   await setupScenario(I, login);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.standardDirectionOrder);
   assertAmendment(I, caseViewPage, orders.standardDirectionOrder);
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS Admin amends urgent hearing order', async ({ I, caseViewPage, manageOrdersEventPage, login }) => {
   await setupScenario(I, login);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.urgentHearingOrder);
   assertAmendment(I, caseViewPage, orders.urgentHearingOrder);
   await api.pollLastEvent(caseId, config.internalActions.updateCase);
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS Admin amends case management order', async ({ I, caseViewPage, manageOrdersEventPage, login }) => {
   await setupScenario(I, login);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.caseManagementOrder);
   assertAmendment(I, caseViewPage, orders.caseManagementOrder);
   await api.pollLastEvent(caseId, config.internalActions.updateCase);
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS Admin amends generated order (closed)', async ({ I, caseViewPage, manageOrdersEventPage, login }) => {
   await setupScenario(I, login, closedCaseData);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.generated, manageOrdersEventPage.selectOperationInClosedState);
   assertAmendment(I, caseViewPage, orders.generated);
-});
+}).tag('@nightly-only'); // todo - maybe keep this one on preview?
 
 async function amendOrder(I, caseViewPage, manageOrdersEventPage, order, orderOperation = manageOrdersEventPage.selectOperation) {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);

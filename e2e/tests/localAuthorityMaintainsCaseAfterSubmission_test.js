@@ -45,7 +45,7 @@ Scenario('local authority update its details', async ({ I, caseViewPage, enterLo
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.seeInTab(['Applicant 1', 'Colleague 1', 'Email address'], solicitorEmail);
-});
+}).tag('@nightly-only');
 
 Scenario('local authority provides a statements of service', async ({ I, caseViewPage, addStatementOfServiceEventPage, login }) => {
   await setupScenario(I, login);
@@ -84,7 +84,7 @@ Scenario('local authority provides a statements of service', async ({ I, caseVie
   I.seeInTab(['Recipients 2', 'Time sent'], recipients[1].timeSent);
   I.seeInTab(['Recipients 2', 'How were they sent?'], recipients[1].sentBy);
   I.seeInTab(['Recipients 2', 'Recipient\'s email address'], recipients[1].email);
-});
+}).tag('@nightly-only');
 
 Scenario('local authority upload placement application and court admin make order', async ({I, caseViewPage, placementEventPage, manageOrdersEventPage, login}) => {
 
@@ -271,5 +271,5 @@ Scenario('local authority upload placement application and court admin make orde
   I.seeInTab(['Order 1', 'Children'], 'Timothy Jones');
   I.seeInTab(['Order 1', 'Notification document'], 'placement_order_notification_a206.pdf');
 
-});
+}).tag('@nightly-only');
 

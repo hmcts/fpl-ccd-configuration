@@ -70,7 +70,7 @@ Scenario('Solicitor cannot request representation before case submission and Caf
   await I.completeEvent('Submit', null, true);
 
   await attemptAndFailNoticeOfChange(I, noticeOfChangePage, 'hillingdonLocalAuthorityUserOne', children[0]);
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS Confirm that a main solicitor in not assigned for all the children yet @flaky', async ({I, caseViewPage, enterChildrenEventPage, noticeOfChangePage, login}) => {
   await setupScenario(I);
@@ -83,7 +83,7 @@ Scenario('HMCTS Confirm that a main solicitor in not assigned for all the childr
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.amendChildren);
   await attemptAndFailNoticeOfChange(I, noticeOfChangePage, 'hillingdonLocalAuthorityUserOne', children[0]);
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS assign a main solicitor for all the children @flaky', async ({I, caseViewPage, enterChildrenEventPage, login}) => {
   await setupScenario(I);
@@ -104,7 +104,7 @@ Scenario('HMCTS assign a main solicitor for all the children @flaky', async ({I,
     assertChild(I, index + 1, child.value, solicitor1);
   }
   caseViewPage.checkTabIsNotPresent(caseViewPage.tabs.changeOfRepresentatives);
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS assign a different solicitor for some of the children @flaky', async ({I, caseViewPage, enterChildrenEventPage, login}) => {
   await setupScenario(I);
@@ -142,7 +142,7 @@ Scenario('HMCTS assign a different solicitor for some of the children @flaky', a
   caseViewPage.selectTab(caseViewPage.tabs.changeOfRepresentatives);
   assertChangeOfRepresentative(I, 1, 'FPL', `${children[childWithDifferentRegisteredSolicitorIdx].value.party.firstName} ${children[childWithDifferentRegisteredSolicitorIdx].value.party.lastName}`, 'HMCTS', {removedUser: solicitor1.details, addedUser: solicitor2.details });
   assertChangeOfRepresentative(I, 2, 'FPL', `${children[childWithUnregisteredSolicitorIdx].value.party.firstName} ${children[childWithUnregisteredSolicitorIdx].value.party.lastName}`, 'HMCTS', {removedUser: solicitor1.details, addedUser: unregisteredSolicitor.details });
-});
+}).tag('@nightly-only');
 
 Scenario('Solicitor can request representation via NOC only after case submission and Cafcass solicitor is set @flaky', async ({I, caseListPage, noticeOfChangePage, caseViewPage, login}) => {
   await setupScenario(I);
@@ -157,7 +157,7 @@ Scenario('Solicitor can request representation via NOC only after case submissio
 
   caseViewPage.selectTab(caseViewPage.tabs.changeOfRepresentatives);
   assertChangeOfRepresentative(I, 3, 'Notice of change', `${children[11].value.party.firstName} ${children[11].value.party.lastName}`, solicitor3.details.email, {removedUser: solicitor1.details, addedUser: solicitor3.details });
-});
+}).tag('@nightly-only');
 
 async function setSpecificRepresentative(enterChildrenEventPage, idx, child, solicitor) {
   await enterChildrenEventPage.selectChildUseMainRepresentation(enterChildrenEventPage.fields(idx).childSolicitor.useMainSolicitor.options.no, idx, child);

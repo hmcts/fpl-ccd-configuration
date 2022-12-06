@@ -59,7 +59,7 @@ Scenario('HMCTS admin adds secondary local authority', async ({I, caseViewPage, 
   I.seeInTab(['Applicant 2', 'Group email address'], hillingdonLocalAuthority.email);
   I.dontSeeTagInTab(['Applicant 2', 'Designated local authority']);
   I.dontSeeInTab('Applicant 2', 'Colleague 1');
-});
+}).tag('@nightly-only');
 
 Scenario('Designated local authority solicitor can see all local authorities but updates only his own @broken-AAT', async ({I, caseViewPage, enterLocalAuthorityEventPage, login}) => {
   await setupScenario(I);
@@ -78,7 +78,7 @@ Scenario('Designated local authority solicitor can see all local authorities but
 
   // assert.strictEqual(await enterLocalAuthorityEventPage.getLocalAuthorityName(), swanseaLocalAuthority.name); todo - fix flakyness in AAT - has fpla_test_friday27?
   assert.strictEqual(await enterLocalAuthorityEventPage.getLocalAuthorityEmail(), swanseaLocalAuthority.email);
-});
+}).tag('@nightly-only');
 
 Scenario('Secondary local authority solicitor can see all local authorities but updates only his own @flaky', async ({I, caseViewPage, enterLocalAuthorityEventPage, login}) => {
 
@@ -137,7 +137,7 @@ Scenario('Secondary local authority solicitor can see all local authorities but 
   I.seeInTab(['Applicant 2', 'Colleague 1', 'Email address'], hillingdonColleague.email);
   I.seeInTab(['Applicant 2', 'Colleague 1', 'Send them case update notifications?'], hillingdonColleague.notificationRecipient);
   I.seeTagInTab(['Applicant 2', 'Colleague 1', 'Main contact']);
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS admin removes secondary local authority', async ({I, caseViewPage, caseListPage, manageLocalAuthoritiesEventPage, login}) => {
   await setupScenario(I);
@@ -163,7 +163,7 @@ Scenario('HMCTS admin removes secondary local authority', async ({I, caseViewPag
   await I.signIn(config.hillingdonLocalAuthorityUserOne);
 
   caseListPage.verifyCaseIsNotAccessible(caseId);
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS admin transfer case to new local authority @broken', async ({I, caseViewPage, manageLocalAuthoritiesEventPage, login}) => {
   await setupScenario(I);
@@ -200,13 +200,13 @@ Scenario('HMCTS admin transfer case to new local authority @broken', async ({I, 
 
   caseViewPage.selectTab(caseViewPage.tabs.summary);
   I.seeInTab(['Court to issue'], hillingdonLocalAuthority.court);
-});
+}).tag('@nightly-only');
 
 Scenario('Old LA can not seen transferred case @broken @relies-on-previous', async ({I, caseListPage, login}) => {
   await setupScenario(I);
   await login('swanseaLocalAuthorityUserOne');
   caseListPage.verifyCaseIsNotAccessible(caseId);
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS admin transfer case to secondary local authority @flaky', async ({I, caseViewPage, manageLocalAuthoritiesEventPage, login}) => {
   await setupScenario(I);
@@ -252,19 +252,19 @@ Scenario('HMCTS admin transfer case to secondary local authority @flaky', async 
 
   caseViewPage.selectTab(caseViewPage.tabs.summary);
   I.seeInTab(['Court to issue'], hillingdonLocalAuthority.court);
-});
+}).tag('@nightly-only');
 
 Scenario('Original LA cannot see case when transferred to secondary LA', async ({I, caseListPage, login}) => {
   await setupScenario(I);
   await login('hillingdonLocalAuthorityUserOne');
   caseListPage.verifyCaseIsNotAccessible(caseId);
-});
+}).tag('@nightly-only');
 
 Scenario('Secondary LA can see case after transfer', async ({I, login}) => {
   await setupScenario(I);
   await login('swanseaLocalAuthorityUserOne');
   I.seeCaseInSearchResult(caseId);
-});
+}).tag('@nightly-only');
 
 async function organisationAdminGrantAccess(user, role) {
   await api.grantCaseAccess(caseId, user, role);

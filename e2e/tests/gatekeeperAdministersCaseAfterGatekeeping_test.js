@@ -4,7 +4,7 @@ const gatekeepingCaseData = require('../fixtures/caseData/gatekeepingNoAllocated
 let caseId;
 
 Feature('Gatekeeper Case administration after gatekeeping');
-
+// todo - check if these are needed on preview
 async function setupScenario(I, login) {
   if (!caseId) { caseId = await I.submitNewCaseWithData(gatekeepingCaseData); }
   await login('gateKeeperUser');
