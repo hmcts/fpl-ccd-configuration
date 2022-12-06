@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.RemovalToolData;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
-import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -21,7 +20,6 @@ import java.util.UUID;
 
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.ApplicationRemovalReason.WRONG_CASE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
@@ -183,7 +181,7 @@ class RemoveSentDocumentServiceTest {
     public void shouldRemoveSentDocumentFromCase() {
         final UUID id = UUID.randomUUID();
 
-        Element<SentDocument> removedTarget = element(id, SentDocument.builder().build());
+        final Element<SentDocument> removedTarget = element(id, SentDocument.builder().build());
 
         List<Element<SentDocument>> sentDocumentsForPartyOne = new ArrayList<>();
         sentDocumentsForPartyOne.add(element(SentDocument.builder().build()));
@@ -226,7 +224,7 @@ class RemoveSentDocumentServiceTest {
                     SentDocument.builder().removalReason("This is the reason.").build())))
                 .build())
         );
-       assertThat(caseDetailsMap.get("hiddenDocumentsSentToParties")).isEqualTo(hiddenDocumentsSentToParties);
+        assertThat(caseDetailsMap.get("hiddenDocumentsSentToParties")).isEqualTo(hiddenDocumentsSentToParties);
     }
 
     private SentDocuments buildSentDocuments(String partyName, Map... fileInfos) {
