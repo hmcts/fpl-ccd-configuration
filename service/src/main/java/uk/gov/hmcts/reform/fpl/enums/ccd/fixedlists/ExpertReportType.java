@@ -33,20 +33,20 @@ public enum ExpertReportType {
     PSYCHIATRIC_ON_PARENTS("psychiatricOnParents", "Adult Psychiatric Report on Parents(s)"),
 
     @JsonProperty("clinicalReportOnChild")
-    CLINICAL_REPORT_ON_CHILD("clinicalReportOnChild", "Physiological Report on Child Only - Clinical"),
+    CLINICAL_REPORT_ON_CHILD("clinicalReportOnChild", "Psychological Report on Child Only - Clinical"),
 
     @JsonProperty("educationalReportOnChild")
-    EDUCATIONAL_REPORT_ON_CHILD("educationalReportOnChild", "Physiological Report on Child Only - Educational"),
+    EDUCATIONAL_REPORT_ON_CHILD("educationalReportOnChild", "Psychological Report on Child Only - Educational"),
 
     @JsonProperty("cognitiveReportOnParent")
-    COGNITIVE_REPORT_ON_PARENT("cognitiveReportOnParent", "Physiological Report on Parent(s) - full cognitive"),
+    COGNITIVE_REPORT_ON_PARENT("cognitiveReportOnParent", "Psychological Report on Parent(s) - full cognitive"),
 
     @JsonProperty("functioningReportOnParent")
-    FUNCTIONING_REPORT_ON_PARENT("functioningReportOnParent", "Physiological Report on Parent(s) - functioning"),
+    FUNCTIONING_REPORT_ON_PARENT("functioningReportOnParent", "Psychological Report on Parent(s) - functioning"),
 
     @JsonProperty("physiologicalReportOnParentAndChild")
     PHYSIOLOGICAL_REPORT_ON_PARENT_AND_CHILD("physiologicalReportOnParentAndChild",
-        "Physiological Report on Parent(s) and child"),
+        "Psychological Report on Parent(s) and child"),
 
     @JsonProperty("multiDisciplinaryAssessment")
     MULTI_DISCIPLINARY_ASSESSMENT("multiDisciplinaryAssessment", "Multi Disciplinary Assessment"),
