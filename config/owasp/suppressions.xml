@@ -260,4 +260,11 @@
     <packageUrl regex="true">^pkg:maven/org\.apache\.commons/commons\-text@.*$</packageUrl>
     <cve>CVE-2022-42889</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: postgresql-42.2.24.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.postgresql/postgresql@.*$</packageUrl>
+    <cve>CVE-2022-41946</cve>
+  </suppress>
 </suppressions>

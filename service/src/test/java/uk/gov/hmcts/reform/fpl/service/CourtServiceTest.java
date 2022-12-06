@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.HighCourtAdminEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -24,6 +25,10 @@ import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_NAME;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_REGION;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,6 +40,9 @@ class CourtServiceTest {
 
     @Mock
     private CtscEmailLookupConfiguration ctscLookup;
+
+    @Mock
+    private HighCourtAdminEmailLookupConfiguration highCourtAdminEmailLookupConfiguration;
 
     @InjectMocks
     private CourtService underTest;
@@ -49,6 +57,14 @@ class CourtServiceTest {
         .code("C2")
         .email("court2@test.com")
         .name("Court 2")
+        .build();
+
+    private final String highCourtEmail = "high.court@test.com";
+
+    private final Court highCourt = Court.builder()
+        .code(RCJ_HIGH_COURT_CODE)
+        .name(RCJ_HIGH_COURT_NAME)
+        .region(RCJ_HIGH_COURT_REGION)
         .build();
 
     private final Court transferredCourt1 = Court.builder()
@@ -419,6 +435,18 @@ class CourtServiceTest {
             String courtSeal = underTest.getCourtSeal(caseData, DRAFT);
 
             assertThat(courtSeal).isNull();
+        }
+
+        @Test
+        void shouldGetTheHighCourtEmailWhenRequested() {
+            when(highCourtAdminEmailLookupConfiguration.getEmail()).thenReturn(highCourtEmail);
+            CaseData caseData = CaseData.builder()
+                .court(highCourt)
+                .sendToCtsc(NO.getValue())
+                .build();
+
+            String email = underTest.getCourtEmail(caseData);
+            assertThat(email).isEqualTo(highCourtEmail);
         }
     }
 }
