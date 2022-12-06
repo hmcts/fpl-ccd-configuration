@@ -414,6 +414,12 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         return caseDetails;
     }
 
+    @BeforeEach
+    void setup() {
+        givenSystemUser();
+        givenFplService();
+    }
+
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class Dfpl702 {
@@ -534,11 +540,5 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             verify(coreCaseDataApi).submitSupplementaryData(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN,
                 caseData.getId().toString(), supplementaryData);
         }
-    }
-
-    @BeforeEach
-    void setup() {
-        givenSystemUser();
-        givenFplService();
     }
 }
