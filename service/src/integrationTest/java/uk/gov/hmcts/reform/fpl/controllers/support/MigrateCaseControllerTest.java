@@ -409,12 +409,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     }
 
-    private CaseDetails buildCaseDetails(CaseData caseData, String migrationId) {
-        CaseDetails caseDetails = asCaseDetails(caseData);
-        caseDetails.getData().put("migrationId", migrationId);
-        return caseDetails;
-    }
-
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class Dfpl985 {
@@ -472,6 +466,12 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                     respondentStatementElement
                 )).build();
         }
+    }
+
+    private CaseDetails buildCaseDetails(CaseData caseData, String migrationId) {
+        CaseDetails caseDetails = asCaseDetails(caseData);
+        caseDetails.getData().put("migrationId", migrationId);
+        return caseDetails;
     }
 
     @BeforeEach
