@@ -110,19 +110,22 @@ public class HearingBooking implements TranslatableItem {
     public LocalDateTime getEndDate() {
         LocalDateTime date = this.startDate;
         Integer hearingDays = nonNull(this.hearingDays) ? this.hearingDays : null;
+        int counter = 0;
 
         if (isNull(hearingDays)) {
             return this.endDate;
         }
 
-        for (int i = 0; i < hearingDays; i++) {
+        while (counter < hearingDays) {
+            date = date.plusDays(1);
+
             if (date.getDayOfWeek().toString().contains("SATURDAY")
                 || date.getDayOfWeek().toString().contains("SUNDAY")) {
 
                 continue;
             }
 
-            date = date.plusDays(1);
+            counter++;
         }
 
         return date;

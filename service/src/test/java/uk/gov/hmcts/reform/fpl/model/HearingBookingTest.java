@@ -437,7 +437,7 @@ class HearingBookingTest {
         void shouldReturnCorrectEndDateWithNoWeekend() {
             HearingBooking hearingBooking = HearingBooking.builder()
                 .startDate(LocalDateTime.of(2022, 11, 28, 0, 0, 0))
-                .hearingDays(5)
+                .hearingDays(4)
                 .build();
 
             assertThat(hearingBooking.getEndDate()).isEqualTo(LocalDateTime.of(2022, 12, 2, 0, 0, 0));
@@ -447,7 +447,7 @@ class HearingBookingTest {
         void shouldReturnCorrectEndDateWithOneWeekend() {
             HearingBooking hearingBooking = HearingBooking.builder()
                 .startDate(LocalDateTime.of(2022, 12, 7, 0, 0, 0))
-                .hearingDays(6)
+                .hearingDays(5)
                 .build();
 
             assertThat(hearingBooking.getEndDate()).isEqualTo(LocalDateTime.of(2022, 12, 14, 0, 0, 0));
@@ -456,11 +456,11 @@ class HearingBookingTest {
         @Test
         void shouldReturnCorrectEndDateWithThreeWeekends() {
             HearingBooking hearingBooking = HearingBooking.builder()
-                .startDate(LocalDateTime.of(2022, 11, 22, 0, 0, 0))
-                .hearingDays(17)
+                .startDate(LocalDateTime.of(2022, 11, 28, 0, 0, 0))
+                .hearingDays(16)
                 .build();
 
-            assertThat(hearingBooking.getEndDate()).isEqualTo(LocalDateTime.of(2022, 12, 14, 0, 0, 0));
+            assertThat(hearingBooking.getEndDate()).isEqualTo(LocalDateTime.of(2022, 12, 20, 0, 0, 0));
         }
 
         @Test
@@ -470,7 +470,7 @@ class HearingBookingTest {
                 .hearingDays(0)
                 .build();
 
-            assertThat(hearingBooking.getEndDate()).isEqualTo(LocalDateTime.of(2022, 11, 22, 10, 0, 0));
+            assertThat(hearingBooking.getEndDate()).isEqualTo(LocalDateTime.of(2022, 11, 22, 0, 0, 0));
         }
     }
 }
