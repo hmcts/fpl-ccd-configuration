@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.removeorder;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.exceptions.removaltool.RemovableSentDocumentNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.RemovalToolData;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
@@ -20,6 +21,7 @@ import java.util.UUID;
 
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
@@ -146,6 +148,26 @@ class RemoveSentDocumentServiceTest {
         Element<SentDocument> application = underTest.getRemovedSentDocumentById(caseData, id);
 
         assertThat(application).isEqualTo(sentDocuments.get(1));
+    }
+
+    @Test
+    void shouldThrowExceptionGetRemovedSentDocumentById() {
+        final UUID id = UUID.randomUUID();
+        List<Element<SentDocument>> sentDocuments = new ArrayList<>();
+        sentDocuments.add(element(SentDocument.builder().build()));
+        sentDocuments.add(element(SentDocument.builder().build()));
+        sentDocuments.add(element(SentDocument.builder().build()));
+
+        CaseData caseData = CaseData.builder()
+            .documentsSentToParties(List.of(
+                element(SentDocuments.builder()
+                    .documentsSentToParty(sentDocuments)
+                    .build())
+            ))
+            .build();
+        assertThatThrownBy(() -> underTest.getRemovedSentDocumentById(caseData, id))
+            .isInstanceOf(RemovableSentDocumentNotFoundException.class)
+            .hasMessageContaining(String.format("Removable documents sent to parties with id %s not found", id));
     }
 
     @Test
