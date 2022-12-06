@@ -36,7 +36,6 @@ import static java.util.UUID.fromString;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Api
 @RestController
@@ -79,8 +78,6 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
-
-
     private void run872(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();
