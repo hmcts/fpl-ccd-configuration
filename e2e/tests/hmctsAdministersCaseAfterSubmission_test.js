@@ -40,7 +40,7 @@ Scenario('HMCTS admin updates language requirement', async ({I, caseViewPage, en
   I.seeEventSubmissionConfirmation(config.administrationActions.languageRequirement);
   caseViewPage.selectTab(caseViewPage.tabs.summary);
   I.seeTagInTab('WELSH CASE');
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS admin amends children, respondents, others, international element, other proceedings and attending hearing', async ({I, caseViewPage, enterOtherProceedingsEventPage, enterChildrenEventPage, login}) => {
   await setupScenario(I);
@@ -72,7 +72,7 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
   await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendOtherProceedings, summaryText, descriptionText, () => enterOtherProceedingsEventPage.selectNoForProceeding());
 
   await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendAttendingHearing, summaryText, descriptionText);
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS admin uploads additional applications to the case', async ({I, caseViewPage, uploadAdditionalApplicationsEventPage, paymentHistoryPage, login}) => {
   await setupScenario(I);
@@ -157,7 +157,7 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   I.seeInTab(['Additional applications 1', 'PBA Payment', 'Customer reference'], c2Payment.customerReference);
 
   await api.pollLastEvent(caseId, config.internalActions.updateCase);
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS admin edits supporting evidence document on C2 application', async({I, caseViewPage, manageDocumentsEventPage, login}) => {
   await setupScenario(I);
@@ -177,7 +177,7 @@ Scenario('HMCTS admin edits supporting evidence document on C2 application', asy
   I.seeTextInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Date and time uploaded']);
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Uploaded by'], 'HMCTS');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'File'], 'mockFile.pdf');
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS admin edits supporting evidence document on Other application', async({I, caseViewPage, manageDocumentsEventPage, login}) => {
   await setupScenario(I);
@@ -197,7 +197,7 @@ Scenario('HMCTS admin edits supporting evidence document on Other application', 
   I.seeTextInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Date and time uploaded']);
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Uploaded by'], 'HMCTS');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'File'], 'mockFile.pdf');
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS admin share case with representatives', async ({I, caseViewPage, enterRepresentativesEventPage, login}) => {
   const representative1 = representatives.servedByDigitalService;
@@ -230,14 +230,14 @@ Scenario('HMCTS admin share case with representatives', async ({I, caseViewPage,
   I.seeInTab(['Representatives 2', 'Position in a case'], representative2.positionInACase);
   I.seeInTab(['Representatives 2', 'How do they want to get case information?'], representative2.servingPreferences);
   I.seeInTab(['Representatives 2', 'Who are they?'], representative2.role);
-});
+}).tag('@nightly-only');
 
 Scenario('Representatives can see shared case', async ({I, login}) => {
   await setupScenario(I);
   await login('hillingdonLocalAuthorityUserOne');
   await I.navigateToCaseDetails(caseId);
   I.see(I.uiFormatted(caseId));
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS admin revoke case access from representative', async ({I, caseViewPage, login}) => {
   await setupScenario(I);
@@ -250,13 +250,13 @@ Scenario('HMCTS admin revoke case access from representative', async ({I, caseVi
 
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.amendRepresentatives);
-});
+}).tag('@nightly-only');
 
 Scenario('Representative cannot see revoked case', async ({I, caseListPage, login}) => {
   await setupScenario(I);
   await login('hillingdonLocalAuthorityUserOne');
   await caseListPage.verifyCaseIsNotAccessible(caseId);
-});
+}).tag('@nightly-only');
 
 // Disabled as part of FPLA-1754 - TBD if super user will have access to notice of proceedings event
 xScenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage, login) => {
@@ -321,7 +321,7 @@ Scenario('HMCTS admin handles supplementary evidence', async ({I, caseListPage, 
   await I.navigateToCaseList();
   await I.retryUntilExists(() => caseListPage.searchForCasesWithHandledEvidences(caseId), caseListPage.locateCase(caseId), false);
   I.seeCaseInSearchResult(caseId);
-}).retry(1); //Async case update in prev test
+}).tag('@nightly-only').retry(1); //Async case update in prev test
 
 Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async ({I, caseViewPage, sendCaseToGatekeeperEventPage, login}) => {
   await setupScenario(I);
@@ -334,7 +334,7 @@ Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async 
   await sendCaseToGatekeeperEventPage.enterEmail('cafcass+gatekeeping@gmail.com');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS admin adds a note to the case', async ({I, caseViewPage, addNoteEventPage, login}) => {
   const note = 'Example note';
@@ -348,7 +348,7 @@ Scenario('HMCTS admin adds a note to the case', async ({I, caseViewPage, addNote
   await I.seeEventSubmissionConfirmation(config.administrationActions.addNote);
   caseViewPage.selectTab(caseViewPage.tabs.notes);
   I.seeInTab(['Note 1', 'Note'], note);
-}).retry(1); // async processing in previous test
+}).tag('@nightly-only').retry(1); // async processing in previous test
 
 Scenario('HMCTS admin adds expert report log', async ({I, caseViewPage, addExpertReportEventPage, login}) => {
   await setupScenario(I);
@@ -364,7 +364,7 @@ Scenario('HMCTS admin adds expert report log', async ({I, caseViewPage, addExper
   I.seeInTab(['Report 1', 'Date requested'], '1 Mar 2020');
   I.seeInTab(['Report 1', 'Has it been approved?'], 'Yes');
   I.seeInTab(['Report 1', 'Date approved'], '2 Apr 2020');
-}).retry(1);
+}).tag('@nightly-only').retry(1);
 
 Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, addExtend26WeekTimelineEventPage, login}) => {
   await setupScenario(I);
@@ -386,7 +386,7 @@ Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, ad
   I.seeInTab('Extended timeline date', '10 Oct 2030');
   I.seeInTab('Why is this case being extended?', 'Timetable for child');
   I.seeInTab('Add comments', 'Comment');
-}).retry(1);
+}).tag('@nightly-only').retry(1);
 
 Scenario('HMCTS admin closes the case', async ({I, caseViewPage, recordFinalDecisionsEventPage, login}) => {
   await setupScenario(I);
@@ -413,4 +413,4 @@ Scenario('HMCTS admin closes the case', async ({I, caseViewPage, recordFinalDeci
   I.seeInTab(['Child 3', 'Resolution Date'], '12 March 2020');
   I.seeInTab(['Child 4', 'Resolution Reason'], 'No order made');
   I.seeInTab(['Child 4', 'Resolution Date'], '12 March 2020');
-}).retry(1);
+}).tag('@nightly-only').retry(1);
