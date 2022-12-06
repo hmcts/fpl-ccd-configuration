@@ -217,7 +217,7 @@ class CaseExtensionControllerAboutToSubmitTest extends AbstractCallbackTest {
                                             String lastName) {
         return getChildMap(null, completionDate, firstName, lastName);
     }
-    
+
     private Map<String, Object> getChildMap(String id,
                                             String completionDate,
                                             String firstName,
@@ -229,7 +229,7 @@ class CaseExtensionControllerAboutToSubmitTest extends AbstractCallbackTest {
                         "firstName", firstName,
                         "lastName", lastName,
                         "completionDate", completionDate,
-                        "extensionReason", "INTERNATIONAL_ASPECT")));
+                        "extensionReason", "InternationalAspect")));
         return child1;
     }
 
