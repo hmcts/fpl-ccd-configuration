@@ -415,12 +415,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         return caseDetails;
     }
 
-    @BeforeEach
-    void setup() {
-        givenSystemUser();
-        givenFplService();
-    }
-
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class Dfpl985 {
@@ -478,6 +472,12 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                     respondentStatementElement
                 )).build();
         }
+    }
+
+    @BeforeEach
+    void setup() {
+        givenSystemUser();
+        givenFplService();
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
