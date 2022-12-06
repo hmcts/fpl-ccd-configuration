@@ -71,7 +71,7 @@ Scenario('Add legal counsel', async ({ I, caseViewPage, noticeOfChangePage, subm
   await checkLegalCounsellorsOnEvents(I, caseViewPage, submitApplicationEventPage, returnApplicationEventPage);
 
   legalCounselAdded = true;
-});
+}).tag('@nightly-only');
 
 Scenario('Legal counsel to be removed when respondent representative is removed through NoC @flaky', async ({ I, caseViewPage, noticeOfChangePage }) => {
   checkLegalCounselWasAdded();
@@ -84,7 +84,7 @@ Scenario('Legal counsel to be removed when respondent representative is removed 
 
   // assert that it has just been removed from respondent and not child
   assertLegalCounsellorForParties(I, ['Child 1']);
-});
+}).tag('@nightly-only');
 
 Scenario('Legal counsel to be removed when child representative is updated @flaky', async ({ I, caseViewPage, enterChildrenEventPage }) => {
   checkLegalCounselWasAdded();
@@ -94,7 +94,7 @@ Scenario('Legal counsel to be removed when child representative is updated @flak
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.dontSeeInTab(['Child 1', 'Legal Counsellor']);
-});
+}).tag('@nightly-only');
 
 function checkLegalCounselWasAdded() {
   if (!legalCounselAdded) {

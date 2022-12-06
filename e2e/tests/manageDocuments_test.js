@@ -163,7 +163,7 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential respondent
   I.dontSeeConfidentialInExpandedDocument(respondent1StatementsSection, supportingEvidenceDocuments[2].name);
   I.dontSeeDocumentSection(respondent1StatementsSection, supportingEvidenceDocuments[2].name);
   I.dontSeeDocumentSection(respondent1StatementsSection, supportingEvidenceDocuments[0].name);
-});
+}).tag('@nightly-only');
 
 // @flaky?
 Scenario('HMCTS Admin and LA upload confidential and non confidential correspondence documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, login}) => {
@@ -207,7 +207,7 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential correspond
 
   assertCorrespondence(I, 'local authority', 1, 'C2 supporting document', 'Supports the C2 application');
   assertConfidentialCorrespondence(I, 'local authority', 2, 'Correspondence document', 'Test notes');
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadAdditionalApplicationsEventPage, login}) => {
   await setupScenario(I, login);
@@ -263,7 +263,7 @@ Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async
   assertC2SupportingDocuments(I, 'C2 application', 2, 'Email with evidence attached', 'Case evidence included');
   assertConfidentialC2SupportingDocuments(I, 'C2 application', 3, 'Correspondence document', 'Test notes');
   assertC2SupportingDocuments(I, 'C2 application', 4, 'C2 supporting document', 'Supports the C2 application');
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS Admin and LA upload confidential Other applications supporting documents @flaky', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadAdditionalApplicationsEventPage, login}) => {
   await setupScenario(I, login);
@@ -316,7 +316,7 @@ Scenario('HMCTS Admin and LA upload confidential Other applications supporting d
   assertC2SupportingDocuments(I, 'Other applications', 2, 'Email with evidence attached', 'Case evidence included');
   assertConfidentialC2SupportingDocuments(I, 'Other applications', 3, 'Correspondence document', 'Test notes');
   assertC2SupportingDocuments(I, 'Other applications', 4, 'C2 supporting document', 'Supports the C2 application');
-});
+}).tag('@nightly-only');
 
 Scenario('Solicitor with access uploads documents', async ({I, manageDocumentsEventPage, caseViewPage, login}) => {
   await setupScenario(I, login);

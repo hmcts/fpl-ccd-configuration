@@ -12,7 +12,7 @@ const api = require('../helpers/api_helper');
 let caseId;
 
 Feature('Case administration after submission');
-
+// todo check if these can be relegated to the nightly pipeline
 async function setupScenario(I) {
   if (!caseId) { caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren); }
 }

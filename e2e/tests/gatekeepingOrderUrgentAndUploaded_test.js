@@ -55,7 +55,7 @@ Scenario('Gatekeeping judge uploads draft gatekeeping order', async ({I, caseVie
   I.seeInTab(['Gatekeeping order', 'File'], 'mockFile.docx');
   I.seeInTab(['Gatekeeping order', 'Date uploaded'], dateFormat('d mmm yyyy'));
   I.seeInTab(['Gatekeeping order', 'Uploaded by'], 'Uploaded by');
-});
+}).tag('@nightly-only');
 
 Scenario('Gatekeeping judge uploads final standard directions', async ({I, caseViewPage, draftStandardDirectionsEventPage, login}) => {
   await setupScenario(I, login);
@@ -73,4 +73,4 @@ Scenario('Gatekeeping judge uploads final standard directions', async ({I, caseV
   I.seeInTab(['Gatekeeping order', 'Uploaded by'], 'Uploaded by');
 
   I.dontSeeTab(caseViewPage.tabs.draftOrders);
-});
+}).tag('@nightly-only');

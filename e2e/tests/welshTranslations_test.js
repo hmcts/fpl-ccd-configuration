@@ -183,7 +183,7 @@ Scenario('Request and upload translation for C110A', async ({ I, caseViewPage, u
   caseViewPage.selectTab(orders.c11a.tabName);
   I.waitForText(orders.c11a.translationFile);
   I.dontSee('Sent for translation');
-});
+}).tag('@nightly-only');
 
 Scenario('Request and upload translation for uploaded order', async ({ I, caseViewPage, uploadWelshTranslationsPage, manageOrdersEventPage, login }) => {
   let caseId = await I.submitNewCaseWithData(caseDataGatekeepingWithLanguage);
@@ -210,7 +210,7 @@ Scenario('Request and upload translation for uploaded order', async ({ I, caseVi
   assertSentToTranslation(I, caseViewPage, orders.uploadedOrder);
   await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.uploadedOrder);
   assertTranslation(I, caseViewPage, orders.uploadedOrder);
-});
+}).tag('@nightly-only');
 
 Scenario('Request and upload translation for standard directions order', async ({ I, caseViewPage, uploadWelshTranslationsPage, draftStandardDirectionsEventPage, login }) => {
   let caseId = await I.submitNewCaseWithData(caseDataGatekeepingWithLanguage);
@@ -236,19 +236,19 @@ Scenario('Request and upload translation for standard directions order', async (
   await I.navigateToCaseDetails(caseId);
   await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.standardDirectionOrder);
   assertTranslation(I, caseViewPage, orders.standardDirectionOrder);
-});
+}).tag('@nightly-only');
 
 Scenario('Upload translation for notice of proceedings (C36)', async ({ I, caseViewPage, uploadWelshTranslationsPage, login }) => {
   await setupScenario(I, login);
   await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.noticeOfProceedingsC6);
   assertTranslation(I, caseViewPage, orders.noticeOfProceedingsC6);
-});
+}).tag('@nightly-only');
 
 Scenario('Upload translation for notice of proceedings - others (C36A)', async ({ I, caseViewPage, uploadWelshTranslationsPage, login }) => {
   await setupScenario(I, login);
   await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.noticeOfProceedingsC6A);
   assertTranslation(I, caseViewPage, orders.noticeOfProceedingsC6A);
-});
+}).tag('@nightly-only');
 
 Scenario('Request and upload translation for urgent hearing order', async ({ I, caseViewPage, uploadWelshTranslationsPage, draftStandardDirectionsEventPage, login }) => {
   let caseId = await I.submitNewCaseWithData(caseDataGatekeepingWithLanguage);
@@ -274,7 +274,7 @@ Scenario('Request and upload translation for urgent hearing order', async ({ I, 
   await I.navigateToCaseDetails(caseId);
   await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.urgentHearingOrder);
   assertTranslation(I, caseViewPage, orders.urgentHearingOrder);
-});
+}).tag('@nightly-only');
 
 Scenario('Request and upload translation for case management order', async ({ I, caseViewPage, uploadWelshTranslationsPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage, login }) => {
   const hearing1 = 'Case management hearing, 1 January 2020';
@@ -313,13 +313,13 @@ Scenario('Request and upload translation for case management order', async ({ I,
 
   await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.caseManagementOrder);
   assertTranslation(I, caseViewPage, orders.caseManagementOrder);
-});
+}).tag('@nightly-only');
 
 Scenario('Upload translation for generated order (closed)', async ({ I, caseViewPage, uploadWelshTranslationsPage, login }) => {
   await setupScenario(I, login, closedCaseData);
   await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.generated);
   assertTranslation(I, caseViewPage, orders.generated);
-});
+}).tag('@nightly-only');
 
 Scenario('Request and upload translation for notice of hearing', async ({ I, caseViewPage, uploadWelshTranslationsPage, manageHearingsEventPage, login }) => {
   let caseId = await I.submitNewCaseWithData(caseDataCaseManagementWithLanguage);
@@ -352,7 +352,7 @@ Scenario('Request and upload translation for notice of hearing', async ({ I, cas
   assertSentToTranslation(I, caseViewPage, orders.noticeOfHearing);
   await translateOrder(I, caseViewPage, uploadWelshTranslationsPage, orders.noticeOfHearing);
   assertTranslation(I, caseViewPage, orders.noticeOfHearing);
-});
+}).tag('@nightly-only');
 
 Scenario('Request and upload translation for HMCTS further evidence documents', async ({ I, caseViewPage, uploadWelshTranslationsPage, manageDocumentsEventPage, login }) => {
   let caseId = await I.submitNewCaseWithData(caseDataCaseManagementWithLanguage);
@@ -376,7 +376,7 @@ Scenario('Request and upload translation for HMCTS further evidence documents', 
   caseViewPage.selectTab(orders.furtherEvidence.tabName);
   I.expandDocumentSection(orders.furtherEvidence.description.type, orders.furtherEvidence.description.type.name);
   I.seeInExpandedDocumentTranslated(orders.furtherEvidence.description.type.name, 'HMCTS', dateFormat(new Date(), 'd mmm yyyy'));
-});
+}).tag('@nightly-only');
 
 async function translateOrder(I, caseViewPage, uploadWelshTranslationsPage, item) {
   await caseViewPage.goToNewActions(config.administrationActions.uploadWelshTranslations);

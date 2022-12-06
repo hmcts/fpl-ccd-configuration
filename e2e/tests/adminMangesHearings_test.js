@@ -130,7 +130,7 @@ Scenario('HMCTS admin edits a future hearing', async ({I, caseViewPage, manageHe
   I.seeInTab(['Hearing 2', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
   I.seeInTab(['Hearing 2', 'Others notified'], 'Noah King');
   await api.pollLastEvent(caseId, config.internalActions.updateCase);
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, caseViewPage, manageDocumentsEventPage, login}) => {
   await setupScenario(I, login);
@@ -168,7 +168,7 @@ Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, ca
 
   I.expandDocument('Expert reports', 'Document 3');
   I.seeInExpandedDocument('Document 3', 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS admin adjourns and re-lists a hearing', async ({I, caseViewPage, manageHearingsEventPage, login}) => {
   await setupScenario(I, login);
@@ -211,7 +211,7 @@ Scenario('HMCTS admin adjourns and re-lists a hearing', async ({I, caseViewPage,
   I.expandDocumentSection('Other reports', 'Document 2');
   I.seeInExpandedDocument('Document 2', 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
 
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS admin vacates and re-lists a hearing', async ({I, caseViewPage, manageHearingsEventPage, login}) => {
   await setupScenario(I, login);
@@ -248,7 +248,7 @@ Scenario('HMCTS admin vacates and re-lists a hearing', async ({I, caseViewPage, 
   caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
   I.expandDocumentSection('Expert reports', 'Document 3');
   I.seeInExpandedDocument('Document 3', 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS admin cancels and re-lists hearing', async ({I, caseViewPage, manageHearingsEventPage, login}) => {
   await setupScenario(I, login);
@@ -295,7 +295,7 @@ Scenario('HMCTS admin cancels and re-lists hearing', async ({I, caseViewPage, ma
   caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
   I.expandDocumentSection('Expert reports', 'Document 3');
   I.seeInExpandedDocument('Document 3', 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearingsEventPage, login}) => {
   await setupScenario(I, login);
@@ -340,7 +340,7 @@ Scenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearing
   I.seeInTab(['Hearing 3', 'Additional notes'], hearingDetails[0].additionalNotes);
   I.seeInTab(['Hearing 3', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
   I.seeInTab(['Hearing 3', 'Others notified'], 'Noah King');
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS admin updates past hearing', async ({I, caseViewPage, manageHearingsEventPage, login}) => {
   await setupScenario(I, login);
@@ -363,4 +363,4 @@ Scenario('HMCTS admin updates past hearing', async ({I, caseViewPage, manageHear
   I.seeInTab(['Hearing 3', 'Hearing attendance'], hearingDetails[0].attendance);
   await api.pollLastEvent(caseId, config.internalActions.updateCase);
 
-});
+}).tag('@nightly-only');

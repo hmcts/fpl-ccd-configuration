@@ -130,7 +130,7 @@ Scenario('Gatekeeping judge adds allocated judge', async ({I, caseViewPage, allo
   I.seeInTab(['Allocated Judge', 'Judge or magistrate\'s title'], 'Her Honour Judge');
   I.seeInTab(['Allocated Judge', 'Last name'], 'Moley');
   I.seeInTab(['Allocated Judge', 'Email Address'], 'moley@example.com');
-});
+}).tag('@nightly-only');
 
 Scenario('Gatekeeping judge seals gatekeeping order', async ({I, caseViewPage, addGatekeepingOrderEventPage, login}) => {
   await setupScenario(I, login);
@@ -195,4 +195,4 @@ Scenario('Gatekeeping judge seals gatekeeping order', async ({I, caseViewPage, a
   caseViewPage.selectTab(caseViewPage.tabs.history);
   I.seeEndStateForEvent(config.administrationActions.addGatekeepingOrder, 'Case management');
 
-});
+}).tag('@nightly-only');

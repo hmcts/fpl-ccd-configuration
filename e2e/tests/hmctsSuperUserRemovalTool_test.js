@@ -38,7 +38,7 @@ Scenario('HMCTS super user removes a generated order through \'Create or upload 
   I.seeInTab([generatedOrders, 'Starts on'], '26 May 2020');
   I.seeInTab([generatedOrders, 'Date and time of upload'], '2:33pm, 26 May 2020');
   I.seeInTab([generatedOrders, 'Reason for removal'], 'Entered incorrect order');
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS super user removes a generated order through \'Manage orders\' from a case', async ({I, caseViewPage, removalToolEventPage, login}) => {
   await setupScenario(I, login);
@@ -55,7 +55,6 @@ Scenario('HMCTS super user removes a generated order through \'Manage orders\' f
   I.seeInTab([generatedOrders, 'Children'], 'Timothy Jones');
   I.seeInTab([generatedOrders, 'Reason for removal'], 'Entered incorrect order');
 });
-
 
 Scenario('HMCTS super user removes a sealed cmo from a case', async ({I, caseViewPage, removalToolEventPage, login}) => {
   await setupScenario(I, login);
@@ -86,7 +85,7 @@ Scenario('HMCTS super user removes a sdo from a case', async ({I, caseViewPage, 
   I.seeInTab([removeSDO, 'File'], 'sdo.pdf');
   I.seeInTab([removeSDO, 'Date of issue'], '28 April 2020');
   I.seeInTab([removeSDO, 'Reason for removal'], 'Entered incorrect order');
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS super user removes a draft cmo from a case', async ({I, caseViewPage, removalToolEventPage, login}) => {
   await setupScenario(I, login);
@@ -101,7 +100,7 @@ Scenario('HMCTS super user removes a draft cmo from a case', async ({I, caseView
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.dontSeeInTab('Removed case management orders 2');
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS super user removes an agreed cmo from a case', async ({I, caseViewPage, removalToolEventPage, login}) => {
   await setupScenario(I, login);
@@ -116,8 +115,7 @@ Scenario('HMCTS super user removes an agreed cmo from a case', async ({I, caseVi
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.dontSeeInTab('Removed case management orders 2');
-});
-
+}).tag('@nightly-only');
 
 Scenario('HMCTS super user removes a draft order from a case', async ({I, caseViewPage, removalToolEventPage, login}) => {
   await setupScenario(I, login);
@@ -128,7 +126,7 @@ Scenario('HMCTS super user removes a draft order from a case', async ({I, caseVi
 
   await removeOrder(I, caseViewPage, removalToolEventPage, labelToSelect, false);
   caseViewPage.checkTabIsNotPresent(caseViewPage.tabs.draftOrders);
-});
+}).tag('@nightly-only');
 
 Scenario('HMCTS super user removes an additional application from the case', async ({I, caseViewPage, removalToolEventPage, login}) => {
   await setupScenarioWithApplication(I, login);

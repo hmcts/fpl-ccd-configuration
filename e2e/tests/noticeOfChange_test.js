@@ -99,7 +99,7 @@ Scenario('Solicitor can request representation of a respondent @flaky', async ({
   assertChangeOfRepresentative(I, 5, 'FPL', 'Joe Bloggs', 'HMCTS', {removedUser: solicitor3.details });
   await login('wiltshireLocalAuthorityUserOne');
   await caseListPage.verifyCaseIsNotAccessible(caseId);
-});
+}).tag('@nightly-only');
 
 const assertRepresentative = (I, user, organisation, index = 1) => {
   I.seeInTab(['Representative', 'Representative\'s first name'], user.forename);

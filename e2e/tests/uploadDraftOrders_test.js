@@ -115,7 +115,7 @@ Scenario('Respondent solicitor uploads draft orders', async ({I, caseViewPage, e
   assertDraftOrders(I, 4, hearing4, [
     {title: draftOrder3.title, status: withJudgeStatus},
   ]);
-});
+}).tag('@nightly-only');
 
 Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage, login}) => {
   await setupScenario(I);
@@ -166,7 +166,7 @@ Scenario('Judge sends draft orders to the local authority', async ({I, caseViewP
   caseViewPage.selectTab(caseViewPage.tabs.refusedOrders);
   I.seeInTab(['Refused Order 1', 'Changes requested by judge'], changeRequestReason);
   I.seeInTab(['Refused Order 2', 'Changes requested by judge'], 'note2');
-});
+}).tag('@nightly-only');
 
 Scenario('Local authority makes changes requested by the judge', async ({I, caseViewPage, uploadCaseManagementOrderEventPage, login}) => {
   await setupScenario(I);
@@ -189,7 +189,7 @@ Scenario('Local authority makes changes requested by the judge', async ({I, case
   ]);
 
   I.dontSee(linkLabel);
-});
+}).tag('@nightly-only');
 
 Scenario('Judge seals and sends draft orders for no hearing to parties', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage, login}) => {
   await setupScenario(I);
@@ -216,7 +216,7 @@ Scenario('Judge seals and sends draft orders for no hearing to parties', async (
 
   caseViewPage.selectTab(caseViewPage.tabs.documentsSentToParties);
   assertDocumentSentToParties(I);
-});
+}).tag('@nightly-only');
 
 Scenario('Judge seals and sends draft orders for hearing to parties', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage, login}) => {
   await setupScenario(I);
@@ -251,7 +251,7 @@ Scenario('Judge seals and sends draft orders for hearing to parties', async ({I,
 
   caseViewPage.selectTab(caseViewPage.tabs.documentsSentToParties);
   assertDocumentSentToParties(I);
-});
+}).tag('@nightly-only');
 
 const assertDraftOrders = function (I, collectionId, hearingName, orders, title, status, supportingDocs) {
   const hearing = `Hearing ${collectionId}`;
