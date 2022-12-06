@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
@@ -418,6 +419,65 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     void setup() {
         givenSystemUser();
         givenFplService();
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl985 {
+        private static final long invalidCaseId = 8888888888888888L;
+        private static final long validCaseId = 1648203424556112L;
+        private static final String migrationId = "DFPL-985";
+
+        private final UUID respondentStatementId = UUID.fromString("4b88563e-c6b3-4780-90b6-531e1db65b7e");
+
+        private final Element<RespondentStatement> respondentStatementElement = element(
+            respondentStatementId, RespondentStatement.builder().build());
+
+        @Test
+        void shouldRemoveRespondentStatement() {
+            CaseData caseData = prepareValidCaseData();
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+            assertThat(responseData.getRespondentStatements()).doesNotContain(respondentStatementElement);
+        }
+
+        @Test
+        void shouldThrowExceptionIfWrongCase() {
+            CaseData caseData = CaseData.builder().id(invalidCaseId).build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format("Migration {id = %s, case reference = 8888888888888888}, expected case id %d",
+                    migrationId, validCaseId));
+        }
+
+        @Test
+        void shouldThrowExceptionIfWrongRespondentStatement() {
+            CaseData caseData = CaseData.builder().id(validCaseId)
+                .respondentStatements(List.of(
+                    element(UUID.randomUUID(), RespondentStatement.builder().build()))
+                ).build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format("Migration {id = %s, case reference = %s}, invalid respondent statements",
+                    migrationId, validCaseId));
+        }
+
+        private CaseData prepareValidCaseData() {
+            return CaseData.builder()
+                .id(validCaseId)
+                .respondentStatements(List.of(
+                    element(UUID.randomUUID(), RespondentStatement.builder().respondentId(UUID.randomUUID()).build()),
+                    element(UUID.randomUUID(), RespondentStatement.builder().respondentId(UUID.randomUUID()).build()),
+                    respondentStatementElement
+                )).build();
+        }
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
