@@ -48,7 +48,7 @@ public class RemoveSentDocumentService {
             allDocuments.addAll(d.getDocumentsSentToParty());
         });
 
-        return asDynamicList(allDocuments, selected, (r) ->
+        return asDynamicList(allDocuments, selected, r ->
             format("%s - %s", r.getPartyName(), format("%s (%s)", r.getDocument().getFilename(), r.getSentAt())));
     }
 

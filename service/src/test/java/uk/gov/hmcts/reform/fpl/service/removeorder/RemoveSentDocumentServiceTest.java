@@ -178,7 +178,7 @@ class RemoveSentDocumentServiceTest {
     }
 
     @Test
-    public void shouldRemoveSentDocumentFromCase() {
+    void shouldRemoveSentDocumentFromCase() {
         final UUID id = UUID.randomUUID();
 
         final Element<SentDocument> removedTarget = element(id, SentDocument.builder().build());
@@ -216,7 +216,6 @@ class RemoveSentDocumentServiceTest {
 
         documentsSentToParties.get(0).getValue().getDocumentsSentToParty().remove(removedTarget);
 
-        assertThat(caseDetailsMap.get("documentsSentToParties")).isEqualTo(documentsSentToParties);
 
         List<Element<SentDocuments>> hiddenDocumentsSentToParties = List.of(
             element(documentsSentToParties.get(1).getId(), SentDocuments.builder()
@@ -224,7 +223,10 @@ class RemoveSentDocumentServiceTest {
                     SentDocument.builder().removalReason("This is the reason.").build())))
                 .build())
         );
-        assertThat(caseDetailsMap.get("hiddenDocumentsSentToParties")).isEqualTo(hiddenDocumentsSentToParties);
+
+        assertThat(caseDetailsMap).containsAllEntriesOf(
+            Map.of("documentsSentToParties", documentsSentToParties,
+                "hiddenDocumentsSentToParties", hiddenDocumentsSentToParties));
     }
 
     private SentDocuments buildSentDocuments(String partyName, Map... fileInfos) {
