@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasEndDateAfterStartDate;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -119,8 +120,8 @@ public class HearingBooking implements TranslatableItem {
         while (counter < hearingDays) {
             date = date.plusDays(1);
 
-            if (date.getDayOfWeek().toString().contains("SATURDAY")
-                || date.getDayOfWeek().toString().contains("SUNDAY")) {
+            if (date.getDayOfWeek().equals(DayOfWeek.SATURDAY)
+                || date.getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
 
                 continue;
             }
