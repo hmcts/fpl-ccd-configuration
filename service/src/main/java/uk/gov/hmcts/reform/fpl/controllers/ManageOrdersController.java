@@ -151,7 +151,7 @@ public class ManageOrdersController extends CallbackController {
             updates = orderProcessing.postProcessDocument(fixedCaseData);
         } catch (Exception exception) {
             log.error("Error while processing manage orders document for case id {}.",
-                caseDetails.getId(), exception.toString());
+                caseDetails.getId(), exception);
         }
 
         if (updates.isEmpty()) {
