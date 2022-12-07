@@ -468,7 +468,7 @@ public class ManageHearingsService {
             populateFields.accept(caseData.getHearingEndDateTime(),
                 formatLocalDateTimeBaseUsingFormat(caseData.getHearingEndDateTime(), DateFormatterHelper.DATE_TIME));
         } else if (DAYS.getType().equals(caseData.getHearingDuration())) {
-            LocalDateTime endDateTime = calculateEndDate(caseData.getHearingStartDate(), caseData.getHearingDays());
+            LocalDateTime endDateTime = getEndDate(caseData.getHearingStartDate(), caseData.getHearingDays());
             populateFields.accept(endDateTime, getHearingDays(caseData.getHearingDays()));
         } else if (HOURS_MINS.getType().equals(caseData.getHearingDuration())) {
             LocalDateTime startDate = caseData.getHearingStartDate();
@@ -491,27 +491,12 @@ public class ManageHearingsService {
         return String.join(" ", String.valueOf(hours), "hours", String.valueOf(minutes), "minutes");
     }
 
-    private LocalDateTime calculateEndDate(LocalDateTime startDate, Integer hearingDays) {
-        LocalDateTime date = startDate;
-        int counter = 0;
+    private LocalDateTime getEndDate(LocalDateTime startDate, Integer hearingDays) {
 
-        if (isNull(date) || isNull(hearingDays)) {
-            return date;
-        }
-
-        while (counter < hearingDays) {
-            date = date.plusDays(1);
-
-            if (DayOfWeek.SATURDAY.equals(date.getDayOfWeek())
-                || DayOfWeek.SUNDAY.equals(date.getDayOfWeek())) {
-
-                continue;
-            }
-
-            counter++;
-        }
-
-        return date;
+        return HearingBooking.builder()
+            .startDate(startDate)
+            .hearingDays(hearingDays)
+            .build().getEndDate();
     }
 
     public Map<String, Object> updateHearingDates(CaseData caseData) {
