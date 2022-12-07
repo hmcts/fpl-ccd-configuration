@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +46,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
-import static java.util.Objects.nonNull;
+import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -467,9 +468,7 @@ public class ManageHearingsService {
             populateFields.accept(caseData.getHearingEndDateTime(),
                 formatLocalDateTimeBaseUsingFormat(caseData.getHearingEndDateTime(), DateFormatterHelper.DATE_TIME));
         } else if (DAYS.getType().equals(caseData.getHearingDuration())) {
-            LocalDateTime endDateTime = nonNull(caseData.getHearingEndDate())
-                ? caseData.getHearingEndDate()
-                : caseData.getHearingStartDate().plusDays(caseData.getHearingDays().longValue() - 1);
+            LocalDateTime endDateTime = calculateEndDate(caseData.getHearingStartDate(), caseData.getHearingDays());
             populateFields.accept(endDateTime, getHearingDays(caseData.getHearingDays()));
         } else if (HOURS_MINS.getType().equals(caseData.getHearingDuration())) {
             LocalDateTime startDate = caseData.getHearingStartDate();
@@ -492,7 +491,28 @@ public class ManageHearingsService {
         return String.join(" ", String.valueOf(hours), "hours", String.valueOf(minutes), "minutes");
     }
 
+    private LocalDateTime calculateEndDate(LocalDateTime startDate, Integer hearingDays) {
+        LocalDateTime date = startDate;
+        int counter = 0;
 
+        if (isNull(date) || isNull(hearingDays)) {
+            return date;
+        }
+
+        while (counter < hearingDays) {
+            date = date.plusDays(1);
+
+            if (DayOfWeek.SATURDAY.equals(date.getDayOfWeek())
+                || DayOfWeek.SUNDAY.equals(date.getDayOfWeek())) {
+
+                continue;
+            }
+
+            counter++;
+        }
+
+        return date;
+    }
 
     public Map<String, Object> updateHearingDates(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
