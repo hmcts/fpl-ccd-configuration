@@ -80,9 +80,9 @@ public class RespondentsCommonFormatHelper {
 
         for (int i = 0; i < selected.size(); i++) {
             String name = selected.get(i);
-
             if (i >= 1) {
-                selectedApplicants.add(String.format(", %s", name));
+                String text = (selected.size() - 1) == i ? " and %s" : ", %s";
+                selectedApplicants.add(String.format(text, name));
             } else {
                 selectedApplicants.add(String.format("%s", name));
             }

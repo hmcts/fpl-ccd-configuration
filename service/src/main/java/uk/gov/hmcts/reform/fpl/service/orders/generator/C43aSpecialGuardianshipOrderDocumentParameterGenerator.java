@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
@@ -81,7 +82,20 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
         String childOrChildren = (numOfChildren == 1 ? "child" : "children");
         String applicant = appointedGuardianFormatter.getGuardiansNamesForDocument(caseData);
 
-        return format("The Court orders that %s appointed as special guardian for the %s.", applicant, childOrChildren);
+        ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
+
+        StringBuffer ret = new StringBuffer();
+        if (!StringUtils.isEmpty(applicant)) {
+            ret.append(format("The Court orders that %s appointed as special guardian for the %s.", applicant,
+                    childOrChildren));
+        }
+        if (!StringUtils.isEmpty(eventData.getAppointedGuardianDetails())) {
+            if (!ret.isEmpty()) {
+                ret.append("\n\n");
+            }
+            ret.append(eventData.getAppointedGuardianDetails());
+        }
+        return ret.toString();
     }
 
 

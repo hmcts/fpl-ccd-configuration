@@ -64,11 +64,24 @@ class AppointedGuardianFormatterTest {
         }
 
         @Test
+        void shouldGetOnlySelectedNamesForDocumentWhenBothRespondents() {
+            CaseData caseData = CaseData.builder().respondents1(wrapElements(Respondent.builder()
+                    .party(RespondentParty.builder().firstName("Remy").lastName("Respondy").build()).build(),
+                    Respondent.builder()
+                        .party(RespondentParty.builder().firstName("Otto").lastName("Otherman").build()).build()))
+                .appointedGuardianSelector(Selector.builder().selected(List.of(0, 1)).build())
+                .build();
+
+            String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
+            assertThat(formattedNames).isEqualTo("Remy Respondy and Otto Otherman are");
+        }
+
+        @Test
         void shouldGetOnlySelectedNamesForDocumentWhenBothRespondentsAndOthersPresent() {
             CaseData caseData = getMultiplePeopleCaseData();
 
             String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
-            assertThat(formattedNames).isEqualTo("Remy Respondy, Otto Otherman, Bob Bothers are");
+            assertThat(formattedNames).isEqualTo("Remy Respondy, Otto Otherman and Bob Bothers are");
         }
     }
 
@@ -99,7 +112,7 @@ class AppointedGuardianFormatterTest {
             CaseData caseData = getMultiplePeopleCaseData();
 
             String formattedNames = underTest.getGuardiansNamesForTab(caseData);
-            assertThat(formattedNames).isEqualTo("Remy Respondy, Otto Otherman, Bob Bothers");
+            assertThat(formattedNames).isEqualTo("Remy Respondy, Otto Otherman and Bob Bothers");
         }
     }
 
