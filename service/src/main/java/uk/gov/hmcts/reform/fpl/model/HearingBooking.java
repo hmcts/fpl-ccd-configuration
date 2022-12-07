@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasEndDateAfterStartDate;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -32,6 +33,8 @@ import javax.validation.constraints.Future;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -103,6 +106,30 @@ public class HearingBooking implements TranslatableItem {
 
     public boolean hasDatesOnSameDay() {
         return this.startDate.toLocalDate().isEqual(this.endDate.toLocalDate());
+    }
+
+    public LocalDateTime getEndDate() {
+        LocalDateTime date = this.startDate;
+        Integer hearingDays = nonNull(this.hearingDays) ? this.hearingDays : null;
+        int counter = 0;
+
+        if (isNull(date) || isNull(hearingDays)) {
+            return this.endDate;
+        }
+
+        while (counter < hearingDays) {
+            date = date.plusDays(1);
+
+            if (DayOfWeek.SATURDAY.equals(date.getDayOfWeek())
+                || DayOfWeek.SUNDAY.equals(date.getDayOfWeek())) {
+
+                continue;
+            }
+
+            counter++;
+        }
+
+        return date;
     }
 
     public boolean startsAfterToday() {

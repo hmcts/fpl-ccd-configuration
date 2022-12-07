@@ -419,4 +419,58 @@ class HearingBookingTest {
             assertThat(hearingBooking.isRemote()).isTrue();
         }
     }
+
+    @Nested
+    class EndDate {
+
+        @Test
+        void shouldReturnCorrectEndDateForSingleDayHearing() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .startDate(LocalDateTime.of(2022, 11, 28, 0, 0, 0))
+                .hearingDays(1)
+                .build();
+
+            assertThat(hearingBooking.getEndDate()).isEqualTo(LocalDateTime.of(2022, 11, 29, 0, 0, 0));
+        }
+
+        @Test
+        void shouldReturnCorrectEndDateWithNoWeekend() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .startDate(LocalDateTime.of(2022, 11, 28, 0, 0, 0))
+                .hearingDays(4)
+                .build();
+
+            assertThat(hearingBooking.getEndDate()).isEqualTo(LocalDateTime.of(2022, 12, 2, 0, 0, 0));
+        }
+
+        @Test
+        void shouldReturnCorrectEndDateWithOneWeekend() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .startDate(LocalDateTime.of(2022, 12, 7, 0, 0, 0))
+                .hearingDays(5)
+                .build();
+
+            assertThat(hearingBooking.getEndDate()).isEqualTo(LocalDateTime.of(2022, 12, 14, 0, 0, 0));
+        }
+
+        @Test
+        void shouldReturnCorrectEndDateWithThreeWeekends() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .startDate(LocalDateTime.of(2022, 11, 28, 0, 0, 0))
+                .hearingDays(16)
+                .build();
+
+            assertThat(hearingBooking.getEndDate()).isEqualTo(LocalDateTime.of(2022, 12, 20, 0, 0, 0));
+        }
+
+        @Test
+        void shouldReturnCorrectEndDateWhenHearingIsOnSameDay() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .startDate(LocalDateTime.of(2022, 11, 22, 0, 0, 0))
+                .hearingDays(0)
+                .build();
+
+            assertThat(hearingBooking.getEndDate()).isEqualTo(LocalDateTime.of(2022, 11, 22, 0, 0, 0));
+        }
+    }
 }
