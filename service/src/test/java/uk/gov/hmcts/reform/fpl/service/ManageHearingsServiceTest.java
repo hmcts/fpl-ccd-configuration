@@ -499,8 +499,8 @@ class ManageHearingsServiceTest {
     @Test
     void shouldSetHearingDayAndHearingDurationWhenHearingDaysIsSet() {
         int days = 9;
-        LocalDateTime startDate = time.now().plusDays(1);
-        LocalDateTime endDate = startDate.plusDays(days);
+        LocalDateTime startDate = LocalDateTime.of(2022, 12, 5, 0, 0, 0);
+        LocalDateTime endDate = LocalDateTime.of(2022, 12, 16, 0, 0, 0);
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = testJudgeAndLegalAdviser();
         Judge allocatedJudge = testJudge();
 
