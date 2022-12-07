@@ -45,6 +45,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -466,7 +467,9 @@ public class ManageHearingsService {
             populateFields.accept(caseData.getHearingEndDateTime(),
                 formatLocalDateTimeBaseUsingFormat(caseData.getHearingEndDateTime(), DateFormatterHelper.DATE_TIME));
         } else if (DAYS.getType().equals(caseData.getHearingDuration())) {
-            LocalDateTime endDateTime = caseData.getHearingEndDate();
+            LocalDateTime endDateTime = nonNull(caseData.getHearingEndDate())
+                ? caseData.getHearingEndDate()
+                : caseData.getHearingStartDate().plusDays(caseData.getHearingDays().longValue() - 1);
             populateFields.accept(endDateTime, getHearingDays(caseData.getHearingDays()));
         } else if (HOURS_MINS.getType().equals(caseData.getHearingDuration())) {
             LocalDateTime startDate = caseData.getHearingStartDate();
@@ -488,6 +491,8 @@ public class ManageHearingsService {
     private String getHearingHoursAndMins(Integer hours, Integer minutes) {
         return String.join(" ", String.valueOf(hours), "hours", String.valueOf(minutes), "minutes");
     }
+
+
 
     public Map<String, Object> updateHearingDates(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
