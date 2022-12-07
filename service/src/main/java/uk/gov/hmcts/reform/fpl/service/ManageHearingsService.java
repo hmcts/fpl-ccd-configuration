@@ -31,7 +31,6 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,7 +45,6 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
-import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
