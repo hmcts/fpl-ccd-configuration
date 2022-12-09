@@ -1051,7 +1051,8 @@
           "[LAMANAGING]",
           "[LABARRISTER]",
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]"
+          "[CHILDSOLICITORA]",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "CR"
       },
