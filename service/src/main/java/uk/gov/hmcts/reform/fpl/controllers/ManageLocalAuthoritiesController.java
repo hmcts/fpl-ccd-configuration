@@ -27,12 +27,14 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 import java.util.List;
 import java.util.Set;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.ADD;
 import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.REMOVE;
 import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.TRANSFER;
 import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.TRANSFER_COURT;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
 
 @Api
 @RestController
@@ -198,9 +200,18 @@ public class ManageLocalAuthoritiesController extends CallbackController {
         }
 
         if (TRANSFER_COURT == action) {
+            Court oldCourt = caseData.getCourt();
             Court courtTransferred = service.transferCourtWithoutTransferLA(caseData);
             caseDetails.getData().put(PAST_COURT_LIST_KEY, caseData.getPastCourtList());
             caseDetails.getData().put(COURT_KEY, courtTransferred);
+
+            if (!isEmpty(courtTransferred) && RCJ_HIGH_COURT_CODE.equals(courtTransferred.getCode())) {
+                // transferred to the high court -> turn off sendToCtsc
+                caseDetails.getData().put("sendToCtsc", YesNo.NO.getValue());
+            } else if (!isEmpty(oldCourt) && RCJ_HIGH_COURT_CODE.equals(oldCourt.getCode())) {
+                // we were in the high court, now we're not -> sendToCtsc again
+                caseDetails.getData().put("sendToCtsc", YesNo.YES.getValue());
+            }
         }
 
         return respond(removeTemporaryFields(caseDetails));
