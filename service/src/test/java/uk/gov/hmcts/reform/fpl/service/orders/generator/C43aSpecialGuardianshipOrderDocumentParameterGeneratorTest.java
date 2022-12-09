@@ -95,6 +95,24 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
     }
 
     @Test
+    void generateDocumentForSingleChildWithOrderByConsentAndAppointedGuardianDetails() {
+        CaseData caseData = getCaseData(true, 1, "ABC");
+
+        List<Element<Child>> selectedChildren = wrapElements(CHILD);
+
+        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData)).thenReturn("Remmy Respondent is");
+        when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
+
+        DocmosisParameters generatedParameters = underTest.generate(caseData);
+        DocmosisParameters expectedParameters = expectedCommonParameters(true)
+            .orderDetails(getOrderAppointmentMessageForChildWithSinglePersonResponsible() + "\n\n" + "ABC")
+            .build();
+
+        assertThat(generatedParameters).isEqualTo(expectedParameters);
+    }
+
+    @Test
     void generateDocumentForChildWithOrderByConsentAndSingleSpecialGuardianAppointee() {
         CaseData caseData = getCaseData(true, 1);
 
@@ -269,12 +287,17 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
     }
 
     private CaseData getCaseData(boolean isOrderByConsent, int numOfGuardians) {
+        return getCaseData(isOrderByConsent, numOfGuardians, null);
+    }
+
+    private CaseData getCaseData(boolean isOrderByConsent, int numOfGuardians, String appointedGuardianDetails) {
 
         return CaseData.builder()
             .appointedGuardianSelector(Selector.builder().selected(List.of(numOfGuardians)).build())
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDateTime(APPROVAL_DATE_TIME)
                 .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
+                .appointedGuardianDetails(appointedGuardianDetails)
                 .manageOrdersIsByConsent(isOrderByConsent ? "Yes" : "No")
                 .build())
             .build();

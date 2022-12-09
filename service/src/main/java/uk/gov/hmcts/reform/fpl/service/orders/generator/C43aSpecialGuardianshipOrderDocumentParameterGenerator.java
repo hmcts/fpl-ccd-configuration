@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGener
 import java.util.List;
 
 import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
@@ -85,11 +86,11 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
         ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
 
         StringBuffer ret = new StringBuffer();
-        if (!StringUtils.isEmpty(applicant)) {
+        if (isNotEmpty(applicant)) {
             ret.append(format("The Court orders that %s appointed as special guardian for the %s.", applicant,
                     childOrChildren));
         }
-        if (!StringUtils.isEmpty(eventData.getAppointedGuardianDetails())) {
+        if (isNotEmpty(eventData.getAppointedGuardianDetails())) {
             if (!ret.isEmpty()) {
                 ret.append("\n\n");
             }
