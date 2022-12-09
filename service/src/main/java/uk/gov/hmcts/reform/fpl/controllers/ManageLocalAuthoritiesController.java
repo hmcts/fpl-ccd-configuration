@@ -208,7 +208,8 @@ public class ManageLocalAuthoritiesController extends CallbackController {
             if (!isEmpty(courtTransferred) && RCJ_HIGH_COURT_CODE.equals(courtTransferred.getCode())) {
                 // transferred to the high court -> turn off sendToCtsc
                 caseDetails.getData().put("sendToCtsc", YesNo.NO.getValue());
-            } else if (!isEmpty(oldCourt) && RCJ_HIGH_COURT_CODE.equals(oldCourt.getCode())) {
+            } else if (!isEmpty(oldCourt) && !isEmpty(courtTransferred)
+                && RCJ_HIGH_COURT_CODE.equals(oldCourt.getCode())) {
                 // we were in the high court, now we're not -> sendToCtsc again
                 caseDetails.getData().put("sendToCtsc", YesNo.YES.getValue());
             }
