@@ -500,7 +500,7 @@ class ManageHearingsServiceTest {
     void shouldSetHearingDayAndHearingDurationWhenHearingDaysIsSet() {
         int days = 9;
         LocalDateTime startDate = LocalDateTime.of(2022, 12, 5, 0, 0, 0);
-        LocalDateTime endDate = LocalDateTime.of(2022, 12, 16, 0, 0, 0);
+        LocalDateTime endDate = LocalDateTime.of(2022, 12, 15, 0, 0, 0);
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = testJudgeAndLegalAdviser();
         Judge allocatedJudge = testJudge();
 
@@ -999,7 +999,7 @@ class ManageHearingsServiceTest {
                 "hearingStartDateLabel", "16 April 2011, 8:20pm",
                 "endDateFlag", "Yes",
                 "hearingDurationLabel", "3 days",
-                "hearingEndDate", LocalDateTime.parse("2011-04-20T20:20:00"));
+                "hearingEndDate", LocalDateTime.parse("2011-04-19T20:20:00"));
 
 
             assertThat(hearingDateFields).isEqualTo(extractedFields);

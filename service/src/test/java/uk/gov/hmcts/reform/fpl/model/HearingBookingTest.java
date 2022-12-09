@@ -430,7 +430,7 @@ class HearingBookingTest {
                 .hearingDays(1)
                 .build();
 
-            assertThat(hearingBooking.getEndDate()).isEqualTo(LocalDateTime.of(2022, 11, 29, 0, 0, 0));
+            assertThat(hearingBooking.getEndDate()).isEqualTo(LocalDateTime.of(2022, 11, 28, 0, 0, 0));
         }
 
         @Test
@@ -440,7 +440,7 @@ class HearingBookingTest {
                 .hearingDays(4)
                 .build();
 
-            assertThat(hearingBooking.getEndDate()).isEqualTo(LocalDateTime.of(2022, 12, 2, 0, 0, 0));
+            assertThat(hearingBooking.getEndDate()).isEqualTo(LocalDateTime.of(2022, 12, 1, 0, 0, 0));
         }
 
         @Test
@@ -450,7 +450,7 @@ class HearingBookingTest {
                 .hearingDays(5)
                 .build();
 
-            assertThat(hearingBooking.getEndDate()).isEqualTo(LocalDateTime.of(2022, 12, 14, 0, 0, 0));
+            assertThat(hearingBooking.getEndDate()).isEqualTo(LocalDateTime.of(2022, 12, 13, 0, 0, 0));
         }
 
         @Test
@@ -460,17 +460,7 @@ class HearingBookingTest {
                 .hearingDays(16)
                 .build();
 
-            assertThat(hearingBooking.getEndDate()).isEqualTo(LocalDateTime.of(2022, 12, 20, 0, 0, 0));
-        }
-
-        @Test
-        void shouldReturnCorrectEndDateWhenHearingIsOnSameDay() {
-            HearingBooking hearingBooking = HearingBooking.builder()
-                .startDate(LocalDateTime.of(2022, 11, 22, 0, 0, 0))
-                .hearingDays(0)
-                .build();
-
-            assertThat(hearingBooking.getEndDate()).isEqualTo(LocalDateTime.of(2022, 11, 22, 0, 0, 0));
+            assertThat(hearingBooking.getEndDate()).isEqualTo(LocalDateTime.of(2022, 12, 19, 0, 0, 0));
         }
     }
 }

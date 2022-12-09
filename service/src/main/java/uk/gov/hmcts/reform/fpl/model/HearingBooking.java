@@ -129,7 +129,7 @@ public class HearingBooking implements TranslatableItem {
             counter++;
         }
 
-        return date;
+        return date.minusDays(1);
     }
 
     public boolean startsAfterToday() {
