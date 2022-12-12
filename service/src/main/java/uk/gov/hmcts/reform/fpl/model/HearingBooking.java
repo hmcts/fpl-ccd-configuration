@@ -111,7 +111,7 @@ public class HearingBooking implements TranslatableItem {
     public LocalDateTime getEndDate() {
         LocalDateTime date = this.startDate;
         Integer hearingDays = nonNull(this.hearingDays) ? this.hearingDays : null;
-        int counter = 0;
+        int counter = 1;
 
         if (isNull(date) || isNull(hearingDays)) {
             return this.endDate;
@@ -129,7 +129,7 @@ public class HearingBooking implements TranslatableItem {
             counter++;
         }
 
-        return date.minusDays(1);
+        return date;
     }
 
     public boolean startsAfterToday() {
