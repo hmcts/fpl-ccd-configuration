@@ -3,6 +3,16 @@
     "LiveFrom": "01/01/2021",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "NoCChallenge",
+    "DisplayOrder": "1",
+    "QuestionText": "Applicant's name",
+    "AnswerFieldType": "Text",
+    "Answer": "${noticeOfChangeAnswers0.applicantName}:[SOLICITORA],${noticeOfChangeAnswers1.applicantName}:[SOLICITORB],${noticeOfChangeAnswers2.applicantName}:[SOLICITORC],${noticeOfChangeAnswers3.applicantName}:[SOLICITORD],${noticeOfChangeAnswers4.applicantName}:[SOLICITORE],${noticeOfChangeAnswers5.applicantName}:[SOLICITORF],${noticeOfChangeAnswers6.applicantName}:[SOLICITORG],${noticeOfChangeAnswers7.applicantName}:[SOLICITORH],${noticeOfChangeAnswers8.applicantName}:[SOLICITORI],${noticeOfChangeAnswers9.applicantName}:[SOLICITORJ],${noticeOfChangeChildAnswers0.applicantName}:[CHILDSOLICITORA],${noticeOfChangeChildAnswers1.applicantName}:[CHILDSOLICITORB],${noticeOfChangeChildAnswers2.applicantName}:[CHILDSOLICITORC],${noticeOfChangeChildAnswers3.applicantName}:[CHILDSOLICITORD],${noticeOfChangeChildAnswers4.applicantName}:[CHILDSOLICITORE],${noticeOfChangeChildAnswers5.applicantName}:[CHILDSOLICITORF],${noticeOfChangeChildAnswers6.applicantName}:[CHILDSOLICITORG],${noticeOfChangeChildAnswers7.applicantName}:[CHILDSOLICITORH],${noticeOfChangeChildAnswers8.applicantName}:[CHILDSOLICITORI],${noticeOfChangeChildAnswers9.applicantName}:[CHILDSOLICITORJ],${noticeOfChangeChildAnswers10.applicantName}:[CHILDSOLICITORK],${noticeOfChangeChildAnswers11.applicantName}:[CHILDSOLICITORL],${noticeOfChangeChildAnswers12.applicantName}:[CHILDSOLICITORM],${noticeOfChangeChildAnswers13.applicantName}:[CHILDSOLICITORN],${noticeOfChangeChildAnswers14.applicantName}:[CHILDSOLICITORO]",
+    "QuestionId": "applicantName"
+  },
+  {
+    "LiveFrom": "01/01/2021",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "NoCChallenge",
     "DisplayOrder": "2",
     "QuestionText": "Your client's first name",
     "AnswerFieldType": "Text",
