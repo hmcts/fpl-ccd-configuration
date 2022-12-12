@@ -216,7 +216,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
-        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
+        final CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         final AdditionalApplicationsBundle lastBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
         final UUID lastBundleId = caseData.getAdditionalApplicationsBundle().get(0).getId();
