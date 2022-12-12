@@ -316,4 +316,7 @@
     <packageUrl regex="true">^pkg:maven/org\.postgresql/postgresql@.*$</packageUrl>
     <cve>CVE-2022-41946</cve>
   </suppress>
+  <suppress>
+    <cve>CVE-2021-37533</cve>
+  </suppress>
 </suppressions>
