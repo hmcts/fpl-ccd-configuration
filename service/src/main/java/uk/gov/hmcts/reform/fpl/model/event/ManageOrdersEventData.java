@@ -33,6 +33,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+
 @Value
 @Builder(toBuilder = true)
 @Jacksonized
@@ -122,7 +124,11 @@ public class ManageOrdersEventData {
     String manageOrdersSupervisionOrderCourtDirection;
     LocalDate manageOrdersSupervisionOrderApprovalDate;
     LocalDate manageOrdersSupervisionOrderEndDate;
+
+    //deprecated since DFPL-1060 - use manageOrdersChildArrangementsOrderTypes instead
     ChildArrangementsOrderType manageOrdersChildArrangementsOrderType;
+    List<ChildArrangementsOrderType> manageOrdersChildArrangementsOrderTypes;
+
     String manageOrdersPartyGrantedLeave;
     String manageOrdersChildNewSurname;
     DynamicList manageOrdersAllowedContact1;
@@ -138,6 +144,14 @@ public class ManageOrdersEventData {
     DynamicList manageOrdersPartyToBeBefriended2;
     DynamicList manageOrdersPartyToBeBefriended3;
     LocalDate manageOrdersFamilyAssistanceEndDate;
+
+    @JsonIgnore
+    public List<ChildArrangementsOrderType> getManageOrdersChildArrangementsOrderTypes() {
+        if (isEmpty(manageOrdersChildArrangementsOrderTypes) && manageOrdersChildArrangementsOrderType != null) {
+            return List.of(manageOrdersChildArrangementsOrderType);
+        }
+        return manageOrdersChildArrangementsOrderTypes;
+    }
 
     @JsonIgnore
     public LocalDateTime getManageOrdersApprovalDateOrDateTime() {
