@@ -91,7 +91,7 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
                     childOrChildren));
         }
         if (isNotEmpty(eventData.getAppointedGuardianDetails())) {
-            if (!ret.isEmpty()) {
+            if (ret.length() != 0) {
                 ret.append("\n\n");
             }
             ret.append(eventData.getAppointedGuardianDetails());
