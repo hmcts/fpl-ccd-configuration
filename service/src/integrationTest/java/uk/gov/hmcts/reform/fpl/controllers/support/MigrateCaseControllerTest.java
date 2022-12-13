@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
@@ -149,8 +148,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         private Stream<Arguments> provideMigrationTestData() {
             return Stream.of(
-                Arguments.of("DFPL-809a", 1651569615587841L),
-                Arguments.of("DFPL-809b", 1651755091217652L)
+                Arguments.of("DFPL-809", 1651569615587841L)
             );
         }
 
@@ -158,27 +156,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         @MethodSource("provideMigrationTestData")
         void shouldPerformMigrationWhenDocIdMatches(String migrationId, Long validCaseId) {
 
-            List<Element<SupportingEvidenceBundle>> correspondenceDocuments =
-                wrapElements(
-                    SupportingEvidenceBundle.builder()
-                        .name("bundle1")
-                        .confidential(List.of("CONFIDENTIAL"))
-                        .hasConfidentialAddress("No")
-                        .build(),
-                    SupportingEvidenceBundle.builder()
-                        .name("bundle2")
-                        .confidential(List.of("CONFIDENTIAL"))
-                        .hasConfidentialAddress("Yes")
-                        .build(),
-                    SupportingEvidenceBundle.builder()
-                        .name("bundle3")
-                        .hasConfidentialAddress("No")
-                        .build()
-                );
-
             CaseData caseData = CaseData.builder()
                 .id(validCaseId)
-                .correspondenceDocuments(correspondenceDocuments)
+                .documentsWithConfidentialAddress(emptyList())
                 .build();
 
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
@@ -187,38 +167,17 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             CaseData responseData = extractCaseData(response);
 
-            assertThat(responseData.getCorrespondenceDocuments().get(0).getValue().getConfidential())
-                .isEqualTo(emptyList());
-            assertThat(responseData.getCorrespondenceDocuments().get(1).getValue().getConfidential())
-                .isEqualTo(List.of("CONFIDENTIAL"));
-            assertThat(responseData.getCorrespondenceDocuments().get(2).getValue().getConfidential())
+            assertThat(responseData.getDocumentsWithConfidentialAddress())
                 .isEqualTo(null);
         }
 
         @ParameterizedTest
         @MethodSource("provideMigrationTestData")
         void shouldThrowAssersionErrorWhenCaseIdIsInvalid(String migrationId, Long validCaseId) {
-            List<Element<SupportingEvidenceBundle>> correspondenceDocuments =
-                wrapElements(
-                    SupportingEvidenceBundle.builder()
-                        .name("bundle1")
-                        .confidential(List.of("CONFIDENTIAL"))
-                        .hasConfidentialAddress("No")
-                        .build(),
-                    SupportingEvidenceBundle.builder()
-                        .name("bundle2")
-                        .confidential(List.of("CONFIDENTIAL"))
-                        .hasConfidentialAddress("Yes")
-                        .build(),
-                    SupportingEvidenceBundle.builder()
-                        .name("bundle3")
-                        .hasConfidentialAddress("No")
-                        .build()
-                );
 
             CaseData caseData = CaseData.builder()
                 .id(invalidCaseId)
-                .correspondenceDocuments(correspondenceDocuments)
+                .documentsWithConfidentialAddress(emptyList())
                 .build();
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
@@ -392,8 +351,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
     }
 
-    // @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    // @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
     class Dfpl1029 {
 
         final String migrationId = "DFPL-1029";

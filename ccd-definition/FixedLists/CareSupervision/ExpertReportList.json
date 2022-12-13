@@ -59,35 +59,35 @@
     "LiveFrom": "01/01/2017",
     "ID": "ExpertReportList",
     "ListElementCode": "clinicalReportOnChild",
-    "ListElement": "Physiological Report on Child Only - Clinical",
+    "ListElement": "Psychological Report on Child Only - Clinical",
     "DisplayOrder": 9
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ExpertReportList",
     "ListElementCode": "educationalReportOnChild",
-    "ListElement": "Physiological Report on Child Only - Educational",
+    "ListElement": "Psychological Report on Child Only - Educational",
     "DisplayOrder": 10
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ExpertReportList",
     "ListElementCode": "cognitiveReportOnParent",
-    "ListElement": "Physiological Report on Parent(s) - full cognitive",
+    "ListElement": "Psychological Report on Parent(s) - full cognitive",
     "DisplayOrder": 11
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ExpertReportList",
     "ListElementCode": "functioningReportOnParent",
-    "ListElement": "Physiological Report on Parent(s) - functioning",
+    "ListElement": "Psychological Report on Parent(s) - functioning",
     "DisplayOrder": 12
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ExpertReportList",
     "ListElementCode": "physiologicalReportOnParentAndChild",
-    "ListElement": "Physiological Report on Parent(s) and child",
+    "ListElement": "Psychological Report on Parent(s) and child",
     "DisplayOrder": 13
   },
   {

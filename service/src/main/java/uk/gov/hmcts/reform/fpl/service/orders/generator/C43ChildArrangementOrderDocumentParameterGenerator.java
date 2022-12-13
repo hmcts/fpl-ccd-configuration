@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
@@ -94,18 +95,19 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
         StringBuilder stringBuilder = new StringBuilder();
 
         if (isChildArrangementOrderSelected(eventData)) {
-            switch (eventData.getManageOrdersChildArrangementsOrderType()) {
-                case CHILD_LIVE:
-                    stringBuilder
-                        .append("The Child Arrangement Order is for the child to live with")
-                        .append(".\n\n");
-                    break;
-                case CHILD_CONTACT:
-                    stringBuilder
-                        .append("The Child Arrangement Order is for the child to have contact with")
-                        .append(".\n\n");
-                    break;
-            }
+            stringBuilder.append("The Child Arrangement Order is for the child to ");
+            stringBuilder.append(eventData.getManageOrdersChildArrangementsOrderTypes().stream()
+                .map(type -> {
+                    switch (type) {
+                        case CHILD_LIVE:
+                            return "live with";
+                        case CHILD_CONTACT:
+                            return "have contact with";
+                        default: return type.toString();
+                    }
+                })
+                .collect(Collectors.joining(" and ")));
+            stringBuilder.append(".\n\n");
         }
 
         return stringBuilder.toString() + getOrderRecitalsAndPreambles(eventData);
