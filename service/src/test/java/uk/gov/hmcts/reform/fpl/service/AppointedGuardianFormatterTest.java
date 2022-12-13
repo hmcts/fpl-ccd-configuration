@@ -64,6 +64,17 @@ class AppointedGuardianFormatterTest {
         }
 
         @Test
+        void shouldGetAppointedGuardiansNamesForDocumentWhenOneRespondentButNotSelected() {
+            CaseData caseData = CaseData.builder().respondents1(wrapElements(Respondent.builder()
+                    .party(RespondentParty.builder().firstName("Remy").lastName("Respondy").build()).build()))
+                .appointedGuardianSelector(Selector.builder().selected(List.of()).build())
+                .build();
+
+            String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
+            assertThat(formattedNames).isEqualTo("");
+        }
+
+        @Test
         void shouldGetOnlySelectedNamesForDocumentWhenBothRespondents() {
             CaseData caseData = CaseData.builder().respondents1(wrapElements(Respondent.builder()
                     .party(RespondentParty.builder().firstName("Remy").lastName("Respondy").build()).build(),
