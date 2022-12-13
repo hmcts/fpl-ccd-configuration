@@ -1634,6 +1634,7 @@
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
+          "[LASHARED]",
           "caseworker-publiclaw-courtadmin"
         ],
         "CRUD": "CR"
