@@ -122,6 +122,8 @@ public class MigrateCaseController extends CallbackController {
                 .map(element -> element(element.getId(),
                     element.getValue().toBuilder()
                         .party(element.getValue().getParty().toBuilder()
+                            .completionDate(null)
+                            .extensionReason(null)
                             .build())
                         .build())
                 ).collect(toList());
