@@ -76,11 +76,7 @@ public class RemoveSentDocumentService {
             .filter(s -> s.getValue().getDocumentsSentToParty().stream().anyMatch(e -> e.equals(removedSentDocument)))
             .findFirst().orElseThrow();
 
-        caseData.getDocumentsSentToParties().stream().filter(p ->
-                p.getValue().getDocumentsSentToParty().contains(removedSentDocument))
-            .findFirst()
-            .orElseThrow(() -> new RemovableSentDocumentNotFoundException(removedDocId)).getValue()
-            .getDocumentsSentToParty().remove(removedSentDocument);
+        removedSentDocuments.getValue().getDocumentsSentToParty().remove(removedSentDocument);
         caseDetailsMap.putIfNotEmpty("documentsSentToParties", caseData.getDocumentsSentToParties());
 
         removedSentDocument.getValue().setRemovalReason(getReasonToRemove(caseData));
