@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
@@ -51,6 +52,7 @@ import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.function.Predicate.not;
@@ -200,10 +202,18 @@ public class FurtherEvidenceUploadedEventHandler {
             recipients.addAll(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData));
 
             if (isNotEmpty(recipients)) {
+                List<Element<HearingBooking>> hearingBookings = caseData.getHearingDetails().stream()
+                    .filter(element -> element.getValue().toLabel().equals(newHearingDocuments.get(0).getHearing()))
+                    .collect(Collectors.toList());
+
+                Optional<HearingBooking> hearingBookingToSend = hearingBookings.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(hearingBookings.get(0).getValue());
+
                 List<String> newDocumentNames = newHearingDocuments.stream()
                     .map(doc -> doc.getDocument().getFilename()).collect(toList());
-                furtherEvidenceNotificationService.sendNotification(caseData, recipients, uploader.getFullName(),
-                    newDocumentNames);
+                furtherEvidenceNotificationService.sendNotificationWithHearing(caseData, recipients,
+                    uploader.getFullName(), newDocumentNames, hearingBookingToSend);
             }
         }
     }
