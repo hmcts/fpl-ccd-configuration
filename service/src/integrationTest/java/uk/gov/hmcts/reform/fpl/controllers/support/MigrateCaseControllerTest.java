@@ -415,6 +415,68 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
     }
 
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl872Rollback {
+        final String migrationId = "DFPL-872rollback";
+        final LocalDate extensionDate = LocalDate.now();
+        final Long caseId = 1660300177298257L;
+        final UUID child1Id = UUID.fromString("d76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0");
+        final UUID child2Id = UUID.fromString("c76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0");
+        final Element<Child> childToBeRolledBack1 = element(child1Id, Child.builder()
+            .party(ChildParty.builder()
+                .firstName("Jim")
+                .lastName("Bob")
+                .completionDate(extensionDate)
+                .extensionReason(TIMETABLE_FOR_PROCEEDINGS)
+                .build())
+            .build());
+        final Element<Child> childToBeRolledBack2 = element(child2Id, Child.builder()
+            .party(ChildParty.builder()
+                .firstName("Fred")
+                .lastName("Frederson")
+                .completionDate(extensionDate)
+                .extensionReason(TIMETABLE_FOR_PROCEEDINGS)
+                .build())
+            .build());
+        final Element<Child> expectedChild1 = element(child1Id, Child.builder()
+            .party(ChildParty.builder()
+                .firstName("Jim")
+                .lastName("Bob")
+                .completionDate(null)
+                .extensionReason(null)
+                .build())
+            .build());
+        final Element<Child> expectedChild2 = element(child2Id, Child.builder()
+            .party(ChildParty.builder()
+                .firstName("Fred")
+                .lastName("Frederson")
+                .completionDate(null)
+                .extensionReason(null)
+                .build())
+            .build());
+
+        @Test
+        void shouldRemoveNewExtensionFields() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .state(State.CASE_MANAGEMENT)
+                .caseCompletionDate(extensionDate)
+                .caseExtensionReasonList(TIMETABLE_FOR_PROCEEDINGS)
+                .children1(List.of(childToBeRolledBack1, childToBeRolledBack2))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+            List<Element<Child>> expectedChildren = List.of(expectedChild1, expectedChild2);
+
+            assertThat(responseData.getAllChildren()).isEqualTo(expectedChildren);
+        }
+    }
+
     private CaseDetails buildCaseDetails(CaseData caseData, String migrationId) {
         CaseDetails caseDetails = asCaseDetails(caseData);
         caseDetails.getData().put("migrationId", migrationId);
