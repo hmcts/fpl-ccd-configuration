@@ -381,8 +381,6 @@ class RemoveSentDocumentServiceTest {
                 "hiddenDocumentsSentToParties", expectedHiddenDocumentsSentToParties));
     }
 
-
-
     @Test
     @SuppressWarnings("unchecked")
     void shouldRemoveLastSentDocumentFromCase() {
