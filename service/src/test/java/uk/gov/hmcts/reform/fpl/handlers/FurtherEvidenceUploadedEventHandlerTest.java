@@ -1318,19 +1318,26 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldSendNotificationWhenHearingDocumentsIsUploaded() {
+        final List<Element<HearingBooking>> hearingBooking = wrapElements(testHearing());
+        final String hearingBookingLabel = hearingBooking.get(0).getValue().toLabel();
         final List<Element<CaseSummary>> caseSummaryList = wrapElements(
-            CaseSummary.builder().document(TestDataHelper.testDocumentReference("CaseSummary 1.pdf")).build(),
-            CaseSummary.builder().document(TestDataHelper.testDocumentReference("CaseSummary 2.pdf")).build());
+            CaseSummary.builder().hearing(hearingBookingLabel)
+                .document(TestDataHelper.testDocumentReference("CaseSummary 1.pdf")).build(),
+            CaseSummary.builder().hearing(hearingBookingLabel)
+                .document(TestDataHelper.testDocumentReference("CaseSummary 2.pdf")).build());
         final List<Element<PositionStatementChild>> positionStatementChildList = wrapElements(
             PositionStatementChild.builder()
+                .hearing(hearingBookingLabel)
                 .document(TestDataHelper.testDocumentReference("PositionStatementChild.pdf")).build());
         final List<Element<PositionStatementRespondent>> positionStatementRespondentList = wrapElements(
             PositionStatementRespondent.builder()
+                .hearing(hearingBookingLabel)
                 .document(TestDataHelper.testDocumentReference("PositionStatementRespondent.pdf")).build());
         final List<Element<SkeletonArgument>> skeletonArgumentList = wrapElements(
             SkeletonArgument.builder()
+                .hearing(hearingBookingLabel)
                 .document(TestDataHelper.testDocumentReference("SkeletonArgument.pdf")).build());
-        final List<Element<HearingBooking>> hearingBooking = wrapElements(testHearing());
+
 
         CaseData caseDataBefore = buildSubmittedCaseData();
         CaseData caseData = buildSubmittedCaseData().toBuilder()
@@ -1369,7 +1376,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         verify(furtherEvidenceNotificationService)
             .sendNotificationWithHearing(caseData, expectedRecipients, userDetails.getFullName(),
-                expectedNewDocumentName, Optional.of(hearingBooking.get(0).getValue()));
+                expectedNewDocumentName, Optional.of(caseData.getHearingDetails().get(0).getValue()));
     }
 
     @Test
