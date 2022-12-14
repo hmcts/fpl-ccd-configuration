@@ -77,6 +77,9 @@ public class RemoveSentDocumentService {
             .findFirst().orElseThrow();
 
         removedSentDocuments.getValue().getDocumentsSentToParty().remove(removedSentDocument);
+        if (removedSentDocuments.getValue().getDocumentsSentToParty().isEmpty()) {
+            caseData.getDocumentsSentToParties().remove(removedSentDocuments);
+        }
         caseDetailsMap.putIfNotEmpty("documentsSentToParties", caseData.getDocumentsSentToParties());
 
         removedSentDocument.getValue().setRemovalReason(getReasonToRemove(caseData));
