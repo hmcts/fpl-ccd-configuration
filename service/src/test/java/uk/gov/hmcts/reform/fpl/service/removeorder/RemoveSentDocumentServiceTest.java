@@ -381,6 +381,47 @@ class RemoveSentDocumentServiceTest {
                 "hiddenDocumentsSentToParties", expectedHiddenDocumentsSentToParties));
     }
 
+
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldRemoveLastSentDocumentFromCase() {
+        final UUID idToBeRemoved = fromString("31111111-1111-1111-1111-111111111112");
+
+        List<Element<SentDocuments>> documentsSentToParties = new ArrayList<>(List.of(
+            element(fromString("BBBBBBBB-1111-1111-1111-111111111111"), SentDocuments.builder()
+                .documentsSentToParty(createSentDocumentsForPartyThree())
+                .build())
+        ));
+
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of("documentsSentToParties",  new ArrayList<>(List.of(
+                element(fromString("BBBBBBBB-1111-1111-1111-111111111111"), SentDocuments.builder()
+                    .documentsSentToParty(createSentDocumentsForPartyThree())
+                    .build())
+            ))))
+            .build());
+        CaseData caseData = CaseData.builder()
+            .documentsSentToParties(documentsSentToParties)
+            .removalToolData(RemovalToolData.builder()
+                .reasonToRemoveSentDocument("This is the reason.")
+                .build())
+            .build();
+
+        underTest.removeSentDocumentFromCase(caseData, caseDetailsMap, idToBeRemoved);
+
+        List<Element<SentDocuments>> expectedHiddenDocumentsSentToParties = List.of(
+            element(fromString("BBBBBBBB-1111-1111-1111-111111111111"), SentDocuments.builder()
+                .documentsSentToParty(List.of(element(idToBeRemoved,
+                    SentDocument.builder().removalReason("This is the reason.").build())))
+                .build())
+        );
+
+        assertThat(caseDetailsMap).doesNotContainKey("documentsSentToParties");
+        assertThat(caseDetailsMap).containsAllEntriesOf(
+            Map.of("hiddenDocumentsSentToParties", expectedHiddenDocumentsSentToParties));
+    }
+
     private SentDocuments buildSentDocuments(String partyName, Map... fileInfos) {
         List<Element<SentDocument>> documentsSentToParty = new ArrayList<>();
 
