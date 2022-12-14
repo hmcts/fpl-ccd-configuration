@@ -53,7 +53,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-979", this::run979,
         "DFPL-1006", this::run1006,
         "DFPL-969", this::run969,
-        "DFPL-1029", this::run1029
+        "DFPL-1029", this::run1029 // DON'T DELETE THIS MIGRATION, POTENTIALLY ONGOING ISSUES
     );
 
     @PostMapping("/about-to-submit")
@@ -237,8 +237,9 @@ public class MigrateCaseController extends CallbackController {
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private void run1029(CaseDetails caseDetails) {
+        // DON'T DELETE THIS MIGRATION, POTENTIALLY ONGOING ISSUES
         var migrationId = "DFPL-1029";
-        var expectedCaseId = 1650359065299290L;
+        var expectedCaseId = 1638876373455956L;
 
         CaseData caseData = getCaseData(caseDetails);
 
