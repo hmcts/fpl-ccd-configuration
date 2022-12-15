@@ -234,8 +234,9 @@ public class MigrateCaseController extends CallbackController {
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private void run1029(CaseDetails caseDetails) {
+        // DON'T DELETE THIS MIGRATION, POTENTIALLY ONGOING ISSUES
         var migrationId = "DFPL-1029";
-        var expectedCaseId = 1650359065299290L;
+        var expectedCaseId = 1638876373455956L;
 
         CaseData caseData = getCaseData(caseDetails);
 

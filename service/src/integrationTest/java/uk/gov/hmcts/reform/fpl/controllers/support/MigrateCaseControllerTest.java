@@ -336,7 +336,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     class Dfpl1029 {
 
         final String migrationId = "DFPL-1029";
-        final long expectedCaseId = 1650359065299290L;
+        final long expectedCaseId = 1638876373455956L;
         final long incorrectCaseId = 111111111111111L;
 
         @Test
