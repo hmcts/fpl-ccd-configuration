@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -317,7 +318,7 @@ public class MigrateCaseController extends CallbackController {
             ));
         }
 
-        caseDetails.getData().put("sendToCtsc", false);
+        caseDetails.getData().put("sendToCtsc", YesNo.NO.getValue());
     }
 
     private void run1065(CaseDetails caseDetails) {
@@ -335,6 +336,6 @@ public class MigrateCaseController extends CallbackController {
             ));
         }
 
-        caseDetails.getData().put("sendToCtsc", true);
+        caseDetails.getData().put("sendToCtsc", YesNo.YES.getValue());
     }
 }

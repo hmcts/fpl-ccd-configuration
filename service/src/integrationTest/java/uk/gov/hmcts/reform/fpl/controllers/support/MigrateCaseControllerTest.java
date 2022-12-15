@@ -12,9 +12,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
@@ -33,7 +33,6 @@ import java.util.stream.Stream;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -65,6 +64,85 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             .isInstanceOf(NoSuchElementException.class)
             .hasMessage("No migration mapped to " + INVALID_MIGRATION_ID);
     }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl1064 {
+        private final long invalidCaseId = 1643728359986136L;
+        private final long validCaseId = 1659605693892067L;
+        private final String migrationId = "DFPL-1064";
+
+        @Test
+        void shouldThrowExceptionIfWrongCaseId() {
+            CaseData caseData = CaseData.builder()
+                .id(invalidCaseId)
+                .sendToCtsc(YesNo.YES.getValue())
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format(
+                    "Migration {id = %s, case reference = %s}, case id not present in allowed list",
+                    migrationId, invalidCaseId));
+        }
+
+        @Test
+        void shouldSetSendToCtscToNo() {
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .sendToCtsc(YesNo.YES.getValue())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getSendToCtsc()).isEqualTo(YesNo.NO.getValue());
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl1065 {
+        private final long invalidCaseId = 1643728359986136L;
+        private final long validCaseId = 1667558394262009L;
+        private final String migrationId = "DFPL-1065";
+
+        @Test
+        void shouldThrowExceptionIfWrongCaseId() {
+            CaseData caseData = CaseData.builder()
+                .id(invalidCaseId)
+                .sendToCtsc(YesNo.YES.getValue())
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format(
+                    "Migration {id = %s, case reference = %s}, case id not present in allowed list",
+                    migrationId, invalidCaseId));
+        }
+
+        @Test
+        void shouldSetSendToCtscToYes() {
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .sendToCtsc(YesNo.NO.getValue())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getSendToCtsc()).isEqualTo(YesNo.YES.getValue());
+        }
+    }
+
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
@@ -250,104 +328,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .hasMessage(String.format(
                     "Migration {id = %s, case reference = %s}, invalid JudicialMessage ID",
                     migrationId, expectedCaseId));
-        }
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class Dfpl1015 {
-        final String migrationId = "DFPL-1015";
-        final Long caseId = 1641373238062313L;
-        final UUID hearingId = UUID.fromString("894fa026-e403-45e8-a2fe-105e8135ee5b");
-
-        final Element<HearingBooking> hearingToBeRemoved = element(hearingId, HearingBooking.builder()
-            .type(CASE_MANAGEMENT)
-            .startDate(now().minusDays(3))
-            .endDate(now().minusDays(2))
-            .build());
-        final Element<HearingBooking> hearingBooking1 = element(HearingBooking.builder()
-            .type(CASE_MANAGEMENT)
-            .startDate(now().minusDays(3))
-            .endDate(now().minusDays(2))
-            .build());
-        final Element<HearingBooking> hearingBooking2 = element(HearingBooking.builder()
-            .type(CASE_MANAGEMENT)
-            .startDate(now().minusDays(3))
-            .endDate(now().minusDays(2))
-            .build());
-
-        @Test
-        void shouldPerformMigrationWhenHearingIdMatches() {
-            CaseData caseData = CaseData.builder()
-                .id(caseId)
-                .hearingDetails(List.of(hearingToBeRemoved, hearingBooking1, hearingBooking2))
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId)
-            );
-
-            CaseData responseData = extractCaseData(response);
-
-            List<Element<HearingBooking>> expectedHearingDetails = List.of(hearingBooking1, hearingBooking2);
-
-            assertThat(responseData.getHearingDetails()).isEqualTo(expectedHearingDetails);
-            assertThat(responseData.getSelectedHearingId()).isIn(hearingBooking1.getId(), hearingBooking2.getId());
-        }
-
-        @Test
-        void shouldThrowAssertionErrorWhenHearingDetailsIsNull() {
-            CaseData caseData = CaseData.builder()
-                .id(caseId)
-                .build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format("Migration {id = %s, case reference = %s},"
-                    + " hearing details not found", migrationId, caseId));
-        }
-
-        @Test
-        void shouldThrowAssertionErrorWhenCaseIdIsInvalid() {
-            CaseData caseData = CaseData.builder()
-                .id(1111111111111111L)
-                .hearingDetails(List.of(hearingToBeRemoved, hearingBooking1, hearingBooking2))
-                .build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format("Migration {id = %s, case reference = 1111111111111111},"
-                    + " expected case id %s", migrationId, caseId));
-        }
-
-        @Test
-        void shouldThrowAssertionErrorWhenHearingBookingIdIsInvalid() {
-            CaseData caseData = CaseData.builder()
-                .id(caseId)
-                .hearingDetails(List.of(hearingBooking1, hearingBooking2))
-                .build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format("Migration {id = %s, case reference = %s},"
-                    + " hearing booking %s not found", migrationId, caseId, hearingId));
-        }
-
-        @Test
-        void shouldThrowAssertionErrorWhenMoreThanOneHearingBookingWithSameIdFound() {
-            CaseData caseData = CaseData.builder()
-                .id(caseId)
-                .hearingDetails(List.of(hearingToBeRemoved, hearingToBeRemoved))
-                .build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format("Migration {id = %s, case reference = %s},"
-                    + " more than one hearing booking %s found", migrationId, caseId, hearingId));
         }
     }
 
