@@ -600,8 +600,7 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
         CaseData responseData = extractCaseData(response);
-        assertThat(responseData.getDocumentsSentToParties().get(1).getValue().getDocumentsSentToParty())
-            .hasSize(0);
+        assertThat(responseData.getDocumentsSentToParties()).hasSize(1);
         assertThat(responseData.getDocumentsSentToParties().get(0).getValue().getDocumentsSentToParty())
             .hasSize(1);
     }
