@@ -34,18 +34,18 @@ public class ElementUtils {
             .collect(toList());
     }
 
+    public static <T> List<Element<T>> wrapElements(List<T> elements) {
+        return nullSafeCollection(elements).stream()
+            .filter(Objects::nonNull)
+            .map(element -> Element.<T>builder().value(element).build())
+            .collect(toList());
+    }
+
     @SafeVarargs
     public static <T> List<Element<T>> wrapElementsWithUUIDs(T... elements) {
         return Stream.of(elements)
             .filter(Objects::nonNull)
             .map(element -> Element.<T>builder().id(UUID.randomUUID()).value(element).build())
-            .collect(toList());
-    }
-
-    public static <T> List<Element<T>> wrapElements(List<T> elements) {
-        return nullSafeCollection(elements).stream()
-            .filter(Objects::nonNull)
-            .map(element -> Element.<T>builder().value(element).build())
             .collect(toList());
     }
 
