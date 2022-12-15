@@ -36,6 +36,7 @@ import static java.util.Comparator.comparing;
 import static java.util.Comparator.reverseOrder;
 import static java.util.Objects.isNull;
 import static java.util.function.Predicate.not;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
@@ -179,14 +180,18 @@ public class UploadAdditionalApplicationsService {
     public OtherApplicationsBundle convertOtherBundle(OtherApplicationsBundle bundle) {
         return bundle.toBuilder()
             .document(getDocumentToStore(bundle.getDocument()))
-            .supplementsBundle(getSupplementsBundleConverted(bundle.getSupplementsBundle()))
+            .supplementsBundle(!isEmpty(bundle.getSupplementsBundle())
+                ? getSupplementsBundleConverted(bundle.getSupplementsBundle())
+                : null)
             .build();
     }
 
     public C2DocumentBundle convertC2Bundle(C2DocumentBundle bundle) {
         return bundle.toBuilder()
             .document(getDocumentToStore(bundle.getDocument()))
-            .supplementsBundle(getSupplementsBundleConverted(bundle.getSupplementsBundle()))
+            .supplementsBundle(!isEmpty(bundle.getSupplementsBundle())
+                ? getSupplementsBundleConverted(bundle.getSupplementsBundle())
+                : null)
             .build();
     }
 
