@@ -138,12 +138,13 @@ class UploadAdditionalApplicationsServiceTest {
 
         assertC2DocumentBundle(actual.getC2DocumentBundle(), supplement, supportingEvidenceBundle);
 
-        verify(conversionService).convertToPdf(DOCUMENT);
+        // No longer called in this method
+        // verify(conversionService).convertToPdf(DOCUMENT);
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldConvertApplications(boolean isHmctsUser) {
+    void shouldNotConvertApplications(boolean isHmctsUser) {
         given(user.isHmctsUser()).willReturn(isHmctsUser);
         given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(USER_EMAIL);
         given(conversionService.convertToPdf(SUPPLEMENT_DOCUMENT)).willReturn(CONVERTED_SUPPLEMENT_DOCUMENT);
@@ -169,11 +170,11 @@ class UploadAdditionalApplicationsServiceTest {
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
         assertThat(actual.getAuthor()).isEqualTo(USER_EMAIL);
-        assertThat(actual.getC2DocumentBundle().getDocument()).isEqualTo(CONVERTED_DOCUMENT);
+        assertThat(actual.getC2DocumentBundle().getDocument()).isEqualTo(DOCUMENT);
         assertThat(actual.getC2DocumentBundle().getSupplementsBundle()).hasSize(1)
             .first()
             .extracting(actualSupplement -> actualSupplement.getValue().getDocument())
-            .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
+            .isEqualTo(SUPPLEMENT_DOCUMENT);
     }
 
     @Test
@@ -456,7 +457,7 @@ class UploadAdditionalApplicationsServiceTest {
     private void assertC2DocumentBundle(C2DocumentBundle actualC2Bundle, Supplement expectedSupplement,
                                         SupportingEvidenceBundle expectedSupportingEvidence) {
         assertThat(actualC2Bundle.getId()).isNotNull();
-        assertThat(actualC2Bundle.getDocument().getFilename()).isEqualTo(CONVERTED_DOCUMENT.getFilename());
+        assertThat(actualC2Bundle.getDocument().getFilename()).isEqualTo(DOCUMENT.getFilename());
         assertThat(actualC2Bundle.getType()).isEqualTo(WITH_NOTICE);
         assertThat(actualC2Bundle.getSupportingEvidenceBundle()).hasSize(1);
         assertThat(actualC2Bundle.getSupplementsBundle()).hasSize(1);
@@ -470,7 +471,7 @@ class UploadAdditionalApplicationsServiceTest {
     private void assertOtherDocumentBundle(OtherApplicationsBundle actual, Supplement expectedSupplement,
                                            SupportingEvidenceBundle expectedSupportingDocument) {
         assertThat(actual.getId()).isNotNull();
-        assertThat(actual.getDocument().getFilename()).isEqualTo(CONVERTED_DOCUMENT.getFilename());
+        assertThat(actual.getDocument().getFilename()).isEqualTo(DOCUMENT.getFilename());
         assertThat(actual.getApplicationType()).isEqualTo(C1_PARENTAL_RESPONSIBILITY);
         assertThat(actual.getParentalResponsibilityType()).isEqualTo(PR_BY_FATHER);
         assertThat(actual.getAuthor()).isEqualTo(HMCTS);
@@ -487,7 +488,7 @@ class UploadAdditionalApplicationsServiceTest {
         Supplement expectedSupplement = exampleOfExpectedSupplement.toBuilder()
             .dateTimeUploaded(time.now())
             .uploadedBy(HMCTS)
-            .document(CONVERTED_SUPPLEMENT_DOCUMENT)
+            .document(SUPPLEMENT_DOCUMENT)
             .build();
 
         assertThat(actual).isEqualTo(expectedSupplement);
