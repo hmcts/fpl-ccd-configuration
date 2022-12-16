@@ -114,6 +114,36 @@ class AppointedGuardianFormatterTest {
             String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
             assertThat(formattedNames).isEqualTo("Remy Respondy, Otto Otherman, Mummy Pig and Peppa Pig are");
         }
+
+        @Test
+        void shouldGetSingleAdditionalAppointedGuardians() {
+            CaseData caseData = CaseData.builder().respondents1(wrapElements(Respondent.builder()
+                        .party(RespondentParty.builder().firstName("Remy").lastName("Respondy").build()).build(),
+                    Respondent.builder()
+                        .party(RespondentParty.builder().firstName("Otto").lastName("Otherman").build()).build()))
+                .appointedGuardianSelector(Selector.builder().selected(List.of()).build())
+                .manageOrdersEventData(ManageOrdersEventData.builder()
+                    .additionalAppointedSpecialGuardians("Mummy Pig").build())
+                .build();
+
+            String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
+            assertThat(formattedNames).isEqualTo("Mummy Pig is");
+        }
+
+        @Test
+        void shouldGetTwoAdditionalAppointedGuardians() {
+            CaseData caseData = CaseData.builder().respondents1(wrapElements(Respondent.builder()
+                        .party(RespondentParty.builder().firstName("Remy").lastName("Respondy").build()).build(),
+                    Respondent.builder()
+                        .party(RespondentParty.builder().firstName("Otto").lastName("Otherman").build()).build()))
+                .appointedGuardianSelector(Selector.builder().selected(List.of()).build())
+                .manageOrdersEventData(ManageOrdersEventData.builder()
+                    .additionalAppointedSpecialGuardians("Mummy Pig\nPeppa Pig").build())
+                .build();
+
+            String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
+            assertThat(formattedNames).isEqualTo("Mummy Pig and Peppa Pig are");
+        }
     }
 
     @Nested
