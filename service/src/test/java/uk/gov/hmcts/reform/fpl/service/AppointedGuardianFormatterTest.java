@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.List;
@@ -64,7 +65,7 @@ class AppointedGuardianFormatterTest {
         }
 
         @Test
-        void shouldGetOnlySelectedNamesForDocumentWhenBothRespondents() {
+        void shouldGetBothSelectedNamesForDocumentWhenBothRespondents() {
             CaseData caseData = CaseData.builder().respondents1(wrapElements(Respondent.builder()
                     .party(RespondentParty.builder().firstName("Remy").lastName("Respondy").build()).build(),
                     Respondent.builder()
@@ -82,6 +83,36 @@ class AppointedGuardianFormatterTest {
 
             String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
             assertThat(formattedNames).isEqualTo("Remy Respondy, Otto Otherman and Bob Bothers are");
+        }
+
+        @Test
+        void shouldGetBothSelectedNamesForDocumentWhenBothRespondentsAndAdditionalAppointedGuardians() {
+            CaseData caseData = CaseData.builder().respondents1(wrapElements(Respondent.builder()
+                        .party(RespondentParty.builder().firstName("Remy").lastName("Respondy").build()).build(),
+                    Respondent.builder()
+                        .party(RespondentParty.builder().firstName("Otto").lastName("Otherman").build()).build()))
+                .appointedGuardianSelector(Selector.builder().selected(List.of(0, 1)).build())
+                .manageOrdersEventData(ManageOrdersEventData.builder()
+                    .additionalAppointedSpecialGuardians("Mummy Pig").build())
+                .build();
+
+            String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
+            assertThat(formattedNames).isEqualTo("Remy Respondy, Otto Otherman and Mummy Pig are");
+        }
+
+        @Test
+        void shouldGetBothSelectedNamesForDocumentWhenBothRespondentsAndTwoAdditionalAppointedGuardians() {
+            CaseData caseData = CaseData.builder().respondents1(wrapElements(Respondent.builder()
+                        .party(RespondentParty.builder().firstName("Remy").lastName("Respondy").build()).build(),
+                    Respondent.builder()
+                        .party(RespondentParty.builder().firstName("Otto").lastName("Otherman").build()).build()))
+                .appointedGuardianSelector(Selector.builder().selected(List.of(0, 1)).build())
+                .manageOrdersEventData(ManageOrdersEventData.builder()
+                    .additionalAppointedSpecialGuardians("Mummy Pig\nPeppa Pig").build())
+                .build();
+
+            String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
+            assertThat(formattedNames).isEqualTo("Remy Respondy, Otto Otherman, Mummy Pig and Peppa Pig are");
         }
     }
 
