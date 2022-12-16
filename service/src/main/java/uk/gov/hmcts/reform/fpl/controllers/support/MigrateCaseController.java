@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.Court;
@@ -69,11 +70,11 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1012", this::run1012,
         "DFPL-776", this::run776,
         "DFPL-809", this::run809,
-        "DFPL-1015", this::run1015,
         "DFPL-979", this::run979,
         "DFPL-1006", this::run1006,
         "DFPL-969", this::run969,
-        "DFPL-1034", this::run1034
+        "DFPL-1064", this::run1064,
+        "DFPL-1065", this::run1065
     );
 
     @PostMapping("/about-to-submit")
@@ -242,11 +243,6 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put("judicialMessages", resultJudicialMessages);
     }
 
-    private void run1015(CaseDetails caseDetails) {
-        removeHearingBooking("DFPL-1015", 1641373238062313L, caseDetails,
-            "894fa026-e403-45e8-a2fe-105e8135ee5b");
-    }
-
     private void removeHearingBooking(final String migrationId, final Long expectedCaseId,
                                       final CaseDetails caseDetails, final String hearingIdToBeRemoved) {
 
@@ -311,21 +307,12 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put("state", CASE_MANAGEMENT);
     }
 
-    private void run1034(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1034";
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1667917072654848L, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.removeDocumentsSentToParties(getCaseData(caseDetails),
-            migrationId,
-            fromString("a1ba061a-2982-4ce3-9881-b74c37aa9b4f"),
-            List.of(fromString("0e133c81-51aa-4bd3-b5aa-7689224ad28a"))));
-    }
-
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private void run1029(CaseDetails caseDetails) {
+        // DON'T DELETE THIS MIGRATION, POTENTIALLY ONGOING ISSUES
         var migrationId = "DFPL-1029";
-        var expectedCaseId = 1650359065299290L;
+        var expectedCaseId = 1638876373455956L;
 
         CaseData caseData = getCaseData(caseDetails);
 
@@ -392,5 +379,40 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(getCaseData(caseDetails),
             migrationId, fromString("b8da3a48-441f-4210-a21c-7008d256aa32")));
+    }
+
+    private void run1064(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1064";
+        var caseId = caseDetails.getId();
+        var allowedCaseIds = List.of(1652106605168560L, 1661248269079243L, 1653561237363238L,
+            1662981673264014L, 1643959297308700L, 1659605693892067L, 1658311700073897L, 1663516203585030L,
+            1651066091833534L, 1657533247030897L);
+
+        if (!allowedCaseIds.contains(caseId)) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, case id not present in allowed list",
+                migrationId, caseId
+            ));
+        }
+
+        caseDetails.getData().put("sendToCtsc", YesNo.NO.getValue());
+    }
+
+    private void run1065(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1065";
+        var caseId = caseDetails.getId();
+        var allowedCaseIds = List.of(1668006391899836L, 1669021882046010L, 1664550708978381L,
+            1666192242451225L, 1669386919276017L, 1667557188169842L, 1669305338431433L, 1667208965579320L,
+            1667557388743867L, 1638284933401539L, 1667558394262009L, 1669035467933533L, 1666272019920949L,
+            1665658257668862L, 1664903454848680L, 1666178550940636L, 1666022942850998L);
+
+        if (!allowedCaseIds.contains(caseId)) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, case id not present in allowed list",
+                migrationId, caseId
+            ));
+        }
+
+        caseDetails.getData().put("sendToCtsc", YesNo.YES.getValue());
     }
 }
