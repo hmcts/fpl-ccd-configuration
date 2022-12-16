@@ -47,10 +47,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 @Slf4j
 public abstract class AbstractApiTest {
 
-    static final User LA_SWANSEA_USER_1 = user("james@swansea.gov.uk");
-    static final User LA_WILTSHIRE_USER_1 = user("raghu@wiltshire.gov.uk");
-    static final User LA_WILTSHIRE_USER_2 = user("sam@wiltshire.gov.uk");
-    static final User COURT_ADMIN = user("hmcts-admin@example.com");
+    public static final User LA_SWANSEA_USER_1 = user("james@swansea.gov.uk");
+    public static final User LA_WILTSHIRE_USER_1 = user("raghu@wiltshire.gov.uk");
+    public static final User LA_WILTSHIRE_USER_2 = user("sam@wiltshire.gov.uk");
+    public static final User COURT_ADMIN = user("hmcts-admin@example.com");
 
     @Autowired
     protected TestConfiguration testConfiguration;
@@ -70,11 +70,10 @@ public abstract class AbstractApiTest {
     @Before
     public void setUp() {
         RestAssured.baseURI = testConfiguration.getFplUrl();
-        log.info("api test url: " + testConfiguration.getFplUrl());
         RestAssured.useRelaxedHTTPSValidation();
     }
 
-    CaseData createCase(String path, User user) {
+    public CaseData createCase(String path, User user) {
         CaseData caseData = readCase(path);
         return caseService.createCase(caseData, user);
     }
