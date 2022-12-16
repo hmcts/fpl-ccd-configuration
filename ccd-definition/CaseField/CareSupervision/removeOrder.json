@@ -13,7 +13,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "removableOrderList",
-    "Label": "Choose the order you want remove",
+    "Label": "Choose the order you want to remove",
     "FieldType": "DynamicList",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -22,7 +22,16 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "removableApplicationList",
-    "Label": "Choose the application you want remove",
+    "Label": "Choose the application you want to remove",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "removableSentDocumentList",
+    "Label": "Choose the document sent to parties you want to remove",
     "FieldType": "DynamicList",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -78,8 +87,27 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hiddenDocumentsSentToParties",
+    "Label": "Removed documents sent to parties",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsSentToParty",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "removeOrderWarning",
     "Label": "<div class='panel panel-border-wide'><h2>Check you're removing the right order</h2><p>You will not be able to reinstate it after it’s removed</p></div>",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "removeDocumentsSentToPartiesWarning",
+    "Label": "<div class='panel panel-border-wide'><h2>Check you're removing the right document sent to parties</h2><p>You will not be able to reinstate it after it’s removed</p></div>",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -135,6 +163,51 @@
     "ID": "orderTitleToBeRemoved",
     "Label": "Order title",
     "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "partyNameToBeRemoved",
+    "Label": "Party name",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "sentAtToBeRemoved",
+    "Label": "Date and time sent",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "letterIdToBeRemoved",
+    "Label": "ID from Send Letter Service",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "reasonToRemoveSentDocument",
+    "Label": "Why is the document being removed?",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "sentDocumentToBeRemoved",
+    "Label": "File",
+    "FieldType": "Document",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
