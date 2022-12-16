@@ -82,7 +82,7 @@ public abstract class AbstractE2ETest extends AbstractApiTest {
 
     @Before
     public void beforeEach() {
-        context = browser.newContext();
+        context = browser.newContext(new Browser.NewContextOptions().setIgnoreHTTPSErrors(true));
         page = context.newPage();
     }
 
