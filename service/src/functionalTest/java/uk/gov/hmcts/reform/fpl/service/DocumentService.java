@@ -5,6 +5,7 @@ import net.serenitybdd.rest.SerenityRest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.docmosis.DocmosisHelper;
+import uk.gov.hmcts.reform.fpl.model.Document;
 import uk.gov.hmcts.reform.fpl.model.User;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
@@ -34,6 +35,17 @@ public class DocumentService {
             .statusCode(SC_OK)
             .extract()
             .asByteArray();
+    }
+
+    public Document getTestDocument(User user) {
+        return SerenityRest
+            .given()
+            .headers(authenticationService.getAuthorizationHeaders(user))
+            .get("/testing-support/test-document")
+            .then()
+            .statusCode(SC_OK)
+            .extract()
+            .as(Document.class);
     }
 
 }

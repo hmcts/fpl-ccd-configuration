@@ -1,6 +1,8 @@
-package uk.gov.hmcts.reform.fpl;
+package uk.gov.hmcts.reform.fpl.api;
 
-import org.junit.Test;
+import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.fnp.model.payment.Payment;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
@@ -21,25 +23,25 @@ import java.util.Map;
 import static java.math.RoundingMode.FLOOR;
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.api.ApiTestService.COURT_ADMIN;
+import static uk.gov.hmcts.reform.fpl.api.ApiTestService.LA_SWANSEA_USER_1;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SubmitCaseApiTest extends AbstractApiTest {
 
-    @Autowired
-    private EmailService emailService;
-
-    @Autowired
-    private PaymentService paymentService;
-
-    @Autowired
-    private DocumentService documentService;
+    final EmailService emailService;
+    final PaymentService paymentService;
+    final DocumentService documentService;
+    final ApiTestService apiTestService;
 
     @Test
     public void shouldSubmitAndPayForApplication() {
 
-        CaseData caseData = createCase("case-submission/case.json", LA_SWANSEA_USER_1);
+        CaseData caseData = apiTestService.createCase("case-submission/case.json", LA_SWANSEA_USER_1);
 
         caseData = callAboutToStart(caseData);
         caseData = callMidEvent(caseData);
@@ -49,7 +51,7 @@ public class SubmitCaseApiTest extends AbstractApiTest {
 
     public CaseData callAboutToStart(CaseData caseData) {
 
-        CallbackResponse response = callback(caseData, LA_SWANSEA_USER_1, "case-submission/about-to-start");
+        CallbackResponse response = apiTestService.callback(caseData, LA_SWANSEA_USER_1, "case-submission/about-to-start");
 
         String actualApplication = documentService.getPdfContent(response.getCaseData().getDraftApplicationDocument(),
             LA_SWANSEA_USER_1, "C110A");
@@ -66,7 +68,7 @@ public class SubmitCaseApiTest extends AbstractApiTest {
 
     public CaseData callMidEvent(CaseData caseData) {
 
-        CallbackResponse response = callback(caseData, LA_SWANSEA_USER_1, "case-submission/mid-event");
+        CallbackResponse response = apiTestService.callback(caseData, LA_SWANSEA_USER_1, "case-submission/mid-event");
 
         assertThat(response.getErrors()).containsExactly(
             "In the allocation proposal section:",
@@ -79,7 +81,7 @@ public class SubmitCaseApiTest extends AbstractApiTest {
                 .build())
             .build();
 
-        response = callback(updated, LA_SWANSEA_USER_1, "case-submission/mid-event");
+        response = apiTestService.callback(updated, LA_SWANSEA_USER_1, "case-submission/mid-event");
 
         assertThat(response.getErrors()).isEmpty();
 
@@ -88,7 +90,7 @@ public class SubmitCaseApiTest extends AbstractApiTest {
 
     public CaseData callAboutToSubmit(CaseData caseData) {
 
-        CallbackResponse response = callback(caseData, LA_SWANSEA_USER_1, "case-submission/about-to-submit");
+        CallbackResponse response = apiTestService.callback(caseData, LA_SWANSEA_USER_1, "case-submission/about-to-submit");
 
         final String actualApplication = documentService
             .getPdfContent(response.getCaseData().getC110A().getSubmittedForm(), LA_SWANSEA_USER_1, "C110A");
@@ -105,7 +107,7 @@ public class SubmitCaseApiTest extends AbstractApiTest {
 
     public void callSubmitted(CaseData caseData) {
 
-        submittedCallback(caseData, LA_SWANSEA_USER_1, "case-submission/submitted");
+        apiTestService.submittedCallback(caseData, LA_SWANSEA_USER_1, "case-submission/submitted");
 
         List<Payment> payments = paymentService.pollPayments(caseData.getId(), COURT_ADMIN);
         List<Email> emails = emailService.pollEmails(caseData.getId(), LA_SWANSEA_USER_1);

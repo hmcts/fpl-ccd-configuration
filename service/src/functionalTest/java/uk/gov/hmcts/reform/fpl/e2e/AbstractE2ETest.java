@@ -5,19 +5,14 @@ import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import lombok.extern.slf4j.Slf4j;
-import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.rules.TestName;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import uk.gov.hmcts.reform.fpl.AbstractApiTest;
+import uk.gov.hmcts.reform.fpl.api.ApiTestService;
 import uk.gov.hmcts.reform.fpl.e2e.pages.CaseDetailsPage;
 import uk.gov.hmcts.reform.fpl.e2e.pages.LoginPage;
 import uk.gov.hmcts.reform.fpl.service.AuthenticationService;
@@ -33,35 +28,23 @@ import uk.gov.hmcts.reform.fpl.util.TestConfiguration;
 import java.nio.file.Paths;
 
 @ActiveProfiles("test-${env:local}")
-@ContextConfiguration(classes = {
-    TestConfiguration.class,
-    CaseConverter.class,
-    ObjectMapperApiTestConfig.class,
+@Slf4j
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@SpringBootTest(classes = {
+    LoginPage.class,
+    CaseDetailsPage.class,
+    ApiTestService.class,
     AuthenticationService.class,
-    ScenarioService.class,
     CaseService.class,
     DocumentService.class,
-    PaymentService.class,
     EmailService.class,
-    LoginPage.class,
-    CaseDetailsPage.class
+    PaymentService.class,
+    ScenarioService.class,
+    TestConfiguration.class,
+    ObjectMapperApiTestConfig.class,
+    CaseConverter.class
 })
-@Slf4j
-@RunWith(SpringIntegrationSerenityRunner.class)
-@SpringBootTest
-public abstract class AbstractE2ETest extends AbstractApiTest {
-
-    @Rule
-    public TestName name = new TestName();
-
-    @Autowired
-    protected TestConfiguration testConfiguration;
-
-    @Autowired
-    protected LoginPage loginPage;
-
-    @Autowired
-    protected CaseDetailsPage caseDetailsPage;
+abstract class AbstractE2ETest {
 
     static Playwright playwright;
     static Browser browser;
@@ -69,33 +52,37 @@ public abstract class AbstractE2ETest extends AbstractApiTest {
     BrowserContext context;
     Page page;
 
-    @BeforeClass
-    public static void beforeAll() {
+    @BeforeAll
+    static void beforeAll() {
         playwright = Playwright.create();
         browser = playwright.chromium().launch();
     }
 
-    @AfterClass
-    public static void afterAll() {
+    @AfterAll
+    static void afterAll() {
         playwright.close();
     }
 
-    @Before
-    public void beforeEach() {
+    @BeforeEach
+    void beforeEach() {
         context = browser.newContext(new Browser.NewContextOptions().setIgnoreHTTPSErrors(true));
         page = context.newPage();
     }
 
-    @After
-    public void afterEach() {
+    @AfterEach
+    void afterEach() {
         page.screenshot(new Page.ScreenshotOptions()
-            .setPath(Paths.get("test-results/e2e/screenshots/" + name.getMethodName() + ".png")));
+            .setPath(Paths.get("test-results/e2e/screenshots/screenshot.png")));
 
         context.close();
     }
 
+    public void goToNextPage(String label) {
+        page.locator("button:has-text(\"" + label + "\")").click();
+    }
+
     public void goToNextPage() {
-        page.locator("button:has-text(\"Continue\")").click();
+        goToNextPage("Continue");
     }
 
     public void saveAndContinue() {

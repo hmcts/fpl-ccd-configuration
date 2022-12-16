@@ -112,6 +112,7 @@ task runBrowserTests(type: Exec, description: 'Runs brower tests.') {
 }
 
 task runApiTests(type: Test, description: 'Runs api tests.', group: 'Verification') {
+  useJUnitPlatform()
   onlyIf {
     return System.env.SKIP_API_TESTS == null || System.env.SKIP_API_TESTS == 'false'
   }

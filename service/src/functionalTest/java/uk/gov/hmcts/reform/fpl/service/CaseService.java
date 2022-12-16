@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.User;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -60,6 +62,8 @@ public class CaseService {
     public CaseData createCase(CaseData caseData, User user) {
 
         CaseDetailsMap data = caseDetailsMap(caseConverter.toMap(caseData));
+        data.put("dateSubmitted", LocalDate.now().toString());
+        data.put("dateAndTimeSubmitted", LocalDateTime.now().toString());
 
         CaseDetails caseDetails = SerenityRest
             .given()
