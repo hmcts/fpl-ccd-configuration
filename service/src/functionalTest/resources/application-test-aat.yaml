@@ -1,6 +1,7 @@
 test-conf:
   idam-url: https://idam-api.aat.platform.hmcts.net
   fpl-url: http://fpl-case-service-aat.service.core-compute-aat.internal
+  xui-url: https://manage-case.aat.platform.hmcts.net
   placeholders:
     SwanseaOrganisationID: W9V61CP
     WiltshireOrganisationID: 11VOC93

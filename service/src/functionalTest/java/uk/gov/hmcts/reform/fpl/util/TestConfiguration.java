@@ -15,6 +15,7 @@ import java.util.Map;
 public class TestConfiguration {
     private String idamUrl;
     private String fplUrl;
+    private String xuiUrl;
     private Map<String, Object> placeholders;
     private Map<String, User> users;
 }
