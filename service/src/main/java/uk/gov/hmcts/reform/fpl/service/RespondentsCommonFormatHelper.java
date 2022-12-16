@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -84,10 +85,9 @@ public class RespondentsCommonFormatHelper {
                 .getSelected().stream()
                 .map(respondentsAndOthersNames::get)
                 .collect(Collectors.toList());
+
         if (isNotEmpty(additionalNamesSeparatedByNewline)) {
-            for (String a : additionalNamesSeparatedByNewline.split("\n")) {
-                selected.add(a);
-            }
+            selected.addAll(Arrays.asList(additionalNamesSeparatedByNewline.split("\n")));
         }
 
         for (int i = 0; i < selected.size(); i++) {
