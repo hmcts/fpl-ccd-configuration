@@ -244,7 +244,7 @@ module.exports = {
     manageLocalAuthorities: 'Manage LAs / Transfer to court',
   },
   superUserActions: {
-    removeOrdersAndApplications: 'Remove orders and applications',
+    removeOrdersAndApplications: 'Removal Tool',
     changeCaseState: 'Change case state',
   },
   internalActions: {
