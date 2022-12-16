@@ -12,18 +12,17 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -31,12 +30,10 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
-import static java.util.Collections.emptyList;
-import static java.util.Objects.nonNull;
+import static java.util.Objects.isNull;
 import static java.util.UUID.fromString;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Api
 @RestController
@@ -52,13 +49,13 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-985", this::run985,
         "DFPL-1012", this::run1012,
         "DFPL-776", this::run776,
-        "DFPL-1015", this::run1015,
-        "DFPL-809a", this::run809a,
-        "DFPL-809b", this::run809b,
+        "DFPL-809", this::run809,
         "DFPL-979", this::run979,
         "DFPL-1006", this::run1006,
         "DFPL-969", this::run969,
-        "DFPL-1034", this::run1034
+        "DFPL-1029", this::run1029,
+        "DFPL-1064", this::run1064,
+        "DFPL-1065", this::run1065
     );
 
     @PostMapping("/about-to-submit")
@@ -81,16 +78,9 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private void run809a(CaseDetails caseDetails) {
-        var migrationId = "DFPL-809a";
+    private void run809(CaseDetails caseDetails) {
+        var migrationId = "DFPL-809";
         var expectedCaseId = 1651569615587841L;
-
-        removeConfidentialTab(caseDetails, migrationId, expectedCaseId);
-    }
-
-    private void run809b(CaseDetails caseDetails) {
-        var migrationId = "DFPL-809b";
-        var expectedCaseId = 1651755091217652L;
 
         removeConfidentialTab(caseDetails, migrationId, expectedCaseId);
     }
@@ -105,33 +95,9 @@ public class MigrateCaseController extends CallbackController {
                 migrationId, caseId, expectedCaseId
             ));
         }
-
-        List<Element<SupportingEvidenceBundle>> correspondenceDocuments = caseData.getCorrespondenceDocuments();
-        List<Element<SupportingEvidenceBundle>> newCorrespondenceDocuments = new ArrayList<>();
-
-        for (Element<SupportingEvidenceBundle> bundle : correspondenceDocuments) {
-            List<String> confidentialTag = bundle.getValue().getConfidential();
-            String hasConfidentialAddress = bundle.getValue().getHasConfidentialAddress();
-
-            if (nonNull(confidentialTag)) {
-                if (confidentialTag.contains("CONFIDENTIAL") && hasConfidentialAddress.equals("No")) {
-                    newCorrespondenceDocuments.add(element(SupportingEvidenceBundle.builder()
-                        .name(bundle.getValue().getName())
-                        .document(bundle.getValue().getDocument())
-                        .uploadedBy(bundle.getValue().getUploadedBy())
-                        .confidential(emptyList())
-                        .dateTimeUploaded(bundle.getValue().getDateTimeUploaded())
-                        .hasConfidentialAddress(bundle.getValue().getHasConfidentialAddress())
-                        .build()));
-                } else {
-                    newCorrespondenceDocuments.add(bundle);
-                }
-            } else {
-                newCorrespondenceDocuments.add(bundle);
-            }
+        if (!isNull(caseDetails.getData().get("documentsWithConfidentialAddress"))) {
+            caseDetails.getData().remove("documentsWithConfidentialAddress");
         }
-
-        caseDetails.getData().put("correspondenceDocuments", newCorrespondenceDocuments);
     }
 
     private void run979(CaseDetails caseDetails) {
@@ -201,11 +167,6 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put("judicialMessages", resultJudicialMessages);
     }
 
-    private void run1015(CaseDetails caseDetails) {
-        removeHearingBooking("DFPL-1015", 1641373238062313L, caseDetails,
-            "894fa026-e403-45e8-a2fe-105e8135ee5b");
-    }
-
     private void removeHearingBooking(final String migrationId, final Long expectedCaseId,
                                       final CaseDetails caseDetails, final String hearingIdToBeRemoved) {
 
@@ -270,21 +231,12 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put("state", CASE_MANAGEMENT);
     }
 
-    private void run1034(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1034";
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1667917072654848L, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.removeDocumentsSentToParties(getCaseData(caseDetails),
-            migrationId,
-            fromString("a1ba061a-2982-4ce3-9881-b74c37aa9b4f"),
-            List.of(fromString("0e133c81-51aa-4bd3-b5aa-7689224ad28a"))));
-    }
-
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private void run1029(CaseDetails caseDetails) {
+        // DON'T DELETE THIS MIGRATION, POTENTIALLY ONGOING ISSUES
         var migrationId = "DFPL-1029";
-        var expectedCaseId = 1650359065299290L;
+        var expectedCaseId = 1638876373455956L;
 
         CaseData caseData = getCaseData(caseDetails);
 
@@ -351,5 +303,40 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(getCaseData(caseDetails),
             migrationId, fromString("b8da3a48-441f-4210-a21c-7008d256aa32")));
+    }
+
+    private void run1064(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1064";
+        var caseId = caseDetails.getId();
+        var allowedCaseIds = List.of(1652106605168560L, 1661248269079243L, 1653561237363238L,
+            1662981673264014L, 1643959297308700L, 1659605693892067L, 1658311700073897L, 1663516203585030L,
+            1651066091833534L, 1657533247030897L);
+
+        if (!allowedCaseIds.contains(caseId)) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, case id not present in allowed list",
+                migrationId, caseId
+            ));
+        }
+
+        caseDetails.getData().put("sendToCtsc", YesNo.NO.getValue());
+    }
+
+    private void run1065(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1065";
+        var caseId = caseDetails.getId();
+        var allowedCaseIds = List.of(1668006391899836L, 1669021882046010L, 1664550708978381L,
+            1666192242451225L, 1669386919276017L, 1667557188169842L, 1669305338431433L, 1667208965579320L,
+            1667557388743867L, 1638284933401539L, 1667558394262009L, 1669035467933533L, 1666272019920949L,
+            1665658257668862L, 1664903454848680L, 1666178550940636L, 1666022942850998L);
+
+        if (!allowedCaseIds.contains(caseId)) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, case id not present in allowed list",
+                migrationId, caseId
+            ));
+        }
+
+        caseDetails.getData().put("sendToCtsc", YesNo.YES.getValue());
     }
 }
