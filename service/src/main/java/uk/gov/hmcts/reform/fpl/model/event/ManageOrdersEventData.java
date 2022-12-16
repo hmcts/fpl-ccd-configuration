@@ -52,7 +52,7 @@ public class ManageOrdersEventData {
     LocalDateTime manageOrdersApprovalDateTime;
     LocalDateTime manageOrdersEndDateTime;
     String manageOrdersFurtherDirections;
-    String appointedGuardianDetails;
+    String additionalAppointedSpecialGuardians;
     String manageOrdersIsFinalOrder;
     String manageOrdersTitle;
     String manageOrdersDirections;

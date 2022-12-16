@@ -3607,7 +3607,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "appointedGuardianDetails",
+    "CaseFieldID": "additionalAppointedSpecialGuardians",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRU"
   },

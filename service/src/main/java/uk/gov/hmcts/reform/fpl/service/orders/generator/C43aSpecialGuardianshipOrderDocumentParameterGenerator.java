@@ -82,19 +82,9 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
         String childOrChildren = (numOfChildren == 1 ? "child" : "children");
         String applicant = appointedGuardianFormatter.getGuardiansNamesForDocument(caseData);
 
-        ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
-
         StringBuilder sb = new StringBuilder();
-        if (isNotEmpty(applicant)) {
-            sb.append(format("The Court orders that %s appointed as special guardian for the %s.", applicant,
-                    childOrChildren));
-        }
-        if (isNotEmpty(eventData.getAppointedGuardianDetails())) {
-            if (sb.length() != 0) {
-                sb.append("\n\n");
-            }
-            sb.append(eventData.getAppointedGuardianDetails());
-        }
+        sb.append(format("The Court orders that %s appointed as special guardian for the %s.", applicant,
+            childOrChildren));
         return sb.toString();
     }
 

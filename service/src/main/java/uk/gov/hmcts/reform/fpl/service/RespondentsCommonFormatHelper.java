@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @Service
 public class RespondentsCommonFormatHelper {
@@ -49,7 +50,8 @@ public class RespondentsCommonFormatHelper {
 
     public static String getRespondentsForTab(CaseData caseData, Selector orderSelector) {
         StringBuilder builder = new StringBuilder();
-        List<String> selected = getSelectedARespondents(caseData, orderSelector);
+        List<String> selected = getSelectedARespondents(caseData, orderSelector, caseData.getManageOrdersEventData()
+            .getAdditionalAppointedSpecialGuardians());
 
         if (selected.isEmpty()) {
             return null;
@@ -61,6 +63,11 @@ public class RespondentsCommonFormatHelper {
     }
 
     public static List<String> getSelectedARespondents(CaseData caseData, Selector orderSelector) {
+        return getSelectedARespondents(caseData, orderSelector, null);
+    }
+
+    public static List<String> getSelectedARespondents(CaseData caseData, Selector orderSelector,
+                                                       String additionalNamesSeparatedByNewline) {
         List<String> selectedApplicants = new ArrayList<>();
         List<String> selected;
 
@@ -77,6 +84,11 @@ public class RespondentsCommonFormatHelper {
                 .getSelected().stream()
                 .map(respondentsAndOthersNames::get)
                 .collect(Collectors.toList());
+        if (isNotEmpty(additionalNamesSeparatedByNewline)) {
+            for (String a : additionalNamesSeparatedByNewline.split("\n")) {
+                selected.add(a);
+            }
+        }
 
         for (int i = 0; i < selected.size(); i++) {
             String name = selected.get(i);

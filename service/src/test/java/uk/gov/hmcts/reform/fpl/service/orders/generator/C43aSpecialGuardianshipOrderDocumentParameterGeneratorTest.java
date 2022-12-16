@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGener
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -96,24 +95,6 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
     }
 
     @Test
-    void generateDocumentForSingleChildWithOrderByConsentAndAppointedGuardianDetails() {
-        CaseData caseData = getCaseData(true, 1, "ABC");
-
-        List<Element<Child>> selectedChildren = wrapElements(CHILD);
-
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
-        when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData)).thenReturn("Remmy Respondent is");
-        when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
-
-        DocmosisParameters generatedParameters = underTest.generate(caseData);
-        DocmosisParameters expectedParameters = expectedCommonParameters(true)
-            .orderDetails(getOrderAppointmentMessageForChildWithSinglePersonResponsible() + "\n\n" + "ABC")
-            .build();
-
-        assertThat(generatedParameters).isEqualTo(expectedParameters);
-    }
-
-    @Test
     void generateDocumentForChildWithOrderByConsentAndSingleSpecialGuardianAppointee() {
         CaseData caseData = getCaseData(true, 1);
 
@@ -167,24 +148,6 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
     }
 
     @Test
-    void generateDocumentWithoutApplicant() {
-        CaseData caseData = getCaseData(true, 1, "ABC");
-
-        List<Element<Child>> selectedChildren = wrapElements(CHILD, CHILD, CHILD);
-
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
-        when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData)).thenReturn("");
-        when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
-
-        DocmosisParameters generatedParameters = underTest.generate(caseData);
-        DocmosisParameters expectedParameters = expectedCommonParameters(true)
-            .orderDetails(getOrderAppointmentMessageForChildrenWithoutApplicant("ABC"))
-            .build();
-
-        assertThat(generatedParameters).isEqualTo(expectedParameters);
-    }
-
-    @Test
     void generateDocumentForChildrenWithoutOrderByConsentAndSingleSpecialGuardianAppointee() {
         CaseData caseData = getCaseData(false, 1);
 
@@ -197,24 +160,6 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(false)
             .orderDetails(getOrderAppointmentMessageForChildrenWithSinglePersonResponsible())
-            .build();
-
-        assertThat(generatedParameters).isEqualTo(expectedParameters);
-    }
-
-    @Test
-    void generateDocumentForChildrenWithoutOrderByConsentAndSingleSpecialGuardianAppointeeAndGuardianDetails() {
-        CaseData caseData = getCaseData(false, 1, "This is details");
-
-        List<Element<Child>> selectedChildren = wrapElements(CHILD, CHILD, CHILD);
-
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
-        when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData)).thenReturn("Remmy Respondent is");
-        when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(null);
-
-        DocmosisParameters generatedParameters = underTest.generate(caseData);
-        DocmosisParameters expectedParameters = expectedCommonParameters(false)
-            .orderDetails(getOrderAppointmentMessageForChildrenWithSinglePersonResponsible("This is details"))
             .build();
 
         assertThat(generatedParameters).isEqualTo(expectedParameters);
@@ -282,23 +227,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
     }
 
     private String getOrderAppointmentMessageForChildrenWithSinglePersonResponsible() {
-        return getOrderAppointmentMessageForChildrenWithSinglePersonResponsible(null);
-    }
-
-    private String getOrderAppointmentMessageForChildrenWithSinglePersonResponsible(String appointedGuardianDetails) {
-        if (isNotEmpty(appointedGuardianDetails)) {
-            return "The Court orders that Remmy Respondent is appointed as special guardian for the children."
-                + "\n\n" + appointedGuardianDetails;
-        }
         return "The Court orders that Remmy Respondent is appointed as special guardian for the children.";
-    }
-
-    private String getOrderAppointmentMessageForChildrenWithoutApplicant(String appointedGuardianDetails) {
-        if (isNotEmpty(appointedGuardianDetails)) {
-            return appointedGuardianDetails;
-        } else {
-            return "";
-        }
     }
 
     private String getOrderAppointmentMessageForChildWithMultiplePeopleResponsible() {
@@ -350,7 +279,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDateTime(APPROVAL_DATE_TIME)
                 .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
-                .appointedGuardianDetails(appointedGuardianDetails)
+                .additionalAppointedSpecialGuardians(appointedGuardianDetails)
                 .manageOrdersIsByConsent(isOrderByConsent ? "Yes" : "No")
                 .build())
             .build();

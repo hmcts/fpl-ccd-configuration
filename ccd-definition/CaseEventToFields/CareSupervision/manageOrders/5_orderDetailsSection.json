@@ -433,7 +433,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageOrders",
-    "CaseFieldID": "appointedGuardianDetails",
+    "CaseFieldID": "additionalAppointedSpecialGuardians",
     "PageFieldDisplayOrder": 34,
     "DisplayContext": "OPTIONAL",
     "PageID": "OrderDetails",
