@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGener
 import java.util.List;
 
 import static java.lang.String.format;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
