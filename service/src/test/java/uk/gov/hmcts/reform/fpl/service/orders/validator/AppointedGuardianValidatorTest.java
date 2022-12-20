@@ -11,7 +11,8 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPOINTED_G
 
 class AppointedGuardianValidatorTest {
 
-    private static final String MESSAGE = "Select the appointed guardian for the children";
+    private static final String MESSAGE = "Select the appointed guardian for the children from the"
+        + " list of parties or detail the special guardians in the free text field. ";
 
     private final AppointedGuardianValidator underTest = new AppointedGuardianValidator();
 
@@ -25,6 +26,16 @@ class AppointedGuardianValidatorTest {
         CaseData caseData = CaseData.builder()
             .orderAppliesToAllChildren("No")
             .appointedGuardianSelector(Selector.builder().selected(List.of(1, 2)).build())
+            .build();
+
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of());
+    }
+
+    @Test
+    void validatePartiesSpecifiedInTextField() {
+        CaseData caseData = CaseData.builder()
+            .additionalAppointedSpecialGuardians("Joe Bloggs")
+            .appointedGuardianSelector(Selector.builder().build())
             .build();
 
         assertThat(underTest.validate(caseData)).isEqualTo(List.of());

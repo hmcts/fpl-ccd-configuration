@@ -467,6 +467,7 @@ public class CaseData extends CaseDataParent {
     private final String orderAppliesToAllChildren;
     private final String sendOrderToAllOthers;
     private final String sendPlacementNoticeToAllRespondents;
+    private final String additionalAppointedSpecialGuardians;
     private final List<Element<Respondent>> placementRespondentsToNotify;
 
     private final String notifyApplicationsToAllOthers;
