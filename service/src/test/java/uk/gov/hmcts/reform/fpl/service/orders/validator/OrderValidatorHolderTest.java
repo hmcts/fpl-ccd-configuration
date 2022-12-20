@@ -14,6 +14,7 @@ import java.util.Map;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPOINTED_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DISCHARGE_DETAILS;
@@ -49,6 +50,8 @@ class OrderValidatorHolderTest {
     private OrderMadeDateValidator orderMadeDateValidator;
     @Mock
     private FamilyAssistanceBefriendValidator familyAssistanceBefriendValidator;
+    @Mock
+    private AppointedGuardianValidator appointedGuardianValidator;
 
     @InjectMocks
     private OrderValidatorHolder underTest;
@@ -64,7 +67,8 @@ class OrderValidatorHolderTest {
             manageOrderEndDateValidator,
             manageOrderEndDateWithEndOfProceedingsValidator,
             orderMadeDateValidator,
-            familyAssistanceBefriendValidator
+            familyAssistanceBefriendValidator,
+            appointedGuardianValidator
         );
 
         orderQuestionBlockValidators = Map.of(
@@ -76,7 +80,8 @@ class OrderValidatorHolderTest {
             MANAGE_ORDER_END_DATE_WITH_MONTH, manageOrderEndDateValidator,
             MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS, manageOrderEndDateWithEndOfProceedingsValidator,
             ORDER_PLACED_CHILD_IN_CUSTODY, orderMadeDateValidator,
-            FAMILY_ASSISTANCE_ORDER, familyAssistanceBefriendValidator
+            FAMILY_ASSISTANCE_ORDER, familyAssistanceBefriendValidator,
+            APPOINTED_GUARDIAN, appointedGuardianValidator
         );
 
         validators.forEach(validator -> when(validator.accept()).thenCallRealMethod());
