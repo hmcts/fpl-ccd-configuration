@@ -64,6 +64,7 @@ import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C13A_SPECIAL_GUARDIAN
 import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C20_SECURE_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithRandomUUID;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 class UploadAdditionalApplicationsServiceTest {
@@ -452,6 +453,35 @@ class UploadAdditionalApplicationsServiceTest {
         }
     }
 
+    @Nested
+    class PostSubmitProcessing {
+
+        @Test
+        void shouldConvertC2SupplementToPdf() {
+            C2DocumentBundle bundle = C2DocumentBundle.builder()
+                .document(DOCUMENT)
+                .supplementsBundle(wrapElementsWithRandomUUID(Supplement.builder()
+                    .document(SUPPLEMENT_DOCUMENT)
+                    .build()))
+                .build();
+            C2DocumentBundle converted = underTest.convertC2Bundle(bundle);
+
+            assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument()).isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
+        }
+
+        @Test
+        void shouldConvertOtherSupplementToPdf() {
+            OtherApplicationsBundle bundle = OtherApplicationsBundle.builder()
+                .document(DOCUMENT)
+                .supplementsBundle(wrapElementsWithRandomUUID(Supplement.builder()
+                    .document(SUPPLEMENT_DOCUMENT)
+                    .build()))
+                .build();
+            OtherApplicationsBundle converted = underTest.convertOtherBundle(bundle);
+
+            assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument()).isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
+        }
+    }
 
     private void assertC2DocumentBundle(C2DocumentBundle actualC2Bundle, Supplement expectedSupplement,
                                         SupportingEvidenceBundle expectedSupportingEvidence) {
