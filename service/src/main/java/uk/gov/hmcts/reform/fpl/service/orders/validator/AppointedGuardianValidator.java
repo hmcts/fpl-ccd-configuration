@@ -22,7 +22,8 @@ public class AppointedGuardianValidator implements QuestionBlockOrderValidator {
     @Override
     public List<String> validate(CaseData caseData) {
         Selector guardianSelector = caseData.getAppointedGuardianSelector();
-        String additionalSpecialGuardians = caseData.getAdditionalAppointedSpecialGuardians();
+        String additionalSpecialGuardians = caseData.getManageOrdersEventData()
+            .getAdditionalAppointedSpecialGuardians();
         if (guardianSelector.getSelected().isEmpty() && StringUtils.isEmpty(additionalSpecialGuardians)) {
             return List.of(MESSAGE);
         }

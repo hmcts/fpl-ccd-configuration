@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.orders.validator;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.List;
@@ -34,7 +35,9 @@ class AppointedGuardianValidatorTest {
     @Test
     void validatePartiesSpecifiedInTextField() {
         CaseData caseData = CaseData.builder()
-            .additionalAppointedSpecialGuardians("Joe Bloggs")
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .additionalAppointedSpecialGuardians("Joe Bloggs")
+                .build())
             .appointedGuardianSelector(Selector.builder().build())
             .build();
 
@@ -44,6 +47,8 @@ class AppointedGuardianValidatorTest {
     @Test
     void validateNoGuardianSelected() {
         CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .build())
             .appointedGuardianSelector(Selector.builder().build())
             .build();
 
