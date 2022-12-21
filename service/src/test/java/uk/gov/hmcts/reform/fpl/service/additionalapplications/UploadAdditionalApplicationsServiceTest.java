@@ -466,7 +466,8 @@ class UploadAdditionalApplicationsServiceTest {
                 .build();
             C2DocumentBundle converted = underTest.convertC2Bundle(bundle);
 
-            assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument()).isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
+            assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
+                .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
         }
 
         @Test
@@ -479,7 +480,8 @@ class UploadAdditionalApplicationsServiceTest {
                 .build();
             OtherApplicationsBundle converted = underTest.convertOtherBundle(bundle);
 
-            assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument()).isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
+            assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
+                .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
         }
     }
 
