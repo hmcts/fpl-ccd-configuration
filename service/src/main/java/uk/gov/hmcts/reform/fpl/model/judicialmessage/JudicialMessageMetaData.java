@@ -5,13 +5,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 
 @Data
 @SuperBuilder(toBuilder = true)
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class JudicialMessageMetaData {
+    private final JudicialMessageRoleType senderType;
     private final String sender;
+    private final JudicialMessageRoleType recipientType;
     private final String recipient;
     @JsonProperty("requestedBy")
     private final String subject;

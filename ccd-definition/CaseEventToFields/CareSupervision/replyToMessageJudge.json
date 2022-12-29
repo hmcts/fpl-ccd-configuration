@@ -52,6 +52,18 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
+    "CaseFieldID": "isJudiciary",
+    "DisplayContext": "READONLY",
+    "PageDisplayOrder": 2,
+    "PageFieldDisplayOrder": 2,
+    "PageID": "ReplyToMessage",
+    "ShowSummaryChangeOption": "N",
+    "FieldShowCondition": "judicialMessageReply=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageReply",
     "DisplayContext": "COMPLEX",
     "PageID": "ReplyToMessage",

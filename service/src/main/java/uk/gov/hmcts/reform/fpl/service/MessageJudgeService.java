@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
@@ -10,10 +12,23 @@ import java.util.Comparator;
 import java.util.List;
 
 import static java.lang.String.join;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static uk.gov.hmcts.reform.fpl.enums.UserRole.JUDICIARY;
 
 public abstract class MessageJudgeService {
     @Autowired
     protected Time time;
+
+    @Autowired
+    protected CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
+
+    @Autowired
+    protected UserService userService;
+
+    protected boolean isJudiciary() {
+        return userService.hasUserRole(JUDICIARY);
+    }
 
     protected String getNextHearingLabel(CaseData caseData) {
         return caseData.getNextHearingAfter(time.now())
@@ -36,5 +51,32 @@ public abstract class MessageJudgeService {
         }
 
         return join("\n \n", history, formattedLatestMessage);
+    }
+
+    protected String getEmailAddressByRoleType(JudicialMessageRoleType roleType) {
+        if (JudicialMessageRoleType.JUDICIARY.equals(roleType)) {
+            return userService.getUserEmail();
+        } else if (JudicialMessageRoleType.CTSC.equals(roleType)) {
+            return ctscEmailLookupConfiguration.getEmail();
+        }
+
+        return EMPTY;
+    }
+
+    protected String resolveSenderEmailAddress(JudicialMessageRoleType roleType, String defaultEmail) {
+        String resolvedAddress = getEmailAddressByRoleType(resolveSenderRoleType(roleType));
+        return isNotEmpty(resolvedAddress) ? resolvedAddress : defaultEmail;
+    }
+
+    protected String resolveRecipientEmailAddress(JudicialMessageRoleType roleType, String defaultEmail){
+        return (JudicialMessageRoleType.CTSC.equals(roleType)) ?
+            getEmailAddressByRoleType(JudicialMessageRoleType.CTSC) : defaultEmail;
+    }
+
+    protected JudicialMessageRoleType resolveSenderRoleType(JudicialMessageRoleType defaultRoleType) {
+        if (isJudiciary()) {
+            return JudicialMessageRoleType.JUDICIARY;
+        }
+        return defaultRoleType;
     }
 }

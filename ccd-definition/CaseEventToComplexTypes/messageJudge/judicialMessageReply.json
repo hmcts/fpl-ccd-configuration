@@ -67,10 +67,32 @@
     "ID": "JudicialMessageReply",
     "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageReply",
-    "ListElementCode": "replyFrom",
+    "ListElementCode": "senderType",
     "FieldDisplayOrder": 7,
     "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Sender",
+    "FieldShowCondition": "judicialMessageReply.isReplying=\"Yes\" AND isJudiciary!=\"YES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageReply",
+    "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
+    "CaseFieldID": "judicialMessageReply",
+    "ListElementCode": "replyFrom",
+    "FieldDisplayOrder": 8,
+    "DisplayContext": "MANDATORY",
     "EventElementLabel": "Sender's email address",
+    "FieldShowCondition": "judicialMessageReply.isReplying=\"Yes\" AND isJudiciary!=\"YES\" AND judicialMessageReply.senderType!=\"CTSC\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageReply",
+    "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
+    "CaseFieldID": "judicialMessageReply",
+    "ListElementCode": "recipientType",
+    "FieldDisplayOrder": 9,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Recipient",
     "FieldShowCondition": "judicialMessageReply.isReplying=\"Yes\""
   },
   {
@@ -79,10 +101,10 @@
     "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "replyTo",
-    "FieldDisplayOrder": 8,
+    "FieldDisplayOrder": 10,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Recipient's email address",
-    "FieldShowCondition": "judicialMessageReply.isReplying=\"Yes\""
+    "FieldShowCondition": "judicialMessageReply.isReplying=\"Yes\" AND judicialMessageReply.recipientType!=\"CTSC\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -90,7 +112,7 @@
     "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "latestMessage",
-    "FieldDisplayOrder": 9,
+    "FieldDisplayOrder": 11,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Reply",
     "FieldShowCondition": "judicialMessageReply.isReplying=\"Yes\""
@@ -102,7 +124,7 @@
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "closeMessageLabel",
     "EventElementLabel": "This message will now be marked as closed",
-    "FieldDisplayOrder": 10,
+    "FieldDisplayOrder": 12,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "judicialMessageReply.isReplying=\"No\""
   }

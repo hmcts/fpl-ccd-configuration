@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.exceptions.JudicialMessageNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -23,7 +23,6 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.CLOSED;
-import static uk.gov.hmcts.reform.fpl.enums.UserRole.JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
@@ -36,12 +35,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedV
 public class ReplyToMessageJudgeService extends MessageJudgeService {
     @Autowired
     private ObjectMapper mapper;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
 
     public Map<String, Object> initialiseCaseFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
@@ -82,18 +75,25 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
 
         JudicialMessage judicialMessageReply = JudicialMessage.builder()
             .relatedDocumentFileNames(selectedJudicialMessage.getRelatedDocumentFileNames())
+            .recipientType(selectedJudicialMessage.getSenderType())
             .recipient(selectedJudicialMessage.getSender())
             .subject(selectedJudicialMessage.getSubject())
             .urgency(selectedJudicialMessage.getUrgency())
             .messageHistory(selectedJudicialMessage.getMessageHistory())
             .latestMessage(EMPTY)
-            .replyFrom(getReplyFrom())
+            .replyFrom(isJudiciary() ? getEmailAddressByRoleType(JudicialMessageRoleType.JUDICIARY) : EMPTY)
             .replyTo(selectedJudicialMessage.getSender())
             .build();
 
         data.put("judicialMessageReply", judicialMessageReply);
         data.put("judicialMessageDynamicList", rebuildJudicialMessageDynamicList(caseData, selectedJudicialMessageId));
         data.put("replyToMessageJudgeNextHearingLabel", getNextHearingLabel(caseData));
+
+        if (isJudiciary()) {
+            data.put("isJudiciary", YES);
+        } else {
+            data.put("isJudiciary", NO);
+        }
 
         return data;
     }
@@ -147,13 +147,17 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
 
                     JudicialMessage judicialMessage = judicialMessageElement.getValue();
 
-                    String sender = judicialMessageReply.getReplyFrom();
+                    String sender = resolveSenderEmailAddress(judicialMessageReply.getSenderType(),
+                        judicialMessageReply.getReplyFrom());
 
                     JudicialMessage updatedMessage = judicialMessage.toBuilder()
                         .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
                         .updatedTime(time.now())
+                        .senderType(resolveSenderRoleType(judicialMessageReply.getSenderType()))
                         .sender(sender)
-                        .recipient(judicialMessageReply.getReplyTo())
+                        .recipientType(judicialMessageReply.getRecipientType())
+                        .recipient(resolveRecipientEmailAddress(judicialMessageReply.getRecipientType(),
+                            judicialMessageReply.getReplyTo()))
                         .messageHistory(buildMessageHistory(judicialMessageReply, judicialMessage, sender))
                         .latestMessage(judicialMessageReply.getLatestMessage())
                         .build();
@@ -174,19 +178,15 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
     }
 
     private boolean hasMatchingReplyEmailAddress(JudicialMessage judicialMessageReply) {
-        return isNotEmpty(judicialMessageReply.getReplyFrom())
-            && judicialMessageReply.getReplyFrom().equals(judicialMessageReply.getReplyTo());
+        String sender = resolveSenderEmailAddress(judicialMessageReply.getSenderType(),
+            judicialMessageReply.getReplyFrom());
+        String recipient = resolveRecipientEmailAddress(judicialMessageReply.getRecipientType(),
+            judicialMessageReply.getReplyTo());
+
+        return isNotEmpty(sender) && sender.equals(recipient);
     }
 
     private boolean isReplyingToMessage(JudicialMessage judicialMessageReply) {
         return judicialMessageReply != null && YES.getValue().equals(judicialMessageReply.getIsReplying());
-    }
-
-    private String getReplyFrom() {
-        if (userService.hasUserRole(JUDICIARY)) {
-            return userService.getUserEmail();
-        } else {
-            return ctscEmailLookupConfiguration.getEmail();
-        }
     }
 }

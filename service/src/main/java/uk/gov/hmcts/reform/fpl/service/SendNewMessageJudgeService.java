@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
@@ -39,7 +39,7 @@ import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
-import static uk.gov.hmcts.reform.fpl.enums.UserRole.JUDICIARY;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
@@ -63,12 +63,6 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
 
     @Autowired
     private ObjectMapper mapper;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
 
     public Map<String, Object> initialiseCaseFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
@@ -104,7 +98,7 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
     public Optional<String> validateRecipientEmail(CaseData caseData) {
         JudicialMessageMetaData judgeMetaData = caseData.getMessageJudgeEventData().getJudicialMessageMetaData();
         if (nonNull(judgeMetaData)) {
-            String email = judgeMetaData.getRecipient();
+            String email = resolveRecipientEmailAddress(judgeMetaData.getRecipientType(), judgeMetaData.getRecipient());
             return validateEmailService.validate(email);
         }
         return Optional.empty();
@@ -116,11 +110,15 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         JudicialMessageMetaData judicialMessageMetaData = messageJudgeEventData.getJudicialMessageMetaData();
         String latestMessage = messageJudgeEventData.getJudicialMessageNote();
 
-        String sender = judicialMessageMetaData.getSender();
+        String sender = resolveSenderEmailAddress(judicialMessageMetaData.getSenderType(),
+            judicialMessageMetaData.getSender());
 
         JudicialMessage.JudicialMessageBuilder<?, ?> judicialMessageBuilder = JudicialMessage.builder()
             .sender(sender)
-            .recipient(judicialMessageMetaData.getRecipient())
+            .senderType(resolveSenderRoleType(judicialMessageMetaData.getSenderType()))
+            .recipient(resolveRecipientEmailAddress(judicialMessageMetaData.getRecipientType(),
+                judicialMessageMetaData.getRecipient()))
+            .recipientType(judicialMessageMetaData.getRecipientType())
             .subject(judicialMessageMetaData.getSubject())
             .latestMessage(latestMessage)
             .messageHistory(buildMessageHistory(latestMessage, sender))
@@ -206,14 +204,18 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
     private Map<String, Object> prePopulateSenderAndRecipient() {
         Map<String, Object> data = new HashMap<>();
 
-        if (userService.hasUserRole(JUDICIARY)) {
+        if (isJudiciary()) {
             data.put("judicialMessageMetaData", JudicialMessageMetaData.builder()
-                .sender(userService.getUserEmail())
-                .recipient(ctscEmailLookupConfiguration.getEmail()).build());
+                .sender(getEmailAddressByRoleType(JudicialMessageRoleType.JUDICIARY))
+                .recipient(EMPTY)
+                .build());
+            data.put("isJudiciary", YES);
         } else {
             data.put("judicialMessageMetaData", JudicialMessageMetaData.builder()
-                .sender(ctscEmailLookupConfiguration.getEmail())
-                .recipient(EMPTY).build());
+                .sender(EMPTY)
+                .recipient(EMPTY)
+                .build());
+            data.put("isJudiciary", NO);
         }
 
         return data;
