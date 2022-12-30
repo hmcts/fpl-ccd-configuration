@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.removaltool.MissingApplicationException;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 
@@ -22,6 +23,7 @@ public class AdditionalApplicationsBundle {
     private PBAPayment pbaPayment;
     private String removalReason;
     private String amountToPay;
+    private YesNo applicationReviewed;
 
     @JsonIgnore
     public String toLabel() {

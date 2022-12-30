@@ -50,6 +50,7 @@ import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
+import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthoritiesEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
@@ -1209,4 +1210,9 @@ public class CaseData extends CaseDataParent {
             .map(Orders::isRefuseContactWithChildApplication)
             .orElse(false);
     }
+
+    @JsonUnwrapped
+    @Builder.Default
+    protected final ConfirmApplicationReviewedEventData confirmApplicationReviewedEventData =
+        ConfirmApplicationReviewedEventData.builder().build();
 }
