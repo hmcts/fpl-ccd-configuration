@@ -17,6 +17,7 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 
 @Service
@@ -65,8 +66,13 @@ public class ConfirmApplicationReviewedService {
             findElement(eventData.getConfirmApplicationReviewedList().getValueCodeAsUUID(),
                 additionalApplications).orElseThrow();
 
-        selectedApplication.getValue().setApplicationReviewed(YES);
-
-        return additionalApplications;
+        return additionalApplications.stream().map(existingBundle -> {
+                if (selectedApplication.getId().equals(existingBundle.getId())) {
+                    return element(selectedApplication.getId(),
+                        selectedApplication.getValue().toBuilder().applicationReviewed(YES).build());
+                }
+                return existingBundle;
+            }
+        ).collect(Collectors.toList());
     }
 }
