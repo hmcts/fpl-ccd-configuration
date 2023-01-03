@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 
 import java.util.HashMap;
@@ -23,7 +22,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ConfirmApplicationReviewedService {
-    public final static String ADDITIONAL_APPLICATION_REVIEWED = "ADDITIONAL_APPLICATION_REVIEWED";
+    public static final String ADDITIONAL_APPLICATION_REVIEWED = "ADDITIONAL_APPLICATION_REVIEWED";
 
     public Map<String, Object> initEventField(CaseData caseData) {
         Map<String, Object> resultMap = new HashMap<>();
