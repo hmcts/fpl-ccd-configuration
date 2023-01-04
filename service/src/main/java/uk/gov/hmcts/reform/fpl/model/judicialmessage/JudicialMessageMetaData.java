@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 
 @Data
 @SuperBuilder(toBuilder = true)
