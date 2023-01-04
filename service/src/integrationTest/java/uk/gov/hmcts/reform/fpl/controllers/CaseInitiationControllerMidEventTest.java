@@ -6,8 +6,12 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 import uk.gov.hmcts.reform.rd.model.Organisation;
@@ -88,5 +92,25 @@ class CaseInitiationControllerMidEventTest extends AbstractCallbackTest {
             "You cannot start an online application until you’re fully registered.",
             "Ask your local authority’s public law administrator, or email MyHMCTSsupport@justice.gov.uk, "
                 + "for help with registration.");
+    }
+
+    @Test
+    void shouldGetListOfUsersIfOutsourced() {
+        Organisation organisation = testOrganisation();
+        given(featureToggleService.isCaseCreationForNotOnboardedUsersEnabled(anyString())).willReturn(true);
+        given(organisationService.findOrganisation()).willReturn(Optional.of(organisation));
+
+        CaseData caseData = CaseData.builder()
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .representativeType(RepresentativeType.LOCAL_AUTHORITY)
+            .outsourcingType(OutsourcingType.MLA)
+            .outsourcingLAs(DynamicList.builder()
+                .value(DynamicListElement.builder().label("SW").code("SW").build())
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData);
+
+        assertThat(response.getData().get("isOutsourcedCase")).isEqualTo(YesNo.YES.getValue());
     }
 }
