@@ -84,7 +84,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                     .build())
                 .build();
 
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId));
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
             CaseData responseData = extractCaseData(response);
 
             assertThat(responseData.getPlacementEventData().getPlacements()).isEmpty();
