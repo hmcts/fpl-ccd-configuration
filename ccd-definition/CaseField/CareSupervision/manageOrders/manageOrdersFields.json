@@ -178,9 +178,9 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "manageOrdersChildArrangementsOrderType",
+    "ID": "manageOrdersChildArrangementsOrderTypes",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "FieldType": "FixedRadioList",
+    "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildArrangementsOrderType",
     "Label": "What is the order for?",
     "SecurityClassification": "PUBLIC",

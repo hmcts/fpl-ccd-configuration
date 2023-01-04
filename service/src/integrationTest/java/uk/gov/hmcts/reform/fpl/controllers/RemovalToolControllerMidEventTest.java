@@ -11,6 +11,8 @@ import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.RemovalToolData;
+import uk.gov.hmcts.reform.fpl.model.SentDocument;
+import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -24,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -41,6 +44,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_WITH_SUPPLEM
 import static uk.gov.hmcts.reform.fpl.enums.RemovableType.ADDITIONAL_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.RemovableType.APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.RemovableType.ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.RemovableType.SENT_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -51,6 +55,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
     private static final UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
     private static final UUID REMOVE_ORDER_ID = UUID.randomUUID();
+    private static final UUID REMOVE_DOC_ID = UUID.randomUUID();
     private Element<GeneratedOrder> selectedOrder;
 
     RemovalToolControllerMidEventTest() {
@@ -126,6 +131,78 @@ class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
             "orderTitleToBeRemoved", "Sealed case management order",
             "hearingToUnlink", hearingBooking.toLabel()
         );
+
+        assertThat(responseData).containsAllEntriesOf(extractedFields);
+    }
+
+    @Test
+    void shouldExtractSelectedDocumentFields() {
+        final String PARTY_NAME_1 = "Peter Pan";
+        final String PARTY_NAME_2 = "Mickey Donald";
+
+        DocumentReference file = DocumentReference.builder()
+            .filename("file.pdf")
+            .build();
+        DocumentReference randomFile = DocumentReference.builder()
+            .filename("randomFile.pdf")
+            .build();
+
+        final UUID id = UUID.fromString("11111111-1111-1111-1111-111111111111");
+
+        final Element<SentDocument> removedTarget = element(id, SentDocument.builder()
+            .partyName(PARTY_NAME_2)
+            .document(file)
+            .sentAt("04 JUNE 2020")
+            .letterId("LETTER11-1111-1111-1111-111111111111")
+            .build());
+
+        List<Element<SentDocument>> sentDocumentsForPartyOne = new ArrayList<>();
+        sentDocumentsForPartyOne.add(element(SentDocument.builder()
+            .partyName(PARTY_NAME_1)
+            .document(randomFile)
+            .sentAt("12 June 2020")
+            .build()));
+
+        List<Element<SentDocument>> sentDocumentsForPartyTwo = new ArrayList<>();
+        sentDocumentsForPartyTwo.add(removedTarget);
+
+        List<Element<SentDocuments>> documentsSentToParties = List.of(
+            element(SentDocuments.builder()
+                .partyName(PARTY_NAME_1)
+                .documentsSentToParty(sentDocumentsForPartyOne)
+                .build()),
+            element(SentDocuments.builder()
+                .partyName(PARTY_NAME_2)
+                .documentsSentToParty(sentDocumentsForPartyTwo)
+                .build())
+        );
+
+        DynamicList dynamicList = DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code("11111111-1111-1111-1111-111111111111")
+                .label(PARTY_NAME_2 + " - file.pdf (04 JUNE 1989)")
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .documentsSentToParties(documentsSentToParties)
+            .removalToolData(RemovalToolData.builder()
+                .removableType(SENT_DOCUMENT)
+                .removableSentDocumentList(dynamicList)
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
+
+        Map<String, Object> responseData = response.getData();
+
+        Map<String, Object> extractedFields = Map.of(
+            "partyNameToBeRemoved", PARTY_NAME_2,
+            "sentAtToBeRemoved", "04 JUNE 2020",
+            "letterIdToBeRemoved", "LETTER11-1111-1111-1111-111111111111",
+            "sentDocumentToBeRemoved", mapper.convertValue(file,
+                new TypeReference<Map<String, Object>>() {
+                }));
 
         assertThat(responseData).containsAllEntriesOf(extractedFields);
     }
