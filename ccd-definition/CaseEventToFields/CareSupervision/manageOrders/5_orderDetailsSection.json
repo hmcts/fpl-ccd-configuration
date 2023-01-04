@@ -264,13 +264,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageOrders",
-    "CaseFieldID": "manageOrdersChildArrangementsOrderType",
+    "CaseFieldID": "manageOrdersChildArrangementsOrderTypes",
     "PageFieldDisplayOrder": 21,
     "DisplayContext": "MANDATORY",
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "manageOrdersMultiSelectListForC43=\"CHILD_ARRANGEMENT_ORDER\"",
+    "FieldShowCondition": "manageOrdersMultiSelectListForC43 CONTAINS \"CHILD_ARRANGEMENT_ORDER\"",
     "ShowSummaryChangeOption": "Y"
   },
   {

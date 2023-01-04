@@ -39,5 +39,13 @@
     "FieldType": "Text",
     "ElementLabel": "ID from Send Letter Service",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentSentToParty",
+    "ListElementCode": "removalReason",
+    "FieldType": "Text",
+    "ElementLabel": "Reason for removal",
+    "SecurityClassification": "Public"
   }
 ]

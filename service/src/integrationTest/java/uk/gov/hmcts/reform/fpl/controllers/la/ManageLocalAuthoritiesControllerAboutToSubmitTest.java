@@ -486,6 +486,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
                 .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
                 .caseLocalAuthorityName(LOCAL_AUTHORITY_1_NAME)
                 .localAuthoritiesEventData(eventData)
+                .sendToCtsc(YesNo.YES.getValue())
                 .build();
 
             final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
@@ -494,6 +495,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
             assertThat(updatedCaseData.getCourt().getName()).isEqualTo(RCJ_HIGH_COURT_NAME);
             assertThat(updatedCaseData.getCourt().getDateTransferred()).isNotNull();
             assertThat(updatedCaseData.getPastCourtList()).hasSize(1);
+            assertThat(updatedCaseData.getSendToCtsc()).isEqualTo(YesNo.NO.getValue());
 
             Court lastCourt = unwrapElements(updatedCaseData.getPastCourtList())
                 .stream()
@@ -502,5 +504,39 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
             assertThat(lastCourt).isNotNull();
             assertThat(lastCourt.getCode()).isEqualTo("344");
         }
+
+        @Test
+        void shouldTransferOutOfTheHighCourt() {
+            final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
+                .localAuthorityAction(TRANSFER_COURT)
+                .courtsToTransferWithoutTransferLA(dynamicLists.from(0,
+                    Pair.of("Worcester", "380"),
+                    Pair.of(RCJ_HIGH_COURT_NAME, RCJ_HIGH_COURT_CODE)))
+                .build();
+
+            final CaseData initialCaseData = CaseData.builder()
+                .court(Court.builder().name(RCJ_HIGH_COURT_NAME).code(RCJ_HIGH_COURT_CODE).build())
+                .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+                .caseLocalAuthorityName(LOCAL_AUTHORITY_1_NAME)
+                .localAuthoritiesEventData(eventData)
+                .sendToCtsc(YesNo.NO.getValue())
+                .build();
+
+            final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
+
+            assertThat(updatedCaseData.getCourt().getCode()).isEqualTo("380");
+            assertThat(updatedCaseData.getCourt().getName()).isEqualTo("Worcester");
+            assertThat(updatedCaseData.getCourt().getDateTransferred()).isNotNull();
+            assertThat(updatedCaseData.getPastCourtList()).hasSize(1);
+            assertThat(updatedCaseData.getSendToCtsc()).isEqualTo(YesNo.YES.getValue());
+
+            Court lastCourt = unwrapElements(updatedCaseData.getPastCourtList())
+                .stream()
+                .sorted(Comparator.comparing(Court::getDateTransferred).reversed())
+                .findFirst().orElse(null);
+            assertThat(lastCourt).isNotNull();
+            assertThat(lastCourt.getCode()).isEqualTo(RCJ_HIGH_COURT_CODE);
+        }
+
     }
 }
