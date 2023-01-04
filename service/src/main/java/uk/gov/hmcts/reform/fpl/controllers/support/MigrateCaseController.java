@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
@@ -34,7 +35,8 @@ public class MigrateCaseController extends CallbackController {
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1029", this::run1029
+        "DFPL-1029", this::run1029,
+        "DFPL-1103", this::run1103
     );
 
     @PostMapping("/about-to-submit")
@@ -72,6 +74,17 @@ public class MigrateCaseController extends CallbackController {
             ));
         }
         fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
+    }
+
+    private void run1103(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1103";
+        var possibleCaseIds = List.of(1659951867520203L, 1649252759660329L);
+
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().remove("placements");
+        caseDetails.getData().remove("placementsNonConfidential");
+        caseDetails.getData().remove("placementsNonConfidentialNotices");
     }
 
 }
