@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import java.util.List;
 import java.util.UUID;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
@@ -89,7 +90,7 @@ class ReplyToMessageJudgeControllerMidEventTest extends AbstractCallbackTest {
         JudicialMessage expectedJudicialMessage = JudicialMessage.builder()
             .relatedDocumentFileNames(selectedJudicialMessage.getRelatedDocumentFileNames())
             .recipient(selectedJudicialMessage.getSender())
-            .replyFrom(ctscEmailLookupConfiguration.getEmail())
+            .replyFrom(EMPTY)
             .replyTo(SENDER)
             .subject(selectedJudicialMessage.getSubject())
             .messageHistory(selectedJudicialMessage.getMessageHistory())

@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.exceptions.JudicialMessageNotFoundException;
@@ -35,6 +36,7 @@ import java.util.UUID;
 
 import static java.lang.String.format;
 import static java.util.UUID.randomUUID;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.groups.Tuple.tuple;
@@ -141,6 +143,7 @@ class ReplyToMessageJudgeServiceTest {
     void shouldBuildRelatedDocumentsLabelAndRebuildJudicialMessagesDynamicListWhenReplyingToAMessage() {
         JudicialMessage selectedJudicialMessage = JudicialMessage.builder()
             .sender(MESSAGE_SENDER)
+            .senderType(JudicialMessageRoleType.OTHER)
             .relatedDocumentFileNames("file1.doc")
             .messageHistory("message history")
             .latestMessage("Some note")
@@ -170,11 +173,12 @@ class ReplyToMessageJudgeServiceTest {
 
         JudicialMessage expectedJudicialMessage = JudicialMessage.builder()
             .relatedDocumentFileNames(selectedJudicialMessage.getRelatedDocumentFileNames())
+            .recipientType(JudicialMessageRoleType.OTHER)
             .recipient(MESSAGE_SENDER)
             .subject(selectedJudicialMessage.getSubject())
             .messageHistory(selectedJudicialMessage.getMessageHistory())
             .urgency(selectedJudicialMessage.getUrgency())
-            .replyFrom(COURT_EMAIL)
+            .replyFrom(EMPTY)
             .replyTo(MESSAGE_SENDER)
             .latestMessage("")
             .build();
