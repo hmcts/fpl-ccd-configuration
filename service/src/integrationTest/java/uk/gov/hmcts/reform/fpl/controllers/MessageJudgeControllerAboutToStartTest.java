@@ -89,10 +89,11 @@ class MessageJudgeControllerAboutToStartTest extends AbstractCallbackTest {
         Map<String, Object> caseDetails = postAboutToStartEvent(caseData).getData();
 
         assertThat(caseDetails.get("additionalApplicationsDynamicList")).isNull();
-        assertThat(caseDetails.get("hasAdditionalApplications")).isNull();
+        assertThat(caseDetails.get("hasAdditional"
+                                   + "Applications")).isNull();
         assertThat(caseDetails.get("judicialMessageMetaData"))
             .extracting("sender", "recipient")
-            .containsExactly(ctscEmailLookupConfiguration.getEmail(), EMPTY);
+            .containsExactly(EMPTY, EMPTY);
     }
 
     @Test
@@ -105,6 +106,6 @@ class MessageJudgeControllerAboutToStartTest extends AbstractCallbackTest {
         Map<String, Object> caseDetails = postAboutToStartEvent(caseData, UserRole.JUDICIARY.getRoleName()).getData();
 
         assertThat(caseDetails.get("judicialMessageMetaData")).extracting("sender", "recipient")
-            .containsExactly("sender@mail.com", ctscEmailLookupConfiguration.getEmail());
+            .containsExactly("sender@mail.com", EMPTY);
     }
 }

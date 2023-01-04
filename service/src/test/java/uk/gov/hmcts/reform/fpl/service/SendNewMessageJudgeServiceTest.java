@@ -5,6 +5,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -13,9 +18,11 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Placement;
@@ -41,6 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static java.util.Map.entry;
 import static java.util.UUID.randomUUID;
@@ -63,6 +71,7 @@ class SendNewMessageJudgeServiceTest {
 
     private static final String COURT_EMAIL = "ctsc@test.com";
     private static final String MESSAGE_NOTE = "Message note";
+    private static final String MESSAGE_SENDER_JUDICIARY = "judiciary@test.com";
     private static final String MESSAGE_SENDER = "sender@fpla.com";
     private static final String MESSAGE_REQUESTED_BY = "request review from some court";
     private static final String MESSAGE_RECIPIENT = "recipient@fpla.com";
@@ -152,8 +161,9 @@ class SendNewMessageJudgeServiceTest {
             "hasAdditionalApplications", "Yes",
             "additionalApplicationsDynamicList", expectedAdditionalApplicationsDynamicList,
             "judicialMessageMetaData", JudicialMessageMetaData.builder()
-                .sender(COURT_EMAIL)
-                .recipient(EMPTY).build());
+                .sender(EMPTY)
+                .recipient(EMPTY).build(),
+            "isJudiciary", YesNo.NO);
 
         assertThat(expectedEventData).isEqualTo(expectedData);
     }
@@ -186,8 +196,9 @@ class SendNewMessageJudgeServiceTest {
             "hasAdditionalApplications", "Yes",
             "additionalApplicationsDynamicList", expectedAdditionalApplicationsDynamicList,
             "judicialMessageMetaData", JudicialMessageMetaData.builder()
-                .sender(COURT_EMAIL)
-                .recipient(EMPTY).build()
+                .sender(EMPTY)
+                .recipient(EMPTY).build(),
+            "isJudiciary", YesNo.NO
         );
 
         assertThat(data).isEqualTo(expectedData);
@@ -214,15 +225,11 @@ class SendNewMessageJudgeServiceTest {
 
         Map<String, Object> data = sendNewMessageJudgeService.initialiseCaseFields(caseData);
 
-        DynamicList expectedJudicialDynamicList = buildDynamicList(
-            Pair.of(judicialMessages.get(0).getId(), "01 Dec 2020"),
-            Pair.of(judicialMessages.get(1).getId(), "02 Dec 2020")
-        );
-
         Map<String, Object> expectedData = Map.of(
             "judicialMessageMetaData", JudicialMessageMetaData.builder()
-                .sender(COURT_EMAIL)
-                .recipient(EMPTY).build()
+                .sender(EMPTY)
+                .recipient(EMPTY).build(),
+            "isJudiciary", YesNo.NO
         );
 
         assertThat(data).isEqualTo(expectedData);
@@ -253,14 +260,11 @@ class SendNewMessageJudgeServiceTest {
 
         Map<String, Object> data = sendNewMessageJudgeService.initialiseCaseFields(caseData);
 
-        DynamicList expectedJudicialDynamicList = buildDynamicList(
-            Pair.of(judicialMessages.get(0).getId(), "01 Dec 2020")
-        );
-
         Map<String, Object> expectedData = Map.of(
             "judicialMessageMetaData", JudicialMessageMetaData.builder()
-                .sender(COURT_EMAIL)
-                .recipient(EMPTY).build()
+                .sender(EMPTY)
+                .recipient(EMPTY).build(),
+            "isJudiciary", YesNo.NO
         );
 
         assertThat(data).isEqualTo(expectedData);
@@ -269,10 +273,11 @@ class SendNewMessageJudgeServiceTest {
     @Test
     void shouldPopulateOnlyEmailAddressesWhenDocumentsDoNotExist() {
         assertThat(sendNewMessageJudgeService.initialiseCaseFields(CaseData.builder().build()))
-            .containsExactly(
+            .containsOnly(
                 entry("judicialMessageMetaData", JudicialMessageMetaData.builder()
-                    .sender(COURT_EMAIL)
-                    .recipient(EMPTY).build()));
+                    .sender(EMPTY)
+                    .recipient(EMPTY).build()),
+                entry("isJudiciary", YesNo.NO));
     }
 
     @Test
@@ -283,10 +288,11 @@ class SendNewMessageJudgeServiceTest {
         CaseData caseData = CaseData.builder().build();
 
         assertThat(sendNewMessageJudgeService.initialiseCaseFields(caseData))
-            .containsExactly(
+            .containsOnly(
                 entry("judicialMessageMetaData", JudicialMessageMetaData.builder()
-                    .recipient(COURT_EMAIL)
-                    .sender(MESSAGE_SENDER).build()));
+                    .recipient(EMPTY)
+                    .sender(MESSAGE_SENDER).build()),
+                entry("isJudiciary", YesNo.YES));
     }
 
     @Test
@@ -296,10 +302,11 @@ class SendNewMessageJudgeServiceTest {
         CaseData caseData = CaseData.builder().build();
 
         assertThat(sendNewMessageJudgeService.initialiseCaseFields(caseData))
-            .containsExactly(
+            .containsOnly(
                 entry("judicialMessageMetaData", JudicialMessageMetaData.builder()
-                    .sender(COURT_EMAIL)
-                    .recipient(EMPTY).build()));
+                    .sender(EMPTY)
+                    .recipient(EMPTY).build()),
+                entry("isJudiciary", YesNo.NO));
     }
 
     @Test
@@ -750,11 +757,41 @@ class SendNewMessageJudgeServiceTest {
             .containsExactly(placementApplication);
     }
 
-    @Test
-    void shouldAppendNewJudicialMessageToExistingJudicialMessageList() {
+    private static Stream<Arguments> argForShouldAppendNewJudicialMessageToExistingJudicialMessageList() {
+        List<Arguments> args = new ArrayList<>();
+        List<JudicialMessageRoleType> judicialMessageRoleTypes =
+            List.of(JudicialMessageRoleType.JUDICIARY, JudicialMessageRoleType.CTSC,
+                JudicialMessageRoleType.LOCAL_COURT_ADMIN,JudicialMessageRoleType.OTHER);
+
+        List.of(true, false).stream()
+            .forEach(isJuducuary -> {
+                judicialMessageRoleTypes.stream().forEach(senderRole -> {
+                    judicialMessageRoleTypes.stream().forEach(recipientRole -> {
+                        args.add(Arguments.of(senderRole, recipientRole, isJuducuary));
+                    });
+                });
+            });
+        return args.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("argForShouldAppendNewJudicialMessageToExistingJudicialMessageList")
+    void shouldAppendNewJudicialMessageToExistingJudicialMessageList(JudicialMessageRoleType senderRole,
+                                                                     JudicialMessageRoleType recipientRole,
+                                                                     boolean isJudiciary) {
+        if (isJudiciary) {
+            when(userService.hasUserRole(UserRole.JUDICIARY)).thenReturn(true);
+            when(userService.getUserEmail()).thenReturn(MESSAGE_SENDER_JUDICIARY);
+        } else {
+            when(userService.hasUserRole(UserRole.JUDICIARY)).thenReturn(false);
+            when(userService.getUserEmail()).thenReturn(MESSAGE_SENDER);
+        }
+
         JudicialMessage newMessage = JudicialMessage.builder()
             .subject(MESSAGE_REQUESTED_BY)
+            .recipientType(recipientRole)
             .recipient(MESSAGE_RECIPIENT)
+            .senderType(senderRole)
             .sender(MESSAGE_SENDER)
             .build();
 
@@ -774,19 +811,31 @@ class SendNewMessageJudgeServiceTest {
             .judicialMessages(existingJudicialMessages)
             .build();
 
+        JudicialMessageRoleType expectedSenderRole = (isJudiciary) ? JudicialMessageRoleType.JUDICIARY : senderRole;
+        String expectedSender = MESSAGE_SENDER;
+        if (JudicialMessageRoleType.CTSC.equals(expectedSenderRole)) {
+            expectedSender = COURT_EMAIL;
+        } else if (isJudiciary) {
+            expectedSender = MESSAGE_SENDER_JUDICIARY;
+        }
+
+        String expectedRecipient = (JudicialMessageRoleType.CTSC.equals(recipientRole)) ?
+            COURT_EMAIL : MESSAGE_RECIPIENT;
+
         JudicialMessage expectedNewJudicialMessage = JudicialMessage.builder()
-            .sender(MESSAGE_SENDER)
-            .recipient(MESSAGE_RECIPIENT)
+            .senderType(expectedSenderRole)
+            .sender(expectedSender)
+            .recipientType(recipientRole)
+            .recipient(expectedRecipient)
             .updatedTime(time.now())
             .status(OPEN)
             .subject(MESSAGE_REQUESTED_BY)
             .latestMessage(MESSAGE_NOTE)
-            .messageHistory(String.format("%s - %s", MESSAGE_SENDER, MESSAGE_NOTE))
+            .messageHistory(String.format("%s - %s", expectedSender, MESSAGE_NOTE))
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .build();
 
         when(identityService.generateId()).thenReturn(NEW_ELEMENT_ID);
-        when(userService.getUserEmail()).thenReturn(MESSAGE_SENDER);
 
         List<Element<JudicialMessage>> updatedMessages = sendNewMessageJudgeService.addNewJudicialMessage(caseData);
 
