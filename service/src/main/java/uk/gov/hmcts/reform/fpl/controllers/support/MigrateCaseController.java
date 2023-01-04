@@ -291,10 +291,11 @@ public class MigrateCaseController extends CallbackController {
     }
 
     private void run985(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-985";
-        final Long expectedCaseId = 1648203424556112L;
-        removeRespondentStatementList(caseDetails, expectedCaseId, migrationId,
-            "4b88563e-c6b3-4780-90b6-531e1db65b7e");
+        var migrationId = "DFPL-985";
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1648203424556112L, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removePositionStatementRespondent(getCaseData(caseDetails),
+            migrationId, fromString("5ee0f6f7-1e7c-4fad-a193-b7cb7a6d613d")));
     }
 
     private void run1012(CaseDetails caseDetails) {
