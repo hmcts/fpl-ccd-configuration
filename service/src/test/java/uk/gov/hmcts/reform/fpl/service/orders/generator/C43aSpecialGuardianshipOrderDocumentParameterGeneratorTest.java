@@ -173,7 +173,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData))
-            .thenReturn("Remmy Respondent, Randle Responde are");
+            .thenReturn("Remmy Respondent and Randle Responde are");
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
@@ -192,7 +192,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData))
-            .thenReturn("Remmy Respondent, Randle Responde are");
+            .thenReturn("Remmy Respondent and Randle Responde are");
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
@@ -231,12 +231,12 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
     }
 
     private String getOrderAppointmentMessageForChildWithMultiplePeopleResponsible() {
-        return "The Court orders that Remmy Respondent, "
+        return "The Court orders that Remmy Respondent and "
             + "Randle Responde are appointed as special guardian for the child.";
     }
 
     private String getOrderAppointmentMessageForChildrenWithMultiplePeopleResponsible() {
-        return "The Court orders that Remmy Respondent, "
+        return "The Court orders that Remmy Respondent and "
             + "Randle Responde are appointed as special guardian for the children.";
     }
 
@@ -269,12 +269,17 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
     }
 
     private CaseData getCaseData(boolean isOrderByConsent, int numOfGuardians) {
+        return getCaseData(isOrderByConsent, numOfGuardians, null);
+    }
+
+    private CaseData getCaseData(boolean isOrderByConsent, int numOfGuardians, String appointedGuardianDetails) {
 
         return CaseData.builder()
             .appointedGuardianSelector(Selector.builder().selected(List.of(numOfGuardians)).build())
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDateTime(APPROVAL_DATE_TIME)
                 .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
+                .additionalAppointedSpecialGuardians(appointedGuardianDetails)
                 .manageOrdersIsByConsent(isOrderByConsent ? "Yes" : "No")
                 .build())
             .build();
