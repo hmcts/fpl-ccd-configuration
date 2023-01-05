@@ -191,8 +191,9 @@ public class MigrateCaseService {
                     c.getIncorrectCourtCode().equals(caseData.getCourt().getCode())
                         && c.getOrganisationId().equals(caseData.getLocalAuthorityPolicy()
                         .getOrganisation().getOrganisationID()))
-                .findAny().orElseThrow(() -> new AssertionError(format("It does not match condition. (courtCode = %s, "
-                        + "localAuthorityPolicy.organisation.organisationID = %s)", caseData.getCourt().getCode(),
+                .findAny().orElseThrow(() -> new AssertionError(format("It does not match any migration conditions. "
+                        + "(courtCode = %s, localAuthorityPolicy.organisation.organisationID = %s)",
+                    caseData.getCourt().getCode(),
                     caseData.getLocalAuthorityPolicy().getOrganisation().getOrganisationID())));
             return Map.of("court", caseData.getCourt().toBuilder()
                 .code(config.getCorrectCourtCode())

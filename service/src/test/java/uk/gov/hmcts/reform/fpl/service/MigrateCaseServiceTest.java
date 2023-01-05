@@ -521,7 +521,7 @@ class MigrateCaseServiceTest {
 
             assertThatThrownBy(() -> underTest.updateIncorrectCourtCodes(caseData))
                 .isInstanceOf(AssertionError.class)
-                .hasMessage("It does not match condition. (courtCode = 544, "
+                .hasMessage("It does not match any migration conditions. (courtCode = 544, "
                     + "localAuthorityPolicy.organisation.organisationID = 0F6AZIX)");
         }
 
