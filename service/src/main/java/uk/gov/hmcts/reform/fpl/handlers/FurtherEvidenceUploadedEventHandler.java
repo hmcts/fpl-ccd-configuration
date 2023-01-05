@@ -52,7 +52,6 @@ import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.function.Predicate.not;
@@ -202,7 +201,7 @@ public class FurtherEvidenceUploadedEventHandler {
             recipients.addAll(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData));
 
             if (isNotEmpty(recipients)) {
-                Optional <HearingBooking> hearingBookings = caseData.getHearingDetails().stream()
+                Optional<HearingBooking> hearingBookings = caseData.getHearingDetails().stream()
                     .filter(element -> element.getValue().toLabel().equals(newHearingDocuments.get(0).getHearing()))
                     .findFirst()
                     .map(Element::getValue);
