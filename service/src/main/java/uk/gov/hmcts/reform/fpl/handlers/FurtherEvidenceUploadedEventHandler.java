@@ -202,18 +202,15 @@ public class FurtherEvidenceUploadedEventHandler {
             recipients.addAll(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData));
 
             if (isNotEmpty(recipients)) {
-                List<Element<HearingBooking>> hearingBookings = caseData.getHearingDetails().stream()
+                Optional <HearingBooking> hearingBookings = caseData.getHearingDetails().stream()
                     .filter(element -> element.getValue().toLabel().equals(newHearingDocuments.get(0).getHearing()))
-                    .collect(Collectors.toList());
-
-                Optional<HearingBooking> hearingBookingToSend = hearingBookings.isEmpty()
-                    ? Optional.empty()
-                    : Optional.of(hearingBookings.get(0).getValue());
+                    .findFirst()
+                    .map(Element::getValue);
 
                 List<String> newDocumentNames = newHearingDocuments.stream()
                     .map(doc -> doc.getDocument().getFilename()).collect(toList());
                 furtherEvidenceNotificationService.sendNotificationWithHearing(caseData, recipients,
-                    uploader.getFullName(), newDocumentNames, hearingBookingToSend);
+                    uploader.getFullName(), newDocumentNames, hearingBookings);
             }
         }
     }
