@@ -128,8 +128,8 @@ class NoticeOfChangeFieldPopulatorTest {
         when(policyConverter.generate(SOLICITORI, Optional.empty())).thenReturn(ORG_POLICY_I);
         when(policyConverter.generate(SOLICITORJ, Optional.empty())).thenReturn(ORG_POLICY_J);
 
-        when(answersConverter.generateForSubmission(RESPONDENT_1_ELEMENT_INT, APPLICANT_NAME)).thenReturn(ANSWERS_1);
-        when(answersConverter.generateForSubmission(RESPONDENT_2_ELEMENT_INT, APPLICANT_NAME)).thenReturn(ANSWERS_2);
+        when(answersConverter.generateForSubmission(RESPONDENT_1_ELEMENT_INT)).thenReturn(ANSWERS_1);
+        when(answersConverter.generateForSubmission(RESPONDENT_2_ELEMENT_INT)).thenReturn(ANSWERS_2);
 
         final Map<String, Object> data = underTest.generate(caseData, Representing.RESPONDENT);
 

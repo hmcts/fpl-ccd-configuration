@@ -10,5 +10,4 @@ import lombok.Data;
 public class NoticeOfChangeAnswers {
     private final String respondentFirstName;
     private final String respondentLastName;
-    private final String applicantName;
 }
