@@ -4014,6 +4014,16 @@
     }
   },
   {
+    "hearingVenueId": 437,
+    "venue": "Newport AIT",
+    "address": {
+      "AddressLine1": "Newport AIT, Columbus House, Langstone Business Park",
+      "AddressLine2": "Chepstow Road",
+      "PostTown": "Newport",
+      "PostCode": "NP18 2LX"
+    }
+  },
+  {
     "hearingVenueId": -1,
     "venue": "High Court Family Division",
     "address": {

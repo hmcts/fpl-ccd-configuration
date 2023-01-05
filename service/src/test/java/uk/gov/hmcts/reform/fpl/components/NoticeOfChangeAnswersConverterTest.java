@@ -29,8 +29,6 @@ class NoticeOfChangeAnswersConverterTest {
     void shouldConvertRespondentAndApplicantToNoticeOfChangeAnswers() {
         UUID elementId = UUID.randomUUID();
 
-        String applicantName = "Test organisation";
-
         Organisation solicitorOrganisation = Organisation.builder()
             .organisationName("Summers Inc")
             .organisationID("12345")
@@ -63,11 +61,10 @@ class NoticeOfChangeAnswersConverterTest {
         NoticeOfChangeAnswers expectedNoticeOfChangeAnswers = NoticeOfChangeAnswers.builder()
             .respondentFirstName("Joe")
             .respondentLastName("Bloggs")
-            .applicantName("Test organisation")
             .build();
 
         NoticeOfChangeAnswers actualNoticeOfChangeAnswer
-            = noticeOfChangeAnswersConverter.generateForSubmission(respondentElement, applicantName);
+            = noticeOfChangeAnswersConverter.generateForSubmission(respondentElement);
 
         assertThat(actualNoticeOfChangeAnswer).isEqualTo(expectedNoticeOfChangeAnswers);
     }
