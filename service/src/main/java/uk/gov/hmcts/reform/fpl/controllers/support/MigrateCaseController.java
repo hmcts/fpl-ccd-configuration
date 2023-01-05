@@ -342,17 +342,6 @@ public class MigrateCaseController extends CallbackController {
     }
 
     private void run1072(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1072";
-        var caseId = caseDetails.getId();
-        var allowedCaseIds = List.of(1661877618161045L); // TODO, finding out the caseIDs
-
-        if (!allowedCaseIds.contains(caseId)) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, case id not present in allowed list",
-                migrationId, caseId
-            ));
-        }
-
         caseDetails.getData().putAll(migrateCaseService.updateIncorrectCourtCodes(getCaseData(caseDetails)));
     }
 }

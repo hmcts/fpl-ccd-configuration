@@ -525,9 +525,37 @@ class MigrateCaseServiceTest {
                 .build();
 
             assertThatThrownBy(() -> underTest.updateIncorrectCourtCodes(caseData))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("It does not match the migration condition. (courtCode = 544, "
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("It does not match condition. (courtCode = 544, "
                     + "localAuthorityPolicy.organisation.organisationID = 0F6AZIX)");
+        }
+
+        @Test
+        void shouldThrowExceptionWithoutLocalAuthorityPolicy() {
+            CaseData caseData = CaseData.builder()
+                .court(Court.builder()
+                    .name("Something")
+                    .code("544")
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> underTest.updateIncorrectCourtCodes(caseData))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("The case does not have court or local authority policy's organisation.");
+        }
+
+        @Test
+        void shouldThrowExceptionWithoutCourt() {
+            CaseData caseData = CaseData.builder()
+                .localAuthorityPolicy(
+                    OrganisationPolicy.builder()
+                        .organisation(Organisation.builder().organisationID("0F6AZIX").build())
+                        .build())
+                .build();
+
+            assertThatThrownBy(() -> underTest.updateIncorrectCourtCodes(caseData))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("The case does not have court or local authority policy's organisation.");
         }
     }
 }
