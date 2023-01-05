@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -15,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.service.additionalapplications.ConfirmApplication
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,27 +32,27 @@ class ConfirmApplicationReviewedServiceTest {
 
     private static final Element<AdditionalApplicationsBundle> REVIEWED_BUNDLE =
         element(AdditionalApplicationsBundle.builder()
-           .uploadedDateTime("2022 Dec 30")
+           .uploadedDateTime("1 January 2021, 12:00pm")
            .author("TEST_REVIEWED")
-           .c2DocumentBundle(C2DocumentBundle.builder().uploadedDateTime("2022 Dec 30").build())
-           .applicationReviewed(YesNo.YES)
+           .c2DocumentBundle(C2DocumentBundle.builder().uploadedDateTime("1 January 2021, 12:00pm").build())
+           .applicationReviewed(YES)
            .build());
 
     private static final Element<AdditionalApplicationsBundle> NEW_BUNDLE_1 =
         element(AdditionalApplicationsBundle.builder()
-            .uploadedDateTime("2022 Dec 30")
+            .uploadedDateTime("1 January 2021, 12:00pm")
             .author("TESTING1")
             .c2DocumentBundle(C2DocumentBundle.builder()
-                .uploadedDateTime("2022 Dec 30").build())
+                .uploadedDateTime("1 January 2021, 12:00pm").build())
             .build());
 
     private static final Element<AdditionalApplicationsBundle> NEW_BUNDLE_2 =
         element(AdditionalApplicationsBundle.builder()
-            .uploadedDateTime("2022 Dec 30")
+            .uploadedDateTime("1 January 2021, 12:00pm")
             .author("TESTING2")
             .otherApplicationsBundle(OtherApplicationsBundle.builder()
                 .applicationType(OtherApplicationType.C1_TERMINATION_OF_APPOINTMENT_OF_A_GUARDIAN)
-                .uploadedDateTime("2022 Dec 30").build())
+                .uploadedDateTime("1 January 2021, 12:00pm").build())
             .build());
 
     @Test
@@ -111,7 +111,9 @@ class ConfirmApplicationReviewedServiceTest {
                 .build())
             .build();
 
-        assertThatThrownBy(() -> confirmApplicationReviewedService.getSelectedApplicationsToBeReviewed(caseData));
+        assertThatThrownBy(() -> confirmApplicationReviewedService.getSelectedApplicationsToBeReviewed(caseData))
+            .isInstanceOf(NoSuchElementException.class)
+            .hasMessage("No value present");
     }
 
     @Test
@@ -145,6 +147,8 @@ class ConfirmApplicationReviewedServiceTest {
                 .build())
             .build();
 
-        assertThatThrownBy(() -> confirmApplicationReviewedService.markSelectedBundleAsReviewed(caseData));
+        assertThatThrownBy(() -> confirmApplicationReviewedService.markSelectedBundleAsReviewed(caseData))
+            .isInstanceOf(NoSuchElementException.class)
+            .hasMessage("No value present");
     }
 }

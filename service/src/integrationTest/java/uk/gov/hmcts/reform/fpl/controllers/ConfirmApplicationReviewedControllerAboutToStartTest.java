@@ -31,7 +31,7 @@ public class ConfirmApplicationReviewedControllerAboutToStartTest extends Abstra
         "hasApplicationToBeReviewed", YesNo.YES,
         "confirmApplicationReviewedList",
         asDynamicList(wrapElementsWithRandomUUID(AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(C2DocumentBundle.builder().uploadedDateTime("2022 Dec 30").build())
+                .c2DocumentBundle(C2DocumentBundle.builder().uploadedDateTime("1 January 2021, 12:00pm").build())
                 .build()), AdditionalApplicationsBundle::toLabel));
 
     ConfirmApplicationReviewedControllerAboutToStartTest() {

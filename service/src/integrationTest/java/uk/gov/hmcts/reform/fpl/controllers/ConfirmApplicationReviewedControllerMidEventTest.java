@@ -25,7 +25,7 @@ public class ConfirmApplicationReviewedControllerMidEventTest extends AbstractCa
 
     private static final Element<AdditionalApplicationsBundle> APPLICATION_BUNDLE_ELEMENT =
         element(AdditionalApplicationsBundle.builder()
-            .uploadedDateTime("2022 Dec 30")
+            .uploadedDateTime("1 January 2021, 12:00pm")
             .author("TESTING")
             .build());
 

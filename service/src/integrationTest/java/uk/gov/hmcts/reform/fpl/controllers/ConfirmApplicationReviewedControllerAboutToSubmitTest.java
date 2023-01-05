@@ -27,7 +27,7 @@ public class ConfirmApplicationReviewedControllerAboutToSubmitTest extends Abstr
 
     private static final List<Element<AdditionalApplicationsBundle>> APPLICATION_BUNDLE_ELEMENT_LIST =
         wrapElements(AdditionalApplicationsBundle.builder()
-            .uploadedDateTime("2022 Dec 30")
+            .uploadedDateTime("1 January 2021, 12:00pm")
             .author("TESTING")
             .applicationReviewed(YesNo.YES)
             .build());
