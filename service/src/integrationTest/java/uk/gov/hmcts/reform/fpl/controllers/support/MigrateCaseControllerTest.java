@@ -93,38 +93,4 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .containsExactly(null, null);
         }
     }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class Dfpl1108 {
-
-        private final String migrationId = "DFPL-1108";
-        private final long validCaseId = 1632998316920007L;
-
-        @Test
-        void shouldRemoveAllPlacementCollections() {
-            List<Element<Placement>> placements = List.of(
-                element(Placement.builder()
-                    .application(testDocumentReference())
-                    .build()),
-                element(Placement.builder()
-                    .application(testDocumentReference())
-                    .build())
-            );
-            CaseData caseData = CaseData.builder()
-                .id(validCaseId)
-                .placementEventData(PlacementEventData.builder()
-                    .placements(placements)
-                    .build())
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId));
-            CaseData responseData = extractCaseData(response);
-
-            assertThat(responseData.getPlacementEventData().getPlacements()).isEmpty();
-            assertThat(response.getData()).extracting("placementsNonConfidential", "placementsNonConfidentialNotices")
-                .containsExactly(null, null);
-        }
-    }
 }
