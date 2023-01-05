@@ -96,7 +96,7 @@ class CaseNoteServiceTest {
 
         List<Element<CaseNote>> result = service.removeCaseNote(caseNote.getId(), existingNotes);
 
-        assertThat(result).doesNotContain(caseNote);
+        assertThat(result).doesNotContain(caseNote).isEmpty();
     }
 
     private CaseNote caseNoteForToday(String note) {
