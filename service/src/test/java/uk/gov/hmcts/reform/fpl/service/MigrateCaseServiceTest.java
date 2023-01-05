@@ -51,11 +51,6 @@ class MigrateCaseServiceTest {
         assertThrows(AssertionError.class, () -> underTest.doCaseIdCheck(1L, 2L, MIGRATION_ID));
     }
 
-    @Test
-    void shouldThrowExceptionIfCaseIdListCheckFails() {
-        assertThrows(AssertionError.class, () -> underTest.doCaseIdCheckList(1L, List.of(2L, 3L), MIGRATION_ID));
-    }
-
     @Nested
     class RemoveHearingOrderBundleDraft {
 

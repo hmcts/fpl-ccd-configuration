@@ -66,15 +66,6 @@ public class MigrateCaseService {
         }
     }
 
-    public void doCaseIdCheckList(long caseId, List<Long> possibleIds, String migrationId) throws AssertionError {
-        if (!possibleIds.contains(caseId)) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, case id not one of the expected options",
-                migrationId, caseId
-            ));
-        }
-    }
-
     public Map<String, Object> removeDocumentsSentToParties(CaseData caseData,
                                                             String migrationId,
                                                             UUID expectedPartyUuid,
