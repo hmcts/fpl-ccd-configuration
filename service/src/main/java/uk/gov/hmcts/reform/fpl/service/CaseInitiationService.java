@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.LocalAuthorityName;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.model.Organisation;
+import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 
 import java.util.List;
 import java.util.Objects;
@@ -30,6 +31,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CHILDSOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CREATOR;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LAMANAGING;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.EPS;
@@ -103,6 +105,21 @@ public class CaseInitiationService {
         return userLA.isPresent();
     }
 
+    public String getOrganisationUsers() {
+        Optional<Organisation> userOrg = organisationService.findOrganisation();
+
+        try {
+            if (userOrg.isPresent()) {
+                return "<ul>" + caseAccessService.getLocalAuthorityUsersAllInfo().stream()
+                    .map(OrganisationUser::getUserString)
+                    .collect(Collectors.joining("")) + "</ul>";
+            }
+        } catch (Exception e) {
+            return "No users found";
+        }
+        return "No users found";
+    }
+
     public List<String> checkUserAllowedToCreateCase(CaseData caseData) {
 
         Optional<Organisation> userOrg = organisationService.findOrganisation();
@@ -155,6 +172,14 @@ public class CaseInitiationService {
         }
 
         return emptyList();
+    }
+
+    public boolean isCaseOutsourced(CaseData caseData) {
+        final Optional<String> userLocalAuthority = localAuthorities.getLocalAuthorityCode();
+        final Optional<String> outsourcingLocalAuthority = dynamicLists.getSelectedValue(caseData.getOutsourcingLAs());
+
+        return outsourcingLocalAuthority.isPresent()
+            && !userLocalAuthority.equals(outsourcingLocalAuthority);
     }
 
     public CaseData updateOrganisationsDetails(CaseData caseData) {
@@ -253,9 +278,18 @@ public class CaseInitiationService {
 
         if (nonNull(caseData.getOutsourcingPolicy())) {
             final CaseRole caseRole = getCaseRole(caseData.getOutsourcingPolicy());
-            caseAccessService.grantCaseRoleToUser(caseId, creatorId, caseRole);
+            if (LAMANAGING.equals(caseRole)
+                && !isEmpty(caseData.getShouldShareWithOrganisationUsers())
+                && caseData.getShouldShareWithOrganisationUsers().equals(YesNo.YES)) {
+                // LAMANAGING + we want to share with everyone
+                caseAccessService.grantCaseRoleToLocalAuthority(caseId, creatorId, localAuthority, caseRole);
+            } else {
+                // EPSMANAGING do not share OR LAMANAGING doesn't want to share
+                caseAccessService.grantCaseRoleToUser(caseId, creatorId, caseRole);
+            }
         } else {
             final CaseRole caseRole = getCaseRole(caseData.getLocalAuthorityPolicy());
+            // LASOLICITOR share with all sols in org
             caseAccessService.grantCaseRoleToLocalAuthority(caseId, creatorId, localAuthority, caseRole);
         }
     }
