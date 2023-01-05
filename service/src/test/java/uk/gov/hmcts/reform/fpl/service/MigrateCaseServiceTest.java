@@ -7,8 +7,11 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -24,6 +27,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -45,6 +49,11 @@ class MigrateCaseServiceTest {
     @Test
     void shouldThrowExceptionIfCaseIdCheckFails() {
         assertThrows(AssertionError.class, () -> underTest.doCaseIdCheck(1L, 2L, MIGRATION_ID));
+    }
+
+    @Test
+    void shouldThrowExceptionIfCaseIdListCheckFails() {
+        assertThrows(AssertionError.class, () -> underTest.doCaseIdCheckList(1L, List.of(2L, 3L), MIGRATION_ID));
     }
 
     @Nested
@@ -349,6 +358,176 @@ class MigrateCaseServiceTest {
             assertThrows(AssertionError.class, () ->
                 underTest.removePositionStatementRespondent(caseData, MIGRATION_ID,
                     docIdToRemove));
+        }
+    }
+
+    @Nested
+    class UpdateIncorrectCourtCodes {
+
+        @Test
+        void shouldUpdateIncorrectCourtCodeForBHC() {
+            CaseData caseData = CaseData.builder()
+                .court(Court.builder()
+                    .name("Something")
+                    .code("544")
+                    .build())
+                .localAuthorityPolicy(
+                    OrganisationPolicy.builder()
+                        .organisation(Organisation.builder().organisationID("0F6AZIR").build())
+                        .build())
+                .build();
+
+            Map<String, Object> fields = underTest.updateIncorrectCourtCodes(caseData);
+
+            assertThat(fields.get("court")).isEqualTo(Court.builder()
+                .code("554")
+                .name("Family Court sitting at Brighton")
+                .build());
+        }
+
+        @Test
+        void shouldUpdateIncorrectCourtCodeForWSX() {
+            CaseData caseData = CaseData.builder()
+                .court(Court.builder()
+                    .name("Something")
+                    .code("544")
+                    .build())
+                .localAuthorityPolicy(
+                    OrganisationPolicy.builder()
+                        .organisation(Organisation.builder().organisationID("HLT7S0M").build())
+                        .build())
+                .build();
+
+            Map<String, Object> fields = underTest.updateIncorrectCourtCodes(caseData);
+
+            assertThat(fields.get("court")).isEqualTo(Court.builder()
+                .code("554")
+                .name("Family Court Sitting at Brighton County Court")
+                .build());
+        }
+
+        @Test
+        void shouldUpdateIncorrectCourtCodeForBNT() {
+            CaseData caseData = CaseData.builder()
+                .court(Court.builder()
+                    .name("Something")
+                    .code("117")
+                    .build())
+                .localAuthorityPolicy(
+                    OrganisationPolicy.builder()
+                        .organisation(Organisation.builder().organisationID("SPUL3VV").build())
+                        .build())
+                .build();
+
+            Map<String, Object> fields = underTest.updateIncorrectCourtCodes(caseData);
+
+            assertThat(fields.get("court")).isEqualTo(Court.builder()
+                .code("332")
+                .name("Family Court Sitting at West London")
+                .build());
+        }
+
+        @Test
+        void shouldUpdateIncorrectCourtCodeForHRW() {
+            CaseData caseData = CaseData.builder()
+                .court(Court.builder()
+                    .name("Something")
+                    .code("117")
+                    .build())
+                .localAuthorityPolicy(
+                    OrganisationPolicy.builder()
+                        .organisation(Organisation.builder().organisationID("L3HSA4L").build())
+                        .build())
+                .build();
+
+            Map<String, Object> fields = underTest.updateIncorrectCourtCodes(caseData);
+
+            assertThat(fields.get("court")).isEqualTo(Court.builder()
+                .code("332")
+                .name("Family Court Sitting at West London")
+                .build());
+        }
+
+        @Test
+        void shouldUpdateIncorrectCourtCodeForHLW() {
+            CaseData caseData = CaseData.builder()
+                .court(Court.builder()
+                    .name("Something")
+                    .code("117")
+                    .build())
+                .localAuthorityPolicy(
+                    OrganisationPolicy.builder()
+                        .organisation(Organisation.builder().organisationID("6I4Z3OO").build())
+                        .build())
+                .build();
+
+            Map<String, Object> fields = underTest.updateIncorrectCourtCodes(caseData);
+
+            assertThat(fields.get("court")).isEqualTo(Court.builder()
+                .code("332")
+                .name("Family Court Sitting at West London")
+                .build());
+        }
+
+        @Test
+        void shouldUpdateIncorrectCourtCodeForRCT() {
+            CaseData caseData = CaseData.builder()
+                .court(Court.builder()
+                    .name("Something")
+                    .code("164")
+                    .build())
+                .localAuthorityPolicy(
+                    OrganisationPolicy.builder()
+                        .organisation(Organisation.builder().organisationID("68MNZN8").build())
+                        .build())
+                .build();
+
+            Map<String, Object> fields = underTest.updateIncorrectCourtCodes(caseData);
+
+            assertThat(fields.get("court")).isEqualTo(Court.builder()
+                .code("159")
+                .name("Family Court sitting at Cardiff")
+                .build());
+        }
+
+        @Test
+        void shouldUpdateIncorrectCourtCodeForBAD() {
+            CaseData caseData = CaseData.builder()
+                .court(Court.builder()
+                    .name("Something")
+                    .code("3403")
+                    .build())
+                .localAuthorityPolicy(
+                    OrganisationPolicy.builder()
+                        .organisation(Organisation.builder().organisationID("3FG3URQ").build())
+                        .build())
+                .build();
+
+            Map<String, Object> fields = underTest.updateIncorrectCourtCodes(caseData);
+
+            assertThat(fields.get("court")).isEqualTo(Court.builder()
+                .code("121")
+                .name("Family Court Sitting at East London Family Court")
+                .build());
+        }
+
+        @Test
+        void shouldThrowExceptionWhenCourtCodeAndOrganisationNotMatch() {
+            CaseData caseData = CaseData.builder()
+                .court(Court.builder()
+                    .name("Something")
+                    .code("544")
+                    .build())
+                .localAuthorityPolicy(
+                    OrganisationPolicy.builder()
+                        .organisation(Organisation.builder().organisationID("0F6AZIX").build())
+                        .build())
+                .build();
+
+            assertThatThrownBy(() -> underTest.updateIncorrectCourtCodes(caseData))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("It does not match the migration condition. (courtCode = 544, "
+                    + "localAuthorityPolicy.organisation.organisationID = 0F6AZIX)");
         }
     }
 }

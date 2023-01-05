@@ -19,6 +19,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -60,6 +61,15 @@ public class MigrateCaseService {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, expected case id %d",
                 migrationId, caseId, expectedCaseId
+            ));
+        }
+    }
+
+    public void doCaseIdCheckList(long caseId, List<Long> possibleIds, String migrationId) throws AssertionError {
+        if (!possibleIds.contains(caseId)) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, case id not one of the expected options",
+                migrationId, caseId
             ));
         }
     }
@@ -135,5 +145,86 @@ public class MigrateCaseService {
                 migrationId, caseId));
         }
         return Map.of("positionStatementRespondentListV2", positionStatementRespondentListResult);
+    }
+
+    public Map<String, Object> updateIncorrectCourtCodes(CaseData caseData) {
+        if (nonNull(caseData.getCourt())) {
+            if ("544".equals(caseData.getCourt().getCode())) {
+                // BHC
+                if (nonNull(caseData.getLocalAuthorityPolicy())
+                    && nonNull(caseData.getLocalAuthorityPolicy().getOrganisation())
+                    && "0F6AZIR".equals(caseData.getLocalAuthorityPolicy().getOrganisation().getOrganisationID())) {
+                    return Map.of("court", caseData.getCourt().toBuilder()
+                        .code("554")
+                        .name("Family Court sitting at Brighton")
+                        .build());
+                }
+                // WSX
+                if (nonNull(caseData.getLocalAuthorityPolicy())
+                    && nonNull(caseData.getLocalAuthorityPolicy().getOrganisation())
+                    && "HLT7S0M".equals(caseData.getLocalAuthorityPolicy().getOrganisation().getOrganisationID())) {
+                    return Map.of("court", caseData.getCourt().toBuilder()
+                        .code("554")
+                        .name("Family Court Sitting at Brighton County Court")
+                        .build());
+                }
+            } else if ("117".equals(caseData.getCourt().getCode())) {
+                // BNT
+                if (nonNull(caseData.getLocalAuthorityPolicy())
+                    && nonNull(caseData.getLocalAuthorityPolicy().getOrganisation())
+                    && "SPUL3VV".equals(caseData.getLocalAuthorityPolicy().getOrganisation().getOrganisationID())) {
+                    return Map.of("court", caseData.getCourt().toBuilder()
+                        .code("332")
+                        .name("Family Court Sitting at West London")
+                        .build());
+                }
+                // HRW
+                if (nonNull(caseData.getLocalAuthorityPolicy())
+                    && nonNull(caseData.getLocalAuthorityPolicy().getOrganisation())
+                    && "L3HSA4L".equals(caseData.getLocalAuthorityPolicy().getOrganisation().getOrganisationID())) {
+                    return Map.of("court", caseData.getCourt().toBuilder()
+                        .code("332")
+                        .name("Family Court Sitting at West London")
+                        .build());
+                }
+                // HLW
+                if (nonNull(caseData.getLocalAuthorityPolicy())
+                    && nonNull(caseData.getLocalAuthorityPolicy().getOrganisation())
+                    && "6I4Z3OO".equals(caseData.getLocalAuthorityPolicy().getOrganisation().getOrganisationID())) {
+                    return Map.of("court", caseData.getCourt().toBuilder()
+                        .code("332")
+                        .name("Family Court Sitting at West London")
+                        .build());
+                }
+            } else if ("164".equals(caseData.getCourt().getCode())) {
+                // RCT
+                if (nonNull(caseData.getLocalAuthorityPolicy())
+                    && nonNull(caseData.getLocalAuthorityPolicy().getOrganisation())
+                    && "68MNZN8".equals(caseData.getLocalAuthorityPolicy().getOrganisation().getOrganisationID())) {
+                    return Map.of("court", caseData.getCourt().toBuilder()
+                        .code("159")
+                        .name("Family Court sitting at Cardiff")
+                        .build());
+                }
+            } else if ("3403".equals(caseData.getCourt().getCode())) {
+                // BAD
+                if (nonNull(caseData.getLocalAuthorityPolicy())
+                    && nonNull(caseData.getLocalAuthorityPolicy().getOrganisation())
+                    && "3FG3URQ".equals(caseData.getLocalAuthorityPolicy().getOrganisation().getOrganisationID())) {
+                    return Map.of("court", caseData.getCourt().toBuilder()
+                        .code("121")
+                        .name("Family Court Sitting at East London Family Court")
+                        .build());
+                }
+            }
+        }
+        throw new IllegalStateException(format("It does not match the migration condition. (courtCode = %s, "
+                + "localAuthorityPolicy.organisation.organisationID = %s)",
+            nonNull(caseData.getCourt()) ? caseData.getCourt().getCode() : "null",
+            nonNull(caseData.getLocalAuthorityPolicy())
+                ? (nonNull(caseData.getLocalAuthorityPolicy().getOrganisation())
+                    ? caseData.getLocalAuthorityPolicy().getOrganisation().getOrganisationID()
+                    : "null")
+                : "null"));
     }
 }
