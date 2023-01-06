@@ -109,6 +109,19 @@ class OrganisationServiceTest {
         }
 
         @Test
+        void shouldReturnAllUserDetailsFromOrganisationIfExistsInRefData() {
+            OrganisationUsers usersInAnOrganisation = prepareUsersForAnOrganisation();
+            when(organisationApi.findUsersInCurrentUserOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, ACTIVE, false))
+                .thenReturn(usersInAnOrganisation);
+
+
+            List<OrganisationUser> users = organisationService
+                .getUsersFromSameOrganisationBasedOnReferenceDataAllInfo();
+
+            assertThat(users).isEqualTo(usersInAnOrganisation.getUsers());
+        }
+
+        @Test
         void shouldReturnEmptyListWhenTheLAIsNotKnownAndTheApiReturnsNotFound() {
             when(organisationApi.findUsersInCurrentUserOrganisation(any(), any(), any(), any()))
                 .thenThrow(feignException(SC_FORBIDDEN));
@@ -124,7 +137,9 @@ class OrganisationServiceTest {
 
         @Test
         void shouldFindUser() {
-            OrganisationUser user = new OrganisationUser(RandomStringUtils.randomAlphanumeric(10));
+            OrganisationUser user = OrganisationUser.builder()
+                .userIdentifier(RandomStringUtils.randomAlphanumeric(10))
+                .build();
 
             when(organisationApi.findUserByEmail(AUTH_TOKEN, SERVICE_AUTH_TOKEN, USER_EMAIL)).thenReturn(user);
 
@@ -263,10 +278,16 @@ class OrganisationServiceTest {
             OrganisationUser
                 .builder()
                 .userIdentifier("40")
+                .email("40@test.com")
+                .firstName("first40")
+                .lastName("last40")
                 .build(),
             OrganisationUser
                 .builder()
                 .userIdentifier("41")
+                .email("41@test.com")
+                .firstName("first41")
+                .lastName("last41")
                 .build()
         ));
     }
