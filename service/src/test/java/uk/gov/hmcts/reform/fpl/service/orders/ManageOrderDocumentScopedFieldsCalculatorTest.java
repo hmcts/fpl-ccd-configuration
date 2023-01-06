@@ -34,6 +34,7 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "childSelector",
             "appointedGuardians_label",
             "appointedGuardianSelector",
+            "additionalAppointedSpecialGuardians",
             "manageOrdersIsByConsent",
             "manageOrdersTitle",
             "manageOrdersDirections",
