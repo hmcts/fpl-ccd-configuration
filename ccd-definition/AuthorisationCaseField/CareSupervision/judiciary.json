@@ -3838,6 +3838,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "additionalAppointedSpecialGuardians",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "othersSelector",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRUD"
