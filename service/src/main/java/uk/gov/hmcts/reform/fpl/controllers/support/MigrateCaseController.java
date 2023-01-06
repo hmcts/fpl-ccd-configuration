@@ -13,15 +13,12 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
-import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
 import java.time.LocalDate;
@@ -51,12 +48,11 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-985", this::run985,
         "DFPL-1012", this::run1012,
-        "DFPL-776", this::run776,
-        "DFPL-1015", this::run1015,
+        "DFPL-1064", this::run1064,
         "DFPL-872", this::run872,
         "DFPL-979", this::run979,
         "DFPL-1006", this::run1006,
-        "DFPL-969", this::run969,
+        "DFPL-1065", this::run1065,
         "DFPL-872rollback", this::run872Rollback,
         "DFPL-1029", this::run1029 // DON'T DELETE THIS MIGRATION, POTENTIALLY ONGOING ISSUES
     );
@@ -173,84 +169,6 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put("caseNotes", resultCaseNotes);
     }
 
-    private void run776(CaseDetails caseDetails) {
-        var migrationId = "DFPL-776";
-        var expectedCaseId = 1646318196381762L;
-
-        CaseData caseData = getCaseData(caseDetails);
-        Long caseId = caseData.getId();
-
-        if (caseId != expectedCaseId) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, expected case id %d",
-                migrationId, caseId, expectedCaseId
-            ));
-        }
-
-        UUID expectedMsgId = UUID.fromString("878a2dd7-8d50-46b1-88d3-a5c6fe9a39ba");
-
-        List<Element<JudicialMessage>> resultJudicialMessages = caseData.getJudicialMessages().stream()
-            .filter(msgElement -> !expectedMsgId.equals(msgElement.getId()))
-            .collect(toList());
-
-        // only one message should be removed
-        if (resultJudicialMessages.size() != caseData.getJudicialMessages().size() - 1) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, invalid JudicialMessage ID",
-                migrationId, caseId
-            ));
-        }
-
-        caseDetails.getData().put("judicialMessages", resultJudicialMessages);
-    }
-
-    private void removeHearingBooking(final String migrationId, final Long expectedCaseId,
-                                      final CaseDetails caseDetails, final String hearingIdToBeRemoved) {
-
-        CaseData caseData = getCaseData(caseDetails);
-        final Long caseId = caseData.getId();
-        final UUID expectedHearingId = UUID.fromString(hearingIdToBeRemoved);
-
-        if (!expectedCaseId.equals(caseId)) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, expected case id %d",
-                migrationId, caseId, expectedCaseId
-            ));
-        }
-
-        List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
-        if (hearingDetails != null) {
-            // get the hearing with the expected UUID
-            List<Element<HearingBooking>> hearingBookingsToBeRemoved =
-                hearingDetails.stream().filter(hearingBooking -> expectedHearingId.equals(hearingBooking.getId()))
-                    .collect(toList());
-
-            if (hearingBookingsToBeRemoved.size() == 0) {
-                throw new AssertionError(format(
-                    "Migration {id = %s, case reference = %s}, hearing booking %s not found",
-                    migrationId, caseId, expectedHearingId
-                ));
-            }
-
-            if (hearingBookingsToBeRemoved.size() > 1) {
-                throw new AssertionError(format(
-                    "Migration {id = %s, case reference = %s}, more than one hearing booking %s found",
-                    migrationId, caseId, expectedHearingId
-                ));
-            }
-
-            // remove the hearing from the hearing list
-            hearingDetails.removeAll(hearingBookingsToBeRemoved);
-            caseDetails.getData().put("hearingDetails", hearingDetails);
-            caseDetails.getData().put("selectedHearingId", hearingDetails.get(hearingDetails.size() - 1).getId());
-        } else {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, hearing details not found",
-                migrationId, caseId
-            ));
-        }
-    }
-
     private void run1006(CaseDetails caseDetails) {
         var migrationId = "DFPL-1006";
         var expectedCaseId = 1664880596046318L;
@@ -285,46 +203,6 @@ public class MigrateCaseController extends CallbackController {
             ));
         }
         fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
-    }
-
-    private void run969(CaseDetails caseDetails) {
-        var migrationId = "DFPL-969";
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1654525609722908L, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.removeHearingOrderBundleDraft(getCaseData(caseDetails),
-            migrationId, UUID.fromString("4f20eca8-d255-4339-bb09-23a1e2ba7d80"),
-            UUID.fromString("84573155-34ac-4ff4-b616-54ac4cc369cb")));
-    }
-
-    private final DocumentListService documentListService;
-
-    private void removeRespondentStatementList(CaseDetails caseDetails, long expectedCaseId,
-                                               String migrationId,
-                                               String expectedRespondentStatementId) {
-        CaseData caseData = getCaseData(caseDetails);
-        final Long caseId = caseData.getId();
-
-        if (caseId != expectedCaseId) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, expected case id %d",
-                migrationId, caseId, expectedCaseId));
-        }
-
-        List<Element<RespondentStatement>> respondentStatementsResult =
-            caseData.getRespondentStatements().stream()
-                .filter(el -> !el.getId().equals(UUID.fromString(expectedRespondentStatementId)))
-                .collect(toList());
-
-        if (respondentStatementsResult.size() != caseData.getRespondentStatements().size() - 1) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, invalid respondent statements",
-                migrationId, caseId));
-        }
-
-        caseDetails.getData().put("respondentStatements", respondentStatementsResult);
-        // refreshing the document view
-        caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
     }
 
     private void run985(CaseDetails caseDetails) {

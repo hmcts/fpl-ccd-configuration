@@ -3,9 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers.support;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -13,8 +10,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -25,12 +22,9 @@ import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -142,82 +136,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             CaseData responseData = extractCaseData(response);
 
             assertThat(responseData.getSendToCtsc()).isEqualTo(YesNo.YES.getValue());
-        }
-    }
-
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class DfplRemoveCaseNotes {
-        private Stream<Arguments> provideMigrationTestData() {
-            return Stream.of(
-                Arguments.of("DFPL-979", 1648556593632182L,
-                    List.of(UUID.fromString("c0c0c620-055e-488c-a6a9-d5e7ec35c210"),
-                        UUID.fromString("0a202483-b7e6-44a1-a28b-8c9342f67967")))
-            );
-        }
-
-        @ParameterizedTest
-        @MethodSource("provideMigrationTestData")
-        void shouldRemoveCaseNotes(String migrationId, Long expectedCaseId, List<UUID> validNoteId) {
-            UUID otherNoteId = UUID.randomUUID();
-            List<UUID> testNoteId = new ArrayList<>(validNoteId);
-            testNoteId.add(otherNoteId);
-
-            CaseData caseData = CaseData.builder()
-                .id(expectedCaseId)
-                .caseNotes(testNoteId.stream().map(this::buildMockCaseNotes).collect(Collectors.toList()))
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId)
-            );
-
-            CaseData responseData = extractCaseData(response);
-
-            assertThat(responseData.getCaseNotes().size()).isEqualTo(1);
-            assertThat(responseData.getCaseNotes().stream().map(Element::getId).collect(Collectors.toList()))
-                .doesNotContainAnyElementsOf(validNoteId)
-                .contains(otherNoteId);
-
-        }
-
-        @ParameterizedTest
-        @MethodSource("provideMigrationTestData")
-        void shouldThrowExceptionWhenCaseIdInvalid(String migrationId, Long expectedCaseId, List<UUID> validNoteId) {
-            CaseData caseData = CaseData.builder().id(1L).build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format("Migration {id = %s, case reference = %s}, expected case id %d",
-                    migrationId, 1, expectedCaseId));
-        }
-
-        @ParameterizedTest
-        @MethodSource("provideMigrationTestData")
-        void shouldThrowExceptionWhenCasNotesIdInvalid(String migrationId, Long expectedCaseId,
-                                                       List<UUID> validNoteId) {
-            CaseData caseData = CaseData.builder()
-                .id(expectedCaseId)
-                .caseNotes(List.of(buildMockCaseNotes(UUID.randomUUID()),
-                    buildMockCaseNotes(UUID.randomUUID()),
-                    buildMockCaseNotes(UUID.randomUUID()))).build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format(
-                    "Migration {id = %s, case reference = %s}, expected caseNotes id not found",
-                    migrationId, expectedCaseId));
-        }
-
-        private Element<CaseNote> buildMockCaseNotes(UUID id) {
-            return element(id, CaseNote.builder()
-                .createdBy("mockCreatedBy")
-                .date(LocalDate.of(2022, 6, 14))
-                .note("Testing Note")
-                .build());
         }
     }
 
