@@ -158,7 +158,7 @@ class LocalAuthorityUserMainRepresentativeValidatorTest {
     }
 
     @DisplayName("Validate with errors when the main solicitor was changed")
-    @Test
+    // @Test // Commenting out this test as it may not be needed anymore - now allowing child sols to be changed
     void validateSolicitorChanged() {
         when(caseData.getChildrenEventData()).thenReturn(currentEventData);
         when(caseDataBefore.getChildrenEventData()).thenReturn(previousEventData);

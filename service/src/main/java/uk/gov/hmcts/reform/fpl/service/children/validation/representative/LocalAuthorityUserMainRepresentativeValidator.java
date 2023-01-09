@@ -63,10 +63,9 @@ public final class LocalAuthorityUserMainRepresentativeValidator extends LocalAu
         }
 
         // already set so just need to check if the representatives are equal
-        RespondentSolicitor oldRepresentative = sanitizer.sanitize(oldData.getChildrenMainRepresentative());
-        RespondentSolicitor currentRepresentative = sanitizer.sanitize(currentData.getChildrenMainRepresentative());
-        return !Objects.equals(oldRepresentative, currentRepresentative)
-               ? List.of(MAIN_REP_MODIFICATION_ERROR)
-               : List.of();
+        // No other checks necessary?
+        // Allowing the main rep to be removed/swapped out - the NoC service will handle if there are any roles that
+        // need to be cleaned up/orgs to be swapped.
+        return List.of();
     }
 }
