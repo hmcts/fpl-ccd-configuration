@@ -20,6 +20,7 @@ import java.util.Set;
 
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -127,10 +128,13 @@ class LegalRepresentativeServiceTest {
                 .build()
         );
 
-        underTest.updateRepresentatives(CASE_ID, originalRepresentatives, updatedRepresentatives);
+        Exception exception = assertThrows(IllegalArgumentException.class,
+            () -> underTest.updateRepresentatives(CASE_ID, originalRepresentatives, updatedRepresentatives)
+        );
+
+        assertThat(exception.getMessage()).isEqualTo(String.format("Could not find the user with email %s",
+            REPRESENTATIVE_EMAIL_1));
         verifyNoInteractions(caseService);
-        assertThat(logs.getInfos())
-            .containsExactly(String.format("Could not find the user with email %s", REPRESENTATIVE_EMAIL_1));
     }
 
     @Test
