@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
@@ -25,14 +24,12 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
 import static java.util.UUID.fromString;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Api
@@ -44,16 +41,16 @@ public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
 
     private final MigrateCaseService migrateCaseService;
+    private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-1012", this::run1012,
         "DFPL-1064", this::run1064,
         "DFPL-872", this::run872,
-        "DFPL-979", this::run979,
-        "DFPL-1006", this::run1006,
         "DFPL-1065", this::run1065,
         "DFPL-872rollback", this::run872Rollback,
-        "DFPL-1029", this::run1029 // DON'T DELETE THIS MIGRATION, POTENTIALLY ONGOING ISSUES
+        "DFPL-1029", this::run1029,
+        "DFPL-1103", this::run1103
     );
 
     @PostMapping("/about-to-submit")
@@ -132,63 +129,7 @@ public class MigrateCaseController extends CallbackController {
         }
     }
 
-    private void run979(CaseDetails caseDetails) {
-        var migrationId = "DFPL-979";
-        var expectedCaseId = 1648556593632182L;
-        var expectedCaseNotesId = List.of("c0c0c620-055e-488c-a6a9-d5e7ec35c210",
-            "0a202483-b7e6-44a1-a28b-8c9342f67967");
-        removeCaseNote(caseDetails, migrationId, expectedCaseId, expectedCaseNotesId);
-    }
-
-    private void removeCaseNote(CaseDetails caseDetails, String migrationId, long expectedCaseId,
-                                List<String> expectedCaseNotesId) {
-        CaseData caseData = getCaseData(caseDetails);
-        Long caseId = caseData.getId();
-
-        if (caseId != expectedCaseId) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, expected case id %d",
-                migrationId, caseId, expectedCaseId
-            ));
-        }
-
-        List<UUID> caseNotesId = expectedCaseNotesId.stream().map(UUID::fromString).collect(toList());
-
-        List<Element<CaseNote>> resultCaseNotes = caseData.getCaseNotes().stream()
-            .filter(caseNoteElement -> !caseNotesId.contains(caseNoteElement.getId()))
-            .collect(toList());
-
-        if (caseData.getCaseNotes().size() - resultCaseNotes.size() != expectedCaseNotesId.size()) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, expected caseNotes id not found",
-                migrationId, caseId
-            ));
-        }
-
-        caseDetails.getData().put("caseNotes", resultCaseNotes);
-    }
-
-    private void run1006(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1006";
-        var expectedCaseId = 1664880596046318L;
-
-        CaseData caseData = getCaseData(caseDetails);
-        Long caseId = caseData.getId();
-
-        if (caseId != expectedCaseId) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, expected case id %d",
-                migrationId, caseId, expectedCaseId
-            ));
-        }
-
-        caseDetails.getData().put("state", CASE_MANAGEMENT);
-    }
-
-    private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
-
     private void run1029(CaseDetails caseDetails) {
-        // DON'T DELETE THIS MIGRATION, POTENTIALLY ONGOING ISSUES
         var migrationId = "DFPL-1029";
         var expectedCaseId = 1638876373455956L;
 
@@ -245,5 +186,16 @@ public class MigrateCaseController extends CallbackController {
         }
 
         caseDetails.getData().put("sendToCtsc", YesNo.YES.getValue());
+    }
+
+    private void run1103(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1103";
+        var possibleCaseIds = List.of(1659951867520203L, 1649252759660329L, 1632998316920007L);
+
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().remove("placements");
+        caseDetails.getData().remove("placementsNonConfidential");
+        caseDetails.getData().remove("placementsNonConfidentialNotices");
     }
 }
