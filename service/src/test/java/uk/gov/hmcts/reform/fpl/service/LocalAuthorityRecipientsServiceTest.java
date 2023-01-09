@@ -147,7 +147,7 @@ class LocalAuthorityRecipientsServiceTest {
         }
 
         @Test
-        void shouldReturnFirstLocalAuthorityWhenDesignatedIsNotSet(){
+        void shouldReturnFirstLocalAuthorityWhenDesignatedIsNotSet() {
             final CaseData caseData = CaseData.builder()
                 .caseLocalAuthority(LA_1_CODE)
                 .localAuthorities(wrapElements(
