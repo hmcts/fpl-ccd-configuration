@@ -146,7 +146,6 @@ class LocalAuthorityRecipientsServiceTest {
             assertThat(underTest.getRecipients(recipientsRequest)).containsExactly(FALLBACK_INBOX);
         }
 
-
         @Test
         void shouldReturnFirstLocalAuthorityWhenDesignatedIsNotSet(){
             final CaseData caseData = CaseData.builder()
@@ -174,8 +173,6 @@ class LocalAuthorityRecipientsServiceTest {
             given(featureToggles.emailsToSolicitorEnabled(LA_1_CODE)).willReturn(true);
 
             assertThat(underTest.getRecipients(recipientsRequest)).containsExactly(LA_1_INBOX);
-
-            //assertThat(getDesignatedLocalAuthorityContacts(caseData)).containsExactly(LA_1_INBOX);
         }
 
         @Test
