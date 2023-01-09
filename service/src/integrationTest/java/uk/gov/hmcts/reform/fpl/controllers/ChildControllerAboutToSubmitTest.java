@@ -594,7 +594,6 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
     private NoticeOfChangeAnswers nocAnswers(String organisationName, String respondentFirstName,
                                              String respondentLastName) {
         return NoticeOfChangeAnswers.builder()
-            .applicantName(organisationName)
             .respondentFirstName(respondentFirstName)
             .respondentLastName(respondentLastName)
             .build();

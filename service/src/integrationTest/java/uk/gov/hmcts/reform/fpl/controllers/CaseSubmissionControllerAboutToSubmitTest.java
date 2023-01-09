@@ -248,7 +248,6 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
         NoticeOfChangeAnswers expectedNoticeOfChangeAnswers = NoticeOfChangeAnswers.builder()
             .respondentFirstName("Joe")
             .respondentLastName("Bloggs")
-            .applicantName("Test organisation")
             .build();
 
         RespondentPolicyData respondentPolicyData = updatedCaseData.getRespondentPolicyData();
