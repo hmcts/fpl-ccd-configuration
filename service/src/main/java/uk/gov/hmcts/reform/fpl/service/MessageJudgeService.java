@@ -63,20 +63,20 @@ public abstract class MessageJudgeService {
         return EMPTY;
     }
 
-    protected String resolveSenderEmailAddress(JudicialMessageRoleType roleType, String defaultEmail) {
+    protected String resolveSenderEmailAddress(JudicialMessageRoleType roleType, String emailFilledByUser) {
         String resolvedAddress = getEmailAddressByRoleType(resolveSenderRoleType(roleType));
-        return isNotEmpty(resolvedAddress) ? resolvedAddress : defaultEmail;
+        return isNotEmpty(resolvedAddress) ? resolvedAddress : emailFilledByUser;
     }
 
-    protected String resolveRecipientEmailAddress(JudicialMessageRoleType roleType, String defaultEmail) {
+    protected String resolveRecipientEmailAddress(JudicialMessageRoleType roleType, String emailFilledByUser) {
         return (JudicialMessageRoleType.CTSC.equals(roleType))
-            ? getEmailAddressByRoleType(JudicialMessageRoleType.CTSC) : defaultEmail;
+            ? getEmailAddressByRoleType(JudicialMessageRoleType.CTSC) : emailFilledByUser;
     }
 
-    protected JudicialMessageRoleType resolveSenderRoleType(JudicialMessageRoleType defaultRoleType) {
+    protected JudicialMessageRoleType resolveSenderRoleType(JudicialMessageRoleType roleTypeSelectedByUser) {
         if (isJudiciary()) {
             return JudicialMessageRoleType.JUDICIARY;
         }
-        return defaultRoleType;
+        return roleTypeSelectedByUser;
     }
 }
