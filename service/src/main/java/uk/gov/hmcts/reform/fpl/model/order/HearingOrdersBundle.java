@@ -49,7 +49,6 @@ public class HearingOrdersBundle {
             .forEach(order -> order.setType(type));
 
         orders = defaultIfNull(orders, new ArrayList<>());
-        orders.removeIf(order -> Objects.equals(order.getValue().getType(), type));
         orders.addAll(newOrders);
 
         return this;
