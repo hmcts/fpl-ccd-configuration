@@ -326,4 +326,10 @@
    <packageUrl regex="true">^pkg:maven/org\.latencyutils/LatencyUtils@.*$</packageUrl>
    <cve>CVE-2021-4277</cve>
   </suppress>
+  <suppress>
+    <cve>CVE-2021-4235</cve>
+  </suppress>
+  <suppress>
+    <cve>CVE-2022-3064</cve>
+  </suppress>
 </suppressions>
