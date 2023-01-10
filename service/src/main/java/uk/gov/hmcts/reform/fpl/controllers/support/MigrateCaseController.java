@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCal
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
@@ -36,7 +37,8 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-1029", this::run1029,
-        "DFPL-1103", this::run1103
+        "DFPL-1103", this::run1103,
+        "DFPL-1081", this::run1081
     );
 
     @PostMapping("/about-to-submit")
@@ -87,4 +89,11 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove("placementsNonConfidentialNotices");
     }
 
+    private void run1081(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1081";
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1643819301061903L, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removeHearingBooking(getCaseData(caseDetails),
+            migrationId, UUID.fromString("bbad9942-e682-4cb7-a05a-7963c3c96fd6")));
+    }
 }
