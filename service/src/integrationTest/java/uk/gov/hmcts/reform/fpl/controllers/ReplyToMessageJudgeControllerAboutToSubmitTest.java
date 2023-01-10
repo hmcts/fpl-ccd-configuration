@@ -152,7 +152,8 @@ class ReplyToMessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTes
                 Map.entry("judicialMessageNote", "some data"),
                 Map.entry("judicialMessageDynamicList",
                     buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "some data"))),
-                Map.entry("judicialMessageReply", JudicialMessage.builder().build())
+                Map.entry("judicialMessageReply", JudicialMessage.builder()
+                    .recipientType(JudicialMessageRoleType.CTSC).build())
             ))
             .build();
 
@@ -169,6 +170,7 @@ class ReplyToMessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTes
             "judicialMessageDynamicList",
             "judicialMessageReply"
         );
+        assertThat(response.getData()).containsKey("latestRoleSent");
     }
 
     private JudicialMessage buildJudicialMessage(String dateSent, String latestMessage) {
