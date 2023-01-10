@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
@@ -29,6 +30,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 @WebMvcTest(MessageJudgeController.class)
 @OverrideAutoConfiguration(enabled = true)
 class MessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
+    private static final JudicialMessageRoleType SENDER_TYPE = JudicialMessageRoleType.LOCAL_COURT_ADMIN;
+    private static final JudicialMessageRoleType RECIPIENT_TYPE = JudicialMessageRoleType.OTHER;
     private static final String SENDER = "ben@fpla.com";
     private static final String MESSAGE = "Some message";
     private static final String MESSAGE_REQUESTED_BY = "request review from some court";
@@ -57,7 +60,9 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
             .judicialMessageMetaData(JudicialMessageMetaData.builder()
                 .urgency("High urgency")
                 .recipient(MESSAGE_RECIPIENT)
+                .recipientType(RECIPIENT_TYPE)
                 .sender(SENDER)
+                .senderType(SENDER_TYPE)
                 .build())
             .build();
 
@@ -77,14 +82,18 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
             .updatedTime(now())
             .status(OPEN)
             .recipient(MESSAGE_RECIPIENT)
+            .recipientType(RECIPIENT_TYPE)
             .latestMessage(MESSAGE)
             .sender(SENDER)
+            .senderType(SENDER_TYPE)
             .messageHistory(String.format("%s - %s", SENDER, MESSAGE))
             .urgency("High urgency")
             .build();
 
         assertThat(responseCaseData.getJudicialMessages().get(0).getValue()).isEqualTo(expectedJudicialMessage);
         assertThat(responseCaseData.getJudicialMessages().get(1).getValue()).isEqualTo(oldJudicialMessage);
+        assertThat(responseCaseData.getLatestRoleSent()).isEqualTo(RECIPIENT_TYPE);
+
     }
 
     @Test

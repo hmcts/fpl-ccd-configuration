@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA;
@@ -1037,6 +1038,8 @@ public class CaseData extends CaseDataParent {
     private final MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder().build();
     private final List<Element<JudicialMessage>> judicialMessages;
     private final List<Element<JudicialMessage>> closedJudicialMessages;
+    private JudicialMessageRoleType latestRoleSent;
+
 
     public DynamicList buildJudicialMessageDynamicList(UUID selected) {
         return asDynamicList(judicialMessages, selected, JudicialMessage::toLabel);

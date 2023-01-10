@@ -70,6 +70,8 @@ public class MessageJudgeController extends CallbackController {
 
         updatedMessages = messageJudgeService.addNewJudicialMessage(caseData);
         caseDetailsMap.put("judicialMessages", messageJudgeService.sortJudicialMessages(updatedMessages));
+        caseDetailsMap.put("latestRoleSent", caseData.getMessageJudgeEventData().getJudicialMessageMetaData()
+            .getRecipientType());
 
         removeTemporaryFields(caseDetailsMap, transientFields());
 

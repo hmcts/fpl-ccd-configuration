@@ -112,7 +112,8 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
         } else {
             List<Element<JudicialMessage>> updatedMessages = replyToJudicialMessage(
                 selectedJudicialMessageId, judicialMessageReply, caseData.getJudicialMessages());
-            return Map.of("judicialMessages", sortJudicialMessages(updatedMessages));
+            return Map.of("judicialMessages", sortJudicialMessages(updatedMessages),
+                "latestRoleSent", judicialMessageReply.getRecipientType());
         }
     }
 

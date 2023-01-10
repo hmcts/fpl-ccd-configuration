@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -31,6 +32,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 @WebMvcTest(ReplyToMessageJudgeController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ReplyToMessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
+    private static final JudicialMessageRoleType SENDER_TYPE = JudicialMessageRoleType.LOCAL_COURT_ADMIN;
+    private static final JudicialMessageRoleType RECIPIENT_TYPE = JudicialMessageRoleType.OTHER;
     private static final String SENDER = "ben@fpla.com";
     private static final String MESSAGE = "Some message";
     private static final String REPLY = "Some reply";
@@ -57,6 +60,8 @@ class ReplyToMessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTes
                 .latestMessage(REPLY)
                 .replyFrom(MESSAGE_RECIPIENT)
                 .replyTo(SENDER)
+                .senderType(SENDER_TYPE)
+                .recipientType(RECIPIENT_TYPE)
                 .build())
             .build();
 
@@ -69,6 +74,8 @@ class ReplyToMessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTes
         JudicialMessage expectedUpdatedJudicialMessage = JudicialMessage.builder()
             .sender(MESSAGE_RECIPIENT)
             .recipient(SENDER)
+            .senderType(SENDER_TYPE)
+            .recipientType(RECIPIENT_TYPE)
             .subject(MESSAGE_REQUESTED_BY)
             .updatedTime(now())
             .status(OPEN)
@@ -85,6 +92,7 @@ class ReplyToMessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTes
         assertThat(responseCaseData.getJudicialMessages())
             .first()
             .isEqualTo(element(SELECTED_DYNAMIC_LIST_ITEM_ID, expectedUpdatedJudicialMessage));
+        assertThat(responseCaseData.getLatestRoleSent()).isEqualTo(RECIPIENT_TYPE);
     }
 
     @Test

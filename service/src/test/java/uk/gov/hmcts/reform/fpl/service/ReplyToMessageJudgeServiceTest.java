@@ -390,6 +390,8 @@ class ReplyToMessageJudgeServiceTest {
         Element<JudicialMessage> expectedUpdatedJudicialMessage = element(SELECTED_DYNAMIC_LIST_ITEM_ID,
             JudicialMessage.builder()
                 .sender(MESSAGE_RECIPIENT)
+                .recipientType(JudicialMessageRoleType.LOCAL_COURT_ADMIN)
+                .senderType(JudicialMessageRoleType.OTHER)
                 .recipient(MESSAGE_SENDER)
                 .subject(MESSAGE_REQUESTED_BY)
                 .updatedTime(time.now())
@@ -401,6 +403,7 @@ class ReplyToMessageJudgeServiceTest {
         );
 
         assertThat(updatedMessages.get(0)).isEqualTo(expectedUpdatedJudicialMessage);
+        assertThat(updatedData.get("latestRoleSent")).isEqualTo(JudicialMessageRoleType.LOCAL_COURT_ADMIN);
     }
 
     @Test
@@ -462,6 +465,7 @@ class ReplyToMessageJudgeServiceTest {
             .messageJudgeEventData(messageJudgeEventData)
             .judicialMessages(List.of(oldJudicialMessage, selectedJudicialMessage))
             .closedJudicialMessages(List.of(closedJudicialMessage))
+            .latestRoleSent(JudicialMessageRoleType.OTHER)
             .build();
 
         when(userService.getUserEmail()).thenReturn(MESSAGE_RECIPIENT);
@@ -470,6 +474,7 @@ class ReplyToMessageJudgeServiceTest {
         Map<String, Object> updatedJudicialMessages = replyToMessageJudgeService.updateJudicialMessages(caseData);
 
         assertThat(updatedJudicialMessages).containsEntry("judicialMessages", expectedJudicialMessages);
+        assertThat(updatedJudicialMessages).doesNotContainKeys("latestRoleSent");
 
         List<Element<JudicialMessage>> updatedClosedMessages =
             (List<Element<JudicialMessage>>) updatedJudicialMessages.get("closedJudicialMessages");
@@ -517,6 +522,8 @@ class ReplyToMessageJudgeServiceTest {
                 .latestMessage(isReplying ? messageReply : null)
                 .replyFrom(sender)
                 .replyTo(recipient)
+                .recipientType(JudicialMessageRoleType.LOCAL_COURT_ADMIN)
+                .senderType(JudicialMessageRoleType.OTHER)
                 .build())
             .build();
     }
@@ -528,7 +535,9 @@ class ReplyToMessageJudgeServiceTest {
     private JudicialMessage buildJudicialMessage(String dateSent) {
         return JudicialMessage.builder()
             .sender(MESSAGE_SENDER)
+            .senderType(JudicialMessageRoleType.LOCAL_COURT_ADMIN)
             .recipient(MESSAGE_RECIPIENT)
+            .recipientType(JudicialMessageRoleType.OTHER)
             .updatedTime(time.now().minusDays(1))
             .status(OPEN)
             .subject(MESSAGE_REQUESTED_BY)
