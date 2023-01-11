@@ -11,7 +11,7 @@ async function setupScenario(I) {
 Scenario('Different user in the same local authority can see case created', async ({I}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserTwo, caseId);
-  I.see(caseId);
+  I.see(I.uiFormatted(caseId));
 });
 
 Scenario('Different user in a different local authority cannot see case created', async ({I, caseListPage}) => {
@@ -23,31 +23,31 @@ Scenario('Different user in a different local authority cannot see case created'
 Scenario('HMCTS admin user can see the case', async ({I}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
-  I.see(caseId);
+  I.see(I.uiFormatted(caseId));
 });
 
 Scenario('CAFCASS user can see the case', async ({I}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.cafcassUser, caseId);
-  I.see(caseId);
+  I.see(I.uiFormatted(caseId));
 });
 
 Scenario('Gatekeeper user can see the case', async ({I}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
-  I.see(caseId);
+  I.see(I.uiFormatted(caseId));
 });
 
 Scenario('Judiciary user can see the case', async ({I}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
-  I.see(caseId);
+  I.see(I.uiFormatted(caseId));
 });
 
 Scenario('Magistrate user can see the case', async ({I}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.magistrateUser, caseId);
-  I.see(caseId);
+  I.see(I.uiFormatted(caseId));
   await I.seeAvailableEvents([config.administrationActions.manageDocuments, config.administrationActions.addCaseFlag]);
 
 });

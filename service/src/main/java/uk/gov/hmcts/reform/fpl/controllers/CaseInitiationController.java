@@ -51,6 +51,13 @@ public class CaseInitiationController extends CallbackController {
         final CaseDetails caseDetails = callbackrequest.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
 
+        boolean isOutsourcedCase = caseInitiationService.isCaseOutsourced(caseData);
+
+        if (isOutsourcedCase) {
+            caseDetails.getData().put("isOutsourcedCase", YesNo.from(isOutsourcedCase).getValue());
+            caseDetails.getData().put("sharingWithUsers", caseInitiationService.getOrganisationUsers());
+        }
+
         return respond(caseDetails, caseInitiationService.checkUserAllowedToCreateCase(caseData));
     }
 
@@ -69,7 +76,7 @@ public class CaseInitiationController extends CallbackController {
         caseDetails.putIfNotEmpty("multiCourts", updatedCaseData.getMultiCourts());
         caseDetails.putIfNotEmpty("representativeType", updatedCaseData.getRepresentativeType());
 
-        caseDetails.removeAll("outsourcingType", "outsourcingLAs");
+        caseDetails.removeAll("outsourcingType", "outsourcingLAs", "sharingWithUsers", "isOutsourcedCase");
 
         return respond(caseDetails);
     }
