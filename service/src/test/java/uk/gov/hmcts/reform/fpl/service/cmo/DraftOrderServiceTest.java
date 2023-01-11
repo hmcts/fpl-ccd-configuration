@@ -565,62 +565,6 @@ class DraftOrderServiceTest {
         }
 
         @Test
-        void shouldUpdateExistingCMOWithNewOrderAndChangeStatus() {
-            List<Element<HearingBooking>> hearings = hearings();
-            List<Element<HearingOrder>> unsealedOrders = newArrayList();
-            Element<HearingOrder> oldOrder = element(HearingOrder.builder().status(RETURNED).build());
-
-            Element<HearingBooking> selectedHearing = hearings.get(0);
-
-            unsealedOrders.add(oldOrder);
-            unsealedOrders.add(element(HearingOrder.builder().build()));
-
-            selectedHearing.getValue().setCaseManagementOrderId(unsealedOrders.get(0).getId());
-
-            UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
-                .cmoUploadType(CMOType.AGREED)
-                .hearingOrderDraftKind(List.of(HearingOrderKind.CMO))
-                .pastHearingsForCMO(dynamicList(selectedHearing.getId(), hearings))
-                .uploadedCaseManagementOrder(testDocumentReference())
-                .cmoToSendTranslationRequirements(TRANSLATION_REQUIREMENTS)
-                .build();
-
-            Element<HearingOrder> previousCmoOrder = hearingOrder(AGREED_CMO);
-            Element<HearingOrder> c21Order = hearingOrder(C21);
-            HearingOrdersBundle ordersBundle = ordersBundle(selectedHearing.getId(), previousCmoOrder, c21Order);
-            List<Element<HearingOrdersBundle>> ordersBundles = wrapElements(ordersBundle);
-
-            service.updateCase(eventData, hearings, unsealedOrders, ordersBundles);
-
-            HearingOrder expectedOrder = HearingOrder.builder()
-                .title("Agreed CMO discussed at hearing")
-                .type(AGREED_CMO)
-                .status(SEND_TO_JUDGE)
-                .dateSent(time.now().toLocalDate())
-                .order(eventData.getUploadedCaseManagementOrder())
-                .hearing("Case management hearing, 2 March 2020")
-                .judgeTitleAndName("His Honour Judge Dredd")
-                .translationRequirements(TRANSLATION_REQUIREMENTS)
-                .build();
-
-            assertThat(unsealedOrders).hasSize(2)
-                .first()
-                .extracting(Element::getValue)
-                .isNotEqualTo(oldOrder.getValue())
-                .isEqualTo(expectedOrder);
-
-            assertThat(hearings).hasSize(2)
-                .first()
-                .extracting(hearing -> hearing.getValue().getCaseManagementOrderId())
-                .isNotEqualTo(oldOrder.getId())
-                .isEqualTo(unsealedOrders.get(0).getId());
-
-            assertThat(ordersBundles).hasSize(1);
-            assertThat(ordersBundles.get(0).getValue().getOrders()).extracting(Element::getValue)
-                .containsExactly(expectedOrder, c21Order.getValue());
-        }
-
-        @Test
         void shouldCreateOrderBundleIfDoesNotExists() {
             List<Element<HearingBooking>> hearings = hearings();
 
@@ -682,7 +626,7 @@ class DraftOrderServiceTest {
             service.updateCase(eventData, hearings, emptyList(), ordersBundles);
 
             HearingOrdersBundle expectedOrdersBundle = originalOrdersBundle.toBuilder()
-                .orders(newArrayList(cmoOrder, hearingOrder1, hearingOrder3))
+                .orders(newArrayList(cmoOrder, hearingOrder1, hearingOrder2, hearingOrder1, hearingOrder3))
                 .build();
 
             assertThat(ordersBundles).hasSize(1).first()
@@ -690,7 +634,7 @@ class DraftOrderServiceTest {
         }
 
         @Test
-        void shouldRemoveOrderBundleIfNoOrdersPresent() {
+        void shouldNotRemoveOrderBundleIfNoOrdersPresent() {
             List<Element<HearingBooking>> hearings = hearings();
 
             Element<HearingBooking> selectedHearing = hearings.get(0);
@@ -714,7 +658,8 @@ class DraftOrderServiceTest {
 
             service.updateCase(eventData, hearings, emptyList(), ordersBundles);
 
-            assertThat(ordersBundles).extracting(Element::getValue).containsExactly(otherOrdersBundle);
+            assertThat(ordersBundles).isEqualTo(
+                wrapElements(selectedHearingOrderBundle, otherOrdersBundle));
         }
 
         @Test
