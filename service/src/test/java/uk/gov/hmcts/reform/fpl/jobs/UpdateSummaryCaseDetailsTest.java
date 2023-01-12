@@ -15,6 +15,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.event.CaseProgressionReportEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
@@ -139,7 +140,11 @@ class UpdateSummaryCaseDetailsTest {
         List<CaseDetails> caseDetails = List.of(CaseDetails.builder().data(Map.of()).build());
 
         when(searchService.search(FIRST_RUN_ES_QUERY, SEARCH_SIZE, 0)).thenReturn(caseDetails);
-        when(summaryService.generateSummaryFields(CaseData.builder().build())).thenReturn(Map.of());
+        when(summaryService.generateSummaryFields(CaseData.builder()
+                .caseProgressionReportEventData(CaseProgressionReportEventData
+                        .builder()
+                        .build())
+                .build())).thenReturn(Map.of());
 
         underTest.execute(executionContext);
 
@@ -153,7 +158,11 @@ class UpdateSummaryCaseDetailsTest {
         List<CaseDetails> caseDetails = List.of(CaseDetails.builder().data(Map.of()).build());
 
         when(searchService.search(ES_QUERY, SEARCH_SIZE, 0)).thenReturn(caseDetails);
-        when(summaryService.generateSummaryFields(CaseData.builder().build())).thenReturn(Map.of());
+        when(summaryService.generateSummaryFields(CaseData.builder()
+                .caseProgressionReportEventData(CaseProgressionReportEventData
+                        .builder()
+                        .build())
+                .build())).thenReturn(Map.of());
 
         underTest.execute(executionContext);
 
@@ -167,7 +176,11 @@ class UpdateSummaryCaseDetailsTest {
         List<CaseDetails> caseDetails = List.of(CaseDetails.builder().data(Map.of()).build());
 
         when(searchService.search(ES_QUERY, SEARCH_SIZE, 0)).thenReturn(caseDetails);
-        when(summaryService.generateSummaryFields(CaseData.builder().build())).thenReturn(Map.of());
+        when(summaryService.generateSummaryFields(CaseData.builder()
+                .caseProgressionReportEventData(CaseProgressionReportEventData
+                    .builder()
+                    .build()).build()))
+                .thenReturn(Map.of());
 
         underTest.execute(executionContext);
 
@@ -184,6 +197,9 @@ class UpdateSummaryCaseDetailsTest {
                 .build())
             .uploadDraftOrdersEventData(UploadDraftOrdersData.builder().build())
             .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
+            .caseProgressionReportEventData(CaseProgressionReportEventData
+                .builder()
+                .build())
             .build();
 
         List<CaseDetails> caseDetails = List.of(CaseDetails.builder()
@@ -234,10 +250,18 @@ class UpdateSummaryCaseDetailsTest {
 
         CaseData expectedCaseData1 = caseData.toBuilder().id(CASE_ID)
             .uploadDraftOrdersEventData(UploadDraftOrdersData.builder().build())
-            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build()).build();
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
+            .caseProgressionReportEventData(CaseProgressionReportEventData
+                .builder()
+                .build())
+            .build();
         CaseData expectedCaseData2 = caseData.toBuilder().id(54321L)
             .uploadDraftOrdersEventData(UploadDraftOrdersData.builder().build())
-            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build()).build();
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
+            .caseProgressionReportEventData(CaseProgressionReportEventData
+                .builder()
+                .build())
+            .build();
 
         verify(summaryService).generateSummaryFields(expectedCaseData1);
         verify(summaryService).generateSummaryFields(expectedCaseData2);
@@ -277,8 +301,17 @@ class UpdateSummaryCaseDetailsTest {
 
         underTest.execute(executionContext);
 
-        CaseData expectedCaseData1 = caseData.toBuilder().id(CASE_ID).build();
-        CaseData expectedCaseData2 = caseData.toBuilder().id(54321L).build();
+        CaseData expectedCaseData1 = caseData.toBuilder()
+                .caseProgressionReportEventData(CaseProgressionReportEventData
+                    .builder()
+                    .build())
+                .id(CASE_ID)
+                .build();
+        CaseData expectedCaseData2 = caseData.toBuilder()
+                .caseProgressionReportEventData(CaseProgressionReportEventData
+                    .builder()
+                    .build())
+                .id(54321L).build();
 
         verify(summaryService).generateSummaryFields(expectedCaseData1);
         verify(summaryService).generateSummaryFields(expectedCaseData2);
@@ -315,7 +348,12 @@ class UpdateSummaryCaseDetailsTest {
 
         underTest.execute(executionContext);
 
-        CaseData expectedCaseData2 = caseData.toBuilder().id(54321L).build();
+        CaseData expectedCaseData2 = caseData.toBuilder()
+                .caseProgressionReportEventData(CaseProgressionReportEventData
+                .builder()
+                .build())
+                .id(54321L)
+                .build();
 
         verify(summaryService).generateSummaryFields(expectedCaseData2);
         verify(ccdService).triggerEvent(JURISDICTION, CASE_TYPE, 54321L, EVENT_NAME, caseSummaryData);
