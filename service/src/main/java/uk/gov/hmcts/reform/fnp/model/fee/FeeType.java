@@ -66,7 +66,7 @@ public enum FeeType {
     static {
         orderToFeeMap = new HashMap<>();
         orderToFeeMap.put(OrderType.CARE_ORDER, CARE_ORDER);
-        orderToFeeMap.put(OrderType.EDUCATION_SUPERVISION_ORDER, EDUCATION_SUPERVISION_ORDER);
+        orderToFeeMap.put(OrderType.EDUCATION_SUPERVISION__ORDER, EDUCATION_SUPERVISION_ORDER);
         orderToFeeMap.put(OrderType.EMERGENCY_PROTECTION_ORDER, EMERGENCY_PROTECTION_ORDER);
         orderToFeeMap.put(OrderType.INTERIM_CARE_ORDER, INTERIM_CARE_ORDER);
         orderToFeeMap.put(OrderType.INTERIM_SUPERVISION_ORDER, INTERIM_SUPERVISION_ORDER);
