@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
+import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -46,7 +47,7 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-1012", this::run1012,
         "DFPL-1064", this::run1064,
-        "DFPL-872", this::run872,
+        "DFPL-1144", this::run1144,
         "DFPL-1065", this::run1065,
         "DFPL-872rollback", this::run872Rollback,
         "DFPL-1029", this::run1029,
@@ -73,7 +74,7 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private void run872(CaseDetails caseDetails) {
+    private void run1144(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();
         List<Element<Child>> childrenInCase = caseData.getAllChildren();
@@ -82,7 +83,7 @@ public class MigrateCaseController extends CallbackController {
         Map<String, Object> caseDetailsData = caseDetails.getData();
 
         if (isNotEmpty(childrenInCase) && oldReason != null) {
-            log.info("Migration {id = DFPL-872, case reference = {}} extension date migration", caseId);
+            log.info("Migration {id = DFPL-1144, case reference = {}} extension date migration", caseId);
 
             List<Element<Child>> children = childrenInCase.stream()
                 .map(element -> element(element.getId(),
@@ -95,6 +96,7 @@ public class MigrateCaseController extends CallbackController {
                 ).collect(toList());
 
             caseDetailsData.put("children1", children);
+            caseDetailsData.put("hearingOption", HearingOptions.EDIT_PAST_HEARING);
             log.info("Migration {id = DFPL-872, case reference = {}} children extension date finish", caseId);
         } else {
             log.warn("Migration {id = DFPL-872, case reference = {}, case state = {}} doesn't have an extension ",

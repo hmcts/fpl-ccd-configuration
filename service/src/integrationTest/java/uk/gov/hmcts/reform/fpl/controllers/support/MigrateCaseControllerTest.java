@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
+import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -181,8 +182,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Dfpl872 {
-        final String migrationId = "DFPL-872";
+    class Dfpl1144 {
+        final String migrationId = "DFPL-1144";
         final LocalDate extensionDate = LocalDate.now();
         final Long caseId = 1660300177298257L;
         final UUID child1Id = UUID.fromString("d76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0");
@@ -224,6 +225,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .caseCompletionDate(extensionDate)
                 .caseExtensionReasonList(TIMETABLE_FOR_PROCEEDINGS)
                 .children1(List.of(childToBeUpdated1, childToBeUpdated2))
+                .hearingOption(HearingOptions.NEW_HEARING)
                 .build();
 
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
@@ -234,6 +236,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             List<Element<Child>> expectedChildren = List.of(expectedChild1,expectedChild2);
 
             assertThat(responseData.getAllChildren()).isEqualTo(expectedChildren);
+            assertThat(responseData.getHearingOption()).isEqualTo(HearingOptions.EDIT_PAST_HEARING);
         }
 
         @Test
@@ -252,6 +255,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             List<Element<Child>> unchangedChildren = List.of(childToBeUpdated1, childToBeUpdated2);
 
             assertThat(responseData.getAllChildren()).isEqualTo(unchangedChildren);
+            assertThat(responseData.getHearingOption()).isEqualTo(HearingOptions.EDIT_PAST_HEARING);
         }
     }
 
