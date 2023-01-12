@@ -66,9 +66,7 @@ public class CaseProgressionReportEventHandler {
 
                 emailService.sendEmail(FROM_EMAIL,
                     EmailData.builder()
-                        //.recipient(event.getUserDetails().getEmail())
-                        //TODO: comment out above for testing and uncomment below
-                        .recipient("familypubliclaw+report@gmail.com")
+                        .recipient(event.getUserDetails().getEmail())
                         .subject(subject)
                         .attachments(Set.of(attachment))
                         .message(subject)
