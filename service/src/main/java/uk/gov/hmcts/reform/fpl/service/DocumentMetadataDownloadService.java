@@ -62,7 +62,8 @@ public class DocumentMetadataDownloadService {
                             documentUrlString)
                     )
                 );
-            log.info("Size of document {}: {}", documentUrlString, document.size);
+            log.info("Size of document {}: {}", documentUrlString, Optional.ofNullable(document)
+                .map(doc -> doc.size).orElse(0l));
             return ret;
         } else {
             uk.gov.hmcts.reform.document.domain.Document document = documentMetadataDownloadClient.getDocumentMetadata(
@@ -84,7 +85,8 @@ public class DocumentMetadataDownloadService {
                             documentUrlString)
                     )
                 );
-            log.info("Size of document {}: {}", documentUrlString, document.size);
+            log.info("Size of document {}: {}", documentUrlString, Optional.ofNullable(document)
+                .map(doc -> doc.size).orElse(0l));
             return ret;
         }
     }
