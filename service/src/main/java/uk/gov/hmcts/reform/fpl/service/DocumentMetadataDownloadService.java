@@ -51,7 +51,7 @@ public class DocumentMetadataDownloadService {
         if (featureToggleService.isSecureDocstoreEnabled()) {
             Document document = secureDocStoreService.getDocumentMetadata(documentUrlString);
 
-            DocumentReference ret = Optional.ofNullable(document)
+            return Optional.ofNullable(document)
                 .map(doc -> DocumentReference.buildFromDocument(document)
                     .toBuilder()
                     .size(document.size)
@@ -62,8 +62,6 @@ public class DocumentMetadataDownloadService {
                             documentUrlString)
                     )
                 );
-            log.info("Size of document {}: {}", documentUrlString, document.size);
-            return ret;
         } else {
             uk.gov.hmcts.reform.document.domain.Document document = documentMetadataDownloadClient.getDocumentMetadata(
                 authorisation,
@@ -73,7 +71,7 @@ public class DocumentMetadataDownloadService {
                 URI.create(documentUrlString).getPath()
             );
 
-            DocumentReference ret =  Optional.ofNullable(document)
+            return Optional.ofNullable(document)
                 .map(doc -> DocumentReference.buildFromDocument(document)
                     .toBuilder()
                     .size(document.size)
@@ -84,8 +82,6 @@ public class DocumentMetadataDownloadService {
                             documentUrlString)
                     )
                 );
-            log.info("Size of document {}: {}", documentUrlString, document.size);
-            return ret;
         }
     }
 }
