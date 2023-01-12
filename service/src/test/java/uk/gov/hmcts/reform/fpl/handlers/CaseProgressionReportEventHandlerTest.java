@@ -64,10 +64,7 @@ class CaseProgressionReportEventHandlerTest {
         CaseData caseDataSelected = CaseData.builder()
                 .caseProgressionReportEventData(caseProgressionReportEventData)
                 .build();
-        //todo: uncomment line below
-        //String toEmail = "test@gmail.com";
-        String toEmail = "familypubliclaw+report@gmail.com";
-
+        String toEmail = "test@gmail.com";
 
         Path path = Files.createTempFile("CaseProgressionReport", ".xlsx", ATTRIBUTE);
         final byte[] actualContent = Files.readAllBytes(path);
@@ -112,9 +109,7 @@ class CaseProgressionReportEventHandlerTest {
                 .caseProgressionReportEventData(caseProgressionReportEventData)
                 .build();
 
-        //todo: uncomment line below
-        //String toEmail = "test@gmail.com";
-        String toEmail = "familypubliclaw+report@gmail.com";
+        String toEmail = "test@gmail.com";
 
         when(caseProgressionReportService.getCourt(caseProgressionReportEventData))
                 .thenReturn(courtId);
