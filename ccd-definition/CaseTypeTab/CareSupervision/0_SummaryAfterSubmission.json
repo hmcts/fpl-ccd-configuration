@@ -156,7 +156,7 @@
     "TabID": "Summary",
     "TabLabel": "Summary",
     "TabDisplayOrder": 0,
-    "CaseFieldID": "caseExtensionReasonList",
+    "CaseFieldID": "caseSummaryExtensionDetails",
     "TabFieldDisplayOrder": 32
   },
   {
@@ -167,7 +167,7 @@
     "TabLabel": "Summary",
     "TabDisplayOrder": 0,
     "CaseFieldID": "extensionComments",
-    "FieldShowCondition": "extensionComments!=\"\"",
+    "FieldShowCondition": "extensionComments=\"*\"",
     "TabFieldDisplayOrder": 33
   },
   {
