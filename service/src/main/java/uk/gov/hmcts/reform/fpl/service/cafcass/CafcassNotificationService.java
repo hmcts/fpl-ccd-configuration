@@ -108,6 +108,10 @@ public class CafcassNotificationService {
                 .sum();
 
         if (totalDocSize / MEGABYTE  <= maxAttachmentSize) {
+            log.info("For case id {}, sum of file size is {} mb. Number of files: {}",
+                caseData.getId(),
+                totalDocSize / MEGABYTE,
+                documentMetaData.values().size());
             if (featureToggleService.isCafcassSubjectCategorised()) {
                 sendAsAttachment(caseData, Set.copyOf(documentMetaData.values()), provider, cafcassData,
                         provider.getContent());
@@ -182,7 +186,8 @@ public class CafcassNotificationService {
         Set<EmailAttachment> emailAttachments = getEmailAttachment(documentReference)
                 .map(Set::of).orElse(emptySet());
 
-        log.info("data in the document {}",emailAttachments);
+        log.info("data in the document {} with total size: {} mb", emailAttachments,
+            documentReference.stream().mapToLong(DocumentReference::getSize).sum() / MEGABYTE);
 
         emailService.sendEmail(configuration.getSender(),
                 EmailData.builder()
