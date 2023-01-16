@@ -108,9 +108,15 @@ public class CourtService {
             // try to get the court selected in "Orders and direction sought" section
             // this is the case for standalone application submitted by solicitors
             // who do not have court info from onboarding configs
-            return courtLookup.getCourtByCode(Optional.ofNullable(caseData.getOrders()).map(o -> o.getCourt())
-                .orElseThrow(() -> new IllegalArgumentException(
-                    format("unexpected missing court information (case id: {})", caseData.getId())))).get();
+            Optional<String> courtCode = Optional.ofNullable(caseData.getOrders()).map(o -> o.getCourt());
+            if (courtCode.isPresent()) {
+                return courtLookup.getCourtByCode(courtCode.get())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                        format("Fail to lookup court by court code: {}", courtCode.get())));
+            } else {
+                throw new IllegalArgumentException(
+                    format("unexpected missing court information (case id: {})", caseData.getId()));
+            }
         }
         return courtLookup.getCourts(localAuthorityCode).get(0);
     }
