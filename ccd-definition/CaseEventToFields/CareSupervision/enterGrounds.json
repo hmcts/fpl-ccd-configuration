@@ -183,7 +183,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "enterGrounds",
     "CaseFieldID": "groundsForEducationSupervisionOrder",
-    "CaseEventFieldLabel": "How are there grounds for a education supervision order?",
+    "CaseEventFieldLabel": "How are there grounds for an education supervision order?",
     "PageFieldDisplayOrder": 9,
     "DisplayContext": "COMPLEX",
     "PageID": 1,
