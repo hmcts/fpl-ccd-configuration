@@ -30,12 +30,16 @@ public class RemovalToolData {
     List<Element<GeneratedOrder>> hiddenOrders;
     List<Element<StandardDirectionOrder>> hiddenStandardDirectionOrders;
     List<Element<AdditionalApplicationsBundle>> hiddenApplicationsBundle;
+    List<Element<SentDocuments>> hiddenDocumentsSentToParties;
 
     @Temp
     Object removableOrderList;
 
     @Temp
     Object removableApplicationList;
+
+    @Temp
+    Object removableSentDocumentList;
 
     @Temp
     RemovableType removableType;
@@ -50,12 +54,16 @@ public class RemovalToolData {
     String reasonToRemoveOrder;
 
     @Temp
+    String reasonToRemoveSentDocument;
+
+    @Temp
     ApplicationRemovalReason reasonToRemoveApplication;
 
     static List<String> otherTemporaryFields = List.of("orderTitleToBeRemoved", "applicationTypeToBeRemoved",
         "orderToBeRemoved", "c2ApplicationToBeRemoved", "otherApplicationToBeRemoved", "orderIssuedDateToBeRemoved",
         "orderDateToBeRemoved", "hearingToUnlink", "showRemoveCMOFieldsFlag", "showRemoveSDOWarningFlag",
-        "showReasonFieldFlag");
+        "showReasonFieldFlag", "partyNameToBeRemoved", "sentAtToBeRemoved", "letterIdToBeRemoved",
+        "sentDocumentToBeRemoved");
 
     public static List<String> temporaryFields() {
         List<String> tempFields = getFieldsListWithAnnotation(RemovalToolData.class, Temp.class).stream()
@@ -63,6 +71,10 @@ public class RemovalToolData {
             .collect(toList());
         tempFields.addAll(otherTemporaryFields);
         return tempFields;
+    }
+
+    public List<Element<SentDocuments>> getHiddenDocumentsSentToParties() {
+        return defaultIfNull(hiddenDocumentsSentToParties, new ArrayList<>());
     }
 
     public List<Element<AdditionalApplicationsBundle>> getHiddenApplicationsBundle() {

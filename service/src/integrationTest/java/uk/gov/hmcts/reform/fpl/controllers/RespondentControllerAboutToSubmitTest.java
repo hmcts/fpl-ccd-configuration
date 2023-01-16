@@ -83,7 +83,6 @@ class RespondentControllerAboutToSubmitTest extends AbstractCallbackTest {
             .noticeOfChangeAnswers0(NoticeOfChangeAnswers.builder()
                 .respondentFirstName(respondentWithRepresentative.getParty().getFirstName())
                 .respondentLastName(respondentWithRepresentative.getParty().getLastName())
-                .applicantName(localAuthority.getName())
                 .build())
             .build();
         assertThat(responseData.getNoticeOfChangeAnswersData()).isEqualTo(expectedAnswers);
@@ -111,7 +110,6 @@ class RespondentControllerAboutToSubmitTest extends AbstractCallbackTest {
             .noticeOfChangeAnswers0(NoticeOfChangeAnswers.builder()
                 .respondentFirstName(respondentWithRepresentative.getParty().getFirstName())
                 .respondentLastName(respondentWithRepresentative.getParty().getLastName())
-                .applicantName(LEGACY_APPLICANT.getOrganisationName())
                 .build())
             .build();
         assertThat(responseData.getNoticeOfChangeAnswersData()).isEqualTo(expectedAnswers);

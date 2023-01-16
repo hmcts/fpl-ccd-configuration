@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicantsListGenerator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationsFeeCalculator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.UploadAdditionalApplicationsService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -41,11 +42,13 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -76,6 +79,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private final ApplicationsFeeCalculator applicationsFeeCalculator;
     private final ApplicantsListGenerator applicantsListGenerator;
     private final PeopleInCaseService peopleInCaseService;
+    private final CoreCaseDataService coreCaseDataService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -212,9 +216,43 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
-        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
+        final CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         final AdditionalApplicationsBundle lastBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
+        final UUID lastBundleId = caseData.getAdditionalApplicationsBundle().get(0).getId();
+
+        AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder bundleBuilder = lastBundle.toBuilder();
+
+        // If we have a C2 application, do the conversion if needed
+        if (!isEmpty(lastBundle.getC2DocumentBundle())) {
+            bundleBuilder.c2DocumentBundle(
+                uploadAdditionalApplicationsService.convertC2Bundle(lastBundle.getC2DocumentBundle())
+            );
+        }
+
+        // If we have a other application, do conversion if needed
+        if (!isEmpty(lastBundle.getOtherApplicationsBundle())) {
+            bundleBuilder.otherApplicationsBundle(
+                uploadAdditionalApplicationsService.convertOtherBundle(lastBundle.getOtherApplicationsBundle())
+            );
+        }
+
+        // update with our newly converted bundles (may not have changed at all, but we can't tell easily as it could be
+        // a supplement
+        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle
+            = caseData.getAdditionalApplicationsBundle().stream()
+            .filter(bundle -> !bundle.getId().equals(lastBundleId))
+            .collect(Collectors.toList());
+
+        additionalApplicationsBundle.add(0, element(lastBundleId, bundleBuilder.build()));
+
+        Map<String, Object> updates = Map.of(
+            "additionalApplicationsBundle", additionalApplicationsBundle
+        );
+
+        coreCaseDataService.triggerEvent(caseData.getId(),
+            "internal-change-upload-add-apps",
+            updates);
 
         final PBAPayment pbaPayment = lastBundle.getPbaPayment();
 

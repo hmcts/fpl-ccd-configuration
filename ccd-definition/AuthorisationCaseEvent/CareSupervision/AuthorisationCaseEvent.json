@@ -52,6 +52,7 @@
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
+          "[LASHARED]",
           "[SOLICITORA]",
           "[CHILDSOLICITORA]"
         ],
@@ -229,6 +230,7 @@
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
+          "[LASHARED]",
           "[SOLICITORA]",
           "[CHILDSOLICITORA]"
         ],
@@ -287,6 +289,7 @@
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
+          "[LASHARED]",
           "[SOLICITORA]",
           "[CHILDSOLICITORA]"
         ],
@@ -431,6 +434,7 @@
           "[LASOLICITOR]",
           "[LAMANAGING]",
           "[EPSMANAGING]",
+          "[LASHARED]",
           "[SOLICITORA]",
           "[CHILDSOLICITORA]"
         ],
@@ -540,6 +544,27 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "caseProgressionReport",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "CRUD"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "extend26WeekTimeline",
     "AccessControl": [
       {
@@ -614,6 +639,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "internal-change-upload-add-apps",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CR"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "internal-change-SEND_DOCUMENT",
     "UserRole": "caseworker-publiclaw-systemupdate",
     "CRUD": "CR"
@@ -649,7 +681,8 @@
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper"
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "CR"
       },
@@ -682,7 +715,8 @@
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate"
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "R"
       }
@@ -1050,7 +1084,8 @@
           "[LAMANAGING]",
           "[LABARRISTER]",
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]"
+          "[CHILDSOLICITORA]",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "CR"
       },
@@ -1081,7 +1116,8 @@
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper"
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "R"
       }
@@ -1181,6 +1217,7 @@
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
+          "[LASHARED]",
           "[SOLICITORA]",
           "[CHILDSOLICITORA]"
         ],
@@ -1612,6 +1649,7 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
+          "[LASHARED]",
           "[LAMANAGING]"
         ],
         "CRUD": "CR"
@@ -1634,6 +1672,7 @@
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
+          "[LASHARED]",
           "caseworker-publiclaw-courtadmin"
         ],
         "CRUD": "CR"
@@ -1643,7 +1682,8 @@
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate",
           "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-solicitor"
+          "caseworker-publiclaw-solicitor",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "R"
       }
@@ -1668,7 +1708,8 @@
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate",
           "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-solicitor"
+          "caseworker-publiclaw-solicitor",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "R"
       }
