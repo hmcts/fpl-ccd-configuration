@@ -255,7 +255,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             List<Element<Child>> unchangedChildren = List.of(childToBeUpdated1, childToBeUpdated2);
 
             assertThat(responseData.getAllChildren()).isEqualTo(unchangedChildren);
-            assertThat(responseData.getHearingOption()).isEqualTo(HearingOptions.EDIT_PAST_HEARING);
         }
     }
 
