@@ -214,13 +214,11 @@ public class CaseDataExtractionService {
     private String buildHearingVenue(HearingBooking hearing) {
         HearingVenue venue = hearingVenueLookUpService.getHearingVenue(hearing);
         if (venue.getAddress() != null) {
+            String venueAddress = hearingVenueLookUpService.buildHearingVenue(venue);
             if (hearing.isRemote()) {
-                String venueName = HEARING_VENUE_ID_OTHER.equals(venue.getHearingVenueId())
-                    ? venue.getAddress().getAddressLine1() : venue.getVenue();
-                // assuming that the building name is in address line 1
-                return String.format(REMOTE_HEARING_VENUE, venueName);
+                return String.format(REMOTE_HEARING_VENUE, venueAddress);
             } else {
-                return hearingVenueLookUpService.buildHearingVenue(venue);
+                return venueAddress;
             }
         } else {
             // enters this if:
@@ -228,11 +226,7 @@ public class CaseDataExtractionService {
             //  • the second hearing uses the same venue
             String previousAddress = hearing.getCustomPreviousVenue();
             if (hearing.isRemote()) {
-                // going to have to assume that the building name of the venue is before the first comma,
-                // but the user could have entered anything, by limiting to 0 even if the string is empty something
-                // is still returned
-                String[] splitAddress = previousAddress.split(",", 0);
-                return String.format(REMOTE_HEARING_VENUE, splitAddress[0]);
+                return String.format(REMOTE_HEARING_VENUE, previousAddress);
             } else {
                 return previousAddress;
             }
