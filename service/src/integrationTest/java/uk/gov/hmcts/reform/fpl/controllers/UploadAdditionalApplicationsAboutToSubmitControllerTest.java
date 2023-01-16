@@ -219,7 +219,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         String expectedDateTime = formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME);
         assertThat(appendedC2Document.getUploadedDateTime()).isEqualTo(expectedDateTime);
         assertDocument(existingC2Document.getDocument(), buildFromDocument(document()));
-        assertDocument(appendedC2Document.getDocument(), PDF_DOCUMENT);
+        // This is no longer true - PDF conversion has been moved to post submit
+        // assertDocument(appendedC2Document.getDocument(), PDF_DOCUMENT);
 
         assertThat(returnedCaseData.getTemporaryC2Document()).isNull();
         assertThat(appendedC2Document.getAuthor()).isEqualTo(USER_NAME);
@@ -315,7 +316,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(uploadedC2DocumentBundle.getUploadedDateTime()).isEqualTo(expectedDateTime);
 
         assertThat(uploadedC2DocumentBundle.getAuthor()).isEqualTo(USER_NAME);
-        assertDocument(uploadedC2DocumentBundle.getDocument(), PDF_DOCUMENT);
+        // This is no longer true - PDF conversion has been moved to post submit
+        // assertDocument(uploadedC2DocumentBundle.getDocument(), PDF_DOCUMENT);
         assertSupportingEvidenceBundle(uploadedC2DocumentBundle.getSupportingEvidenceBundle());
         assertSupplementsBundle(uploadedC2DocumentBundle.getSupplementsBundle());
     }
@@ -332,7 +334,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertSupportingEvidenceBundle(uploadedOtherApplicationsBundle.getSupportingEvidenceBundle());
         assertSupplementsBundle(uploadedOtherApplicationsBundle.getSupplementsBundle());
 
-        assertThat(uploadedOtherApplicationsBundle.getDocument()).isEqualTo(PDF_DOCUMENT);
+        // This is no longer true - PDF conversion has been moved to post submit
+        // assertThat(uploadedOtherApplicationsBundle.getDocument()).isEqualTo(PDF_DOCUMENT);
     }
 
     private void assertTemporaryFieldsAreRemoved(CaseData caseData) {
@@ -378,13 +381,13 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             Supplement::getName,
             Supplement::getNotes,
             Supplement::getDateTimeUploaded,
-            Supplement::getDocument,
+            // Supplement::getDocument,        // This is no longer true - PDF conversion has been moved to post submit
             Supplement::getUploadedBy
         ).containsExactly(
             SupplementType.C13A_SPECIAL_GUARDIANSHIP,
             "Supplement notes",
             time.now(),
-            PDF_DOCUMENT,
+            // PDF_DOCUMENT,
             USER_NAME
         );
     }
