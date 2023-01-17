@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfChangeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -25,6 +27,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 @Api
+@Slf4j
 @RestController
 @RequestMapping("/callback/noc-decision")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -86,6 +89,9 @@ public class NoticeOfChangeController extends CallbackController {
     @PostMapping("/update-respondents")
     public CallbackResponse handleRespondentUpdate(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        ChangeOrganisationRequest request = (ChangeOrganisationRequest) caseDetails.getData()
+            .get("changeOrganisationRequestField");
+        log.info(request.getRequestTimestamp().toString());
         return caseAssignmentService.applyDecisionAsSystemUser(caseDetails);
     }
 }
