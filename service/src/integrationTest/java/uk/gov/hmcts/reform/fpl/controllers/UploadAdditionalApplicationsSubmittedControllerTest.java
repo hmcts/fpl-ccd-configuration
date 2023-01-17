@@ -86,6 +86,7 @@ import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.CO
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinary;
@@ -206,7 +207,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             .others(Others.builder().firstOther(other).build())
             .additionalApplicationType(List.of(C2_ORDER))
             .sendToCtsc("No")
-            .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
+            .additionalApplicationsBundle(wrapElementsWithUUIDs(AdditionalApplicationsBundle.builder()
                 .pbaPayment(PBAPayment.builder().usePbaPayment("Yes").build())
                 .c2DocumentBundle(C2DocumentBundle.builder()
                     .type(WITH_NOTICE)
@@ -283,7 +284,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             "additionalApplicationType",
             List.of(OTHER_ORDER),
             "additionalApplicationsBundle",
-            wrapElements(
+            wrapElementsWithUUIDs(
                 AdditionalApplicationsBundle.builder()
                     .otherApplicationsBundle(OtherApplicationsBundle.builder()
                         .applicationType(C1_APPOINTMENT_OF_A_GUARDIAN)
@@ -370,7 +371,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                     .build())
                 .build())))
             .additionalApplicationType(List.of(C2_ORDER))
-            .additionalApplicationsBundle(wrapElements(
+            .additionalApplicationsBundle(wrapElementsWithUUIDs(
                 AdditionalApplicationsBundle.builder()
                     .pbaPayment(null)
                     .c2DocumentBundle(C2DocumentBundle.builder()
@@ -561,7 +562,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private Map<String, Object> buildAdditionalApplicationsBundle(YesNo usePbaPayment) {
         return ImmutableMap.of(
             "additionalApplicationType", List.of(C2_ORDER),
-            "additionalApplicationsBundle", wrapElements(
+            "additionalApplicationsBundle", wrapElementsWithUUIDs(
                 AdditionalApplicationsBundle.builder()
                     .pbaPayment(PBAPayment.builder().usePbaPayment(usePbaPayment.getValue()).build())
                     .c2DocumentBundle(C2DocumentBundle.builder()
@@ -574,7 +575,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private Map<String, Object> buildAdditionalApplicationsAdjournmentBundle(YesNo usePbaPayment) {
         return ImmutableMap.of(
             "additionalApplicationType", List.of(C2_ORDER),
-            "additionalApplicationsBundle", wrapElements(
+            "additionalApplicationsBundle", wrapElementsWithUUIDs(
                 AdditionalApplicationsBundle.builder()
                     .pbaPayment(PBAPayment.builder().usePbaPayment(usePbaPayment.getValue()).build())
                     .c2DocumentBundle(C2DocumentBundle.builder()
@@ -588,7 +589,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private Map<String, Object> buildAdditionalApplicationsBundleWithC2AndOtherOrder(YesNo usePbaPayment) {
         return ImmutableMap.of(
             "additionalApplicationType", List.of(C2_ORDER, OTHER_ORDER),
-            "additionalApplicationsBundle", wrapElements(
+            "additionalApplicationsBundle", wrapElementsWithUUIDs(
                 AdditionalApplicationsBundle.builder()
                     .pbaPayment(PBAPayment.builder().usePbaPayment(usePbaPayment.getValue()).build())
                     .c2DocumentBundle(C2DocumentBundle.builder()
