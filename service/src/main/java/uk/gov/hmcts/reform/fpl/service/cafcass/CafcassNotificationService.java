@@ -177,17 +177,17 @@ public class CafcassNotificationService {
                               final CafcassData cafcassData,
                               final BiFunction<CaseData, CafcassData, String> content) {
         String subject = getSubject(caseData, provider, cafcassData, documentReference);
-        log.info("Subject: {} for doc reference type: {} ", subject,
+        log.info("Subject: {} for doc reference type: {} (case id: {})", subject,
                 documentReference
                     .map(DocumentReference::getType)
-                    .orElse(String.join(":", "not set for",provider.getLabel()))
+                    .orElse(String.join(":", "not set for",provider.getLabel())), caseData.getId()
         );
 
         Set<EmailAttachment> emailAttachments = getEmailAttachment(documentReference)
                 .map(Set::of).orElse(emptySet());
 
-        log.info("data in the document {} with total size: {} mb", emailAttachments,
-            documentReference.stream().mapToLong(DocumentReference::getSize).sum() / MEGABYTE);
+        log.info("Subject: {} data in the document {} with total size: {} mb (case id: {})", subject, emailAttachments,
+            documentReference.stream().mapToLong(DocumentReference::getSize).sum() / MEGABYTE, caseData.getId());
 
         emailService.sendEmail(configuration.getSender(),
                 EmailData.builder()
@@ -283,13 +283,17 @@ public class CafcassNotificationService {
 
         documentMetaData.values()
                 .forEach(documentReference -> {
+                    log.info("{}: {}, {} mb (max: {})", caseData.getId(), documentReference.getUrl(),
+                        documentReference.getSize() / MEGABYTE, maxAttachmentSize);
                     if (documentReference.getSize() / MEGABYTE <= maxAttachmentSize) {
+                        log.info("{}: {} sendAsAttachment", caseData.getId(), documentReference.getUrl());
                         String message = String.join(" : ",
                                 "Document attached is",
                                 documentReference.getFilename());
                         sendAsAttachment(caseData, of(documentReference), provider, cafcassData,
                             (caseDataObj, cafcassDataObj) -> message);
                     } else {
+                        log.info("{}: {} sendAsLink", caseData.getId(), documentReference.getUrl());
                         sendAsLink(caseData, documentReference,
                                 Optional.ofNullable(documentReference.getType())
                                         .orElse(provider.getLabel()));
