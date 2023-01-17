@@ -89,9 +89,8 @@ public class NoticeOfChangeController extends CallbackController {
     @PostMapping("/update-respondents")
     public CallbackResponse handleRespondentUpdate(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        ChangeOrganisationRequest request = (ChangeOrganisationRequest) caseDetails.getData()
-            .get("changeOrganisationRequestField");
-        log.info(request.getRequestTimestamp().toString());
+        CaseData caseData = getCaseData(caseDetails);
+        log.info(caseData.getChangeOrganisationRequestField().getRequestTimestamp().toString());
         return caseAssignmentService.applyDecisionAsSystemUser(caseDetails);
     }
 }
