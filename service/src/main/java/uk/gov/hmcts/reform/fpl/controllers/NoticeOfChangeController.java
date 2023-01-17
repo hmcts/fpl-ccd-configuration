@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.service.legalcounsel.RepresentableLegalCounselUpd
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Api
@@ -90,6 +92,10 @@ public class NoticeOfChangeController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         log.info(caseData.getChangeOrganisationRequestField().getRequestTimestamp().toString());
-        return caseAssignmentService.applyDecisionAsSystemUser(caseDetails);
+        AboutToStartOrSubmitCallbackResponse aacResponse = caseAssignmentService.applyDecisionAsSystemUser(caseDetails);
+        if (!aacResponse.getErrors().isEmpty()) {
+            log.info(aacResponse.getErrors().stream().collect(Collectors.joining(",")));
+        }
+        return aacResponse;
     }
 }
