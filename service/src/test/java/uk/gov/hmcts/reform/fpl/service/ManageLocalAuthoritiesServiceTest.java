@@ -46,9 +46,9 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -942,7 +942,7 @@ class ManageLocalAuthoritiesServiceTest {
         @Test
         void shouldBuildPastCourtsList() {
             final CaseData caseData = CaseData.builder().build();
-            when(courtService.getCourt(any())).thenReturn(
+            when(courtService.getCourt(isA(CaseData.class))).thenReturn(
                 Court.builder().code("344").name("Family Court sitting at Swansea").build()
             );
 
