@@ -27,6 +27,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.springframework.util.ObjectUtils.isEmpty;
+
 @Api
 @Slf4j
 @RestController
@@ -90,11 +92,10 @@ public class NoticeOfChangeController extends CallbackController {
     @PostMapping("/update-respondents")
     public CallbackResponse handleRespondentUpdate(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
-        log.info(caseData.getChangeOrganisationRequestField().getRequestTimestamp().toString());
-        AboutToStartOrSubmitCallbackResponse aacResponse = caseAssignmentService.applyDecisionAsSystemUser(caseDetails);
-        if (!aacResponse.getErrors().isEmpty()) {
-            log.info(aacResponse.getErrors().stream().collect(Collectors.joining(",")));
+
+        AboutToStartOrSubmitCallbackResponse aacResponse = caseAssignmentService.applyDecision(caseDetails);
+        if (!isEmpty(aacResponse.getErrors())) {
+            log.error(aacResponse.getErrors().stream().collect(Collectors.joining(", ")));
         }
         return aacResponse;
     }
