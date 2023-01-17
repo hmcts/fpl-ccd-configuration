@@ -1,0 +1,29 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ExtendTimetable",
+    "ListElementCode": "timeList",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "CaseExtensionTimeList",
+    "ElementLabel": "You can extend this date again, but you will not be able to revert back to the original date.",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ExtendTimetable",
+    "ListElementCode": "eightWeekExtensionDateOther",
+    "FieldType": "Date",
+    "ElementLabel": "New end date",
+    "HintText": "For example, 31 3 1980",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ExtendTimetable",
+    "ListElementCode": "reasonList",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "CaseExtensionReasonList",
+    "ElementLabel": "Why is this case being extended?",
+    "SecurityClassification": "Public"
+  }
+]
