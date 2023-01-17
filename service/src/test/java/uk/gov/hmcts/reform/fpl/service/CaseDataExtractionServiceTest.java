@@ -394,7 +394,8 @@ class CaseDataExtractionServiceTest {
             .hearingTime("3:30pm - 4:30pm")
             .hearingAttendance("Remote - video call")
             .preHearingAttendance("30 minutes before the hearing")
-            .hearingVenue("Remote hearing at some building, somewhere. Details and instructions will be sent by the local court.")
+            .hearingVenue("Remote hearing at some building, somewhere. Details and instructions will be sent by "
+                + "the local court.")
             .hearingJudgeTitleAndName("Her Honour Judge Law")
             .hearingLegalAdvisorName("Peter Parker")
             .hearingStartDate(formatLocalDateTimeBaseUsingFormat(hearingBooking.getStartDate(), DATE_TIME))
@@ -424,7 +425,8 @@ class CaseDataExtractionServiceTest {
             .hearingAttendance("Remote - phone call, remote - video call")
             .hearingAttendanceDetails("Phone: +44 777 777 777, Video: https://remote-hearing.gov.uk/1")
             .preHearingAttendance("30 minutes before the hearing")
-            .hearingVenue("Remote hearing at some building, somewhere. Details and instructions will be sent by the local court.")
+            .hearingVenue("Remote hearing at some building, somewhere. Details and instructions will be sent by "
+                + "the local court.")
             .hearingJudgeTitleAndName("Her Honour Judge Law")
             .hearingLegalAdvisorName("Peter Parker")
             .hearingStartDate(formatLocalDateTimeBaseUsingFormat(hearingBooking.getStartDate(), DATE_TIME))
