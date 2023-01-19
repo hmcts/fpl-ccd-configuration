@@ -205,7 +205,7 @@ public class MigrateCaseController extends CallbackController {
 
     private void run1156(CaseDetails caseDetails) {
         var migrationId = "DFPL-1156";
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(),1674130727787317L, migrationId);
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(),1668086461879587L, migrationId);
 
         caseDetails.getData().putAll(migrateCaseService.removeApplicationDocument(getCaseData(caseDetails),
             migrationId, UUID.fromString("1862581c-b628-4fc8-afb8-8576d3def0f1")));
