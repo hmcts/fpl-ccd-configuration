@@ -649,6 +649,7 @@ public class FurtherEvidenceUploadedEventHandler {
         unwrapElements(newApplicationDocuments).forEach(applicationDocument -> {
             ret.get(ALL_LAS).add(applicationDocument);
             if (!applicationDocument.isConfidentialDocument()) {
+                ret.get(CAFCASS).add(applicationDocument);
                 ret.get(CHILD_SOLICITOR).add(applicationDocument);
                 ret.get(RESPONDENT_SOLICITOR).add(applicationDocument);
             }
