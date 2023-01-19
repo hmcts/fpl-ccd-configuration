@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
+import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
 import java.time.LocalDate;
@@ -42,6 +43,7 @@ public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
 
     private final MigrateCaseService migrateCaseService;
+    private final DocumentListService documentListService;
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
@@ -52,7 +54,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-872rollback", this::run872Rollback,
         "DFPL-1029", this::run1029,
         "DFPL-1103", this::run1103,
-        "DFPL-1081", this::run1081
+        "DFPL-1156", this::run1156
     );
 
     @PostMapping("/about-to-submit")
@@ -201,11 +203,13 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove("placementsNonConfidentialNotices");
     }
 
-    private void run1081(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1081";
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1643819301061903L, migrationId);
+    private void run1156(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1156";
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(),1674130727787317L, migrationId);
 
-        caseDetails.getData().putAll(migrateCaseService.removeHearingBooking(getCaseData(caseDetails),
-            migrationId, UUID.fromString("bbad9942-e682-4cb7-a05a-7963c3c96fd6")));
+        caseDetails.getData().putAll(migrateCaseService.removeApplicationDocument(getCaseData(caseDetails),
+            migrationId, UUID.fromString("1862581c-b628-4fc8-afb8-8576d3def0f1")));
+        CaseDetails details = CaseDetails.builder().data(caseDetails.getData()).build();
+        caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(details)));
     }
 }
