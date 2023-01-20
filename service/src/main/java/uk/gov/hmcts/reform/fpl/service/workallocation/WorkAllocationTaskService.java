@@ -16,13 +16,14 @@ import java.util.Map;
 public class WorkAllocationTaskService {
 
     private static final String WORK_ALLOCATION_DUMMY_EVENT = "create-work-allocation-task";
+    private static final String WORK_ALLOCATION_DUMMY_CASE_FIELD = "lastCreatedWATask";
 
     private final CoreCaseDataService coreCaseDataService;
 
     public void createWorkAllocationTask(CaseData caseData, WorkAllocationTaskType taskType) {
         log.info("Creating work allocation task - " + taskType.name());
         coreCaseDataService.triggerEvent(caseData.getId(), WORK_ALLOCATION_DUMMY_EVENT, Map.of(
-            "lastCreatedWATask", taskType
+            WORK_ALLOCATION_DUMMY_CASE_FIELD, taskType
         ));
     }
 
