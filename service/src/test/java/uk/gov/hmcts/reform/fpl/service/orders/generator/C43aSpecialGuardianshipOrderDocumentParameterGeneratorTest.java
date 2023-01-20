@@ -52,7 +52,15 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
     private static final String NOTICE_HEADER = "Notice \n";
     private static final String NOTICE_MESSAGE = "Any person with parental responsibility for a child may "
         + "obtain advice on what can be done to prevent the issue of a passport to the child. They should write "
-        + "to The United Kingdom Passport Agency, Globe House, 89 Eccleston Square, LONDON, SW1V 1PN.";
+        + "to Glasgow CPST, HMPO Glasgow, 96 Milton Street, Glasgow, G4 0BT.";
+    //TODO: add new passport office email
+    /*
+    * Original last line
+    * + "to The United Kingdom Passport Agency, Globe House, 89 Eccleston Square, LONDON, SW1V 1PN.";
+    *
+    * New email to be included
+    * Glasgowcaveats@hmpo.gov.uk
+    */
 
     @Mock
     private ChildrenService childrenService;

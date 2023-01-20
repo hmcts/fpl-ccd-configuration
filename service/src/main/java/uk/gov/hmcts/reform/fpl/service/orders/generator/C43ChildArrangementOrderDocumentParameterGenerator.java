@@ -50,8 +50,16 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
         + "necessary.";
 
     public static final String NOTICE_MESSAGE = "Any person with parental responsibility for the child may obtain "
-        + "advice on what can be done to prevent the issue of a passport to the child. They should write to London "
-        + "Passport Office, Globe House, 89 Eccleston Square, LONDON SW1V 1PN.";
+        + "advice on what can be done to prevent the issue of a passport to the child. They should write to "
+        + "Glasgow CPST, HMPO Glasgow, 96 Milton Street, Glasgow, G4 0BT.";
+    //TODO: add new passport office email
+    /*
+     * Original last line
+     * + "Passport Office, Globe House, 89 Eccleston Square, LONDON SW1V 1PN.";
+     *
+     * New email to be added
+     * Glasgowcaveats@hmpo.gov.uk
+     */
 
     private final LocalAuthorityNameLookupConfiguration laNameLookup;
     private final C43ChildArrangementOrderTitleGenerator c43TitleGenerator;
