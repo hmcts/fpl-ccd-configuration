@@ -53,8 +53,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1065", this::run1065,
         "DFPL-872rollback", this::run872Rollback,
         "DFPL-1029", this::run1029,
-        "DFPL-1156", this::run1156,
-        "DFPL-1161", this::run1161
+        "DFPL-1161", this::run1161,
+        "DFPL-1156", this::run1156
     );
 
     @PostMapping("/about-to-submit")
