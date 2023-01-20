@@ -26,6 +26,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER_V2;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C43A_SPECIAL_GUARDIANSHIP_ORDER;
+import static uk.gov.hmcts.reform.fpl.service.orders.generator.C43aSpecialGuardianshipOrderDocumentParameterGenerator.NOTICE_MESSAGE;
+import static uk.gov.hmcts.reform.fpl.service.orders.generator.C43aSpecialGuardianshipOrderDocumentParameterGenerator.ORDER_MESSAGE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith({MockitoExtension.class})
@@ -37,30 +39,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
     public static final String CONSENT = "By consent";
     private static final String FURTHER_DIRECTIONS = "further directions";
     private static final String ORDER_HEADER = "Warning \n";
-    private static final String ORDER_MESSAGE = "Where a Special Guardianship Order is in force no person may "
-        + "cause the child to be known by a new surname or remove the "
-        + "child from the United Kingdom without either the written consent"
-        + " of every person who has parental responsibility for the child or "
-        + "the leave of the Court. "
-        + "However, this does not prevent the removal "
-        + "of a child for a period of less than 3 months, "
-        + "by its special guardian(s) (Section 14C (3) and (4) Children Act 1989)."
-        + "\n \n"
-        + "It may be a criminal offence under the Child Abduction Act 1984 "
-        + "to remove the child from the United Kingdom without leave of the Court.\n"
-        + "";
     private static final String NOTICE_HEADER = "Notice \n";
-    private static final String NOTICE_MESSAGE = "Any person with parental responsibility for a child may "
-        + "obtain advice on what can be done to prevent the issue of a passport to the child. They should write "
-        + "to Glasgow CPST, HMPO Glasgow, 96 Milton Street, Glasgow, G4 0BT.";
-    //TODO: add new passport office email
-    /*
-    * Original last line
-    * + "to The United Kingdom Passport Agency, Globe House, 89 Eccleston Square, LONDON, SW1V 1PN.";
-    *
-    * New email to be included
-    * Glasgowcaveats@hmpo.gov.uk
-    */
 
     @Mock
     private ChildrenService childrenService;
