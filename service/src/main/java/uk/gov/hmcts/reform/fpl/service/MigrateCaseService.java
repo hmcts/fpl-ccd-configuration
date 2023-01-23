@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
@@ -208,4 +209,22 @@ public class MigrateCaseService {
         return Map.of("caseNotes", caseNoteService.removeCaseNote(caseNoteIdToRemove, caseData.getCaseNotes()));
     }
 
+    public Map<String, Object> removeGatekeepingOrderUrgentHearingOrder(CaseData caseData, String migrationId,
+                                                                        String fileName) {
+        if (caseData.getUrgentHearingOrder() == null) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, GateKeeping order - Urgent hearing order not found",
+                migrationId, caseData.getId()));
+        }
+
+        if (isNotEmpty(fileName)) {
+            if (!fileName.equals(caseData.getUrgentHearingOrder().getOrder().getFilename())) {
+                throw new AssertionError(format(
+                    "Migration {id = %s, case reference = %s}, GateKeeping order - Urgent hearing order %s not found",
+                    migrationId, caseData.getId(), fileName));
+            }
+        }
+
+        return Map.of("urgentHearingOrder", null);
+    }
 }
