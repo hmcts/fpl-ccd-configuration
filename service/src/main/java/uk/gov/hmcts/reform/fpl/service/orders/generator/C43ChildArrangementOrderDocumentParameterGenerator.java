@@ -49,10 +49,9 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
         + "to consider that risk assessment and give such directions as the Court thinks "
         + "necessary.";
 
-    //TODO: add new passport office email (DFPL-1123) Glasgowcaveats@hmpo.gov.uk
     public static final String NOTICE_MESSAGE = "Any person with parental responsibility for the child may obtain "
         + "advice on what can be done to prevent the issue of a passport to the child. They should write to "
-        + "Glasgow CPST, HMPO Glasgow, 96 Milton Street, Glasgow, G4 0BT.";
+        + "Glasgow CPST, HMPO Glasgow, 96 Milton Street, Glasgow, G4 0BT or email Glasgowcaveats@hmpo.gov.uk.";
 
     private final LocalAuthorityNameLookupConfiguration laNameLookup;
     private final C43ChildArrangementOrderTitleGenerator c43TitleGenerator;

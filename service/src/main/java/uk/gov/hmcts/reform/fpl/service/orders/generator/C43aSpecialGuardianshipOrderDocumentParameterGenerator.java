@@ -44,10 +44,9 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
         + "to remove the child from the United Kingdom without leave of the Court.\n"
         + "";
     private static String NOTICE_HEADER = "Notice \n";
-    //TODO: add new passport office email (DFPL-1123) Glasgowcaveats@hmpo.gov.uk
     protected static String NOTICE_MESSAGE = "Any person with parental responsibility for a child may "
         + "obtain advice on what can be done to prevent the issue of a passport to the child. They should write "
-        + "to Glasgow CPST, HMPO Glasgow, 96 Milton Street, Glasgow, G4 0BT.";
+        + "to Glasgow CPST, HMPO Glasgow, 96 Milton Street, Glasgow, G4 0BT or email Glasgowcaveats@hmpo.gov.uk.";
 
     @Override
     public Order accept() {
