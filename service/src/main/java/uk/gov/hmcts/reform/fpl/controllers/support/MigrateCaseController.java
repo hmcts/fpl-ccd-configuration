@@ -213,9 +213,9 @@ public class MigrateCaseController extends CallbackController {
     private void run1162(CaseDetails caseDetails) {
         var migrationId = "DFPL-1162";
         migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1673628190034209L, migrationId);
+        migrateCaseService.verifyGatekeepingOrderUrgentHearingOrder(getCaseData(caseDetails), migrationId,
+            "PO23C50013 HCC V Carter EPO with remote hearing directions march 2021.pdf");
 
-        caseDetails.getData().putAll(migrateCaseService.removeGatekeepingOrderUrgentHearingOrder(
-            getCaseData(caseDetails), migrationId,
-            "PO23C50013 HCC V Carter EPO with remote hearing directions march 2021.pdf"));
+        caseDetails.getData().remove("urgentHearingOrder");
     }
 }

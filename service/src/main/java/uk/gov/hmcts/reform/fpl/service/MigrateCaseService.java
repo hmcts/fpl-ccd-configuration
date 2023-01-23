@@ -209,8 +209,7 @@ public class MigrateCaseService {
         return Map.of("caseNotes", caseNoteService.removeCaseNote(caseNoteIdToRemove, caseData.getCaseNotes()));
     }
 
-    public Map<String, Object> removeGatekeepingOrderUrgentHearingOrder(CaseData caseData, String migrationId,
-                                                                        String fileName) {
+    public void verifyGatekeepingOrderUrgentHearingOrder(CaseData caseData, String migrationId, String fileName) {
         if (caseData.getUrgentHearingOrder() == null) {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, GateKeeping order - Urgent hearing order not found",
@@ -224,7 +223,5 @@ public class MigrateCaseService {
                     migrationId, caseData.getId(), fileName));
             }
         }
-
-        return Map.of("urgentHearingOrder", null);
     }
 }
