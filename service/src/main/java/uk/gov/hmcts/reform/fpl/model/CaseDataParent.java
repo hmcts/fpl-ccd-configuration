@@ -50,4 +50,6 @@ public class CaseDataParent {
     protected final GroundsForContactWithChild groundsForContactWithChild;
 
     protected final YesNo skipPaymentPage;
+
+    protected final YesNo shouldSendOrderReminder;
 }
