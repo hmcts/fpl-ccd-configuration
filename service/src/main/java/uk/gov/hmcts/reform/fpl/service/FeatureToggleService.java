@@ -85,6 +85,10 @@ public class FeatureToggleService {
         return ldClient.boolVariation("secure-docstore-enabled", createLDUser(), false);
     }
 
+    public boolean isChaseOrdersFirstCronRunEnabled() {
+        return ldClient.boolVariation("chasing-tasks-first-run", createLDUser(), false);
+    }
+
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }
