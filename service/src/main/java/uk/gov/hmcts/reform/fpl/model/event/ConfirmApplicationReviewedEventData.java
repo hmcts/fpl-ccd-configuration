@@ -19,7 +19,7 @@ public class ConfirmApplicationReviewedEventData {
     @JsonDeserialize(using = YesNoDeserializer.class)
     YesNo hasApplicationToBeReviewed;
 
-    @JsonDeserialize(using = YesNoDeserializer.class)
+    @JsonDeserialize(using = YesNoDeserializer.class
     YesNo onlyOneApplicationToBeReviewed;
 
     @JsonDeserialize(using = DynamicListDeserializer.class)
@@ -28,7 +28,7 @@ public class ConfirmApplicationReviewedEventData {
     AdditionalApplicationsBundle additionalApplicationsBundleToBeReviewed;
     List<String> confirmApplicationReviewed;
 
-    public static List<String> eventFields(){
+    public static List<String> eventFields() {
         return List.of("hasApplicationToBeReviewed",
             "onlyOneApplicationToBeReviewed",
             "additionalApplicationToBeReviewedList",
