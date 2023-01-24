@@ -449,7 +449,7 @@ class MigrateCaseServiceTest {
     @Nested
     class RemoveGatekeepingOrderUrgentHearingOrder {
 
-        private final long caseId = 1673628190034209L;
+        private final long caseId = UUID.randomUUID();
 
         @Test
         void shouldThrowAssertionIfOrderNotFound() {
