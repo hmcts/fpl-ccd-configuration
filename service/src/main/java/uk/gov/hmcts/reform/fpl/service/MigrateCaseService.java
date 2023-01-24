@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -176,10 +177,18 @@ public class MigrateCaseService {
 
             // remove the hearing from the hearing list
             hearingDetails.removeAll(hearingBookingsToBeRemoved);
-            return Map.of(
-                "hearingDetails", hearingDetails,
-                "selectedHearingId", hearingDetails.get(hearingDetails.size() - 1).getId()
-            );
+            if (hearingDetails.size() > 0) {
+                return Map.of(
+                    "hearingDetails", hearingDetails,
+                    "selectedHearingId", hearingDetails.get(hearingDetails.size() - 1).getId()
+                );
+            } else {
+                Map<String, Object> ret =  new HashMap<String, Object>(Map.of(
+                    "hearingDetails", hearingDetails
+                ));
+                ret.put("selectedHearingId", null);
+                return ret;
+            }
         } else {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, hearing details not found",

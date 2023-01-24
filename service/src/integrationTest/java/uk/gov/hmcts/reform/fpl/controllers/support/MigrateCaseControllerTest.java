@@ -325,10 +325,10 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Dfpl1103 {
+    class Dfpl1161 {
 
-        private final String migrationId = "DFPL-1103";
-        private final long validCaseId = 1659951867520203L;
+        private final String migrationId = "DFPL-1161";
+        private final long validCaseId = 1660209462518487L;
 
         @Test
         void shouldRemoveAllPlacementCollections() {
