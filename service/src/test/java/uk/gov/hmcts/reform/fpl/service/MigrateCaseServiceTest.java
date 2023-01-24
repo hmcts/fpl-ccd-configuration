@@ -449,7 +449,6 @@ class MigrateCaseServiceTest {
     @Nested
     class RemoveGatekeepingOrderUrgentHearingOrder {
 
-        private final String migrationId = "DFPL-1162";
         private final long caseId = 1673628190034209L;
 
         @Test
