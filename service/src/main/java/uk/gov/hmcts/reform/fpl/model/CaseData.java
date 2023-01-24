@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
@@ -49,6 +50,8 @@ import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
+import uk.gov.hmcts.reform.fpl.model.event.CaseProgressionReportEventData;
+import uk.gov.hmcts.reform.fpl.model.event.ChildExtensionEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
@@ -158,6 +161,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @EPOTimeRange(message = "Date must be within 8 days of the order date", groups = EPOEndDateGroup.class,
     maxDate = @TimeDifference(amount = 8, unit = DAYS))
 public class CaseData extends CaseDataParent {
+    public static final int DEFAULT_CASE_COMPLETION = 26;
     private final Long id;
     private final State state;
     @NotBlank(message = "Enter a case name")
@@ -646,8 +650,13 @@ public class CaseData extends CaseDataParent {
     private final List<Element<EmailAddress>> gatekeeperEmails;
 
     @JsonIgnore
+    public LocalDate getDefaultCompletionDate() {
+        return dateSubmitted.plusWeeks(DEFAULT_CASE_COMPLETION);
+    }
+
+    @JsonIgnore
     public String getComplianceDeadline() {
-        return formatLocalDateToString(dateSubmitted.plusWeeks(26), FormatStyle.LONG);
+        return formatLocalDateToString(getDefaultCompletionDate(), FormatStyle.LONG);
     }
 
     private final String amountToPay;
@@ -659,6 +668,10 @@ public class CaseData extends CaseDataParent {
     private LocalDate eightWeeksExtensionDateOther;
     private final CaseExtensionTime caseExtensionTimeList;
     private final CaseExtensionTime caseExtensionTimeConfirmationList;
+    private final CaseExtensionReasonList caseExtensionReasonList;
+    @JsonUnwrapped
+    @Builder.Default
+    private final ChildExtensionEventData childExtensionEventData = ChildExtensionEventData.builder().build();
 
     private final CloseCase closeCase;
     private final String deprivationOfLiberty;
@@ -701,6 +714,7 @@ public class CaseData extends CaseDataParent {
     private final DynamicList manageDocumentsChildrenList;
     private final DynamicList hearingDocumentsRespondentList;
     private final DynamicList hearingDocumentsPartyList;
+
 
     @JsonUnwrapped
     @Builder.Default
@@ -1148,6 +1162,9 @@ public class CaseData extends CaseDataParent {
     @JsonUnwrapped
     @Builder.Default
     private final LocalAuthoritiesEventData localAuthoritiesEventData = LocalAuthoritiesEventData.builder().build();
+
+    @JsonUnwrapped
+    private final CaseProgressionReportEventData caseProgressionReportEventData;
 
     @JsonUnwrapped
     @Builder.Default

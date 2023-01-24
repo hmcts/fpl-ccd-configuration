@@ -1,0 +1,24 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CarlisleDFJCourts",
+    "ListElementCode": "120",
+    "ListElement": "Barrow in Furness",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CarlisleDFJCourts",
+    "ListElementCode": "165",
+    "ListElement": "Carlisle",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CarlisleDFJCourts",
+    "ListElementCode": "373",
+    "ListElement": "West Cumbria ",
+    "DisplayOrder": 3
+  }
+
+]

@@ -2,13 +2,17 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseNote;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -34,6 +38,9 @@ class MigrateCaseServiceTest {
 
     private static final String MIGRATION_ID = "test-migration";
 
+    @Mock
+    private CaseNoteService caseNoteService;
+
     @InjectMocks
     private MigrateCaseService underTest;
 
@@ -45,6 +52,11 @@ class MigrateCaseServiceTest {
     @Test
     void shouldThrowExceptionIfCaseIdCheckFails() {
         assertThrows(AssertionError.class, () -> underTest.doCaseIdCheck(1L, 2L, MIGRATION_ID));
+    }
+
+    @Test
+    void shouldThrowExceptionIfCaseIdListCheckFails() {
+        assertThrows(AssertionError.class, () -> underTest.doCaseIdCheckList(1L, List.of(2L, 3L), MIGRATION_ID));
     }
 
     @Nested
@@ -347,8 +359,87 @@ class MigrateCaseServiceTest {
                 .build();
 
             assertThrows(AssertionError.class, () ->
-                underTest.removePositionStatementRespondent(caseData, MIGRATION_ID,
-                    docIdToRemove));
+                underTest.removePositionStatementRespondent(caseData, MIGRATION_ID, docIdToRemove));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveCaseNote {
+
+        private final UUID noteIdToRemove = UUID.randomUUID();
+
+        @Test
+        void shouldThrowExceptionWhenCaseNoteNotPresent() {
+            UUID otherNoteId = UUID.randomUUID();
+            UUID otherNoteId2 = UUID.randomUUID();
+            CaseData caseData = CaseData.builder()
+                .caseNotes(List.of(
+                    element(otherNoteId, CaseNote.builder().note("Test note 1").build()),
+                    element(otherNoteId2, CaseNote.builder().note("Test note 2").build())
+                ))
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest.removeCaseNote(caseData, MIGRATION_ID, noteIdToRemove));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveHearingBooking {
+
+        private final UUID hearingBookingToRemove = UUID.randomUUID();
+        private final UUID otherHearingBookingId = UUID.randomUUID();
+
+        @Test
+        void shouldThrowAssertionErrorIfHearingBookingNotPresent() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(otherHearingBookingId, HearingBooking.builder().build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(bookings)
+                .build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.removeHearingBooking(caseData, MIGRATION_ID, hearingBookingToRemove));
+        }
+
+        @Test
+        void shouldRemoveHearingBooking() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(otherHearingBookingId, HearingBooking.builder().build()));
+            bookings.add(element(hearingBookingToRemove, HearingBooking.builder().build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(bookings)
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeHearingBooking(caseData, MIGRATION_ID,
+                hearingBookingToRemove);
+
+            assertThat(updatedFields).extracting("hearingDetails").asList().hasSize(1);
+            assertThat(updatedFields).extracting("hearingDetails").asList()
+                .doesNotContainAnyElementsOf(List.of(hearingBookingToRemove));
+
+        }
+
+        @Test
+        void shouldRemoveHearingBookingWithSingleHearing() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(hearingBookingToRemove, HearingBooking.builder().build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(bookings)
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeHearingBooking(caseData, MIGRATION_ID,
+                hearingBookingToRemove);
+
+            assertThat(updatedFields).extracting("hearingDetails").asList().hasSize(0);
+            assertThat(updatedFields).extracting("hearingDetails").asList()
+                .doesNotContainAnyElementsOf(List.of(hearingBookingToRemove));
+            assertThat(updatedFields).extracting("selectedHearingId").isNull();
+
         }
     }
 }

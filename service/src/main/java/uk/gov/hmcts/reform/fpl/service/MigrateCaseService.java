@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,6 +27,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MigrateCaseService {
+
+    private final CaseNoteService caseNoteService;
 
     public Map<String, Object> removeHearingOrderBundleDraft(CaseData caseData, String migrationId, UUID bundleId,
                                                              UUID orderId) {
@@ -60,6 +64,15 @@ public class MigrateCaseService {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, expected case id %d",
                 migrationId, caseId, expectedCaseId
+            ));
+        }
+    }
+
+    public void doCaseIdCheckList(long caseId, List<Long> possibleIds, String migrationId) throws AssertionError {
+        if (!possibleIds.contains(caseId)) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, case id not one of the expected options",
+                migrationId, caseId
             ));
         }
     }
@@ -136,4 +149,63 @@ public class MigrateCaseService {
         }
         return Map.of("positionStatementRespondentListV2", positionStatementRespondentListResult);
     }
+
+    public Map<String, Object> removeHearingBooking(CaseData caseData, final String migrationId,
+                                                     final UUID hearingIdToBeRemoved) {
+        final Long caseId = caseData.getId();
+
+        List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
+        if (hearingDetails != null) {
+            // get the hearing with the expected UUID
+            List<Element<HearingBooking>> hearingBookingsToBeRemoved =
+                hearingDetails.stream().filter(hearingBooking -> hearingIdToBeRemoved.equals(hearingBooking.getId()))
+                    .collect(toList());
+
+            if (hearingBookingsToBeRemoved.isEmpty()) {
+                throw new AssertionError(format(
+                    "Migration {id = %s, case reference = %s}, hearing booking %s not found",
+                    migrationId, caseId, hearingIdToBeRemoved
+                ));
+            }
+
+            if (hearingBookingsToBeRemoved.size() > 1) {
+                throw new AssertionError(format(
+                    "Migration {id = %s, case reference = %s}, more than one hearing booking %s found",
+                    migrationId, caseId, hearingIdToBeRemoved
+                ));
+            }
+
+            // remove the hearing from the hearing list
+            hearingDetails.removeAll(hearingBookingsToBeRemoved);
+            if (hearingDetails.size() > 0) {
+                return Map.of(
+                    "hearingDetails", hearingDetails,
+                    "selectedHearingId", hearingDetails.get(hearingDetails.size() - 1).getId()
+                );
+            } else {
+                Map<String, Object> ret =  new HashMap<String, Object>(Map.of(
+                    "hearingDetails", hearingDetails
+                ));
+                ret.put("selectedHearingId", null);
+                return ret;
+            }
+        } else {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, hearing details not found",
+                migrationId, caseId
+            ));
+        }
+    }
+
+    public Map<String, Object> removeCaseNote(CaseData caseData, String migrationId, UUID caseNoteIdToRemove) {
+        if (ElementUtils.findElement(caseNoteIdToRemove, caseData.getCaseNotes()).isEmpty()) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, case note %s found",
+                migrationId, caseData.getId(), caseNoteIdToRemove
+            ));
+        }
+
+        return Map.of("caseNotes", caseNoteService.removeCaseNote(caseNoteIdToRemove, caseData.getCaseNotes()));
+    }
+
 }
