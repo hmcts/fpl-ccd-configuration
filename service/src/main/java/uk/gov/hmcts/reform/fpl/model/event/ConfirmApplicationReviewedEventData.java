@@ -19,7 +19,7 @@ public class ConfirmApplicationReviewedEventData {
     @JsonDeserialize(using = YesNoDeserializer.class)
     YesNo hasApplicationToBeReviewed;
 
-    @JsonDeserialize(using = YesNoDeserializer.class
+    @JsonDeserialize(using = YesNoDeserializer.class)
     YesNo onlyOneApplicationToBeReviewed;
 
     @JsonDeserialize(using = DynamicListDeserializer.class)
