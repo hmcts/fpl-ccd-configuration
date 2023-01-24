@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.additionalapplications.ConfirmApplicationReviewedService;
+import uk.gov.hmcts.reform.fpl.service.additionalapplications.ReviewAdditionalApplicationService;
 
 import java.util.List;
 
@@ -19,11 +19,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@WebMvcTest(ConfirmApplicationReviewedController.class)
+@WebMvcTest(ReviewAdditionalApplicationController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class ConfirmApplicationReviewedControllerAboutToSubmitTest extends AbstractCallbackTest {
+public class ReviewAdditionalApplicationControllerAboutToSubmitTest extends AbstractCallbackTest {
     @MockBean
-    private ConfirmApplicationReviewedService confirmApplicationReviewedService;
+    private ReviewAdditionalApplicationService reviewAdditionalApplicationService;
 
     private static final List<Element<AdditionalApplicationsBundle>> APPLICATION_BUNDLE_ELEMENT_LIST =
         wrapElements(AdditionalApplicationsBundle.builder()
@@ -32,13 +32,13 @@ public class ConfirmApplicationReviewedControllerAboutToSubmitTest extends Abstr
             .applicationReviewed(YesNo.YES)
             .build());
 
-    ConfirmApplicationReviewedControllerAboutToSubmitTest() {
-        super("confirm-additional-application-reviewed");
+    ReviewAdditionalApplicationControllerAboutToSubmitTest() {
+        super("review-additional-application");
     }
 
     @BeforeEach
     void initTest() {
-        when(confirmApplicationReviewedService.markSelectedBundleAsReviewed(any()))
+        when(reviewAdditionalApplicationService.markSelectedBundleAsReviewed(any()))
             .thenReturn(APPLICATION_BUNDLE_ELEMENT_LIST);
     }
 

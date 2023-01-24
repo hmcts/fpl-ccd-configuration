@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "confirmApplicationReviewed",
+    "CaseEventID": "reviewAdditionalApplication",
     "CaseFieldID": "hasApplicationToBeReviewed",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
@@ -10,27 +10,40 @@
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "confirmApplicationReviewedList=\"DO_NOT_SHOW\"",
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/confirm-additional-application-reviewed/mid-event"
+    "FieldShowCondition": "additionalApplicationToBeReviewedList=\"DO_NOT_SHOW\"",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/review-additional-application/mid-event",
+    "PageShowCondition": "onlyOneApplicationToBeReviewed=\"NO\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "confirmApplicationReviewed",
-    "CaseFieldID": "confirmApplicationReviewedList",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "onlyOneApplicationToBeReviewed",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N",
+    "FieldShowCondition": "additionalApplicationToBeReviewedList=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewAdditionalApplication",
+    "CaseFieldID": "additionalApplicationToBeReviewedList",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "hasApplicationToBeReviewed=\"YES\"",
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/confirm-additional-application-reviewed/mid-event"
+    "FieldShowCondition": "hasApplicationToBeReviewed=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "confirmApplicationReviewed",
+    "CaseEventID": "reviewAdditionalApplication",
     "CaseFieldID": "confirmApplicationReviewedNoApplicationLabel",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
@@ -43,7 +56,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "confirmApplicationReviewed",
+    "CaseEventID": "reviewAdditionalApplication",
     "CaseFieldID": "additionalApplicationsBundleToBeReviewed",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
@@ -55,7 +68,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "confirmApplicationReviewed",
+    "CaseEventID": "reviewAdditionalApplication",
     "CaseFieldID": "confirmApplicationReviewed",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",

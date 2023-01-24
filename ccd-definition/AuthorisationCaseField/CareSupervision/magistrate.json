@@ -2011,6 +2011,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewAdditionalApplicationLink",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hasApplicationToBeReviewed",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "CRUD"
@@ -2018,7 +2025,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "confirmApplicationReviewedList",
+    "CaseFieldID": "onlyOneApplicationToBeReviewed",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "additionalApplicationToBeReviewedList",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "CRUD"
   },

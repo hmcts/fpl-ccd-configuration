@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
-import uk.gov.hmcts.reform.fpl.service.additionalapplications.ConfirmApplicationReviewedService;
+import uk.gov.hmcts.reform.fpl.service.additionalapplications.ReviewAdditionalApplicationService;
 
 import java.util.List;
 import java.util.Map;
@@ -25,10 +25,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
-class ConfirmApplicationReviewedServiceTest {
+class ReviewAdditionalApplicationServiceTest {
 
-    private ConfirmApplicationReviewedService confirmApplicationReviewedService =
-        new ConfirmApplicationReviewedService();
+    private ReviewAdditionalApplicationService reviewAdditionalApplicationService =
+        new ReviewAdditionalApplicationService();
 
     private static final Element<AdditionalApplicationsBundle> REVIEWED_BUNDLE =
         element(AdditionalApplicationsBundle.builder()
@@ -61,11 +61,12 @@ class ConfirmApplicationReviewedServiceTest {
             .additionalApplicationsBundle(List.of(REVIEWED_BUNDLE, NEW_BUNDLE_1, NEW_BUNDLE_2))
             .build();
 
-        Map<String, Object> resultMap = confirmApplicationReviewedService.initEventField(caseData);
+        Map<String, Object> resultMap = reviewAdditionalApplicationService.initEventField(caseData);
 
         Map<String, Object> expectedMap = Map.of(
             "hasApplicationToBeReviewed", YES,
-            "confirmApplicationReviewedList",
+            "onlyOneApplicationToBeReviewed", NO,
+            "additionalApplicationToBeReviewedList",
             asDynamicList(List.of(NEW_BUNDLE_1, NEW_BUNDLE_2), AdditionalApplicationsBundle::toLabel)
         );
 
@@ -78,9 +79,26 @@ class ConfirmApplicationReviewedServiceTest {
             .additionalApplicationsBundle(List.of(REVIEWED_BUNDLE))
             .build();
 
-        Map<String, Object> resultMap = confirmApplicationReviewedService.initEventField(caseData);
+        Map<String, Object> resultMap = reviewAdditionalApplicationService.initEventField(caseData);
 
         Map<String, Object> expectedMap = Map.of("hasApplicationToBeReviewed", NO);
+
+        assertThat(resultMap).isEqualTo(expectedMap);
+    }
+
+    @Test
+    void shouldInitEventFieldWithOneBundleToBeReviewed() {
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationsBundle(List.of(REVIEWED_BUNDLE, NEW_BUNDLE_1))
+            .build();
+
+        Map<String, Object> resultMap = reviewAdditionalApplicationService.initEventField(caseData);
+
+        Map<String, Object> expectedMap = Map.of(
+            "hasApplicationToBeReviewed", YES,
+            "onlyOneApplicationToBeReviewed", YES,
+            "additionalApplicationsBundleToBeReviewed", NEW_BUNDLE_1.getValue()
+        );
 
         assertThat(resultMap).isEqualTo(expectedMap);
     }
@@ -90,13 +108,13 @@ class ConfirmApplicationReviewedServiceTest {
         CaseData caseData = CaseData.builder()
             .additionalApplicationsBundle(List.of(REVIEWED_BUNDLE, NEW_BUNDLE_1, NEW_BUNDLE_2))
             .confirmApplicationReviewedEventData(ConfirmApplicationReviewedEventData.builder()
-                .confirmApplicationReviewedList(asDynamicList(List.of(NEW_BUNDLE_1, NEW_BUNDLE_2),
+                .additionalApplicationToBeReviewedList(asDynamicList(List.of(NEW_BUNDLE_1, NEW_BUNDLE_2),
                     NEW_BUNDLE_1.getId(), AdditionalApplicationsBundle::toLabel))
                 .build())
             .build();
 
         Element<AdditionalApplicationsBundle> result =
-            confirmApplicationReviewedService.getSelectedApplicationsToBeReviewed(caseData);
+            reviewAdditionalApplicationService.getSelectedApplicationsToBeReviewed(caseData);
 
         assertThat(result).isEqualTo(NEW_BUNDLE_1);
     }
@@ -106,12 +124,12 @@ class ConfirmApplicationReviewedServiceTest {
         CaseData caseData = CaseData.builder()
             .additionalApplicationsBundle(List.of(REVIEWED_BUNDLE, NEW_BUNDLE_1, NEW_BUNDLE_2))
             .confirmApplicationReviewedEventData(ConfirmApplicationReviewedEventData.builder()
-                .confirmApplicationReviewedList(asDynamicList(List.of(NEW_BUNDLE_1, NEW_BUNDLE_2),
+                .additionalApplicationToBeReviewedList(asDynamicList(List.of(NEW_BUNDLE_1, NEW_BUNDLE_2),
                     UUID.randomUUID(), AdditionalApplicationsBundle::toLabel))
                 .build())
             .build();
 
-        assertThatThrownBy(() -> confirmApplicationReviewedService.getSelectedApplicationsToBeReviewed(caseData))
+        assertThatThrownBy(() -> reviewAdditionalApplicationService.getSelectedApplicationsToBeReviewed(caseData))
             .isInstanceOf(NoSuchElementException.class)
             .hasMessage("No value present");
     }
@@ -121,13 +139,13 @@ class ConfirmApplicationReviewedServiceTest {
         CaseData caseData = CaseData.builder()
             .additionalApplicationsBundle(List.of(REVIEWED_BUNDLE, NEW_BUNDLE_1, NEW_BUNDLE_2))
             .confirmApplicationReviewedEventData(ConfirmApplicationReviewedEventData.builder()
-                .confirmApplicationReviewedList(asDynamicList(List.of(NEW_BUNDLE_1, NEW_BUNDLE_2),
+                .additionalApplicationToBeReviewedList(asDynamicList(List.of(NEW_BUNDLE_1, NEW_BUNDLE_2),
                     NEW_BUNDLE_1.getId(), AdditionalApplicationsBundle::toLabel))
                 .build())
             .build();
 
         List<Element<AdditionalApplicationsBundle>> resultList =
-            confirmApplicationReviewedService.markSelectedBundleAsReviewed(caseData);
+            reviewAdditionalApplicationService.markSelectedBundleAsReviewed(caseData);
 
         List<Element<AdditionalApplicationsBundle>> expectedList =
             List.of(REVIEWED_BUNDLE,
@@ -142,12 +160,12 @@ class ConfirmApplicationReviewedServiceTest {
         CaseData caseData = CaseData.builder()
             .additionalApplicationsBundle(List.of(REVIEWED_BUNDLE, NEW_BUNDLE_1, NEW_BUNDLE_2))
             .confirmApplicationReviewedEventData(ConfirmApplicationReviewedEventData.builder()
-                .confirmApplicationReviewedList(asDynamicList(List.of(NEW_BUNDLE_1, NEW_BUNDLE_2),
+                .additionalApplicationToBeReviewedList(asDynamicList(List.of(NEW_BUNDLE_1, NEW_BUNDLE_2),
                     UUID.randomUUID(), AdditionalApplicationsBundle::toLabel))
                 .build())
             .build();
 
-        assertThatThrownBy(() -> confirmApplicationReviewedService.markSelectedBundleAsReviewed(caseData))
+        assertThatThrownBy(() -> reviewAdditionalApplicationService.markSelectedBundleAsReviewed(caseData))
             .isInstanceOf(NoSuchElementException.class)
             .hasMessage("No value present");
     }

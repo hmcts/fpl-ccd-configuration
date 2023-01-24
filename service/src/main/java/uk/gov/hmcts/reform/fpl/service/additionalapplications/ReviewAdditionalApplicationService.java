@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class ConfirmApplicationReviewedService {
+public class ReviewAdditionalApplicationService {
     public static final String ADDITIONAL_APPLICATION_REVIEWED = "ADDITIONAL_APPLICATION_REVIEWED";
 
     public Map<String, Object> initEventField(CaseData caseData) {
@@ -33,38 +34,52 @@ public class ConfirmApplicationReviewedService {
 
         if (isEmpty(applicationsBundlesToBeReviewed)) {
             resultMap.put("hasApplicationToBeReviewed", NO);
+            resultMap.put("onlyOneApplicationToBeReviewed", NO);
         } else {
-            resultMap.put("confirmApplicationReviewedList",
-                asDynamicList(applicationsBundlesToBeReviewed, AdditionalApplicationsBundle::toLabel));
             resultMap.put("hasApplicationToBeReviewed", YES);
+
+            if (applicationsBundlesToBeReviewed.size() > 1) {
+                resultMap.put("additionalApplicationToBeReviewedList", asDynamicList(applicationsBundlesToBeReviewed,
+                    AdditionalApplicationsBundle::toLabel));
+                resultMap.put("onlyOneApplicationToBeReviewed", NO);
+            } else if (applicationsBundlesToBeReviewed.size() == 1) {
+                resultMap.put("onlyOneApplicationToBeReviewed", YES);
+                resultMap.put("additionalApplicationsBundleToBeReviewed",
+                    applicationsBundlesToBeReviewed.get(0).getValue());
+            }
         }
 
         return resultMap;
     }
 
     private List<Element<AdditionalApplicationsBundle>> getApplicationsToBeReviewed(CaseData caseData) {
-        return caseData.getAdditionalApplicationsBundle().stream()
-            .filter(bundleElement -> !YES.equals(bundleElement.getValue().getApplicationReviewed()))
-            .collect(Collectors.toList());
+        if (caseData.getAdditionalApplicationsBundle() != null) {
+            return caseData.getAdditionalApplicationsBundle().stream()
+                .filter(bundleElement -> !YES.equals(bundleElement.getValue().getApplicationReviewed()))
+                .collect(Collectors.toList());
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     public Element<AdditionalApplicationsBundle> getSelectedApplicationsToBeReviewed(CaseData caseData) {
         final List<Element<AdditionalApplicationsBundle>> applicationsBundlesToBeReviewed =
             getApplicationsToBeReviewed(caseData);
 
-        ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
+        if (applicationsBundlesToBeReviewed.size() == 1) {
+            return applicationsBundlesToBeReviewed.get(0);
+        } else {
+            ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
 
-        return findElement(eventData.getConfirmApplicationReviewedList().getValueCodeAsUUID(),
-            applicationsBundlesToBeReviewed).orElseThrow();
+            return findElement(eventData.getAdditionalApplicationToBeReviewedList().getValueCodeAsUUID(),
+                applicationsBundlesToBeReviewed).orElseThrow();
+        }
     }
 
     public List<Element<AdditionalApplicationsBundle>> markSelectedBundleAsReviewed(CaseData caseData) {
-        ConfirmApplicationReviewedEventData eventData = caseData.getConfirmApplicationReviewedEventData();
         List<Element<AdditionalApplicationsBundle>> additionalApplications = caseData.getAdditionalApplicationsBundle();
 
-        Element<AdditionalApplicationsBundle> selectedApplication =
-            findElement(eventData.getConfirmApplicationReviewedList().getValueCodeAsUUID(),
-                additionalApplications).orElseThrow();
+        Element<AdditionalApplicationsBundle> selectedApplication = getSelectedApplicationsToBeReviewed(caseData);
 
         return additionalApplications.stream().map(existingBundle -> {
                 if (selectedApplication.getId().equals(existingBundle.getId())) {

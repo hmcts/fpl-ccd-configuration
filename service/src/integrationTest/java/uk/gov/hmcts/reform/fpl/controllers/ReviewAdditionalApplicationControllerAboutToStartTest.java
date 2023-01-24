@@ -11,36 +11,43 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
-import uk.gov.hmcts.reform.fpl.service.additionalapplications.ConfirmApplicationReviewedService;
+import uk.gov.hmcts.reform.fpl.service.additionalapplications.ReviewAdditionalApplicationService;
 
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithRandomUUID;
 
-@WebMvcTest(ConfirmApplicationReviewedController.class)
+@WebMvcTest(ReviewAdditionalApplicationController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class ConfirmApplicationReviewedControllerAboutToStartTest extends AbstractCallbackTest {
+public class ReviewAdditionalApplicationControllerAboutToStartTest extends AbstractCallbackTest {
     @MockBean
-    private ConfirmApplicationReviewedService confirmApplicationReviewedService;
+    private ReviewAdditionalApplicationService reviewAdditionalApplicationService;
 
     private static final Map<String, Object> initFieldMap = Map.of(
         "hasApplicationToBeReviewed", YesNo.YES,
-        "confirmApplicationReviewedList",
-        asDynamicList(wrapElementsWithRandomUUID(AdditionalApplicationsBundle.builder()
+        "onlyOneApplicationToBeReviewed", NO,
+        "additionalApplicationToBeReviewedList",
+        asDynamicList(wrapElementsWithRandomUUID(
+            AdditionalApplicationsBundle.builder()
                 .c2DocumentBundle(C2DocumentBundle.builder().uploadedDateTime("1 January 2021, 12:00pm").build())
-                .build()), AdditionalApplicationsBundle::toLabel));
+                .build(),
+            AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(C2DocumentBundle.builder().uploadedDateTime("1 January 2021, 3:00pm").build())
+                .build()
+        ), AdditionalApplicationsBundle::toLabel));
 
-    ConfirmApplicationReviewedControllerAboutToStartTest() {
-        super("confirm-additional-application-reviewed");
+    ReviewAdditionalApplicationControllerAboutToStartTest() {
+        super("review-additional-application");
     }
 
     @BeforeEach
     void initTest() {
-        when(confirmApplicationReviewedService.initEventField(any())).thenReturn(initFieldMap);
+        when(reviewAdditionalApplicationService.initEventField(any())).thenReturn(initFieldMap);
     }
 
     @Test
@@ -51,8 +58,10 @@ public class ConfirmApplicationReviewedControllerAboutToStartTest extends Abstra
 
         assertThat(resultEventData.getHasApplicationToBeReviewed())
             .isEqualTo(initFieldMap.get("hasApplicationToBeReviewed"));
-        assertThat(resultEventData.getConfirmApplicationReviewedList())
-            .isEqualTo(initFieldMap.get("confirmApplicationReviewedList"));
+        assertThat(resultEventData.getOnlyOneApplicationToBeReviewed())
+            .isEqualTo(initFieldMap.get("onlyOneApplicationToBeReviewed"));
+        assertThat(resultEventData.getAdditionalApplicationToBeReviewedList())
+            .isEqualTo(initFieldMap.get("additionalApplicationToBeReviewedList"));
     }
 
 }

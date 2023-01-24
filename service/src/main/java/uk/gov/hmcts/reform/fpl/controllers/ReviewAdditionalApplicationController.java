@@ -12,23 +12,24 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.additionalapplications.ConfirmApplicationReviewedService;
+import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
+import uk.gov.hmcts.reform.fpl.service.additionalapplications.ReviewAdditionalApplicationService;
 
 @Api
 @Slf4j
 @RestController
-@RequestMapping("/callback/confirm-additional-application-reviewed")
+@RequestMapping("/callback/review-additional-application")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class ConfirmApplicationReviewedController extends CallbackController {
+public class ReviewAdditionalApplicationController extends CallbackController {
 
-    private final ConfirmApplicationReviewedService confirmApplicationReviewedService;
+    private final ReviewAdditionalApplicationService reviewAdditionalApplicationService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().putAll(confirmApplicationReviewedService.initEventField(caseData));
+        caseDetails.getData().putAll(reviewAdditionalApplicationService.initEventField(caseData));
 
         return respond(caseDetails);
     }
@@ -39,19 +40,21 @@ public class ConfirmApplicationReviewedController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().put("additionalApplicationsBundleToBeReviewed",
-            confirmApplicationReviewedService.getSelectedApplicationsToBeReviewed(caseData).getValue());
+            reviewAdditionalApplicationService.getSelectedApplicationsToBeReviewed(caseData).getValue());
 
         return respond(caseDetails);
     }
 
 
     @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse validateReplyMessage(@RequestBody CallbackRequest callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().put("additionalApplicationsBundle",
-            confirmApplicationReviewedService.markSelectedBundleAsReviewed(caseData));
+            reviewAdditionalApplicationService.markSelectedBundleAsReviewed(caseData));
+
+        ConfirmApplicationReviewedEventData.eventFields().forEach(caseDetails.getData()::remove);
 
         return respond(caseDetails);
     }
