@@ -458,7 +458,7 @@ class MigrateCaseServiceTest {
                 .build();
 
             assertThrows(AssertionError.class, () ->
-                underTest.verifyGatekeepingOrderUrgentHearingOrder(caseData, MIGRATION_ID, "test.pdf"));
+                underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID, "test.pdf"));
         }
 
         @Test
@@ -471,7 +471,7 @@ class MigrateCaseServiceTest {
                 .build();
 
             assertThrows(AssertionError.class, () ->
-                underTest.verifyGatekeepingOrderUrgentHearingOrder(caseData, MIGRATION_ID, "test.pdf"));
+                underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID, "test.pdf"));
         }
 
         @Test
@@ -483,7 +483,7 @@ class MigrateCaseServiceTest {
                 .build();
 
             assertDoesNotThrow(() ->
-                underTest.verifyGatekeepingOrderUrgentHearingOrder(caseData, MIGRATION_ID, "test.pdf"));
+                underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID, "test.pdf"));
         }
     }
 }

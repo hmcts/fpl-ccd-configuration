@@ -209,19 +209,22 @@ public class MigrateCaseService {
         return Map.of("caseNotes", caseNoteService.removeCaseNote(caseNoteIdToRemove, caseData.getCaseNotes()));
     }
 
-    public void verifyGatekeepingOrderUrgentHearingOrder(CaseData caseData, String migrationId, String fileName) {
+    public void verifyGatekeepingOrderUrgentHearingOrderExist(CaseData caseData, String migrationId) {
         if (caseData.getUrgentHearingOrder() == null) {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, GateKeeping order - Urgent hearing order not found",
                 migrationId, caseData.getId()));
         }
+    }
 
-        if (isNotEmpty(fileName)) {
-            if (!fileName.equals(caseData.getUrgentHearingOrder().getOrder().getFilename())) {
-                throw new AssertionError(format(
-                    "Migration {id = %s, case reference = %s}, GateKeeping order - Urgent hearing order %s not found",
-                    migrationId, caseData.getId(), fileName));
-            }
+    public void verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(CaseData caseData, String migrationId,
+                                                                               String fileName) {
+        verifyGatekeepingOrderUrgentHearingOrderExist(caseData, migrationId);
+
+        if (!fileName.equals(caseData.getUrgentHearingOrder().getOrder().getFilename())) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, GateKeeping order - Urgent hearing order %s not found",
+                migrationId, caseData.getId(), fileName));
         }
     }
 }
