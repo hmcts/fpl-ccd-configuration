@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ApplicantType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
+import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.payment.FailedPBANotificationData;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FailedPBAPaymentContentProvider;
+import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,6 +41,7 @@ public class FailedPBAPaymentEventHandler {
     private final NotificationService notificationService;
     private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
     private final FailedPBAPaymentContentProvider notificationContent;
+    private final WorkAllocationTaskService workAllocationTaskService;
 
     @EventListener
     public void notifyApplicant(FailedPBAPaymentEvent event) {
@@ -153,5 +156,7 @@ public class FailedPBAPaymentEventHandler {
             notificationService.sendEmail(INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC, email, parameters,
                 caseData.getId());
         }
+
+        workAllocationTaskService.createWorkAllocationTask(caseData, WorkAllocationTaskType.FAILED_PAYMENT);
     }
 }
