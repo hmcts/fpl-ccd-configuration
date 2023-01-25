@@ -32,6 +32,7 @@ public class CaseDataParent {
     protected final List<Element<Direction>> otherPartiesDirectionsCustom;
     protected final List<Element<Direction>> respondentDirections;
     protected final List<Element<Direction>> respondentDirectionsCustom;
+    protected final List<Element<FailedPayment>> failedPayments;
 
     @NotNull(message = "Add the grounds for the application", groups = SecureAccommodationGroup.class)
     @Valid

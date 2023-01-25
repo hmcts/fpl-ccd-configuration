@@ -1,0 +1,27 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "FailedPayment",
+    "ListElementCode": "orderApplicantType",
+    "FieldType": "Text",
+    "ElementLabel": "Applicant type",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "FailedPayment",
+    "ListElementCode": "orderApplicantName",
+    "FieldType": "Text",
+    "ElementLabel": "Applicant name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "FailedPayment",
+    "ListElementCode": "applicationTypes",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ApplicationTypes",
+    "ElementLabel": "Application types",
+    "SecurityClassification": "Public"
+  }
+]

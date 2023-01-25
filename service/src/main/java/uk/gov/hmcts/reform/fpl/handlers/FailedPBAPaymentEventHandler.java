@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -11,18 +12,23 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.FailedPayment;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.payment.FailedPBANotificationData;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FailedPBAPaymentContentProvider;
 import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static java.util.Objects.isNull;
@@ -34,6 +40,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FA
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class FailedPBAPaymentEventHandler {
@@ -42,6 +49,7 @@ public class FailedPBAPaymentEventHandler {
     private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
     private final FailedPBAPaymentContentProvider notificationContent;
     private final WorkAllocationTaskService workAllocationTaskService;
+    private final CoreCaseDataService coreCaseDataService;
 
     @EventListener
     public void notifyApplicant(FailedPBAPaymentEvent event) {
@@ -161,12 +169,22 @@ public class FailedPBAPaymentEventHandler {
     @EventListener
     public void createWorkAllocationTask(FailedPBAPaymentEvent event) {
         CaseData caseData = event.getCaseData();
+        log.info("Creating dummy work allocation task case {}", caseData.getId());
         workAllocationTaskService.createWorkAllocationTask(caseData, WorkAllocationTaskType.FAILED_PAYMENT);
     }
 
     @EventListener
-    public void storeFailedPaymentToCaes(FailedPBAPaymentEvent event) {
+    public void setFailedPayments(FailedPBAPaymentEvent event) {
         CaseData caseData = event.getCaseData();
-
+        log.info("Setting failedPayments to caseData for case {}", caseData.getId());
+        List<Element<FailedPayment>> failedPayments = new ArrayList<>(caseData.getFailedPayments() == null
+            ? List.of() : caseData.getFailedPayments());
+        failedPayments.add(ElementUtils.element(
+            FailedPayment.builder()
+                .orderApplicantName(event.getApplicant().getName())
+                .orderApplicantType(event.getApplicant().getType().name())
+                .applicationTypes(event.getApplicationTypes()).build()));
+        coreCaseDataService.updateCase(caseData.getId(), Map.of("failedPayments", failedPayments));
+        log.info("Finished setting failedPayments to caseData for case {}", caseData.getId());
     }
 }

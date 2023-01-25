@@ -1,0 +1,98 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationTypes",
+    "ListElementCode": "C2_APPLICATION",
+    "ListElement": "C2"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationTypes",
+    "ListElementCode": "C110A_APPLICATION",
+    "ListElement": "C110a"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationTypes",
+    "ListElementCode": "C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION",
+    "ListElement": "C1 - Change surname or remove from jurisdiction"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationTypes",
+    "ListElementCode": "C1_APPOINTMENT_OF_A_GUARDIAN",
+    "ListElement": "C1 - Appointment of a guardian"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationTypes",
+    "ListElementCode": "C1_TERMINATION_OF_APPOINTMENT_OF_A_GUARDIAN",
+    "ListElement": "C1 - Termination of appointment of a guardian"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationTypes",
+    "ListElementCode": "C1_PARENTAL_RESPONSIBILITY",
+    "ListElement": "C1 - Parental responsibility"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationTypes",
+    "ListElementCode": "C1_WITH_SUPPLEMENT",
+    "ListElement": "C1 - With supplement"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationTypes",
+    "ListElementCode": "C3_SEARCH_TAKE_CHARGE_AND_DELIVERY_OF_A_CHILD",
+    "ListElement": "C3 - Search, take charge and delivery of a child"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationTypes",
+    "ListElementCode": "C4_WHEREABOUTS_OF_A_MISSING_CHILD",
+    "ListElement": "C4 - Whereabouts of a missing child"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationTypes",
+    "ListElementCode": "C12_WARRANT_TO_ASSIST_PERSON",
+    "ListElement": "C12 - Warrant to assist person authorised by an emergency protection order"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationTypes",
+    "ListElementCode": "C17_EDUCATION_SUPERVISION_ORDER",
+    "ListElement": "C17 - Education supervision order (ESO)"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationTypes",
+    "ListElementCode": "C17A_EXTENSION_OF_ESO",
+    "ListElement": "C17a - Variation or extension of ESO"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationTypes",
+    "ListElementCode": "C19_WARRANT_TO_ASSISTANCE",
+    "ListElement": "C19 - Warrant of assistance"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationTypes",
+    "ListElementCode": "C63_DECLARATION_OF_PARENTAGE",
+    "ListElement": "C63 - Declaration of parentage"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationTypes",
+    "ListElementCode": "C100_CHILD_ARRANGEMENTS",
+    "ListElement": "C100 - Child arrangements, prohibited steps or specific issue"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationTypes",
+    "ListElementCode": "A50_PLACEMENT",
+    "ListElement": "A50 - Application for a Placement Order"
+  }
+]
