@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
@@ -50,7 +51,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1065", this::run1065,
         "DFPL-872rollback", this::run872Rollback,
         "DFPL-1029", this::run1029,
-        "DFPL-1103", this::run1103
+        "DFPL-1161", this::run1161,
+        "DFPL-1081", this::run1081
     );
 
     @PostMapping("/about-to-submit")
@@ -188,14 +190,22 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put("sendToCtsc", YesNo.YES.getValue());
     }
 
-    private void run1103(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1103";
-        var possibleCaseIds = List.of(1659951867520203L, 1649252759660329L, 1632998316920007L, 1643299954630843L);
+    private void run1161(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1161";
+        var possibleCaseIds = List.of(1660209462518487L);
 
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
         caseDetails.getData().remove("placements");
         caseDetails.getData().remove("placementsNonConfidential");
         caseDetails.getData().remove("placementsNonConfidentialNotices");
+    }
+
+    private void run1081(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1081";
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1643819301061903L, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removeHearingBooking(getCaseData(caseDetails),
+            migrationId, UUID.fromString("bbad9942-e682-4cb7-a05a-7963c3c96fd6")));
     }
 }
