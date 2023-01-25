@@ -156,7 +156,17 @@ public class FailedPBAPaymentEventHandler {
             notificationService.sendEmail(INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC, email, parameters,
                 caseData.getId());
         }
+    }
 
+    @EventListener
+    public void createWorkAllocationTask(FailedPBAPaymentEvent event) {
+        CaseData caseData = event.getCaseData();
         workAllocationTaskService.createWorkAllocationTask(caseData, WorkAllocationTaskType.FAILED_PAYMENT);
+    }
+
+    @EventListener
+    public void storeFailedPaymentToCaes(FailedPBAPaymentEvent event) {
+        CaseData caseData = event.getCaseData();
+
     }
 }
