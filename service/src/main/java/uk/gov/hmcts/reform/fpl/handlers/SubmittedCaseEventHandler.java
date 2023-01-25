@@ -161,8 +161,7 @@ public class SubmittedCaseEventHandler {
             return;
         }
 
-        // XXX
-        if (false && YES == getPaymentDecision(caseData)) {
+        if (YES == getPaymentDecision(caseData)) {
             makePaymentForCaseOrders(caseData);
         } else {
             handlePaymentNotTaken(caseData);
