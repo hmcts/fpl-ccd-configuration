@@ -209,7 +209,7 @@ public class MigrateCaseService {
     }
 
     public void verifyGatekeepingOrderUrgentHearingOrderExist(CaseData caseData, String migrationId) {
-        if (caseData.getUrgentHearingOrder() == null) {
+        if (caseData.getUrgentHearingOrder() == null || caseData.getUrgentHearingOrder().getOrder() == null) {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, GateKeeping order - Urgent hearing order not found",
                 migrationId, caseData.getId()));
