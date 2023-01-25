@@ -422,5 +422,24 @@ class MigrateCaseServiceTest {
                 .doesNotContainAnyElementsOf(List.of(hearingBookingToRemove));
 
         }
+
+        @Test
+        void shouldRemoveHearingBookingWithSingleHearing() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(hearingBookingToRemove, HearingBooking.builder().build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(bookings)
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeHearingBooking(caseData, MIGRATION_ID,
+                hearingBookingToRemove);
+
+            assertThat(updatedFields).extracting("hearingDetails").asList().hasSize(0);
+            assertThat(updatedFields).extracting("hearingDetails").asList()
+                .doesNotContainAnyElementsOf(List.of(hearingBookingToRemove));
+            assertThat(updatedFields).extracting("selectedHearingId").isNull();
+
+        }
     }
 }
