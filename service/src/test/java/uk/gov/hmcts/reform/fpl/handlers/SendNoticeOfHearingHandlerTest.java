@@ -62,7 +62,6 @@ import static uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -170,9 +169,10 @@ class SendNoticeOfHearingHandlerTest {
     }
 
     @Test
-    void shouldSendNotificationToCtscWhenOtherDoesNotHaveRepresentationAndAddressWhenNewHearingIsAdded() {
+    void shouldSendNotificationToLocalAuthorityWhenOtherDoesNotHaveRepresentationAndAddressWhenNewHearingIsAdded() {
         given(CASE_DATA.getId()).willReturn(CASE_ID);
-        given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_INBOX);
+        given(localAuthorityRecipients.getRecipients(RecipientsRequest.builder().caseData(CASE_DATA).build()))
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
         given(HEARING.getOthers()).willReturn(wrapElements(OTHER));
         given(OTHER.isRepresented()).willReturn(false);
         given(OTHER.hasAddressAdded()).willReturn(false);
@@ -180,43 +180,51 @@ class SendNoticeOfHearingHandlerTest {
         given(noticeOfHearingNoOtherAddressEmailContentProvider.buildNewNoticeOfHearingNoOtherAddressNotification(
             CASE_DATA, HEARING, OTHER)).willReturn(NO_OTHER_ADDRESS_NOTIFY_DATA);
 
-        underTest.notifyCtsc(new SendNoticeOfHearing(CASE_DATA, HEARING));
+        underTest.notifyLocalAuthorityNoOtherAddress(new SendNoticeOfHearing(CASE_DATA, HEARING));
 
         verify(notificationService).sendEmail(
-            NOTICE_OF_NEW_HEARING_NO_OTHER_ADDRESS, CTSC_INBOX, NO_OTHER_ADDRESS_NOTIFY_DATA, CASE_ID);
+            NOTICE_OF_NEW_HEARING_NO_OTHER_ADDRESS,
+            Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            NO_OTHER_ADDRESS_NOTIFY_DATA,
+            CASE_ID);
 
     }
 
     @ParameterizedTest
     @NullAndEmptySource
-    void shouldNotSendNotificationToCtscWhenOtherDoesNotHaveAddressAndNameIsNullOrEmpty(String otherName) {
+    void shouldNotSendNotificationToLocalAuthorityWhenOtherDoesNotHaveAddressAndNameIsNullOrEmpty(String otherName) {
         given(CASE_DATA.getId()).willReturn(CASE_ID);
-        given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_INBOX);
+        given(localAuthorityRecipients.getRecipients(RecipientsRequest.builder().caseData(CASE_DATA).build()))
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
         given(HEARING.getOthers()).willReturn(wrapElements(OTHER));
         given(OTHER.isRepresented()).willReturn(false);
         given(OTHER.hasAddressAdded()).willReturn(false);
         given(OTHER.getName()).willReturn(otherName);
 
-        underTest.notifyCtsc(new SendNoticeOfHearing(CASE_DATA, HEARING));
+        underTest.notifyLocalAuthorityNoOtherAddress(new SendNoticeOfHearing(CASE_DATA, HEARING));
 
         verifyNoInteractions(notificationService);
     }
 
     @ParameterizedTest
     @MethodSource("shouldNotSendOtherSource")
-    void shouldNotSendNotificationToCtscWhenOtherHasRepresentationOrAddressWhenNewHearingIsAdded(
+    void shouldNotSendNotificationToLocalAuthorityWhenOtherHasRepresentationOrAddressWhenNewHearingIsAdded(
         boolean isRepresented, boolean hasAddressAdded) {
 
         given(CASE_DATA.getId()).willReturn(CASE_ID);
-        given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_INBOX);
+        given(localAuthorityRecipients.getRecipients(RecipientsRequest.builder().caseData(CASE_DATA).build()))
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
         given(HEARING.getOthers()).willReturn(wrapElements(OTHER));
         given(OTHER.isRepresented()).willReturn(isRepresented);
         given(OTHER.hasAddressAdded()).willReturn(hasAddressAdded);
 
-        underTest.notifyCtsc(new SendNoticeOfHearing(CASE_DATA, HEARING));
+        underTest.notifyLocalAuthorityNoOtherAddress(new SendNoticeOfHearing(CASE_DATA, HEARING));
 
         verify(notificationService, never()).sendEmail(
-            NOTICE_OF_NEW_HEARING_NO_OTHER_ADDRESS, CTSC_INBOX, NO_OTHER_ADDRESS_NOTIFY_DATA, CASE_ID);
+            NOTICE_OF_NEW_HEARING_NO_OTHER_ADDRESS,
+            Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            NO_OTHER_ADDRESS_NOTIFY_DATA,
+            CASE_ID);
 
     }
 

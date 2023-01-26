@@ -154,22 +154,24 @@ public class SendNoticeOfHearingHandler {
 
     @Async
     @EventListener
-    public void notifyCtsc(final SendNoticeOfHearing event) {
-        final CaseData caseData = event.getCaseData();
-        final HearingBooking hearingBooking = event.getSelectedHearing();
+    public void notifyLocalAuthorityNoOtherAddress(final SendNoticeOfHearing sendNoticeOfHearing) {
 
-        String recipient = ctscEmailLookupConfiguration.getEmail();
+        final CaseData caseData = sendNoticeOfHearing.getCaseData();
+        final HearingBooking hearingBooking = sendNoticeOfHearing.getSelectedHearing();
+        final RecipientsRequest recipientsRequest = RecipientsRequest.builder().caseData(caseData).build();
 
-        List<Other> others = unwrapElements(hearingBooking.getOthers());
+        final Collection<String> recipients = localAuthorityRecipients.getRecipients(recipientsRequest);
+
+        final List<Other> others = unwrapElements(hearingBooking.getOthers());
 
         others.forEach(other -> {
             if (!other.isRepresented() && !other.hasAddressAdded() && isNotEmpty(other.getName())) {
-                NotifyData notifyData =
+                final NotifyData notifyData =
                     noticeOfHearingNoOtherAddressEmailContentProvider.buildNewNoticeOfHearingNoOtherAddressNotification(
-                        caseData, event.getSelectedHearing(), other);
+                        caseData, sendNoticeOfHearing.getSelectedHearing(), other);
 
                 notificationService.sendEmail(NOTICE_OF_NEW_HEARING_NO_OTHER_ADDRESS,
-                    recipient,
+                    recipients,
                     notifyData,
                     caseData.getId());
             }

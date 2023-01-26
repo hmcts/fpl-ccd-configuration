@@ -212,8 +212,8 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
     }
 
     @Test
-    void notifyCtsc() {
-        underTest.notifyCtsc(new SendNoticeOfHearing(CASE_DATA, HEARING));
+    void notifyLocalAuthorityNoOtherAddress() {
+        underTest.notifyLocalAuthorityNoOtherAddress(new SendNoticeOfHearing(CASE_DATA, HEARING));
         String caseName = "FAM_NUM, 1111-1111-1111-1111, case management, 12 December 2021";
 
         assertThat(response())
@@ -221,16 +221,17 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
             .hasBody(emailContent()
                 .line("Case name: " + caseName)
                 .line()
-                .line("A notice of hearing could not be sent to the following party because there's no address for "
-                    + "them:")
+                .line("A notice of hearing could not be sent to the following party because there is no address for "
+                    + "them on the digital system:")
                 .line()
                 .line("Party's name: " + OTHER_NAME)
                 .line()
                 .h1("Next steps")
-                .list("check case data for the party's email or phone details")
-                .list("ask the relevant court, local authority or legal representative if they have contact "
-                    + "information")
-                .list("tell the judge or magistrate the notice of hearing has not yet been sent to the party")
+                .list("If known, update the address for the party on the digital system so that they can be "
+                    + "notified of future hearings")
+                .list("Notify the party about their upcoming hearing")
+                .list("If you haven't been able to inform the party of the hearing, tell the judge or "
+                    + "magistrate")
                 .line()
                 .line("To view the application, sign in to:")
                 .line()
