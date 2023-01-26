@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static java.lang.String.format;
 import static io.jsonwebtoken.lang.Collections.isEmpty;
+import static java.lang.String.format;
 
 @Api
 @Slf4j
@@ -75,11 +75,6 @@ public class ReviewFailedPaymentController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-//        CaseData caseData = getCaseData(callbackRequest);
-//
-//        if (YES.equals(caseData.getShouldSendOrderReminder())) {
-//            publishEvent(new SendOrderReminderEvent(caseData));
-//        }
     }
 
 }
