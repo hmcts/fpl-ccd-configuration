@@ -182,7 +182,7 @@ public class UploadAdditionalApplicationsService {
             .document(getDocumentToStore(bundle.getDocument()))
             .supplementsBundle(!isEmpty(bundle.getSupplementsBundle())
                 ? getSupplementsBundleConverted(bundle.getSupplementsBundle())
-                : null)
+                 : List.of())
             .build();
     }
 
@@ -191,7 +191,7 @@ public class UploadAdditionalApplicationsService {
             .document(getDocumentToStore(bundle.getDocument()))
             .supplementsBundle(!isEmpty(bundle.getSupplementsBundle())
                 ? getSupplementsBundleConverted(bundle.getSupplementsBundle())
-                : null)
+                : List.of())
             .build();
     }
 
