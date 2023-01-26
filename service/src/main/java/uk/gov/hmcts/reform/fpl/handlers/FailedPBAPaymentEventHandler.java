@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FailedPBAPaymentContentProvider;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
@@ -39,6 +40,8 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FA
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_APPLICANT;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
 @Slf4j
 @Component
@@ -50,6 +53,8 @@ public class FailedPBAPaymentEventHandler {
     private final FailedPBAPaymentContentProvider notificationContent;
     private final WorkAllocationTaskService workAllocationTaskService;
     private final CoreCaseDataService coreCaseDataService;
+    @Autowired
+    private Time time;
 
     @EventListener
     public void notifyApplicant(FailedPBAPaymentEvent event) {
@@ -181,6 +186,7 @@ public class FailedPBAPaymentEventHandler {
             ? List.of() : caseData.getFailedPayments());
         failedPayments.add(ElementUtils.element(
             FailedPayment.builder()
+                .paymentAt(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE))
                 .orderApplicantName(event.getApplicant().getName())
                 .orderApplicantType(event.getApplicant().getType().name())
                 .applicationTypes(event.getApplicationTypes()).build()));

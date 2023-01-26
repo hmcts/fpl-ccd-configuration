@@ -14,4 +14,5 @@ public class FailedPayment {
     private final List<ApplicationType> applicationTypes;
     private String orderApplicantType;
     private String orderApplicantName;
+    private String paymentAt;
 }

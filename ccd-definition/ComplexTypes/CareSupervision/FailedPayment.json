@@ -23,5 +23,13 @@
     "FieldTypeParameter": "ApplicationTypes",
     "ElementLabel": "Application types",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "FailedPayment",
+    "ListElementCode": "paymentAt",
+    "FieldType": "Text",
+    "ElementLabel": "Date and time paid",
+    "SecurityClassification": "Public"
   }
 ]
