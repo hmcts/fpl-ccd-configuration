@@ -81,7 +81,10 @@ class ReviewAdditionalApplicationServiceTest {
 
         Map<String, Object> resultMap = reviewAdditionalApplicationService.initEventField(caseData);
 
-        Map<String, Object> expectedMap = Map.of("hasApplicationToBeReviewed", NO);
+        Map<String, Object> expectedMap = Map.of(
+            "hasApplicationToBeReviewed", NO,
+            "onlyOneApplicationToBeReviewed", NO
+            );
 
         assertThat(resultMap).isEqualTo(expectedMap);
     }
