@@ -1,14 +1,11 @@
 package uk.gov.hmcts.reform.fpl.model.event;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
-import uk.gov.hmcts.reform.fpl.enums.MessageJudgeOptions;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
-
-import static uk.gov.hmcts.reform.fpl.enums.MessageJudgeOptions.REPLY;
 
 @Value
 @Builder
@@ -19,20 +16,15 @@ public class MessageJudgeEventData {
     String judicialMessageNote;
     JudicialMessageMetaData judicialMessageMetaData;
     String relatedDocumentsLabel;
-    MessageJudgeOptions messageJudgeOption;
     JudicialMessage judicialMessageReply;
+    YesNo isJudiciary;
 
     public static String[] transientFields() {
         return new String[]{
             "hasAdditionalApplications", "isMessageRegardingAdditionalApplications",
             "additionalApplicationsDynamicList", "relatedDocumentsLabel",
             "nextHearingLabel", "judicialMessageMetaData", "judicialMessageNote", "judicialMessageDynamicList",
-            "messageJudgeOption", "judicialMessageReply", "hasJudicialMessages"
+            "judicialMessageReply", "replyToMessageJudgeNextHearingLabel", "isJudiciary"
         };
-    }
-
-    @JsonIgnore
-    public boolean isReplyingToAMessage() {
-        return REPLY.equals(messageJudgeOption);
     }
 }
