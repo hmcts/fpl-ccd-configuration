@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
@@ -49,9 +50,15 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
         + "to consider that risk assessment and give such directions as the Court thinks "
         + "necessary.";
 
-    public static final String NOTICE_MESSAGE = "Any person with parental responsibility for the child may obtain "
-        + "advice on what can be done to prevent the issue of a passport to the child. They should write to "
-        + "Glasgow CPST, HMPO Glasgow, 96 Milton Street, Glasgow, G4 0BT or email Glasgowcaveats@hmpo.gov.uk.";
+    public static String NOTICE_MESSAGE;
+
+    @Autowired
+    public void setNoticeMessage(@Value("${contacts.passport_office.email}") String email,
+                                 @Value("${contacts.passport_office.address}") String address) {
+        C43ChildArrangementOrderDocumentParameterGenerator.NOTICE_MESSAGE = "Any person with "
+            + "parental responsibility for a child may obtain advice on what can be done to prevent "
+            + "the issue of a passport to the child. They should write to " + address + " or email " + email + ".";
+    }
 
     private final LocalAuthorityNameLookupConfiguration laNameLookup;
     private final C43ChildArrangementOrderTitleGenerator c43TitleGenerator;
