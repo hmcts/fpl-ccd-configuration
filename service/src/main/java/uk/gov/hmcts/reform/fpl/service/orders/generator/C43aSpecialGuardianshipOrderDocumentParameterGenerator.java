@@ -32,7 +32,7 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
 
     private static String paragraphBreak = "\n \n";
     private static String ORDER_HEADER = "Warning \n";
-    protected static String ORDER_MESSAGE = "Where a Special Guardianship Order is in force no person may "
+    protected static final String ORDER_MESSAGE = "Where a Special Guardianship Order is in force no person may "
         + "cause the child to be known by a new surname or remove the "
         + "child from the United Kingdom without either the written consent"
         + " of every person who has parental responsibility for the child or "
@@ -48,7 +48,7 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
     protected static String NOTICE_MESSAGE;
 
     @Autowired
-    public void setNoticeMessage(@Value("${contacts.passport_office.email}") String email,
+    protected void setNoticeMessage(@Value("${contacts.passport_office.email}") String email,
                                  @Value("${contacts.passport_office.address}") String address) {
         C43aSpecialGuardianshipOrderDocumentParameterGenerator.NOTICE_MESSAGE = "Any person with "
             + "parental responsibility for a child may obtain advice on what can be done to prevent "

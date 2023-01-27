@@ -50,10 +50,10 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
         + "to consider that risk assessment and give such directions as the Court thinks "
         + "necessary.";
 
-    public static String NOTICE_MESSAGE;
+    protected static String NOTICE_MESSAGE;
 
     @Autowired
-    public void setNoticeMessage(@Value("${contacts.passport_office.email}") String email,
+    protected void setNoticeMessage(@Value("${contacts.passport_office.email}") String email,
                                  @Value("${contacts.passport_office.address}") String address) {
         C43ChildArrangementOrderDocumentParameterGenerator.NOTICE_MESSAGE = "Any person with "
             + "parental responsibility for a child may obtain advice on what can be done to prevent "
