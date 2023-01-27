@@ -8,3 +8,8 @@ test-conf:
       name: james@swansea.gov.uk
     admin:
       name: hmcts-admin@example.com
+
+contacts:
+  passport_office:
+    address: 'passport office, some address, somewhere'
+    email: 'passport-office@example.com'
