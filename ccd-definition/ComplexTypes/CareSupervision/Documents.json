@@ -16,7 +16,8 @@
     "ElementLabel": "Document name",
     "HintText": "Use a meaningful name. For example, medical report",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "documentType=\"OTHER\""
+    "FieldShowCondition": "documentType=\"OTHER\"",
+    "RegularExpression": "^(?!.*<[^>\\d]+>*).*"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -26,7 +27,8 @@
     "ElementLabel": "Included in SWET",
     "HintText": "Use a meaningful name. For example, Genogram",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "documentType=\"SWET\""
+    "FieldShowCondition": "documentType=\"SWET\"",
+    "RegularExpression": "^(?!.*<[^>\\d]+>*).*"
   },
   {
     "LiveFrom": "01/01/2017",
