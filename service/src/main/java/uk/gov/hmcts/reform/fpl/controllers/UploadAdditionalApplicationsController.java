@@ -250,6 +250,9 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             "additionalApplicationsBundle", additionalApplicationsBundle
         );
 
+        caseDetails.getData().putAll(updates);
+        caseData = getCaseData(caseDetails);
+
         coreCaseDataService.triggerEvent(caseData.getId(),
             "internal-change-upload-add-apps",
             updates);
