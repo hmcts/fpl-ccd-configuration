@@ -18,10 +18,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.payment.FailedPBANotificationData;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FailedPBAPaymentContentProvider;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 
 import java.util.Collection;
@@ -46,9 +44,6 @@ public class FailedPBAPaymentEventHandler {
     private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
     private final FailedPBAPaymentContentProvider notificationContent;
     private final WorkAllocationTaskService workAllocationTaskService;
-    private final CoreCaseDataService coreCaseDataService;
-    @Autowired
-    private Time time;
 
     @EventListener
     public void notifyApplicant(FailedPBAPaymentEvent event) {
