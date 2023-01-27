@@ -163,7 +163,7 @@ public class FailedPBAPaymentEventHandler {
     @EventListener
     public void createWorkAllocationTask(FailedPBAPaymentEvent event) {
         CaseData caseData = event.getCaseData();
-        log.info("Creating dummy work allocation task case {}", caseData.getId());
+        log.info("Creating FAILED_PAYMENT work allocation task for case: {}", caseData.getId());
         workAllocationTaskService.createWorkAllocationTask(caseData, WorkAllocationTaskType.FAILED_PAYMENT);
     }
 }
