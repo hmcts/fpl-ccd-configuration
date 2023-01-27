@@ -1654,6 +1654,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "isJudiciary",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "judicialMessageMetaData",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRUD"
@@ -1669,6 +1676,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "judicialMessageReply",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "noJudicialMessageLabel",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRUD"
   },
@@ -1808,9 +1822,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "messageJudgeOption",
+    "CaseFieldID": "replyToMessageJudgeOrLegalAdviserLink",
     "UserRole": "caseworker-publiclaw-judiciary",
-    "CRUD": "CRUD"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1865,6 +1879,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "nextHearingLabel",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "replyToMessageJudgeNextHearingLabel",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRD"
   },
@@ -4364,6 +4385,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "manageOrdersParentageAction",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "latestRoleSent",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRU"
   },
