@@ -19,9 +19,11 @@ import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -441,6 +443,51 @@ class MigrateCaseServiceTest {
                 .doesNotContainAnyElementsOf(List.of(hearingBookingToRemove));
             assertThat(updatedFields).extracting("selectedHearingId").isNull();
 
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveGatekeepingOrderUrgentHearingOrder {
+
+        private final long caseId = 1L;
+
+        @Test
+        void shouldThrowAssertionIfOrderNotFound() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
+                    "test.pdf"));
+        }
+
+        @Test
+        void shouldThrowAssertionIfOrderFileNameNotMatch() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .urgentHearingOrder(UrgentHearingOrder.builder()
+                    .order(DocumentReference.builder().filename("test").build())
+                    .build())
+                .build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
+                    "test.pdf"));
+        }
+
+        @Test
+        void shouldNotThrowIfUrgentHearingOrderFound() {
+            CaseData caseData = CaseData.builder()
+                .urgentHearingOrder(UrgentHearingOrder.builder()
+                    .order(DocumentReference.builder().filename("test.pdf").build())
+                    .build())
+                .build();
+
+            assertDoesNotThrow(() ->
+                underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
+                    "test.pdf"));
         }
     }
 
