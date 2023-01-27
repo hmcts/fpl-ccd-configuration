@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
@@ -206,6 +207,42 @@ public class MigrateCaseService {
         }
 
         return Map.of("caseNotes", caseNoteService.removeCaseNote(caseNoteIdToRemove, caseData.getCaseNotes()));
+    }
+
+    public void verifyGatekeepingOrderUrgentHearingOrderExist(CaseData caseData, String migrationId) {
+        if (caseData.getUrgentHearingOrder() == null || caseData.getUrgentHearingOrder().getOrder() == null) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, GateKeeping order - Urgent hearing order not found",
+                migrationId, caseData.getId()));
+        }
+    }
+
+    public void verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(CaseData caseData, String migrationId,
+                                                                               String fileName) {
+        verifyGatekeepingOrderUrgentHearingOrderExist(caseData, migrationId);
+
+        if (!fileName.equals(caseData.getUrgentHearingOrder().getOrder().getFilename())) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, GateKeeping order - Urgent hearing order %s not found",
+                migrationId, caseData.getId(), fileName));
+        }
+    }
+
+    public Map<String, Object> removeApplicationDocument(CaseData caseData,
+                                                                 String migrationId,
+                                                                 UUID expectedApplicationDocumentId) {
+        Long caseId = caseData.getId();
+        List<Element<ApplicationDocument>> applicationDocuments =
+            caseData.getApplicationDocuments().stream()
+                .filter(el -> !el.getId().equals(expectedApplicationDocumentId))
+                .collect(toList());
+
+        if (applicationDocuments.size() != caseData.getApplicationDocuments().size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, application document",
+                migrationId, caseId));
+        }
+        return Map.of("applicationDocuments", applicationDocuments);
     }
 
 }

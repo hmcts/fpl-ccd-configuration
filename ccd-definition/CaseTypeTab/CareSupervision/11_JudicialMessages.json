@@ -26,8 +26,19 @@
     "TabID": "JudicialMessagesTab",
     "TabLabel": "Judicial messages",
     "TabDisplayOrder": 11,
-    "CaseFieldID": "judicialMessages",
+    "CaseFieldID": "replyToMessageJudgeOrLegalAdviserLink",
     "TabFieldDisplayOrder": 3,
+    "FieldShowCondition": "judicialMessages!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "JudicialMessagesTab",
+    "TabLabel": "Judicial messages",
+    "TabDisplayOrder": 11,
+    "CaseFieldID": "judicialMessages",
+    "TabFieldDisplayOrder": 4,
     "FieldShowCondition": "judicialMessages!=\"\""
   },
   {
@@ -38,7 +49,7 @@
     "TabLabel": "Judicial messages",
     "TabDisplayOrder": 13,
     "CaseFieldID": "closedJudicialMessagesTabHeading",
-    "TabFieldDisplayOrder": 4,
+    "TabFieldDisplayOrder": 5,
     "FieldShowCondition": "closedJudicialMessages!=\"\""
   },
   {
@@ -49,6 +60,6 @@
     "TabLabel": "Closed messages",
     "TabDisplayOrder": 13,
     "CaseFieldID": "closedJudicialMessages",
-    "TabFieldDisplayOrder": 5
+    "TabFieldDisplayOrder": 6
   }
 ]
