@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForChildAssessmentOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForContactWithChild;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
+import uk.gov.hmcts.reform.fpl.model.GroundsForEducationSupervisionOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForRefuseContactWithChild;
 import uk.gov.hmcts.reform.fpl.model.GroundsForSecureAccommodationOrder;
 import uk.gov.hmcts.reform.fpl.model.Orders;
@@ -268,6 +269,36 @@ class GroundsCheckerTest {
             "Please state whether you had care of the child(ren) through an order which was in force "
                 + "immediately before the care order was made (Section 34(1)(d) Children Act 1989)",
             "Please provide reasons for application");
+        assertThat(isCompleted).isFalse();
+    }
+
+    @Test
+    void shouldReturnEmptyErrorsWhenGroundsProvidedForEducationSupervisionOrder() {
+        final CaseData caseData = CaseData.builder()
+            .orders(Orders.builder().orderType(List.of(OrderType.EDUCATION_SUPERVISION__ORDER)).build())
+            .groundsForEducationSupervisionOrder(GroundsForEducationSupervisionOrder.builder()
+                .groundDetails("ground details").build())
+            .build();
+
+        final List<String> errors = groundsChecker.validate(caseData);
+        final boolean isCompleted = groundsChecker.isCompleted(caseData);
+
+        assertThat(errors).isEmpty();
+        assertThat(isCompleted).isTrue();
+    }
+
+    @Test
+    void shouldReturnErrorWhenEducationSupervisionOrderRequestedButNoGroundsProvided() {
+        final CaseData caseData = CaseData.builder()
+            .orders(Orders.builder()
+                .orderType(List.of(OrderType.EDUCATION_SUPERVISION__ORDER))
+                .build())
+            .build();
+
+        final List<String> errors = groundsChecker.validate(caseData);
+        final boolean isCompleted = groundsChecker.isCompleted(caseData);
+
+        assertThat(errors).containsExactlyInAnyOrder("Add the grounds for the application");
         assertThat(isCompleted).isFalse();
     }
 

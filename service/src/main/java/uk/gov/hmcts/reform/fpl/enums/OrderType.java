@@ -7,7 +7,7 @@ public enum OrderType {
     INTERIM_CARE_ORDER("Interim care order", "Gorchymyn Gofal Dros Dro"),
     SUPERVISION_ORDER("Supervision order", "Gorchymyn Goruchwylio"),
     INTERIM_SUPERVISION_ORDER("Interim supervision order", "Gorchymyn Goruchwylio Dros Dro"),
-    EDUCATION_SUPERVISION_ORDER("Education supervision order", "Gorchymyn goruchwylio addysg"),
+    EDUCATION_SUPERVISION__ORDER("Education supervision order", "Gorchymyn goruchwylio addysg"),
     EMERGENCY_PROTECTION_ORDER("Emergency protection order", "Gorchymyn Diogelu Brys"),
     OTHER("Variation or discharge of care or supervision order",
         "Amrywio neu ddiddymu gorchymyn gofal neu oruchwyliaeth"),
