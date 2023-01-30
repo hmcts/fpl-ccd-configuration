@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -18,9 +19,11 @@ import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -421,6 +424,126 @@ class MigrateCaseServiceTest {
             assertThat(updatedFields).extracting("hearingDetails").asList()
                 .doesNotContainAnyElementsOf(List.of(hearingBookingToRemove));
 
+        }
+
+        @Test
+        void shouldRemoveHearingBookingWithSingleHearing() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(hearingBookingToRemove, HearingBooking.builder().build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(bookings)
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeHearingBooking(caseData, MIGRATION_ID,
+                hearingBookingToRemove);
+
+            assertThat(updatedFields).extracting("hearingDetails").asList().hasSize(0);
+            assertThat(updatedFields).extracting("hearingDetails").asList()
+                .doesNotContainAnyElementsOf(List.of(hearingBookingToRemove));
+            assertThat(updatedFields).extracting("selectedHearingId").isNull();
+
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveGatekeepingOrderUrgentHearingOrder {
+
+        private final long caseId = 1L;
+
+        @Test
+        void shouldThrowAssertionIfOrderNotFound() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
+                    "test.pdf"));
+        }
+
+        @Test
+        void shouldThrowAssertionIfOrderFileNameNotMatch() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .urgentHearingOrder(UrgentHearingOrder.builder()
+                    .order(DocumentReference.builder().filename("test").build())
+                    .build())
+                .build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
+                    "test.pdf"));
+        }
+
+        @Test
+        void shouldNotThrowIfUrgentHearingOrderFound() {
+            CaseData caseData = CaseData.builder()
+                .urgentHearingOrder(UrgentHearingOrder.builder()
+                    .order(DocumentReference.builder().filename("test.pdf").build())
+                    .build())
+                .build();
+
+            assertDoesNotThrow(() ->
+                underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
+                    "test.pdf"));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveApplicationDocument {
+
+        private final UUID applicationDocumentIdToRemove = UUID.randomUUID();
+
+        @Test
+        void shouldThrowExceptionWhenApplicationDocumentNotPresent() {
+            UUID otherApplicationDocumentId1 = UUID.randomUUID();
+            UUID otherApplicationDocumentId2 = UUID.randomUUID();
+            CaseData caseData = CaseData.builder()
+                .applicationDocuments(List.of(
+                    element(otherApplicationDocumentId1, ApplicationDocument.builder().documentName("1").build()),
+                    element(otherApplicationDocumentId2, ApplicationDocument.builder().documentName("2").build())
+                ))
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest.removeApplicationDocument(caseData, MIGRATION_ID,
+                applicationDocumentIdToRemove));
+        }
+
+        @Test
+        void shouldRemoveApplicationDocument() {
+            UUID otherApplicationDocumentId1 = UUID.randomUUID();
+            List<Element<ApplicationDocument>> applicationDocuments = new ArrayList<>();
+            applicationDocuments.add(element(otherApplicationDocumentId1, ApplicationDocument.builder().build()));
+            applicationDocuments.add(element(applicationDocumentIdToRemove, ApplicationDocument.builder().build()));
+
+            CaseData caseData = CaseData.builder()
+                .applicationDocuments(applicationDocuments)
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeApplicationDocument(caseData, MIGRATION_ID,
+                applicationDocumentIdToRemove);
+
+            assertThat(updatedFields).extracting("applicationDocuments").asList().hasSize(1);
+            assertThat(updatedFields).extracting("applicationDocuments").asList()
+                .doesNotContainAnyElementsOf(List.of(applicationDocumentIdToRemove));
+        }
+
+        @Test
+        void shouldRemoveSingleApplicationDocument() {
+            List<Element<ApplicationDocument>> applicationDocuments = new ArrayList<>();
+            applicationDocuments.add(element(applicationDocumentIdToRemove, ApplicationDocument.builder().build()));
+
+            CaseData caseData = CaseData.builder()
+                .applicationDocuments(applicationDocuments)
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeApplicationDocument(caseData, MIGRATION_ID,
+                applicationDocumentIdToRemove);
+
+            assertThat(updatedFields).extracting("applicationDocuments").asList().hasSize(0);
         }
     }
 }

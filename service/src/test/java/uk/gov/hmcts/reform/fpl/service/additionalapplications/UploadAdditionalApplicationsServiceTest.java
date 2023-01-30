@@ -457,6 +457,18 @@ class UploadAdditionalApplicationsServiceTest {
     class PostSubmitProcessing {
 
         @Test
+        void shouldSetSupplementsToEmptyListIfNonePresent() {
+            C2DocumentBundle bundle = C2DocumentBundle.builder()
+                .document(DOCUMENT)
+                .supplementsBundle(List.of())
+                .build();
+            C2DocumentBundle converted = underTest.convertC2Bundle(bundle);
+
+            assertThat(converted.getSupplementsBundle()).isEmpty();
+            assertThat(converted.getSupplementsBundle()).isNotNull();
+        }
+
+        @Test
         void shouldConvertC2SupplementToPdf() {
             C2DocumentBundle bundle = C2DocumentBundle.builder()
                 .document(DOCUMENT)

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -176,10 +178,18 @@ public class MigrateCaseService {
 
             // remove the hearing from the hearing list
             hearingDetails.removeAll(hearingBookingsToBeRemoved);
-            return Map.of(
-                "hearingDetails", hearingDetails,
-                "selectedHearingId", hearingDetails.get(hearingDetails.size() - 1).getId()
-            );
+            if (hearingDetails.size() > 0) {
+                return Map.of(
+                    "hearingDetails", hearingDetails,
+                    "selectedHearingId", hearingDetails.get(hearingDetails.size() - 1).getId()
+                );
+            } else {
+                Map<String, Object> ret =  new HashMap<String, Object>(Map.of(
+                    "hearingDetails", hearingDetails
+                ));
+                ret.put("selectedHearingId", null);
+                return ret;
+            }
         } else {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, hearing details not found",
@@ -197,6 +207,42 @@ public class MigrateCaseService {
         }
 
         return Map.of("caseNotes", caseNoteService.removeCaseNote(caseNoteIdToRemove, caseData.getCaseNotes()));
+    }
+
+    public void verifyGatekeepingOrderUrgentHearingOrderExist(CaseData caseData, String migrationId) {
+        if (caseData.getUrgentHearingOrder() == null || caseData.getUrgentHearingOrder().getOrder() == null) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, GateKeeping order - Urgent hearing order not found",
+                migrationId, caseData.getId()));
+        }
+    }
+
+    public void verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(CaseData caseData, String migrationId,
+                                                                               String fileName) {
+        verifyGatekeepingOrderUrgentHearingOrderExist(caseData, migrationId);
+
+        if (!fileName.equals(caseData.getUrgentHearingOrder().getOrder().getFilename())) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, GateKeeping order - Urgent hearing order %s not found",
+                migrationId, caseData.getId(), fileName));
+        }
+    }
+
+    public Map<String, Object> removeApplicationDocument(CaseData caseData,
+                                                                 String migrationId,
+                                                                 UUID expectedApplicationDocumentId) {
+        Long caseId = caseData.getId();
+        List<Element<ApplicationDocument>> applicationDocuments =
+            caseData.getApplicationDocuments().stream()
+                .filter(el -> !el.getId().equals(expectedApplicationDocumentId))
+                .collect(toList());
+
+        if (applicationDocuments.size() != caseData.getApplicationDocuments().size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, application document",
+                migrationId, caseId));
+        }
+        return Map.of("applicationDocuments", applicationDocuments);
     }
 
 }
