@@ -1,13 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.PassportOfficeConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.enums.ChildArrangementsOrderType;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
@@ -55,15 +54,11 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
 
     @Mock
     private C43ChildArrangementOrderTitleGenerator c43ChildArrangementOrderTitleGenerator;
+    @Mock
+    private PassportOfficeConfiguration passportOffice;
 
     @InjectMocks
     private C43ChildArrangementOrderDocumentParameterGenerator underTest;
-
-    @BeforeEach
-    public void setup() {
-        ReflectionTestUtils.setField(underTest, "passportOfficeEmail", PASSPORT_OFFICE_EMAIL);
-        ReflectionTestUtils.setField(underTest, "passportOfficeAddress", PASSPORT_OFFICE_ADDRESS);
-    }
 
     @Test
     void accept() {
@@ -80,6 +75,8 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
         when(c43ChildArrangementOrderTitleGenerator.getOrderTitle(any())).thenReturn(ORDER_TITLE);
+        when(passportOffice.getAddress()).thenReturn(PASSPORT_OFFICE_ADDRESS);
+        when(passportOffice.getEmail()).thenReturn(PASSPORT_OFFICE_EMAIL);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
 
@@ -99,6 +96,8 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
         when(c43ChildArrangementOrderTitleGenerator.getOrderTitle(any())).thenReturn(ORDER_TITLE);
+        when(passportOffice.getAddress()).thenReturn(PASSPORT_OFFICE_ADDRESS);
+        when(passportOffice.getEmail()).thenReturn(PASSPORT_OFFICE_EMAIL);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
 
@@ -115,6 +114,8 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
         when(c43ChildArrangementOrderTitleGenerator.getOrderTitle(any())).thenReturn(ORDER_TITLE);
+        when(passportOffice.getAddress()).thenReturn(PASSPORT_OFFICE_ADDRESS);
+        when(passportOffice.getEmail()).thenReturn(PASSPORT_OFFICE_EMAIL);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
 
@@ -131,6 +132,8 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
         when(c43ChildArrangementOrderTitleGenerator.getOrderTitle(any())).thenReturn(ORDER_TITLE);
+        when(passportOffice.getAddress()).thenReturn(PASSPORT_OFFICE_ADDRESS);
+        when(passportOffice.getEmail()).thenReturn(PASSPORT_OFFICE_EMAIL);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
 
@@ -147,6 +150,8 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
         when(c43ChildArrangementOrderTitleGenerator.getOrderTitle(any())).thenReturn(ORDER_TITLE);
+        when(passportOffice.getAddress()).thenReturn(PASSPORT_OFFICE_ADDRESS);
+        when(passportOffice.getEmail()).thenReturn(PASSPORT_OFFICE_EMAIL);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
 

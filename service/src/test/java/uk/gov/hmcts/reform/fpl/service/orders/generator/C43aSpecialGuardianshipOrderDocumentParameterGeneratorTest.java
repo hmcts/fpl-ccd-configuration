@@ -1,12 +1,11 @@
 package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.hmcts.reform.fpl.config.PassportOfficeConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -52,15 +51,11 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
 
     @Mock
     private OrderMessageGenerator orderMessageGenerator;
+    @Mock
+    private PassportOfficeConfiguration passportOffice;
 
     @InjectMocks
     private C43aSpecialGuardianshipOrderDocumentParameterGenerator underTest;
-
-    @BeforeEach
-    public void setup() {
-        ReflectionTestUtils.setField(underTest, "passportOfficeEmail", PASSPORT_OFFICE_EMAIL);
-        ReflectionTestUtils.setField(underTest, "passportOfficeAddress", PASSPORT_OFFICE_ADDRESS);
-    }
 
     @Test
     void shouldReturnCorrectOrder() {
@@ -81,6 +76,8 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData)).thenReturn("Remmy Respondent is");
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
+        when(passportOffice.getAddress()).thenReturn(PASSPORT_OFFICE_ADDRESS);
+        when(passportOffice.getEmail()).thenReturn(PASSPORT_OFFICE_EMAIL);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
@@ -99,6 +96,9 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData)).thenReturn("Remmy Respondent is");
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
+        when(passportOffice.getAddress()).thenReturn(PASSPORT_OFFICE_ADDRESS);
+        when(passportOffice.getEmail()).thenReturn(PASSPORT_OFFICE_EMAIL);
+
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
             .orderDetails(getOrderAppointmentMessageForChildWithSinglePersonResponsible())
@@ -116,6 +116,8 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData)).thenReturn("Remmy Respondent is");
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(null);
+        when(passportOffice.getAddress()).thenReturn(PASSPORT_OFFICE_ADDRESS);
+        when(passportOffice.getEmail()).thenReturn(PASSPORT_OFFICE_EMAIL);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(false)
@@ -134,6 +136,8 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData)).thenReturn("Remmy Respondent is");
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
+        when(passportOffice.getAddress()).thenReturn(PASSPORT_OFFICE_ADDRESS);
+        when(passportOffice.getEmail()).thenReturn(PASSPORT_OFFICE_EMAIL);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
@@ -152,6 +156,8 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData)).thenReturn("Remmy Respondent is");
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(null);
+        when(passportOffice.getAddress()).thenReturn(PASSPORT_OFFICE_ADDRESS);
+        when(passportOffice.getEmail()).thenReturn(PASSPORT_OFFICE_EMAIL);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(false)
@@ -171,6 +177,8 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData))
             .thenReturn("Remmy Respondent and Randle Responde are");
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
+        when(passportOffice.getAddress()).thenReturn(PASSPORT_OFFICE_ADDRESS);
+        when(passportOffice.getEmail()).thenReturn(PASSPORT_OFFICE_EMAIL);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
@@ -190,6 +198,8 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData))
             .thenReturn("Remmy Respondent and Randle Responde are");
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
+        when(passportOffice.getAddress()).thenReturn(PASSPORT_OFFICE_ADDRESS);
+        when(passportOffice.getEmail()).thenReturn(PASSPORT_OFFICE_EMAIL);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
@@ -209,6 +219,8 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         when(appointedGuardianFormatter.getGuardiansNamesForDocument(caseData))
             .thenReturn("P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17 are");
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
+        when(passportOffice.getAddress()).thenReturn(PASSPORT_OFFICE_ADDRESS);
+        when(passportOffice.getEmail()).thenReturn(PASSPORT_OFFICE_EMAIL);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters(true)
