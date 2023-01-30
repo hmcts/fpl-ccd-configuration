@@ -39,6 +39,8 @@ public class GroundsChecker extends PropertiesChecker {
             return super.validate(caseData, List.of("groundsForChildRecoveryOrder"));
         } else if (caseData.isContactWithChildInCareApplication()) {
             return super.validate(caseData, List.of("groundsForContactWithChild"));
+        } else if (caseData.isEducationSupervisionApplication()) {
+            return super.validate(caseData, List.of("groundsForEducationSupervisionOrder"));
         } else {
             return super.validate(caseData, List.of("grounds"));
         }
