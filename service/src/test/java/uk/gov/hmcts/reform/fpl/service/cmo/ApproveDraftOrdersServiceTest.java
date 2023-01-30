@@ -35,6 +35,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -119,6 +120,9 @@ class ApproveDraftOrdersServiceTest {
     @Mock
     private OthersService othersService;
 
+    @Mock
+    private WorkAllocationTaskService workAllocationTaskService;
+
     @InjectMocks
     private ApproveDraftOrdersService underTest;
 
@@ -132,7 +136,8 @@ class ApproveDraftOrdersServiceTest {
             draftOrdersBundleHearingSelector,
             blankOrderGenerator,
             hearingOrderGenerator,
-            othersService
+            othersService,
+            workAllocationTaskService
         );
     }
 
