@@ -54,6 +54,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-872rollback", this::run872Rollback,
         "DFPL-1029", this::run1029,
         "DFPL-1161", this::run1161,
+        "DFPL-1162", this::run1162,
         "DFPL-1156", this::run1156
     );
 
@@ -211,5 +212,14 @@ public class MigrateCaseController extends CallbackController {
             migrationId, UUID.fromString("1862581c-b628-4fc8-afb8-8576d3def0f1")));
         CaseDetails details = CaseDetails.builder().data(caseDetails.getData()).build();
         caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(details)));
+    }
+
+    private void run1162(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1162";
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1673628190034209L, migrationId);
+        migrateCaseService.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(getCaseData(caseDetails),
+            migrationId, "PO23C50013 HCC V Carter EPO with remote hearing directions march 2021.pdf");
+
+        caseDetails.getData().remove("urgentHearingOrder");
     }
 }
