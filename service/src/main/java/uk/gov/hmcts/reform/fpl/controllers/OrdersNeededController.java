@@ -35,6 +35,8 @@ public class OrdersNeededController extends CallbackController {
         OrderType.CONTACT_WITH_CHILD_IN_CARE,
         OrderType.OTHER,
         OrderType.CHILD_RECOVERY_ORDER,
+        OrderType.REFUSE_CONTACT_WITH_CHILD,
+        OrderType.SECURE_ACCOMMODATION_ORDER,
         OrderType.EDUCATION_SUPERVISION__ORDER);
     public static final List<String> STANDALONE_ORDER_TYPE_NAME = STANDALONE_ORDER_TYPE.stream().map(OrderType::name)
         .collect(Collectors.toList());
