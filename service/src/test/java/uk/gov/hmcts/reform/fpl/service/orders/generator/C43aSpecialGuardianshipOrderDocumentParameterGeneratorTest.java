@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -32,7 +34,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith({MockitoExtension.class})
 class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
-
+    private static final String PASSPORT_OFFICE_EMAIL = "passport-office@example.com";
+    private static final String PASSPORT_OFFICE_ADDRESS = "Passport Office, some address, somewhere";
     private static final Child CHILD = mock(Child.class);
     public static final LocalDateTime APPROVAL_DATE_TIME = LocalDateTime.of(2021, 4, 20, 10, 0, 0);
     public static final String EXPECTED_APPROVAL_DATE_TIME = "20 April 2021, 10:00am";
@@ -52,6 +55,12 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
 
     @InjectMocks
     private C43aSpecialGuardianshipOrderDocumentParameterGenerator underTest;
+
+    @BeforeEach
+    public void setup() {
+        ReflectionTestUtils.setField(underTest, "passportOfficeEmail", PASSPORT_OFFICE_EMAIL);
+        ReflectionTestUtils.setField(underTest, "passportOfficeAddress", PASSPORT_OFFICE_ADDRESS);
+    }
 
     @Test
     void shouldReturnCorrectOrder() {
@@ -235,6 +244,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
     private C43aSpecialGuardianshipOrderDocmosisParameters.C43aSpecialGuardianshipOrderDocmosisParametersBuilder<?, ?>
         expectedCommonParameters(Boolean isOrderByConsent) {
         String orderByConsentContent = getOrderByConsentContent(isOrderByConsent);
+        String noticeMessage = String.format(NOTICE_MESSAGE, PASSPORT_OFFICE_ADDRESS, PASSPORT_OFFICE_EMAIL);
 
         return C43aSpecialGuardianshipOrderDocmosisParameters.builder()
             .orderTitle(Order.C43A_SPECIAL_GUARDIANSHIP_ORDER.getTitle())
@@ -244,7 +254,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
             .orderHeader(ORDER_HEADER)
             .orderMessage(ORDER_MESSAGE)
             .noticeHeader(NOTICE_HEADER)
-            .noticeMessage(NOTICE_MESSAGE);
+            .noticeMessage(noticeMessage);
     }
 
     private String getOrderByConsentContent(Boolean isOrderByConsent) {

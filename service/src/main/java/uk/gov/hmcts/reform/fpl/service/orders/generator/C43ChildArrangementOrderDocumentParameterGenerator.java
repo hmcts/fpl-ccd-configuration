@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
@@ -22,6 +23,10 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class C43ChildArrangementOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
     private final OrderMessageGenerator orderMessageGenerator;
+    @Value("${contacts.passport_office.email}")
+    private String passportOfficeEmail;
+    @Value("${contacts.passport_office.address}")
+    private String passportOfficeAddress;
 
     public static final String WARNING_MESSAGE = "Where a Child Arrangements Order is in force and the arrangements "
         + "regulated by it consist of, or include, arrangements which relate to either or both (a) with whom the child "
@@ -49,9 +54,9 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
         + "to consider that risk assessment and give such directions as the Court thinks "
         + "necessary.";
 
-    public static final String NOTICE_MESSAGE = "Any person with parental responsibility for the child may obtain "
-        + "advice on what can be done to prevent the issue of a passport to the child. They should write to "
-        + "Glasgow CPST, HMPO Glasgow, 96 Milton Street, Glasgow, G4 0BT or email Glasgowcaveats@hmpo.gov.uk.";
+    protected static final String NOTICE_MESSAGE = "Any person with "
+        + "parental responsibility for a child may obtain advice on what can be done to prevent "
+        + "the issue of a passport to the child. They should write to %s or email %s.";
 
     private final LocalAuthorityNameLookupConfiguration laNameLookup;
     private final C43ChildArrangementOrderTitleGenerator c43TitleGenerator;
@@ -77,7 +82,7 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
             .furtherDirections(getOrderDirections(eventData))
             .localAuthorityName(localAuthorityName)
             .noticeHeader("Notice")
-            .noticeMessage(NOTICE_MESSAGE);
+            .noticeMessage(String.format(NOTICE_MESSAGE, passportOfficeAddress, passportOfficeEmail));
 
         if (isChildArrangementOrderSelected(eventData)) {
             addChildArrangementOrderWarningMessage(c43DocmosisParameters);
