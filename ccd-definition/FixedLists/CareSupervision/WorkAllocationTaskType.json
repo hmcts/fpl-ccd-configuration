@@ -19,5 +19,12 @@
     "ListElementCode": "CORRESPONDENCE_UPLOADED",
     "ListElement": "Correspondence Uploaded",
     "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "WorkAllocationTaskType",
+    "ListElementCode": "CMO_REVIEWED",
+    "ListElement": "Case Management Order reviewed",
+    "DisplayOrder": 3
   }
 ]
