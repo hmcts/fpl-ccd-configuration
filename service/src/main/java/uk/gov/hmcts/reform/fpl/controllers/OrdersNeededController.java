@@ -36,7 +36,8 @@ public class OrdersNeededController extends CallbackController {
         OrderType.OTHER,
         OrderType.CHILD_RECOVERY_ORDER,
         OrderType.REFUSE_CONTACT_WITH_CHILD,
-        OrderType.SECURE_ACCOMMODATION_ORDER);
+        OrderType.SECURE_ACCOMMODATION_ORDER,
+        OrderType.EDUCATION_SUPERVISION__ORDER);
     public static final List<String> STANDALONE_ORDER_TYPE_NAME = STANDALONE_ORDER_TYPE.stream().map(OrderType::name)
         .collect(Collectors.toList());
     private final HmctsCourtLookupConfiguration courtLookup;
@@ -98,6 +99,10 @@ public class OrdersNeededController extends CallbackController {
 
                 if (!orderTypes.contains(OrderType.CHILD_RECOVERY_ORDER.name())) {
                     data.remove("groundsForChildRecoveryOrder");
+                }
+
+                if (!orderTypes.contains(OrderType.EDUCATION_SUPERVISION__ORDER.name())) {
+                    data.remove("groundsForEducationSupervisionOrder");
                 }
             });
 
