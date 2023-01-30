@@ -1237,4 +1237,11 @@ public class CaseData extends CaseDataParent {
     @Builder.Default
     protected final ConfirmApplicationReviewedEventData confirmApplicationReviewedEventData =
         ConfirmApplicationReviewedEventData.builder().build();
+
+    @JsonIgnore
+    public boolean isEducationSupervisionApplication() {
+        return ofNullable(getOrders())
+            .map(Orders::isEducationSupervisionOrder)
+            .orElse(false);
+    }
 }
