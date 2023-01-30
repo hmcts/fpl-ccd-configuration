@@ -79,8 +79,7 @@
     "HintText": "Include the applicant's name and respondent's last name. For example, Endley Council v Smith/Tate/Jones",
     "FieldType": "Text",
     "SecurityClassification": "Public",
-    "Searchable": "Y",
-    "RegularExpression": "^(?!.*<[^>\\d]+>*).*"
+    "Searchable": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -579,8 +578,7 @@
     "Label": "FamilyMan case number",
     "FieldType": "Text",
     "SecurityClassification": "Public",
-    "Searchable": "Y",
-    "RegularExpression": "^[a-zA-Z0-9]*$"
+    "Searchable": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
