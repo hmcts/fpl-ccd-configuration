@@ -51,6 +51,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASHARED;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.RESPONDENT_STATEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.DOCUMENT_SUB_TYPE;
@@ -183,19 +184,17 @@ public class ManageDocumentsLAController extends CallbackController {
 
         List<String> errors = new ArrayList<>();
 
-        switch (caseData.getManageDocumentLA().getType()) {
-            case FURTHER_EVIDENCE_DOCUMENTS:
-                List<Element<ApplicationDocument>> swetDocs = caseData.getApplicationDocuments().stream()
-                    .filter(df -> !StringUtils.isEmpty(df.getValue().getIncludedInSWET()))
-                    .collect(Collectors.toList());
-                if (!swetDocs.isEmpty()) {
-                    if (swetDocs.stream()
-                        .filter(df -> !df.getValue().getIncludedInSWET().matches("^(?s)(?!.*<[^>\\d\\n]+>*).*"))
-                        .findAny().isPresent()) {
-                        errors.add("The data entered is not valid for your input in SWET\n");
-                    }
+        if (FURTHER_EVIDENCE_DOCUMENTS.equals(caseData.getManageDocumentLA().getType())) {
+            List<Element<ApplicationDocument>> swetDocs = caseData.getApplicationDocuments().stream()
+                .filter(df -> !StringUtils.isEmpty(df.getValue().getIncludedInSWET()))
+                .collect(Collectors.toList());
+            if (!swetDocs.isEmpty()) {
+                if (swetDocs.stream()
+                    .filter(df -> !df.getValue().getIncludedInSWET().matches("^(?s)(?!.*<[^>\\d\\n]+>*).*"))
+                    .findAny().isPresent()) {
+                    errors.add("The data entered is not valid for your input in SWET\n");
                 }
-                break;
+            }
         }
         return respond(caseDetails, errors);
     }
