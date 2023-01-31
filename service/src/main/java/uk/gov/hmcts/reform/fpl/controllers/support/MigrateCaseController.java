@@ -18,12 +18,14 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
+import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
@@ -41,16 +43,19 @@ public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
 
     private final MigrateCaseService migrateCaseService;
+    private final DocumentListService documentListService;
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-1012", this::run1012,
         "DFPL-1064", this::run1064,
         "DFPL-872", this::run872,
-        "DFPL-1065", this::run1065,
         "DFPL-872rollback", this::run872Rollback,
         "DFPL-1029", this::run1029,
-        "DFPL-1103", this::run1103
+        "DFPL-1161", this::run1161,
+        "DFPL-1162", this::run1162,
+        "DFPL-1156", this::run1156,
+        "DFPL-1072", this::run1072
     );
 
     @PostMapping("/about-to-submit")
@@ -188,14 +193,37 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put("sendToCtsc", YesNo.YES.getValue());
     }
 
-    private void run1103(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1103";
-        var possibleCaseIds = List.of(1659951867520203L, 1649252759660329L, 1632998316920007L, 1643299954630843L);
+    private void run1161(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1161";
+        var possibleCaseIds = List.of(1660209462518487L);
 
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
         caseDetails.getData().remove("placements");
         caseDetails.getData().remove("placementsNonConfidential");
         caseDetails.getData().remove("placementsNonConfidentialNotices");
+    }
+
+    private void run1156(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1156";
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(),1668086461879587L, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removeApplicationDocument(getCaseData(caseDetails),
+            migrationId, UUID.fromString("1862581c-b628-4fc8-afb8-8576d3def0f1")));
+        CaseDetails details = CaseDetails.builder().data(caseDetails.getData()).build();
+        caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(details)));
+    }
+
+    private void run1162(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1162";
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1673628190034209L, migrationId);
+        migrateCaseService.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(getCaseData(caseDetails),
+            migrationId, "PO23C50013 HCC V Carter EPO with remote hearing directions march 2021.pdf");
+
+        caseDetails.getData().remove("urgentHearingOrder");
+    }
+
+    private void run1072(CaseDetails caseDetails) {
+        caseDetails.getData().putAll(migrateCaseService.updateIncorrectCourtCodes(getCaseData(caseDetails)));
     }
 }

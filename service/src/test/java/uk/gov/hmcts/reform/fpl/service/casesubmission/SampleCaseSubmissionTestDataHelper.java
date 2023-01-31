@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.casesubmission;
 
 import uk.gov.hmcts.reform.fpl.enums.ChildRecoveryOrderGround;
 import uk.gov.hmcts.reform.fpl.enums.ParticularsOfChildren;
+import uk.gov.hmcts.reform.fpl.enums.PriorConsultationType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderGround;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderSection;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC14Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC15Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC16Supplement;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC17Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC18Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC20Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
@@ -316,6 +318,19 @@ public class SampleCaseSubmissionTestDataHelper {
             .directionsSoughtAssessment("Directions sought in respect of assessment")
             .directionsSoughtContact("Directions sought in respect of contact")
             .groundsForChildAssessmentOrderReason("Reason for the grounds being met")
+            .build();
+    }
+
+    public static DocmosisC17Supplement expectedDocmosisC17Supplement() {
+        return DocmosisC17Supplement.builder()
+            .childrensNames("Bobby Smith")
+            .caseNumber("01234567890")
+            .isOrAre("is")
+            .childOrChildren("child")
+            .priorConsultationOtherLA("Other LA")
+            .priorConsultationType(List.of(PriorConsultationType.PROVIDE_ACCOMMODATION.getLabel()))
+            .groundReason("Ground detail")
+            .directionsAppliedFor("directionApplied")
             .build();
     }
 
