@@ -68,17 +68,16 @@ class RepresentativeNotificationServiceTest {
     }
 
     @Test
-    void shouldNotNotifyRepresentativesOfNonSelectedOthers() {
+    void shouldNotNotifyRepresentativesOfOthers() {
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
             .representatives(getRepresentativesOfMixedServingPreferences())
             .build();
 
-        given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL), eq(caseData), eq(emptyList()), any()))
+        given(otherRecipientsInbox.getAllRecipients(eq(EMAIL), eq(caseData), any()))
             .willReturn(Set.of("sam@test.co.uk"));
 
-        underTest.sendToRepresentativesByServedPreference(
-            EMAIL, TEMPLATE_NAME, TEMPLATE_DATA, caseData, emptyList());
+        underTest.sendToRepresentativesExceptOthersByServedPreference(EMAIL, TEMPLATE_NAME, TEMPLATE_DATA, caseData);
 
         verify(notificationService, never()).sendEmail(TEMPLATE_NAME, "sam@test.co.uk", TEMPLATE_DATA, CASE_ID);
     }

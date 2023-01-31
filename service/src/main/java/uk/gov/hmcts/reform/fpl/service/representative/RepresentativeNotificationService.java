@@ -34,16 +34,16 @@ public class RepresentativeNotificationService {
         sendNotificationToRepresentatives(caseData.getId(), notifyData, emailRepresentatives, templateId);
     }
 
-    public void sendToRepresentativesByServedPreference(final RepresentativeServingPreferences servedPreference,
-                                                        final String templateId,
-                                                        final NotifyData notifyData,
-                                                        final CaseData caseData,
-                                                        final List<Element<Other>> othersSelected) {
+    public void sendToRepresentativesExceptOthersByServedPreference(
+        final RepresentativeServingPreferences servedPreference,
+        final String templateId,
+        final NotifyData notifyData,
+        final CaseData caseData) {
         Set<String> emailRepresentatives = representativesInbox.getEmailsByPreference(caseData, servedPreference);
 
-        emailRepresentatives.removeAll(otherRecipientsInbox.getNonSelectedRecipients(
-            servedPreference, caseData, othersSelected, element -> element.getValue().getEmail()
-        ));
+        emailRepresentatives.removeAll(
+            otherRecipientsInbox.getAllRecipients(servedPreference, caseData, element -> element.getValue().getEmail())
+        );
 
         sendNotificationToRepresentatives(caseData.getId(), notifyData, emailRepresentatives, templateId);
     }
