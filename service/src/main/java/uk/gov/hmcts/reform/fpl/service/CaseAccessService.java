@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.model.Organisation;
+import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 
 import java.util.List;
 import java.util.Set;
@@ -107,6 +108,10 @@ public class CaseAccessService {
             log.error("Could not assign the users to the case", ex);
             throw new GrantCaseAccessException(caseId, users, caseRole);
         }
+    }
+
+    public List<OrganisationUser> getLocalAuthorityUsersAllInfo() {
+        return organisationService.getUsersFromSameOrganisationBasedOnReferenceDataAllInfo();
     }
 
     private Set<String> getLocalAuthorityUsers(Long caseId, String localAuthority, CaseRole caseRole) {
