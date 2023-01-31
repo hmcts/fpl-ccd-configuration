@@ -537,9 +537,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             "final-check", USER_ROLES);
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
-    
+
     @ParameterizedTest
-    @EnumSource(value= ManageDocumentTypeListLA.class, names = {
+    @EnumSource(value = ManageDocumentTypeListLA.class, names = {
         "CORRESPONDENCE",
         "ADDITIONAL_APPLICATIONS_DOCUMENTS",
         "HEARING_DOCUMENTS",
