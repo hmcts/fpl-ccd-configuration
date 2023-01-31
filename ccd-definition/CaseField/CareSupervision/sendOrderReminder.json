@@ -21,7 +21,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingsMissingOrdersMessage",
-    "Label": "The following finished hearings have not had a CMO uploaded (in draft or sealed): <br/> ${listOfHearingsMissingOrders} <br/>",
+    "Label": "These hearings have concluded and have not had a CMO uploaded (in draft or sealed): <br/> ${listOfHearingsMissingOrders} <br/>",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -30,7 +30,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "noHearingsMissingOrdersMessage",
-    "Label": "There are no finished hearings missing CMOs on this case.",
+    "Label": "There are no concluded hearings missing CMOs on this case.",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -39,7 +39,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "shouldSendOrderReminder",
-    "Label": "Would you like to send a reminder to the Applicant asking them to upload CMOs for these hearings?",
+    "Label": "Would you like to remind the applicant to upload the CMO for these hearings?",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "YesOrNoFixedList",
     "SecurityClassification": "Public",
