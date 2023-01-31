@@ -2,24 +2,31 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +45,9 @@ class MigrateCaseServiceTest {
 
     private static final String MIGRATION_ID = "test-migration";
 
+    @Mock
+    private CaseNoteService caseNoteService;
+
     @InjectMocks
     private MigrateCaseService underTest;
 
@@ -49,6 +59,11 @@ class MigrateCaseServiceTest {
     @Test
     void shouldThrowExceptionIfCaseIdCheckFails() {
         assertThrows(AssertionError.class, () -> underTest.doCaseIdCheck(1L, 2L, MIGRATION_ID));
+    }
+
+    @Test
+    void shouldThrowExceptionIfCaseIdListCheckFails() {
+        assertThrows(AssertionError.class, () -> underTest.doCaseIdCheckList(1L, List.of(2L, 3L), MIGRATION_ID));
     }
 
     @Nested
@@ -351,8 +366,188 @@ class MigrateCaseServiceTest {
                 .build();
 
             assertThrows(AssertionError.class, () ->
-                underTest.removePositionStatementRespondent(caseData, MIGRATION_ID,
-                    docIdToRemove));
+                underTest.removePositionStatementRespondent(caseData, MIGRATION_ID, docIdToRemove));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveCaseNote {
+
+        private final UUID noteIdToRemove = UUID.randomUUID();
+
+        @Test
+        void shouldThrowExceptionWhenCaseNoteNotPresent() {
+            UUID otherNoteId = UUID.randomUUID();
+            UUID otherNoteId2 = UUID.randomUUID();
+            CaseData caseData = CaseData.builder()
+                .caseNotes(List.of(
+                    element(otherNoteId, CaseNote.builder().note("Test note 1").build()),
+                    element(otherNoteId2, CaseNote.builder().note("Test note 2").build())
+                ))
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest.removeCaseNote(caseData, MIGRATION_ID, noteIdToRemove));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveHearingBooking {
+
+        private final UUID hearingBookingToRemove = UUID.randomUUID();
+        private final UUID otherHearingBookingId = UUID.randomUUID();
+
+        @Test
+        void shouldThrowAssertionErrorIfHearingBookingNotPresent() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(otherHearingBookingId, HearingBooking.builder().build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(bookings)
+                .build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.removeHearingBooking(caseData, MIGRATION_ID, hearingBookingToRemove));
+        }
+
+        @Test
+        void shouldRemoveHearingBooking() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(otherHearingBookingId, HearingBooking.builder().build()));
+            bookings.add(element(hearingBookingToRemove, HearingBooking.builder().build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(bookings)
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeHearingBooking(caseData, MIGRATION_ID,
+                hearingBookingToRemove);
+
+            assertThat(updatedFields).extracting("hearingDetails").asList().hasSize(1);
+            assertThat(updatedFields).extracting("hearingDetails").asList()
+                .doesNotContainAnyElementsOf(List.of(hearingBookingToRemove));
+
+        }
+
+        @Test
+        void shouldRemoveHearingBookingWithSingleHearing() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(hearingBookingToRemove, HearingBooking.builder().build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(bookings)
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeHearingBooking(caseData, MIGRATION_ID,
+                hearingBookingToRemove);
+
+            assertThat(updatedFields).extracting("hearingDetails").asList().hasSize(0);
+            assertThat(updatedFields).extracting("hearingDetails").asList()
+                .doesNotContainAnyElementsOf(List.of(hearingBookingToRemove));
+            assertThat(updatedFields).extracting("selectedHearingId").isNull();
+
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveGatekeepingOrderUrgentHearingOrder {
+
+        private final long caseId = 1L;
+
+        @Test
+        void shouldThrowAssertionIfOrderNotFound() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
+                    "test.pdf"));
+        }
+
+        @Test
+        void shouldThrowAssertionIfOrderFileNameNotMatch() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .urgentHearingOrder(UrgentHearingOrder.builder()
+                    .order(DocumentReference.builder().filename("test").build())
+                    .build())
+                .build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
+                    "test.pdf"));
+        }
+
+        @Test
+        void shouldNotThrowIfUrgentHearingOrderFound() {
+            CaseData caseData = CaseData.builder()
+                .urgentHearingOrder(UrgentHearingOrder.builder()
+                    .order(DocumentReference.builder().filename("test.pdf").build())
+                    .build())
+                .build();
+
+            assertDoesNotThrow(() ->
+                underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
+                    "test.pdf"));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveApplicationDocument {
+
+        private final UUID applicationDocumentIdToRemove = UUID.randomUUID();
+
+        @Test
+        void shouldThrowExceptionWhenApplicationDocumentNotPresent() {
+            UUID otherApplicationDocumentId1 = UUID.randomUUID();
+            UUID otherApplicationDocumentId2 = UUID.randomUUID();
+            CaseData caseData = CaseData.builder()
+                .applicationDocuments(List.of(
+                    element(otherApplicationDocumentId1, ApplicationDocument.builder().documentName("1").build()),
+                    element(otherApplicationDocumentId2, ApplicationDocument.builder().documentName("2").build())
+                ))
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest.removeApplicationDocument(caseData, MIGRATION_ID,
+                applicationDocumentIdToRemove));
+        }
+
+        @Test
+        void shouldRemoveApplicationDocument() {
+            UUID otherApplicationDocumentId1 = UUID.randomUUID();
+            List<Element<ApplicationDocument>> applicationDocuments = new ArrayList<>();
+            applicationDocuments.add(element(otherApplicationDocumentId1, ApplicationDocument.builder().build()));
+            applicationDocuments.add(element(applicationDocumentIdToRemove, ApplicationDocument.builder().build()));
+
+            CaseData caseData = CaseData.builder()
+                .applicationDocuments(applicationDocuments)
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeApplicationDocument(caseData, MIGRATION_ID,
+                applicationDocumentIdToRemove);
+
+            assertThat(updatedFields).extracting("applicationDocuments").asList().hasSize(1);
+            assertThat(updatedFields).extracting("applicationDocuments").asList()
+                .doesNotContainAnyElementsOf(List.of(applicationDocumentIdToRemove));
+        }
+
+        @Test
+        void shouldRemoveSingleApplicationDocument() {
+            List<Element<ApplicationDocument>> applicationDocuments = new ArrayList<>();
+            applicationDocuments.add(element(applicationDocumentIdToRemove, ApplicationDocument.builder().build()));
+
+            CaseData caseData = CaseData.builder()
+                .applicationDocuments(applicationDocuments)
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeApplicationDocument(caseData, MIGRATION_ID,
+                applicationDocumentIdToRemove);
+
+            assertThat(updatedFields).extracting("applicationDocuments").asList().hasSize(0);
         }
     }
 
