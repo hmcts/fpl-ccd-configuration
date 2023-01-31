@@ -179,6 +179,7 @@ public class ManageDocumentsLAController extends CallbackController {
     }
 
     @PostMapping("/final-check/mid-event")
+    @java.lang.SuppressWarnings("java:S5852")
     public AboutToStartOrSubmitCallbackResponse handleFinalCheckMidEvent(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
@@ -190,7 +191,7 @@ public class ManageDocumentsLAController extends CallbackController {
                 .filter(df -> !StringUtils.isEmpty(df.getValue().getIncludedInSWET()))
                 .collect(Collectors.toList());
             if (!swetDocs.isEmpty()) {
-                Pattern pattern = Pattern.compile("(?s)(?!.*<[^>\\d\\n]+>*).*+");
+                Pattern pattern = Pattern.compile("(?s)(?!.*<[^>\\d\\n]+>*).*");
                 if (swetDocs.stream()
                     .anyMatch(df -> !pattern.matcher(df.getValue().getIncludedInSWET()).matches())) {
                     errors.add("The data entered is not valid for your input in SWET\n");

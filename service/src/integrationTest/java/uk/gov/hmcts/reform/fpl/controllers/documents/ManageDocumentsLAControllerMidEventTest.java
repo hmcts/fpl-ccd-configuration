@@ -523,7 +523,10 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
         "<1\nABC",
         "<1\rABC",
         "<1\r\nABC",
-        "ABC <1"
+        "ABC <1",
+        "ABC\n<1",
+        "ABC\r<1",
+        "ABC\r\n<1"
     })
     void shouldPassHtmlInjectionValidationInSWET(String includeInSWET) {
         CaseData caseData = CaseData.builder()
