@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -49,7 +48,6 @@ public class HearingOrdersBundle {
             .forEach(order -> order.setType(type));
 
         orders = defaultIfNull(orders, new ArrayList<>());
-        orders.removeIf(order -> Objects.equals(order.getValue().getType(), type));
         orders.addAll(newOrders);
 
         return this;
