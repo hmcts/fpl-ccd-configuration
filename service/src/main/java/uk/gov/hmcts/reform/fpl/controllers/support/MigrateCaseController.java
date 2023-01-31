@@ -50,12 +50,12 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1012", this::run1012,
         "DFPL-1064", this::run1064,
         "DFPL-872", this::run872,
-        "DFPL-1065", this::run1065,
         "DFPL-872rollback", this::run872Rollback,
         "DFPL-1029", this::run1029,
         "DFPL-1161", this::run1161,
         "DFPL-1162", this::run1162,
-        "DFPL-1156", this::run1156
+        "DFPL-1156", this::run1156,
+        "DFPL-1072", this::run1072
     );
 
     @PostMapping("/about-to-submit")
@@ -221,5 +221,9 @@ public class MigrateCaseController extends CallbackController {
             migrationId, "PO23C50013 HCC V Carter EPO with remote hearing directions march 2021.pdf");
 
         caseDetails.getData().remove("urgentHearingOrder");
+    }
+
+    private void run1072(CaseDetails caseDetails) {
+        caseDetails.getData().putAll(migrateCaseService.updateIncorrectCourtCodes(getCaseData(caseDetails)));
     }
 }

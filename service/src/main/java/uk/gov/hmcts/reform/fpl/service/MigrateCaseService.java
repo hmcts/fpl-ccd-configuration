@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
@@ -22,6 +23,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -149,6 +151,71 @@ public class MigrateCaseService {
                 migrationId, caseId));
         }
         return Map.of("positionStatementRespondentListV2", positionStatementRespondentListResult);
+    }
+
+    public Map<String, Object> updateIncorrectCourtCodes(CaseData caseData) {
+        IncorrectCourtCodeConfig bhc = IncorrectCourtCodeConfig.builder()
+            .incorrectCourtCode("544")
+            .correctCourtCode("554")
+            .correctCourtName("Family Court sitting at Brighton")
+            .organisationId("0F6AZIR")
+            .build();
+        IncorrectCourtCodeConfig wsx = IncorrectCourtCodeConfig.builder()
+            .incorrectCourtCode("544")
+            .correctCourtCode("554")
+            .correctCourtName("Family Court Sitting at Brighton County Court")
+            .organisationId("HLT7S0M")
+            .build();
+        IncorrectCourtCodeConfig bnt = IncorrectCourtCodeConfig.builder()
+            .incorrectCourtCode("117")
+            .correctCourtCode("332")
+            .correctCourtName("Family Court Sitting at West London")
+            .organisationId("SPUL3VV")
+            .build();
+        IncorrectCourtCodeConfig hrw = IncorrectCourtCodeConfig.builder()
+            .incorrectCourtCode("117")
+            .correctCourtCode("332")
+            .correctCourtName("Family Court Sitting at West London")
+            .organisationId("L3HSA4L")
+            .build();
+        IncorrectCourtCodeConfig hlw = IncorrectCourtCodeConfig.builder()
+            .incorrectCourtCode("117")
+            .correctCourtCode("332")
+            .correctCourtName("Family Court Sitting at West London")
+            .organisationId("6I4Z3OO")
+            .build();
+        IncorrectCourtCodeConfig rct = IncorrectCourtCodeConfig.builder()
+            .incorrectCourtCode("164")
+            .correctCourtCode("159")
+            .correctCourtName("Family Court sitting at Cardiff")
+            .organisationId("68MNZN8")
+            .build();
+        IncorrectCourtCodeConfig bad = IncorrectCourtCodeConfig.builder()
+            .incorrectCourtCode("3403")
+            .correctCourtCode("121")
+            .correctCourtName("Family Court Sitting at East London Family Court")
+            .organisationId("3FG3URQ")
+            .build();
+        List<IncorrectCourtCodeConfig> configs = List.of(bhc, wsx, bnt, hrw, hlw, rct, bad);
+
+        if (nonNull(caseData.getCourt()) && nonNull(caseData.getLocalAuthorityPolicy())
+            && nonNull(caseData.getLocalAuthorityPolicy().getOrganisation())) {
+            IncorrectCourtCodeConfig config = configs.stream()
+                .filter(c ->
+                    c.getIncorrectCourtCode().equals(caseData.getCourt().getCode())
+                        && c.getOrganisationId().equals(caseData.getLocalAuthorityPolicy()
+                        .getOrganisation().getOrganisationID()))
+                .findAny().orElseThrow(() -> new AssertionError(format("It does not match any migration conditions. "
+                        + "(courtCode = %s, localAuthorityPolicy.organisation.organisationID = %s)",
+                    caseData.getCourt().getCode(),
+                    caseData.getLocalAuthorityPolicy().getOrganisation().getOrganisationID())));
+            return Map.of("court", caseData.getCourt().toBuilder()
+                .code(config.getCorrectCourtCode())
+                .name(config.getCorrectCourtName())
+                .build());
+
+        }
+        throw new AssertionError("The case does not have court or local authority policy's organisation.");
     }
 
     public Map<String, Object> removeHearingBooking(CaseData caseData, final String migrationId,
