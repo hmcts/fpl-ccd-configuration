@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers.documents;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -529,6 +530,25 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .manageDocumentLA(ManageDocumentLA.builder().type(FURTHER_EVIDENCE_DOCUMENTS).build())
             .applicationDocuments(List.of(element(ApplicationDocument.builder()
                 .includedInSWET(includeInSWET)
+                .build())))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+            "final-check", USER_ROLES);
+        assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+    
+    @ParameterizedTest
+    @EnumSource(value= ManageDocumentTypeListLA.class, names = {
+        "CORRESPONDENCE",
+        "ADDITIONAL_APPLICATIONS_DOCUMENTS",
+        "HEARING_DOCUMENTS",
+        "PLACEMENT_NOTICE_RESPONSE"
+    })
+    void shouldPassFinalCheckMidEvent(ManageDocumentTypeListLA type) {
+        CaseData caseData = CaseData.builder()
+            .manageDocumentLA(ManageDocumentLA.builder().type(type).build())
+            .applicationDocuments(List.of(element(ApplicationDocument.builder()
                 .build())))
             .build();
 

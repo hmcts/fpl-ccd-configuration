@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASHARED;
@@ -189,8 +190,9 @@ public class ManageDocumentsLAController extends CallbackController {
                 .filter(df -> !StringUtils.isEmpty(df.getValue().getIncludedInSWET()))
                 .collect(Collectors.toList());
             if (!swetDocs.isEmpty()) {
+                Pattern pattern = Pattern.compile("^(?s)(?!.*<[^>\\d\\n]+>*).*");
                 if (swetDocs.stream()
-                    .filter(df -> !df.getValue().getIncludedInSWET().matches("^(?s)(?!.*<[^>\\d\\n]+>*).*"))
+                    .filter(df -> !pattern.matcher(df.getValue().getIncludedInSWET()).matches())
                     .findAny().isPresent()) {
                     errors.add("The data entered is not valid for your input in SWET\n");
                 }
