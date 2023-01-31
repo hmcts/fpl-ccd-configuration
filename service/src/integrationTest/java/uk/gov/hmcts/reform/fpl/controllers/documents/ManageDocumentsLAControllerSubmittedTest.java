@@ -35,6 +35,7 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CAFCASS_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
@@ -87,7 +88,11 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
         verifySendingNotification(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
             TEST_CASE_ID, List.of(
                 LOCAL_AUTHORITY_1_INBOX,
-                LOCAL_AUTHORITY_2_INBOX
+                LOCAL_AUTHORITY_2_INBOX,
+                RESPONDENT_REP_1_EMAIL,
+                RESPONDENT_SOLICITOR_1_EMAIL,
+                CHILD_SOLICITOR_1_EMAIL,
+                DEFAULT_CAFCASS_EMAIL
             ));
     }
 
@@ -208,7 +213,11 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
         verifySendingNotification(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
             TEST_CASE_ID, List.of(
                 LOCAL_AUTHORITY_1_INBOX,
-                LOCAL_AUTHORITY_2_INBOX
+                LOCAL_AUTHORITY_2_INBOX,
+                RESPONDENT_REP_1_EMAIL,
+                RESPONDENT_SOLICITOR_1_EMAIL,
+                CHILD_SOLICITOR_1_EMAIL,
+                DEFAULT_CAFCASS_EMAIL
             ));
     }
 
