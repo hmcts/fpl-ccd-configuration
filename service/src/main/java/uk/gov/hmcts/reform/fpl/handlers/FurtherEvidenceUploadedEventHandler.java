@@ -644,6 +644,7 @@ public class FurtherEvidenceUploadedEventHandler {
         // Further application documents - for example the SWET or care plan
         // - everyone except respondent/child solicitors have permission to see
         // So we shouldn’t send the notification to respondent/child solicitors
+        // DFPL-1087, respondent/child should receive notification if the docs are not confidential
         List<Element<ApplicationDocument>> newApplicationDocuments =
             getNewApplicationDocuments(caseData.getApplicationDocuments(), beforeCaseData.getApplicationDocuments());
         unwrapElements(newApplicationDocuments).forEach(applicationDocument -> {
