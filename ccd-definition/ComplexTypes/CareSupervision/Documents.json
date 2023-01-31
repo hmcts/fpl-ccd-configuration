@@ -27,8 +27,7 @@
     "ElementLabel": "Included in SWET",
     "HintText": "Use a meaningful name. For example, Genogram",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "documentType=\"SWET\"",
-    "RegularExpression": "^(?!.*<[^>\\d]+>*).*"
+    "FieldShowCondition": "documentType=\"SWET\""
   },
   {
     "LiveFrom": "01/01/2017",

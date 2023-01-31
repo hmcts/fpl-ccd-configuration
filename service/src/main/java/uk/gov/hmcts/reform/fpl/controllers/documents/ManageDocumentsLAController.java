@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers.documents;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
+import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
@@ -43,6 +45,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASHARED;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.APPLICATION_DOCUMENTS;
@@ -171,6 +174,30 @@ public class ManageDocumentsLAController extends CallbackController {
         }
 
         return respond(caseDetails);
+    }
+
+    @PostMapping("/final-check/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleFinalCheckMidEvent(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        List<String> errors = new ArrayList<>();
+
+        switch (caseData.getManageDocumentLA().getType()) {
+            case FURTHER_EVIDENCE_DOCUMENTS:
+                List<Element<ApplicationDocument>> swetDocs = caseData.getApplicationDocuments().stream()
+                    .filter(df -> !StringUtils.isEmpty(df.getValue().getIncludedInSWET()))
+                    .collect(Collectors.toList());
+                if (!swetDocs.isEmpty()) {
+                    if (swetDocs.stream()
+                        .filter(df -> !df.getValue().getIncludedInSWET().matches("^(?s)(?!.*<[^>\\d\\n]+>*).*"))
+                        .findAny().isPresent()) {
+                        errors.add("The data entered is not valid for your input in SWET\n");
+                    }
+                }
+                break;
+        }
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/about-to-submit")
