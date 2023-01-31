@@ -45,8 +45,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;

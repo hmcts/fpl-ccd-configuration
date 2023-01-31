@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NoticeOfHearingCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
@@ -26,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingNoOtherAddressEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 

@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import java.util.List;
 import java.util.Set;
 
-import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
