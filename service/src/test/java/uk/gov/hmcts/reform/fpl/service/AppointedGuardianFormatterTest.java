@@ -75,7 +75,7 @@ class AppointedGuardianFormatterTest {
 
             String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
             assertThat(formattedNames)
-                .isEqualTo("Remy Respondy and Otto Otherman is/are appointed as special guardian(s)");
+                .isEqualTo("Remy Respondy and Otto Otherman are appointed as special guardians");
         }
 
         @Test
@@ -84,7 +84,7 @@ class AppointedGuardianFormatterTest {
 
             String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
             assertThat(formattedNames)
-                .isEqualTo("Remy Respondy, Otto Otherman and Bob Bothers is/are appointed as special guardian(s)");
+                .isEqualTo("Remy Respondy, Otto Otherman and Bob Bothers are appointed as special guardians");
         }
 
         @Test
@@ -99,8 +99,8 @@ class AppointedGuardianFormatterTest {
                 .build();
 
             String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
-            assertThat(formattedNames).isEqualTo("Remy Respondy, Otto Otherman and Mummy Pig is/are "
-                + "appointed as special guardian(s)");
+            assertThat(formattedNames).isEqualTo("Remy Respondy, Otto Otherman and Mummy Pig "
+                + "are appointed as special guardians");
         }
 
         @Test
@@ -116,7 +116,7 @@ class AppointedGuardianFormatterTest {
 
             String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
             assertThat(formattedNames).isEqualTo("Remy Respondy, Otto Otherman, Mummy Pig and Peppa Pig "
-                + "is/are appointed as special guardian(s)");
+                + "are appointed as special guardians");
         }
 
         @Test
@@ -147,7 +147,7 @@ class AppointedGuardianFormatterTest {
 
             String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
             assertThat(formattedNames)
-                .isEqualTo("Mummy Pig and Peppa Pig is/are appointed as special guardian(s)");
+                .isEqualTo("Mummy Pig and Peppa Pig are appointed as special guardians");
         }
     }
 

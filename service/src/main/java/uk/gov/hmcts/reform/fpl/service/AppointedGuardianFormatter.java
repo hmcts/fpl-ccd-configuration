@@ -36,7 +36,7 @@ public class AppointedGuardianFormatter {
             return;
         }
         if (hasMultipleGuardiansGrammar) {
-            builder.append(" is/are appointed as special guardian(s)");
+            builder.append(" are appointed as special guardians");
         } else {
             builder.append(" is appointed as special guardian");
         }
