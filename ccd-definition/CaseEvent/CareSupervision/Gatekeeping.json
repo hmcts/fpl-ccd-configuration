@@ -5,7 +5,7 @@
     "ID": "otherAllocationDecision",
     "Name": "Allocation decision",
     "Description": "Entering other proceedings and allocation proposals",
-    "DisplayOrder": 1,
+    "DisplayOrder": 2,
     "PreConditionState(s)": "Gatekeeping",
     "PostConditionState": "Gatekeeping",
     "SecurityClassification": "Public",
