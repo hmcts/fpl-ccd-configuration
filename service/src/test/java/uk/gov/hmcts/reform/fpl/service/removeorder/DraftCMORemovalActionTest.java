@@ -368,8 +368,6 @@ class DraftCMORemovalActionTest {
                 element(HEARING_ID, hearing(TO_REMOVE_ORDER_ID, HEARING_START_DATE, HearingStatus.VACATED))))
             .build();
 
-        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder().data(Map.of()).build());
-
         List<Element<HearingBooking>> updatedHearings = List.of(
             element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID)));
 
@@ -388,6 +386,7 @@ class DraftCMORemovalActionTest {
         when(draftOrderService.migrateCmoDraftToOrdersBundles(caseData))
             .thenReturn(hearingOrdersBundles);
 
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder().data(Map.of()).build());
         underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, draftCMO);
 
         Map<String, List<?>> expectedData = Map.of(

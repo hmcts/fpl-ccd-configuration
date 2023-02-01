@@ -466,7 +466,7 @@ class ApproveDraftOrdersServiceTest {
                 .agreedCmos(emptyList())
                 .draftCmos(emptyList())
                 .build()
-        );
+            );
 
         Map<String, Object> expectedData = Map.of(
             "draftUploadedCMOs", emptyList(),
