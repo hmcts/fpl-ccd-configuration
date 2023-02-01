@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
@@ -200,10 +201,15 @@ public class FurtherEvidenceUploadedEventHandler {
             recipients.addAll(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData));
 
             if (isNotEmpty(recipients)) {
+                Optional<HearingBooking> hearingBookings = caseData.getHearingDetails().stream()
+                    .filter(element -> element.getValue().toLabel().equals(newHearingDocuments.get(0).getHearing()))
+                    .findFirst()
+                    .map(Element::getValue);
+
                 List<String> newDocumentNames = newHearingDocuments.stream()
                     .map(doc -> doc.getDocument().getFilename()).collect(toList());
-                furtherEvidenceNotificationService.sendNotification(caseData, recipients, uploader.getFullName(),
-                    newDocumentNames);
+                furtherEvidenceNotificationService.sendNotificationWithHearing(caseData, recipients,
+                    uploader.getFullName(), newDocumentNames, hearingBookings);
             }
         }
     }
