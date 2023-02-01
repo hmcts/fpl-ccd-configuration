@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
+import static uk.gov.hmcts.reform.fpl.enums.UserRole.JUDICIARY;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -40,6 +41,11 @@ public class UserService {
     public boolean isHmctsAdminUser() {
         Set<String> roles = getIdamRoles();
         return roles != null && roles.contains(HMCTS_ADMIN.getRoleName());
+    }
+
+    public boolean isJudiciaryUser() {
+        Set<String> roles = getIdamRoles();
+        return roles != null && roles.contains(JUDICIARY.getRoleName());
     }
 
     public boolean hasAnyCaseRoleFrom(List<CaseRole> caseRoles, Long caseId) {

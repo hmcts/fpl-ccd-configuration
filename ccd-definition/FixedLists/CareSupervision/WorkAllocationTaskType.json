@@ -16,15 +16,22 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "WorkAllocationTaskType",
+    "ListElementCode": "ORDER_UPLOADED",
+    "ListElement": "Order uploaded",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "WorkAllocationTaskType",
     "ListElementCode": "CORRESPONDENCE_UPLOADED",
     "ListElement": "Correspondence Uploaded",
-    "DisplayOrder": 2
+    "DisplayOrder": 3
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "WorkAllocationTaskType",
     "ListElementCode": "CMO_REVIEWED",
     "ListElement": "Case Management Order reviewed",
-    "DisplayOrder": 3
+    "DisplayOrder": 4
   }
 ]
