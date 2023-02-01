@@ -168,6 +168,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "groundsForEducationSupervisionOrder",
+    "Label": "How are there grounds for an education supervision order?",
+    "FieldType": "GroundsForEducationSupervisionOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearing",
     "Label": "Hearing needed",
     "FieldType": "Hearing",
@@ -2203,6 +2212,16 @@
     "ID": "othersList",
     "Label": "Select one of the others to be given notice",
     "FieldType": "DynamicList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "latestRoleSent",
+    "Label": " ",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "JudicialMessageRoleTypes",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }
