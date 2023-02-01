@@ -230,7 +230,7 @@ public class MigrateCaseController extends CallbackController {
 
     private void run1163(CaseDetails caseDetails) {
         String migrationId = "DFPL-1162";
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1673628190034209L, migrationId);
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1635857454109111L, migrationId);
         caseDetails.getData().putAll(migrateCaseService.revertChildExtensionDate(getCaseData(caseDetails), migrationId,
             "23f4eb98-6bb5-4775-a724-aa6856618007", LocalDate.of(2022,5,9), null));
         caseDetails.getData().putAll(migrateCaseService.revertChildExtensionDate(getCaseData(caseDetails), migrationId,
