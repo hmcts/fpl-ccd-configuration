@@ -28,7 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicantsListGenerator;
@@ -180,11 +180,11 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                 .map(ElementUtils::element)
                 .collect(Collectors.toList());
 
-            List<Element<HearingOrdersBundle>> bundles = draftOrderService.migrateCmoDraftToOrdersBundles(caseData);
+            HearingOrdersBundles hearingOrdersBundles = draftOrderService.migrateCmoDraftToOrdersBundles(caseData);
 
-            draftOrderService.additionalApplicationUpdateCase(newDrafts, bundles);
+            draftOrderService.additionalApplicationUpdateCase(newDrafts, hearingOrdersBundles.getAgreedCmos());
 
-            caseDetails.getData().put("hearingOrdersBundlesDrafts", bundles);
+            caseDetails.getData().put("hearingOrdersBundlesDrafts", hearingOrdersBundles.getAgreedCmos());
         }
 
         List<Element<AdditionalApplicationsBundle>> additionalApplications = defaultIfNull(

@@ -8,7 +8,8 @@
     "TabDisplayOrder": 4,
     "CaseFieldID": "draftSDOLabel",
     "TabFieldDisplayOrder": 1,
-    "FieldShowCondition": "standardDirectionOrder.orderStatus=\"DRAFT\""
+    "FieldShowCondition": "standardDirectionOrder.orderStatus=\"DRAFT\"",
+    "TabShowCondition": "hearingOrdersBundlesDrafts!=\"\" OR standardDirectionOrder.orderStatus=\"DRAFT\" OR caseManagementOrder!=\"\" OR sharedDraftCMODocument!=\"\" OR cmoToAction!=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -19,7 +20,7 @@
     "TabDisplayOrder": 4,
     "CaseFieldID": "reviewCMOLink",
     "TabFieldDisplayOrder": 1,
-    "FieldShowCondition": "draftUploadedCMOs!=\"\" OR hearingOrdersBundlesDrafts!=\"\""
+    "FieldShowCondition": "hearingOrdersBundlesDrafts!=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -71,7 +72,27 @@
     "TabLabel": "Draft orders",
     "TabDisplayOrder": 4,
     "CaseFieldID": "caseManagementOrder",
-    "TabFieldDisplayOrder": 2,
-    "TabShowCondition": "standardDirectionOrder.orderStatus=\"DRAFT\" OR caseManagementOrder!=\"\" OR sharedDraftCMODocument!=\"\" OR cmoToAction!=\"\""
+    "TabFieldDisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftOrdersTab",
+    "TabLabel": "Draft orders",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "draftUploadedCMOs",
+    "TabFieldDisplayOrder": 3,
+    "FieldShowCondition": "hearingOrdersBundlesDrafts=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftOrdersTab",
+    "TabLabel": "Draft orders",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "hearingOrdersBundlesDrafts",
+    "TabFieldDisplayOrder": 4
   }
 ]
