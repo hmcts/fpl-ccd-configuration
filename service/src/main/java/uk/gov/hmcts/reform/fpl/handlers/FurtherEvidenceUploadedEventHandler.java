@@ -36,6 +36,7 @@ import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
+import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
@@ -71,6 +72,7 @@ import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificat
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType.CORRESPONDENCE_UPLOADED;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.CASE_SUMMARY;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NEW_DOCUMENT;
@@ -95,6 +97,7 @@ public class FurtherEvidenceUploadedEventHandler {
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private static final String PDF = "pdf";
     private static final String LIST = "•";
+    private final WorkAllocationTaskService workAllocationTaskService;
 
     @EventListener
     public void sendDocumentsUploadedNotification(final FurtherEvidenceUploadedEvent event) {
@@ -816,5 +819,19 @@ public class FurtherEvidenceUploadedEventHandler {
                 Optional.ofNullable(bundle.getValue().getTranslationRequirements()),
                 bundle.getValue().getDocument(), bundle.getValue().asLabel())
             );
+    }
+
+    @EventListener
+    public void createWorkAllocationTask(FurtherEvidenceUploadedEvent event) {
+        CaseData caseData = event.getCaseData();
+        CaseData caseDataBefore = event.getCaseDataBefore();
+
+        if (!getNewCorrespondenceDocumentsByLA(caseData, caseDataBefore).getDocumentReferences().isEmpty()
+            || !getNewCorrespondenceDocumentsBySolicitor(caseData, caseDataBefore).getDocumentReferences().isEmpty()
+            || !getNewCorrespondenceDocumentsByHmtcs(caseData, caseDataBefore).getDocumentReferences().isEmpty()
+        ) {
+            log.info("Creating CORRESPONDENCE_UPLOADED work allocation task for case: {}", caseData.getId());
+            workAllocationTaskService.createWorkAllocationTask(caseData, CORRESPONDENCE_UPLOADED);
+        }
     }
 }
