@@ -30,7 +30,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderType",
-    "ListElementCode": "EDUCATION_SUPERVISION_ORDER",
+    "ListElementCode": "EDUCATION_SUPERVISION__ORDER",
     "ListElement": "Education supervision order",
     "DisplayOrder": 5
   },

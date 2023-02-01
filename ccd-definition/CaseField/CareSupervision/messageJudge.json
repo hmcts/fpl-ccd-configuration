@@ -38,6 +38,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "replyToMessageJudgeNextHearingLabel",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "relatedDocumentsLabel",
     "Label": "Related documents",
     "FieldType": "TextArea",
@@ -95,16 +104,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "messageJudgeOption",
-    "Label": "Do you want to send or reply to a message?",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "MessageJudgeOptions",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "judicialMessageDynamicList",
     "Label": "Your messages",
     "FieldType": "DynamicList",
@@ -118,6 +117,24 @@
     "ID": "judicialMessageReply",
     "Label": " ",
     "FieldType": "JudicialMessage",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "noJudicialMessageLabel",
+    "Label": "There is no judicial message to reply.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "isJudiciary",
+    "Label": " ",
+    "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }

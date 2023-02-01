@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.GroundsForContactWithChild;
+import uk.gov.hmcts.reform.fpl.model.GroundsForEducationSupervisionOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForRefuseContactWithChild;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 
@@ -129,5 +130,16 @@ class OrdersNeededControllerTest extends AbstractCallbackTest {
 
         assertThat(response.getData().get("representativeType")).isEqualTo("RESPONDENT_SOLICITOR");
         assertThat(response.getData().get("orders")).isEqualTo(response.getData().get("ordersSolicitor"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldRemoveEducationSupervisionOrderDataWhenEducationSupervisionOrderIsUnselected() {
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(CaseData.builder()
+            .orders(Orders.builder().orderType(List.of(OrderType.CARE_ORDER)).build())
+            .groundsForEducationSupervisionOrder(GroundsForEducationSupervisionOrder.builder()
+                .groundDetails("ground details").build()).build());
+
+        assertThat((Map<String, Object>) response.getData().get("groundsForEducationSupervisionOrder")).isNullOrEmpty();
     }
 }

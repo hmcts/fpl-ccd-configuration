@@ -54,6 +54,14 @@ class C21BlankOrderDocumentParameterGeneratorTest {
     }
 
     @Test
+    void generateForStandaloneApplicationCase() {
+        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(null);
+
+        DocmosisParameters generatedParameters = underTest.generate(CASE_DATA);
+        assertThat(generatedParameters).isEqualTo(expectedNullLaNameParameters().build());
+    }
+
+    @Test
     void template() {
         assertThat(underTest.template()).isEqualTo(DocmosisTemplates.ORDER_V2);
     }
@@ -83,6 +91,14 @@ class C21BlankOrderDocumentParameterGeneratorTest {
             .orderTitle(TITLE)
             .orderDetails(DIRECTIONS)
             .localAuthorityName(LA_NAME)
+            .orderType(TYPE);
+    }
+
+    private C21BlankOrderDocmosisParameters.C21BlankOrderDocmosisParametersBuilder<?,?> expectedNullLaNameParameters() {
+        return C21BlankOrderDocmosisParameters.builder()
+            .orderTitle(TITLE)
+            .orderDetails(DIRECTIONS)
+            .localAuthorityName(null)
             .orderType(TYPE);
     }
 }

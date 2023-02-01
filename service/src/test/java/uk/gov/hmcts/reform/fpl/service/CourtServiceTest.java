@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -357,6 +358,19 @@ class CourtServiceTest {
                 .build();
 
             when(courtLookup.getCourts("LA1")).thenReturn(List.of(court1, court2));
+
+            final String actualEmail = underTest.getCourtCode(caseData);
+
+            assertThat(actualEmail).isEqualTo(court1.getCode());
+        }
+
+        @Test
+        void shouldReturnCourtInOrdersIfCaseLocalAuthorityIsNull() {
+            final CaseData caseData = CaseData.builder()
+                .orders(Orders.builder().court("123").build())
+                .build();
+
+            when(courtLookup.getCourtByCode("123")).thenReturn(Optional.of(court1));
 
             final String actualEmail = underTest.getCourtCode(caseData);
 

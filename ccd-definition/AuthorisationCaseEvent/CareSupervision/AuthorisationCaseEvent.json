@@ -686,7 +686,6 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-cafcass"
@@ -722,7 +721,6 @@
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
           "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "R"
@@ -797,6 +795,21 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "messageJudgeOrLegalAdviser",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "CR"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
     "AccessControl": [
       {
         "UserRoles": [
