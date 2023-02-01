@@ -379,7 +379,6 @@ class FailedPBAPaymentEventHandlerTest {
                 OrderApplicant.builder().type(LOCAL_AUTHORITY).name(caseData.getCaseLocalAuthorityName()).build()));
 
         verify(workAllocationTaskService).createWorkAllocationTask(caseData, FAILED_PAYMENT);
-
     }
 
 }
