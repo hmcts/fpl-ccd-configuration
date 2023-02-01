@@ -718,10 +718,10 @@ class DraftOrderServiceTest {
                 .build();
 
             assertThat(c21OrdersBundles).hasSize(1);
-            assertThat(c21OrdersBundles.get(0).getValue().getOrders().size()).isEqualTo(2);
+            assertThat(c21OrdersBundles.get(0).getValue().getOrders()).hasSize(2);
             assertThat(c21OrdersBundles.get(0).getValue().getOrders()).extracting(Element::getValue)
                 .containsExactly(expectedOrder, previousC21Order.getValue());
-            assertThat(draftOrdersBundles).hasSize(0);
+            assertThat(draftOrdersBundles).isEmpty();
         }
 
         @Test
