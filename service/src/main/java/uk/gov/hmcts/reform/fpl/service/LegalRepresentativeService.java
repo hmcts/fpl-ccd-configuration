@@ -54,7 +54,7 @@ public class LegalRepresentativeService {
             organisationService.findUserByEmail(userToBeAdded.getEmail())
                 .ifPresentOrElse(
                     userId -> caseService.addUser(Long.toString(caseId), userId, emptySet()),
-                    throwException(userToBeAdded)
+                    logUnableToFindUserFromOrganisationService(userToBeAdded)
                 )
         );
     }
@@ -64,5 +64,9 @@ public class LegalRepresentativeService {
             throw new IllegalArgumentException(String.format("Could not find the user with email %s",
                 userToBeAdded.getEmail()));
         };
+    }
+
+    private Runnable logUnableToFindUserFromOrganisationService(LegalRepresentative userToBeAdded) {
+        return () -> log.info(String.format("Could not find the user with email %s", userToBeAdded.getEmail()));
     }
 }
