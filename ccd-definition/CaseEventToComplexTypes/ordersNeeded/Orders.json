@@ -268,5 +268,40 @@
     "ListElementCode": "particularsOfChildrenDetails",
     "EventElementLabel": "If a child’s identity is not known, state details that will identify the child. You may enclose a recent photograph of the child in upload documents section, which should be dated.",
     "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "educationSupervisionOrderLabel",
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "educationSupervisionOrderDirectionsAppliedFor",
+    "EventElementLabel": "The order and direction(s) applied for",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "educationSupervisionOrderPriorConsultationOtherLA",
+    "EventElementLabel": "State the name of any other local authority which has been consulted:",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "CaseEventID": "ordersNeeded",
+    "CaseFieldID": "orders",
+    "ListElementCode": "educationSupervisionOrderPriorConsultationType",
+    "EventElementLabel": " ",
+    "DisplayContext": "MANDATORY"
   }
 ]
