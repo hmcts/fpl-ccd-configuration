@@ -5,7 +5,7 @@
     "ID": "submitApplication",
     "Name": "Submit application",
     "Description": "Check and send application",
-    "DisplayOrder": 17,
+    "DisplayOrder": 18,
     "PreConditionState(s)": "Open;RETURNED",
     "PostConditionState": "Submitted",
     "SecurityClassification": "Public",
