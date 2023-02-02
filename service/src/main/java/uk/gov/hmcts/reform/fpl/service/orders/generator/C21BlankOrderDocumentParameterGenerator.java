@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C21BlankOrderDocmosisPara
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -32,7 +33,8 @@ public class C21BlankOrderDocumentParameterGenerator implements DocmosisParamete
         ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
 
         String localAuthorityCode = caseData.getCaseLocalAuthority();
-        String localAuthorityName = laNameLookup.getLocalAuthorityName(localAuthorityCode);
+        String localAuthorityName = isEmpty(localAuthorityCode) ? null : laNameLookup
+            .getLocalAuthorityName(localAuthorityCode);
 
         return C21BlankOrderDocmosisParameters.builder()
             .orderTitle(getOrderTitle(caseData))
