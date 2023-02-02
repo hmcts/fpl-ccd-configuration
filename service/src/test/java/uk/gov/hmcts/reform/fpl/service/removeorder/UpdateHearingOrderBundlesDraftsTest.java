@@ -45,6 +45,29 @@ class UpdateHearingOrderBundlesDraftsTest {
     }
 
     @Test
+    void shouldRemoveFromHearingOrdersBundleSuppliedWhenOrdersInSelectedHearingBundleAreEmpty() {
+        Element<HearingOrdersBundle> selectedBundle = element(
+            HearingOrdersBundle.builder().orders(emptyList()).build());
+
+        Element<HearingOrdersBundle> otherBundle = element(HearingOrdersBundle.builder()
+            .orders(newArrayList(element(HearingOrder.builder().type(C21).build()))).build());
+
+        List<Element<HearingOrdersBundle>> hearingOrdersBundles = List.of(otherBundle, selectedBundle);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(newHashMap(Map.of("hearingOrdersBundlesDrafts", hearingOrdersBundles)))
+            .build();
+
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
+        underTest.update(selectedBundle,
+            () -> hearingOrdersBundles,
+            bundle -> caseDetailsMap.putIfNotEmpty("hearingOrdersBundlesDrafts", bundle)
+        );
+
+        assertThat(caseDetailsMap.get("hearingOrdersBundlesDrafts")).isEqualTo(List.of(otherBundle));
+    }
+
+    @Test
     void shouldReplaceHearingOrdersBundleWhenSelectedHearingBundleContainsOrders() {
         UUID selectedBundleId = UUID.randomUUID();
 
@@ -69,5 +92,35 @@ class UpdateHearingOrderBundlesDraftsTest {
         underTest.update(caseDetailsMap, hearingOrdersBundles, updatedBundle);
 
         assertThat(caseDetailsMap.get("hearingOrdersBundlesDrafts")).isEqualTo(List.of(bundle, updatedBundle));
+    }
+
+  @Test
+    void shouldReplaceHearingOrdersBundleSuppliedWhenSelectedHearingBundleContainsOrders() {
+        UUID selectedBundleId = UUID.randomUUID();
+
+        Element<HearingOrdersBundle> updatedBundle = element(selectedBundleId,
+            HearingOrdersBundle.builder()
+                .orders(newArrayList(element(HearingOrder.builder().type(AGREED_CMO).build()))).build());
+
+        Element<HearingOrdersBundle> selectedBundleBeforeUpdate = element(selectedBundleId,
+            HearingOrdersBundle.builder()
+                .orders(newArrayList(element(HearingOrder.builder().type(AGREED_CMO).build()),
+                    element(HearingOrder.builder().type(C21).build()))).build());
+
+        Element<HearingOrdersBundle> bundle = element(HearingOrdersBundle.builder()
+            .orders(newArrayList(element(HearingOrder.builder().type(C21).build()))).build());
+
+        List<Element<HearingOrdersBundle>> hearingOrdersBundles = List.of(bundle, selectedBundleBeforeUpdate);
+
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(newHashMap(Map.of("hearingOrdersBundlesDrafts", hearingOrdersBundles)))
+            .build());
+
+        underTest.update(updatedBundle,
+              () -> hearingOrdersBundles,
+              bundleToReplace -> caseDetailsMap.putIfNotEmpty("hearingOrdersBundlesDraftReview", bundleToReplace)
+        );
+
+        assertThat(caseDetailsMap.get("hearingOrdersBundlesDraftReview")).isEqualTo(List.of(bundle, updatedBundle));
     }
 }
