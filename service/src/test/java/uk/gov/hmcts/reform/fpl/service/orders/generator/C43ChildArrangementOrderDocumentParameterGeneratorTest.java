@@ -181,7 +181,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
 
     private C43ChildArrangementOrderDocmosisParameters.C43ChildArrangementOrderDocmosisParametersBuilder<?, ?>
         expectedCommonParameters() {
-        String orderDetails = String.format("%s\n\nThe Court orders", RECITALS_AND_PREAMBLES);
+        String orderDetails = String.format("The Court orders\n\n%s", RECITALS_AND_PREAMBLES);
         String directions = String.format("%s\n\n%s\n\n%s", DIRECTIONS, FURTHER_DIRECTIONS,
             CONDITIONS_MESSAGE);
         String noticeMessage = String.format(NOTICE_MESSAGE, PASSPORT_OFFICE_ADDRESS, PASSPORT_OFFICE_EMAIL);
@@ -198,7 +198,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
 
     private C43ChildArrangementOrderDocmosisParameters.C43ChildArrangementOrderDocmosisParametersBuilder<?, ?>
         expectedCommonParametersChildArrangementOrder() {
-        String orderDetails = String.format("%s%s\n\nThe Court orders", CHILD_LIVE_TEXT, RECITALS_AND_PREAMBLES);
+        String orderDetails = String.format("%sThe Court orders\n\n%s", CHILD_LIVE_TEXT, RECITALS_AND_PREAMBLES);
         String directions = String.format("%s\n\n%s\n\n%s", DIRECTIONS, FURTHER_DIRECTIONS,
             CONDITIONS_MESSAGE);
         String noticeMessage = String.format(NOTICE_MESSAGE, PASSPORT_OFFICE_ADDRESS, PASSPORT_OFFICE_EMAIL);
