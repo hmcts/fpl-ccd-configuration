@@ -2,9 +2,9 @@ package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.config.PassportOfficeConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -23,7 +23,10 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class C43ChildArrangementOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
     private final OrderMessageGenerator orderMessageGenerator;
-    private final PassportOfficeConfiguration passportOffice;
+    @Value("${contacts.passport_office.email}")
+    private String passportOfficeEmail;
+    @Value("${contacts.passport_office.address}")
+    private String passportOfficeAddress;
 
     public static final String WARNING_MESSAGE = "Where a Child Arrangements Order is in force and the arrangements "
         + "regulated by it consist of, or include, arrangements which relate to either or both (a) with whom the child "
@@ -79,8 +82,7 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
             .furtherDirections(getOrderDirections(eventData))
             .localAuthorityName(localAuthorityName)
             .noticeHeader("Notice")
-            .noticeMessage(String.format(NOTICE_MESSAGE, passportOffice.getAddress(),
-                passportOffice.getEmail()));
+            .noticeMessage(String.format(NOTICE_MESSAGE, passportOfficeAddress, passportOfficeEmail));
 
         if (isChildArrangementOrderSelected(eventData)) {
             addChildArrangementOrderWarningMessage(c43DocmosisParameters);

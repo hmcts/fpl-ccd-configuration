@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.fpl.config.PassportOfficeConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -29,7 +29,10 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
     private final ChildrenService childrenService;
     private final AppointedGuardianFormatter appointedGuardianFormatter;
     private final OrderMessageGenerator orderMessageGenerator;
-    private final PassportOfficeConfiguration passportOffice;
+    @Value("${contacts.passport_office.email}")
+    private String passportOfficeEmail;
+    @Value("${contacts.passport_office.address}")
+    private String passportOfficeAddress;
 
     private static String paragraphBreak = "\n \n";
     private static String ORDER_HEADER = "Warning \n";
@@ -75,7 +78,7 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
             .orderHeader(ORDER_HEADER)
             .orderMessage(ORDER_MESSAGE)
             .noticeHeader(NOTICE_HEADER)
-            .noticeMessage(String.format(NOTICE_MESSAGE, passportOffice.getAddress(), passportOffice.getEmail()))
+            .noticeMessage(String.format(NOTICE_MESSAGE, passportOfficeAddress, passportOfficeEmail))
             .build();
     }
 
