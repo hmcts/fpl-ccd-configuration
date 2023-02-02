@@ -801,6 +801,28 @@ class MigrateCaseServiceTest {
         }
 
         @Test
+        void shouldRevertChildNullExtensionReason() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .children1(List.of(targetChild1, otherChild))
+                .build();
+
+            Map<String, Object> resultMap = underTest.revertChildExtensionDate(caseData, MIGRATION_ID,
+                targetChild1.getId().toString(), revertedDate, null);
+
+            assertThat(resultMap).isEqualTo(Map.of(
+                "children1", List.of(
+                    element(targetChild1.getId(), Child.builder()
+                        .party(ChildParty.builder()
+                            .completionDate(revertedDate)
+                            .extensionReason(null)
+                            .build())
+                        .build()),
+                    otherChild
+                )));
+        }
+
+        @Test
         void shouldThrowExceptionIfChildNotFound() {
             CaseData caseData = CaseData.builder()
                 .id(1L)
