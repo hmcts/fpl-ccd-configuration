@@ -448,7 +448,7 @@ class DraftCMORemovalActionTest {
             .hearingOrdersBundlesDraftReview(List.of(
                 element(UUID.randomUUID(), HearingOrdersBundle.builder()
                     .orders(newArrayList(
-                        element(TO_REMOVE_ORDER_ID, draftCMO)
+                        element(UUID.randomUUID(), draftCMO)
                     )).build())
             ))
             .hearingOrdersBundlesDrafts(List.of(
@@ -470,10 +470,10 @@ class DraftCMORemovalActionTest {
             element(HEARING_ID, hearing(CASE_MANAGEMENT_ORDER_ID)),
             element(ANOTHER_HEARING_ID, hearing(null)));
 
-        when(updateCMOHearing.removeHearingLinkedToCMO(caseData, element(TO_REMOVE_ORDER_ID, draftCMO)))
+        when(updateCMOHearing.removeHearingLinkedToCMO(caseData, element(TO_REMOVE_ORDER_ID, agreedCMO)))
             .thenReturn(updatedHearings);
 
-        underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, draftCMO);
+        underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, agreedCMO);
 
 
         assertThat(caseDetailsMap).isEqualTo(Map.of(
