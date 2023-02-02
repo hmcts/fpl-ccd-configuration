@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrdersEventNotificationBuilder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
