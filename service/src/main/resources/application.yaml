@@ -65,7 +65,7 @@ fees-register:
       jurisdiction2: family court
       keyword: CareOrder
       service: public law
-    EDUCATION_SUPERVISION_ORDER:
+    EDUCATION_SUPERVISION__ORDER:
       channel: default
       event: miscellaneous
       jurisdiction1: family
@@ -250,9 +250,9 @@ scheduler:
   datasourceConf:
     name: schedulerDataSource
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${SCHEDULER_DB_HOST:localhost}:${SCHEDULER_DB_PORT:5050}/${SCHEDULER_DB_NAME:fpl_scheduler}?gssEncMode=disable
-    username: ${SCHEDULER_DB_USER:fpl_scheduler}
-    password: ${SCHEDULER_DB_PASSWORD:fpl_scheduler}
+    url: jdbc:postgresql://${SCHEDULER_DB_HOST:localhost}:${SCHEDULER_DB_PORT:6432}/${SCHEDULER_DB_NAME:postgres}?gssEncMode=disable
+    username: ${SCHEDULER_DB_USER:postgres}
+    password: ${SCHEDULER_DB_PASSWORD:postgres}
   quartzConf:
     org.quartz:
       scheduler:
@@ -270,7 +270,7 @@ scheduler:
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UpdateSummaryCaseDetails'
       cron: ${UPDATE_SUMMARY_TAB_CRON:0 0 3 ? * * *} # might be a longer running job
     - name: 'Undelivered emails'
-      enabled: true
+      enabled: false
       cronGroup: "NIGHTLY_CRON"
       description: 'Find undelivered emails'
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UndeliveredEmailsFinder'
