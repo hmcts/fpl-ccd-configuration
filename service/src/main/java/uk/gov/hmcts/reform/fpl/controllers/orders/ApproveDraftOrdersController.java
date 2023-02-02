@@ -84,9 +84,6 @@ public class ApproveDraftOrdersController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        // reset ordersToBeSent in the notifications
-        caseDetails.getData().remove("ordersToBeSent");
-
         // DFPL-1171 move all document processing step to post-about-to-submitted stage
 
         return respond(caseDetails);
@@ -107,6 +104,9 @@ public class ApproveDraftOrdersController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         Map<String, Object> data = caseDetails.getData();
+
+        // reset ordersToBeSent in the notifications
+        caseDetails.getData().remove("ordersToBeSent");
 
         if (isNotEmpty(caseData.getBundlesForApproval())) {
 

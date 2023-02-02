@@ -96,7 +96,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 @WebMvcTest(ApproveDraftOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
+class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest {
 
     private static final long CASE_ID = 12345L;
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
@@ -139,8 +139,8 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
     @Captor
     private ArgumentCaptor<Set<DocumentReference>> documArgumentCaptor;
 
-    ApproveDraftOrdersControllerSubmittedTest() {
-        super("approve-draft-orders");
+    ApproveDraftOrdersControllerPostSubmittedTest() {
+        super("approve-draft-orders/post-submit-callback");
     }
 
     @BeforeEach
