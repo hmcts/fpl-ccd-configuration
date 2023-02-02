@@ -834,9 +834,7 @@ public class FurtherEvidenceUploadedEventHandler {
 
         if (!getNewCorrespondenceDocumentsByLA(caseData, caseDataBefore).getDocumentReferences().isEmpty()
             || !getNewCorrespondenceDocumentsBySolicitor(caseData, caseDataBefore).getDocumentReferences().isEmpty()
-            || !getNewCorrespondenceDocumentsByHmtcs(caseData, caseDataBefore).getDocumentReferences().isEmpty()
         ) {
-            log.info("Creating CORRESPONDENCE_UPLOADED work allocation task for case: {}", caseData.getId());
             workAllocationTaskService.createWorkAllocationTask(caseData, CORRESPONDENCE_UPLOADED);
         }
     }
