@@ -301,7 +301,10 @@ public class DraftOrderService {
 
     private HearingOrdersBundle cloneHearingOrdersBundle(HearingOrdersBundle hearingOrdersBundle) {
         List<Element<HearingOrder>> orders = hearingOrdersBundle.getOrders().stream()
-                .map(hearingOrderElement -> element(hearingOrderElement.getValue().toBuilder().build()))
+                .map(hearingOrderElement -> element(
+                    hearingOrderElement.getId(),
+                    hearingOrderElement.getValue().toBuilder().build())
+                )
                 .collect(toList());
         HearingOrdersBundle clonedHearingOrdersBundle = hearingOrdersBundle.toBuilder()
                 .orders(new ArrayList<>())
