@@ -103,45 +103,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Dfpl1065 {
-        private final long invalidCaseId = 1643728359986136L;
-        private final long validCaseId = 1667558394262009L;
-        private final String migrationId = "DFPL-1065";
-
-        @Test
-        void shouldThrowExceptionIfWrongCaseId() {
-            CaseData caseData = CaseData.builder()
-                .id(invalidCaseId)
-                .sendToCtsc(YesNo.YES.getValue())
-                .build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format(
-                    "Migration {id = %s, case reference = %s}, case id not present in allowed list",
-                    migrationId, invalidCaseId));
-        }
-
-        @Test
-        void shouldSetSendToCtscToYes() {
-            CaseData caseData = CaseData.builder()
-                .id(validCaseId)
-                .sendToCtsc(YesNo.NO.getValue())
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId)
-            );
-
-            CaseData responseData = extractCaseData(response);
-
-            assertThat(responseData.getSendToCtsc()).isEqualTo(YesNo.YES.getValue());
-        }
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
     class Dfpl1029 {
 
         final String migrationId = "DFPL-1029";
@@ -328,10 +289,10 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Dfpl1103 {
+    class Dfpl1161 {
 
-        private final String migrationId = "DFPL-1103";
-        private final long validCaseId = 1659951867520203L;
+        private final String migrationId = "DFPL-1161";
+        private final long validCaseId = 1660209462518487L;
 
         @Test
         void shouldRemoveAllPlacementCollections() {
