@@ -75,12 +75,13 @@ public class MigrateCaseController extends CallbackController {
     }
 
     private void run1144(CaseDetails caseDetails) {
+        Map<String, Object> caseDetailsData = caseDetails.getData();
+        caseDetailsData.put("hearingOption", HearingOptions.EDIT_PAST_HEARING);
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();
         List<Element<Child>> childrenInCase = caseData.getAllChildren();
         LocalDate oldEightWeeksExtensionDate = caseData.getCaseCompletionDate();
         CaseExtensionReasonList oldReason = caseData.getCaseExtensionReasonList();
-        Map<String, Object> caseDetailsData = caseDetails.getData();
 
         if (isNotEmpty(childrenInCase) && oldReason != null) {
             log.info("Migration {id = DFPL-1144, case reference = {}} extension date migration", caseId);
@@ -96,7 +97,6 @@ public class MigrateCaseController extends CallbackController {
                 ).collect(toList());
 
             caseDetailsData.put("children1", children);
-            caseDetailsData.put("hearingOption", HearingOptions.EDIT_PAST_HEARING);
             log.info("Migration {id = DFPL-872, case reference = {}} children extension date finish", caseId);
         } else {
             log.warn("Migration {id = DFPL-872, case reference = {}, case state = {}} doesn't have an extension ",
