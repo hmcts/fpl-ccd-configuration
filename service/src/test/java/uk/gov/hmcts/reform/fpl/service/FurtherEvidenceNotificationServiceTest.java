@@ -6,13 +6,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.courtbundle.CourtBundleUploadedData;
 import uk.gov.hmcts.reform.fpl.model.notify.furtherevidence.FurtherEvidenceDocumentUploadedData;
@@ -21,11 +26,14 @@ import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.CourtBundleUploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -34,6 +42,8 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.COURT_BUNDLE_UPLOADED_NOTIFICATION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.CAFCASS_SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_PERSON_1;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_1;
@@ -42,6 +52,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
@@ -255,11 +266,12 @@ class FurtherEvidenceNotificationServiceTest {
             FurtherEvidenceDocumentUploadedData.builder().build();
 
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
-        when(furtherEvidenceUploadedEmailContentProvider.buildParameters(caseData, "Sender",
-            DOCUMENTS)).thenReturn(
+        when(furtherEvidenceUploadedEmailContentProvider.buildParametersWithHearing(caseData, "Sender",
+            DOCUMENTS, Optional.of(caseData.getHearingDetails().get(0).getValue()))).thenReturn(
             furtherEvidenceDocumentUploadedData);
 
-        furtherEvidenceNotificationService.sendNotification(caseData, recipients, "Sender", DOCUMENTS);
+        furtherEvidenceNotificationService.sendNotificationWithHearing(caseData, recipients, "Sender", DOCUMENTS,
+            Optional.of(caseData.getHearingDetails().get(0).getValue()));
 
         verify(notificationService).sendEmail(FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE, recipients,
             furtherEvidenceDocumentUploadedData, CASE_ID.toString());
@@ -275,11 +287,12 @@ class FurtherEvidenceNotificationServiceTest {
             FurtherEvidenceDocumentUploadedData.builder().build();
 
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
-        when(furtherEvidenceUploadedEmailContentProvider.buildParameters(caseData, "Sender",
-            DOCUMENTS)).thenReturn(
+        when(furtherEvidenceUploadedEmailContentProvider.buildParametersWithHearing(caseData, "Sender",
+            DOCUMENTS, Optional.of(caseData.getHearingDetails().get(0).getValue()))).thenReturn(
             furtherEvidenceDocumentUploadedData);
 
-        furtherEvidenceNotificationService.sendNotification(caseData, recipients, "Sender", DOCUMENTS);
+        furtherEvidenceNotificationService.sendNotificationWithHearing(caseData, recipients, "Sender", DOCUMENTS,
+            Optional.of(caseData.getHearingDetails().get(0).getValue()));
 
         verify(notificationService).sendEmail(DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE, recipients,
             furtherEvidenceDocumentUploadedData, CASE_ID.toString());
@@ -315,7 +328,9 @@ class FurtherEvidenceNotificationServiceTest {
     }
 
     private CaseData caseData() {
+        final List<Element<HearingBooking>> hearingBooking = wrapElements(testHearing());
         return CaseData.builder()
+            .hearingDetails(hearingBooking)
             .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY)
             .representatives(wrapElements())
@@ -336,6 +351,27 @@ class FurtherEvidenceNotificationServiceTest {
             .caseLocalAuthority(LOCAL_AUTHORITY)
             .respondents1(wrapElements(respondents))
             .children1(wrapElements(children))
+            .build();
+    }
+
+    HearingBooking testHearing() {
+        return HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .status(ADJOURNED)
+            .startDate(LocalDateTime.now())
+            .endDate(LocalDateTime.now().plusDays(1))
+            .endDateDerived("No")
+            .hearingJudgeLabel("Her Honour Judge Judy")
+            .legalAdvisorLabel("")
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
+                .judgeLastName("Judy")
+                .build())
+            .others(emptyList())
+            .venueCustomAddress(Address.builder().build())
+            .venue("96")
+            .attendance(List.of(IN_PERSON))
+            .othersNotified("")
             .build();
     }
 

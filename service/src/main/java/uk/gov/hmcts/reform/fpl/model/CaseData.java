@@ -1231,4 +1231,11 @@ public class CaseData extends CaseDataParent {
             .map(Orders::isRefuseContactWithChildApplication)
             .orElse(false);
     }
+
+    @JsonIgnore
+    public boolean isEducationSupervisionApplication() {
+        return ofNullable(getOrders())
+            .map(Orders::isEducationSupervisionOrder)
+            .orElse(false);
+    }
 }
