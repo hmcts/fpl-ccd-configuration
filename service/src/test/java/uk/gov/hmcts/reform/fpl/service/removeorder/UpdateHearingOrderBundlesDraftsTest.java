@@ -94,7 +94,7 @@ class UpdateHearingOrderBundlesDraftsTest {
         assertThat(caseDetailsMap.get("hearingOrdersBundlesDrafts")).isEqualTo(List.of(bundle, updatedBundle));
     }
 
-  @Test
+    @Test
     void shouldReplaceHearingOrdersBundleSuppliedWhenSelectedHearingBundleContainsOrders() {
         UUID selectedBundleId = UUID.randomUUID();
 
@@ -117,8 +117,8 @@ class UpdateHearingOrderBundlesDraftsTest {
             .build());
 
         underTest.update(updatedBundle,
-              () -> hearingOrdersBundles,
-              bundleToReplace -> caseDetailsMap.putIfNotEmpty("hearingOrdersBundlesDraftReview", bundleToReplace)
+            () -> hearingOrdersBundles,
+            bundleToReplace -> caseDetailsMap.putIfNotEmpty("hearingOrdersBundlesDraftReview", bundleToReplace)
         );
 
         assertThat(caseDetailsMap.get("hearingOrdersBundlesDraftReview")).isEqualTo(List.of(bundle, updatedBundle));

@@ -29,15 +29,16 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
@@ -78,7 +79,10 @@ class DraftCMORemovalActionTest {
     private DraftCMORemovalAction underTest;
 
     @Captor
-    private ArgumentCaptor<Element<HearingOrdersBundle>> hearingOrdersBundleCaptor;
+    private ArgumentCaptor<Supplier<List<Element<HearingOrdersBundle>>>> hearingOrderBundleType;
+
+    @Captor
+    private ArgumentCaptor<Consumer<List<Element<HearingOrdersBundle>>>> updatingCaseDetails;
 
     @Test
     void isAcceptedOfDraftCaseManagementOrders() {
@@ -312,7 +316,6 @@ class DraftCMORemovalActionTest {
             "draftUploadedCMOs", newArrayList(element(ANOTHER_DRAFT_CASE_MANAGEMENT_ORDER_ID, draftCMO))
         );
 
-        verify(updateOrderBundles, never()).update(hearingOrdersBundleCaptor.capture(), any(), any());
         assertThat(caseDetailsMap).containsAllEntriesOf(expectedData);
     }
 
@@ -402,12 +405,14 @@ class DraftCMORemovalActionTest {
         HearingOrder draftCMO = HearingOrder.builder().type(DRAFT_CMO).build();
         HearingOrder agreedCMO = HearingOrder.builder().type(AGREED_CMO).build();
 
+        Element<HearingOrdersBundle> selectedHeargingOrderBundle = element(HEARING_ORDER_BUNDLE_ID_ONE,
+            HearingOrdersBundle.builder()
+                .orders(newArrayList(
+                        element(TO_REMOVE_ORDER_ID, draftCMO)
+                )).build());
         CaseData caseData = CaseData.builder()
             .hearingOrdersBundlesDraftReview(List.of(
-                element(HEARING_ORDER_BUNDLE_ID_ONE, HearingOrdersBundle.builder()
-                    .orders(newArrayList(
-                        element(TO_REMOVE_ORDER_ID, draftCMO)
-                    )).build())
+                    selectedHeargingOrderBundle
             ))
             .hearingOrdersBundlesDrafts(List.of(
                 element(UUID.randomUUID(), HearingOrdersBundle.builder()
@@ -433,9 +438,18 @@ class DraftCMORemovalActionTest {
 
         underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, draftCMO);
 
+        verify(updateOrderBundles).update(eq(selectedHeargingOrderBundle),
+                hearingOrderBundleType.capture(),
+                updatingCaseDetails.capture());
+
+        assertThat(hearingOrderBundleType.getValue().get()).isEqualTo(caseData.getHearingOrdersBundlesDraftReview());
+        Consumer<List<Element<HearingOrdersBundle>>> value = updatingCaseDetails.getValue();
+        value.accept(caseData.getHearingOrdersBundlesDraftReview());
 
         assertThat(caseDetailsMap).isEqualTo(Map.of(
-            "hearingDetails", updatedHearings)
+            "hearingDetails", updatedHearings,
+            "hearingOrdersBundlesDraftReview", List.of(selectedHeargingOrderBundle)
+            )
         );
     }
 
@@ -444,6 +458,11 @@ class DraftCMORemovalActionTest {
         HearingOrder draftCMO = HearingOrder.builder().type(DRAFT_CMO).build();
         HearingOrder agreedCMO = HearingOrder.builder().type(AGREED_CMO).build();
 
+        Element<HearingOrdersBundle> selectedHeargingOrderBundle = element(UUID.randomUUID(),
+            HearingOrdersBundle.builder()
+                .orders(newArrayList(
+                        element(TO_REMOVE_ORDER_ID, agreedCMO)
+                )).build());
         CaseData caseData = CaseData.builder()
             .hearingOrdersBundlesDraftReview(List.of(
                 element(UUID.randomUUID(), HearingOrdersBundle.builder()
@@ -451,12 +470,7 @@ class DraftCMORemovalActionTest {
                         element(UUID.randomUUID(), draftCMO)
                     )).build())
             ))
-            .hearingOrdersBundlesDrafts(List.of(
-                element(UUID.randomUUID(), HearingOrdersBundle.builder()
-                    .orders(newArrayList(
-                        element(TO_REMOVE_ORDER_ID, agreedCMO)
-                    )).build())
-            ))
+            .hearingOrdersBundlesDrafts(List.of(selectedHeargingOrderBundle))
             .hearingDetails(List.of(
                 element(HEARING_ID, hearing(CASE_MANAGEMENT_ORDER_ID)),
                 element(ANOTHER_HEARING_ID, hearing(TO_REMOVE_ORDER_ID))))
@@ -475,9 +489,18 @@ class DraftCMORemovalActionTest {
 
         underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, agreedCMO);
 
+        verify(updateOrderBundles).update(eq(selectedHeargingOrderBundle),
+                hearingOrderBundleType.capture(),
+                updatingCaseDetails.capture());
+
+        assertThat(hearingOrderBundleType.getValue().get()).isEqualTo(caseData.getHearingOrdersBundlesDrafts());
+        Consumer<List<Element<HearingOrdersBundle>>> value = updatingCaseDetails.getValue();
+        value.accept(caseData.getHearingOrdersBundlesDrafts());
 
         assertThat(caseDetailsMap).isEqualTo(Map.of(
-            "hearingDetails", updatedHearings)
+            "hearingDetails", updatedHearings,
+            "hearingOrdersBundlesDrafts", List.of(selectedHeargingOrderBundle)
+            )
         );
     }
 
