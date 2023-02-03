@@ -149,6 +149,7 @@ ccd:
 
   ccd-api-gateway-web:
     nodejs:
+      disableKeyVaults: true
       releaseNameOverride: ${SERVICE_NAME}-ccd-api-gw
       imagePullPolicy: Always
       environment:
@@ -158,9 +159,10 @@ ccd:
         PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
       ingressHost: gateway-${SERVICE_FQDN}
       ingressIP: ${INGRESS_IP}
-      keyVaults: []
+
   ccd-data-store-api:
     java:
+      disableKeyVaults: true
       imagePullPolicy: Always
       devmemoryRequests: '1524Mi'
       devmemoryLimits: '2048Mi'
@@ -185,12 +187,12 @@ ccd:
         DATA_STORE_DB_OPTIONS: "?stringtype=unspecified&ssl=disable&gssEncMode=disable"
         CCD_DOCUMENT_URL_PATTERN: ^https?://(((?:dm-store-aat\.service\.core-compute-aat\.internal(?::\d+)?)\/documents\/[A-Za-z0-9-]+(?:\/binary)?))
         CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-cdam
-      keyVaults: []
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
       autoscaling:
         enabled: false
   ccd-definition-store-api:
     java:
+      disableKeyVaults: true
       devmemoryRequests: '1024Mi'
       devmemoryLimits: '2048Mi'
       devcpuRequests: '900m'
@@ -206,14 +208,14 @@ ccd:
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOST: ${SERVICE_NAME}-es-master
         WELSH_TRANSLATION_ENABLED: false
-      keyVaults: []
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
+
   ccd-user-profile-api:
     java:
+      disableKeyVaults: true
       imagePullPolicy: Always
       enviroment:
         USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
-      keyVaults: []
       ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
 
   postgresql:
@@ -225,7 +227,6 @@ ccd:
   elasticsearch:
     nameOverride: ${SERVICE_NAME}-es
     clusterName: "es"
-    imageTag: "7.17.0"
     replicas: 1
     minimumMasterNodes: 1
     antiAffinity: "soft"
@@ -237,13 +238,6 @@ ccd:
         value: ""
     persistence:
       enabled: false
-    ingress:
-      enabled: true
-      annotations:
-        kubernetes.io/ingress.class: traefik
-      path: /
-      hosts:
-        - es-${SERVICE_FQDN}
 
   logstash:
     image:
@@ -310,6 +304,7 @@ aac-manage-case-assignment:
 ccd-case-document-am-api:
   enabled: true
   java:
+    disableKeyVaults: true
     releaseNameOverride: ${SERVICE_NAME}-cdam
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ccd/case-document-am-api:latest
@@ -322,4 +317,3 @@ ccd-case-document-am-api:
       DM_STORE_BASE_URL: http://dm-store-aat.service.core-compute-aat.internal
       CCD_DATA_STORE_API_BASE_URL: http://${SERVICE_NAME}-ccd-data-store-api
       CASE_DOCUMENT_AM_API_S2S_SECRET: ${CCD_CASE_DOCUMENT_AM_API_SECRET}
-    keyVaults: []

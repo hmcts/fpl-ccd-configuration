@@ -13,11 +13,13 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
+import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
+import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
 import java.time.LocalDate;
@@ -42,17 +44,20 @@ public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
 
     private final MigrateCaseService migrateCaseService;
+    private final DocumentListService documentListService;
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-1012", this::run1012,
         "DFPL-1064", this::run1064,
-        "DFPL-872", this::run872,
+        "DFPL-1144", this::run1144,
         "DFPL-1065", this::run1065,
         "DFPL-872rollback", this::run872Rollback,
         "DFPL-1029", this::run1029,
         "DFPL-1161", this::run1161,
-        "DFPL-1081", this::run1081
+        "DFPL-1162", this::run1162,
+        "DFPL-1156", this::run1156,
+        "DFPL-1072", this::run1072
     );
 
     @PostMapping("/about-to-submit")
@@ -75,16 +80,17 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private void run872(CaseDetails caseDetails) {
+    private void run1144(CaseDetails caseDetails) {
+        Map<String, Object> caseDetailsData = caseDetails.getData();
+        caseDetailsData.put("hearingOption", HearingOptions.EDIT_PAST_HEARING);
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();
         List<Element<Child>> childrenInCase = caseData.getAllChildren();
         LocalDate oldEightWeeksExtensionDate = caseData.getCaseCompletionDate();
         CaseExtensionReasonList oldReason = caseData.getCaseExtensionReasonList();
-        Map<String, Object> caseDetailsData = caseDetails.getData();
 
         if (isNotEmpty(childrenInCase) && oldReason != null) {
-            log.info("Migration {id = DFPL-872, case reference = {}} extension date migration", caseId);
+            log.info("Migration {id = DFPL-1144, case reference = {}} extension date migration", caseId);
 
             List<Element<Child>> children = childrenInCase.stream()
                 .map(element -> element(element.getId(),
@@ -201,11 +207,26 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove("placementsNonConfidentialNotices");
     }
 
-    private void run1081(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1081";
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1643819301061903L, migrationId);
+    private void run1156(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1156";
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(),1668086461879587L, migrationId);
 
-        caseDetails.getData().putAll(migrateCaseService.removeHearingBooking(getCaseData(caseDetails),
-            migrationId, UUID.fromString("bbad9942-e682-4cb7-a05a-7963c3c96fd6")));
+        caseDetails.getData().putAll(migrateCaseService.removeApplicationDocument(getCaseData(caseDetails),
+            migrationId, UUID.fromString("1862581c-b628-4fc8-afb8-8576d3def0f1")));
+        CaseDetails details = CaseDetails.builder().data(caseDetails.getData()).build();
+        caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(details)));
+    }
+
+    private void run1162(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1162";
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1673628190034209L, migrationId);
+        migrateCaseService.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(getCaseData(caseDetails),
+            migrationId, "PO23C50013 HCC V Carter EPO with remote hearing directions march 2021.pdf");
+
+        caseDetails.getData().remove("urgentHearingOrder");
+    }
+
+    private void run1072(CaseDetails caseDetails) {
+        caseDetails.getData().putAll(migrateCaseService.updateIncorrectCourtCodes(getCaseData(caseDetails)));
     }
 }

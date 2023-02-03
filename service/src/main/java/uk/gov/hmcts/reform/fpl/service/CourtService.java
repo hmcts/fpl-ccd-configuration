@@ -16,10 +16,12 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.Collections;
 import java.util.Optional;
 
+import static java.lang.String.format;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.naturalOrder;
 import static java.util.Comparator.nullsFirst;
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -114,8 +116,22 @@ public class CourtService {
         if (YesNo.YES.equals(caseData.getMultiCourts())) {
             return null;
         }
-
-        return courtLookup.getCourts(caseData.getCaseLocalAuthority()).get(0);
+        String localAuthorityCode = caseData.getCaseLocalAuthority();
+        if (isEmpty(localAuthorityCode)) {
+            // try to get the court selected in "Orders and direction sought" section
+            // this is the case for standalone application submitted by solicitors
+            // who do not have court info from onboarding configs
+            Optional<String> courtCode = Optional.ofNullable(caseData.getOrders()).map(o -> o.getCourt());
+            if (courtCode.isPresent()) {
+                return courtLookup.getCourtByCode(courtCode.get())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                        format("Fail to lookup court by court code: {}", courtCode.get())));
+            } else {
+                throw new IllegalArgumentException(
+                    format("unexpected missing court information (case id: {})", caseData.getId()));
+            }
+        }
+        return courtLookup.getCourts(localAuthorityCode).get(0);
     }
 
     private String getSelectedCourtEmail(final CaseData caseData) {
