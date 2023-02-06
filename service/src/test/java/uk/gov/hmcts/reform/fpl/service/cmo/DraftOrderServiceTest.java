@@ -625,7 +625,7 @@ class DraftOrderServiceTest {
             service.updateCase(eventData, hearings, emptyList(), ordersBundles);
 
             HearingOrdersBundle expectedOrdersBundle = originalOrdersBundle.toBuilder()
-                .orders(newArrayList(cmoOrder, hearingOrder1, hearingOrder2, hearingOrder1, hearingOrder3))
+                .orders(newArrayList(cmoOrder, hearingOrder1, hearingOrder2, hearingOrder3))
                 .build();
 
             assertThat(ordersBundles).hasSize(1).first()
