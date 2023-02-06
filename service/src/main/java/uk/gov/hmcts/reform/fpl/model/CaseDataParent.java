@@ -50,8 +50,4 @@ public class CaseDataParent {
     protected final GroundsForContactWithChild groundsForContactWithChild;
 
     protected final YesNo skipPaymentPage;
-
-    @NotNull(message = "Add the grounds for the application")
-    @Valid
-    protected final GroundsForEducationSupervisionOrder groundsForEducationSupervisionOrder;
 }

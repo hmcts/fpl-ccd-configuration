@@ -3,13 +3,38 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "messageJudgeOrLegalAdviser",
-    "CaseFieldID": "isJudiciary",
-    "PageDisplayOrder": 2,
+    "CaseFieldID": "hasJudicialMessages",
     "PageFieldDisplayOrder": 1,
-    "PageID": "NewMessageMetaData",
     "DisplayContext": "READONLY",
+    "PageID": "messageJudgeOptions",
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "hasAdditionalApplications=\"DO NOT SHOW\""
+    "PageDisplayOrder": 1,
+    "FieldShowCondition": "messageJudgeOption=\"DO_NOT_SHOW\"",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/message-judge/mid-event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "messageJudgeOrLegalAdviser",
+    "CaseFieldID": "messageJudgeOption",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY",
+    "PageID": "messageJudgeOptions",
+    "ShowSummaryChangeOption": "N",
+    "PageDisplayOrder": 1,
+    "PageShowCondition": "hasJudicialMessages=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "messageJudgeOrLegalAdviser",
+    "CaseFieldID": "judicialMessageDynamicList",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "PageID": "messageJudgeOptions",
+    "ShowSummaryChangeOption": "N",
+    "PageDisplayOrder": 1,
+    "FieldShowCondition": "messageJudgeOption=\"REPLY\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -34,6 +59,7 @@
     "PageID": "NewMessageMetaData",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2,
+    "PageShowCondition": "messageJudgeOption!=\"REPLY\"",
     "FieldShowCondition": "hasAdditionalApplications=\"Yes\""
   },
   {
@@ -68,7 +94,8 @@
     "DisplayContext": "READONLY",
     "PageID": "NewMessageNote",
     "ShowSummaryChangeOption": "N",
-    "PageDisplayOrder": 3
+    "PageDisplayOrder": 3,
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/message-judge/validate/mid-event"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -86,11 +113,24 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "messageJudgeOrLegalAdviser",
+    "CaseFieldID": "judicialMessageReply",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "COMPLEX",
+    "PageID": "NewMessageNote",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 3,
+    "FieldShowCondition": "messageJudgeOption=\"REPLY\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageNote",
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
     "PageID": "NewMessageNote",
     "ShowSummaryChangeOption": "Y",
-    "PageDisplayOrder": 3
+    "PageDisplayOrder": 3,
+    "FieldShowCondition": "messageJudgeOption!=\"REPLY\""
   }
 ]

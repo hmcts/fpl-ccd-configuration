@@ -8,14 +8,12 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @Service
 public class RespondentsCommonFormatHelper {
@@ -51,8 +49,7 @@ public class RespondentsCommonFormatHelper {
 
     public static String getRespondentsForTab(CaseData caseData, Selector orderSelector) {
         StringBuilder builder = new StringBuilder();
-        List<String> selected = getSelectedARespondents(caseData, orderSelector, caseData.getManageOrdersEventData()
-            .getAdditionalAppointedSpecialGuardians());
+        List<String> selected = getSelectedARespondents(caseData, orderSelector);
 
         if (selected.isEmpty()) {
             return null;
@@ -64,11 +61,6 @@ public class RespondentsCommonFormatHelper {
     }
 
     public static List<String> getSelectedARespondents(CaseData caseData, Selector orderSelector) {
-        return getSelectedARespondents(caseData, orderSelector, null);
-    }
-
-    public static List<String> getSelectedARespondents(CaseData caseData, Selector orderSelector,
-                                                       String additionalNamesSeparatedByNewline) {
         List<String> selectedApplicants = new ArrayList<>();
         List<String> selected;
 
@@ -86,15 +78,11 @@ public class RespondentsCommonFormatHelper {
                 .map(respondentsAndOthersNames::get)
                 .collect(Collectors.toList());
 
-        if (isNotEmpty(additionalNamesSeparatedByNewline)) {
-            selected.addAll(Arrays.asList(additionalNamesSeparatedByNewline.split("\n")));
-        }
-
         for (int i = 0; i < selected.size(); i++) {
             String name = selected.get(i);
+
             if (i >= 1) {
-                String text = (selected.size() - 1) == i ? " and %s" : ", %s";
-                selectedApplicants.add(String.format(text, name));
+                selectedApplicants.add(String.format(", %s", name));
             } else {
                 selectedApplicants.add(String.format("%s", name));
             }

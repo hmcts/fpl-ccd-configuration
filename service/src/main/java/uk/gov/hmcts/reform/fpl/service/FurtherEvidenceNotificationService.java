@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
@@ -14,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmai
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.COURT_BUNDLE_UPLOADED_NOTIFICATION;
@@ -99,21 +97,14 @@ public class FurtherEvidenceNotificationService {
     public void sendNotification(CaseData caseData, Set<String> recipients,
                                  String sender, List<String> newNonConfidentialDocuments) {
 
-        sendNotificationWithHearing(caseData, recipients, sender, newNonConfidentialDocuments, Optional.empty());
-    }
-
-    public void sendNotificationWithHearing(CaseData caseData, Set<String> recipients,
-                                            String sender, List<String> newNonConfidentialDocuments,
-                                            Optional<HearingBooking> hearingBooking) {
-
         String notificationTemplate = featureToggleService.isNewDocumentUploadNotificationEnabled()
             ? DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE : FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
 
         if (!recipients.isEmpty()) {
             notificationService.sendEmail(notificationTemplate,
                 recipients,
-                furtherEvidenceUploadedEmailContentProvider.buildParametersWithHearing(caseData, sender,
-                    newNonConfidentialDocuments, hearingBooking),
+                furtherEvidenceUploadedEmailContentProvider.buildParameters(caseData, sender,
+                    newNonConfidentialDocuments),
                 caseData.getId().toString());
         }
     }

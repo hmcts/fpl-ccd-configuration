@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.utils.elasticsearch;
 
-public interface ESClause<T> {
-    T toMap();
+import java.util.Map;
+
+public interface ESClause {
+    Map<String, Object> toMap();
 }

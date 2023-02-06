@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.enums.ChildRecoveryOrderGround;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.ParticularsOfChildren;
-import uk.gov.hmcts.reform.fpl.enums.PriorConsultationType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderGround;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderSection;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -34,7 +33,6 @@ import uk.gov.hmcts.reform.fpl.model.GroundsForChildAssessmentOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForChildRecoveryOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForContactWithChild;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
-import uk.gov.hmcts.reform.fpl.model.GroundsForEducationSupervisionOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForRefuseContactWithChild;
 import uk.gov.hmcts.reform.fpl.model.GroundsForSecureAccommodationOrder;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
@@ -54,7 +52,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC14Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC15Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC16Supplement;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC17Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC18Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC20Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
@@ -679,74 +676,6 @@ class CaseSubmissionGenerationServiceTest {
     }
 
     @Nested
-    class DocmosisC17SupplementTest {
-
-        @Test
-        void shouldPopulateC17Supplement() {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
-                .orders(givenCaseData.getOrders().toBuilder()
-                    .orderType(of(OrderType.EDUCATION_SUPERVISION__ORDER))
-                    .educationSupervisionOrderDirectionsAppliedFor("direction applied")
-                    .educationSupervisionOrderPriorConsultationOtherLA("other LA")
-                    .educationSupervisionOrderPriorConsultationType(List.of(PriorConsultationType.PROVIDE_ACCOMMODATION,
-                        PriorConsultationType.WITHIN_THE_LIVING_AREA))
-                    .build())
-                .groundsForEducationSupervisionOrder(GroundsForEducationSupervisionOrder.builder()
-                    .groundDetails("ground detail").build())
-                .build();
-
-            DocmosisC17Supplement supplement = underTest.getC17SupplementData(updatedCaseData, false);
-            assertThat(supplement.getDirectionsAppliedFor()).isEqualTo("direction applied");
-            assertThat(supplement.getPriorConsultationOtherLA()).isEqualTo("other LA");
-            assertThat(supplement.getPriorConsultationType()).isEqualTo(List.of(
-                "The other local authority is the authority providing the children with accommodation "
-                + "or on whose behalf the children are being provided with accommodation.",
-                "The other local authority is the authority within whose area the children live, "
-                + "or will live."
-            ));
-            assertThat(supplement.getGroundReason()).isEqualTo("ground detail");
-        }
-
-        @Test
-        void shouldNotPopulateDraftWatermarkOrSealIfDraft() {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
-                .orders(givenCaseData.getOrders().toBuilder()
-                    .orderType(of(OrderType.EDUCATION_SUPERVISION__ORDER))
-                    .educationSupervisionOrderDirectionsAppliedFor("direction applied")
-                    .educationSupervisionOrderPriorConsultationOtherLA("other LA")
-                    .educationSupervisionOrderPriorConsultationType(List.of(PriorConsultationType.PROVIDE_ACCOMMODATION,
-                        PriorConsultationType.WITHIN_THE_LIVING_AREA))
-                    .build())
-                .groundsForEducationSupervisionOrder(GroundsForEducationSupervisionOrder.builder()
-                    .groundDetails("ground detail").build())
-                .build();
-
-            DocmosisC17Supplement supplement = underTest.getC17SupplementData(updatedCaseData, true);
-            assertThat(supplement.getDraftWaterMark()).isNotEmpty();
-            assertThat(supplement.getCourtSeal()).isNullOrEmpty();
-        }
-
-        @Test
-        void shouldPopulateDraftWatermarkOrSealIfNotDraft() {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
-                .orders(givenCaseData.getOrders().toBuilder()
-                    .orderType(of(OrderType.EDUCATION_SUPERVISION__ORDER))
-                    .educationSupervisionOrderDirectionsAppliedFor("direction applied")
-                    .educationSupervisionOrderPriorConsultationOtherLA("other LA")
-                    .educationSupervisionOrderPriorConsultationType(List.of(PriorConsultationType.PROVIDE_ACCOMMODATION,
-                        PriorConsultationType.WITHIN_THE_LIVING_AREA))
-                    .build())
-                .groundsForEducationSupervisionOrder(GroundsForEducationSupervisionOrder.builder()
-                    .groundDetails("ground detail").build())
-                .build();
-
-            DocmosisC17Supplement supplement = underTest.getC17SupplementData(updatedCaseData, false);
-            assertThat(supplement.getDraftWaterMark()).isNullOrEmpty();
-            assertThat(supplement.getCourtSeal()).isNotEmpty();
-        }
-    }
-
-    @Nested
     class DocmosisC18SupplementTest {
 
         @Test
@@ -928,7 +857,7 @@ class CaseSubmissionGenerationServiceTest {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
                     .orderType(of(OrderType.CARE_ORDER,
-                        OrderType.EDUCATION_SUPERVISION__ORDER))
+                        OrderType.EDUCATION_SUPERVISION_ORDER))
                     .build())
                 .build();
 

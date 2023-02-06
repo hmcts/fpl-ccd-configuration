@@ -36,7 +36,6 @@ import static java.util.Comparator.comparing;
 import static java.util.Comparator.reverseOrder;
 import static java.util.Objects.isNull;
 import static java.util.function.Predicate.not;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
@@ -140,7 +139,7 @@ public class UploadAdditionalApplicationsService {
             .id(UUID.randomUUID())
             .applicantName(applicantName)
             .author(uploadedBy)
-            .document(temporaryC2Document.getDocument())
+            .document(getDocumentToStore(temporaryC2Document.getDocument()))
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
             .supplementsBundle(updatedSupplementsBundle)
             .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
@@ -170,28 +169,10 @@ public class UploadAdditionalApplicationsService {
             .applicantName(applicantName)
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
             .applicationType(temporaryOtherApplicationsBundle.getApplicationType())
-            .document(temporaryOtherApplicationsBundle.getDocument())
+            .document(getDocumentToStore(temporaryOtherApplicationsBundle.getDocument()))
             .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
             .supplementsBundle(updatedSupplementsBundle)
             .respondents(respondentsInCase)
-            .build();
-    }
-
-    public OtherApplicationsBundle convertOtherBundle(OtherApplicationsBundle bundle) {
-        return bundle.toBuilder()
-            .document(getDocumentToStore(bundle.getDocument()))
-            .supplementsBundle(!isEmpty(bundle.getSupplementsBundle())
-                ? getSupplementsBundleConverted(bundle.getSupplementsBundle())
-                 : List.of())
-            .build();
-    }
-
-    public C2DocumentBundle convertC2Bundle(C2DocumentBundle bundle) {
-        return bundle.toBuilder()
-            .document(getDocumentToStore(bundle.getDocument()))
-            .supplementsBundle(!isEmpty(bundle.getSupplementsBundle())
-                ? getSupplementsBundleConverted(bundle.getSupplementsBundle())
-                : List.of())
             .build();
     }
 
@@ -207,25 +188,15 @@ public class UploadAdditionalApplicationsService {
         return supportingEvidenceBundle;
     }
 
-    private List<Element<Supplement>> getSupplementsBundleConverted(List<Element<Supplement>> supplementsBundle) {
-        return supplementsBundle.stream().map(supplementElement -> {
-            Supplement incomingSupplement = supplementElement.getValue();
-
-            Supplement modifiedSupplement = incomingSupplement.toBuilder()
-                .document(getDocumentToStore(incomingSupplement.getDocument()))
-                .build();
-
-            return supplementElement.toBuilder().value(modifiedSupplement).build();
-        }).collect(Collectors.toList());
-    }
-
     private List<Element<Supplement>> getSupplementsBundle(
         List<Element<Supplement>> supplementsBundle, String uploadedBy, LocalDateTime dateTime) {
 
         return supplementsBundle.stream().map(supplementElement -> {
             Supplement incomingSupplement = supplementElement.getValue();
 
+            DocumentReference pdfDocument = getDocumentToStore(incomingSupplement.getDocument());
             Supplement modifiedSupplement = incomingSupplement.toBuilder()
+                .document(pdfDocument)
                 .dateTimeUploaded(dateTime)
                 .uploadedBy(uploadedBy)
                 .build();

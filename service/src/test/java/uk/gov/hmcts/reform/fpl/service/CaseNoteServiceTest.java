@@ -24,7 +24,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -87,16 +86,6 @@ class CaseNoteServiceTest {
         List<Element<CaseNote>> caseNotes = service.addNoteToList(newNote, wrapElements(oldNote));
 
         assertThat(unwrapElements(caseNotes)).isEqualTo(List.of(oldNote, newNote));
-    }
-
-    @Test
-    void shouldRemoveCaseNote() {
-        Element<CaseNote> caseNote = element(caseNoteForToday("Note to remove"));
-        List<Element<CaseNote>> existingNotes = List.of(caseNote);
-
-        List<Element<CaseNote>> result = service.removeCaseNote(caseNote.getId(), existingNotes);
-
-        assertThat(result).doesNotContain(caseNote).isEmpty();
     }
 
     private CaseNote caseNoteForToday(String note) {

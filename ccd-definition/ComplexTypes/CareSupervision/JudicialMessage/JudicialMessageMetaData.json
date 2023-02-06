@@ -2,27 +2,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessageMetaData",
-    "ListElementCode": "senderType",
-    "FieldType": "FixedList",
-    "FieldTypeParameter": "JudicialMessageSenderRoleTypes",
-    "ElementLabel": "Sender",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "JudicialMessageMetaData",
     "ListElementCode": "sender",
     "FieldType": "Email",
     "ElementLabel": "Sender's email address",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "JudicialMessageMetaData",
-    "ListElementCode": "recipientType",
-    "FieldType": "FixedList",
-    "FieldTypeParameter": "JudicialMessageRoleTypes",
-    "ElementLabel": "Recipient",
     "SecurityClassification": "Public"
   },
   {

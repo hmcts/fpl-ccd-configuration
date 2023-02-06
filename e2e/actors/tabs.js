@@ -1,4 +1,3 @@
-const assert = require('assert');
 const TAB_CLASS_SELECTOR = '//mat-tab-body';
 
 function tabFieldSelector(pathToField) {
@@ -68,20 +67,6 @@ module.exports = {
       });
     } else {
       this.seeElement(locate(fieldSelector).withText(fieldValue));
-    }
-  },
-
-  assertValueInTab: function (pathToField, fieldValue) {
-    const fieldSelector = tabFieldSelector(pathToField);
-
-    if (Array.isArray(fieldValue)) {
-      fieldValue.forEach((value, index) => {
-        let actualValue = this.grabValueFrom(`${fieldSelector}//tr[${index + 1}]`);
-        assert.strictEqual(actualValue, value);
-      });
-    } else {
-      let actualValue = this.grabValueFrom(fieldSelector);
-      assert.strictEqual(actualValue, fieldValue);
     }
   },
 

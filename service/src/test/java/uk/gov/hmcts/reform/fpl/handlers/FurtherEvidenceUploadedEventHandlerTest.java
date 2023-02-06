@@ -11,16 +11,13 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
-import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
-import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
@@ -34,7 +31,6 @@ import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
@@ -69,9 +65,6 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.BIRTH_CERTIFICATE;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE;
-import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.ALL_LAS;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.CHILD_SOLICITOR;
@@ -1318,30 +1311,21 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldSendNotificationWhenHearingDocumentsIsUploaded() {
-        final List<Element<HearingBooking>> hearingBooking = wrapElements(testHearing());
-        final String hearingBookingLabel = hearingBooking.get(0).getValue().toLabel();
         final List<Element<CaseSummary>> caseSummaryList = wrapElements(
-            CaseSummary.builder().hearing(hearingBookingLabel)
-                .document(TestDataHelper.testDocumentReference("CaseSummary 1.pdf")).build(),
-            CaseSummary.builder().hearing(hearingBookingLabel)
-                .document(TestDataHelper.testDocumentReference("CaseSummary 2.pdf")).build());
+            CaseSummary.builder().document(TestDataHelper.testDocumentReference("CaseSummary 1.pdf")).build(),
+            CaseSummary.builder().document(TestDataHelper.testDocumentReference("CaseSummary 2.pdf")).build());
         final List<Element<PositionStatementChild>> positionStatementChildList = wrapElements(
             PositionStatementChild.builder()
-                .hearing(hearingBookingLabel)
                 .document(TestDataHelper.testDocumentReference("PositionStatementChild.pdf")).build());
         final List<Element<PositionStatementRespondent>> positionStatementRespondentList = wrapElements(
             PositionStatementRespondent.builder()
-                .hearing(hearingBookingLabel)
                 .document(TestDataHelper.testDocumentReference("PositionStatementRespondent.pdf")).build());
         final List<Element<SkeletonArgument>> skeletonArgumentList = wrapElements(
             SkeletonArgument.builder()
-                .hearing(hearingBookingLabel)
                 .document(TestDataHelper.testDocumentReference("SkeletonArgument.pdf")).build());
-
 
         CaseData caseDataBefore = buildSubmittedCaseData();
         CaseData caseData = buildSubmittedCaseData().toBuilder()
-            .hearingDetails(hearingBooking)
             .hearingDocuments(HearingDocuments.builder()
                 .caseSummaryList(caseSummaryList)
                 .skeletonArgumentList(skeletonArgumentList)
@@ -1375,8 +1359,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 "PositionStatementRespondent.pdf", "SkeletonArgument.pdf");
 
         verify(furtherEvidenceNotificationService)
-            .sendNotificationWithHearing(caseData, expectedRecipients, userDetails.getFullName(),
-                expectedNewDocumentName, Optional.of(caseData.getHearingDetails().get(0).getValue()));
+            .sendNotification(caseData, expectedRecipients, userDetails.getFullName(), expectedNewDocumentName);
     }
 
     @Test
@@ -1540,27 +1523,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 EMPTY_CASE_DATA_MODIFIER,
                 EMPTY_CASE_DATA_MODIFIER,
                 emptyList());
-    }
-
-    HearingBooking testHearing() {
-        return HearingBooking.builder()
-            .type(CASE_MANAGEMENT)
-            .status(ADJOURNED)
-            .startDate(LocalDateTime.now())
-            .endDate(LocalDateTime.now().plusDays(1))
-            .endDateDerived("No")
-            .hearingJudgeLabel("Her Honour Judge Judy")
-            .legalAdvisorLabel("")
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
-                .judgeLastName("Judy")
-                .build())
-            .others(emptyList())
-            .venueCustomAddress(Address.builder().build())
-            .venue("96")
-            .attendance(List.of(IN_PERSON))
-            .othersNotified("")
-            .build();
     }
 
     private static List<String> buildNonConfidentialDocumentsNamesList() {

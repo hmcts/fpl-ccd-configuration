@@ -10,9 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.LegalRepresentativesChange;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.utils.extension.TestLogger;
-import uk.gov.hmcts.reform.fpl.utils.extension.TestLogs;
-import uk.gov.hmcts.reform.fpl.utils.extension.TestLogsExtension;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,11 +25,9 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ExtendWith({MockitoExtension.class, TestLogsExtension.class})
+@ExtendWith(MockitoExtension.class)
 class LegalRepresentativeServiceTest {
 
-    @TestLogs
-    private TestLogger logs = new TestLogger(LegalRepresentativeService.class);
     @Mock
     private List<LegalRepresentative> originalRepresentatives;
     @Mock
@@ -176,9 +171,12 @@ class LegalRepresentativeServiceTest {
                 .build()
         );
 
-        underTest.updateRepresentatives(CASE_ID, originalRepresentatives, updatedRepresentatives);
+        Exception exception = assertThrows(IllegalArgumentException.class,
+            () -> underTest.updateRepresentatives(CASE_ID, originalRepresentatives, updatedRepresentatives)
+        );
+
+        assertThat(exception.getMessage()).isEqualTo(String.format("Could not find the user with email %s",
+            REPRESENTATIVE_EMAIL_1));
         verifyNoInteractions(caseService);
-        assertThat(logs.getInfos())
-            .containsExactly(String.format("Could not find the user with email %s", REPRESENTATIVE_EMAIL_1));
     }
 }

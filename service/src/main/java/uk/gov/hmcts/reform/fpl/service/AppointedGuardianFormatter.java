@@ -18,8 +18,7 @@ public class AppointedGuardianFormatter {
     public String getGuardiansNamesForDocument(CaseData caseData) {
         StringBuilder builder = new StringBuilder();
         List<String> selected = RespondentsCommonFormatHelper
-            .getSelectedARespondents(caseData, caseData.getAppointedGuardianSelector(),
-                caseData.getManageOrdersEventData().getAdditionalAppointedSpecialGuardians());
+            .getSelectedARespondents(caseData, caseData.getAppointedGuardianSelector());
 
         selected.forEach(builder::append);
         appendChildGrammarVerb(builder, selected.size() > 1);

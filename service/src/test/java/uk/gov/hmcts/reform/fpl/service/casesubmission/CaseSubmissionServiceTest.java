@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC14Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC15Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC16Supplement;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC17Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC18Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC20Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
@@ -40,13 +39,11 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C110A;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C14_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C15_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C16_SUPPLEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C17_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C18_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C20_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisC14Supplement;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisC15Supplement;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisC16Supplement;
-import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisC17Supplement;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisC18Supplement;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisC20Supplement;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisCaseSubmission;
@@ -82,7 +79,6 @@ class CaseSubmissionServiceTest {
     private DocmosisC14Supplement expectedC14Supplement;
     private DocmosisC15Supplement expectedC15Supplement;
     private DocmosisC16Supplement expectedC16Supplement;
-    private DocmosisC17Supplement expectedC17Supplement;
     private DocmosisC18Supplement expectedC18Supplement;
     private DocmosisC20Supplement expectedC20Supplement;
 
@@ -92,7 +88,6 @@ class CaseSubmissionServiceTest {
         expectedC14Supplement = expectedDocmosisC14Supplement();
         expectedC15Supplement = expectedDocmosisC15Supplement();
         expectedC16Supplement = expectedDocmosisC16Supplement();
-        expectedC17Supplement = expectedDocmosisC17Supplement();
         expectedC18Supplement = expectedDocmosisC18Supplement();
         expectedC20Supplement = expectedDocmosisC20Supplement();
         given(templateDataGenerationService.getTemplateData(any())).willReturn(expectedCaseSubmission);
@@ -102,8 +97,6 @@ class CaseSubmissionServiceTest {
             .willReturn(expectedC15Supplement);
         given(templateDataGenerationService.getC16SupplementData(any(), anyBoolean()))
             .willReturn(expectedC16Supplement);
-        given(templateDataGenerationService.getC17SupplementData(any(), anyBoolean()))
-            .willReturn(expectedC17Supplement);
         given(templateDataGenerationService.getC18SupplementData(any(), anyBoolean()))
             .willReturn(expectedC18Supplement);
         given(templateDataGenerationService.getC20SupplementData(any(), anyBoolean()))
@@ -234,26 +227,6 @@ class CaseSubmissionServiceTest {
 
         DocmosisData c16Supplement = caseSubmissionSupplementDataCaptor.getValue();
         assertThat(c16Supplement).isEqualTo(expectedC16Supplement);
-
-        verify(uploadDocumentService).uploadPDF(eq(PDF), any());
-    }
-
-    @Test
-    void shouldGenerateC17SupplementSuccessfully() {
-        CaseData caseData = givenCaseData.toBuilder()
-            .orders(givenCaseData.getOrders().toBuilder()
-                .orderType(List.of(OrderType.EDUCATION_SUPERVISION__ORDER))
-                .build())
-            .build();
-        caseSubmissionService.generateC1SupplementPDF(caseData, false);
-
-        verify(documentGeneratorService).generateDocmosisDocument(caseSubmissionSupplementDataCaptor.capture(),
-            eq(C17_SUPPLEMENT),
-            eq(RenderFormat.PDF),
-            eq(Language.ENGLISH));
-
-        DocmosisData c17Supplement = caseSubmissionSupplementDataCaptor.getValue();
-        assertThat(c17Supplement).isEqualTo(expectedC17Supplement);
 
         verify(uploadDocumentService).uploadPDF(eq(PDF), any());
     }

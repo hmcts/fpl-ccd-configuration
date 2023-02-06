@@ -149,7 +149,7 @@ class HearingOrdersBundleTest {
         }
 
         @Test
-        void shouldUpdateC21() {
+        void shouldReplaceC21() {
             Element<HearingOrder> originalHearingOrder1 = hearingOrder(AGREED_CMO);
             Element<HearingOrder> originalHearingOrder2 = hearingOrder(C21);
             Element<HearingOrder> newHearingOrder1 = hearingOrder(C21);
@@ -164,14 +164,14 @@ class HearingOrdersBundleTest {
             originalOrdersBundle.updateOrders(hearingOrders, C21);
 
             HearingOrdersBundle expectedOrdersBundle = originalOrdersBundle.toBuilder()
-                .orders(newArrayList(originalHearingOrder1, originalHearingOrder2, newHearingOrder1, newHearingOrder2))
+                .orders(newArrayList(originalHearingOrder1, newHearingOrder1, newHearingOrder2))
                 .build();
 
             assertThat(originalOrdersBundle).isEqualTo(expectedOrdersBundle);
         }
 
         @Test
-        void shouldUpdateCmo() {
+        void shouldReplaceCmo() {
             Element<HearingOrder> originalHearingOrder1 = hearingOrder(AGREED_CMO);
             Element<HearingOrder> originalHearingOrder2 = hearingOrder(C21);
             Element<HearingOrder> newHearingOrder1 = hearingOrder(AGREED_CMO);
@@ -185,7 +185,7 @@ class HearingOrdersBundleTest {
             originalOrdersBundle.updateOrders(hearingOrders, AGREED_CMO);
 
             HearingOrdersBundle expectedOrdersBundle = originalOrdersBundle.toBuilder()
-                .orders(newArrayList(originalHearingOrder1, newHearingOrder1, originalHearingOrder2))
+                .orders(newArrayList(newHearingOrder1, originalHearingOrder2))
                 .build();
 
             assertThat(originalOrdersBundle).isEqualTo(expectedOrdersBundle);

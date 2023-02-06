@@ -66,9 +66,6 @@ public class CaseSubmissionService {
         } else if (caseData.isContactWithChildInCareApplication()) {
             return generateSupplementPDF(caseData, isDraft, DocmosisTemplates.C15_SUPPLEMENT,
                 documentGenerationService.getC15SupplementData(caseData, isDraft));
-        } else if (caseData.isEducationSupervisionApplication()) {
-            return generateSupplementPDF(caseData, isDraft, DocmosisTemplates.C17_SUPPLEMENT,
-                documentGenerationService.getC17SupplementData(caseData, isDraft));
         } else {
             return generateSupplementPDF(caseData, isDraft, DocmosisTemplates.C16_SUPPLEMENT,
                 documentGenerationService.getC16SupplementData(caseData, isDraft));

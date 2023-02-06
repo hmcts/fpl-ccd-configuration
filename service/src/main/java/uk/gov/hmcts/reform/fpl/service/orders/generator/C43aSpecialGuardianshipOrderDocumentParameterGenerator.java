@@ -81,10 +81,7 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
         String childOrChildren = (numOfChildren == 1 ? "child" : "children");
         String applicant = appointedGuardianFormatter.getGuardiansNamesForDocument(caseData);
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(format("The Court orders that %s appointed as special guardian for the %s.", applicant,
-            childOrChildren));
-        return sb.toString();
+        return format("The Court orders that %s appointed as special guardian for the %s.", applicant, childOrChildren);
     }
 
 

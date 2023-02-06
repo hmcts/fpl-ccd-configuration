@@ -257,7 +257,7 @@ public class AdditionalApplicationsUploadedEventHandler {
         List<DocumentReference> documents = new ArrayList<>();
 
         if (bundle.getC2DocumentBundle() != null) {
-            documents.add(Optional.ofNullable(bundle.getC2DocumentBundle().getDocument())
+            documents.add(Optional.of(bundle.getC2DocumentBundle().getDocument())
                     .map(addDocumentType)
                     .orElse(DocumentReference.builder().build()));
             documents.addAll(
@@ -276,7 +276,7 @@ public class AdditionalApplicationsUploadedEventHandler {
         }
 
         if (bundle.getOtherApplicationsBundle() != null) {
-            documents.add(Optional.ofNullable(bundle.getOtherApplicationsBundle().getDocument())
+            documents.add(Optional.of(bundle.getOtherApplicationsBundle().getDocument())
                     .map(addDocumentType)
                     .orElse(DocumentReference.builder().build()));
             documents.addAll(

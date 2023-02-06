@@ -2,30 +2,10 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessage",
-    "ListElementCode": "senderType",
-    "FieldType": "FixedList",
-    "FieldTypeParameter": "JudicialMessageRoleTypes",
-    "ElementLabel": "From",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "recipientType=\"DO NOT SHOW\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "JudicialMessage",
     "ListElementCode": "sender",
     "FieldType": "Email",
     "ElementLabel": "From",
     "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "JudicialMessage",
-    "ListElementCode": "recipientType",
-    "FieldType": "FixedList",
-    "FieldTypeParameter": "JudicialMessageRoleTypes",
-    "ElementLabel": "Sent To",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "senderType=\"DO NOT SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",

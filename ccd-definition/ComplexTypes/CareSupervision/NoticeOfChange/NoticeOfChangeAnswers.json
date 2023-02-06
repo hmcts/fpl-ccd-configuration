@@ -24,7 +24,6 @@
     "FieldType": "Text",
     "ElementLabel": " ",
     "SecurityClassification": "Public",
-    "Searchable": "Y",
-    "Comment": "Deprecated since DFPL-849"
+    "Searchable": "Y"
   }
 ]

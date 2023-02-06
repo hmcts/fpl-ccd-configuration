@@ -48,6 +48,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_ID;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
@@ -64,7 +65,6 @@ import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C13A_SPECIAL_GUARDIAN
 import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C20_SECURE_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithRandomUUID;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 class UploadAdditionalApplicationsServiceTest {
@@ -138,13 +138,12 @@ class UploadAdditionalApplicationsServiceTest {
 
         assertC2DocumentBundle(actual.getC2DocumentBundle(), supplement, supportingEvidenceBundle);
 
-        // No longer called in this method
-        // verify(conversionService).convertToPdf(DOCUMENT);
+        verify(conversionService).convertToPdf(DOCUMENT);
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldNotConvertApplications(boolean isHmctsUser) {
+    void shouldConvertApplications(boolean isHmctsUser) {
         given(user.isHmctsUser()).willReturn(isHmctsUser);
         given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(USER_EMAIL);
         given(conversionService.convertToPdf(SUPPLEMENT_DOCUMENT)).willReturn(CONVERTED_SUPPLEMENT_DOCUMENT);
@@ -170,11 +169,11 @@ class UploadAdditionalApplicationsServiceTest {
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
         assertThat(actual.getAuthor()).isEqualTo(USER_EMAIL);
-        assertThat(actual.getC2DocumentBundle().getDocument()).isEqualTo(DOCUMENT);
+        assertThat(actual.getC2DocumentBundle().getDocument()).isEqualTo(CONVERTED_DOCUMENT);
         assertThat(actual.getC2DocumentBundle().getSupplementsBundle()).hasSize(1)
             .first()
             .extracting(actualSupplement -> actualSupplement.getValue().getDocument())
-            .isEqualTo(SUPPLEMENT_DOCUMENT);
+            .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
     }
 
     @Test
@@ -453,54 +452,11 @@ class UploadAdditionalApplicationsServiceTest {
         }
     }
 
-    @Nested
-    class PostSubmitProcessing {
-
-        @Test
-        void shouldSetSupplementsToEmptyListIfNonePresent() {
-            C2DocumentBundle bundle = C2DocumentBundle.builder()
-                .document(DOCUMENT)
-                .supplementsBundle(List.of())
-                .build();
-            C2DocumentBundle converted = underTest.convertC2Bundle(bundle);
-
-            assertThat(converted.getSupplementsBundle()).isEmpty();
-            assertThat(converted.getSupplementsBundle()).isNotNull();
-        }
-
-        @Test
-        void shouldConvertC2SupplementToPdf() {
-            C2DocumentBundle bundle = C2DocumentBundle.builder()
-                .document(DOCUMENT)
-                .supplementsBundle(wrapElementsWithRandomUUID(Supplement.builder()
-                    .document(SUPPLEMENT_DOCUMENT)
-                    .build()))
-                .build();
-            C2DocumentBundle converted = underTest.convertC2Bundle(bundle);
-
-            assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
-                .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
-        }
-
-        @Test
-        void shouldConvertOtherSupplementToPdf() {
-            OtherApplicationsBundle bundle = OtherApplicationsBundle.builder()
-                .document(DOCUMENT)
-                .supplementsBundle(wrapElementsWithRandomUUID(Supplement.builder()
-                    .document(SUPPLEMENT_DOCUMENT)
-                    .build()))
-                .build();
-            OtherApplicationsBundle converted = underTest.convertOtherBundle(bundle);
-
-            assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
-                .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
-        }
-    }
 
     private void assertC2DocumentBundle(C2DocumentBundle actualC2Bundle, Supplement expectedSupplement,
                                         SupportingEvidenceBundle expectedSupportingEvidence) {
         assertThat(actualC2Bundle.getId()).isNotNull();
-        assertThat(actualC2Bundle.getDocument().getFilename()).isEqualTo(DOCUMENT.getFilename());
+        assertThat(actualC2Bundle.getDocument().getFilename()).isEqualTo(CONVERTED_DOCUMENT.getFilename());
         assertThat(actualC2Bundle.getType()).isEqualTo(WITH_NOTICE);
         assertThat(actualC2Bundle.getSupportingEvidenceBundle()).hasSize(1);
         assertThat(actualC2Bundle.getSupplementsBundle()).hasSize(1);
@@ -514,7 +470,7 @@ class UploadAdditionalApplicationsServiceTest {
     private void assertOtherDocumentBundle(OtherApplicationsBundle actual, Supplement expectedSupplement,
                                            SupportingEvidenceBundle expectedSupportingDocument) {
         assertThat(actual.getId()).isNotNull();
-        assertThat(actual.getDocument().getFilename()).isEqualTo(DOCUMENT.getFilename());
+        assertThat(actual.getDocument().getFilename()).isEqualTo(CONVERTED_DOCUMENT.getFilename());
         assertThat(actual.getApplicationType()).isEqualTo(C1_PARENTAL_RESPONSIBILITY);
         assertThat(actual.getParentalResponsibilityType()).isEqualTo(PR_BY_FATHER);
         assertThat(actual.getAuthor()).isEqualTo(HMCTS);
@@ -531,7 +487,7 @@ class UploadAdditionalApplicationsServiceTest {
         Supplement expectedSupplement = exampleOfExpectedSupplement.toBuilder()
             .dateTimeUploaded(time.now())
             .uploadedBy(HMCTS)
-            .document(SUPPLEMENT_DOCUMENT)
+            .document(CONVERTED_SUPPLEMENT_DOCUMENT)
             .build();
 
         assertThat(actual).isEqualTo(expectedSupplement);

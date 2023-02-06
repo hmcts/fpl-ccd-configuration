@@ -69,7 +69,7 @@ class RespondentsRefusedFormatterTest {
             CaseData caseData = getMultiplePeopleCaseData();
 
             String formattedNames = underTest.getRespondentsNamesForDocument(caseData);
-            assertThat(formattedNames).isEqualTo("Remy Respondy, Otto Otherman and Bob Bothers");
+            assertThat(formattedNames).isEqualTo("Remy Respondy, Otto Otherman, Bob Bothers");
         }
     }
 
@@ -100,7 +100,7 @@ class RespondentsRefusedFormatterTest {
             CaseData caseData = getMultiplePeopleCaseData();
 
             String formattedNames = underTest.getRespondentsNamesForTab(caseData);
-            assertThat(formattedNames).isEqualTo("Remy Respondy, Otto Otherman and Bob Bothers");
+            assertThat(formattedNames).isEqualTo("Remy Respondy, Otto Otherman, Bob Bothers");
         }
     }
 

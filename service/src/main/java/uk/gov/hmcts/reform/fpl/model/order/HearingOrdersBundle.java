@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -44,30 +44,15 @@ public class HearingOrdersBundle {
     }
 
     public HearingOrdersBundle updateOrders(List<Element<HearingOrder>> newOrders, HearingOrderType type) {
-        orders = defaultIfNull(orders, new ArrayList<>());
         newOrders.stream()
-            .forEach(order -> {
-                order.getValue().setType(type);
-                Optional<Integer> orderIndex = checkForExistingOrders(orders, order.getId());
+            .map(Element::getValue)
+            .forEach(order -> order.setType(type));
 
-                if (orderIndex.isEmpty()) {
-                    orders.add(order);
-                } else {
-                    orders.set(orderIndex.get(), order);
-                }
-            });
+        orders = defaultIfNull(orders, new ArrayList<>());
+        orders.removeIf(order -> Objects.equals(order.getValue().getType(), type));
+        orders.addAll(newOrders);
 
         return this;
-    }
-
-    private Optional<Integer> checkForExistingOrders(List<Element<HearingOrder>> existingOrders, UUID orderId) {
-        for (int i = 0; i < existingOrders.size(); i++) {
-            if (existingOrders.get(i).getId().equals(orderId)) {
-                return Optional.of(i);
-            }
-        }
-
-        return Optional.empty();
     }
 
     public List<Element<HearingOrder>> getOrders() {

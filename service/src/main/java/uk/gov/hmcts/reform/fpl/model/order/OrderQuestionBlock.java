@@ -75,7 +75,7 @@ public enum OrderQuestionBlock {
     REVIEW_DRAFT_ORDER("previewOrder", OrderSection.REVIEW,
         List.of("orderPreview")),
     APPOINTED_GUARDIAN("appointedGuardian", OrderSection.ORDER_DETAILS,
-        List.of("appointedGuardians_label", "appointedGuardianSelector", "additionalAppointedSpecialGuardians")),
+        List.of("appointedGuardians_label", "appointedGuardianSelector")),
     ORDER_BY_CONSENT("orderIsByConsent", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersIsByConsent")),
     PARENTAL_RESPONSIBILITY("parentResponsible", OrderSection.ORDER_DETAILS,

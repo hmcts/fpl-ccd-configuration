@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.service.orders.validator;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.List;
@@ -12,8 +11,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPOINTED_G
 
 class AppointedGuardianValidatorTest {
 
-    private static final String MESSAGE = "Select the appointed guardian for the children from the"
-        + " list of parties or detail the special guardians in the free text field. ";
+    private static final String MESSAGE = "Select the appointed guardian for the children";
 
     private final AppointedGuardianValidator underTest = new AppointedGuardianValidator();
 
@@ -33,22 +31,8 @@ class AppointedGuardianValidatorTest {
     }
 
     @Test
-    void validatePartiesSpecifiedInTextField() {
-        CaseData caseData = CaseData.builder()
-            .manageOrdersEventData(ManageOrdersEventData.builder()
-                .additionalAppointedSpecialGuardians("Joe Bloggs")
-                .build())
-            .appointedGuardianSelector(Selector.builder().build())
-            .build();
-
-        assertThat(underTest.validate(caseData)).isEqualTo(List.of());
-    }
-
-    @Test
     void validateNoGuardianSelected() {
         CaseData caseData = CaseData.builder()
-            .manageOrdersEventData(ManageOrdersEventData.builder()
-                .build())
             .appointedGuardianSelector(Selector.builder().build())
             .build();
 

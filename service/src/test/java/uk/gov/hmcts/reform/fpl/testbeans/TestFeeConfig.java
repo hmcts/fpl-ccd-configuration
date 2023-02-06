@@ -20,7 +20,7 @@ import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.C2_WITH_NOTICE;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.CHANGE_SURNAME;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.CHILD_ASSESSMENT_ORDER;
-import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.EDUCATION_SUPERVISION__ORDER;
+import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.INTERIM_SUPERVISION_ORDER;
@@ -71,7 +71,7 @@ public class TestFeeConfig {
         feeTypeToKeyword.put(C2_WITHOUT_NOTICE, C2_WITHOUT_NOTICE_KEYWORD);
         feeTypeToKeyword.put(C2_WITH_NOTICE, C2_WITH_NOTICE_KEYWORD);
         feeTypeToKeyword.put(CARE_ORDER, CARE_ORDER_KEYWORD);
-        feeTypeToKeyword.put(EDUCATION_SUPERVISION__ORDER, EDUCTION_SUPERVISION_ORDER_KEYWORD);
+        feeTypeToKeyword.put(EDUCATION_SUPERVISION_ORDER, EDUCTION_SUPERVISION_ORDER_KEYWORD);
         feeTypeToKeyword.put(EMERGENCY_PROTECTION_ORDER, EMERGENCY_PROTECTION_ORDER_KEYWORD);
         feeTypeToKeyword.put(INTERIM_CARE_ORDER, INTERIM_CARE_ORDER_KEYWORD);
         feeTypeToKeyword.put(INTERIM_SUPERVISION_ORDER, INTERIM_SUPERVISION_ORDER_KEYWORD);
