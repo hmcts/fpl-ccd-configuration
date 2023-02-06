@@ -125,6 +125,7 @@ public class CreateWAOrderChasingTasks implements Job {
                 .filter(booking -> isInRange(booking, isFirstRun))
                 .collect(Collectors.toList());
 
+        // ES cannot index nulls (automatically), also sometimes the cmo field is not present at all => manual check
         return hearingsWithinRange.stream().anyMatch(booking -> !booking.hasCMOAssociation());
     }
 
