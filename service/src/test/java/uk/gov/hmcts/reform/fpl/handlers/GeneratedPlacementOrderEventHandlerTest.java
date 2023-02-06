@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedPlacementOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -23,11 +24,13 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
+import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +38,9 @@ import java.util.Set;
 
 import static java.util.Collections.emptySet;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_ADMIN_EMAIL;
@@ -85,6 +90,12 @@ class GeneratedPlacementOrderEventHandlerTest {
 
     @Mock
     private CafcassNotificationService cafcassNotificationService;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private WorkAllocationTaskService workAllocationTaskService;
 
     @InjectMocks
     private GeneratedPlacementOrderEventHandler underTest;
@@ -238,5 +249,27 @@ class GeneratedPlacementOrderEventHandlerTest {
             OrderCafcassData.builder()
                 .documentName(ORDER_DOCUMENT.getFilename())
                 .build());
+    }
+
+    @Test
+    void shouldCreateWorkAllocationTaskWhenJudgeUploadsOrder() {
+        given(userService.isJudiciaryUser()).willReturn(true);
+        underTest.createWorkAllocationTask(new GeneratedPlacementOrderEvent(basicCaseData,
+            ORDER_DOCUMENT,
+            ORDER_NOTIFICATION_DOCUMENT));
+
+        verify(workAllocationTaskService).createWorkAllocationTask(basicCaseData,
+            WorkAllocationTaskType.ORDER_UPLOADED);
+    }
+
+    @Test
+    void shouldNotCreateWorkAllocationTaskWhenNonJudgeUserUploadsOrder() {
+        given(userService.isJudiciaryUser()).willReturn(false);
+        underTest.createWorkAllocationTask(new GeneratedPlacementOrderEvent(basicCaseData,
+            ORDER_DOCUMENT,
+            ORDER_NOTIFICATION_DOCUMENT));
+
+        verify(workAllocationTaskService, never()).createWorkAllocationTask(any(),
+            any());
     }
 }
