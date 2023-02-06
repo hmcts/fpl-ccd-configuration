@@ -95,7 +95,8 @@ public class CreateWAOrderChasingTasks implements Job {
                             skipped++;
                         }
                     } catch (Exception e) {
-                        log.error("Job '{}' could not create WA task on {} due to {}", jobName, caseId, e.getMessage(), e);
+                        log.error("Job '{}' could not create WA task on {} due to {}", jobName, caseId, e.getMessage(),
+                            e);
                         failed++;
                         Thread.sleep(3000); // give ccd time to recover in case it was getting too many request
                     }
@@ -111,8 +112,8 @@ public class CreateWAOrderChasingTasks implements Job {
 
     private boolean isInRange(HearingBooking booking, boolean isFirstRun) {
         // todo - check the dates on this query with some edge cases!
-        boolean beforeRange = booking.getEndDate().toLocalDate().isBefore(LocalDate.now().minusDays(5)) ||
-            booking.getEndDate().toLocalDate().isEqual(LocalDate.now().minusDays(5));
+        boolean beforeRange = booking.getEndDate().toLocalDate().isBefore(LocalDate.now().minusDays(5))
+            || booking.getEndDate().toLocalDate().isEqual(LocalDate.now().minusDays(5));
         boolean afterRange = booking.getEndDate().toLocalDate().isAfter(LocalDate.now().minusDays(6));
 
         return isFirstRun ? (beforeRange) : (beforeRange && afterRange);
