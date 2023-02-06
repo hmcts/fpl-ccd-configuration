@@ -12,11 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
-import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderOperationPostPopulator;
@@ -27,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.service.orders.amendment.list.AmendableOrderListB
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.OrderSectionAndQuestionsPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.modifier.ManageOrdersCaseDataFixer;
 import uk.gov.hmcts.reform.fpl.service.orders.validator.OrderValidator;
-import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -52,8 +49,6 @@ public class ManageOrdersController extends CallbackController {
     private final AmendableOrderListBuilder amendableOrderListBuilder;
     private final CoreCaseDataService coreCaseDataService;
     private final ManageOrdersEventBuilder eventBuilder;
-    private final UserService userService;
-    private final WorkAllocationTaskService workAllocationTaskService;
     private static final String PDF = "pdf";
 
     @PostMapping("/about-to-start")
@@ -168,11 +163,6 @@ public class ManageOrdersController extends CallbackController {
         coreCaseDataService.triggerEvent(caseData.getId(),
             "internal-change-manage-order",
             updates);
-
-        if (userService.isJudiciaryUser()) {
-            log.info("Creating ORDER_UPLOADED work allocation task for case: {}", caseData.getId());
-            workAllocationTaskService.createWorkAllocationTask(caseData, WorkAllocationTaskType.ORDER_UPLOADED);
-        }
 
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
         publishEvent(eventBuilder.build(caseData, caseDataBefore));
