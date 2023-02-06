@@ -8,28 +8,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
 import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.BooleanQuery;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESClause;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESQuery;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Filter;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
-import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Must;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MustNot;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.RangeQuery;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.math.RoundingMode.UP;
+import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
+import static uk.gov.hmcts.reform.fpl.enums.State.DELETED;
+import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
+import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
+import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
+import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType.ORDER_NOT_UPLOADED;
 import static uk.gov.hmcts.reform.fpl.service.search.SearchService.ES_DEFAULT_SIZE;
 
@@ -105,7 +110,9 @@ public class CreateWAOrderChasingTasks implements Job {
     }
 
     private boolean isInRange(HearingBooking booking, boolean isFirstRun) {
-        boolean beforeRange = booking.getEndDate().toLocalDate().isBefore(LocalDate.now().minusDays(5));
+        // todo - check the dates on this query with some edge cases!
+        boolean beforeRange = booking.getEndDate().toLocalDate().isBefore(LocalDate.now().minusDays(5)) ||
+            booking.getEndDate().toLocalDate().isEqual(LocalDate.now().minusDays(5));
         boolean afterRange = booking.getEndDate().toLocalDate().isAfter(LocalDate.now().minusDays(6));
 
         return isFirstRun ? (beforeRange) : (beforeRange && afterRange);
@@ -121,24 +128,27 @@ public class CreateWAOrderChasingTasks implements Job {
         return hearingsWithinRange.stream().anyMatch(booking -> !booking.hasCMOAssociation());
     }
 
-    private ESQuery buildQuery(boolean firstPassEnabled) {
-        final MatchQuery caseManagementCases = MatchQuery.of("state", State.CASE_MANAGEMENT.getValue());
-        final MatchQuery finalHearingCases = MatchQuery.of("state", State.FINAL_HEARING.getValue());
+    private MustNot getInvalidStates() {
+        List<ESClause> notTheseStates = List.of(OPEN, SUBMITTED, GATEKEEPING, CLOSED, DELETED, RETURNED).stream()
+            .map(state -> MatchQuery.of("state", state.getValue()))
+            .collect(Collectors.toList());
 
+        return MustNot.builder().clauses(notTheseStates).build();
+    }
+
+    private ESQuery buildQuery(boolean firstPassEnabled) {
+        // todo - check the dates on this query with some edge cases!
         final RangeQuery.RangeQueryBuilder olderThan5Days = RangeQuery.builder()
             .field("data.hearingDetails.value.endDate")
-            .lessThan("now-5/d");
+            .lessThanOrEqual("now/d-5d");
 
         if (!firstPassEnabled) {
-            olderThan5Days.greaterThan("now-6/d"); // toggle this based on first run or not!
+            olderThan5Days.greaterThanOrEqual("now/d-5d"); // toggle this based on first run or not!
         }
 
-        Must must = Must.builder()
-            .clauses(List.of(caseManagementCases, finalHearingCases, olderThan5Days.build()))
-            .build();
-
         return BooleanQuery.builder()
-            .must(must)
+            .mustNot(getInvalidStates())
+            .filter(Filter.builder().clauses(List.of(olderThan5Days.build())).build())
             .build();
     }
 
