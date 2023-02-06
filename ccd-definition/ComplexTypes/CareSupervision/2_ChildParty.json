@@ -297,7 +297,8 @@
     "LiveFrom": "01/01/2017",
     "ID": "ChildParty",
     "ListElementCode": "extensionReason",
-    "FieldType": "Text",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "CaseExtensionReasonList",
     "ElementLabel": "Reason for extending completion date",
     "SecurityClassification": "Public"
   },
