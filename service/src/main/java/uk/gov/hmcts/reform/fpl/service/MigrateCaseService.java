@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
@@ -310,6 +311,24 @@ public class MigrateCaseService {
                 migrationId, caseId));
         }
         return Map.of("applicationDocuments", applicationDocuments);
+    }
+
+    public Map<String, Object> removeCaseSummaryByHearingId(CaseData caseData,
+                                                            String migrationId,
+                                                            UUID expectedHearingId) {
+        Long caseId = caseData.getId();
+        List<Element<CaseSummary>> caseSummaries =
+            caseData.getHearingDocuments().getCaseSummaryList()
+                .stream()
+                .filter(el -> !el.getId().equals(expectedHearingId))
+                .collect(toList());
+
+        if (caseSummaries.size() != caseData.getHearingDocuments().getCaseSummaryList().size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, case summary",
+                migrationId, caseId));
+        }
+        return Map.of("caseSummaryList", caseSummaries);
     }
 
 }
