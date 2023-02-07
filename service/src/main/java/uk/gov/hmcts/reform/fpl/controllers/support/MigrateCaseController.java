@@ -50,9 +50,8 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-1012", this::run1012,
         "DFPL-1064", this::run1064,
-        "DFPL-1144", this::run1144,
+        "DFPL-1202", this::run1202,
         "DFPL-1065", this::run1065,
-        "DFPL-872rollback", this::run872Rollback,
         "DFPL-1029", this::run1029,
         "DFPL-1161", this::run1161,
         "DFPL-1162", this::run1162,
@@ -78,63 +77,6 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
-    }
-
-    private void run1144(CaseDetails caseDetails) {
-        Map<String, Object> caseDetailsData = caseDetails.getData();
-        caseDetailsData.put("hearingOption", HearingOptions.EDIT_PAST_HEARING);
-        CaseData caseData = getCaseData(caseDetails);
-        var caseId = caseData.getId();
-        List<Element<Child>> childrenInCase = caseData.getAllChildren();
-        LocalDate oldEightWeeksExtensionDate = caseData.getCaseCompletionDate();
-        CaseExtensionReasonList oldReason = caseData.getCaseExtensionReasonList();
-
-        if (isNotEmpty(childrenInCase) && oldReason != null) {
-            log.info("Migration {id = DFPL-1144, case reference = {}} extension date migration", caseId);
-
-            List<Element<Child>> children = childrenInCase.stream()
-                .map(element -> element(element.getId(),
-                    element.getValue().toBuilder()
-                        .party(element.getValue().getParty().toBuilder()
-                            .completionDate(oldEightWeeksExtensionDate)
-                            .extensionReason(oldReason)
-                            .build())
-                        .build())
-                ).collect(toList());
-
-            caseDetailsData.put("children1", children);
-            log.info("Migration {id = DFPL-872, case reference = {}} children extension date finish", caseId);
-        } else {
-            log.warn("Migration {id = DFPL-872, case reference = {}, case state = {}} doesn't have an extension ",
-                caseId, caseData.getState().getValue());
-        }
-    }
-
-    private void run872Rollback(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-        var caseId = caseData.getId();
-        List<Element<Child>> childrenInCase = caseData.getAllChildren();
-
-        Map<String, Object> caseDetailsData = caseDetails.getData();
-        if (isNotEmpty(childrenInCase)) {
-            log.info("Migration {id = DFPL-872-Rollback, case reference = {}} remove child extension fields", caseId);
-
-            List<Element<Child>> children = childrenInCase.stream()
-                .map(element -> element(element.getId(),
-                    element.getValue().toBuilder()
-                        .party(element.getValue().getParty().toBuilder()
-                            .completionDate(null)
-                            .extensionReason(null)
-                            .build())
-                        .build())
-                ).collect(toList());
-
-            caseDetailsData.put("children1", children);
-            log.info("Migration {id = DFPL-872-rollback, case reference = {}} removed child extension fields", caseId);
-        } else {
-            log.warn("Migration {id = DFPL-872-rollback, case reference = {}, case state = {}} doesn't have children ",
-                caseId, caseData.getState().getValue());
-        }
     }
 
     private void run1029(CaseDetails caseDetails) {
@@ -228,5 +170,16 @@ public class MigrateCaseController extends CallbackController {
 
     private void run1072(CaseDetails caseDetails) {
         caseDetails.getData().putAll(migrateCaseService.updateIncorrectCourtCodes(getCaseData(caseDetails)));
+    }
+
+    private void run1202(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1202";
+        var possibleCaseIds = List.of(1649150882331141L);
+
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().remove("placements");
+        caseDetails.getData().remove("placementsNonConfidential");
+        caseDetails.getData().remove("placementsNonConfidentialNotices");
     }
 }
