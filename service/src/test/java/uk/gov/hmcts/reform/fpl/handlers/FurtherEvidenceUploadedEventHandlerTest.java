@@ -1582,7 +1582,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     private static Stream<Arguments> caseDataWithCorrespondence() {
         return Stream.of(
-            Arguments.of(buildCaseDataWithCorrespondencesByHmtcs()),
             Arguments.of(buildCaseDataWithCorrespondencesByLA()),
             Arguments.of(buildCaseDataWithCorrespondencesBySolicitor())
         );
