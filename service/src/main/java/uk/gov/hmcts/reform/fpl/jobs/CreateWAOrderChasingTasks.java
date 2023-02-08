@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.math.RoundingMode.UP;
+import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.State.DELETED;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
@@ -88,7 +89,7 @@ public class CreateWAOrderChasingTasks implements Job {
                         if (shouldCreateChaseTask(caseData, isFirstRun)) {
                             log.debug("Job '{}' creating chase task {}", jobName, caseId);
                             workAllocationTaskService.createWorkAllocationTask(caseData, ORDER_NOT_UPLOADED);
-                            log.info("Job '{}' updated case {}", jobName, caseId);
+                            log.info("Job '{}' created chase task {}", jobName, caseId);
                             updated++;
                         } else {
                             log.debug("Job '{}' skipped case {}", jobName, caseId);
@@ -121,6 +122,9 @@ public class CreateWAOrderChasingTasks implements Job {
 
     private boolean shouldCreateChaseTask(CaseData caseData, boolean isFirstRun) {
         // Check if the hearings within 5(-6) days have an uploaded CMO
+        if (isEmpty(caseData.getHearingDetails())) {
+            return false;
+        }
         List<HearingBooking> hearingsWithinRange = caseData.getHearingDetails().stream()
                 .map(Element::getValue)
                 .filter(booking -> isInRange(booking, isFirstRun))
