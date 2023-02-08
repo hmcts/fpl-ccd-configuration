@@ -1,4 +1,6 @@
 # fpl-ccd-configuration
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Family public law's implementation of the CCD template
 
 ### Contents:
@@ -12,55 +14,47 @@ Family public law's implementation of the CCD template
 - [Docker](https://www.docker.com)
 - [realpath-osx](https://github.com/harto/realpath-osx) (Mac OS only)
 - [jq](https://stedolan.github.io/jq/)
+- Ask a team member for copies of `application-feature-toggle.yaml` and `application-user-mappings.yaml`
 
-Run command:
-```
+## Getting Started:
+
+To initialise the [fpla-docker](https://github.com/hmcts/fpla-docker/) repository, run the below two commands:
+
+```bash
 git submodule init
 git submodule update
 ```
 
-Add services, roles and users from fpla-docker repository.
+Copy `application-feature-toggle.yaml` and `application-user-mappings.yaml` files to `service/scr/main/resources`.
 
-Run
-```
-./bin/generate-local-user-mappings.sh
-```
-script each time new LA users are added in order to fix access segregation locally.
-
-Load CCD definition:
-
-CCD definition is stored in JSON format. To load it into CCD instance please run:
-
-```bash
-$ ./bin/import-ccd-definition.sh
-```
-
-Note: Above script will export JSON content into XLSX file and upload it into instance of CCD definition store.
-
-Additional note:
-
-You can skip some of the files by using -e option on the import-ccd-definitions, i.e.
-
-```bash
-$ ./bin/import-ccd-definition.sh -e 'UserProfile.json,*-nonprod.json'
-```
-
-The command above will skip UserProfile.json and all files with -nonprod suffix (from the folders).
-
-## Getting Started:
 To ensure you have the correct dependencies run `yarn install` in the command line.
 
-## Code Style:
+### Running the application
+
+The project uses [Gradle](https://gradle.org) as a build tool. It already contains
+`./gradlew` wrapper script, so there's no need to install gradle.
+
+You will need access to the Azure key vault and an active VPN to run locally as it depends on services in AAT.
+
+To run the full CCD and XUI stack locally:
+```
+./gradlew bootWithCCD
+```
+
+Or from IntelliJ:
+
+Right-click the bootWithCCD Gradle task and select 'Run...'
+
+Then you can access XUI on [http://localhost:3000](http://localhost:3000)
+
+You may be prompted to run `az login` to set up account.
+
+### Code Style:
 To run code linting enter `yarn lint` in the command line.
 
-## Docmosis Tornado:
+### Docmosis Tornado:
 
-Some of the functionality requires Docmosis Tornado to be started.
-
-It requires `DOCMOSIS_KEY` to be exposed as environment variable on your machine.
-
-Docker-compose runs FPL Service as well, refer the  [service README](service/README.md)
-for additional explanation what's required to get the FPL service started by Docker Compose.
+Some functionality requires Docmosis Tornado to be started.
 
 ## Testing:
 E2E tests are configured to run in parallel in 3 headless browsers by default.
@@ -69,13 +63,13 @@ To run e2e tests enter `yarn test` in the command line.
 
 ### Optional configuration
 
-To run all tests only in one browser please set `PARALLEL_CHUNKS` environment variable to `1`. By default 3 chunks are enabled.
+To run all tests only in one browser please set `PARALLEL_CHUNKS` environment variable to `1`. By default, 3 chunks are enabled.
 
 ```$bash
 PARALLEL_CHUNKS=1 yarn test
 ```
 
-To show tests in browser window as they run please set `SHOW_BROWSER_WINDOW` environment variable to `true`. By default browser window is hidden.
+To show tests in browser window as they run please set `SHOW_BROWSER_WINDOW` environment variable to `true`. By default, browser window is hidden.
 
 ```$bash
 SHOW_BROWSER_WINDOW=true yarn test
@@ -87,13 +81,13 @@ To enable retry upon test failure please set `TEST_RETRIES` environment variable
 TEST_RETRIES=2 yarn test
 ```
 
-To disable chrome web security
+To disable Chrome web security
 
 ```$bash
 DISABLE_SECURITY=true yarn test
 ```
 
-## Creating sample case via E2E tests
+### Creating sample case via E2E tests
 
 E2E tests can be used to create sample case with mandatory sections only. To do so please run the following command:
 
@@ -103,19 +97,19 @@ PARALLEL_CHUNKS=1 yarn test --grep '@create-case-with-mandatory-sections-only'
 
 Note: Case number will be printed to the console while tests run e.g. `Application draft #1571-7550-7484-8512 has been created`.
 
-## Running E2E against remote environment
+### Running E2E against remote environment
 ```$bash
 URL="https://manage-case.aat.platform.hmcts.net" IDAM_API_URL="https://idam-api.aat.platform.hmcts.net" CASE_SERVICE_URL="http://fpl-case-service-aat.service.core-compute-aat.internal" yarn test
 ```
 If environment requires user to login into hmcts account first then set HMCTS_USER_USERNAME and HMCTS_USER_PASSWORD
 
-## Running E2E against PR enviroment
+### Running E2E against PR enviroment
 
 ```$bash
 PR=<PR_NUMBER>; PARALLEL_CHUNKS=1 SHOW_BROWSER_WINDOW=TRUE URL=http://xui-fpl-case-service-pr-$PR.service.core-compute-preview.internal IDAM_API_URL="https://idam-api.aat.platform.hmcts.net" CASE_SERVICE_URL=http://fpl-case-service-pr-$PR.service.core-compute-preview.internal yarn test
 ```
 
-## Running api tests
+### Running api tests
 
 Application must be up and running
 
@@ -123,12 +117,12 @@ Application must be up and running
 ./gradlew runApiTest
 ```
 
-## Running email template integration tests locally
+### Running email template integration tests locally
 
 In order to run the template tests locally you need to add the gov.uk.notify test-key here:
 ```
 Create the file in this location (it's already included in .gitignore)
-.service/src/integrationTest/resources/application-email-template-test.yaml
+service/src/integrationTest/resources/application-email-template-test.yaml
 
 spring:
   profiles: email-template-test
@@ -150,17 +144,7 @@ kubectl port-forward fpl-case-service-pr-<PR-ID>-postgresql-0 5020:5432
 ```
 then connect to data-store db on port 5020
 
-
-## Connecting to local open idm database:
-
-```$bash
-host: localhost
-port: 5051
-user: openidm
-password: openidm
-database: openidm
-```
-User details are kept in openidm.managedobjects table
+A list of port numbers is available on [RSE CFT lib](https://github.com/hmcts/rse-cft-lib#ports)
 
 ## Connecting to PR elastic search:
 ```$bash
@@ -208,11 +192,7 @@ az keyvault secret show --name <secret_name> --vault-name <vault_name> | grep va
 ```
 
 ## Service:
-See [fpl-service](service/README.md) for more information.
-
-## Stubbing
-Some external dependencies need to be stubbed (i.e. professional reference data).
-Stubbing is configured in fpla-docker repository
+See [fpl-service](service/README.md) for more information on custom configuration parameters.
 
 ## App insight (optional)
 To connect local environment to azure app insight:
@@ -224,5 +204,3 @@ To connect preview env to azure app insight:
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
-
-

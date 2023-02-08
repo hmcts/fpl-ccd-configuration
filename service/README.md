@@ -1,69 +1,5 @@
 # fpl-service
 
-NOTE: All commands have to be executed from project root directory.
-
-## Building and deploying the application
-
-### Building the application
-
-The project uses [Gradle](https://gradle.org) as a build tool. It already contains `./gradlew` wrapper script, so there's no need to install Gradle.
-
-To build the project execute the following command:
-
-```bash
-  ./gradlew build
-```
-
-### Running the application (as a Docker container)
-
-Create the image of the application by executing the following command:
-
-```bash
-  ./gradlew assemble
-```
-
-Create docker image:
-
-```bash
-  docker-compose build
-```
-
-Run the distribution (created in `build/install/service` directory) by executing the following command:
-
-```bash
-  docker-compose up
-```
-
-This will start the API container exposing the application's port (set to `4000` in this app).
-
-In order to test if the application is up, you can call its health endpoint:
-
-```bash
-  curl http://localhost:4000/health
-```
-
-You should get a response similar to this:
-
-```
-  {"status":"UP","diskSpace":{"status":"UP","total":249644974080,"free":137188298752,"threshold":10485760}}
-```
-
-Change the variable for CCD_DEF_CASE_SERVICE_BASE_URL in bin/configurer/utils/fpl-process-definition.sh
- to http://fpl-service:4000 - this ensures the CCD use the docker networking to reach
-the service.
-
-### Run the application (from IntelliiJ)
-
-Ensure that the Spring Boot application is started with local, user-mappings and the feature-toggle profiles
-(add environment variable spring.profiles.active=feature-toggle,local,user-mappings when starting the main class).
-
-Configure the notify.api_key if necessary (you can pass them as environment variables when IntelliJ
-starts the application).
-
-Ensure the variable CCD_DEF_CASE_SERVICE_BASE_URL bin/configurer/utils/fpl-process-definition.sh is set to
-http://docker.for.mac.localhost:4000 - this will use the host machine for CCD, reaching
-the locally running application.
-
 ## Config
 
 The FPL Service (as any other HMCTS Reform services) uses three sources of configuration for the placeholders:
@@ -252,7 +188,6 @@ You will be able to set your own flag values there without affecting other envir
 ### Scheduler
 
 In order to enable quartz scheduler
-- run ./bin/utils/create-scheduler-db.sh
 - set scheduler.enabled:true in application.yml local profile
 
 Upcoming hearing jobs can be configured with environment variables
