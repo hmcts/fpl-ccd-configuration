@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.removaltool.MissingApplicationException;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Data
@@ -38,5 +39,15 @@ public class AdditionalApplicationsBundle {
         }
 
         throw new MissingApplicationException(uploadedDateTime);
+    }
+
+    @JsonIgnore
+    public YesNo getApplicationReviewed() {
+        if (isEmpty(applicationReviewed)) {
+            // DFPL-1047 Reviewing is not required for documents uploaded in historic cases
+            return YesNo.YES;
+        } else {
+            return applicationReviewed;
+        }
     }
 }
