@@ -11,13 +11,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
-import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
@@ -31,7 +28,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList.TIMETABLE_FOR_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
