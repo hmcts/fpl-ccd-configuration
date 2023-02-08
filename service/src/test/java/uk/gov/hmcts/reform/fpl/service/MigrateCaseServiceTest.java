@@ -9,26 +9,37 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -446,6 +457,51 @@ class MigrateCaseServiceTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
+    class RemoveGatekeepingOrderUrgentHearingOrder {
+
+        private final long caseId = 1L;
+
+        @Test
+        void shouldThrowAssertionIfOrderNotFound() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
+                    "test.pdf"));
+        }
+
+        @Test
+        void shouldThrowAssertionIfOrderFileNameNotMatch() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .urgentHearingOrder(UrgentHearingOrder.builder()
+                    .order(DocumentReference.builder().filename("test").build())
+                    .build())
+                .build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
+                    "test.pdf"));
+        }
+
+        @Test
+        void shouldNotThrowIfUrgentHearingOrderFound() {
+            CaseData caseData = CaseData.builder()
+                .urgentHearingOrder(UrgentHearingOrder.builder()
+                    .order(DocumentReference.builder().filename("test.pdf").build())
+                    .build())
+                .build();
+
+            assertDoesNotThrow(() ->
+                underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
+                    "test.pdf"));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
     class RemoveApplicationDocument {
 
         private final UUID applicationDocumentIdToRemove = UUID.randomUUID();
@@ -497,6 +553,302 @@ class MigrateCaseServiceTest {
                 applicationDocumentIdToRemove);
 
             assertThat(updatedFields).extracting("applicationDocuments").asList().hasSize(0);
+        }
+    }
+
+    @Nested
+    class UpdateIncorrectCourtCodes {
+
+        @Test
+        void shouldUpdateIncorrectCourtCodeForBHC() {
+            CaseData caseData = CaseData.builder()
+                .court(Court.builder()
+                    .name("Something")
+                    .code("544")
+                    .build())
+                .localAuthorityPolicy(
+                    OrganisationPolicy.builder()
+                        .organisation(Organisation.builder().organisationID("0F6AZIR").build())
+                        .build())
+                .build();
+
+            Map<String, Object> fields = underTest.updateIncorrectCourtCodes(caseData);
+
+            assertThat(fields.get("court")).isEqualTo(Court.builder()
+                .code("554")
+                .name("Family Court sitting at Brighton")
+                .build());
+        }
+
+        @Test
+        void shouldUpdateIncorrectCourtCodeForWSX() {
+            CaseData caseData = CaseData.builder()
+                .court(Court.builder()
+                    .name("Something")
+                    .code("544")
+                    .build())
+                .localAuthorityPolicy(
+                    OrganisationPolicy.builder()
+                        .organisation(Organisation.builder().organisationID("HLT7S0M").build())
+                        .build())
+                .build();
+
+            Map<String, Object> fields = underTest.updateIncorrectCourtCodes(caseData);
+
+            assertThat(fields.get("court")).isEqualTo(Court.builder()
+                .code("554")
+                .name("Family Court Sitting at Brighton County Court")
+                .build());
+        }
+
+        @Test
+        void shouldUpdateIncorrectCourtCodeForBNT() {
+            CaseData caseData = CaseData.builder()
+                .court(Court.builder()
+                    .name("Something")
+                    .code("117")
+                    .build())
+                .localAuthorityPolicy(
+                    OrganisationPolicy.builder()
+                        .organisation(Organisation.builder().organisationID("SPUL3VV").build())
+                        .build())
+                .build();
+
+            Map<String, Object> fields = underTest.updateIncorrectCourtCodes(caseData);
+
+            assertThat(fields.get("court")).isEqualTo(Court.builder()
+                .code("332")
+                .name("Family Court Sitting at West London")
+                .build());
+        }
+
+        @Test
+        void shouldUpdateIncorrectCourtCodeForHRW() {
+            CaseData caseData = CaseData.builder()
+                .court(Court.builder()
+                    .name("Something")
+                    .code("117")
+                    .build())
+                .localAuthorityPolicy(
+                    OrganisationPolicy.builder()
+                        .organisation(Organisation.builder().organisationID("L3HSA4L").build())
+                        .build())
+                .build();
+
+            Map<String, Object> fields = underTest.updateIncorrectCourtCodes(caseData);
+
+            assertThat(fields.get("court")).isEqualTo(Court.builder()
+                .code("332")
+                .name("Family Court Sitting at West London")
+                .build());
+        }
+
+        @Test
+        void shouldUpdateIncorrectCourtCodeForHLW() {
+            CaseData caseData = CaseData.builder()
+                .court(Court.builder()
+                    .name("Something")
+                    .code("117")
+                    .build())
+                .localAuthorityPolicy(
+                    OrganisationPolicy.builder()
+                        .organisation(Organisation.builder().organisationID("6I4Z3OO").build())
+                        .build())
+                .build();
+
+            Map<String, Object> fields = underTest.updateIncorrectCourtCodes(caseData);
+
+            assertThat(fields.get("court")).isEqualTo(Court.builder()
+                .code("332")
+                .name("Family Court Sitting at West London")
+                .build());
+        }
+
+        @Test
+        void shouldUpdateIncorrectCourtCodeForRCT() {
+            CaseData caseData = CaseData.builder()
+                .court(Court.builder()
+                    .name("Something")
+                    .code("164")
+                    .build())
+                .localAuthorityPolicy(
+                    OrganisationPolicy.builder()
+                        .organisation(Organisation.builder().organisationID("68MNZN8").build())
+                        .build())
+                .build();
+
+            Map<String, Object> fields = underTest.updateIncorrectCourtCodes(caseData);
+
+            assertThat(fields.get("court")).isEqualTo(Court.builder()
+                .code("159")
+                .name("Family Court sitting at Cardiff")
+                .build());
+        }
+
+        @Test
+        void shouldUpdateIncorrectCourtCodeForBAD() {
+            CaseData caseData = CaseData.builder()
+                .court(Court.builder()
+                    .name("Something")
+                    .code("3403")
+                    .build())
+                .localAuthorityPolicy(
+                    OrganisationPolicy.builder()
+                        .organisation(Organisation.builder().organisationID("3FG3URQ").build())
+                        .build())
+                .build();
+
+            Map<String, Object> fields = underTest.updateIncorrectCourtCodes(caseData);
+
+            assertThat(fields.get("court")).isEqualTo(Court.builder()
+                .code("121")
+                .name("Family Court Sitting at East London Family Court")
+                .build());
+        }
+
+        @Test
+        void shouldThrowExceptionWhenCourtCodeAndOrganisationNotMatch() {
+            CaseData caseData = CaseData.builder()
+                .court(Court.builder()
+                    .name("Something")
+                    .code("544")
+                    .build())
+                .localAuthorityPolicy(
+                    OrganisationPolicy.builder()
+                        .organisation(Organisation.builder().organisationID("0F6AZIX").build())
+                        .build())
+                .build();
+
+            assertThatThrownBy(() -> underTest.updateIncorrectCourtCodes(caseData))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("It does not match any migration conditions. (courtCode = 544, "
+                    + "localAuthorityPolicy.organisation.organisationID = 0F6AZIX)");
+        }
+
+        @Test
+        void shouldThrowExceptionWithoutLocalAuthorityPolicy() {
+            CaseData caseData = CaseData.builder()
+                .court(Court.builder()
+                    .name("Something")
+                    .code("544")
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> underTest.updateIncorrectCourtCodes(caseData))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("The case does not have court or local authority policy's organisation.");
+        }
+
+        @Test
+        void shouldThrowExceptionWithoutCourt() {
+            CaseData caseData = CaseData.builder()
+                .localAuthorityPolicy(
+                    OrganisationPolicy.builder()
+                        .organisation(Organisation.builder().organisationID("0F6AZIX").build())
+                        .build())
+                .build();
+
+            assertThatThrownBy(() -> underTest.updateIncorrectCourtCodes(caseData))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("The case does not have court or local authority policy's organisation.");
+        }
+    }
+
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RevertChildExtensionDate {
+        LocalDate completeDate = LocalDate.of(2023, 1, 1);
+        LocalDate revertedDate = LocalDate.of(2022, 1, 1);
+
+        CaseExtensionReasonList extensionReason = CaseExtensionReasonList.DELAY_IN_CASE_OR_IMPACT_ON_CHILD;
+        CaseExtensionReasonList revertedReason = CaseExtensionReasonList.NO_EXTENSION;
+
+        Element<Child> targetChild1 = element(UUID.randomUUID(), Child.builder()
+            .party(ChildParty.builder()
+                .completionDate(completeDate)
+                .extensionReason(extensionReason)
+                .build())
+            .build());
+
+        Element<Child> otherChild = element(UUID.randomUUID(), Child.builder()
+            .party(ChildParty.builder()
+                .completionDate(completeDate)
+                .extensionReason(extensionReason)
+                .build())
+            .build());
+
+        @Test
+        void shouldRevertChildCompletionDate() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .children1(List.of(targetChild1, otherChild))
+                .build();
+
+            Map<String, Object> resultMap = underTest.revertChildExtensionDate(caseData, MIGRATION_ID,
+                targetChild1.getId().toString(), revertedDate, revertedReason);
+
+            assertThat(resultMap).isEqualTo(Map.of(
+                "children1", List.of(
+                    element(targetChild1.getId(), Child.builder()
+                        .party(ChildParty.builder()
+                            .completionDate(revertedDate)
+                            .extensionReason(revertedReason)
+                            .build())
+                        .build()),
+                    otherChild
+                )));
+        }
+
+        @Test
+        void shouldRevertChildNullExtensionReason() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .children1(List.of(targetChild1, otherChild))
+                .build();
+
+            Map<String, Object> resultMap = underTest.revertChildExtensionDate(caseData, MIGRATION_ID,
+                targetChild1.getId().toString(), revertedDate, null);
+
+            assertThat(resultMap).isEqualTo(Map.of(
+                "children1", List.of(
+                    element(targetChild1.getId(), Child.builder()
+                        .party(ChildParty.builder()
+                            .completionDate(revertedDate)
+                            .extensionReason(null)
+                            .build())
+                        .build()),
+                    otherChild
+                )));
+        }
+
+        @Test
+        void shouldThrowExceptionIfChildNotFound() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .children1(List.of(otherChild))
+                .build();
+
+            assertThatThrownBy(() -> underTest.revertChildExtensionDate(caseData, MIGRATION_ID,
+                    targetChild1.getId().toString(), revertedDate, revertedReason))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format(
+                    "Migration {id = {}}, case reference = {}} child {} not found",
+                    MIGRATION_ID, 1L, targetChild1.getId()));
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoChildren() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .build();
+
+            assertThatThrownBy(() -> underTest.revertChildExtensionDate(caseData, MIGRATION_ID,
+                targetChild1.getId().toString(), revertedDate, revertedReason))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format(
+                    "Migration {id = {}, case reference = {}} doesn't have children",
+                    MIGRATION_ID, 1L));
         }
     }
 }

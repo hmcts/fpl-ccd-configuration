@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.ChildRecoveryOrderGround;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.ParticularsOfChildren;
+import uk.gov.hmcts.reform.fpl.enums.PriorConsultationType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderGround;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.GroundsForChildAssessmentOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForChildRecoveryOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForContactWithChild;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
+import uk.gov.hmcts.reform.fpl.model.GroundsForEducationSupervisionOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForRefuseContactWithChild;
 import uk.gov.hmcts.reform.fpl.model.GroundsForSecureAccommodationOrder;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
@@ -48,6 +50,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC14Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC15Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC16Supplement;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC17Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC18Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC20Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
@@ -67,11 +70,13 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.GrammarHelper;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.lang.String.join;
 import static java.time.LocalDate.parse;
@@ -163,6 +168,44 @@ public class CaseSubmissionGenerationService
             .directionsSoughtAssessment(caseData.getOrders().getChildAssessmentOrderAssessmentDirections())
             .directionsSoughtContact(caseData.getOrders().getChildAssessmentOrderContactDirections())
             .caseNumber(String.valueOf(caseData.getId()))
+            .build();
+
+        if (isDraft) {
+            supplement.setDraftWaterMark(getDraftWaterMarkData());
+        } else {
+            supplement.setCourtSeal(courtService.getCourtSeal(caseData, SEALED));
+        }
+        return supplement;
+    }
+
+    public DocmosisC17Supplement getC17SupplementData(final CaseData caseData, boolean isDraft) {
+        Language applicationLanguage = Optional.ofNullable(caseData.getC110A()
+            .getLanguageRequirementApplication()).orElse(Language.ENGLISH);
+
+        GroundsForEducationSupervisionOrder grounds = caseData.getGroundsForEducationSupervisionOrder();
+
+        Orders order = caseData.getOrders();
+        int numOfChildren = caseData.getAllChildren().size();
+
+        DocmosisC17Supplement supplement = DocmosisC17Supplement.builder()
+            .caseNumber(String.valueOf(caseData.getId()))
+            .welshLanguageRequirement(getWelshLanguageRequirement(caseData, applicationLanguage))
+            .courtName(courtService.getCourtName(caseData))
+            .childrensNames(getChildrensNames(caseData.getAllChildren()))
+            .submittedDate(formatDateDisplay(time.now().toLocalDate(), applicationLanguage))
+            .childOrChildren(GrammarHelper.getChildGrammar(numOfChildren))
+            .isOrAre(GrammarHelper.getIsOrAreGrammar(numOfChildren))
+            .priorConsultationOtherLA(order.getEducationSupervisionOrderPriorConsultationOtherLA())
+            .priorConsultationType((isNotEmpty(order.getEducationSupervisionOrderPriorConsultationType()))
+                ? order.getEducationSupervisionOrderPriorConsultationType().stream()
+                    .map(PriorConsultationType::getLabel)
+                    .map(label -> label.replace("child[ren]", GrammarHelper.getChildGrammar(numOfChildren))
+                        .replace("[is] [are]", GrammarHelper.getIsOrAreGrammar(numOfChildren))
+                        .replace("live[s]", (numOfChildren > 1) ? "live" : "lives"))
+                    .collect(Collectors.toList())
+                : new ArrayList<>())
+            .groundReason(grounds.getGroundDetails())
+            .directionsAppliedFor(order.getEducationSupervisionOrderDirectionsAppliedFor())
             .build();
 
         if (isDraft) {
