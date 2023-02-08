@@ -48,15 +48,8 @@ public class MigrateCaseController extends CallbackController {
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1012", this::run1012,
-        "DFPL-1064", this::run1064,
         "DFPL-1144", this::run1144,
-        "DFPL-1065", this::run1065,
         "DFPL-872rollback", this::run872Rollback,
-        "DFPL-1029", this::run1029,
-        "DFPL-1161", this::run1161,
-        "DFPL-1162", this::run1162,
-        "DFPL-1156", this::run1156,
         "DFPL-1072", this::run1072,
         "DFPL-1163", this::run1163
     );
