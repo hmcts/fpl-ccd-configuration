@@ -25,6 +25,7 @@ public class ApplicationDocument implements FurtherDocument {
     private String documentName;
     private String includedInSWET;
     private List<String> documentAcknowledge;
+    private List<String> confidential;
 
     @JsonIgnore
     public boolean hasDocument() {
@@ -33,7 +34,7 @@ public class ApplicationDocument implements FurtherDocument {
 
     @JsonIgnore
     public boolean isConfidentialDocument() {
-        return true;
+        return confidential != null && confidential.contains("CONFIDENTIAL");
     }
 
     @JsonIgnore
