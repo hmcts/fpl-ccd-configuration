@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "WorkAllocationTaskType",
+    "ListElementCode": "FAILED_PAYMENT",
+    "ListElement": "Failed Payment",
+    "DisplayOrder": 0
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "WorkAllocationTaskType",
+    "ListElementCode": "ORDER_NOT_UPLOADED",
+    "ListElement": "Order not uploaded",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "WorkAllocationTaskType",
+    "ListElementCode": "CORRESPONDENCE_UPLOADED",
+    "ListElement": "Correspondence Uploaded",
+    "DisplayOrder": 2
+  }
+]
