@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
@@ -200,10 +201,15 @@ public class FurtherEvidenceUploadedEventHandler {
             recipients.addAll(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData));
 
             if (isNotEmpty(recipients)) {
+                Optional<HearingBooking> hearingBookings = caseData.getHearingDetails().stream()
+                    .filter(element -> element.getValue().toLabel().equals(newHearingDocuments.get(0).getHearing()))
+                    .findFirst()
+                    .map(Element::getValue);
+
                 List<String> newDocumentNames = newHearingDocuments.stream()
                     .map(doc -> doc.getDocument().getFilename()).collect(toList());
-                furtherEvidenceNotificationService.sendNotification(caseData, recipients, uploader.getFullName(),
-                    newDocumentNames);
+                furtherEvidenceNotificationService.sendNotificationWithHearing(caseData, recipients,
+                    uploader.getFullName(), newDocumentNames, hearingBookings);
             }
         }
     }
@@ -644,10 +650,16 @@ public class FurtherEvidenceUploadedEventHandler {
         // Further application documents - for example the SWET or care plan
         // - everyone except respondent/child solicitors have permission to see
         // So we shouldn’t send the notification to respondent/child solicitors
+        // DFPL-1087, respondent/child should receive notification if the docs are not confidential
         List<Element<ApplicationDocument>> newApplicationDocuments =
             getNewApplicationDocuments(caseData.getApplicationDocuments(), beforeCaseData.getApplicationDocuments());
         unwrapElements(newApplicationDocuments).forEach(applicationDocument -> {
             ret.get(ALL_LAS).add(applicationDocument);
+            if (!applicationDocument.isConfidentialDocument()) {
+                ret.get(CAFCASS).add(applicationDocument);
+                ret.get(CHILD_SOLICITOR).add(applicationDocument);
+                ret.get(RESPONDENT_SOLICITOR).add(applicationDocument);
+            }
         });
 
         // Respondent Statement

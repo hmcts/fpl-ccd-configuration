@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -202,6 +203,67 @@ class CourtServiceTest {
     }
 
     @Nested
+    class GetCourtEmailNotCtsc {
+
+        private final String ctscEmail = "ctsc@test.com";
+
+        @BeforeEach
+        void init() {
+            when(ctscLookup.getEmail()).thenReturn(ctscEmail);
+        }
+
+        @Test
+        void shouldReturnNullIfSendToCtscIsSet() {
+            final CaseData caseData = CaseData.builder()
+                .caseLocalAuthority("LA1")
+                .multiCourts(YesNo.YES)
+                .sendToCtsc(YesNo.YES.getValue())
+                .build();
+
+            final String actualEmail = underTest.getCourtEmailNotCtsc(caseData);
+
+            assertThat(actualEmail).isNull();
+        }
+
+        @Test
+        void shouldReturnDesignatedCourtEmail() {
+            final CaseData caseData = CaseData.builder()
+                .caseLocalAuthority("LA1")
+                .court(court1)
+                .build();
+
+            final String actualEmail = underTest.getCourtEmailNotCtsc(caseData);
+
+            assertThat(actualEmail).isEqualTo(court1.getEmail());
+        }
+
+        @Test
+        void shouldReturnDefaultCourtEmail() {
+            final CaseData caseData = CaseData.builder()
+                .caseLocalAuthority("LA1")
+                .build();
+
+            when(courtLookup.getCourts("LA1")).thenReturn(List.of(court1, court2));
+
+            final String actualEmail = underTest.getCourtEmailNotCtsc(caseData);
+
+            assertThat(actualEmail).isEqualTo(court1.getEmail());
+        }
+
+        @Test
+        void shouldReturnNullWhenUserDidNotSelectCourt() {
+            final CaseData caseData = CaseData.builder()
+                .caseLocalAuthority("LA1")
+                .multiCourts(YesNo.YES)
+                .build();
+
+            final String actualEmail = underTest.getCourtEmailNotCtsc(caseData);
+
+            assertThat(actualEmail).isNull();
+        }
+    }
+
+    @Nested
     class GetCourtName {
 
         @Test
@@ -364,6 +426,19 @@ class CourtServiceTest {
         }
 
         @Test
+        void shouldReturnCourtInOrdersIfCaseLocalAuthorityIsNull() {
+            final CaseData caseData = CaseData.builder()
+                .orders(Orders.builder().court("123").build())
+                .build();
+
+            when(courtLookup.getCourtByCode("123")).thenReturn(Optional.of(court1));
+
+            final String actualEmail = underTest.getCourtCode(caseData);
+
+            assertThat(actualEmail).isEqualTo(court1.getCode());
+        }
+
+        @Test
         void shouldReturnNullWhenUserDidNotSelectCourt() {
             final CaseData caseData = CaseData.builder()
                 .caseLocalAuthority("LA1")
@@ -457,6 +532,18 @@ class CourtServiceTest {
                 .build();
 
             String email = underTest.getCourtEmail(caseData);
+            assertThat(email).isEqualTo(highCourtEmail);
+        }
+
+        @Test
+        void shouldGetTheHighCourtEmailWhenRequestedWithGetCourtEmailNotCtsc() {
+            when(highCourtAdminEmailLookupConfiguration.getEmail()).thenReturn(highCourtEmail);
+            CaseData caseData = CaseData.builder()
+                .court(highCourt)
+                .sendToCtsc(NO.getValue())
+                .build();
+
+            String email = underTest.getCourtEmailNotCtsc(caseData);
             assertThat(email).isEqualTo(highCourtEmail);
         }
     }
