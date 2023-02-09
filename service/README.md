@@ -1,5 +1,12 @@
 # fpl-service
 
+## Contents:
+- [Config](#config)
+- [Application Mappings](#application-mappings)
+- [Feature Toggle](#feature-toggle)
+- [Scheduler](#scheduler)
+- [Emails](#emails)
+
 ## Config
 
 The FPL Service (as any other HMCTS Reform services) uses three sources of configuration for the placeholders:
@@ -8,7 +15,7 @@ The FPL Service (as any other HMCTS Reform services) uses three sources of confi
 * The following [library](https://github.com/hmcts/properties-volume-spring-boot-starter) provides secrets as configuration placeholders.
   [This file](src/main/resources/bootstrap.yaml) configures mapping from a secret name to Spring's configuration property.
 
-Custom configuration parameters:
+### Custom configuration parameters:
 
 |Property name|Configuration place|Description|
 |---|---|---|
@@ -67,7 +74,7 @@ Custom configuration parameters:
 |translation.notification.recipient|SECRET|Translation recipient team mail inbox|
 |robotics.notification.sender|SECRET|FROM field when sending emails to robotics|
 |robotics.notification.recipient|SECRET|Robotics mailbox address|
-|feature.toggle.robotics.case-number.notification.enabled|ENV|Determines if JSON file should be send to robotics when Family Man case number is added to the case'
+|feature.toggle.robotics.case-number.notification.enabled|ENV|Determines if JSON file should be send to robotics when Family Man case number is added to the case'|
 |feature.toggle.robotics.support.api.enabled|ENV|Enables API to retrigger robotics notification for particular case|
 |appinsights.instrumentationkey|SECRET|Key used to connect to Azure AppInsights|
 
@@ -161,7 +168,9 @@ create `application-feature-toggle.yaml` file with following data:
 
 ```
 spring:
-  profiles: feature-toggle
+  config:
+    activate:
+      on-profile: feature-toggle
 
 ld:
   sdk_key: (get from key vault)
@@ -175,7 +184,9 @@ In order to test your feature with custom flag values `user_key` needs to be add
 
 ```
 spring:
-  profiles: feature-toggle
+  config:
+    activate:
+      on-profile: feature-toggle
 
 ld:
   sdk_key: (get from key vault)
@@ -185,20 +196,19 @@ ld:
 Your key will be added on first `FeatureToggleService` call and will be available on LaunchDarkly panel in Users tab.
 You will be able to set your own flag values there without affecting other environments.
 
-### Scheduler
+## Scheduler
 
 In order to enable quartz scheduler
-- set scheduler.enabled:true in application.yml local profile
+- set `scheduler.enabled:true` in application-local.yaml
 
 Upcoming hearing jobs can be configured with environment variables
 UPCOMING_HEARINGS_CRON[default 0 0 2 ? * MON-FRI] - quartz expression, e.g 0/30 * * ? * MON-FRI
 UPCOMING_HEARINGS_DAYS[default 2] - number of working days notification is sent before hearing
 Elastic search must be enable in ccd-docker for Upcoming hearings job to work
 
-### Emails
+## Emails
 
 Emails to Robotics and to Welsh translation team are sent using SMTP protocol via MTA (Mail Transfer Agent) or SendGrid depending on feature toggle *send-grid*.
-On local environment test mailhog server is available. Sent emails can be checked at http://localhost:8025/
-
+On local environment test MailHog server is available. Sent emails can be checked at http://localhost:8025/
 
 Emails to users are sent via gov.notify
