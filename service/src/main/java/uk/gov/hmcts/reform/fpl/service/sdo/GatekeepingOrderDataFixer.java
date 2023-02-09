@@ -12,7 +12,7 @@ public class GatekeepingOrderDataFixer {
      * the hidden field needs to be replicated, in order to be loaded by the ui
      * and used in the show-field conditions
      */
-    public CaseDetailsMap fix(CaseDetailsMap caseDetailsMap) {
+    public CaseDetailsMap addLanguageRequirement(CaseDetailsMap caseDetailsMap) {
 
         return caseDetailsMap.putIfNotEmpty("languageRequirementUrgent",
             caseDetailsMap.getOrDefault("languageRequirement", null)
