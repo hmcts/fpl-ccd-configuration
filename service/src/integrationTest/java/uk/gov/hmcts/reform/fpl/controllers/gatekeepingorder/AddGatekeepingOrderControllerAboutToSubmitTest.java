@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.AddGatekeepingOrderController;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
-import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
@@ -126,7 +125,9 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
     }
 
     @Test
-    void shouldBuildDraftSDOWithExistingDraftDocumentWhenOrderStatusIsDraft() {
+    void shouldPopulateAllocationDecisionWhenSubmitting() {
+
+        Allocation allocationDecision = createAllocation("Lay justices", "Reason");
         CaseData caseData = CaseData.builder()
             .gatekeepingOrderRouter(SERVICE)
             .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
@@ -135,7 +136,29 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
                     .draftDocument(SDO_REFERENCE)
                     .build())
                 .build())
+            .allocationDecision(allocationDecision)
+            .build();
 
+        CaseDetails caseDetails = asCaseDetails(caseData);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+
+        assertThat(callbackResponse.getData()).containsKey("allocationDecision");
+    }
+
+    @Test
+    void shouldBuildDraftSDOWithExistingDraftDocumentWhenOrderStatusIsDraft() {
+
+        Allocation allocationDecision = createAllocation("Lay justices", "Reason");
+        CaseData caseData = CaseData.builder()
+            .gatekeepingOrderRouter(SERVICE)
+            .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .gatekeepingOrderSealDecision(GatekeepingOrderSealDecision.builder()
+                    .orderStatus(DRAFT)
+                    .draftDocument(SDO_REFERENCE)
+                    .build())
+                .build())
+            .allocationDecision(allocationDecision)
             .build();
 
         StandardDirectionOrder expectedSDO = StandardDirectionOrder.builder()
@@ -150,28 +173,13 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
         assertThat(responseData.getStandardDirectionOrder()).isEqualTo(expectedSDO);
     }
 
-    private static Stream<Arguments> translationRequirements() {
-        return Stream.of(
-            Arguments.of(LanguageTranslationRequirement.NO),
-            Arguments.of(LanguageTranslationRequirement.WELSH_TO_ENGLISH),
-            Arguments.of(LanguageTranslationRequirement.ENGLISH_TO_WELSH)
-        );
-    }
-
-    private static Stream<Arguments> caseTranslationRequirement() {
-        return Stream.of(
-            Arguments.of(YesNo.YES.getValue(), LanguageTranslationRequirement.ENGLISH_TO_WELSH),
-            Arguments.of(YesNo.NO.getValue(), LanguageTranslationRequirement.NO),
-            Arguments.of("", LanguageTranslationRequirement.NO)
-        );
-    }
-
     @ParameterizedTest
     @MethodSource("caseTranslationRequirement")
     void shouldBuildSealedSDOAndRemoveTransientFieldsWhenOrderStatusIsSealed(
         String caseLanguageRequirement,
         LanguageTranslationRequirement expectedTranslationRequirements) {
 
+        Allocation allocationDecision = createAllocation("Lay justices", "Reason");
         final CustomDirection customDirection =
             CustomDirection.builder()
                 .type(CUSTOM)
@@ -219,6 +227,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
                 entry("gatekeepingTranslationRequirements", expectedTranslationRequirements),
                 entry("directionsForAllParties", List.of(ATTEND_HEARING)),
                 entry("direction-ATTEND_HEARING", standardDirection),
+                entry("allocationDecision", allocationDecision),
                 entry("customDirections", wrapElements(customDirection))))
             .build();
 
@@ -247,11 +256,9 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
             "standardDirections", "gatekeepingOrderIssuingJudge");
     }
 
-
     @ParameterizedTest
     @MethodSource("translationRequirements")
-    void shouldBuildUrgentHearingOrderAndAddAllocationDecision(
-        LanguageTranslationRequirement translationRequirements) {
+    void shouldBuildUrgentHearingOrderAndAddAllocationDecision(LanguageTranslationRequirement translationRequirements) {
 
         final DocumentReference urgentReference = testDocumentReference();
         final DocumentReference sealedUrgentReference = testDocumentReference();
@@ -311,9 +318,9 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
         DocumentReference document = DocumentReference.builder().filename("final.docx").build();
         Court court = Court.builder().build();
         givenCurrentUserWithName("adam");
-
+        Allocation allocationDecision = createAllocation("Lay justices", "Reason");
         CaseData responseCaseData = extractCaseData(
-            postAboutToSubmitEvent(validCaseDetailsForUploadRoute(document, court, SEALED))
+            postAboutToSubmitEvent(validCaseDetailsForUploadRoute(document, court, allocationDecision))
         );
 
         assertThat(responseCaseData.getNoticeOfProceedingsBundle())
@@ -321,6 +328,22 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
             .containsExactly(DocumentBundle.builder().document(C6_REFERENCE).build());
         assertThat(responseCaseData.getState()).isEqualTo(State.CASE_MANAGEMENT);
         assertThat(responseCaseData.getSdoRouter()).isNull();
+    }
+
+    private static Stream<Arguments> translationRequirements() {
+        return Stream.of(
+            Arguments.of(LanguageTranslationRequirement.NO),
+            Arguments.of(LanguageTranslationRequirement.WELSH_TO_ENGLISH),
+            Arguments.of(LanguageTranslationRequirement.ENGLISH_TO_WELSH)
+        );
+    }
+
+    private static Stream<Arguments> caseTranslationRequirement() {
+        return Stream.of(
+            Arguments.of(YesNo.YES.getValue(), LanguageTranslationRequirement.ENGLISH_TO_WELSH),
+            Arguments.of(YesNo.NO.getValue(), LanguageTranslationRequirement.NO),
+            Arguments.of("", LanguageTranslationRequirement.NO)
+        );
     }
 
     private List<Element<Applicant>> getApplicant() {
@@ -331,7 +354,9 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
             .build());
     }
 
-    private CaseData validCaseDetailsForUploadRoute(DocumentReference document, Court court, OrderStatus status) {
+    private CaseData validCaseDetailsForUploadRoute(
+        DocumentReference document, Court court, Allocation allocation
+    ) {
         CaseData.CaseDataBuilder builder = CaseData.builder()
             .id(1234123412341234L)
             .court(court)
@@ -347,6 +372,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
             .orders(Orders.builder().orderType(List.of(CARE_ORDER)).build())
             .gatekeepingOrderRouter(GatekeepingOrderRoute.UPLOAD)
             .state(GATEKEEPING)
+            .allocationDecision(allocation)
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .useAllocatedJudge("Yes")
                 .legalAdvisorName("Chris Newport")
@@ -359,5 +385,11 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
         return builder.build();
     }
 
-
+    private Allocation createAllocation(String proposal, String judgeLevelRadio) {
+        Allocation allocationDecision = Allocation.builder()
+            .proposal(proposal)
+            .judgeLevelRadio(judgeLevelRadio)
+            .build();
+        return allocationDecision;
+    }
 }
