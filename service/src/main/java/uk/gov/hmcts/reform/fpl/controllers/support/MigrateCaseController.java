@@ -53,7 +53,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1072", this::run1072,
         "DFPL-1163", this::run1163,
         "DFPL-1165", this::run1165,
-        "DFPL-1192", this::run1192
+        "DFPL-1192", this::run1192,
+        "DFPL-1215", this::run1215
     );
 
     @PostMapping("/about-to-submit")
@@ -136,6 +137,22 @@ public class MigrateCaseController extends CallbackController {
     private void run1192(CaseDetails caseDetails) {
         var migrationId = "DFPL-1192";
         var expectedCaseId = 1645718564640841L;
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        Long caseId = caseData.getId();
+        if (caseId != expectedCaseId) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId
+            ));
+        }
+        fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
+    }
+
+    private void run1215(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1215";
+        var expectedCaseId = 1662713946163354L;
 
         CaseData caseData = getCaseData(caseDetails);
 
