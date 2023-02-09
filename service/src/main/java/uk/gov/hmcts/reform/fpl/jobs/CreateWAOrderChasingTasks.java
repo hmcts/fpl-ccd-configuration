@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.jobs;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -23,12 +24,10 @@ import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MustNot;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.RangeQuery;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.math.RoundingMode.UP;
 import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.State.DELETED;
@@ -38,6 +37,8 @@ import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType.ORDER_NOT_UPLOADED;
 import static uk.gov.hmcts.reform.fpl.service.search.SearchService.ES_DEFAULT_SIZE;
+import static uk.gov.hmcts.reform.fpl.utils.JobHelper.buildStats;
+import static uk.gov.hmcts.reform.fpl.utils.JobHelper.paginate;
 
 @Slf4j
 @Component
@@ -51,24 +52,24 @@ public class CreateWAOrderChasingTasks implements Job {
     private final WorkAllocationTaskService workAllocationTaskService;
 
     @Override
+    @SneakyThrows
     public void execute(JobExecutionContext jobExecutionContext) {
         final String jobName = jobExecutionContext.getJobDetail().getKey().getName();
         log.info("Job '{}' started", jobName);
 
         log.debug("Job '{}' searching for cases", jobName);
 
-        final boolean isFirstRun = toggleService.isChaseOrdersFirstCronRunEnabled();
-
-        final ESQuery query = buildQuery(isFirstRun);
-
         int total;
         int skipped = 0;
-        int updated = 0;
+        int chased = 0;
         int failed = 0;
+
+        final boolean isFirstRun = toggleService.isChaseOrdersFirstCronRunEnabled();
+        final ESQuery query = buildQuery(isFirstRun);
 
         try {
             total = searchService.searchResultsSize(query);
-            log.info("Job '{}' found {} cases", jobName, total);
+            log.info("Job '{}' found {} cases to chase", jobName, total);
         } catch (Exception e) {
             log.error("Job '{}' could not determine the number of cases to search for due to {}",
                 jobName, e.getMessage(), e
@@ -89,8 +90,7 @@ public class CreateWAOrderChasingTasks implements Job {
                         if (shouldCreateChaseTask(caseData, isFirstRun)) {
                             log.debug("Job '{}' creating chase task {}", jobName, caseId);
                             workAllocationTaskService.createWorkAllocationTask(caseData, ORDER_NOT_UPLOADED);
-                            log.info("Job '{}' created chase task {}", jobName, caseId);
-                            updated++;
+                            chased++;
                         } else {
                             log.debug("Job '{}' skipped case {}", jobName, caseId);
                             skipped++;
@@ -99,16 +99,20 @@ public class CreateWAOrderChasingTasks implements Job {
                         log.error("Job '{}' could not create WA task on {} due to {}", jobName, caseId, e.getMessage(),
                             e);
                         failed++;
-                        Thread.sleep(3000); // give ccd time to recover in case it was getting too many request
+                        Thread.sleep(2000); // If CCD is overwhelmed, stop for 2s before continuing
                     }
                 }
             } catch (Exception e) {
+                if (Thread.interrupted()) {
+                    // if this exception was on Thread.sleep rather than get case details
+                    throw e;
+                }
                 log.error("Job '{}' could not search for cases due to {}", jobName, e.getMessage(), e);
                 failed += ES_DEFAULT_SIZE;
             }
         }
 
-        log.info("Job '{}' finished. {}", jobName, buildStats(total, skipped, updated, failed));
+        log.info("Job '{}' finished. {}", jobName, buildStats(total, skipped, chased, failed));
     }
 
     private boolean isInRange(HearingBooking booking, boolean isFirstRun) {
@@ -156,23 +160,5 @@ public class CreateWAOrderChasingTasks implements Job {
             .mustNot(getInvalidStates())
             .filter(Filter.builder().clauses(List.of(olderThan5Days.build())).build())
             .build();
-    }
-
-    private int paginate(int total) {
-        return new BigDecimal(total).divide(new BigDecimal(ES_DEFAULT_SIZE), UP).intValue();
-    }
-
-
-    private String buildStats(int total, int skipped, int updated, int failed) {
-        double percentUpdated = updated * 100.0 / total;
-        double percentSkipped = skipped * 100.0 / total;
-        double percentFailed = failed * 100.0 / total;
-
-        return String.format("total cases: %1$d, "
-                + "updated cases: %2$d/%1$d (%5$.0f%%), "
-                + "skipped cases: %3$d/%1$d (%6$.0f%%), "
-                + "failed cases: %4$d/%1$d (%7$.0f%%)",
-            total, updated, skipped, failed, percentUpdated, percentSkipped, percentFailed
-        );
     }
 }

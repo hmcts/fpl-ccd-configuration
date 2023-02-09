@@ -17,7 +17,7 @@ import static java.time.LocalDateTime.now;
 public class SendOrderReminderService {
 
     public List<HearingBooking> getPastHearingBookingsWithoutCMOs(CaseData caseData) {
-        return caseData.getHearingDetails().stream()
+        return caseData.getAllNonCancelledHearings().stream()
             .map(Element::getValue)
             .filter(booking -> booking.getEndDate().isBefore(now()) && !booking.hasCMOAssociation())
             .collect(Collectors.toList());
