@@ -1885,13 +1885,7 @@
       },
       {
         "UserRoles": [
-          "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-systemupdate",
-          "[EPSMANAGING]",
           "[LABARRISTER]",
-          "[LAMANAGING]",
           "[LASOLICITOR]",
           "[SOLICITOR]",
           "[SOLICITORA]",
@@ -1904,10 +1898,42 @@
           "[SOLICITORH]",
           "[SOLICITORI]",
           "[SOLICITORJ]",
-          "[BARRISTER]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[CAFCASSSOLICITOR]",
+          "[LASHARED]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]",
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass",
+          "[BARRISTER]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
           "caseworker-publiclaw-gatekeeper"
         ],
         "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CRUD"
       }
     ]
   }

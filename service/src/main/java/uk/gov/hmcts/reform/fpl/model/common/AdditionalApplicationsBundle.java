@@ -41,9 +41,8 @@ public class AdditionalApplicationsBundle {
         throw new MissingApplicationException(uploadedDateTime);
     }
 
-    @JsonIgnore
     public YesNo getApplicationReviewed() {
-        if (isEmpty(applicationReviewed)) {
+        if (applicationReviewed == null) {
             // DFPL-1047 Reviewing is not required for documents uploaded in historic cases
             return YesNo.YES;
         } else {
