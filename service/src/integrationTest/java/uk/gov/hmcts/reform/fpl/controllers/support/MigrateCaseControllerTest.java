@@ -215,8 +215,10 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             CaseData responseData = extractCaseData(response);
 
             assertThat(responseData.getPlacementEventData().getPlacements()).isEqualTo(placementsRemaining);
-            assertThat(responseData.getPlacementEventData().getPlacementsNonConfidential(true)).isEqualTo(placementsRemaining);
-            assertThat(responseData.getPlacementEventData().getPlacementsNonConfidential(false)).isEqualTo(placementsRemaining);
+            assertThat(responseData.getPlacementEventData()
+                .getPlacementsNonConfidential(true)).isEqualTo(placementsRemaining);
+            assertThat(responseData.getPlacementEventData()
+                .getPlacementsNonConfidential(false)).isEqualTo(placementsRemaining);
         }
     }
 }
