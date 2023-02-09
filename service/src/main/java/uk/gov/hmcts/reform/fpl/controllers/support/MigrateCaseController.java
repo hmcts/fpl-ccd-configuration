@@ -193,9 +193,11 @@ public class MigrateCaseController extends CallbackController {
             .filter(x -> !x.getId().equals(placementToRemove)).collect(toList());
         caseData.getPlacementEventData().setPlacements(placementsToKeep);
 
-        List<Element<Placement>> nonConfidentialPlacementsToKeep = caseData.getPlacementEventData().getPlacementsNonConfidential(false);
+        List<Element<Placement>> nonConfidentialPlacementsToKeep = caseData.getPlacementEventData()
+            .getPlacementsNonConfidential(false);
 
-        List<Element<Placement>> nonConfidentialNoticesPlacementsToKeep = caseData.getPlacementEventData().getPlacementsNonConfidential(true);
+        List<Element<Placement>> nonConfidentialNoticesPlacementsToKeep = caseData.getPlacementEventData()
+            .getPlacementsNonConfidential(true);
 
         caseDetails.getData().put("placements", placementsToKeep);
         caseDetails.getData().put("placementsNonConfidential", nonConfidentialPlacementsToKeep);
