@@ -1,0 +1,52 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "gatekeepingOrderSealDecision",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "COMPLEX",
+    "PageID": "SealDecision",
+    "PageDisplayOrder": 7,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
+    "PageShowCondition": "gatekeepingOrderRouter!=\"URGENT\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "nextStepsLabel",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": "SealDecision",
+    "PageDisplayOrder": 7,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "gatekeepingOrderSealDecision.nextSteps=\"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "languageRequirement",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "PageID": "SealDecision",
+    "PageDisplayOrder": 7,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "gatekeepingOrderRouter=\"DO_NOT_SHOW\"",
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "gatekeepingTranslationRequirements",
+    "PageFieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "PageID": "SealDecision",
+    "PageDisplayOrder": 7,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "languageRequirement=\"Yes\" AND gatekeepingOrderRouter!=\"SERVICE\" AND useServiceRoute!=\"YES\""
+  }
+]
