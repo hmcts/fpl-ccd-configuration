@@ -180,6 +180,7 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove("placementsNonConfidential");
         caseDetails.getData().remove("placementsNonConfidentialNotices");
     }
+
     private void run1204(CaseDetails caseDetails) {
         var migrationId = "DFPL-1204";
         var possibleCaseIds = List.of(1638528543085011L);
@@ -191,7 +192,6 @@ public class MigrateCaseController extends CallbackController {
         List<Element<Placement>> placementsToKeep = caseData.getPlacementEventData().getPlacements().stream()
             .filter(x -> !x.getId().equals(placementToRemove)).collect(toList());
         caseData.getPlacementEventData().setPlacements(placementsToKeep);
-
 
         List<Element<Placement>> nonConfidentialPlacementsToKeep = caseData.getPlacementEventData().getPlacementsNonConfidential(false);
 
