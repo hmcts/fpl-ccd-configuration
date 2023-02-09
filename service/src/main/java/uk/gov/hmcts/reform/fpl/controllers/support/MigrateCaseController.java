@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -51,7 +52,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1144", this::run1144,
         "DFPL-872rollback", this::run872Rollback,
         "DFPL-1072", this::run1072,
-        "DFPL-1163", this::run1163
+        "DFPL-1163", this::run1163,
+        "DFPL-1210", this::run1210
     );
 
     @PostMapping("/about-to-submit")
@@ -233,5 +235,15 @@ public class MigrateCaseController extends CallbackController {
             "055ed3b0-fdeb-4e83-8758-f99f387fe2c4", LocalDate.of(2022,5,9), null));
         caseDetails.getData().putAll(migrateCaseService.revertChildExtensionDate(getCaseData(caseDetails), migrationId,
             "67bd3180-3cd2-4b44-a34b-700f315ccbac", LocalDate.of(2022,5,9), null));
+    }
+
+    private void run1210(CaseDetails caseDetails) {
+        String migrationId = "DFPL-1210";
+        Map<String, Object> caseDetailsData = caseDetails.getData();
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1615556003529811L, migrationId);
+        migrateCaseService.doHearingOptionCheck(caseDetails.getId(),
+            Optional.of((String) caseDetails.getData().get("hearingOption")).orElse(""),
+            "EDIT_HEARING", migrationId);
+        caseDetailsData.put("hearingOption", HearingOptions.EDIT_PAST_HEARING);
     }
 }
