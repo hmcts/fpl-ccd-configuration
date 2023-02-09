@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -171,6 +173,50 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThat(responseData.getPlacementEventData().getPlacements()).isEmpty();
             assertThat(response.getData()).extracting("placementsNonConfidential", "placementsNonConfidentialNotices")
                 .containsExactly(null, null);
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl1204 {
+
+        private final String migrationId = "DFPL-1204";
+        private final long validCaseId = 1638528543085011L;
+        private final UUID placementToRemove = UUID.fromString("88125c8b-8466-4af4-967f-197c3b82773c");
+        private final UUID placementToRemain = UUID.randomUUID();
+        private final DocumentReference documentToRemain = testDocumentReference();
+
+        @Test
+        void shouldOnlyRemoveSelectPlacement() {
+            List<Element<Placement>> placements = List.of(
+                element(placementToRemove, Placement.builder()
+                    .application(testDocumentReference())
+                    .build()),
+                element(placementToRemain, Placement.builder()
+                    .application(documentToRemain)
+                    .build())
+            );
+
+            List<Element<Placement>> placementsRemaining = List.of(
+                element(placementToRemain, Placement.builder()
+                    .application(documentToRemain)
+                    .build())
+            );
+
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .placementEventData(PlacementEventData.builder()
+                    .placements(placements)
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getPlacementEventData().getPlacements()).isEqualTo(placementsRemaining);
+            assertThat(responseData.getPlacementEventData().getPlacementsNonConfidential(true)).isEqualTo(placementsRemaining);
+            assertThat(responseData.getPlacementEventData().getPlacementsNonConfidential(false)).isEqualTo(placementsRemaining);
         }
     }
 }

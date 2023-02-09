@@ -14,6 +14,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
@@ -25,7 +27,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
-import static java.util.UUID.fromString;
+import static java.util.stream.Collectors.toList;
 
 @Api
 @RestController
@@ -40,9 +42,10 @@ public class MigrateCaseController extends CallbackController {
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1012", this::run1012,
+        "DFPL-1204", this::run1204,
         "DFPL-1064", this::run1064,
         "DFPL-1202", this::run1202,
+        "DFPL-1195", this::run1195,
         "DFPL-1065", this::run1065,
         "DFPL-1029", this::run1029,
         "DFPL-1161", this::run1161,
@@ -85,14 +88,6 @@ public class MigrateCaseController extends CallbackController {
             ));
         }
         fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
-    }
-
-    private void run1012(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1012";
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1661877618161045L, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(getCaseData(caseDetails),
-            migrationId, fromString("b8da3a48-441f-4210-a21c-7008d256aa32")));
     }
 
     private void run1064(CaseDetails caseDetails) {
@@ -173,5 +168,37 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove("placements");
         caseDetails.getData().remove("placementsNonConfidential");
         caseDetails.getData().remove("placementsNonConfidentialNotices");
+    }
+
+    private void run1195(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1195";
+        var possibleCaseIds = List.of(1655911528192218L);
+
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().remove("placements");
+        caseDetails.getData().remove("placementsNonConfidential");
+        caseDetails.getData().remove("placementsNonConfidentialNotices");
+    }
+    private void run1204(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1204";
+        var possibleCaseIds = List.of(1638528543085011L);
+        final UUID placementToRemove = UUID.fromString("88125c8b-8466-4af4-967f-197c3b82773c");
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        List<Element<Placement>> placementsToKeep = caseData.getPlacementEventData().getPlacements().stream()
+            .filter(x -> !x.getId().equals(placementToRemove)).collect(toList());
+        caseData.getPlacementEventData().setPlacements(placementsToKeep);
+
+
+        List<Element<Placement>> nonConfidentialPlacementsToKeep = caseData.getPlacementEventData().getPlacementsNonConfidential(false);
+
+        List<Element<Placement>> nonConfidentialNoticesPlacementsToKeep = caseData.getPlacementEventData().getPlacementsNonConfidential(true);
+
+        caseDetails.getData().put("placements", placementsToKeep);
+        caseDetails.getData().put("placementsNonConfidential", nonConfidentialPlacementsToKeep);
+        caseDetails.getData().put("placementsNonConfidentialNotices", nonConfidentialNoticesPlacementsToKeep);
     }
 }
