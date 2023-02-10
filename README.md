@@ -151,7 +151,7 @@ Application must be up and running
 
 In order to run the template tests locally you need to add the gov.uk.notify test-key here:
 
-Create the file in this location`service/src/integrationTest/resources/application-email-template-test.yaml`
+Create the file in this location `service/src/integrationTest/resources/application-email-template-test.yaml`
 (it's already included in .gitignore)
 ```
 spring:
