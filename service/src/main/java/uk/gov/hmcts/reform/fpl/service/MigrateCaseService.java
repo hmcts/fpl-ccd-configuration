@@ -6,11 +6,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-<<<<<<< HEAD
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
-=======
 import uk.gov.hmcts.reform.fpl.model.Child;
->>>>>>> master
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
