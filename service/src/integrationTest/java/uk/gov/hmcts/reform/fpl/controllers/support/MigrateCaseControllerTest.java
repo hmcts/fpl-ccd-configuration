@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
@@ -26,7 +25,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -91,7 +89,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             );
 
             CaseData responseData = extractCaseData(response);
-
             assertThat(responseData.getSendToCtsc()).isEqualTo(YesNo.NO.getValue());
         }
     }
@@ -133,7 +130,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThat(response.getData()).extracting("appointedGuardians_label").isNull();
             assertThat(response.getData()).extracting("manageOrdersCafcassRegion").isNull();
         }
-
     }
 
     private CaseDetails buildCaseDetails(CaseData caseData, String migrationId) {
