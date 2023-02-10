@@ -448,7 +448,7 @@
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "GatekeepingListOrSendToAdmin",
     "Label": "Do you want to list the hearing or send it to admin?",
-    "HintText": "If you want to list the hearing yourself, allocate the judge and serve the order you must complete the List Gatekeeping Hearing event.\n \n If you need an admin to list the order, it will be saved in the Draft Orders Tab.",
+    "HintText": "If you want to list the hearing yourself, allocate the judge and serve the order you must complete the List Gatekeeping Hearing event. If you need an admin to list the order, it will be saved in the Draft Orders Tab.",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
