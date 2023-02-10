@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GatekeepingListOrSendToAdmin",
+    "ListElementCode": "YES",
+    "ListElement": "Yes, I want to list the order myself",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GatekeepingListOrSendToAdmin",
+    "ListElementCode": "NO",
+    "ListElement": "No, I need to send to an admin to list the order",
+    "DisplayOrder": 2
+  }
+]
