@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.removaltool.MissingApplicationException;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Data
