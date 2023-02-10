@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.cmo;
 
-
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
