@@ -44,6 +44,7 @@ class ReviewAdditionalApplicationServiceTest {
             .author("TESTING1")
             .c2DocumentBundle(C2DocumentBundle.builder()
                 .uploadedDateTime("1 January 2021, 12:00pm").build())
+            .applicationReviewed(NO)
             .build());
 
     private static final Element<AdditionalApplicationsBundle> NEW_BUNDLE_2 =
@@ -53,6 +54,7 @@ class ReviewAdditionalApplicationServiceTest {
             .otherApplicationsBundle(OtherApplicationsBundle.builder()
                 .applicationType(OtherApplicationType.C1_TERMINATION_OF_APPOINTMENT_OF_A_GUARDIAN)
                 .uploadedDateTime("1 January 2021, 12:00pm").build())
+            .applicationReviewed(NO)
             .build());
 
     @Test
