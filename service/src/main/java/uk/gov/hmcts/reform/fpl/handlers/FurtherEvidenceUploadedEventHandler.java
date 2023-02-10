@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.FurtherDocument;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
@@ -98,6 +99,7 @@ public class FurtherEvidenceUploadedEventHandler {
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private static final String PDF = "pdf";
     private static final String LIST = "•";
+    private final UserService userService;
     private final WorkAllocationTaskService workAllocationTaskService;
 
     @EventListener
@@ -840,7 +842,8 @@ public class FurtherEvidenceUploadedEventHandler {
 
         if (!getNewCorrespondenceDocumentsByLA(caseData, caseDataBefore).getDocumentReferences().isEmpty()
             || !getNewCorrespondenceDocumentsBySolicitor(caseData, caseDataBefore).getDocumentReferences().isEmpty()
-        ) {
+            || (userService.isJudiciaryUser()
+                && !getNewCorrespondenceDocumentsByHmtcs(caseData, caseDataBefore).getDocumentReferences().isEmpty())) {
             workAllocationTaskService.createWorkAllocationTask(caseData, CORRESPONDENCE_UPLOADED);
         }
     }
