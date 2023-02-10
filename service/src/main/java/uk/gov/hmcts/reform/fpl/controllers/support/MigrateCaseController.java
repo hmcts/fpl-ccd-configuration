@@ -51,7 +51,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1161", this::run1161,
         "DFPL-1162", this::run1162,
         "DFPL-1156", this::run1156,
-        "DFPL-1072", this::run1072
+        "DFPL-1218", this::run1218
     );
 
     @PostMapping("/about-to-submit")
@@ -154,10 +154,6 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove("urgentHearingOrder");
     }
 
-    private void run1072(CaseDetails caseDetails) {
-        caseDetails.getData().putAll(migrateCaseService.updateIncorrectCourtCodes(getCaseData(caseDetails)));
-    }
-
     private void run1202(CaseDetails caseDetails) {
         var migrationId = "DFPL-1202";
         var possibleCaseIds = List.of(1649150882331141L);
@@ -184,6 +180,29 @@ public class MigrateCaseController extends CallbackController {
         var migrationId = "DFPL-1204";
         var possibleCaseIds = List.of(1638528543085011L);
         final UUID placementToRemove = UUID.fromString("88125c8b-8466-4af4-967f-197c3b82773c");
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        List<Element<Placement>> placementsToKeep = caseData.getPlacementEventData().getPlacements().stream()
+            .filter(x -> !x.getId().equals(placementToRemove)).collect(toList());
+        caseData.getPlacementEventData().setPlacements(placementsToKeep);
+
+        List<Element<Placement>> nonConfidentialPlacementsToKeep = caseData.getPlacementEventData()
+            .getPlacementsNonConfidential(false);
+
+        List<Element<Placement>> nonConfidentialNoticesPlacementsToKeep = caseData.getPlacementEventData()
+            .getPlacementsNonConfidential(true);
+
+        caseDetails.getData().put("placements", placementsToKeep);
+        caseDetails.getData().put("placementsNonConfidential", nonConfidentialPlacementsToKeep);
+        caseDetails.getData().put("placementsNonConfidentialNotices", nonConfidentialNoticesPlacementsToKeep);
+    }
+
+    private void run1218(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1218";
+        var possibleCaseIds = List.of(1651753104228873L);
+        final UUID placementToRemove = UUID.fromString("e32706b1-22e5-4bd9-ba05-355fe69028d0");
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
         CaseData caseData = getCaseData(caseDetails);
