@@ -7,7 +7,9 @@ import static uk.gov.hmcts.reform.fpl.service.search.SearchService.ES_DEFAULT_SI
 
 public class JobHelper {
 
-    private JobHelper() {}
+    private JobHelper() {
+
+    }
 
     public static String buildStats(int total, int skipped, int updated, int failed) {
         double percentUpdated = updated * 100.0 / total;
