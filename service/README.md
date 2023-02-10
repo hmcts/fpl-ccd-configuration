@@ -163,20 +163,8 @@ ORGLA3=>LA1,LA2;ORGLA2=>LA1,LA3
 For local development feature toggle will use default flag values defined in `FeatureToggleService.java`.
 
 ### Use Test flag values
-In order to use `Test` environment values locally, `sdk_key` needs to be specified. To do that,
-create `application-feature-toggle.yaml` file with following data:
-
-```
-spring:
-  config:
-    activate:
-      on-profile: feature-toggle
-
-ld:
-  sdk_key: (get from key vault)
-```
-
-`feature-toggle` value needs to be added to your run profiles in `spring.profiles.active` variable.
+In order to use `Test` environment values locally, `sdk_key` needs to be specified,
+and `feature-toggle` value needs to be added to your run profiles in `spring.profiles.active` variable.
 
 ### Custom flag values
 
@@ -204,7 +192,7 @@ In order to enable quartz scheduler
 Upcoming hearing jobs can be configured with environment variables
 UPCOMING_HEARINGS_CRON[default 0 0 2 ? * MON-FRI] - quartz expression, e.g 0/30 * * ? * MON-FRI
 UPCOMING_HEARINGS_DAYS[default 2] - number of working days notification is sent before hearing
-Elastic search must be enable in ccd-docker for Upcoming hearings job to work
+Elastic search must be enabled in ccd-docker for Upcoming hearings job to work
 
 ## Emails
 

@@ -15,7 +15,9 @@ Family public law's implementation of the CCD template
 - [Docker](https://www.docker.com)
 - [realpath-osx](https://github.com/harto/realpath-osx) (Mac OS only)
 - [jq](https://stedolan.github.io/jq/)
-- access to Azure key vault and an active VPN
+- access to Azure key vault
+- active VPN
+- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) (optional for secret management)
 
 ## Getting Started
 
@@ -26,9 +28,9 @@ git submodule init
 git submodule update
 ```
 
-Create the following two files in this location `service/scr/main/resources` (they are already included in .gitignore)
+Create the following two files (they are already included in .gitignore)
 
-`application-user-mappings.yaml`:
+`service/src/main/resources/application-user-mappings.yaml`:
 ```
 spring:
   profiles: user-mappings
@@ -37,7 +39,7 @@ fpl:
   local_authority_user:
     mapping: <get from key vault>
 ```
-and `application-feature-toggle.yaml`:
+and `service/src/main/resources/application-feature-toggle.yaml`:
 ```
 spring:
   config:
@@ -85,14 +87,6 @@ It requires `DOCMOSIS_KEY` to be exposed as environment variable on your machine
 Refer to the confluence page at [https://tools.hmcts.net/confluence/x/QRTgWw](https://tools.hmcts.net/confluence/x/QRTgWw)
 for additional explanation.
 
-### App insight (optional)
-To connect local environment to azure app insight:
-- set APPINSIGHTS_INSTRUMENTATIONKEY env variable (value can be found in env vault under name AppInsightsInstrumentationKey)
-- add env variable JAVA_TOOL_OPTIONS=-javaagent:<PATH_TO_PROJECT>/fpl-ccd-configuration/lib/applicationinsights-agent-2.6.1.jar
-
-To connect preview env to azure app insight:
-- add AppInsightsInstrumentationKey under java.keyVaults.fpla.secrets in charts/fpl-case-service/values.preview.template.yaml
-
 ## Testing
 E2E tests are configured to run in parallel in 3 headless browsers by default.
 
@@ -124,20 +118,20 @@ To disable Chrome web security
 DISABLE_SECURITY=true yarn test
 ```
 
-To run a selected E2E test
+To run a selected E2E test use the Feature or Scenario name
 
 ```$bash
-SHOW_BROWSER_WINDOW=true yarn test -g "Case administration after submission"
+SHOW_BROWSER_WINDOW=true yarn test -g "Gatekeeper adds allocated judge"
 ```
 
 ### Creating sample case via E2E tests
 
-E2E tests can be used to create sample case with mandatory sections only. To do so please run the following command:
+E2E tests can be used to create a sample case. To do so you can run the following command:
 
 ```$bash
-PARALLEL_CHUNKS=1 yarn test --grep '@create-case-with-mandatory-sections-only'
+PARALLEL_CHUNKS=1 yarn test --grep 'Create EPO order'
 ```
-Note: Case number will be printed to the console while tests run e.g. `Application draft #1571-7550-7484-8512 has been created`.
+Note: Case number will be printed to the console while tests run e.g. `Case #1571-7550-7484-8512 has been created`.
 
 ### Running E2E against remote environment
 ```$bash
