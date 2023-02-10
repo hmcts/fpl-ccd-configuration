@@ -77,7 +77,6 @@ public class MigrateCaseController extends CallbackController {
     private void run1029(CaseDetails caseDetails) {
         var migrationId = "DFPL-1029";
         var expectedCaseId = 1638876373455956L;
-
         CaseData caseData = getCaseData(caseDetails);
 
         Long caseId = caseData.getId();
