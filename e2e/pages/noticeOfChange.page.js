@@ -38,8 +38,7 @@ module.exports = {
   async userFillsNoC(caseReference, applicantName, firstName, lastName) {
     await this.navigate();
     await this.enterCaseReference(caseReference);
-    await I.retryUntilExists(() => I.click('Continue'), this.fields.applicantName);
-    await this.enterApplicantName(applicantName);
+    await I.retryUntilExists(() => I.click('Continue'), this.fields.respondentFirstName);
     this.enterRespondentName(firstName, lastName);
   },
 

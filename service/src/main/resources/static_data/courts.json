@@ -105,6 +105,11 @@
       "regionId": "7"
     },
     {
+      "code": "164",
+      "name": "Cardiff",
+      "region": "Wales"
+    },
+    {
       "code": "165",
       "name": "Carlisle",
       "region": "North West",
