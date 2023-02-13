@@ -1,0 +1,27 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "gatekeepingOrderListOrSendToAdmin",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY",
+    "PageID": "ListHearingOrSendToAdmin",
+    "PageDisplayOrder": 8,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+  "LiveFrom": "01/01/2017",
+  "CaseTypeID": "CARE_SUPERVISION_EPO",
+  "CaseEventID": "addGatekeepingOrder",
+  "CaseFieldID": "gatekeepingOrderListOrSendToAdminReason",
+  "PageFieldDisplayOrder": 2,
+  "DisplayContext": "OPTIONAL",
+  "PageID": "ListHearingOrSendToAdmin",
+  "PageDisplayOrder": 8,
+  "PageColumnNumber": 1,
+  "FieldShowCondition": "gatekeepingOrderListOrSendToAdmin=\"NO\"",
+  "ShowSummaryChangeOption": "Y"
+  }
+]
