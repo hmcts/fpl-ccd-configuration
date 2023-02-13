@@ -71,8 +71,8 @@ class ChaseMissingCMOEmailContentProviderTest extends AbstractEmailContentProvid
             .respondentLastName("Smith")
             .caseUrl(caseUrl(CASE_NUMBER.toString()))
             .subjectLine("Test v Smith, 12345, AB12C45000")
-            .listOfHearingsMissingOrders("Case management hearing, " +
-                formatLocalDateTimeBaseUsingFormat(hearingDate, DATE))
+            .listOfHearingsMissingOrders("Case management hearing, "
+                + formatLocalDateTimeBaseUsingFormat(hearingDate, DATE))
             .build();
 
         assertThat(template).isEqualTo(expected);
