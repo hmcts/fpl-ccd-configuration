@@ -284,7 +284,7 @@
     "caseLocalAuthorityName": "Swansea City Council",
     "displayAmountToPay": "Yes",
     "familyManCaseNumber": "mockcaseID",
-    "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
+    "dateAndTimeSubmitted": "2050-01-02T16:30:00",
     "respondentDirections": [
       {
         "id": "b5e6c23c-5478-4c9f-9de8-1d4b8277b605",
@@ -429,9 +429,9 @@
         "id": "681458fa-9c6b-4c25-a275-77b23a3375aa",
         "value": {
           "document": {
-            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/f4b656be-02b0-4f2e-82f9-b4b8281af1dc",
             "document_filename": "solicitor-role-tech.docx",
-            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/f4b656be-02b0-4f2e-82f9-b4b8281af1dc/binary"
           },
           "uploadedBy": null,
           "documentName": null,

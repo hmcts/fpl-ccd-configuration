@@ -3,7 +3,7 @@ const defaultPassword = 'Password12';
 module.exports = {
   swanseaLocalAuthorityUserOne: {
     email: 'kurt@swansea.gov.uk',
-    password: process.env.LA_USER_PASSWORD || defaultPassword,
+    password: process.env.LA_USER_PASSWORD || '',
     forename: 'kurt@swansea.gov.uk',
     surname: '(local-authority)',
   },
