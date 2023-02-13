@@ -105,8 +105,6 @@ public class FurtherEvidenceNotificationService {
     public void sendNotificationWithHearing(CaseData caseData, Set<String> recipients,
                                             String sender, List<String> newNonConfidentialDocuments,
                                             Optional<HearingBooking> hearingBooking) {
-        // According to test case, it switches to send old notification when feature toggle off.
-        // It does not literally disable the notification.
         String notificationTemplate = featureToggleService.isNewDocumentUploadNotificationEnabled()
             ? DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE : FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
 
