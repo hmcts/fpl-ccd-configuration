@@ -133,9 +133,9 @@ public class MigrateCaseController extends CallbackController {
 
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
-        caseDetails.getData().remove("placements");
-        caseDetails.getData().remove("placementsNonConfidential");
-        caseDetails.getData().remove("placementsNonConfidentialNotices");
+        caseDetails.getData().remove(PLACEMENT);
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL);
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL_NOTICES);
     }
 
     private void run1195(CaseDetails caseDetails) {
@@ -144,9 +144,9 @@ public class MigrateCaseController extends CallbackController {
 
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
-        caseDetails.getData().remove("placements");
-        caseDetails.getData().remove("placementsNonConfidential");
-        caseDetails.getData().remove("placementsNonConfidentialNotices");
+        caseDetails.getData().remove(PLACEMENT);
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL);
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL_NOTICES);
     }
 
     private void run1204(CaseDetails caseDetails) {
