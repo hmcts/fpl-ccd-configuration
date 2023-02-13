@@ -178,6 +178,7 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     @Test
     void shouldSendEmailsWhenCourtBundleUploadedByDesignatedLA()
         throws NotificationClientException {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
         postSubmittedEvent(buildCallbackRequestForAddingCourtBundle());
@@ -186,6 +187,7 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
 
     @Test
     void shouldSendEmailToCafcassWhenNewCourtBundlePresentByDesignatedLA() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
         postSubmittedEvent(buildCallbackRequestForAddingCourtBundle());
@@ -223,6 +225,7 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
 
     @Test
     void shouldSendEmailToCafcassWhenNewCourtBundlePresent() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
 
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
@@ -337,6 +340,7 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     @Test
     void shouldSendEmailsWhenCourtBundleUploadedBySecondaryLA()
         throws NotificationClientException {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
         postSubmittedEvent(buildCallbackRequestForAddingCourtBundle());
@@ -345,10 +349,10 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
 
     @Test
     void shouldSendEmailToCafcassWhenNewCourtBundlePresentBySecondaryLA() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
         postSubmittedEvent(buildCallbackRequestForAddingCourtBundle());
-
         verify(cafcassNotificationService).sendEmail(isA(CaseData.class),
             documentReferences.capture(),
             eq(COURT_BUNDLE),
