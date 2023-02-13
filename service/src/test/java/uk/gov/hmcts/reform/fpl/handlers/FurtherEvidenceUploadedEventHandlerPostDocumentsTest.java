@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 
@@ -76,6 +77,9 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
     @Captor
     private ArgumentCaptor<CourtBundleData> courtBundleCaptor;
 
+    @Mock
+    private FeatureToggleService featureToggleService;
+
     @InjectMocks
     private FurtherEvidenceUploadedEventHandler furtherEvidenceUploadedEventHandler;
 
@@ -84,6 +88,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
     void shouldSendDocumentByPostWhenPDFUploadedByRespSolicitor() {
         final CaseData caseData = buildCaseDataWithNonConfidentialPDFDocumentsSolicitor(REP_USER, null);
 
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(sendDocumentService.getStandardRecipients(caseData)).thenReturn(RECIPIENTS_LIST);
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
@@ -118,6 +123,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
     void shouldNotSendDocumentByPostWhenPDFUploadedBySolicitor() {
         final CaseData caseData = buildCaseDataWithNonConfidentialNonPdfDocumentsSolicitor(REP_USER);
 
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(sendDocumentService.getStandardRecipients(caseData)).thenReturn(RECIPIENTS_LIST);
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
@@ -134,7 +140,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
     @Test
     void shouldSendDocumentByPostWhenResponseStatementPdfIsUploadedByASolicitor() {
         final CaseData caseData = buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor();
-
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(sendDocumentService.getStandardRecipients(caseData)).thenReturn(RECIPIENTS_LIST);
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
@@ -152,7 +158,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
     @Test
     void shouldRemoveNonPdfResponseStatements() {
         final CaseData caseData = buildCaseDataWithNonConfidentialNonPDFRespondentStatementsSolicitor();
-
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(sendDocumentService.getStandardRecipients(caseData)).thenReturn(RECIPIENTS_LIST);
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
@@ -168,6 +174,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
 
     @Test
     void shouldEmailCafcassWhenNewBundleAdded() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
                         Optional.of(
@@ -207,6 +214,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
 
     @Test
     void shouldNotEmailCafcassWhenNoNewBundle() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
                         Optional.of(
@@ -240,6 +248,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
 
     @Test
     void shouldEmailCafcassWhenFirstBundleIsAdded() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
                         Optional.of(
@@ -281,6 +290,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
 
     @Test
     void shouldEmailCafcassWhenNewBundlesAreAdded() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
                         Optional.of(
