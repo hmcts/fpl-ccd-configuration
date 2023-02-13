@@ -36,6 +36,9 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
+    private static final String PLACEMENT = "placements";
+    private static final String PLACEMENT_NON_CONFIDENTIAL = "placementsNonConfidential";
+    private static final String PLACEMENT_NON_CONFIDENTIAL_NOTICES = "placementsNonConfidentialNotices";
 
     private final MigrateCaseService migrateCaseService;
     private final DocumentListService documentListService;
@@ -164,9 +167,9 @@ public class MigrateCaseController extends CallbackController {
         List<Element<Placement>> nonConfidentialNoticesPlacementsToKeep = caseData.getPlacementEventData()
             .getPlacementsNonConfidential(true);
 
-        caseDetails.getData().put("placements", placementsToKeep);
-        caseDetails.getData().put("placementsNonConfidential", nonConfidentialPlacementsToKeep);
-        caseDetails.getData().put("placementsNonConfidentialNotices", nonConfidentialNoticesPlacementsToKeep);
+        caseDetails.getData().put(PLACEMENT, placementsToKeep);
+        caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL, nonConfidentialPlacementsToKeep);
+        caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL_NOTICES, nonConfidentialNoticesPlacementsToKeep);
     }
 
     private void run1218(CaseDetails caseDetails) {
@@ -187,8 +190,8 @@ public class MigrateCaseController extends CallbackController {
         List<Element<Placement>> nonConfidentialNoticesPlacementsToKeep = caseData.getPlacementEventData()
             .getPlacementsNonConfidential(true);
 
-        caseDetails.getData().put("placements", placementsToKeep);
-        caseDetails.getData().put("placementsNonConfidential", nonConfidentialPlacementsToKeep);
-        caseDetails.getData().put("placementsNonConfidentialNotices", nonConfidentialNoticesPlacementsToKeep);
+        caseDetails.getData().put(PLACEMENT, placementsToKeep);
+        caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL, nonConfidentialPlacementsToKeep);
+        caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL_NOTICES, nonConfidentialNoticesPlacementsToKeep);
     }
 }
