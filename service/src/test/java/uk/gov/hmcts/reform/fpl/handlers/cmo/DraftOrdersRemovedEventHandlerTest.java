@@ -114,7 +114,7 @@ public class DraftOrdersRemovedEventHandlerTest {
         when(draftOrdersRemovedContentProvider.buildContent(
             caseDataBefore, Optional.of(HEARING.getValue()), JUDGE, ORDER_TO_BE_REMOVED.getValue(), REMOVAL_REASON)
         ).thenReturn(DRAFT_ORDERS_REMOVED_TEMPLATE_DATA);
-        when(courtService.getCourtEmail(any())).thenReturn(COURT_EMAIL_ADDRESS);
+        when(courtService.getCourtEmailNotCtsc(any())).thenReturn(COURT_EMAIL_ADDRESS);
         when(localAuthorityRecipients.getRecipients(any())).thenReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         CaseData caseDataAfter = caseDataBefore.toBuilder()
@@ -147,6 +147,56 @@ public class DraftOrdersRemovedEventHandlerTest {
         verify(notificationService).sendEmail(
             DRAFT_ORDER_REMOVED_TEMPLATE,
             Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS, COURT_EMAIL_ADDRESS),
+            DRAFT_ORDERS_REMOVED_TEMPLATE_DATA,
+            CASE_ID);
+    }
+
+    @Test
+    void shouldNotSendNotificationToCourtIfCourtEmailIsNull() {
+        final HearingOrder additionalOrder = HearingOrder.builder().type(HearingOrderType.DRAFT_CMO).build();
+
+        final List<Element<HearingOrder>> caseManagementOrdersBefore = Stream.of(ORDER_TO_BE_REMOVED,
+                element(OTHER_ORDER_ID, additionalOrder))
+            .collect(Collectors.toList());
+
+        final HearingOrdersBundle hearingOrdersBundleBefore = HearingOrdersBundle.builder()
+            .hearingId(HEARING.getId())
+            .orders(caseManagementOrdersBefore).build();
+
+        final CaseData caseDataBefore = CaseData.builder()
+            .id(CASE_ID)
+            .allocatedJudge(allocatedJudge())
+            .hearingOrdersBundlesDrafts(List.of(
+                element(HEARING_ORDER_BUNDLE_ID, hearingOrdersBundleBefore)
+            ))
+            .hearingDetails(List.of(HEARING))
+            .build();
+
+        final List<Element<HearingOrder>> caseManagementOrdersAfter = List.of(element(OTHER_ORDER_ID, additionalOrder));
+
+        when(draftOrdersRemovedContentProvider.buildContent(
+            caseDataBefore, Optional.of(HEARING.getValue()), JUDGE, ORDER_TO_BE_REMOVED.getValue(), REMOVAL_REASON)
+        ).thenReturn(DRAFT_ORDERS_REMOVED_TEMPLATE_DATA);
+        when(courtService.getCourtEmailNotCtsc(any())).thenReturn(null);
+        when(localAuthorityRecipients.getRecipients(any())).thenReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+
+        final CaseData caseDataAfter = caseDataBefore.toBuilder()
+            .hearingOrdersBundlesDrafts(List.of(
+                element(HEARING_ORDER_BUNDLE_ID,
+                    hearingOrdersBundleBefore.toBuilder().orders(caseManagementOrdersAfter).build())
+            ))
+            .build();
+
+        underTest.sendNotification(
+            new DraftOrdersRemovedEvent(
+                caseDataAfter,
+                caseDataBefore,
+                ORDER_TO_BE_REMOVED,
+                REMOVAL_REASON));
+
+        verify(notificationService).sendEmail(
+            DRAFT_ORDER_REMOVED_TEMPLATE,
+            Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             DRAFT_ORDERS_REMOVED_TEMPLATE_DATA,
             CASE_ID);
     }
