@@ -99,7 +99,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
     private UserService userService;
 
     @Test
-    void sendNotificationWhenNewDocumentUploadNotificationToggledOffForLA() {
+    void sendNotNotificationWhenNewDocumentUploadNotificationToggledOffForLA() {
 
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
         when(representativesInbox.getRepresentativeEmailsFilteredByRole(CASE_DATA, DIGITAL_SERVICE, ROLES))
@@ -111,12 +111,11 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
         ));
 
         assertThat(response())
-            .hasSubject("New documents uploaded, " + CHILD_LAST_NAME)
-            .hasBody(EMAIL_CONTENT_NO_DOC_NAMES);
+            .isNull();
     }
 
     @Test
-    void sendNotificationWhenNewDocumentUploadNotificationToggledOffForSolicitor() {
+    void sendNotNotificationWhenNewDocumentUploadNotificationToggledOffForSolicitor() {
 
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
 
@@ -125,9 +124,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
             UserDetails.builder().email(REP_EMAIL).forename("The").surname("Sender").build()
         ));
 
-        assertThat(response())
-            .hasSubject("New documents uploaded, " + CHILD_LAST_NAME)
-            .hasBody(EMAIL_CONTENT_NO_DOC_NAMES);
+        assertThat(response()).isNull();
     }
 
     @Test
