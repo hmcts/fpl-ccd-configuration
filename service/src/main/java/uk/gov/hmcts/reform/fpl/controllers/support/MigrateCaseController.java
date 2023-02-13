@@ -155,21 +155,7 @@ public class MigrateCaseController extends CallbackController {
         final UUID placementToRemove = UUID.fromString("88125c8b-8466-4af4-967f-197c3b82773c");
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
-        CaseData caseData = getCaseData(caseDetails);
-
-        List<Element<Placement>> placementsToKeep = caseData.getPlacementEventData().getPlacements().stream()
-            .filter(x -> !x.getId().equals(placementToRemove)).collect(toList());
-        caseData.getPlacementEventData().setPlacements(placementsToKeep);
-
-        List<Element<Placement>> nonConfidentialPlacementsToKeep = caseData.getPlacementEventData()
-            .getPlacementsNonConfidential(false);
-
-        List<Element<Placement>> nonConfidentialNoticesPlacementsToKeep = caseData.getPlacementEventData()
-            .getPlacementsNonConfidential(true);
-
-        caseDetails.getData().put(PLACEMENT, placementsToKeep);
-        caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL, nonConfidentialPlacementsToKeep);
-        caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL_NOTICES, nonConfidentialNoticesPlacementsToKeep);
+        removeSpecificPlacements(caseDetails, placementToRemove);
     }
 
     private void run1218(CaseDetails caseDetails) {
@@ -178,6 +164,10 @@ public class MigrateCaseController extends CallbackController {
         final UUID placementToRemove = UUID.fromString("e32706b1-22e5-4bd9-ba05-355fe69028d0");
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
+        removeSpecificPlacements(caseDetails, placementToRemove);
+    }
+
+    private void removeSpecificPlacements(CaseDetails caseDetails,UUID placementToRemove) {
         CaseData caseData = getCaseData(caseDetails);
 
         List<Element<Placement>> placementsToKeep = caseData.getPlacementEventData().getPlacements().stream()
