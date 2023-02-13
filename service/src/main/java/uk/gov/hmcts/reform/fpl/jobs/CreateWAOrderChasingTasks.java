@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
 import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.BooleanQuery;
@@ -48,7 +47,6 @@ public class CreateWAOrderChasingTasks implements Job {
 
     private final CaseConverter converter;
     private final SearchService searchService;
-    private final FeatureToggleService toggleService;
     private final WorkAllocationTaskService workAllocationTaskService;
 
     @Override
@@ -64,8 +62,7 @@ public class CreateWAOrderChasingTasks implements Job {
         int chased = 0;
         int failed = 0;
 
-        final boolean isFirstRun = toggleService.isChaseOrdersFirstCronRunEnabled();
-        final ESQuery query = buildQuery(isFirstRun);
+        final ESQuery query = buildQuery();
 
         try {
             total = searchService.searchResultsSize(query);
@@ -87,7 +84,7 @@ public class CreateWAOrderChasingTasks implements Job {
                     final Long caseId = caseDetails.getId();
                     try {
                         CaseData caseData = converter.convert(caseDetails);
-                        if (shouldCreateChaseTask(caseData, isFirstRun)) {
+                        if (shouldCreateChaseTask(caseData)) {
                             log.debug("Job '{}' creating chase task {}", jobName, caseId);
                             workAllocationTaskService.createWorkAllocationTask(caseData, ORDER_NOT_UPLOADED);
                             chased++;
@@ -115,23 +112,23 @@ public class CreateWAOrderChasingTasks implements Job {
         log.info("Job '{}' finished. {}", jobName, buildStats(total, skipped, chased, failed));
     }
 
-    private boolean isInRange(HearingBooking booking, boolean isFirstRun) {
+    private boolean isInRange(HearingBooking booking) {
         // todo - check the dates on this query with some edge cases!
         boolean beforeRange = booking.getEndDate().toLocalDate().isBefore(LocalDate.now().minusDays(5))
             || booking.getEndDate().toLocalDate().isEqual(LocalDate.now().minusDays(5));
         boolean afterRange = booking.getEndDate().toLocalDate().isAfter(LocalDate.now().minusDays(6));
 
-        return isFirstRun ? (beforeRange) : (beforeRange && afterRange);
+        return beforeRange && afterRange;
     }
 
-    private boolean shouldCreateChaseTask(CaseData caseData, boolean isFirstRun) {
+    private boolean shouldCreateChaseTask(CaseData caseData) {
         // Check if the hearings within 5(-6) days have an uploaded CMO
         if (isEmpty(caseData.getHearingDetails())) {
             return false;
         }
         List<HearingBooking> hearingsWithinRange = caseData.getHearingDetails().stream()
                 .map(Element::getValue)
-                .filter(booking -> isInRange(booking, isFirstRun))
+                .filter(this::isInRange)
                 .collect(Collectors.toList());
 
         // ES cannot index nulls (automatically), also sometimes the cmo field is not present at all => manual check
@@ -146,15 +143,12 @@ public class CreateWAOrderChasingTasks implements Job {
         return MustNot.builder().clauses(notTheseStates).build();
     }
 
-    private ESQuery buildQuery(boolean firstPassEnabled) {
+    private ESQuery buildQuery() {
         // todo - check the dates on this query with some edge cases!
         final RangeQuery.RangeQueryBuilder olderThan5Days = RangeQuery.builder()
             .field("data.hearingDetails.value.endDate")
-            .lessThanOrEqual("now/d-5d");
-
-        if (!firstPassEnabled) {
-            olderThan5Days.greaterThanOrEqual("now/d-5d"); // toggle this based on first run or not!
-        }
+            .lessThanOrEqual("now/d-5d")
+            .greaterThanOrEqual("now/d-5d");
 
         return BooleanQuery.builder()
             .mustNot(getInvalidStates())

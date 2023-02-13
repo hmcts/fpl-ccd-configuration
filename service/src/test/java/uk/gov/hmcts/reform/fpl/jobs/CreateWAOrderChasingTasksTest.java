@@ -17,16 +17,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
 import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
-import uk.gov.hmcts.reform.fpl.utils.elasticsearch.BooleanQuery;
-import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESQuery;
-import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Filter;
-import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
-import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MustNot;
-import uk.gov.hmcts.reform.fpl.utils.elasticsearch.RangeQuery;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -51,58 +44,11 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.feignException;
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class})
 class CreateWAOrderChasingTasksTest {
 
-    private static final String JURISDICTION = "PUBLICLAW";
-    private static final String CASE_TYPE = "CARE_SUPERVISION_EPO";
-    private static final String EVENT_NAME = "create-work-allocation-task";
     private static final Long CASE_ID = 12345L;
     private static final int SEARCH_SIZE = 50;
-    private static final String RANGE_FIELD = "data.hearingDetails.value.endDate";
-
-    private static final ESQuery FIRST_RUN_ES_QUERY = BooleanQuery.builder()
-        .mustNot(MustNot.builder()
-            .clauses(List.of(
-                MatchQuery.of("state", "Open"),
-                MatchQuery.of("state", "Submitted"),
-                MatchQuery.of("state", "Gatekeeping"),
-                MatchQuery.of("state", "CLOSED"),
-                MatchQuery.of("state", "Deleted"),
-                MatchQuery.of("state", "RETURNED")
-            ))
-            .build())
-        .filter(Filter.builder()
-            .clauses(List.of(
-                RangeQuery.builder().field(RANGE_FIELD)
-                    .lessThanOrEqual("now/d-5d")
-                    .build()
-            ))
-            .build())
-        .build();
-
-    private static final ESQuery ES_QUERY = BooleanQuery.builder()
-        .mustNot(MustNot.builder()
-            .clauses(List.of(
-                MatchQuery.of("state", "Open"),
-                MatchQuery.of("state", "Submitted"),
-                MatchQuery.of("state", "Gatekeeping"),
-                MatchQuery.of("state", "CLOSED"),
-                MatchQuery.of("state", "Deleted"),
-                MatchQuery.of("state", "RETURNED")
-            ))
-            .build())
-        .filter(Filter.builder()
-            .clauses(List.of(
-                RangeQuery.builder().field(RANGE_FIELD)
-                    .lessThanOrEqual("now/d-5d")
-                    .greaterThanOrEqual("now/d-5d")
-                    .build()
-            ))
-            .build())
-        .build();
 
     @Mock
     private SearchService searchService;
-    @Mock
-    private FeatureToggleService toggleService;
     @Mock
     private WorkAllocationTaskService waTaskService;
     @Mock
@@ -122,7 +68,6 @@ class CreateWAOrderChasingTasksTest {
         CaseConverter converter = new CaseConverter(mapper);
         underTest = new CreateWAOrderChasingTasks(converter,
             searchService,
-            toggleService,
             waTaskService);
 
         JobDetail jobDetail = mock(JobDetail.class);
@@ -135,8 +80,6 @@ class CreateWAOrderChasingTasksTest {
 
     @Test
     void shouldNotCallCCDWhenNothingToUpdate() {
-        when(toggleService.isChaseOrdersFirstCronRunEnabled()).thenReturn(false);
-
         List<CaseDetails> caseDetails = List.of(CaseDetails.builder().data(Map.of()).build());
 
         when(searchService.search(any(), eq(SEARCH_SIZE), eq(0))).thenReturn(caseDetails);
@@ -148,8 +91,6 @@ class CreateWAOrderChasingTasksTest {
 
     @Test
     void shouldCreateWADummyEventIfHearingWas5DaysAgo() {
-        when(toggleService.isChaseOrdersFirstCronRunEnabled()).thenReturn(false);
-
         CaseData caseData = CaseData.builder()
             .hearingDetails(List.of(
                 element(HearingBooking.builder()
@@ -174,7 +115,6 @@ class CreateWAOrderChasingTasksTest {
 
     @Test
     void shouldGracefullyHandleErrorsFromCCDWhenUpdatingCaseDetails() {
-        when(toggleService.isChaseOrdersFirstCronRunEnabled()).thenReturn(false);
         when(searchService.searchResultsSize(any())).thenReturn(2);
 
         CaseData caseData = CaseData.builder()
@@ -209,7 +149,6 @@ class CreateWAOrderChasingTasksTest {
 
     @Test
     void shouldPaginateWhenNumberOfCasesAreMoreThanTheSearchSize() {
-        when(toggleService.isChaseOrdersFirstCronRunEnabled()).thenReturn(false);
         when(searchService.searchResultsSize(any())).thenReturn(75);
 
         CaseData caseData = CaseData.builder()
@@ -244,8 +183,6 @@ class CreateWAOrderChasingTasksTest {
 
     @Test
     void shouldSkipJobIfPaginationQueryFails() {
-        when(toggleService.isSummaryTabFirstCronRunEnabled()).thenReturn(false);
-
         doThrow(feignException(500)).when(searchService).searchResultsSize(any());
 
         underTest.execute(executionContext);
