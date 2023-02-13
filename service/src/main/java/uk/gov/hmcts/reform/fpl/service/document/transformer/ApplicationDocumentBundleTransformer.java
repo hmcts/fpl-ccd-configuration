@@ -151,6 +151,7 @@ public class ApplicationDocumentBundleTransformer {
                     .title(OTHER == doc.getDocumentType() ? doc.getDocumentName() : getFilename(doc.getDocument()))
                     .includeSWETField(SWET == doc.getDocumentType())
                     .includeDocumentName(Arrays.asList(APPLICANT_STATEMENT, OTHER).contains(doc.getDocumentType()))
+                    .confidential(doc.isConfidentialDocument())
                     .build())
                 .sorted(comparing(DocumentView::getUploadedAt, nullsLast(reverseOrder())))
                 .collect(Collectors.toList());

@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
+import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -47,15 +48,13 @@ public class MigrateCaseController extends CallbackController {
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1012", this::run1012,
-        "DFPL-1064", this::run1064,
-        "DFPL-872", this::run872,
+        "DFPL-1144", this::run1144,
         "DFPL-872rollback", this::run872Rollback,
-        "DFPL-1029", this::run1029,
-        "DFPL-1161", this::run1161,
-        "DFPL-1162", this::run1162,
-        "DFPL-1156", this::run1156,
-        "DFPL-1072", this::run1072
+        "DFPL-1072", this::run1072,
+        "DFPL-1163", this::run1163,
+        "DFPL-1165", this::run1165,
+        "DFPL-1192", this::run1192,
+        "DFPL-1215", this::run1215
     );
 
     @PostMapping("/about-to-submit")
@@ -78,16 +77,17 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private void run872(CaseDetails caseDetails) {
+    private void run1144(CaseDetails caseDetails) {
+        Map<String, Object> caseDetailsData = caseDetails.getData();
+        caseDetailsData.put("hearingOption", HearingOptions.EDIT_PAST_HEARING);
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();
         List<Element<Child>> childrenInCase = caseData.getAllChildren();
         LocalDate oldEightWeeksExtensionDate = caseData.getCaseCompletionDate();
         CaseExtensionReasonList oldReason = caseData.getCaseExtensionReasonList();
-        Map<String, Object> caseDetailsData = caseDetails.getData();
 
         if (isNotEmpty(childrenInCase) && oldReason != null) {
-            log.info("Migration {id = DFPL-872, case reference = {}} extension date migration", caseId);
+            log.info("Migration {id = DFPL-1144, case reference = {}} extension date migration", caseId);
 
             List<Element<Child>> children = childrenInCase.stream()
                 .map(element -> element(element.getId(),
@@ -134,9 +134,41 @@ public class MigrateCaseController extends CallbackController {
         }
     }
 
-    private void run1029(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1029";
-        var expectedCaseId = 1638876373455956L;
+    private void run1192(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1192";
+        var expectedCaseId = 1645718564640841L;
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        Long caseId = caseData.getId();
+        if (caseId != expectedCaseId) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId
+            ));
+        }
+        fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
+    }
+
+    private void run1215(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1215";
+        var expectedCaseId = 1662713946163354L;
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        Long caseId = caseData.getId();
+        if (caseId != expectedCaseId) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId
+            ));
+        }
+        fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
+    }
+
+    private void run1165(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1165";
+        var expectedCaseId = 1653304601077492L;
 
         CaseData caseData = getCaseData(caseDetails);
 
@@ -225,5 +257,16 @@ public class MigrateCaseController extends CallbackController {
 
     private void run1072(CaseDetails caseDetails) {
         caseDetails.getData().putAll(migrateCaseService.updateIncorrectCourtCodes(getCaseData(caseDetails)));
+    }
+
+    private void run1163(CaseDetails caseDetails) {
+        String migrationId = "DFPL-1162";
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1635857454109111L, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.revertChildExtensionDate(getCaseData(caseDetails), migrationId,
+            "23f4eb98-6bb5-4775-a724-aa6856618007", LocalDate.of(2022,5,9), null));
+        caseDetails.getData().putAll(migrateCaseService.revertChildExtensionDate(getCaseData(caseDetails), migrationId,
+            "055ed3b0-fdeb-4e83-8758-f99f387fe2c4", LocalDate.of(2022,5,9), null));
+        caseDetails.getData().putAll(migrateCaseService.revertChildExtensionDate(getCaseData(caseDetails), migrationId,
+            "67bd3180-3cd2-4b44-a34b-700f315ccbac", LocalDate.of(2022,5,9), null));
     }
 }
