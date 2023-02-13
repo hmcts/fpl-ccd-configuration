@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.FurtherDocument;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -65,6 +66,7 @@ import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE;
 import static uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType.CORRESPONDENCE_UPLOADED;
@@ -101,9 +103,13 @@ public class FurtherEvidenceUploadedEventHandler {
     private static final String LIST = "•";
     private final UserService userService;
     private final WorkAllocationTaskService workAllocationTaskService;
+    private final FeatureToggleService featureToggleService;
 
     @EventListener
     public void sendDocumentsUploadedNotification(final FurtherEvidenceUploadedEvent event) {
+        if (!this.featureToggleService.isNewDocumentUploadNotificationEnabled()) {
+            return;
+        }
         final CaseData caseData = event.getCaseData();
         final CaseData caseDataBefore = event.getCaseDataBefore();
         final UserDetails uploader = event.getInitiatedBy();
@@ -136,6 +142,9 @@ public class FurtherEvidenceUploadedEventHandler {
 
     @EventListener
     public void sendDocumentsByPost(final FurtherEvidenceUploadedEvent event) {
+        if (!this.featureToggleService.isNewDocumentUploadNotificationEnabled()) {
+            return;
+        }
         DocumentUploaderType userType = event.getUserType();
 
         if (userType == SOLICITOR) {
@@ -155,6 +164,9 @@ public class FurtherEvidenceUploadedEventHandler {
 
     @EventListener
     public void sendCourtBundlesUploadedNotification(final FurtherEvidenceUploadedEvent event) {
+        if (!this.featureToggleService.isNewDocumentUploadNotificationEnabled()) {
+            return;
+        }
         final CaseData caseData = event.getCaseData();
         final CaseData caseDataBefore = event.getCaseDataBefore();
 
@@ -181,6 +193,9 @@ public class FurtherEvidenceUploadedEventHandler {
 
     @EventListener
     public void sendHearingDocumentsUploadedNotification(final FurtherEvidenceUploadedEvent event) {
+        if (!this.featureToggleService.isNewDocumentUploadNotificationEnabled()) {
+            return;
+        }
         final CaseData caseData = event.getCaseData();
         final CaseData caseDataBefore = event.getCaseDataBefore();
         final UserDetails uploader = event.getInitiatedBy();
@@ -221,6 +236,9 @@ public class FurtherEvidenceUploadedEventHandler {
 
     @EventListener
     public void sendHearingDocumentsToCafcass(final FurtherEvidenceUploadedEvent event) {
+        if (!this.featureToggleService.isNewDocumentUploadNotificationEnabled()) {
+            return;
+        }
         final CaseData caseData = event.getCaseData();
         final CaseData caseDataBefore = event.getCaseDataBefore();
 
@@ -255,6 +273,9 @@ public class FurtherEvidenceUploadedEventHandler {
 
     private void sendHearingDocumentsToCafcass(CaseData caseData, List<HearingDocument> newHearingDocuments,
                                                CafcassRequestEmailContentProvider provider) {
+        if (!this.featureToggleService.isNewDocumentUploadNotificationEnabled()) {
+            return;
+        }
         Map<String, Set<DocumentReference>> newHearingDocs = newHearingDocuments.stream()
             .collect(groupingBy(HearingDocument::getHearing,
                 mapping(HearingDocument::getDocument, toSet())));
@@ -271,6 +292,9 @@ public class FurtherEvidenceUploadedEventHandler {
 
     @EventListener
     public void sendCourtBundlesToCafcass(final FurtherEvidenceUploadedEvent event) {
+        if (!this.featureToggleService.isNewDocumentUploadNotificationEnabled()) {
+            return;
+        }
         final CaseData caseData = event.getCaseData();
 
         final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
@@ -299,7 +323,15 @@ public class FurtherEvidenceUploadedEventHandler {
 
     @EventListener
     public void sendDocumentsToCafcass(final FurtherEvidenceUploadedEvent event) {
+        if (!this.featureToggleService.isNewDocumentUploadNotificationEnabled()) {
+            return;
+        }
         final CaseData caseData = event.getCaseData();
+
+        // assuming standalone application not sending notification to CAFCASS
+        if (isEmpty(caseData.getCaseLocalAuthority())) {
+            return;
+        }
 
         final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
                 cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
@@ -828,6 +860,9 @@ public class FurtherEvidenceUploadedEventHandler {
     @Async
     @EventListener
     public void notifyTranslationTeam(FurtherEvidenceUploadedEvent event) {
+        if (!this.featureToggleService.isNewDocumentUploadNotificationEnabled()) {
+            return;
+        }
         furtherEvidenceDifferenceCalculator.calculate(event.getCaseData(), event.getCaseDataBefore())
             .forEach(bundle -> translationRequestService.sendRequest(event.getCaseData(),
                 Optional.ofNullable(bundle.getValue().getTranslationRequirements()),

@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
@@ -40,6 +41,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
@@ -173,6 +175,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Mock
     private CafcassLookupConfiguration cafcassLookupConfiguration;
+    @Mock
+    private FeatureToggleService featureToggleService;
 
     private static final Consumer<CaseData> EMPTY_CASE_DATA_MODIFIER = whatever -> { };
 
@@ -202,6 +206,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
         final Set<String> allCafcassEmails = Set.of(CAFCASS_EMAIL);
         when(furtherEvidenceNotificationService.getCafcassEmails(caseData))
             .thenReturn(Set.of(CAFCASS_EMAIL));
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled())
+            .thenReturn(true);
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
             new FurtherEvidenceUploadedEvent(caseData, caseDataBefore, uploadedType, uploadedBy);
@@ -517,6 +523,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldNotifyTranslationTeamWhenChanges() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(calculator.calculate(CASE_DATA, CASE_DATA_BEFORE)).thenReturn(List.of(
             element(UUID.randomUUID(), SupportingEvidenceBundle.builder()
                 .type(FurtherEvidenceType.APPLICANT_STATEMENT)
@@ -570,6 +577,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldEmailCafcassWhenNewBundleIsAdded() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
                         Optional.of(
@@ -614,6 +622,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldEmailCafcassWhenNewBundlesAreAdded() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
                         Optional.of(
@@ -685,6 +694,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldEmailCafcassWhenDocsIsUploadedByLA() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
                         Optional.of(
@@ -778,6 +788,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldEmailCafcassWhenDocsIsUploadedBySolicitor() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
                         Optional.of(
@@ -819,6 +830,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldEmailCafcassWhenGuardianReportsAreUploadedBySolicitor() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
             .thenReturn(
                 Optional.of(
@@ -886,6 +898,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldEmailCafcassWhenAdditionalBundleIsUploadedByLA() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
                         Optional.of(
@@ -938,6 +951,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
                                 new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
                         )
             );
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
 
 
         CaseData caseData = buildCaseDataWithC2AdditionalApplicationBundle();
@@ -978,6 +992,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldEmailCafcassWhenRespondentStatementIsUploaded() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
                         Optional.of(
@@ -1017,6 +1032,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldEmailCafcassWhenHearingFurtherEvidenceBundleIsUploaded() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
                         Optional.of(
@@ -1059,6 +1075,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldEmailCafcassWhenApplicationDocumentIsUploaded() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
                         Optional.of(
@@ -1097,6 +1114,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldNotEmailCafcassWhenNoApplicationDocumentIsUploaded() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
                         Optional.of(
@@ -1129,6 +1147,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldNotSendEmailToCafcassWhenRespondentStatementIsUploaded() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
                         Optional.of(
@@ -1157,6 +1176,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldNotSendEmailToCafcassWhenCafcassIsNotEnlang() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
                         Optional.empty()
@@ -1199,6 +1219,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     private void verifyCorresspondences(CaseData caseData, List<Element<SupportingEvidenceBundle>> correspondence) {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
                         Optional.of(
@@ -1236,6 +1257,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldNotSendEmailToCafcassWhenNoNewDocIsUploadedByLA() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
                         Optional.of(
@@ -1290,6 +1312,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 .thenReturn(Set.of(LA2_USER_EMAIL));
         }
 
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         furtherEvidenceUploadedEventHandler.sendCourtBundlesUploadedNotification(furtherEvidenceUploadedEvent);
 
         if (isHavingNotification) {
@@ -1327,6 +1350,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldSendNotificationWhenHearingDocumentsIsUploaded() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         final List<Element<HearingBooking>> hearingBooking = wrapElements(testHearing());
         final String hearingBookingLabel = hearingBooking.get(0).getValue().toLabel();
         final List<Element<CaseSummary>> caseSummaryList = wrapElements(
@@ -1390,6 +1414,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldEmailCafcassWhenNewHearingDocumentAdded() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
             .thenReturn(
                 Optional.of(
