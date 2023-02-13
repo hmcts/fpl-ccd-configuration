@@ -59,44 +59,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Dfpl1064 {
-        private final long invalidCaseId = 1643728359986136L;
-        private final long validCaseId = 1659605693892067L;
-        private final String migrationId = "DFPL-1064";
-
-        @Test
-        void shouldThrowExceptionIfWrongCaseId() {
-            CaseData caseData = CaseData.builder()
-                .id(invalidCaseId)
-                .sendToCtsc(YesNo.YES.getValue())
-                .build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format(
-                    "Migration {id = %s, case reference = %s}, case id not present in allowed list",
-                    migrationId, invalidCaseId));
-        }
-
-        @Test
-        void shouldSetSendToCtscToNo() {
-            CaseData caseData = CaseData.builder()
-                .id(validCaseId)
-                .sendToCtsc(YesNo.YES.getValue())
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId)
-            );
-
-            CaseData responseData = extractCaseData(response);
-            assertThat(responseData.getSendToCtsc()).isEqualTo(YesNo.NO.getValue());
-        }
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
     class Dfpl1029 {
 
         final String migrationId = "DFPL-1029";
@@ -138,40 +100,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         CaseDetails caseDetails = asCaseDetails(caseData);
         caseDetails.getData().put("migrationId", migrationId);
         return caseDetails;
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class Dfpl1161 {
-
-        private final String migrationId = "DFPL-1161";
-        private final long validCaseId = 1660209462518487L;
-
-        @Test
-        void shouldRemoveAllPlacementCollections() {
-            List<Element<Placement>> placements = List.of(
-                element(Placement.builder()
-                    .application(testDocumentReference())
-                    .build()),
-                element(Placement.builder()
-                    .application(testDocumentReference())
-                    .build())
-            );
-            CaseData caseData = CaseData.builder()
-                .id(validCaseId)
-                .placementEventData(PlacementEventData.builder()
-                    .placements(placements)
-                    .build())
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId));
-            CaseData responseData = extractCaseData(response);
-
-            assertThat(responseData.getPlacementEventData().getPlacements()).isEmpty();
-            assertThat(response.getData()).extracting("placementsNonConfidential", "placementsNonConfidentialNotices")
-                .containsExactly(null, null);
-        }
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)

@@ -43,12 +43,10 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-1204", this::run1204,
-        "DFPL-1064", this::run1064,
         "DFPL-1202", this::run1202,
         "DFPL-1195", this::run1195,
         "DFPL-1065", this::run1065,
         "DFPL-1029", this::run1029,
-        "DFPL-1161", this::run1161,
         "DFPL-1162", this::run1162,
         "DFPL-1156", this::run1156,
         "DFPL-1218", this::run1218
@@ -89,23 +87,6 @@ public class MigrateCaseController extends CallbackController {
         fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
     }
 
-    private void run1064(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1064";
-        var caseId = caseDetails.getId();
-        var allowedCaseIds = List.of(1652106605168560L, 1661248269079243L, 1653561237363238L,
-            1662981673264014L, 1643959297308700L, 1659605693892067L, 1658311700073897L, 1663516203585030L,
-            1651066091833534L, 1657533247030897L);
-
-        if (!allowedCaseIds.contains(caseId)) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, case id not present in allowed list",
-                migrationId, caseId
-            ));
-        }
-
-        caseDetails.getData().put("sendToCtsc", YesNo.NO.getValue());
-    }
-
     private void run1065(CaseDetails caseDetails) {
         var migrationId = "DFPL-1065";
         var caseId = caseDetails.getId();
@@ -122,17 +103,6 @@ public class MigrateCaseController extends CallbackController {
         }
 
         caseDetails.getData().put("sendToCtsc", YesNo.YES.getValue());
-    }
-
-    private void run1161(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1161";
-        var possibleCaseIds = List.of(1660209462518487L);
-
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        caseDetails.getData().remove("placements");
-        caseDetails.getData().remove("placementsNonConfidential");
-        caseDetails.getData().remove("placementsNonConfidentialNotices");
     }
 
     private void run1156(CaseDetails caseDetails) {
