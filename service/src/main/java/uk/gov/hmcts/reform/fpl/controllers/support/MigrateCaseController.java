@@ -157,7 +157,6 @@ public class MigrateCaseController extends CallbackController {
     private void run1144(CaseDetails caseDetails) {
         Map<String, Object> caseDetailsData = caseDetails.getData();
         caseDetailsData.put("hearingOption", HearingOptions.EDIT_PAST_HEARING);
-
         CaseData caseData = getCaseData(caseDetails);
         var caseId = caseData.getId();
         List<Element<Child>> childrenInCase = caseData.getAllChildren();
