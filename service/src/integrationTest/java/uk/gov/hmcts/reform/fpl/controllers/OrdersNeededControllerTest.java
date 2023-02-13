@@ -133,6 +133,7 @@ class OrdersNeededControllerTest extends AbstractCallbackTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void shouldRemoveEducationSupervisionOrderDataWhenEducationSupervisionOrderIsUnselected() {
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(CaseData.builder()
             .orders(Orders.builder().orderType(List.of(OrderType.CARE_ORDER)).build())
