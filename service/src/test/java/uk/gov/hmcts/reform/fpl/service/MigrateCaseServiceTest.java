@@ -833,7 +833,7 @@ class MigrateCaseServiceTest {
                     targetChild1.getId().toString(), revertedDate, revertedReason))
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format(
-                    "Migration {id = {}}, case reference = {}} child {} not found",
+                    "Migration {id = %s}, case reference = %s} child %s not found",
                     MIGRATION_ID, 1L, targetChild1.getId()));
         }
 
@@ -847,7 +847,7 @@ class MigrateCaseServiceTest {
                 targetChild1.getId().toString(), revertedDate, revertedReason))
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format(
-                    "Migration {id = {}, case reference = {}} doesn't have children",
+                    "Migration {id = %s, case reference = %s} doesn't have children",
                     MIGRATION_ID, 1L));
         }
     }
