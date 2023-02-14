@@ -515,8 +515,13 @@
     "ID": "placement",
     "Name": "Placement",
     "Description": "Placement",
+<<<<<<< HEAD
     "DisplayOrder": 21,
     "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING",
+=======
+    "DisplayOrder": 28,
+    "PreConditionState(s)": "PREPARE_FOR_HEARING;FINAL_HEARING",
+>>>>>>> c0e339cc3 (DFPL-1220: Configure Placement event so that it is not visible prior to Case Management state)
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
