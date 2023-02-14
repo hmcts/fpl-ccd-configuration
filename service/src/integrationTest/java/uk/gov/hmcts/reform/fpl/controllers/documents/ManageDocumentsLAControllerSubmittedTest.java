@@ -353,6 +353,7 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
         postSubmittedEvent(buildCallbackRequestForAddingCourtBundle());
+
         verify(cafcassNotificationService).sendEmail(isA(CaseData.class),
             documentReferences.capture(),
             eq(COURT_BUNDLE),

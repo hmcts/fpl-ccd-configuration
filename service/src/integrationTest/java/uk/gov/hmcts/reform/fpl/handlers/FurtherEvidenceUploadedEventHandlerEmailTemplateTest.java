@@ -100,6 +100,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
 
     @Test
     void sendNotificationWhenNewDocumentUploadNotificationToggledOffForLA() {
+
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
         when(representativesInbox.getRepresentativeEmailsFilteredByRole(CASE_DATA, DIGITAL_SERVICE, ROLES))
             .thenReturn(newHashSet("resp@example.com"));
@@ -116,6 +117,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
 
     @Test
     void sendNotificationWhenNewDocumentUploadNotificationToggledOffForSolicitor() {
+        
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
 
         underTest.sendDocumentsUploadedNotification(new FurtherEvidenceUploadedEvent(
