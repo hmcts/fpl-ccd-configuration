@@ -120,6 +120,52 @@ Scenario('Gatekeeping judge drafts gatekeeping order', async ({I, caseViewPage, 
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.seeInTab(['Gatekeeping order', 'File'], 'draft-standard-directions-order.pdf');
+
+  caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
+  I.seeInTab(['Allocation decision', 'Which level of judge is needed for this case?'], 'District Judge');
+});
+
+Scenario('Gatekeeping order allocated to Magistrate judge', async ({I, caseViewPage, addGatekeepingOrderEventPage}) => {
+  await setupScenario(I);
+  await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
+  addGatekeepingOrderEventPage.selectCorrectLevelOfJudge('No');
+  await addGatekeepingOrderEventPage.selectAllocationDecision('Magistrate');
+  await addGatekeepingOrderEventPage.enterProposalReason('new information was acquired');
+  await I.goToNextPage();
+
+  addGatekeepingOrderEventPage.createGatekeepingOrderThroughService();
+  await I.goToNextPage();
+
+  I.see('Request permission for expert evidence');
+  I.see('Request help to take part in proceedings');
+  I.see('Ask for disclosure');
+  I.click('Request permission for expert evidence');
+  I.click('Ask for disclosure');
+  I.click('Send documents to all parties');
+  await I.goToNextPage();
+
+  I.see(hearingDate);
+  I.see('Request permission for expert evidence');
+  I.see('Ask for disclosure');
+  await I.goToNextPage();
+
+  I.see(hearingDate);
+  await I.addAnotherElementToCollection();
+  await addGatekeepingOrderEventPage.enterCustomDirections(directions[0]);
+  await I.goToNextPage();
+
+  addGatekeepingOrderEventPage.enterIssuingJudge('Judy', 'Bob Ross');
+  await I.goToNextPage();
+
+  addGatekeepingOrderEventPage.verifyNextStepsLabel();
+  await I.completeEvent('Save and continue');
+
+  caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
+  I.seeInTab(['Gatekeeping order', 'File'], 'draft-standard-directions-order.pdf');
+
+  caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
+  I.seeInTab(['Allocation decision', 'Which level of judge is needed for this case?'], 'Magistrate');
+  I.seeInTab(['Allocation decision', 'Give reason'], 'new information was acquired');
 });
 
 Scenario('Gatekeeping judge adds allocated judge', async ({I, caseViewPage, allocatedJudgeEventPage}) => {
