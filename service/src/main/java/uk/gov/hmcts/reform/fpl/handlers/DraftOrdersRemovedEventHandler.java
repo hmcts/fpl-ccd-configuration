@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DRAFT_ORDER_REMOVED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DRAFT_ORDER_REMOVED_TEMPLATE_FOR_JUDGES;
@@ -91,7 +92,10 @@ public class DraftOrdersRemovedEventHandler {
 
     private void sendToAdminAndLA(CaseData caseData, DraftOrdersRemovedTemplate draftOrdersRemovedTemplate) {
         final Set<String> recipients = new HashSet<>();
-        recipients.add(courtService.getCourtEmail(caseData));
+
+        ofNullable(courtService.getCourtEmailNotCtsc(caseData))
+                .ifPresent(email -> recipients.add(email));
+
         recipients.addAll(localAuthorityRecipients.getRecipients(RecipientsRequest.builder()
             .caseData(caseData).build()));
 
