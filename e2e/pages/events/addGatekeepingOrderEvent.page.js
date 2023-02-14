@@ -18,7 +18,7 @@ module.exports = {
           description: `#customDirections_${index}_description`,
           assignee: `#customDirections_${index}_assignee`,
           dueDateType: `#customDirections_${index}_dueDateType-DATE`,
-          date: `(//*[contains(@class, "collection-title")])[${ index + 1 }]/parent::div//*[@id="dateToBeCompletedBy"]`,
+          date: `#customDirections_${index}_${index} #dateToBeCompletedBy`,
         };
       },
     },
