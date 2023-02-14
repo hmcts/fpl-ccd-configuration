@@ -16,16 +16,7 @@ import java.util.Map;
 import static org.apache.http.HttpStatus.SC_FORBIDDEN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.Constants.COURT_1;
-import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
-import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_COURT_ID;
-import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_COURT_NAME;
-import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_ID;
-import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
-import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_USER_EMAIL;
-import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_2_USER_EMAIL;
-import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_3_USER_EMAIL;
-import static uk.gov.hmcts.reform.fpl.Constants.PRIVATE_ORG_ID;
+import static uk.gov.hmcts.reform.fpl.Constants.*;
 import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.EPS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.feignException;
@@ -73,6 +64,8 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(caseDetails.get("localAuthorityPolicy"))
             .isEqualTo(orgPolicy(organisation.getOrganisationIdentifier(), "[LASOLICITOR]"));
         assertThat(caseDetails.get("court")).isEqualTo(toMap(expectedCourt));
+        assertThat(caseDetails.get("dfjArea")).isEqualTo("SWANSEA");
+        assertThat(caseDetails.get("swanseaDFJCourt")).isEqualTo("344");
         assertThat(caseDetails.get("multiCourt")).isNull();
     }
 
@@ -108,6 +101,8 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(caseDetails.get("outsourcingPolicy"))
             .isEqualTo(orgPolicy(userOrganisationId, "[EPSMANAGING]"));
         assertThat(caseDetails.get("court")).isEqualTo(toMap(expectedCourt));
+        assertThat(caseDetails.get("dfjArea")).isEqualTo("SWANSEA");
+        assertThat(caseDetails.get("swanseaDFJCourt")).isEqualTo("344");
         assertThat(caseDetails.get("multiCourt")).isNull();
     }
 
@@ -133,6 +128,8 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(caseDetails.get("localAuthorityPolicy")).isNull();
         assertThat(caseDetails.get("outsourcingPolicy")).isNull();
         assertThat(caseDetails.get("court")).isEqualTo(toMap(expectedCourt));
+        assertThat(caseDetails.get("dfjArea")).isEqualTo("SWANSEA");
+        assertThat(caseDetails.get("swanseaDFJCourt")).isEqualTo("344");
         assertThat(caseDetails.get("multiCourt")).isNull();
     }
 
@@ -206,5 +203,4 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
             "OrganisationName", orgName
         ), "OrgPolicyCaseAssignedRole", role);
     }
-
 }

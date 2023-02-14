@@ -27,7 +27,7 @@ public interface Constants {
     String DEFAULT_CTSC_EMAIL = "FamilyPublicLaw+ctsc@gmail.com";
     String DEFAULT_ADMIN_EMAIL = "court1@family-court.com";
     String USER_AUTH_TOKEN = "token";
-    String LOCAL_AUTHORITY_1_COURT_ID = "11";
+    String LOCAL_AUTHORITY_1_COURT_ID = "344";
     String LOCAL_AUTHORITY_3_COURT_A_ID = "31";
     String LOCAL_AUTHORITY_3_COURT_B_ID = "32";
     String LOCAL_AUTHORITY_1_COURT_NAME = "Family Court";

@@ -2,9 +2,17 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "dfj",
+    "CaseFieldID": "dfjArea",
     "Label": "DFJ Area",
     "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "highCourtDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"HIGH_COURT\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -12,7 +20,7 @@
     "CaseFieldID": "centralLondonDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"CENTRAL_LONDON\""
+    "FieldShowCondition" : "dfjArea = \"CENTRAL_LONDON\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -20,7 +28,7 @@
     "CaseFieldID": "eastLondonDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"EAST_LONDON\""
+    "FieldShowCondition" : "dfjArea = \"EAST_LONDON\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -28,7 +36,7 @@
     "CaseFieldID": "westLondonDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"WEST_LONDON\""
+    "FieldShowCondition" : "dfjArea = \"WEST_LONDON\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -36,7 +44,7 @@
     "CaseFieldID": "birminghamDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"BIRMINGHAM\""
+    "FieldShowCondition" : "dfjArea = \"BIRMINGHAM\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -44,7 +52,7 @@
     "CaseFieldID": "coventryDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"COVENTRY\""
+    "FieldShowCondition" : "dfjArea = \"COVENTRY\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -52,7 +60,7 @@
     "CaseFieldID": "derbyDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"DERBY\""
+    "FieldShowCondition" : "dfjArea = \"DERBY\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -60,7 +68,7 @@
     "CaseFieldID": "leicesterDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"LEICESTER\""
+    "FieldShowCondition" : "dfjArea = \"LEICESTER\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -68,7 +76,7 @@
     "CaseFieldID": "lincolnDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"LINCOLN\""
+    "FieldShowCondition" : "dfjArea = \"LINCOLN\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -76,7 +84,7 @@
     "CaseFieldID": "northamptonDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"NORTHAMPTON\""
+    "FieldShowCondition" : "dfjArea = \"NORTHAMPTON\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -84,7 +92,7 @@
     "CaseFieldID": "nottinghamDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"NOTTINGHAM\""
+    "FieldShowCondition" : "dfjArea = \"NOTTINGHAM\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -92,7 +100,7 @@
     "CaseFieldID": "stoke-on-TrentDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"STOKE_ON_TRENT\""
+    "FieldShowCondition" : "dfjArea = \"STOKE_ON_TRENT\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -100,7 +108,7 @@
     "CaseFieldID": "wolverhamptonDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"WOLVERHAMPTON\""
+    "FieldShowCondition" : "dfjArea = \"WOLVERHAMPTON\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -108,7 +116,7 @@
     "CaseFieldID": "worcesterDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"WORCESTER\""
+    "FieldShowCondition" : "dfjArea = \"WORCESTER\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -116,7 +124,7 @@
     "CaseFieldID": "clevelandAndSouthDurhamDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"CLEVELAND_AND_SOUTH_DURHAM\""
+    "FieldShowCondition" : "dfjArea = \"CLEVELAND_AND_SOUTH_DURHAM\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -124,7 +132,7 @@
     "CaseFieldID": "humbersideDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"HUMBERSIDE\""
+    "FieldShowCondition" : "dfjArea = \"HUMBERSIDE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -132,7 +140,7 @@
     "CaseFieldID": "northYorkshireDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"NORTH_YORKSHIRE\""
+    "FieldShowCondition" : "dfjArea = \"NORTH_YORKSHIRE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -140,7 +148,7 @@
     "CaseFieldID": "northumbriaAndNorthDurhamDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"NORTHUMBRIA_AND_NORTH_DURHAM\""
+    "FieldShowCondition" : "dfjArea = \"NORTHUMBRIA_AND_NORTH_DURHAM\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -148,7 +156,7 @@
     "CaseFieldID": "southYorkshireDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"SOUTH_YORKSHIRE\""
+    "FieldShowCondition" : "dfjArea = \"SOUTH_YORKSHIRE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -156,7 +164,7 @@
     "CaseFieldID": "westYorkshireDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"WEST_YORKSHIRE\""
+    "FieldShowCondition" : "dfjArea = \"WEST_YORKSHIRE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -164,7 +172,7 @@
     "CaseFieldID": "blackburnLancasterDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"BLACKBURN_LANCASTER\""
+    "FieldShowCondition" : "dfjArea = \"BLACKBURN_LANCASTER\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -172,7 +180,7 @@
     "CaseFieldID": "carlisleDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"CARLISLE\""
+    "FieldShowCondition" : "dfjArea = \"CARLISLE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -180,7 +188,7 @@
     "CaseFieldID": "liverpoolDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"LIVERPOOL\""
+    "FieldShowCondition" : "dfjArea = \"LIVERPOOL\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -188,7 +196,7 @@
     "CaseFieldID": "manchesterDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"MANCHESTER\""
+    "FieldShowCondition" : "dfjArea = \"MANCHESTER\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -196,7 +204,7 @@
     "CaseFieldID": "brightonDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"BRIGHTON\""
+    "FieldShowCondition" : "dfjArea = \"BRIGHTON\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -204,7 +212,7 @@
     "CaseFieldID": "essexAndSuffolkDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"ESSEX_AND_SUFFOLK\""
+    "FieldShowCondition" : "dfjArea = \"ESSEX_AND_SUFFOLK\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -212,7 +220,7 @@
     "CaseFieldID": "guildfordDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"GUILDFORD\""
+    "FieldShowCondition" : "dfjArea = \"GUILDFORD\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -220,7 +228,7 @@
     "CaseFieldID": "lutonDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"LUTON\""
+    "FieldShowCondition" : "dfjArea = \"LUTON\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -228,7 +236,7 @@
     "CaseFieldID": "medwayDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"MEDWAY\""
+    "FieldShowCondition" : "dfjArea = \"MEDWAY\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -236,7 +244,7 @@
     "CaseFieldID": "miltonKeynesDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"MILTON_KEYNES\""
+    "FieldShowCondition" : "dfjArea = \"MILTON_KEYNES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -244,7 +252,7 @@
     "CaseFieldID": "norwichDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"NORWICH\""
+    "FieldShowCondition" : "dfjArea = \"NORWICH\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -252,7 +260,7 @@
     "CaseFieldID": "peterboroughDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"PETERBOROUGH\""
+    "FieldShowCondition" : "dfjArea = \"PETERBOROUGH\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -260,7 +268,7 @@
     "CaseFieldID": "readingDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"READING\""
+    "FieldShowCondition" : "dfjArea = \"READING\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -268,7 +276,7 @@
     "CaseFieldID": "watfordDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"Watford\""
+    "FieldShowCondition" : "dfjArea = \"Watford\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -276,7 +284,7 @@
     "CaseFieldID": "bournemouthAndDorsetDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"BOURNEMOUTH_AND_DORSET\""
+    "FieldShowCondition" : "dfjArea = \"BOURNEMOUTH_AND_DORSET\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -284,7 +292,7 @@
     "CaseFieldID": "bristolDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"BRISTOL\""
+    "FieldShowCondition" : "dfjArea = \"BRISTOL\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -292,7 +300,7 @@
     "CaseFieldID": "devonDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"DEVON\""
+    "FieldShowCondition" : "dfjArea = \"DEVON\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -300,7 +308,7 @@
     "CaseFieldID": "portsmouthDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"PORTSMOUTH\""
+    "FieldShowCondition" : "dfjArea = \"PORTSMOUTH\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -308,7 +316,7 @@
     "CaseFieldID": "swindonDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"SWINDON\""
+    "FieldShowCondition" : "dfjArea = \"SWINDON\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -316,7 +324,7 @@
     "CaseFieldID": "tauntonDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"TAUNTON\""
+    "FieldShowCondition" : "dfjArea = \"TAUNTON\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -324,7 +332,7 @@
     "CaseFieldID": "truroDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"TRURO\""
+    "FieldShowCondition" : "dfjArea = \"TRURO\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -332,7 +340,7 @@
     "CaseFieldID": "northWalesDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"NORTH_WALES\""
+    "FieldShowCondition" : "dfjArea = \"NORTH_WALES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -340,7 +348,7 @@
     "CaseFieldID": "southEastWalesDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"SOUTH_EAST_WALES\""
+    "FieldShowCondition" : "dfjArea = \"SOUTH_EAST_WALES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -348,7 +356,7 @@
     "CaseFieldID": "swanseaDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfj = \"SWANSEA\""
+    "FieldShowCondition" : "dfjArea = \"SWANSEA\""
   },
   {
     "LiveFrom": "01/01/2017",

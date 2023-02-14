@@ -2,10 +2,20 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "dfj",
-    "Label": "DFJ :",
+    "ID": "dfjArea",
+    "Label": "DFJ Area :",
     "FieldType": "FixedList",
-    "FieldTypeParameter": "DFJ",
+    "FieldTypeParameter": "DFJArea",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "highCourtDFJCourt",
+    "Label": "highCourtDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "HighCourtDFJCourts",
     "SecurityClassification": "Public",
     "Searchable": "Y"
   },
