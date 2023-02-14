@@ -16,7 +16,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "otherAllocationDecision",
     "CaseFieldID": "allocationProposal",
-    "PageFieldDisplayOrder": 1,
+    "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
     "PageID": 1,
     "PageDisplayOrder": 1,
