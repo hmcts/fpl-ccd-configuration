@@ -34,7 +34,7 @@
     "ID": "PBAPaymentComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryPbaPayment",
-    "DisplayContext": "OPTIONAL",
+    "DisplayContext": "MANDATORY",
     "ListElementCode": "fileReference",
     "FieldDisplayOrder": "4",
     "FieldShowCondition": "temporaryPbaPayment.usePbaPayment=\"Yes\""
