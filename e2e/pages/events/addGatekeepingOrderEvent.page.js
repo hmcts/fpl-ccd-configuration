@@ -4,11 +4,13 @@ const assert = require('assert');
 
 module.exports = {
   fields: {
+    proposalReason: '#allocationDecision_proposalReason',
+    judgeLevelRadio: '#allocationDecision_judgeLevelRadio_',
     routingRadioGroup: {
       groupName: '#gatekeepingOrderRouter',
       service: '#gatekeepingOrderRouter-SERVICE',
     },
-    standardDirection: directionName => `//h2[text()='${directionName}']/..`,
+    standardDirection: directionName => `#direction-${directionName}_direction-${directionName}`,
     customDirection: {
       fields(index) {
         return {
@@ -29,6 +31,18 @@ module.exports = {
       sealed: '#gatekeepingOrderSealDecision_orderStatus-SEALED',
       draft: '#gatekeepingOrderSealDecision_orderStatus-DRAFT',
     },
+  },
+
+  async selectAllocationDecision(proposal) {
+    I.click(proposal);
+  },
+
+  async enterProposalReason(reason) {
+    I.fillField(this.fields.proposalReason, reason);
+  },
+
+  selectCorrectLevelOfJudge(radioSelection) {
+    I.click(this.fields.judgeLevelRadio + radioSelection);
   },
 
   createGatekeepingOrderThroughService() {
@@ -64,7 +78,7 @@ module.exports = {
   },
 
   async clickDateAndTime(directionName) {
-    await within(this.fields.standardDirection(directionName), () => I.click('Date and time'));
+    await I.click(`#direction-${directionName}_dueDateType-DATE`);
   },
 
   async clickNumberOfDaysBeforeHearing(directionName) {
@@ -72,7 +86,7 @@ module.exports = {
   },
 
   async seeDate(directionName, date, format = 'YYYY-MM-DD HH:mm:ss') {
-    const getDateField = async field => parseInt(await I.grabValueFrom(`//*[contains(@class, 'form-group-${field}')]/input`));
+    const getDateField = async field => parseInt(await I.grabValueFrom(`#dateToBeCompletedBy-${field}`));
 
     return await within(this.fields.standardDirection(directionName), async () => {
       let day = await getDateField('day');
@@ -98,12 +112,12 @@ module.exports = {
   },
 
   async seeDays(directionName, days) {
-    let actualDays = parseInt(await I.grabValueFrom(`${this.fields.standardDirection(directionName)}//span[text()='Number of days']/../../input`));
+    let actualDays = parseInt(await I.grabValueFrom(`#direction-${directionName}_daysBeforeHearing`));
     assert.strictEqual(actualDays, days);
   },
 
   async seeDetails(directionName, details) {
-    let actualDetails = await I.grabValueFrom(`${this.fields.standardDirection(directionName)}//textarea`);
+    let actualDetails = await I.grabValueFrom(`#direction-${directionName}_description`);
     assert.strictEqual(actualDetails, details);
   },
 
@@ -113,6 +127,6 @@ module.exports = {
 
   async markAsFinal(issueDate) {
     I.click(this.fields.statusRadioGroup.sealed);
-    await I.fillDate(issueDate);
+    await I.fillDate(issueDate, '#dateOfIssue');
   },
 };
