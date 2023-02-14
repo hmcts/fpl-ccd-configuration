@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
@@ -68,6 +69,8 @@ import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.barristers;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE;
 import static uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType.CORRESPONDENCE_UPLOADED;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.ALL_LAS;
@@ -105,9 +108,30 @@ public class FurtherEvidenceUploadedEventHandler {
     private final WorkAllocationTaskService workAllocationTaskService;
     private final FeatureToggleService featureToggleService;
 
+    private DocumentUploaderType getUploaderType(Long id) {
+
+        final Set<CaseRole> caseRoles = userService.getCaseRoles(id);
+
+        if (caseRoles.stream().anyMatch(representativeSolicitors()::contains)) {
+            return DocumentUploaderType.SOLICITOR;
+        }
+
+        if (caseRoles.stream().anyMatch(barristers()::contains)) {
+            return DocumentUploaderType.BARRISTER;
+        }
+
+        return DocumentUploaderType.HMCTS;
+    }
+
+    private boolean shouldNotSendNotification(CaseData caseData) {
+        DocumentUploaderType userType = getUploaderType(caseData.getId());
+        return !(this.featureToggleService.isNewDocumentUploadNotificationEnabled()
+            || (!DocumentUploaderType.SOLICITOR.equals(userType) && !DocumentUploaderType.BARRISTER.equals(userType)));
+    }
+
     @EventListener
     public void sendDocumentsUploadedNotification(final FurtherEvidenceUploadedEvent event) {
-        if (!this.featureToggleService.isNewDocumentUploadNotificationEnabled()) {
+        if (shouldNotSendNotification(event.getCaseData())) {
             return;
         }
         final CaseData caseData = event.getCaseData();
@@ -142,7 +166,7 @@ public class FurtherEvidenceUploadedEventHandler {
 
     @EventListener
     public void sendDocumentsByPost(final FurtherEvidenceUploadedEvent event) {
-        if (!this.featureToggleService.isNewDocumentUploadNotificationEnabled()) {
+        if (shouldNotSendNotification(event.getCaseData())) {
             return;
         }
         DocumentUploaderType userType = event.getUserType();
@@ -164,7 +188,7 @@ public class FurtherEvidenceUploadedEventHandler {
 
     @EventListener
     public void sendCourtBundlesUploadedNotification(final FurtherEvidenceUploadedEvent event) {
-        if (!this.featureToggleService.isNewDocumentUploadNotificationEnabled()) {
+        if (shouldNotSendNotification(event.getCaseData())) {
             return;
         }
         final CaseData caseData = event.getCaseData();
@@ -193,7 +217,7 @@ public class FurtherEvidenceUploadedEventHandler {
 
     @EventListener
     public void sendHearingDocumentsUploadedNotification(final FurtherEvidenceUploadedEvent event) {
-        if (!this.featureToggleService.isNewDocumentUploadNotificationEnabled()) {
+        if (shouldNotSendNotification(event.getCaseData())) {
             return;
         }
         final CaseData caseData = event.getCaseData();
@@ -236,7 +260,7 @@ public class FurtherEvidenceUploadedEventHandler {
 
     @EventListener
     public void sendHearingDocumentsToCafcass(final FurtherEvidenceUploadedEvent event) {
-        if (!this.featureToggleService.isNewDocumentUploadNotificationEnabled()) {
+        if (shouldNotSendNotification(event.getCaseData())) {
             return;
         }
         final CaseData caseData = event.getCaseData();
@@ -273,7 +297,7 @@ public class FurtherEvidenceUploadedEventHandler {
 
     private void sendHearingDocumentsToCafcass(CaseData caseData, List<HearingDocument> newHearingDocuments,
                                                CafcassRequestEmailContentProvider provider) {
-        if (!this.featureToggleService.isNewDocumentUploadNotificationEnabled()) {
+        if (shouldNotSendNotification(caseData)) {
             return;
         }
         Map<String, Set<DocumentReference>> newHearingDocs = newHearingDocuments.stream()
@@ -292,7 +316,7 @@ public class FurtherEvidenceUploadedEventHandler {
 
     @EventListener
     public void sendCourtBundlesToCafcass(final FurtherEvidenceUploadedEvent event) {
-        if (!this.featureToggleService.isNewDocumentUploadNotificationEnabled()) {
+        if (shouldNotSendNotification(event.getCaseData())) {
             return;
         }
         final CaseData caseData = event.getCaseData();
@@ -323,7 +347,7 @@ public class FurtherEvidenceUploadedEventHandler {
 
     @EventListener
     public void sendDocumentsToCafcass(final FurtherEvidenceUploadedEvent event) {
-        if (!this.featureToggleService.isNewDocumentUploadNotificationEnabled()) {
+        if (shouldNotSendNotification(event.getCaseData())) {
             return;
         }
         final CaseData caseData = event.getCaseData();
@@ -860,7 +884,7 @@ public class FurtherEvidenceUploadedEventHandler {
     @Async
     @EventListener
     public void notifyTranslationTeam(FurtherEvidenceUploadedEvent event) {
-        if (!this.featureToggleService.isNewDocumentUploadNotificationEnabled()) {
+        if (shouldNotSendNotification(event.getCaseData())) {
             return;
         }
         furtherEvidenceDifferenceCalculator.calculate(event.getCaseData(), event.getCaseDataBefore())
