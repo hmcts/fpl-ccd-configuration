@@ -325,7 +325,7 @@ public class MigrateCaseService {
         if (isNotEmpty(childrenInCase)) {
             if (ElementUtils.findElement(childUUID, childrenInCase).isEmpty()) {
                 throw new AssertionError(format(
-                    "Migration {id = {}}, case reference = {}} child {} not found",
+                    "Migration {id = %s}, case reference = %s} child %s not found",
                     migrationId, caseData.getId(), childId));
             }
 
@@ -347,7 +347,7 @@ public class MigrateCaseService {
             return Map.of("children1", children);
         } else {
             throw new AssertionError(format(
-                "Migration {id = {}, case reference = {}} doesn't have children",
+                "Migration {id = %s, case reference = %s} doesn't have children",
                 migrationId, caseData.getId()));
         }
     }
