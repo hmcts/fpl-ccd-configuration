@@ -105,7 +105,7 @@ public class FurtherEvidenceNotificationService {
     public void sendNotificationWithHearing(CaseData caseData, Set<String> recipients,
                                             String sender, List<String> newNonConfidentialDocuments,
                                             Optional<HearingBooking> hearingBooking) {
-        
+
         String notificationTemplate = featureToggleService.isNewDocumentUploadNotificationEnabled()
             ? DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE : FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
 

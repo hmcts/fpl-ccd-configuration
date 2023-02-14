@@ -177,10 +177,10 @@ class FurtherEvidenceUploadedEventHandlerTest {
     @Mock
     private FeatureToggleService featureToggleService;
 
-    private static final Consumer<CaseData> EMPTY_CASE_DATA_MODIFIER = whatever -> { };
-
     @Mock
     private WorkAllocationTaskService workAllocationTaskService;
+
+    private static final Consumer<CaseData> EMPTY_CASE_DATA_MODIFIER = whatever -> { };
 
     private void verifyNotificationFurtherDocumentsTemplate(final UserDetails uploadedBy,
                                                              DocumentUploaderType uploadedType,
