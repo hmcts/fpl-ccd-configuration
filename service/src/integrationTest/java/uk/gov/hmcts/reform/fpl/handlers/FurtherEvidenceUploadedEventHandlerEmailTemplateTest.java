@@ -117,7 +117,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
 
     @Test
     void sendNotificationWhenNewDocumentUploadNotificationToggledOffForSolicitor() {
-        
+
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
 
         underTest.sendDocumentsUploadedNotification(new FurtherEvidenceUploadedEvent(
