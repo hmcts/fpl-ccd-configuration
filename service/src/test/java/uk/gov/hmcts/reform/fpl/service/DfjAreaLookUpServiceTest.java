@@ -16,6 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DfjAreaLookUpServiceTest {
     @Autowired
     private DfjAreaLookUpService dfjAreaLookUpService;
+
     @Test
     void shouldReturnDfjForAGivenCourtCode() {
         assertThat(dfjAreaLookUpService.getDfjArea("344"))

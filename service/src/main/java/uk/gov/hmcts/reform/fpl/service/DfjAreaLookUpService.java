@@ -20,6 +20,7 @@ public class DfjAreaLookUpService {
     private final ObjectMapper objectMapper;
     private List<DfjAreaCourtMapping> dfjCourtMapping;
     private Set<String> courtFields;
+
     public DfjAreaLookUpService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         loadDfjMappings();
@@ -45,7 +46,7 @@ public class DfjAreaLookUpService {
         return dfjCourtMapping.stream()
             .filter(dfjCourtMap -> dfjCourtMap.getCourtCode().equals(courtCode))
             .findAny()
-            .orElseThrow(() -> new IllegalArgumentException("No dfjArea found for court code: "+ courtCode));
+            .orElseThrow(() -> new IllegalArgumentException("No dfjArea found for court code: " + courtCode));
     }
 
     public Set<String> getAllCourtFields() {

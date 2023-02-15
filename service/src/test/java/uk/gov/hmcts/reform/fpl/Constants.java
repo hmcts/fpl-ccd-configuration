@@ -29,7 +29,7 @@ public interface Constants {
     String USER_AUTH_TOKEN = "token";
     String LOCAL_AUTHORITY_1_COURT_ID = "344";
     String LOCAL_AUTHORITY_3_COURT_A_ID = "31";
-    String LOCAL_AUTHORITY_3_COURT_B_ID = "32";
+    String LOCAL_AUTHORITY_3_COURT_B_ID = "115";
     String LOCAL_AUTHORITY_1_COURT_NAME = "Family Court";
     String LOCAL_AUTHORITY_3_COURT_A_NAME = "Family Court 3 A";
     String LOCAL_AUTHORITY_3_COURT_B_NAME = "Family Court 3 B";
