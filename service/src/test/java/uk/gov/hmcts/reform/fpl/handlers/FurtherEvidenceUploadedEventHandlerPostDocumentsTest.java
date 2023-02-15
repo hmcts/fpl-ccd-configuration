@@ -131,7 +131,6 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
         final CaseData caseData = buildCaseDataWithNonConfidentialNonPdfDocumentsSolicitor(REP_USER);
 
         when(sendDocumentService.getStandardRecipients(caseData)).thenReturn(RECIPIENTS_LIST);
-        when(sendDocumentService.getStandardRecipients(caseData)).thenReturn(RECIPIENTS_LIST);
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
             new FurtherEvidenceUploadedEvent(
@@ -147,6 +146,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
     @Test
     void shouldSendDocumentByPostWhenResponseStatementPdfIsUploadedByASolicitor() {
         final CaseData caseData = buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor();
+
         when(sendDocumentService.getStandardRecipients(caseData)).thenReturn(RECIPIENTS_LIST);
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
@@ -164,6 +164,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
     @Test
     void shouldRemoveNonPdfResponseStatements() {
         final CaseData caseData = buildCaseDataWithNonConfidentialNonPDFRespondentStatementsSolicitor();
+        
         when(sendDocumentService.getStandardRecipients(caseData)).thenReturn(RECIPIENTS_LIST);
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
