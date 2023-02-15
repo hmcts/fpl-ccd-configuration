@@ -24,28 +24,49 @@
     "LiveFrom": "01/01/2017",
     "ID": "HearingType",
     "ListElementCode": "FINAL",
-    "ListElement": "Final",
+    "ListElement": "Full hearing",
     "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingType",
+    "ListElementCode": "EMERGENCY_PROTECTION_ORDER",
+    "ListElement": "Emergency protection order",
+    "DisplayOrder": 5
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingType",
     "ListElementCode": "INTERIM_CARE_ORDER",
     "ListElement": "Interim care order",
-    "DisplayOrder": 5
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingType",
-    "ListElementCode": "ACCELERATED_DISCHARGE_OF_CARE",
-    "ListElement": "Accelerated discharge of care",
     "DisplayOrder": 6
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingType",
-    "ListElementCode": "OTHER",
-    "ListElement": "Other",
+    "ListElementCode": "ACCELERATED_DISCHARGE_OF_CARE",
+    "ListElement": "Discharge of care",
     "DisplayOrder": 7
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingType",
+    "ListElementCode": "FACT_FINDING",
+    "ListElement": "Fact finding",
+    "DisplayOrder": 8
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingType",
+    "ListElementCode": "JUDGMENT_AFTER_HEARING",
+    "ListElement": "Judgment after hearing",
+    "DisplayOrder": 9
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingType",
+    "ListElementCode": "FAMILY_DRUG_ALCOHOL_COURT",
+    "ListElement": "Family drug & alcohol court",
+    "DisplayOrder": 10
   }
 ]
