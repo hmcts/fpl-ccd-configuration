@@ -218,8 +218,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
         final Set<String> allCafcassEmails = Set.of(CAFCASS_EMAIL);
         when(furtherEvidenceNotificationService.getCafcassEmails(caseData))
             .thenReturn(Set.of(CAFCASS_EMAIL));
-        when(featureToggleService.isNewDocumentUploadNotificationEnabled())
-            .thenReturn(true);
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
             new FurtherEvidenceUploadedEvent(caseData, caseDataBefore, uploadedType, uploadedBy);
