@@ -14,10 +14,12 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReferenceWithLanguage;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
@@ -25,6 +27,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Slf4j
@@ -93,12 +96,35 @@ public class SendDocumentService {
     }
 
     private List<Recipient> getNotRepresentedRespondents(CaseData caseData) {
-        return unwrapElements(caseData.getRespondents1()).stream()
-            .filter(respondent -> ObjectUtils.isEmpty(respondent.getRepresentedBy())
-                && hasNoLegalRepresentation(respondent))
-            .filter(respondent -> !respondent.isDeceasedOrNFA())
-            .map(Respondent::getParty)
+        List<Element<Recipient>> partiesWithConfidentialAddress = getPartiesWithConfidentialAddress(caseData);
+
+        return caseData.getRespondents1().stream()
+            .filter(respondent -> ObjectUtils.isEmpty(respondent.getValue().getRepresentedBy())
+                && hasNoLegalRepresentation(respondent.getValue()))
+            .filter(respondent -> !respondent.getValue().isDeceasedOrNFA())
+            .map(respondent ->
+                    ElementUtils.findElement(respondent.getId(), partiesWithConfidentialAddress).isPresent() ?
+                        ElementUtils.getElement(respondent.getId(), partiesWithConfidentialAddress).getValue() :
+                        respondent.getValue().getParty())
             .collect(toList());
+    }
+
+    private List<Element<Recipient>> getPartiesWithConfidentialAddress(CaseData caseData) {
+        return caseData.getRespondents1().stream()
+            .filter(respondent -> respondent.getValue().containsConfidentialDetails()
+                && hasNoLegalRepresentation(respondent.getValue())
+                && containsConfidentialRespondentDetails(caseData.getConfidentialRespondents(), respondent.getId())
+            ).map(respondent ->
+                element(respondent.getId(), (Recipient) respondent.getValue().getParty().toBuilder()
+                    .address(ElementUtils.getElement(respondent.getId(), caseData.getConfidentialRespondents())
+                        .getValue().getParty().getAddress())
+                    .build())
+            ).collect(toList());
+    }
+
+    private boolean containsConfidentialRespondentDetails(List<Element<Respondent>> confidentialRespondents,
+                                                          UUID respondentId) {
+       return ElementUtils.findElement(respondentId, confidentialRespondents).isPresent();
     }
 
     private boolean hasNoLegalRepresentation(Respondent respondent) {
