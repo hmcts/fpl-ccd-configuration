@@ -437,6 +437,7 @@
     "CaseFieldID": "hearingStartDate",
     "PageFieldDisplayOrder": 7,
     "DisplayContext": "MANDATORY",
+    "DisplayContextParameter": "#DATETIMEENTRY(dd-MM-yyyy hh:mm)",
     "PageID": "EnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 5

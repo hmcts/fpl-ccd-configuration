@@ -54,6 +54,7 @@
     "ElementLabel": "Date and time",
     "HintText": "Use 24h format",
     "SecurityClassification": "Public",
+    "DisplayContextParameter": "#DATETIMEENTRY(dd-MM-yyyy hh:mm)",
     "FieldShowCondition": "dueDateType=\"DATE\""
   },
   {
