@@ -77,6 +77,7 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
             c43DocmosisParameters = C43ChildArrangementOrderDocmosisParameters
             .builder()
             .orderTitle(c43TitleGenerator.getOrderTitle(eventData))
+            .recitalsOrPreamble(getOrderRecitalsAndPreambles(eventData))
             .orderByConsent(orderMessageGenerator.getOrderByConsentMessage(eventData))
             .orderDetails(buildOrderDetails(eventData))
             .furtherDirections(getOrderDirections(eventData))
@@ -99,8 +100,10 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
     private String buildOrderDetails(ManageOrdersEventData eventData) {
         StringBuilder stringBuilder = new StringBuilder();
 
+        stringBuilder.append("The Court orders");
+
         if (isChildArrangementOrderSelected(eventData)) {
-            stringBuilder.append("The Child Arrangement Order is for the child to ");
+            stringBuilder.append("\n\nThe Child Arrangement Order is for the child to ");
             stringBuilder.append(eventData.getManageOrdersChildArrangementsOrderTypes().stream()
                 .map(type -> {
                     switch (type) {
@@ -112,16 +115,14 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
                     }
                 })
                 .collect(Collectors.joining(" and ")));
-            stringBuilder.append(".\n\n");
+            stringBuilder.append(".");
         }
 
-        return stringBuilder.toString() + getOrderRecitalsAndPreambles(eventData);
+        return stringBuilder.toString();
     }
 
     private String getOrderRecitalsAndPreambles(ManageOrdersEventData eventData) {
-        String recitals = eventData.getManageOrdersRecitalsAndPreambles();
-
-        return recitals + "\n\n" + "The Court orders";
+        return eventData.getManageOrdersRecitalsAndPreambles();
     }
 
     private String getOrderDirections(ManageOrdersEventData eventData) {
