@@ -266,8 +266,12 @@ public class FurtherEvidenceUploadedEventHandler {
         final CaseData caseData = event.getCaseData();
         final CaseData caseDataBefore = event.getCaseDataBefore();
 
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-            cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
+
+
+        // assuming standalone application not sending notification to CAFCASS
+        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland
+            = isEmpty(caseData.getCaseLocalAuthority())
+            ? Optional.of(null) : cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
 
         if (recipientIsEngland.isPresent()) {
             List<HearingDocument> newCaseSummaries = getNewHearingDocuments(
@@ -321,8 +325,12 @@ public class FurtherEvidenceUploadedEventHandler {
         }
         final CaseData caseData = event.getCaseData();
 
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
+
+
+        // assuming standalone application not sending notification to CAFCASS
+        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland
+            = isEmpty(caseData.getCaseLocalAuthority())
+            ? Optional.of(null) : cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
 
         if (recipientIsEngland.isPresent()) {
             final CaseData caseDataBefore = event.getCaseDataBefore();
@@ -353,12 +361,9 @@ public class FurtherEvidenceUploadedEventHandler {
         final CaseData caseData = event.getCaseData();
 
         // assuming standalone application not sending notification to CAFCASS
-        if (isEmpty(caseData.getCaseLocalAuthority())) {
-            return;
-        }
-
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
+        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland
+            = isEmpty(caseData.getCaseLocalAuthority())
+                ? Optional.of(null) : cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
 
         if (recipientIsEngland.isPresent()) {
             final CaseData caseDataBefore = event.getCaseDataBefore();
