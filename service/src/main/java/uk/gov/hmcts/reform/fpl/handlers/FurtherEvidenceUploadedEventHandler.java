@@ -266,8 +266,6 @@ public class FurtherEvidenceUploadedEventHandler {
         final CaseData caseData = event.getCaseData();
         final CaseData caseDataBefore = event.getCaseDataBefore();
 
-
-
         // assuming standalone application not sending notification to CAFCASS
         final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland
             = isEmpty(caseData.getCaseLocalAuthority())
