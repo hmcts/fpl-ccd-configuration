@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 
 import java.util.ArrayList;
@@ -79,6 +80,8 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
 
     @Mock
     private FeatureToggleService featureToggleService;
+    @Mock
+    private UserService userService;
 
     @InjectMocks
     private FurtherEvidenceUploadedEventHandler furtherEvidenceUploadedEventHandler;
