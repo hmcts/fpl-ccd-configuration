@@ -5,7 +5,8 @@
     "ListElementCode": "name",
     "FieldType": "Text",
     "ElementLabel": "Document name",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "RegularExpression": "^(?!.*<[^>\\d]+>*).*"
   },
   {
     "LiveFrom": "01/01/2017",
