@@ -164,7 +164,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
     @Test
     void shouldRemoveNonPdfResponseStatements() {
         final CaseData caseData = buildCaseDataWithNonConfidentialNonPDFRespondentStatementsSolicitor();
-        
+
         when(sendDocumentService.getStandardRecipients(caseData)).thenReturn(RECIPIENTS_LIST);
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
