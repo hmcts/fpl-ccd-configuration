@@ -447,8 +447,17 @@
     "ID": "gatekeepingOrderListOrSendToAdmin",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "GatekeepingListOrSendToAdmin",
-    "Label": "Do you want to list the hearing or send it to admin?",
-    "HintText": "If you want to list the hearing yourself, allocate the judge and serve the order you must complete the List Gatekeeping Hearing event. If you need an admin to list the order, it will be saved in the Draft Orders Tab.",
+    "Label": "What is your local agreement for listing and serving the order?",
+    "HintText": "If you need an urgent listing you should complete the listing and serve the order yourself to avoid any delay",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "listGatekeepingHearingLabel",
+    "Label": "You must now complete the \"List gatekeeping hearing\" event to allocate the judge, list the hearing and serve the order",
+    "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -457,8 +466,8 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "gatekeepingOrderListOrSendToAdminReason",
     "FieldType": "TextArea",
-    "Label": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    "HintText": "Nam at dui vitae erat tempor vulputate sed et velit.",
+    "Label": "Local court admin will be notified by email that they need to list and serve this order. The order will be saved in the \"Draft orders tab\" until served.",
+    "HintText": "Enter any listing or allocated judge instructions for local court admin",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }
