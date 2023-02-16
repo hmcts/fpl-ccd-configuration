@@ -41,6 +41,7 @@ import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvide
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
+import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
@@ -58,7 +59,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static java.lang.String.format;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.flatMapping;
@@ -68,7 +68,6 @@ import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.barristers;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
@@ -267,16 +266,7 @@ public class FurtherEvidenceUploadedEventHandler {
         final CaseData caseData = event.getCaseData();
         final CaseData caseDataBefore = event.getCaseDataBefore();
 
-        // prevent NPE for existing standalone cases
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland
-            = isEmpty(caseData.getCaseLocalAuthority())
-            ? Optional.empty() : cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-        if (isEmpty(caseData.getCaseLocalAuthority())) {
-            log.info(format("Not sending notification to cafcass since caseLocalAuthority is null for case: %s",
-                caseData.getId()));
-        }
-
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
             List<HearingDocument> newCaseSummaries = getNewHearingDocuments(
                 caseData.getHearingDocuments().getCaseSummaryList(),
                 caseDataBefore.getHearingDocuments().getCaseSummaryList());
@@ -328,16 +318,7 @@ public class FurtherEvidenceUploadedEventHandler {
         }
         final CaseData caseData = event.getCaseData();
 
-        // prevent NPE for existing standalone cases
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland
-            = isEmpty(caseData.getCaseLocalAuthority())
-            ? Optional.empty() : cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-        if (isEmpty(caseData.getCaseLocalAuthority())) {
-            log.info(format("Not sending notification to cafcass since caseLocalAuthority is null for case: %s",
-                caseData.getId()));
-        }
-
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
             final CaseData caseDataBefore = event.getCaseDataBefore();
 
             Map<String, Set<DocumentReference>> newCourtBundles = getNewCourtBundles(caseData, caseDataBefore);
@@ -365,16 +346,7 @@ public class FurtherEvidenceUploadedEventHandler {
         }
         final CaseData caseData = event.getCaseData();
 
-        // prevent NPE for existing standalone cases
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland
-            = isEmpty(caseData.getCaseLocalAuthority())
-            ? Optional.empty() : cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-        if (isEmpty(caseData.getCaseLocalAuthority())) {
-            log.info(format("Not sending notification to cafcass since caseLocalAuthority is null for case: %s",
-                caseData.getId()));
-        }
-
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
             final CaseData caseDataBefore = event.getCaseDataBefore();
             final DocumentUploaderType userType = event.getUserType();
             final Set<DocumentReference> documentReferences = new HashSet<>();
