@@ -206,12 +206,10 @@ public class ManageLocalAuthoritiesController extends CallbackController {
         }
 
         if (TRANSFER_COURT == action) {
+            Court oldCourt = caseData.getCourt();
             Court courtTransferred = service.transferCourtWithoutTransferLA(caseData);
             caseDetails.getData().put(PAST_COURT_LIST_KEY, caseData.getPastCourtList());
             caseDetails.getData().put(COURT_KEY, courtTransferred);
-            Court oldCourt = caseData.getCourt();
-
-            updateDfjAreaCourtDetails(caseDetails, courtTransferred);
 
             if (!isEmpty(courtTransferred) && RCJ_HIGH_COURT_CODE.equals(courtTransferred.getCode())) {
                 // transferred to the high court -> turn off sendToCtsc
@@ -221,7 +219,9 @@ public class ManageLocalAuthoritiesController extends CallbackController {
                 // we were in the high court, now we're not -> sendToCtsc again
                 caseDetails.getData().put("sendToCtsc", YesNo.YES.getValue());
             }
+            updateDfjAreaCourtDetails(caseDetails, courtTransferred);
         }
+
 
         return respond(removeTemporaryFields(caseDetails));
     }

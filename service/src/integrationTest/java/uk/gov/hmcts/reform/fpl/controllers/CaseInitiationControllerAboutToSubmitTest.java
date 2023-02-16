@@ -74,7 +74,7 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
             .isEqualTo(orgPolicy(organisation.getOrganisationIdentifier(), "[LASOLICITOR]"));
         assertThat(caseDetails.get("court")).isEqualTo(toMap(expectedCourt));
         assertThat(caseDetails.get("dfjArea")).isEqualTo("SWANSEA");
-        assertThat(caseDetails.get("swanseaDFJCourt")).isEqualTo("344");
+        assertThat(caseDetails.get("swanseaDFJCourt")).isEqualTo("11");
         assertThat(caseDetails.get("multiCourt")).isNull();
     }
 
