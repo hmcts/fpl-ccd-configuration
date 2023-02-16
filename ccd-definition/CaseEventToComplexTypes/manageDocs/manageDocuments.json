@@ -104,7 +104,7 @@
     "ListElementCode": "documentAcknowledgeLabel",
     "FieldDisplayOrder": 5,
     "DisplayContext": "READONLY",
-    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -114,7 +114,7 @@
     "ListElementCode": "documentAcknowledge",
     "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
+    "EventElementLabel": "Tick to confirm this document is related to this case"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -236,7 +236,7 @@
     "ListElementCode": "documentAcknowledgeLabel",
     "FieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
-    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -246,7 +246,7 @@
     "ListElementCode": "documentAcknowledge",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD",
+    "EventElementLabel": "Tick to confirm this document is related to this case",
     "FieldShowCondition": "name!=\"SHOW_IN_EVENT_ONLY\""
   },
   {
@@ -329,7 +329,7 @@
     "ListElementCode": "documentAcknowledgeLabel",
     "FieldDisplayOrder": 3,
     "DisplayContext": "READONLY",
-    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -339,7 +339,7 @@
     "ListElementCode": "documentAcknowledge",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
+    "EventElementLabel": "Tick to confirm this document is related to this case"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -389,7 +389,7 @@
     "ListElementCode": "documentAcknowledgeLabel",
     "FieldDisplayOrder": 3,
     "DisplayContext": "READONLY",
-    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -399,7 +399,7 @@
     "ListElementCode": "documentAcknowledge",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD",
+    "EventElementLabel": "Tick to confirm this document is related to this case",
     "FieldShowCondition": "name!=\"SHOW_IN_EVENT_ONLY\""
   },
   {
@@ -450,7 +450,7 @@
     "ListElementCode": "documentAcknowledgeLabel",
     "FieldDisplayOrder": 3,
     "DisplayContext": "READONLY",
-    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -460,7 +460,7 @@
     "ListElementCode": "documentAcknowledge",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
+    "EventElementLabel": "Tick to confirm this document is related to this case"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -510,7 +510,7 @@
     "ListElementCode": "documentAcknowledgeLabel",
     "FieldDisplayOrder": 3,
     "DisplayContext": "READONLY",
-    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -520,7 +520,7 @@
     "ListElementCode": "documentAcknowledge",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
+    "EventElementLabel": "Tick to confirm this document is related to this case"
   },
   {
     "LiveFrom": "01/01/2017",

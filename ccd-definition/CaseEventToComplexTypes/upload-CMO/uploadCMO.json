@@ -27,7 +27,7 @@
     "ListElementCode": "documentAcknowledgeLabel",
     "FieldDisplayOrder": 3,
     "DisplayContext": "READONLY",
-    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -38,7 +38,7 @@
     "ListElementCode": "documentAcknowledge",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD",
+    "EventElementLabel": "Tick to confirm this document is related to this case",
     "ShowSummaryChangeOption": "Y"
   },
   {

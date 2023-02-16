@@ -47,7 +47,7 @@
     "ListElementCode": "documentAcknowledge",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "DocumentAcknowledge",
-    "ElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD",
+    "ElementLabel": "Tick to confirm this document is related to this case",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
