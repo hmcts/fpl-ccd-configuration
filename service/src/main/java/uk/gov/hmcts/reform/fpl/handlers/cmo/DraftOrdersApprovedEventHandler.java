@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailC
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
+import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -135,10 +136,8 @@ public class DraftOrdersApprovedEventHandler {
     @EventListener
     public void sendNotificationToCafcassViaSendGrid(final DraftOrdersApproved event) {
         CaseData caseData = event.getCaseData();
-        final Optional<Cafcass> recipientIsEngland =
-                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
 
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
             LocalDateTime hearingStartDate = findElement(caseData.getLastHearingOrderDraftsHearingId(),
                     caseData.getHearingDetails())
                     .map(Element::getValue)

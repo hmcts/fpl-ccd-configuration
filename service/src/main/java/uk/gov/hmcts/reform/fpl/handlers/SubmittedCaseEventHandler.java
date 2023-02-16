@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OutsourcedCaseContentProvider;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
+import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.util.Collection;
 import java.util.List;
@@ -107,10 +108,7 @@ public class SubmittedCaseEventHandler {
             return;
         }
 
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
             Set<DocumentReference> documentReferences = Optional.ofNullable(caseData.getC110A().getSubmittedForm())
                     .map(documentReference ->
                         documentReference.toBuilder()

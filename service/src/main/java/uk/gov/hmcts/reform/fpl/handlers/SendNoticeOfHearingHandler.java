@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingEmailContent
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingNoOtherAddressEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
+import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.util.Collection;
 import java.util.List;
@@ -95,10 +96,7 @@ public class SendNoticeOfHearingHandler {
     @EventListener
     public void notifyCafcassSendGrid(final SendNoticeOfHearing event) {
         final CaseData caseData = event.getCaseData();
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
             NoticeOfHearingCafcassData noticeOfHearingCafcassData =
                     noticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotificationCafcassData(
                         caseData,

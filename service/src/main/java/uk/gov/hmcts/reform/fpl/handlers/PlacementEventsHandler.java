@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementContentProvider;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.util.Collection;
 import java.util.List;
@@ -103,10 +104,8 @@ public class PlacementEventsHandler {
     @EventListener
     public void notifyCafcassOfNewApplicationSendGrid(final PlacementApplicationSubmitted event) {
         final CaseData caseData = event.getCaseData();
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-            cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
 
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
             PlacementApplicationCafcassData placementApplicationCafcassData =
                 contentProvider.buildNewPlacementApplicationNotificationCafcassData(
                     caseData,
@@ -184,10 +183,7 @@ public class PlacementEventsHandler {
     public void notifyCafcassOfNewNoticeSendGrid(PlacementNoticeAdded event) {
         final CaseData caseData = event.getCaseData();
 
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-            cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
             PlacementApplicationCafcassData placementApplicationCafcassData =
                 contentProvider.buildNewPlacementApplicationNotificationCafcassData(
                     caseData,

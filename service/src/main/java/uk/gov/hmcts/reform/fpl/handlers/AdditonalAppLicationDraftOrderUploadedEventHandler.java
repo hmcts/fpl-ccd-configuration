@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
+import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,10 +33,8 @@ public class AdditonalAppLicationDraftOrderUploadedEventHandler {
     @Async
     public void sendDocumentsToCafcass(final AdditonalAppLicationDraftOrderUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
 
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
             AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
 
             final CaseData caseDataBefore = event.getCaseDataBefore();

@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.DraftOrdersUploadedContentProvider;
+import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
@@ -77,10 +78,7 @@ public class DraftOrdersUploadedEventHandler {
     public void sendNotificationToCafcass(final DraftOrdersUploaded event) {
         final CaseData caseData = event.getCaseData();
 
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
             LocalDateTime hearingStartDate = Optional.ofNullable(getHearingBooking(caseData))
                 .map(HearingBooking::getStartDate)
                 .orElse(null);

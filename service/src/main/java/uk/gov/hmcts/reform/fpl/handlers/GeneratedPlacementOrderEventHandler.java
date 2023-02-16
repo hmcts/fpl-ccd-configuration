@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
+import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -68,10 +69,7 @@ public class GeneratedPlacementOrderEventHandler {
     public void sendPlacementOrderEmailToCafcassEngland(final GeneratedPlacementOrderEvent orderEvent) {
         CaseData caseData = orderEvent.getCaseData();
 
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-            cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
             cafcassNotificationService.sendEmail(caseData,
                 of(orderEvent.getOrderDocument(), orderEvent.getOrderNotificationDocument()),
                 ORDER,
