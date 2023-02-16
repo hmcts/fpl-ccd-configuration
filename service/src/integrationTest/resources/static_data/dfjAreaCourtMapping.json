@@ -8,5 +8,10 @@
     "courtCode": "32",
     "courtField": "centralLondonDFJCourt",
     "dfjArea": "CENTRAL_LONDON"
+  },
+  {
+    "courtCode": "22",
+    "courtField": "liverpoolDFJCourt",
+    "dfjArea": "LIVERPOOL"
   }
 ]
