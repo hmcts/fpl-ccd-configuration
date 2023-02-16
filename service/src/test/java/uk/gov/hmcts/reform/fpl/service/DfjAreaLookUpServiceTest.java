@@ -36,6 +36,6 @@ class DfjAreaLookUpServiceTest {
 
     @Test
     void shouldReturnDistinctCourtFields() {
-        assertThat(dfjAreaLookUpService.getAllCourtFields()).hasSize(43);
+        assertThat(dfjAreaLookUpService.getAllCourtFields()).hasSize(44);
     }
 }
