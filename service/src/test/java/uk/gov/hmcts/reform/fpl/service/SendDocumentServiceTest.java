@@ -340,9 +340,8 @@ class SendDocumentServiceTest {
 
             assertThat(actualRecipients)
                 .containsExactlyInAnyOrder(representativeServedByPost.getValue(),
-                    notRepresentedRespondent.getValue().getParty());
-            assertThat(actualRecipients.get(0).getAddress()).isEqualTo(confidentialAddress);
-
+                    confidentialNotRepresentedRespondent.getValue().getParty());
+            assertThat(actualRecipients.get(1).getAddress()).isEqualTo(confidentialAddress);
         }
 
         @Test
