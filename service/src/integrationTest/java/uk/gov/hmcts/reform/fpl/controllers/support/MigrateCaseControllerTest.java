@@ -56,45 +56,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             .hasMessage("No migration mapped to " + INVALID_MIGRATION_ID);
     }
 
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class Dfpl1029 {
-
-        final String migrationId = "DFPL-1029";
-        final long expectedCaseId = 1638876373455956L;
-        final long incorrectCaseId = 111111111111111L;
-
-        @Test
-        void shouldThrowExceptionWhenIncorrectCaseId() {
-            CaseData caseData = CaseData.builder().id(incorrectCaseId).build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format("Migration {id = %s, case reference = %s}, expected case id %d",
-                    migrationId, incorrectCaseId, expectedCaseId));
-        }
-
-        @Test
-        void shouldSetCaseStateToCaseManagement() {
-            CaseData caseData = CaseData.builder().id(expectedCaseId).build();
-
-            CaseDetails caseDetails = buildCaseDetails(caseData, migrationId);
-
-            // pick a few of the temp fields from ManageOrderDocumentScopedFieldsCalculator and set on CaseDetails
-            caseDetails.getData().put("others_label", "test");
-            caseDetails.getData().put("appointedGuardians_label", "test");
-            caseDetails.getData().put("manageOrdersCafcassRegion", "test");
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
-
-            // check that the migration has successfully removed them
-            assertThat(response.getData()).extracting("others_label").isNull();
-            assertThat(response.getData()).extracting("appointedGuardians_label").isNull();
-            assertThat(response.getData()).extracting("manageOrdersCafcassRegion").isNull();
-        }
-    }
-
     private CaseDetails buildCaseDetails(CaseData caseData, String migrationId) {
         CaseDetails caseDetails = asCaseDetails(caseData);
         caseDetails.getData().put("migrationId", migrationId);
