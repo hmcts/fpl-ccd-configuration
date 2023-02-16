@@ -58,6 +58,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static java.lang.String.format;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.flatMapping;
@@ -266,10 +267,14 @@ public class FurtherEvidenceUploadedEventHandler {
         final CaseData caseData = event.getCaseData();
         final CaseData caseDataBefore = event.getCaseDataBefore();
 
-        // assuming standalone application not sending notification to CAFCASS
+        // prevent NPE for existing standalone cases
         final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland
             = isEmpty(caseData.getCaseLocalAuthority())
             ? Optional.empty() : cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
+        if (isEmpty(caseData.getCaseLocalAuthority())) {
+            log.info(format("Not sending notification to cafcass since caseLocalAuthority is null for case: %s",
+                caseData.getId()));
+        }
 
         if (recipientIsEngland.isPresent()) {
             List<HearingDocument> newCaseSummaries = getNewHearingDocuments(
@@ -323,10 +328,14 @@ public class FurtherEvidenceUploadedEventHandler {
         }
         final CaseData caseData = event.getCaseData();
 
-        // assuming standalone application not sending notification to CAFCASS
+        // prevent NPE for existing standalone cases
         final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland
             = isEmpty(caseData.getCaseLocalAuthority())
             ? Optional.empty() : cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
+        if (isEmpty(caseData.getCaseLocalAuthority())) {
+            log.info(format("Not sending notification to cafcass since caseLocalAuthority is null for case: %s",
+                caseData.getId()));
+        }
 
         if (recipientIsEngland.isPresent()) {
             final CaseData caseDataBefore = event.getCaseDataBefore();
@@ -356,10 +365,14 @@ public class FurtherEvidenceUploadedEventHandler {
         }
         final CaseData caseData = event.getCaseData();
 
-        // assuming standalone application not sending notification to CAFCASS
+        // prevent NPE for existing standalone cases
         final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland
             = isEmpty(caseData.getCaseLocalAuthority())
-                ? Optional.empty() : cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
+            ? Optional.empty() : cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
+        if (isEmpty(caseData.getCaseLocalAuthority())) {
+            log.info(format("Not sending notification to cafcass since caseLocalAuthority is null for case: %s",
+                caseData.getId()));
+        }
 
         if (recipientIsEngland.isPresent()) {
             final CaseData caseDataBefore = event.getCaseDataBefore();
