@@ -28,7 +28,6 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Slf4j
 @Service
@@ -98,33 +97,41 @@ public class SendDocumentService {
     private List<Recipient> getNotRepresentedRespondents(CaseData caseData) {
         List<Element<Recipient>> partiesWithConfidentialAddress = getPartiesWithConfidentialAddress(caseData);
 
-        return caseData.getRespondents1().stream()
-            .filter(respondent -> ObjectUtils.isEmpty(respondent.getValue().getRepresentedBy())
-                && hasNoLegalRepresentation(respondent.getValue()))
-            .filter(respondent -> !respondent.getValue().isDeceasedOrNFA())
-            .map(respondent ->
-                    ElementUtils.findElement(respondent.getId(), partiesWithConfidentialAddress).isPresent() ?
-                        ElementUtils.getElement(respondent.getId(), partiesWithConfidentialAddress).getValue() :
-                        respondent.getValue().getParty())
-            .collect(toList());
+        if (isNotEmpty(caseData.getRespondents1())) {
+            return caseData.getRespondents1().stream()
+                .filter(respondent -> ObjectUtils.isEmpty(respondent.getValue().getRepresentedBy())
+                    && hasNoLegalRepresentation(respondent.getValue()))
+                .filter(respondent -> !respondent.getValue().isDeceasedOrNFA())
+                .map(respondent ->
+                    ElementUtils.findElement(respondent.getId(), partiesWithConfidentialAddress).isPresent()
+                        ? ElementUtils.getElement(respondent.getId(), partiesWithConfidentialAddress).getValue()
+                        : respondent.getValue().getParty())
+                .collect(toList());
+        } else {
+            return emptyList();
+        }
     }
 
     private List<Element<Recipient>> getPartiesWithConfidentialAddress(CaseData caseData) {
-        return caseData.getRespondents1().stream()
-            .filter(respondent -> respondent.getValue().containsConfidentialDetails()
-                && hasNoLegalRepresentation(respondent.getValue())
-                && containsConfidentialRespondentDetails(caseData.getConfidentialRespondents(), respondent.getId())
-            ).map(respondent ->
-                element(respondent.getId(), (Recipient) respondent.getValue().getParty().toBuilder()
-                    .address(ElementUtils.getElement(respondent.getId(), caseData.getConfidentialRespondents())
-                        .getValue().getParty().getAddress())
-                    .build())
-            ).collect(toList());
+        if (isNotEmpty(caseData.getRespondents1())) {
+            return caseData.getRespondents1().stream()
+                .filter(respondent -> respondent.getValue().containsConfidentialDetails()
+                    && hasNoLegalRepresentation(respondent.getValue())
+                    && containsConfidentialRespondentDetails(caseData.getConfidentialRespondents(), respondent.getId())
+                ).map(respondent ->
+                    element(respondent.getId(), (Recipient) respondent.getValue().getParty().toBuilder()
+                        .address(ElementUtils.getElement(respondent.getId(), caseData.getConfidentialRespondents())
+                            .getValue().getParty().getAddress())
+                        .build())
+                ).collect(toList());
+        } else {
+            return emptyList();
+        }
     }
 
     private boolean containsConfidentialRespondentDetails(List<Element<Respondent>> confidentialRespondents,
                                                           UUID respondentId) {
-       return ElementUtils.findElement(respondentId, confidentialRespondents).isPresent();
+        return ElementUtils.findElement(respondentId, confidentialRespondents).isPresent();
     }
 
     private boolean hasNoLegalRepresentation(Respondent respondent) {
