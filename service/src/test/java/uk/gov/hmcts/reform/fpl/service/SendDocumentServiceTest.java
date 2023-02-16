@@ -310,7 +310,6 @@ class SendDocumentServiceTest {
                         .firstName("Not Represented")
                         .lastName("Respondent")
                         .contactDetailsHidden("YES")
-                        .partyId(confidentialAddressRespondentId.toString())
                     .build())
                 .build());
 
@@ -326,7 +325,6 @@ class SendDocumentServiceTest {
                     .lastName("Respondent")
                     .contactDetailsHidden("YES")
                     .address(confidentialAddress)
-                    .partyId(confidentialAddressRespondentId.toString())
                     .build())
                 .build());
 
