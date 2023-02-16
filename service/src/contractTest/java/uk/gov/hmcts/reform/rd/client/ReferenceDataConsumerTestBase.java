@@ -58,10 +58,7 @@ public class ReferenceDataConsumerTestBase {
     }
 
     protected DslPart buildOrganisationUserResponsePactDsl() {
-        return newJsonBody(u -> u.stringType("userIdentifier", "userId")
-                .stringType("firstName", "first")
-                .stringType("lastName", "last")
-                .stringType("email", "email@email.com"))
+        return newJsonBody(u -> u.stringType("userIdentifier", "userId"))
             .build();
     }
 }

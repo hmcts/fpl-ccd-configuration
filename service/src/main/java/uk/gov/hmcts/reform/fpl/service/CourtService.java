@@ -50,12 +50,25 @@ public class CourtService {
             return ctscLookup.getEmail();
         }
 
-        Optional<Court> court = ofNullable(getCourt(caseData));
-        if (court.isPresent() && court.get().getCode().equals(RCJ_HIGH_COURT_CODE)) {
-            return highCourtAdminEmailLookupConfiguration.getEmail();
+        return getSelectedCourtEmail(caseData);
+    }
+
+    /**
+     * This method is intended to not send a notification to CTSC but will continue to send to court email when
+     * required.
+     * <p>
+     * Returns null if the CaseData sendToCtsc field is set to Yes.<br/>
+     * Otherwise will return the RCJ High Court email or the selected court email.
+     *</p>
+     * @param caseData - CaseData to retrieve values from
+     * @return court email or null if sendToCtsc is set to Yes
+     */
+    public String getCourtEmailNotCtsc(final CaseData caseData) {
+        if (YES.getValue().equals(caseData.getSendToCtsc())) {
+            return null;
         }
 
-        return court.map(Court::getEmail).orElse(null);
+        return getSelectedCourtEmail(caseData);
     }
 
     public String getPreviousCourtName(CaseData caseData) {
@@ -119,5 +132,14 @@ public class CourtService {
             }
         }
         return courtLookup.getCourts(localAuthorityCode).get(0);
+    }
+
+    private String getSelectedCourtEmail(final CaseData caseData) {
+        final Optional<Court> court = ofNullable(getCourt(caseData));
+        if (court.isPresent() && court.get().getCode().equals(RCJ_HIGH_COURT_CODE)) {
+            return highCourtAdminEmailLookupConfiguration.getEmail();
+        }
+
+        return court.map(Court::getEmail).orElse(null);
     }
 }
