@@ -319,12 +319,13 @@ class SendDocumentServiceTest {
                 .addressLine2("Testington")
                 .build();
 
-            final Element<Respondent> confidentialNotRepresentedRespondent = element(confidentialAddressRespondentId, Respondent.builder()
-                .party(RespondentParty.builder()
-                    .firstName("Not Represented")
-                    .lastName("Respondent")
-                    .contactDetailsHidden("YES")
-                    .address(confidentialAddress)
+            final Element<Respondent> confidentialNotRepresentedRespondent = element(confidentialAddressRespondentId,
+                Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .firstName("Not Represented")
+                        .lastName("Respondent")
+                        .contactDetailsHidden("YES")
+                        .address(confidentialAddress)
                     .build())
                 .build());
 
@@ -338,7 +339,8 @@ class SendDocumentServiceTest {
             final List<Recipient> actualRecipients = underTest.getStandardRecipients(caseData);
 
             assertThat(actualRecipients)
-                .containsExactlyInAnyOrder(representativeServedByPost.getValue(), notRepresentedRespondent.getValue().getParty());
+                .containsExactlyInAnyOrder(representativeServedByPost.getValue(),
+                    notRepresentedRespondent.getValue().getParty());
             assertThat(actualRecipients.get(0).getAddress()).isEqualTo(confidentialAddress);
 
         }
