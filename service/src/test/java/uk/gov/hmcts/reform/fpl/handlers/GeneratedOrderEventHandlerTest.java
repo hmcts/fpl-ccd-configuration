@@ -8,11 +8,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedOrderEvent;
@@ -38,7 +37,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProv
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
-import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -47,6 +45,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -67,6 +66,8 @@ import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -119,6 +120,8 @@ class GeneratedOrderEventHandlerTest {
     private CafcassNotificationService cafcassNotificationService;
     @Captor
     private ArgumentCaptor<OrderCafcassData> orderCaptor;
+    @Mock
+    private CafcassLookupConfiguration cafcassLookupConfiguration;
 
     @InjectMocks
     private GeneratedOrderEventHandler underTest;
@@ -126,6 +129,7 @@ class GeneratedOrderEventHandlerTest {
     @BeforeEach
     void before() {
         given(CASE_DATA.getId()).willReturn(CASE_ID);
+        given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
 
         given(localAuthorityRecipients.getRecipients(
             RecipientsRequest.builder().caseData(CASE_DATA).build()
@@ -142,11 +146,6 @@ class GeneratedOrderEventHandlerTest {
             DIGITAL_REPS);
         given(othersService.getSelectedOthers(CASE_DATA)).willReturn(Collections.emptyList());
         given(sealedOrderHistoryService.lastGeneratedOrder(any())).willReturn(lastGeneratedOrder);
-    }
-
-    private void mockHelper(MockedStatic<CafcassHelper> cafcassHelper, boolean notifyCafcassEngland) {
-        cafcassHelper.when(() -> CafcassHelper.isNotifyingCafcassEngland(any(), any()))
-            .thenReturn(notifyCafcassEngland);
     }
 
     @Test
@@ -334,6 +333,7 @@ class GeneratedOrderEventHandlerTest {
                 .build();
 
         CaseData caseData = CaseData.builder()
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .selectedHearingId(selectedHearingId)
                 .hearingDetails(List.of(
                         hearingBookingElementOne,
@@ -343,40 +343,42 @@ class GeneratedOrderEventHandlerTest {
 
         String fileName = "dummyFile.doc";
         when(TEST_DOCUMENT.getFilename()).thenReturn(fileName);
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.of(
+                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                        )
+            );
 
-        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
-            mockHelper(cafcassHelper, true);
-
-            var orderApprovalDate = LocalDate.now();
-            GeneratedOrderEvent event = new GeneratedOrderEvent(caseData, TEST_DOCUMENT,
+        var orderApprovalDate = LocalDate.now();
+        GeneratedOrderEvent event = new GeneratedOrderEvent(caseData, TEST_DOCUMENT,
                 TRANSLATION_REQUIREMENT, ORDER_TITLE, orderApprovalDate);
-            underTest.notifyCafcass(event);
-            verify(cafcassNotificationService).sendEmail(
-                eq(caseData),
-                eq(Set.of(TEST_DOCUMENT)),
-                eq(ORDER),
-                orderCaptor.capture());
+        underTest.notifyCafcass(event);
+        verify(cafcassNotificationService).sendEmail(
+            eq(caseData),
+            eq(Set.of(TEST_DOCUMENT)),
+            eq(ORDER),
+            orderCaptor.capture());
 
-            OrderCafcassData orderCafcassData = orderCaptor.getValue();
-            assertThat(orderCafcassData.getDocumentName()).isEqualTo(fileName);
-            assertThat(orderCafcassData.getHearingDate()).isEqualTo(hearingDateTime);
-            assertThat(orderCafcassData.getOrderApprovalDate()).isEqualTo(orderApprovalDate);
-        }
+        OrderCafcassData orderCafcassData = orderCaptor.getValue();
+        assertThat(orderCafcassData.getDocumentName()).isEqualTo(fileName);
+        assertThat(orderCafcassData.getHearingDate()).isEqualTo(hearingDateTime);
+        assertThat(orderCafcassData.getOrderApprovalDate()).isEqualTo(orderApprovalDate);
     }
 
     @Test
     void shouldNotSendNotificationWhenCafcassIsNotEngland() {
         String fileName = "dummyFile.doc";
         when(TEST_DOCUMENT.getFilename()).thenReturn(fileName);
-
-        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
-            mockHelper(cafcassHelper, false);
-            underTest.notifyCafcass(EVENT);
-            verify(cafcassNotificationService, never()).sendEmail(
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+                .thenReturn(
+                        Optional.empty()
+            );
+        underTest.notifyCafcass(EVENT);
+        verify(cafcassNotificationService, never()).sendEmail(
                 any(),
                 any(),
                 any(),
                 any());
-        }
     }
 }
