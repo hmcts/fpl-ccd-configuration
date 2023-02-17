@@ -557,12 +557,14 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .sendToCtsc("Yes")
                 .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle))
                 .build();
-
-        underTest.sendDocumentsToCafcass(
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
+            underTest.sendDocumentsToCafcass(
                 new AdditionalApplicationsUploadedEvent(caseData, caseData, ORDER_APPLICANT_LA));
-        verify(cafcassNotificationService, never()).sendEmail(
+            verify(cafcassNotificationService, never()).sendEmail(
                 any(), any(), any(), any()
-        );
+            );
+        }
     }
 
     private static Stream<Arguments> applicationDataParams() {
