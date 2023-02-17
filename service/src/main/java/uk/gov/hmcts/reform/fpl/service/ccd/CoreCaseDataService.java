@@ -66,31 +66,58 @@ public class CoreCaseDataService {
 
     }
 
-    @Deprecated
+    /**
+     * @deprecated Method does not use CCD concurrency controls correctly, Use startEvent to retrieve current case
+     * data then submitEvent to submit it to avoid concurrency issues.
+     * @param caseId Case to update.
+     * @param updates Map of fields to update.
+     */
+    @Deprecated(since = "February 2023", forRemoval = true)
     public void updateCase(Long caseId, Map<String, Object> updates) {
-        // Use startEvent to retrieve current case data then submitEvent to submit it to avoid concurrency issues
+        //
         triggerEvent(caseId, "internal-change-UPDATE_CASE", updates);
     }
 
-    @Deprecated
+    /**
+     * @deprecated Method does not use CCD concurrency controls correctly, Use startEvent to retrieve current case
+     * data then submitEvent to submit it to avoid concurrency issues.
+     * @param caseId Case to update.
+     * @param event CCD event name to create and submit.
+     * @param updates Map of fields to update.
+     */
+    @Deprecated(since = "February 2023", forRemoval = true)
     public void triggerEvent(Long caseId, String event, Map<String, Object> updates) {
-        // Use startEvent to retrieve current case data then submitEvent to submit it to avoid concurrency issues
         triggerEvent(JURISDICTION, CASE_TYPE, caseId, event, updates);
     }
 
-    @Deprecated
+    /**
+     * @deprecated Method does not use CCD concurrency controls correctly, Use startEvent to retrieve current case
+     * data then submitEvent to submit it to avoid concurrency issues.
+     * @param jurisdiction Jurisdiction of the case in CCD
+     * @param caseType Type of the case in CCD
+     * @param caseId Case to update.
+     * @param event CCD event name to create and submit.
+     */
+    @Deprecated(since = "February 2023", forRemoval = true)
     public void triggerEvent(String jurisdiction, String caseType, Long caseId, String event) {
-        // Use startEvent to retrieve current case data then submitEvent to submit it to avoid concurrency issues
         triggerEvent(jurisdiction, caseType, caseId, event, emptyMap());
     }
 
-    @Deprecated
+    /**
+     * @deprecated Method does not use CCD concurrency controls correctly, Use startEvent to retrieve current case
+     * data then submitEvent to submit it to avoid concurrency issues.
+     * @param jurisdiction Jurisdiction of the case in CCD
+     * @param caseType Type of the case in CCD
+     * @param caseId Case to update.
+     * @param eventName CCD event name to create and submit.
+     * @param eventData Map of fields to update.
+     */
+    @Deprecated(since = "February 2023", forRemoval = true)
     public void triggerEvent(String jurisdiction,
                              String caseType,
                              Long caseId,
                              String eventName,
                              Map<String, Object> eventData) {
-        // Use startEvent to retrieve current case data then submitEvent to submit it to avoid concurrency issues
         String userToken = systemUserService.getSysUserToken();
         String systemUpdateUserId = systemUserService.getUserId(userToken);
 
