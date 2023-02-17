@@ -89,7 +89,7 @@ public class AdditionalApplicationsUploadedEventHandler {
     @Async
     public void sendDocumentsToCafcass(final AdditionalApplicationsUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
-        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
 
             final CaseData caseDataBefore = event.getCaseDataBefore();

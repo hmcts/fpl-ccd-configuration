@@ -137,7 +137,7 @@ public class DraftOrdersApprovedEventHandler {
     public void sendNotificationToCafcassViaSendGrid(final DraftOrdersApproved event) {
         CaseData caseData = event.getCaseData();
 
-        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             LocalDateTime hearingStartDate = findElement(caseData.getLastHearingOrderDraftsHearingId(),
                     caseData.getHearingDetails())
                     .map(Element::getValue)

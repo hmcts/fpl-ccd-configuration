@@ -14,7 +14,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
-import static uk.gov.hmcts.reform.fpl.utils.CafcassHelper.isNotifyingCafcass;
+import static uk.gov.hmcts.reform.fpl.utils.CafcassHelper.isNotifyingCafcassEngland;
 
 @ExtendWith(MockitoExtension.class)
 public class CafcassHelperTest {
@@ -28,7 +28,7 @@ public class CafcassHelperTest {
             .thenReturn(Optional.of(
                 new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)));
 
-        assertThat(isNotifyingCafcass(CaseData.builder()
+        assertThat(isNotifyingCafcassEngland(CaseData.builder()
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE).build(), cafcassLookupConfiguration))
             .isEqualTo(true);
     }
@@ -38,7 +38,7 @@ public class CafcassHelperTest {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
             .thenReturn(Optional.empty());
 
-        assertThat(isNotifyingCafcass(CaseData.builder()
+        assertThat(isNotifyingCafcassEngland(CaseData.builder()
             .caseLocalAuthority("XX").build(), cafcassLookupConfiguration))
             .isEqualTo(false);
     }
@@ -46,7 +46,7 @@ public class CafcassHelperTest {
     @Test
     void shouldReturnFalseWhenCaseLocalAuthorityIsNull() {
         // existing old standalone case which does not have a null caseLocalAuthority
-        assertThat(isNotifyingCafcass(CaseData.builder()
+        assertThat(isNotifyingCafcassEngland(CaseData.builder()
             .caseLocalAuthority(null).build(), cafcassLookupConfiguration))
             .isEqualTo(false);
     }

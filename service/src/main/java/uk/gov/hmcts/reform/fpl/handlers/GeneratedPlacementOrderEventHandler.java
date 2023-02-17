@@ -69,7 +69,7 @@ public class GeneratedPlacementOrderEventHandler {
     public void sendPlacementOrderEmailToCafcassEngland(final GeneratedPlacementOrderEvent orderEvent) {
         CaseData caseData = orderEvent.getCaseData();
 
-        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             cafcassNotificationService.sendEmail(caseData,
                 of(orderEvent.getOrderDocument(), orderEvent.getOrderNotificationDocument()),
                 ORDER,

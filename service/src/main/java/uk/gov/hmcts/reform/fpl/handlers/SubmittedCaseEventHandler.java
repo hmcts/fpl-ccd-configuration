@@ -108,7 +108,7 @@ public class SubmittedCaseEventHandler {
             return;
         }
 
-        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             Set<DocumentReference> documentReferences = Optional.ofNullable(caseData.getC110A().getSubmittedForm())
                     .map(documentReference ->
                         documentReference.toBuilder()

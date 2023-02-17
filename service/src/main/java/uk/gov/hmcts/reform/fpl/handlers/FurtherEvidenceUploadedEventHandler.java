@@ -220,7 +220,7 @@ public class FurtherEvidenceUploadedEventHandler {
         final CaseData caseData = event.getCaseData();
         final CaseData caseDataBefore = event.getCaseDataBefore();
 
-        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             List<HearingDocument> newCaseSummaries = getNewHearingDocuments(
                 caseData.getHearingDocuments().getCaseSummaryList(),
                 caseDataBefore.getHearingDocuments().getCaseSummaryList());
@@ -266,7 +266,7 @@ public class FurtherEvidenceUploadedEventHandler {
     public void sendCourtBundlesToCafcass(final FurtherEvidenceUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
 
-        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             final CaseData caseDataBefore = event.getCaseDataBefore();
 
             Map<String, Set<DocumentReference>> newCourtBundles = getNewCourtBundles(caseData, caseDataBefore);
@@ -291,7 +291,7 @@ public class FurtherEvidenceUploadedEventHandler {
     public void sendDocumentsToCafcass(final FurtherEvidenceUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
 
-        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             final CaseData caseDataBefore = event.getCaseDataBefore();
             final DocumentUploaderType userType = event.getUserType();
             final Set<DocumentReference> documentReferences = new HashSet<>();

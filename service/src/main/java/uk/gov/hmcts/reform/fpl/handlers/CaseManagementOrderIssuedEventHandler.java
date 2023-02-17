@@ -111,7 +111,7 @@ public class CaseManagementOrderIssuedEventHandler {
     public void notifyCafcassViaSendGrid(final CaseManagementOrderIssuedEvent event) {
         CaseData caseData = event.getCaseData();
         HearingOrder issuedCmo = event.getCmo();
-        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             LocalDateTime hearingStartDate = findElement(caseData.getLastHearingOrderDraftsHearingId(),
                     caseData.getHearingDetails())
                     .map(Element::getValue)

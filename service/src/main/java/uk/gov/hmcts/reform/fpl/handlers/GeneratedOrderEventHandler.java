@@ -113,7 +113,7 @@ public class GeneratedOrderEventHandler {
     public void notifyCafcass(GeneratedOrderEvent orderEvent) {
         CaseData caseData = orderEvent.getCaseData();
 
-        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             LocalDateTime hearingStartDate = findElement(caseData.getSelectedHearingId(),
                     caseData.getHearingDetails())
                     .map(Element::getValue)

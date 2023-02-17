@@ -76,7 +76,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
     private FurtherEvidenceUploadedEventHandler furtherEvidenceUploadedEventHandler;
 
     private void mockHelper(MockedStatic<CafcassHelper> cafcassHelper, boolean notifyCafcass) {
-        cafcassHelper.when(() -> CafcassHelper.isNotifyingCafcass(any(), any()))
+        cafcassHelper.when(() -> CafcassHelper.isNotifyingCafcassEngland(any(), any()))
             .thenReturn(notifyCafcass);
     }
 

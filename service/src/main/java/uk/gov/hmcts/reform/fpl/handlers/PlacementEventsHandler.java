@@ -105,7 +105,7 @@ public class PlacementEventsHandler {
     public void notifyCafcassOfNewApplicationSendGrid(final PlacementApplicationSubmitted event) {
         final CaseData caseData = event.getCaseData();
 
-        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             PlacementApplicationCafcassData placementApplicationCafcassData =
                 contentProvider.buildNewPlacementApplicationNotificationCafcassData(
                     caseData,
@@ -183,7 +183,7 @@ public class PlacementEventsHandler {
     public void notifyCafcassOfNewNoticeSendGrid(PlacementNoticeAdded event) {
         final CaseData caseData = event.getCaseData();
 
-        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             PlacementApplicationCafcassData placementApplicationCafcassData =
                 contentProvider.buildNewPlacementApplicationNotificationCafcassData(
                     caseData,

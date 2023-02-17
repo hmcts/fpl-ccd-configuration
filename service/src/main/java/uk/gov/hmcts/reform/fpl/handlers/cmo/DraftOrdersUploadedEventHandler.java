@@ -78,7 +78,7 @@ public class DraftOrdersUploadedEventHandler {
     public void sendNotificationToCafcass(final DraftOrdersUploaded event) {
         final CaseData caseData = event.getCaseData();
 
-        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             LocalDateTime hearingStartDate = Optional.ofNullable(getHearingBooking(caseData))
                 .map(HearingBooking::getStartDate)
                 .orElse(null);

@@ -96,7 +96,7 @@ public class SendNoticeOfHearingHandler {
     @EventListener
     public void notifyCafcassSendGrid(final SendNoticeOfHearing event) {
         final CaseData caseData = event.getCaseData();
-        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             NoticeOfHearingCafcassData noticeOfHearingCafcassData =
                     noticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotificationCafcassData(
                         caseData,
