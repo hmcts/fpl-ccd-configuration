@@ -45,7 +45,7 @@
     "CaseFieldID": "localAuthority",
     "ListElementCode": "customerReference",
     "EventElementLabel": "Customer reference",
-    "DisplayContext": "OPTIONAL",
+    "DisplayContext": "MANDATORY",
     "FieldDisplayOrder": 6
   },
   {
