@@ -158,4 +158,19 @@ public class Other implements Representable, ConfidentialParty<Other> {
         return AddressNotKnowReason.DECEASED.getType().equals(addressNotKnowReason)
             || AddressNotKnowReason.NO_FIXED_ABODE.getType().equals(addressNotKnowReason);
     }
+
+    public Other removeAddress() {
+        Other other =  this.toBuilder()
+            .address(null)
+            .build();
+        return other;
+    }
+
+    public Other removeAddressNotKnowReason() {
+        Other other =  this.toBuilder()
+            .addressNotKnowReason(null)
+            .build();
+        return other;
+    }
+
 }
