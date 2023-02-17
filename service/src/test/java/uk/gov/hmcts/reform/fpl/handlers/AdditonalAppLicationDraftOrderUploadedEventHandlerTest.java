@@ -24,6 +24,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
@@ -45,8 +47,12 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
 
     @Test
     void shouldSendNotificationToCafcassWhenDraftOrderPresent() {
-        when(cafcassLookupConfiguration.getCafcassEngland("SW")).thenReturn(
-            Optional.of(new CafcassLookupConfiguration.Cafcass("SW", "")));
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+            .thenReturn(
+                Optional.of(
+                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                )
+            );
 
         C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder()
             .draftOrdersBundle(wrapElements(DraftOrder.builder().document(DRAFT_ORDER).build()))
@@ -54,7 +60,7 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
 
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
-            .caseLocalAuthority("SW")
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .additionalApplicationsBundle(
                 wrapElements(
                     AdditionalApplicationsBundle.builder()
@@ -66,12 +72,13 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
 
 
         CaseData caseDataBefore = CaseData.builder()
-            .id(RandomUtils.nextLong())
-            .build();
+                .id(RandomUtils.nextLong())
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .build();
 
         underTest.sendDocumentsToCafcass(new AdditonalAppLicationDraftOrderUploadedEvent(
-                caseData,
-                caseDataBefore
+            caseData,
+            caseDataBefore
             )
         );
 
