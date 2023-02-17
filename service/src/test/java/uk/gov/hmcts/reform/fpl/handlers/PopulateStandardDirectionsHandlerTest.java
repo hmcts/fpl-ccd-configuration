@@ -12,6 +12,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
@@ -86,26 +87,32 @@ class PopulateStandardDirectionsHandlerTest {
 
     @Test
     void shouldTriggerEventWithCorrectData() {
+        given(coreCaseDataService.startEvent(CASE_ID, CASE_EVENT))
+            .willReturn(StartEventResponse.builder().caseDetails(callbackWithHearing().getCaseDetails()).build());
+
         handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackWithHearing()));
 
-        verify(coreCaseDataService).triggerEvent(
-            eq(JURISDICTION),
-            eq(CASE_TYPE),
+        verify(coreCaseDataService).startEvent(CASE_ID, CASE_EVENT);
+
+        verify(coreCaseDataService).submitEvent(
+            any(),
             eq(CASE_ID),
-            eq(CASE_EVENT),
             data.capture());
-        assertThat(data.getValue()).isEqualTo(expectedDataWithHearing());
+        // the hearing is not changed so should not be updated in the submitEvent api call
+        assertThat(data.getValue()).isEqualTo(expectedDataWithoutHearing());
     }
 
     @Test
     void shouldCallStandardDirectionsServiceWithNullIfNoFirstHearing() {
+        given(coreCaseDataService.startEvent(CASE_ID, CASE_EVENT))
+            .willReturn(StartEventResponse.builder().caseDetails(callbackWithoutHearing().getCaseDetails()).build());
+
         handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackWithoutHearing()));
 
-        verify(coreCaseDataService).triggerEvent(
-            eq(JURISDICTION),
-            eq(CASE_TYPE),
+        verify(coreCaseDataService).startEvent(CASE_ID, CASE_EVENT);
+        verify(coreCaseDataService).submitEvent(
+            any(),
             eq(CASE_ID),
-            eq(CASE_EVENT),
             data.capture());
         assertThat(data.getValue()).isEqualTo(expectedDataWithoutHearing());
     }
@@ -140,14 +147,6 @@ class PopulateStandardDirectionsHandlerTest {
             CAFCASS.getValue(), emptyList(),
             COURT.getValue(), emptyList(),
             OTHERS.getValue(), emptyList());
-    }
-
-    private Map<String, Object> expectedDataWithHearing() {
-        Map<String, Object> expectedData = new HashMap<>();
-        expectedData.put("hearingDetails", HEARING_DETAILS);
-        expectedData.putAll(getExpectedDirections());
-
-        return expectedData;
     }
 
     private Map<String, Object> expectedDataWithoutHearing() {
