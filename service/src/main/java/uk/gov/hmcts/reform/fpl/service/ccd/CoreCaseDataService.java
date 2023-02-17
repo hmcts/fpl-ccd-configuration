@@ -28,6 +28,44 @@ public class CoreCaseDataService {
     private final RequestData requestData;
     private final SystemUserService systemUserService;
 
+    public StartEventResponse startEvent(Long caseId, String eventName) {
+        String userToken = systemUserService.getSysUserToken();
+        String systemUpdateUserId = systemUserService.getUserId(userToken);
+
+        return coreCaseDataApi.startEventForCaseWorker(
+            userToken,
+            authTokenGenerator.generate(),
+            systemUpdateUserId,
+            JURISDICTION,
+            CASE_TYPE,
+            caseId.toString(),
+            eventName);
+    }
+
+    public void submitEvent(StartEventResponse startEventResponse, Long caseId, Map<String, Object> eventData) {
+        String userToken = systemUserService.getSysUserToken();
+        String systemUpdateUserId = systemUserService.getUserId(userToken);
+
+        CaseDataContent caseDataContent = CaseDataContent.builder()
+            .eventToken(startEventResponse.getToken())
+            .event(Event.builder()
+                .id(startEventResponse.getEventId())
+                .build())
+            .data(eventData)
+            .build();
+
+        coreCaseDataApi.submitEventForCaseWorker(
+            userToken,
+            authTokenGenerator.generate(),
+            systemUpdateUserId,
+            JURISDICTION,
+            CASE_TYPE,
+            caseId.toString(),
+            true,
+            caseDataContent);
+
+    }
+
     public void updateCase(Long caseId, Map<String, Object> updates) {
         triggerEvent(caseId, "internal-change-UPDATE_CASE", updates);
     }

@@ -6,6 +6,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -26,19 +27,16 @@ public class PopulateStandardDirectionsHandler {
 
     @Async
     @EventListener
+    @SuppressWarnings("unchecked")
     public void populateStandardDirections(PopulateStandardDirectionsEvent event) {
-        CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
-        CaseData caseData = caseConverter.convert(caseDetails);
+        CaseDetails oldCaseDetails = event.getCallbackRequest().getCaseDetails();
+
+        StartEventResponse startEventResponse = coreCaseDataService.startEvent(oldCaseDetails.getId(), "populateSDO");
+
+        CaseData caseData = caseConverter.convert(startEventResponse.getCaseDetails());
         Map<String, List<Element<Direction>>> populatedDirections
             = standardDirectionsService.populateStandardDirections(caseData);
 
-        caseDetails.getData().putAll(populatedDirections);
-
-        coreCaseDataService.triggerEvent(caseDetails.getJurisdiction(),
-            caseDetails.getCaseTypeId(),
-            caseDetails.getId(),
-            "populateSDO",
-            caseDetails.getData()
-        );
+        coreCaseDataService.submitEvent(startEventResponse, oldCaseDetails.getId(), (Map) populatedDirections);
     }
 }
