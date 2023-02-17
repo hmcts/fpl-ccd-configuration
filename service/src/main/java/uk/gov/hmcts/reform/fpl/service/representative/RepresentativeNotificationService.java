@@ -5,9 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
@@ -34,16 +32,16 @@ public class RepresentativeNotificationService {
         sendNotificationToRepresentatives(caseData.getId(), notifyData, emailRepresentatives, templateId);
     }
 
-    public void sendToRepresentativesByServedPreference(final RepresentativeServingPreferences servedPreference,
-                                                        final String templateId,
-                                                        final NotifyData notifyData,
-                                                        final CaseData caseData,
-                                                        final List<Element<Other>> othersSelected) {
+    public void sendToRepresentativesExceptOthersByServedPreference(
+        final RepresentativeServingPreferences servedPreference,
+        final String templateId,
+        final NotifyData notifyData,
+        final CaseData caseData) {
         Set<String> emailRepresentatives = representativesInbox.getEmailsByPreference(caseData, servedPreference);
 
-        emailRepresentatives.removeAll(otherRecipientsInbox.getNonSelectedRecipients(
-            servedPreference, caseData, othersSelected, element -> element.getValue().getEmail()
-        ));
+        emailRepresentatives.removeAll(
+            otherRecipientsInbox.getAllRecipients(servedPreference, caseData, element -> element.getValue().getEmail())
+        );
 
         sendNotificationToRepresentatives(caseData.getId(), notifyData, emailRepresentatives, templateId);
     }
