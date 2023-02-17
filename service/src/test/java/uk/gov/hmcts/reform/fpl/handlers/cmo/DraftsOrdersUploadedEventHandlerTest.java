@@ -11,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersUploaded;
@@ -78,9 +77,6 @@ class DraftsOrdersUploadedEventHandlerTest {
 
     @Mock
     private CafcassNotificationService cafcassNotificationService;
-
-    @Mock
-    private CafcassLookupConfiguration cafcassLookupConfiguration;
 
     @Captor
     private ArgumentCaptor<Set<DocumentReference>> documentsToSend;

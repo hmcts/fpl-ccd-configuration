@@ -16,7 +16,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ApplicantType;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -135,8 +134,6 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     private AdditionalApplicationsUploadedTemplate notifyData;
     @Mock
     private CafcassNotificationService cafcassNotificationService;
-    @Mock
-    private CafcassLookupConfiguration cafcassLookupConfiguration;
     @Captor
     private ArgumentCaptor<NewDocumentData> newDocumentDataArgumentCaptor;
 

@@ -11,7 +11,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
@@ -111,8 +110,6 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.userDetailsHMCTS;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.userDetailsLA;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.userDetailsRespondentSolicitor;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.CASE_SUMMARY;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NEW_DOCUMENT;
@@ -167,9 +164,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Captor
     private ArgumentCaptor<NewDocumentData> newDocumentDataCaptor;
-
-    @Mock
-    private CafcassLookupConfiguration cafcassLookupConfiguration;
 
     private static final Consumer<CaseData> EMPTY_CASE_DATA_MODIFIER = whatever -> { };
 
@@ -714,56 +708,50 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldNotEmailCafcassWhenNoticeOfActingOrIssueDocsRelatingToHearingIsUploadedByLA() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-            .thenReturn(
-                Optional.of(
-                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                )
-            );
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
 
-        CaseData caseData = buildCaseDataWithHearingFurtherEvidenceBundle(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE);
+            CaseData caseData = buildCaseDataWithHearingFurtherEvidenceBundle(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE);
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
-                caseData,
-                buildCaseDataWithConfidentialLADocuments(),
-                DESIGNATED_LOCAL_AUTHORITY,
-                userDetailsLA());
+            FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+                new FurtherEvidenceUploadedEvent(
+                    caseData,
+                    buildCaseDataWithConfidentialLADocuments(),
+                    DESIGNATED_LOCAL_AUTHORITY,
+                    userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+            furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
 
-        verify(cafcassNotificationService, never()).sendEmail(
-            any(),
-            any(),
-            any(),
-            any());
+            verify(cafcassNotificationService, never()).sendEmail(
+                any(),
+                any(),
+                any(),
+                any());
+        }
     }
 
     @Test
     void shouldNotEmailCafcassWhenNoticeOfActingOrIssueDocsIsUploadedByLA() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-            .thenReturn(
-                Optional.of(
-                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                )
-            );
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
 
-        CaseData caseData = buildCaseDataWithNonConfidentialLADocuments(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE);
+            CaseData caseData = buildCaseDataWithNonConfidentialLADocuments(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE);
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
-                caseData,
-                buildCaseDataWithConfidentialLADocuments(),
-                DESIGNATED_LOCAL_AUTHORITY,
-                userDetailsLA());
+            FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+                new FurtherEvidenceUploadedEvent(
+                    caseData,
+                    buildCaseDataWithConfidentialLADocuments(),
+                    DESIGNATED_LOCAL_AUTHORITY,
+                    userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+            furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
 
-        verify(cafcassNotificationService, never()).sendEmail(
-            any(),
-            any(),
-            any(),
-            any());
+            verify(cafcassNotificationService, never()).sendEmail(
+                any(),
+                any(),
+                any(),
+                any());
+        }
     }
 
     @Test

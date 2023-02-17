@@ -13,7 +13,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedOrderEvent;
@@ -120,8 +119,6 @@ class GeneratedOrderEventHandlerTest {
     private CafcassNotificationService cafcassNotificationService;
     @Captor
     private ArgumentCaptor<OrderCafcassData> orderCaptor;
-    @Mock
-    private CafcassLookupConfiguration cafcassLookupConfiguration;
 
     @InjectMocks
     private GeneratedOrderEventHandler underTest;
