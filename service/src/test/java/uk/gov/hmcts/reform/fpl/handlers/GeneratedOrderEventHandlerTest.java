@@ -8,6 +8,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -37,6 +39,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProv
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
+import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -66,8 +69,6 @@ import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -145,6 +146,11 @@ class GeneratedOrderEventHandlerTest {
             DIGITAL_REPS);
         given(othersService.getSelectedOthers(CASE_DATA)).willReturn(Collections.emptyList());
         given(sealedOrderHistoryService.lastGeneratedOrder(any())).willReturn(lastGeneratedOrder);
+    }
+
+    private void mockHelper(MockedStatic<CafcassHelper> cafcassHelper, boolean notifyCafcass) {
+        cafcassHelper.when(() -> CafcassHelper.isNotifyingCafcass(any(), any()))
+            .thenReturn(notifyCafcass);
     }
 
     @Test
@@ -341,27 +347,25 @@ class GeneratedOrderEventHandlerTest {
 
         String fileName = "dummyFile.doc";
         when(TEST_DOCUMENT.getFilename()).thenReturn(fileName);
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
 
-        var orderApprovalDate = LocalDate.now();
-        GeneratedOrderEvent event = new GeneratedOrderEvent(caseData, TEST_DOCUMENT,
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
+
+            var orderApprovalDate = LocalDate.now();
+            GeneratedOrderEvent event = new GeneratedOrderEvent(caseData, TEST_DOCUMENT,
                 TRANSLATION_REQUIREMENT, ORDER_TITLE, orderApprovalDate);
-        underTest.notifyCafcass(event);
-        verify(cafcassNotificationService).sendEmail(
-            eq(caseData),
-            eq(Set.of(TEST_DOCUMENT)),
-            eq(ORDER),
-            orderCaptor.capture());
+            underTest.notifyCafcass(event);
+            verify(cafcassNotificationService).sendEmail(
+                eq(caseData),
+                eq(Set.of(TEST_DOCUMENT)),
+                eq(ORDER),
+                orderCaptor.capture());
 
-        OrderCafcassData orderCafcassData = orderCaptor.getValue();
-        assertThat(orderCafcassData.getDocumentName()).isEqualTo(fileName);
-        assertThat(orderCafcassData.getHearingDate()).isEqualTo(hearingDateTime);
-        assertThat(orderCafcassData.getOrderApprovalDate()).isEqualTo(orderApprovalDate);
+            OrderCafcassData orderCafcassData = orderCaptor.getValue();
+            assertThat(orderCafcassData.getDocumentName()).isEqualTo(fileName);
+            assertThat(orderCafcassData.getHearingDate()).isEqualTo(hearingDateTime);
+            assertThat(orderCafcassData.getOrderApprovalDate()).isEqualTo(orderApprovalDate);
+        }
     }
 
     @Test
