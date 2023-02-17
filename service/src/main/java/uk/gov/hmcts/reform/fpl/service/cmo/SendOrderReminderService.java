@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,7 @@ public class SendOrderReminderService {
         return caseData.getAllNonCancelledHearings().stream()
             .map(Element::getValue)
             .filter(booking -> booking.getEndDate().isBefore(now()) && !booking.hasCMOAssociation())
+            .sorted(Comparator.comparing(HearingBooking::getStartDate))
             .collect(Collectors.toList());
     }
 }

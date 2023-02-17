@@ -56,6 +56,40 @@ public class SendOrderReminderControllerAboutToStartTest extends AbstractCallbac
     }
 
     @Test
+    void shouldCheckForMissingCMOsOnMultipleHearings() {
+        LocalDateTime startDate = now().minusDays(5);
+        CaseData caseData = CaseData.builder()
+            .id(12345L)
+            .hearingDetails(List.of(
+                element(HearingBooking.builder()
+                    .type(HearingType.CASE_MANAGEMENT)
+                    .startDate(startDate)
+                    .endDate(startDate.plusHours(1))
+                    .build()),
+                element(HearingBooking.builder()
+                    .type(HearingType.FURTHER_CASE_MANAGEMENT)
+                    .startDate(startDate.plusDays(1))
+                    .endDate(startDate.plusDays(1).plusHours(1))
+                    .build())
+            ))
+            .build();
+
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(callbackRequest);
+
+        assertThat(response.getData()).extracting(HAS_MISSING_ORDERS_FLAG).isEqualTo(YesNo.YES.toString());
+        assertThat(response.getData()).extracting("listOfHearingsMissingOrders")
+            .isEqualTo(String.format("<ul><li>Case management hearing, %s</li>"
+                    + "<li>Further case management hearing, %s</li></ul>",
+                formatLocalDateTimeBaseUsingFormat(startDate, DATE),
+                formatLocalDateTimeBaseUsingFormat(startDate.plusDays(1), DATE)));
+    }
+
+
+    @Test
     void shouldReturnNoHearingsIfAllHearingsHaveCMOs() {
         CaseData caseData = CaseData.builder()
             .id(12345L)

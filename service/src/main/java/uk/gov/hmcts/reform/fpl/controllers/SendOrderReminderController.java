@@ -51,7 +51,6 @@ public class SendOrderReminderController extends CallbackController {
                 .collect(Collectors.joining("")) + "</ul>";
 
             caseDetails.getData().put("listOfHearingsMissingOrders", hearingsWithinRange);
-            log.info(hearingsWithinRange);
         }
 
         return respond(caseDetails);
