@@ -41,8 +41,8 @@ public class RespondentsUpdatedEventHandler {
         CaseData caseData = event.getCaseData();
         CaseData caseDataBefore = event.getCaseDataBefore();
 
-        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration) &&
-            respondentService.hasAddressChange(caseData.getAllRespondents(), caseDataBefore.getAllRespondents())) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)
+            && respondentService.hasAddressChange(caseData.getAllRespondents(), caseDataBefore.getAllRespondents())) {
             cafcassNotificationService.sendEmail(caseData, CHANGE_OF_ADDRESS,
                 ChangeOfAddressData.builder().respondents(true).build());
         }
