@@ -66,24 +66,31 @@ public class CoreCaseDataService {
 
     }
 
+    @Deprecated
     public void updateCase(Long caseId, Map<String, Object> updates) {
+        // Use startEvent to retrieve current case data then submitEvent to submit it to avoid concurrency issues
         triggerEvent(caseId, "internal-change-UPDATE_CASE", updates);
     }
 
+    @Deprecated
     public void triggerEvent(Long caseId, String event, Map<String, Object> updates) {
+        // Use startEvent to retrieve current case data then submitEvent to submit it to avoid concurrency issues
         triggerEvent(JURISDICTION, CASE_TYPE, caseId, event, updates);
     }
 
+    @Deprecated
     public void triggerEvent(String jurisdiction, String caseType, Long caseId, String event) {
+        // Use startEvent to retrieve current case data then submitEvent to submit it to avoid concurrency issues
         triggerEvent(jurisdiction, caseType, caseId, event, emptyMap());
     }
 
+    @Deprecated
     public void triggerEvent(String jurisdiction,
                              String caseType,
                              Long caseId,
                              String eventName,
                              Map<String, Object> eventData) {
-
+        // Use startEvent to retrieve current case data then submitEvent to submit it to avoid concurrency issues
         String userToken = systemUserService.getSysUserToken();
         String systemUpdateUserId = systemUserService.getUserId(userToken);
 
