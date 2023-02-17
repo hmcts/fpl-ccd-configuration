@@ -48,7 +48,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -372,15 +371,15 @@ class GeneratedOrderEventHandlerTest {
     void shouldNotSendNotificationWhenCafcassIsNotEngland() {
         String fileName = "dummyFile.doc";
         when(TEST_DOCUMENT.getFilename()).thenReturn(fileName);
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.empty()
-            );
-        underTest.notifyCafcass(EVENT);
-        verify(cafcassNotificationService, never()).sendEmail(
+
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, false);
+            underTest.notifyCafcass(EVENT);
+            verify(cafcassNotificationService, never()).sendEmail(
                 any(),
                 any(),
                 any(),
                 any());
+        }
     }
 }
