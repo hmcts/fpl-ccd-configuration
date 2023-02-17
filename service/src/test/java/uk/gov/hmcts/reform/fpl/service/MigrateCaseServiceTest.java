@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
+import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Court;
@@ -765,6 +766,67 @@ class MigrateCaseServiceTest {
         }
     }
 
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveCaseSummary {
+
+        private final UUID hearingIdToRemove = UUID.randomUUID();
+
+        @Test
+        void shouldThrowExceptionWhenCaseSummaryNotPresent() {
+            UUID otherHearingId1 = UUID.randomUUID();
+            UUID otherHearingId2 = UUID.randomUUID();
+            CaseData caseData = CaseData.builder()
+                .hearingDocuments(HearingDocuments.builder()
+                    .caseSummaryList(List.of(
+                        element(otherHearingId1, CaseSummary.builder().build()),
+                        element(otherHearingId2, CaseSummary.builder().build())
+                    ))
+                    .build())
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest.removeCaseSummaryByHearingId(caseData, MIGRATION_ID,
+                hearingIdToRemove));
+        }
+
+        @Test
+        void shouldRemoveCaseSummary() {
+            UUID otherHearingId1 = UUID.randomUUID();
+            List<Element<CaseSummary>> caseSummaries = new ArrayList<>();
+            caseSummaries.add(element(otherHearingId1, CaseSummary.builder().build()));
+            caseSummaries.add(element(hearingIdToRemove, CaseSummary.builder().build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDocuments(HearingDocuments.builder()
+                    .caseSummaryList(caseSummaries)
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeCaseSummaryByHearingId(caseData, MIGRATION_ID,
+                hearingIdToRemove);
+
+            assertThat(updatedFields).extracting("caseSummaryList").asList().hasSize(1);
+            assertThat(updatedFields).extracting("caseSummaryList").asList()
+                .doesNotContainAnyElementsOf(List.of(hearingIdToRemove));
+        }
+
+        @Test
+        void shouldRemoveSingleCaseSummary() {
+            List<Element<CaseSummary>> caseSummaries = new ArrayList<>();
+            caseSummaries.add(element(hearingIdToRemove, CaseSummary.builder().build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDocuments(HearingDocuments.builder()
+                    .caseSummaryList(caseSummaries)
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeCaseSummaryByHearingId(caseData, MIGRATION_ID,
+                hearingIdToRemove);
+
+            assertThat(updatedFields).extracting("caseSummaryList").asList().hasSize(0);
+        }
+    }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
