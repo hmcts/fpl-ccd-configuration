@@ -94,8 +94,12 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
 
     @Test
     void shouldSendNotificationToCafcassWhenNoNewApplicationUploaded() {
-        when(cafcassLookupConfiguration.getCafcassEngland("SW")).thenReturn(
-            Optional.of(new CafcassLookupConfiguration.Cafcass("SW", "")));
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+            .thenReturn(
+                Optional.of(
+                        new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                )
+            );
 
         C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder()
             .draftOrdersBundle(wrapElements(DraftOrder.builder().document(DRAFT_ORDER).build()))
@@ -103,12 +107,12 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
 
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
-            .caseLocalAuthority("SW")
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .additionalApplicationsBundle(
                 wrapElements(
                     AdditionalApplicationsBundle.builder()
-                        .c2DocumentBundle(c2DocumentBundle)
-                        .build()
+                            .c2DocumentBundle(c2DocumentBundle)
+                            .build()
                 )
             )
             .build();
@@ -116,13 +120,13 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
 
         CaseData caseDataBefore = CaseData.builder()
             .id(RandomUtils.nextLong())
-            .caseLocalAuthority("SW")
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .additionalApplicationsBundle(
                 wrapElements(
                     AdditionalApplicationsBundle.builder()
                         .c2DocumentBundle(c2DocumentBundle)
                         .build()
-                )
+            )
             )
             .build();
 
@@ -142,57 +146,65 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
 
     @Test
     void shouldNotSendNotificationToCafcassWhenNoDraftOrderPresent() {
-        when(cafcassLookupConfiguration.getCafcassEngland("SW")).thenReturn(
-            Optional.of(new CafcassLookupConfiguration.Cafcass("SW", "")));
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+            .thenReturn(
+                Optional.of(
+                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                )
+            );
 
         C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder()
-            .build();
+                .build();
 
         CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
-            .caseLocalAuthority("SW")
-            .additionalApplicationsBundle(
-                wrapElements(
-                    AdditionalApplicationsBundle.builder()
-                        .c2DocumentBundle(c2DocumentBundle)
-                        .build()
+                .id(CASE_ID)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .additionalApplicationsBundle(
+                        wrapElements(
+                                AdditionalApplicationsBundle.builder()
+                                        .c2DocumentBundle(c2DocumentBundle)
+                                        .build()
+                        )
                 )
-            )
-            .build();
+                .build();
 
 
         CaseData caseDataBefore = CaseData.builder()
-            .id(RandomUtils.nextLong())
-            .caseLocalAuthority("SW")
-            .build();
+                .id(RandomUtils.nextLong())
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .build();
 
         underTest.sendDocumentsToCafcass(new AdditonalAppLicationDraftOrderUploadedEvent(
-                caseData,
-                caseDataBefore
-            )
+                        caseData,
+                        caseDataBefore
+                )
         );
 
         verify(cafcassNotificationService, never()).sendEmail(
-            any(),
-            any(),
-            any(),
-            any()
+                any(),
+                any(),
+                any(),
+                any()
         );
     }
 
     @Test
     void shouldNotSendNotificationToCafcassWhenNoC2Present() {
-        when(cafcassLookupConfiguration.getCafcassEngland("SW")).thenReturn(
-            Optional.of(new CafcassLookupConfiguration.Cafcass("SW", "")));
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+            .thenReturn(
+                Optional.of(
+                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                )
+            );
 
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
-            .caseLocalAuthority("SW")
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .additionalApplicationsBundle(
                 wrapElements(
                     AdditionalApplicationsBundle.builder()
                         .otherApplicationsBundle(
-                            OtherApplicationsBundle.builder().build()
+                                OtherApplicationsBundle.builder().build()
                         )
                         .build()
                 )
@@ -201,37 +213,39 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
 
 
         CaseData caseDataBefore = CaseData.builder()
-            .id(RandomUtils.nextLong())
-            .caseLocalAuthority("SW")
-            .build();
+                .id(RandomUtils.nextLong())
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .build();
 
         underTest.sendDocumentsToCafcass(new AdditonalAppLicationDraftOrderUploadedEvent(
-                caseData,
-                caseDataBefore
-            )
+                        caseData,
+                        caseDataBefore
+                )
         );
 
         verify(cafcassNotificationService, never()).sendEmail(
-            any(),
-            any(),
-            any(),
-            any()
+                any(),
+                any(),
+                any(),
+                any()
         );
     }
 
     @Test
     void shouldNotSendNotificationToCafcassWhenNonEnglishLA() {
-        when(cafcassLookupConfiguration.getCafcassEngland("SW")).thenReturn(
-            Optional.of(new CafcassLookupConfiguration.Cafcass("SW", "")));
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+            .thenReturn(
+                Optional.empty()
+            );
 
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
-            .caseLocalAuthority("SW")
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .additionalApplicationsBundle(
                 wrapElements(
                     AdditionalApplicationsBundle.builder()
                         .otherApplicationsBundle(
-                            OtherApplicationsBundle.builder().build()
+                                OtherApplicationsBundle.builder().build()
                         )
                         .build()
                 )
@@ -241,20 +255,20 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
 
         CaseData caseDataBefore = CaseData.builder()
             .id(RandomUtils.nextLong())
-            .caseLocalAuthority("SW")
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .build();
 
         underTest.sendDocumentsToCafcass(new AdditonalAppLicationDraftOrderUploadedEvent(
-                caseData,
-                caseDataBefore
-            )
+                        caseData,
+                        caseDataBefore
+                )
         );
 
         verify(cafcassNotificationService, never()).sendEmail(
-            any(),
-            any(),
-            any(),
-            any()
+                any(),
+                any(),
+                any(),
+                any()
         );
     }
 }
