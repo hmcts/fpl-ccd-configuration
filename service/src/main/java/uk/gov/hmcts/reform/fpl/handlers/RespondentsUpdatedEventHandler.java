@@ -16,9 +16,9 @@ import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.representative.RegisteredRepresentativeSolicitorContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.representative.UnregisteredRepresentativeSolicitorContentProvider;
+import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.util.List;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
@@ -41,11 +41,8 @@ public class RespondentsUpdatedEventHandler {
         CaseData caseData = event.getCaseData();
         CaseData caseDataBefore = event.getCaseDataBefore();
 
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-            cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-
-        if (recipientIsEngland.isPresent() && respondentService.hasAddressChange(caseData.getAllRespondents(),
-            caseDataBefore.getAllRespondents())) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration) &&
+            respondentService.hasAddressChange(caseData.getAllRespondents(), caseDataBefore.getAllRespondents())) {
             cafcassNotificationService.sendEmail(caseData, CHANGE_OF_ADDRESS,
                 ChangeOfAddressData.builder().respondents(true).build());
         }

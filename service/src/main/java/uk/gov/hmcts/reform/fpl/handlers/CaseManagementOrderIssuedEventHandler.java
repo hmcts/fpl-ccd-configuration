@@ -88,10 +88,9 @@ public class CaseManagementOrderIssuedEventHandler {
     public void notifyCafcass(final CaseManagementOrderIssuedEvent event) {
         CaseData caseData = event.getCaseData();
 
-        final Optional<Cafcass> recipientIsWelsh =
+        if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
+            final Optional<Cafcass> recipientIsWelsh =
                 cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority());
-
-        if (recipientIsWelsh.isPresent()) {
             HearingOrder issuedCmo = event.getCmo();
 
             final IssuedCMOTemplate cafcassParameters = contentProvider.buildCMOIssuedNotificationParameters(
