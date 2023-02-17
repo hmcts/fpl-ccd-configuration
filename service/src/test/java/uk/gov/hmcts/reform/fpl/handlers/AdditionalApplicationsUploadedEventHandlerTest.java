@@ -11,6 +11,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -45,11 +47,11 @@ import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.AdditionalApplicationsUploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
+import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -74,9 +76,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS;
@@ -508,42 +508,44 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         verifyInvocation(documents, caseData, caseDataBefore);
     }
 
+    private void mockHelper(MockedStatic<CafcassHelper> cafcassHelper, boolean notifyCafcass) {
+        cafcassHelper.when(() -> CafcassHelper.isNotifyingCafcass(any(), any()))
+            .thenReturn(notifyCafcass);
+    }
+
     private void verifyInvocation(List<DocumentReference> documents, CaseData caseData, CaseData caseDataBefore) {
-        given(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .willReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
 
-        given(contentProvider.getApplicationTypes(caseData.getAdditionalApplicationsBundle().get(0).getValue()))
+            given(contentProvider.getApplicationTypes(caseData.getAdditionalApplicationsBundle().get(0).getValue()))
                 .willReturn(Arrays.asList("C2 (With notice) - Appointment of a guardian",
-                        "C13A - Special guardianship order",
-                        "C20 - Secure accommodation (England)",
-                        "C1 - Parental responsibility by the father",
-                        "C13A - Special guardianship order",
-                        "C20 - Secure accommodation (England)"));
+                    "C13A - Special guardianship order",
+                    "C20 - Secure accommodation (England)",
+                    "C1 - Parental responsibility by the father",
+                    "C13A - Special guardianship order",
+                    "C20 - Secure accommodation (England)"));
 
-        underTest.sendDocumentsToCafcass(
+            underTest.sendDocumentsToCafcass(
                 new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA));
 
-        verify(cafcassNotificationService).sendEmail(
+            verify(cafcassNotificationService).sendEmail(
                 eq(caseData),
                 eq(Set.copyOf(documents)),
                 same(ADDITIONAL_DOCUMENT),
                 newDocumentDataArgumentCaptor.capture()
-        );
+            );
 
-        NewDocumentData newDocumentData = newDocumentDataArgumentCaptor.getValue();
-        assertThat(newDocumentData.getEmailSubjectInfo())
+            NewDocumentData newDocumentData = newDocumentDataArgumentCaptor.getValue();
+            assertThat(newDocumentData.getEmailSubjectInfo())
                 .isEqualTo("additional documents");
-        assertThat(newDocumentData.getDocumentTypes())
+            assertThat(newDocumentData.getDocumentTypes())
                 .isEqualTo("• C2 (With notice) - Appointment of a guardian\n"
-                        + "• C13A - Special guardianship order\n"
-                        + "• C20 - Secure accommodation (England)\n"
-                        + "• C1 - Parental responsibility by the father\n"
-                        + "• C13A - Special guardianship order\n"
-                        + "• C20 - Secure accommodation (England)");
+                    + "• C13A - Special guardianship order\n"
+                    + "• C20 - Secure accommodation (England)\n"
+                    + "• C1 - Parental responsibility by the father\n"
+                    + "• C13A - Special guardianship order\n"
+                    + "• C20 - Secure accommodation (England)");
+        }
     }
 
     @ParameterizedTest

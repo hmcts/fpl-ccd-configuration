@@ -6,6 +6,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -40,6 +42,7 @@ import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
+import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -230,6 +233,11 @@ class FurtherEvidenceUploadedEventHandlerTest {
         } else {
             verify(furtherEvidenceNotificationService, never()).sendNotification(any(), any(), any(), any());
         }
+    }
+
+    private void mockHelper(MockedStatic<CafcassHelper> cafcassHelper, boolean notifyCafcass) {
+        cafcassHelper.when(() -> CafcassHelper.isNotifyingCafcass(any(), any()))
+            .thenReturn(notifyCafcass);
     }
 
     @Test
@@ -561,156 +569,147 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldEmailCafcassWhenNewBundleIsAdded() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
-        String hearing = "Hearing";
-        CaseData caseData = buildCaseDataWithCourtBundleList(
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
+            String hearing = "Hearing";
+            CaseData caseData = buildCaseDataWithCourtBundleList(
                 2,
                 hearing,
                 "LA");
-        List<Element<HearingCourtBundle>> courtBundleList = caseData.getHearingDocuments().getCourtBundleListV2();
-        Element<HearingCourtBundle> existingBundle = courtBundleList.remove(1);
+            List<Element<HearingCourtBundle>> courtBundleList = caseData.getHearingDocuments().getCourtBundleListV2();
+            Element<HearingCourtBundle> existingBundle = courtBundleList.remove(1);
 
-        CaseData caseDataBefore = commonCaseBuilder()
-            .hearingDocuments(HearingDocuments.builder()
-                .courtBundleListV2(List.of(existingBundle))
-                .build()
-            ).build();
+            CaseData caseDataBefore = commonCaseBuilder()
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(List.of(existingBundle))
+                    .build()
+                ).build();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
                 new FurtherEvidenceUploadedEvent(
-                        caseData,
-                        caseDataBefore,
-                        DESIGNATED_LOCAL_AUTHORITY,
-                        userDetailsLA()
+                    caseData,
+                    caseDataBefore,
+                    DESIGNATED_LOCAL_AUTHORITY,
+                    userDetailsLA()
                 );
-        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
-        Set<DocumentReference> documentReferences = courtBundleList.stream()
+            furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
+            Set<DocumentReference> documentReferences = courtBundleList.stream()
                 .map(courtBundle -> courtBundle.getValue().getCourtBundle().get(0).getValue().getDocument())
                 .collect(toSet());
 
-        verify(cafcassNotificationService).sendEmail(eq(caseData),
+            verify(cafcassNotificationService).sendEmail(eq(caseData),
                 eq(documentReferences),
                 eq(COURT_BUNDLE),
                 courtBundleCaptor.capture());
 
-        CourtBundleData courtBundleData = courtBundleCaptor.getValue();
-        assertThat(courtBundleData.getHearingDetails()).isEqualTo(hearing);
+            CourtBundleData courtBundleData = courtBundleCaptor.getValue();
+            assertThat(courtBundleData.getHearingDetails()).isEqualTo(hearing);
+        }
     }
 
 
     @Test
     void shouldEmailCafcassWhenNewBundlesAreAdded() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
-        String hearing = "Hearing";
-        String secHearing = "secHearing";
-        String hearingOld = "Old";
-        List<Element<HearingCourtBundle>> hearing1 = createCourtBundleList(2, hearing, "LA");
-        List<Element<HearingCourtBundle>> oldHearing = createCourtBundleList(1, hearingOld, "LA");
-        List<Element<HearingCourtBundle>> hearing2 = createCourtBundleList(3, hearing, "LA");
-        List<Element<HearingCourtBundle>> secHearingBundle = createCourtBundleList(2, secHearing, "LA");
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
+            String hearing = "Hearing";
+            String secHearing = "secHearing";
+            String hearingOld = "Old";
+            List<Element<HearingCourtBundle>> hearing1 = createCourtBundleList(2, hearing, "LA");
+            List<Element<HearingCourtBundle>> oldHearing = createCourtBundleList(1, hearingOld, "LA");
+            List<Element<HearingCourtBundle>> hearing2 = createCourtBundleList(3, hearing, "LA");
+            List<Element<HearingCourtBundle>> secHearingBundle = createCourtBundleList(2, secHearing, "LA");
 
-        List<Element<HearingCourtBundle>> totalHearing = new ArrayList<>(hearing1);
-        totalHearing.addAll(oldHearing);
-        totalHearing.addAll(hearing2);
-        totalHearing.addAll(secHearingBundle);
+            List<Element<HearingCourtBundle>> totalHearing = new ArrayList<>(hearing1);
+            totalHearing.addAll(oldHearing);
+            totalHearing.addAll(hearing2);
+            totalHearing.addAll(secHearingBundle);
 
-        Collections.shuffle(totalHearing);
+            Collections.shuffle(totalHearing);
 
-        CaseData caseData = commonCaseBuilder()
-            .hearingDocuments(HearingDocuments.builder()
-                .courtBundleListV2(totalHearing)
-                .build())
-            .build();
+            CaseData caseData = commonCaseBuilder()
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(totalHearing)
+                    .build())
+                .build();
 
-        CaseData caseDataBefore = commonCaseBuilder()
-            .hearingDocuments(HearingDocuments.builder()
-                .courtBundleListV2(oldHearing)
-                .build())
-            .build();
+            CaseData caseDataBefore = commonCaseBuilder()
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(oldHearing)
+                    .build())
+                .build();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
                 new FurtherEvidenceUploadedEvent(
-                        caseData,
-                        caseDataBefore,
-                        DESIGNATED_LOCAL_AUTHORITY,
-                        userDetailsLA()
+                    caseData,
+                    caseDataBefore,
+                    DESIGNATED_LOCAL_AUTHORITY,
+                    userDetailsLA()
                 );
-        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
-        List<Element<HearingCourtBundle>> expectedBundle = new ArrayList<>(hearing1);
-        expectedBundle.addAll(hearing2);
+            furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
+            List<Element<HearingCourtBundle>> expectedBundle = new ArrayList<>(hearing1);
+            expectedBundle.addAll(hearing2);
 
-        Set<DocumentReference> documentReferences = expectedBundle.stream()
+            Set<DocumentReference> documentReferences = expectedBundle.stream()
                 .map(courtBundle -> courtBundle.getValue().getCourtBundle().get(0).getValue().getDocument())
                 .collect(toSet());
 
-        verify(cafcassNotificationService).sendEmail(eq(caseData),
+            verify(cafcassNotificationService).sendEmail(eq(caseData),
                 eq(documentReferences),
                 eq(COURT_BUNDLE),
                 courtBundleCaptor.capture());
 
-        CourtBundleData courtBundleData = courtBundleCaptor.getValue();
-        assertThat(courtBundleData.getHearingDetails()).isEqualTo(hearing);
+            CourtBundleData courtBundleData = courtBundleCaptor.getValue();
+            assertThat(courtBundleData.getHearingDetails()).isEqualTo(hearing);
 
-        Set<DocumentReference> secDocBundle = secHearingBundle.stream()
+            Set<DocumentReference> secDocBundle = secHearingBundle.stream()
                 .map(courtBundle -> courtBundle.getValue().getCourtBundle().get(0).getValue().getDocument())
                 .collect(toSet());
 
-        verify(cafcassNotificationService).sendEmail(eq(caseData),
+            verify(cafcassNotificationService).sendEmail(eq(caseData),
                 eq(secDocBundle),
                 eq(COURT_BUNDLE),
                 courtBundleCaptor.capture());
 
-        courtBundleData = courtBundleCaptor.getValue();
-        assertThat(courtBundleData.getHearingDetails()).isEqualTo(secHearing);
+            courtBundleData = courtBundleCaptor.getValue();
+            assertThat(courtBundleData.getHearingDetails()).isEqualTo(secHearing);
+        }
     }
 
     @Test
     void shouldEmailCafcassWhenDocsIsUploadedByLA() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
 
-        CaseData caseData = buildCaseDataWithNonConfidentialLADocuments();
+            CaseData caseData = buildCaseDataWithNonConfidentialLADocuments();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
                 new FurtherEvidenceUploadedEvent(
-                        caseData,
-                        buildCaseDataWithConfidentialLADocuments(),
-                        DESIGNATED_LOCAL_AUTHORITY,
-                        userDetailsLA());
+                    caseData,
+                    buildCaseDataWithConfidentialLADocuments(),
+                    DESIGNATED_LOCAL_AUTHORITY,
+                    userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+            furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
 
-        Set<DocumentReference> documentReferences = unwrapElements(caseData.getFurtherEvidenceDocumentsLA())
+            Set<DocumentReference> documentReferences = unwrapElements(caseData.getFurtherEvidenceDocumentsLA())
                 .stream()
                 .map(SupportingEvidenceBundle::getDocument)
                 .collect(toSet());
 
-        verify(cafcassNotificationService).sendEmail(
+            verify(cafcassNotificationService).sendEmail(
                 eq(caseData),
                 eq(documentReferences),
                 eq(NEW_DOCUMENT),
                 newDocumentDataCaptor.capture());
 
-        NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
-        assertThat(newDocumentData.getDocumentTypes())
+            NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
+            assertThat(newDocumentData.getDocumentTypes())
                 .isEqualTo("• Child's guardian reports\n"
-                        + "• Child's guardian reports");
-        assertThat(newDocumentData.getEmailSubjectInfo())
+                    + "• Child's guardian reports");
+            assertThat(newDocumentData.getEmailSubjectInfo())
                 .isEqualTo("Further documents for main application");
+        }
     }
 
     @Test
@@ -769,134 +768,120 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldEmailCafcassWhenDocsIsUploadedBySolicitor() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
 
-        CaseData caseData = buildCaseDataWithNonConfidentialPDFDocumentsSolicitor(REP_USER);
+            CaseData caseData = buildCaseDataWithNonConfidentialPDFDocumentsSolicitor(REP_USER);
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
                 new FurtherEvidenceUploadedEvent(
-                        caseData,
-                        buildCaseDataWithConfidentialLADocuments(),
-                        SOLICITOR,
-                        userDetailsRespondentSolicitor());
+                    caseData,
+                    buildCaseDataWithConfidentialLADocuments(),
+                    SOLICITOR,
+                    userDetailsRespondentSolicitor());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+            furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
 
-        Set<DocumentReference> documentReferences = unwrapElements(caseData.getFurtherEvidenceDocumentsSolicitor())
+            Set<DocumentReference> documentReferences = unwrapElements(caseData.getFurtherEvidenceDocumentsSolicitor())
                 .stream()
                 .map(SupportingEvidenceBundle::getDocument)
                 .collect(toSet());
 
-        verify(cafcassNotificationService).sendEmail(
+            verify(cafcassNotificationService).sendEmail(
                 eq(caseData),
                 eq(documentReferences),
                 eq(NEW_DOCUMENT),
                 newDocumentDataCaptor.capture());
 
-        NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
-        assertThat(newDocumentData.getDocumentTypes())
+            NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
+            assertThat(newDocumentData.getDocumentTypes())
                 .contains("• non-confidential-1");
-        assertThat(newDocumentData.getDocumentTypes())
+            assertThat(newDocumentData.getDocumentTypes())
                 .contains("• non-confidential-2");
 
-        assertThat(newDocumentData.getEmailSubjectInfo())
+            assertThat(newDocumentData.getEmailSubjectInfo())
                 .isEqualTo("Further documents for main application");
+        }
     }
 
     @Test
     void shouldEmailCafcassWhenGuardianReportsAreUploadedBySolicitor() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-            .thenReturn(
-                Optional.of(
-                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                )
-            );
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
 
-        CaseData caseData = buildCaseDataWithNonConfidentialPDFDocumentsSolicitor(REP_USER, GUARDIAN_REPORTS);
+            CaseData caseData = buildCaseDataWithNonConfidentialPDFDocumentsSolicitor(REP_USER, GUARDIAN_REPORTS);
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
-                caseData,
-                buildCaseDataWithConfidentialLADocuments(),
-                SOLICITOR,
-                userDetailsRespondentSolicitor());
+            FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+                new FurtherEvidenceUploadedEvent(
+                    caseData,
+                    buildCaseDataWithConfidentialLADocuments(),
+                    SOLICITOR,
+                    userDetailsRespondentSolicitor());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+            furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
 
-        Set<DocumentReference> documentReferences = unwrapElements(caseData.getFurtherEvidenceDocumentsSolicitor())
-            .stream()
-            .map(SupportingEvidenceBundle::getDocument)
-            .collect(toSet());
+            Set<DocumentReference> documentReferences = unwrapElements(caseData.getFurtherEvidenceDocumentsSolicitor())
+                .stream()
+                .map(SupportingEvidenceBundle::getDocument)
+                .collect(toSet());
 
-        verify(cafcassNotificationService).sendEmail(
-            eq(caseData),
-            eq(documentReferences),
-            eq(NEW_DOCUMENT),
-            newDocumentDataCaptor.capture());
+            verify(cafcassNotificationService).sendEmail(
+                eq(caseData),
+                eq(documentReferences),
+                eq(NEW_DOCUMENT),
+                newDocumentDataCaptor.capture());
 
-        NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
-        assertThat(newDocumentData.getDocumentTypes())
-            .contains("• Child's guardian reports");
-        assertThat(newDocumentData.getDocumentTypes())
-            .contains("• Child's guardian reports");
-        assertThat(newDocumentData.getEmailSubjectInfo())
-            .isEqualTo("Further documents for main application");
+            NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
+            assertThat(newDocumentData.getDocumentTypes())
+                .contains("• Child's guardian reports");
+            assertThat(newDocumentData.getDocumentTypes())
+                .contains("• Child's guardian reports");
+            assertThat(newDocumentData.getEmailSubjectInfo())
+                .isEqualTo("Further documents for main application");
+        }
     }
 
     @Test
     void shouldNotEmailCafcassWhenNoticeOfActingOrIssueIsUploadedBySolicitor() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-            .thenReturn(
-                Optional.of(
-                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                )
-            );
-        CaseData caseData = buildCaseDataWithNonConfidentialPDFDocumentsSolicitor(REP_USER,
-            NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE);
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
+            CaseData caseData = buildCaseDataWithNonConfidentialPDFDocumentsSolicitor(REP_USER,
+                NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE);
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
-                caseData,
-                buildCaseDataWithConfidentialLADocuments(),
-                SOLICITOR,
-                userDetailsRespondentSolicitor());
+            FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+                new FurtherEvidenceUploadedEvent(
+                    caseData,
+                    buildCaseDataWithConfidentialLADocuments(),
+                    SOLICITOR,
+                    userDetailsRespondentSolicitor());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+            furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
 
-        verify(cafcassNotificationService, never()).sendEmail(
-            any(),
-            any(),
-            any(),
-            any());
+            verify(cafcassNotificationService, never()).sendEmail(
+                any(),
+                any(),
+                any(),
+                any());
+        }
     }
 
     @Test
     void shouldEmailCafcassWhenAdditionalBundleIsUploadedByLA() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
 
+            CaseData caseData = buildCaseDataWithAdditionalApplicationBundle();
 
-        CaseData caseData = buildCaseDataWithAdditionalApplicationBundle();
-
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
                 new FurtherEvidenceUploadedEvent(
-                        caseData,
-                        buildCaseDataWithConfidentialLADocuments(),
-                        DESIGNATED_LOCAL_AUTHORITY,
-                        userDetailsLA());
+                    caseData,
+                    buildCaseDataWithConfidentialLADocuments(),
+                    DESIGNATED_LOCAL_AUTHORITY,
+                    userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+            furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
 
-        Set<DocumentReference> documentReferences = unwrapElements(caseData.getAdditionalApplicationsBundle())
+            Set<DocumentReference> documentReferences = unwrapElements(caseData.getAdditionalApplicationsBundle())
                 .stream()
                 .map(AdditionalApplicationsBundle::getOtherApplicationsBundle)
                 .map(OtherApplicationsBundle::getAllDocumentReferences)
@@ -905,44 +890,40 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 .collect(toSet());
 
 
-        verify(cafcassNotificationService).sendEmail(
+            verify(cafcassNotificationService).sendEmail(
                 eq(caseData),
                 eq(documentReferences),
                 eq(NEW_DOCUMENT),
                 newDocumentDataCaptor.capture());
 
-        NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
-        assertThat(newDocumentData.getDocumentTypes())
+            NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
+            assertThat(newDocumentData.getDocumentTypes())
                 .contains("• additional applications");
-        assertThat(newDocumentData.getDocumentTypes())
+            assertThat(newDocumentData.getDocumentTypes())
                 .contains("• additional applications");
 
-        assertThat(newDocumentData.getEmailSubjectInfo())
+            assertThat(newDocumentData.getEmailSubjectInfo())
                 .isEqualTo("additional applications");
+        }
     }
 
     @Test
     void shouldEmailCafcassWhenC2AdditionalBundleIsUploadedByLA() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
 
+            CaseData caseData = buildCaseDataWithC2AdditionalApplicationBundle();
 
-        CaseData caseData = buildCaseDataWithC2AdditionalApplicationBundle();
-
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
                 new FurtherEvidenceUploadedEvent(
-                        caseData,
-                        buildCaseDataWithConfidentialLADocuments(),
-                        DESIGNATED_LOCAL_AUTHORITY,
-                        userDetailsLA());
+                    caseData,
+                    buildCaseDataWithConfidentialLADocuments(),
+                    DESIGNATED_LOCAL_AUTHORITY,
+                    userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+            furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
 
-        Set<DocumentReference> documentReferences = unwrapElements(caseData.getAdditionalApplicationsBundle())
+            Set<DocumentReference> documentReferences = unwrapElements(caseData.getAdditionalApplicationsBundle())
                 .stream()
                 .map(AdditionalApplicationsBundle::getC2DocumentBundle)
                 .map(C2DocumentBundle::getAllC2DocumentReferences)
@@ -951,224 +932,209 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 .collect(toSet());
 
 
-        verify(cafcassNotificationService).sendEmail(
+            verify(cafcassNotificationService).sendEmail(
                 eq(caseData),
                 eq(documentReferences),
                 eq(NEW_DOCUMENT),
                 newDocumentDataCaptor.capture());
 
-        NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
-        assertThat(newDocumentData.getDocumentTypes())
+            NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
+            assertThat(newDocumentData.getDocumentTypes())
                 .contains("• additional applications");
-        assertThat(newDocumentData.getDocumentTypes())
+            assertThat(newDocumentData.getDocumentTypes())
                 .contains("• additional applications");
 
-        assertThat(newDocumentData.getEmailSubjectInfo())
+            assertThat(newDocumentData.getEmailSubjectInfo())
                 .isEqualTo("additional applications");
+        }
     }
 
     @Test
     void shouldEmailCafcassWhenRespondentStatementIsUploaded() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
 
-        CaseData caseData = buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor();
+            CaseData caseData = buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
                 new FurtherEvidenceUploadedEvent(
-                        caseData,
-                        buildCaseDataWithConfidentialLADocuments(),
-                        DESIGNATED_LOCAL_AUTHORITY,
-                        userDetailsLA());
+                    caseData,
+                    buildCaseDataWithConfidentialLADocuments(),
+                    DESIGNATED_LOCAL_AUTHORITY,
+                    userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+            furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
 
-        Set<DocumentReference> documentReferences = unwrapElements(caseData.getRespondentStatements())
+            Set<DocumentReference> documentReferences = unwrapElements(caseData.getRespondentStatements())
                 .stream()
                 .flatMap(statement -> unwrapElements(statement.getSupportingEvidenceBundle()).stream())
                 .map(SupportingEvidenceBundle::getDocument)
                 .collect(toSet());
 
-        verify(cafcassNotificationService).sendEmail(
+            verify(cafcassNotificationService).sendEmail(
                 eq(caseData),
                 eq(documentReferences),
                 eq(NEW_DOCUMENT),
                 newDocumentDataCaptor.capture());
 
-        NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
-        assertThat(newDocumentData.getDocumentTypes())
+            NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
+            assertThat(newDocumentData.getDocumentTypes())
                 .isEqualTo("• Respondent statement");
-        assertThat(newDocumentData.getEmailSubjectInfo())
+            assertThat(newDocumentData.getEmailSubjectInfo())
                 .isEqualTo("Further documents for main application");
+        }
     }
 
     @Test
     void shouldEmailCafcassWhenHearingFurtherEvidenceBundleIsUploaded() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
 
-        CaseData caseData = buildCaseDataWithHearingFurtherEvidenceBundle();
+            CaseData caseData = buildCaseDataWithHearingFurtherEvidenceBundle();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
                 new FurtherEvidenceUploadedEvent(
-                        caseData,
-                        buildCaseDataWithConfidentialLADocuments(),
-                        DESIGNATED_LOCAL_AUTHORITY,
-                        userDetailsLA());
+                    caseData,
+                    buildCaseDataWithConfidentialLADocuments(),
+                    DESIGNATED_LOCAL_AUTHORITY,
+                    userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+            furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
 
-        Set<DocumentReference> documentReferences = unwrapElements(
+            Set<DocumentReference> documentReferences = unwrapElements(
                 caseData.getHearingFurtherEvidenceDocuments()).stream()
-                    .map(HearingFurtherEvidenceBundle::getSupportingEvidenceBundle)
-                    .flatMap(List::stream)
-                    .map(Element::getValue)
-                    .map(SupportingEvidenceBundle::getDocument)
-                    .collect(Collectors.toSet());
+                .map(HearingFurtherEvidenceBundle::getSupportingEvidenceBundle)
+                .flatMap(List::stream)
+                .map(Element::getValue)
+                .map(SupportingEvidenceBundle::getDocument)
+                .collect(Collectors.toSet());
 
-        verify(cafcassNotificationService).sendEmail(
-            eq(caseData),
-            eq(documentReferences),
-            eq(NEW_DOCUMENT),
-            newDocumentDataCaptor.capture());
-
-        NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
-        assertThat(newDocumentData.getDocumentTypes())
-                .isEqualTo("• Child's guardian reports\n"
-                        + "• Child's guardian reports");
-        assertThat(newDocumentData.getEmailSubjectInfo())
-                .isEqualTo("Further documents for main application");
-    }
-
-    @Test
-    void shouldEmailCafcassWhenApplicationDocumentIsUploaded() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
-
-        CaseData caseData = buildCaseDataWithApplicationDocuments();
-
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-                new FurtherEvidenceUploadedEvent(
-                        caseData,
-                        buildCaseDataWithConfidentialLADocuments(),
-                        DESIGNATED_LOCAL_AUTHORITY,
-                        userDetailsLA());
-
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
-
-        Set<DocumentReference> documentReferences = unwrapElements(caseData.getApplicationDocuments())
-                .stream()
-                .map(ApplicationDocument::getDocument)
-                .collect(toSet());
-
-        verify(cafcassNotificationService).sendEmail(
+            verify(cafcassNotificationService).sendEmail(
                 eq(caseData),
                 eq(documentReferences),
                 eq(NEW_DOCUMENT),
                 newDocumentDataCaptor.capture());
 
-        NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
-        assertThat(newDocumentData.getDocumentTypes())
-                .isEqualTo("• Birth certificate");
-        assertThat(newDocumentData.getEmailSubjectInfo())
+            NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
+            assertThat(newDocumentData.getDocumentTypes())
+                .isEqualTo("• Child's guardian reports\n"
+                    + "• Child's guardian reports");
+            assertThat(newDocumentData.getEmailSubjectInfo())
                 .isEqualTo("Further documents for main application");
+        }
     }
 
     @Test
-    void shouldNotEmailCafcassWhenNoApplicationDocumentIsUploaded() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
+    void shouldEmailCafcassWhenApplicationDocumentIsUploaded() {
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
 
-        CaseData caseData = buildCaseDataWithApplicationDocuments();
+            CaseData caseData = buildCaseDataWithApplicationDocuments();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
                 new FurtherEvidenceUploadedEvent(
-                        caseData,
-                        caseData,
-                        DESIGNATED_LOCAL_AUTHORITY,
-                        userDetailsLA());
+                    caseData,
+                    buildCaseDataWithConfidentialLADocuments(),
+                    DESIGNATED_LOCAL_AUTHORITY,
+                    userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+            furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
 
-        Set<DocumentReference> documentReferences = unwrapElements(caseData.getApplicationDocuments())
+            Set<DocumentReference> documentReferences = unwrapElements(caseData.getApplicationDocuments())
                 .stream()
                 .map(ApplicationDocument::getDocument)
                 .collect(toSet());
 
-        verify(cafcassNotificationService, never()).sendEmail(
+            verify(cafcassNotificationService).sendEmail(
+                eq(caseData),
+                eq(documentReferences),
+                eq(NEW_DOCUMENT),
+                newDocumentDataCaptor.capture());
+
+            NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
+            assertThat(newDocumentData.getDocumentTypes())
+                .isEqualTo("• Birth certificate");
+            assertThat(newDocumentData.getEmailSubjectInfo())
+                .isEqualTo("Further documents for main application");
+        }
+    }
+
+    @Test
+    void shouldNotEmailCafcassWhenNoApplicationDocumentIsUploaded() {
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
+
+            CaseData caseData = buildCaseDataWithApplicationDocuments();
+
+            FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+                new FurtherEvidenceUploadedEvent(
+                    caseData,
+                    caseData,
+                    DESIGNATED_LOCAL_AUTHORITY,
+                    userDetailsLA());
+
+            furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+
+            Set<DocumentReference> documentReferences = unwrapElements(caseData.getApplicationDocuments())
+                .stream()
+                .map(ApplicationDocument::getDocument)
+                .collect(toSet());
+
+            verify(cafcassNotificationService, never()).sendEmail(
                 any(),
                 any(),
                 any(),
                 any());
+        }
     }
 
     @Test
     void shouldNotSendEmailToCafcassWhenRespondentStatementIsUploaded() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
 
-        CaseData caseData = buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor();
+            CaseData caseData = buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
                 new FurtherEvidenceUploadedEvent(
-                        caseData,
-                        caseData,
+                    caseData,
+                    caseData,
 
-                        DESIGNATED_LOCAL_AUTHORITY,
-                        userDetailsLA());
+                    DESIGNATED_LOCAL_AUTHORITY,
+                    userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+            furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
 
-        verify(cafcassNotificationService, never()).sendEmail(
+            verify(cafcassNotificationService, never()).sendEmail(
                 any(),
                 any(),
                 any(),
                 any());
+        }
     }
 
     @Test
     void shouldNotSendEmailToCafcassWhenCafcassIsNotEnlang() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.empty()
-            );
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, false);
 
-        CaseData caseData = buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor();
+            CaseData caseData = buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
                 new FurtherEvidenceUploadedEvent(
-                        caseData,
-                        caseData,
-                        DESIGNATED_LOCAL_AUTHORITY,
-                        userDetailsLA());
+                    caseData,
+                    caseData,
+                    DESIGNATED_LOCAL_AUTHORITY,
+                    userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+            furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
 
-        verify(cafcassNotificationService, never()).sendEmail(
+            verify(cafcassNotificationService, never()).sendEmail(
                 any(),
                 any(),
                 any(),
                 any());
+        }
     }
 
     @Test
@@ -1190,66 +1156,59 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     private void verifyCorresspondences(CaseData caseData, List<Element<SupportingEvidenceBundle>> correspondence) {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
                 new FurtherEvidenceUploadedEvent(
-                        caseData,
-                        buildCaseDataWithConfidentialLADocuments(),
-                        DESIGNATED_LOCAL_AUTHORITY,
-                        userDetailsLA());
+                    caseData,
+                    buildCaseDataWithConfidentialLADocuments(),
+                    DESIGNATED_LOCAL_AUTHORITY,
+                    userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+            furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
 
-        Set<DocumentReference> documentReferences = unwrapElements(correspondence)
+            Set<DocumentReference> documentReferences = unwrapElements(correspondence)
                 .stream()
                 .map(SupportingEvidenceBundle::getDocument)
                 .collect(toSet());
 
-        verify(cafcassNotificationService).sendEmail(
+            verify(cafcassNotificationService).sendEmail(
                 eq(caseData),
                 eq(documentReferences),
                 eq(NEW_DOCUMENT),
                 newDocumentDataCaptor.capture());
 
-        NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
-        assertThat(newDocumentData.getDocumentTypes())
+            NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
+            assertThat(newDocumentData.getDocumentTypes())
                 .isEqualTo("• Correspondence");
-        assertThat(newDocumentData.getEmailSubjectInfo())
+            assertThat(newDocumentData.getEmailSubjectInfo())
                 .isEqualTo("Correspondence");
+        }
     }
-
 
     @Test
     void shouldNotSendEmailToCafcassWhenNoNewDocIsUploadedByLA() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
 
-        CaseData caseData = buildCaseDataWithNonConfidentialLADocuments();
+            CaseData caseData = buildCaseDataWithNonConfidentialLADocuments();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
                 new FurtherEvidenceUploadedEvent(
-                        caseData,
-                        caseData,
-                        DESIGNATED_LOCAL_AUTHORITY,
-                        userDetailsLA());
+                    caseData,
+                    caseData,
+                    DESIGNATED_LOCAL_AUTHORITY,
+                    userDetailsLA());
 
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+            furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
 
-        verify(cafcassNotificationService, never()).sendEmail(
+            verify(cafcassNotificationService, never()).sendEmail(
                 any(),
                 any(),
                 any(),
                 any());
+        }
     }
 
     private void verifyNotificationForCourtBundleTemplate(final UserDetails uploadedBy,
@@ -1381,132 +1340,128 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldEmailCafcassWhenNewHearingDocumentAdded() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-            .thenReturn(
-                Optional.of(
-                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                )
-            );
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
 
-        String hearing = "Hearing";
-        final DocumentReference caseSummaryDoc1 = TestDataHelper.testDocumentReference("CaseSummary 1.pdf");
-        final DocumentReference caseSummaryDoc2 = TestDataHelper.testDocumentReference("CaseSummary 2.pdf");
-        final DocumentReference positionStatementChildDoc =
-            TestDataHelper.testDocumentReference("PositionStatementChild.pdf");
-        final DocumentReference positionStatementRespondentDoc =
-            TestDataHelper.testDocumentReference("PositionStatementRespondent.pdf");
-        final DocumentReference skeletonArgumentDoc =
-            TestDataHelper.testDocumentReference("SkeletonArgument.pdf");
+            String hearing = "Hearing";
+            final DocumentReference caseSummaryDoc1 = TestDataHelper.testDocumentReference("CaseSummary 1.pdf");
+            final DocumentReference caseSummaryDoc2 = TestDataHelper.testDocumentReference("CaseSummary 2.pdf");
+            final DocumentReference positionStatementChildDoc =
+                TestDataHelper.testDocumentReference("PositionStatementChild.pdf");
+            final DocumentReference positionStatementRespondentDoc =
+                TestDataHelper.testDocumentReference("PositionStatementRespondent.pdf");
+            final DocumentReference skeletonArgumentDoc =
+                TestDataHelper.testDocumentReference("SkeletonArgument.pdf");
 
-        final List<Element<CaseSummary>> caseSummaryList = wrapElements(
-            CaseSummary.builder().hearing(hearing).document(caseSummaryDoc1).build(),
-            CaseSummary.builder().hearing(hearing).document(caseSummaryDoc2).build());
-        final List<Element<PositionStatementChild>> positionStatementChildList = wrapElements(
-            PositionStatementChild.builder().hearing(hearing).document(positionStatementChildDoc).build());
-        final List<Element<PositionStatementRespondent>> positionStatementRespondentList = wrapElements(
-            PositionStatementRespondent.builder().hearing(hearing).document(positionStatementRespondentDoc).build());
-        final List<Element<SkeletonArgument>> skeletonArgumentList = wrapElements(
-            SkeletonArgument.builder().hearing(hearing).document(skeletonArgumentDoc).build());
+            final List<Element<CaseSummary>> caseSummaryList = wrapElements(
+                CaseSummary.builder().hearing(hearing).document(caseSummaryDoc1).build(),
+                CaseSummary.builder().hearing(hearing).document(caseSummaryDoc2).build());
+            final List<Element<PositionStatementChild>> positionStatementChildList = wrapElements(
+                PositionStatementChild.builder().hearing(hearing).document(positionStatementChildDoc).build());
+            final List<Element<PositionStatementRespondent>> positionStatementRespondentList = wrapElements(
+                PositionStatementRespondent.builder().hearing(hearing).document(positionStatementRespondentDoc)
+                    .build());
+            final List<Element<SkeletonArgument>> skeletonArgumentList = wrapElements(
+                SkeletonArgument.builder().hearing(hearing).document(skeletonArgumentDoc).build());
 
-        CaseData caseDataBefore = buildSubmittedCaseData();
-        CaseData caseData = buildSubmittedCaseData().toBuilder()
-            .hearingDocuments(HearingDocuments.builder()
-                .caseSummaryList(caseSummaryList)
-                .skeletonArgumentList(skeletonArgumentList)
-                .positionStatementChildList(positionStatementChildList)
-                .positionStatementRespondentList(positionStatementRespondentList).build())
-            .build();
+            CaseData caseDataBefore = buildSubmittedCaseData();
+            CaseData caseData = buildSubmittedCaseData().toBuilder()
+                .hearingDocuments(HearingDocuments.builder()
+                    .caseSummaryList(caseSummaryList)
+                    .skeletonArgumentList(skeletonArgumentList)
+                    .positionStatementChildList(positionStatementChildList)
+                    .positionStatementRespondentList(positionStatementRespondentList).build())
+                .build();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
-                caseData,
-                caseDataBefore,
-                DESIGNATED_LOCAL_AUTHORITY,
-                userDetailsLA()
-            );
-        furtherEvidenceUploadedEventHandler.sendHearingDocumentsToCafcass(furtherEvidenceUploadedEvent);
+            FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+                new FurtherEvidenceUploadedEvent(
+                    caseData,
+                    caseDataBefore,
+                    DESIGNATED_LOCAL_AUTHORITY,
+                    userDetailsLA()
+                );
+            furtherEvidenceUploadedEventHandler.sendHearingDocumentsToCafcass(furtherEvidenceUploadedEvent);
 
-        CourtBundleData expectedCourtBundleData = CourtBundleData.builder().hearingDetails(hearing).build();
+            CourtBundleData expectedCourtBundleData = CourtBundleData.builder().hearingDetails(hearing).build();
 
-        verify(cafcassNotificationService).sendEmail(caseData, Set.of(caseSummaryDoc1, caseSummaryDoc2),
-            CASE_SUMMARY, expectedCourtBundleData);
-        verify(cafcassNotificationService).sendEmail(caseData, Set.of(positionStatementChildDoc),
-            POSITION_STATEMENT_CHILD, expectedCourtBundleData);
-        verify(cafcassNotificationService).sendEmail(caseData, Set.of(positionStatementRespondentDoc),
-            POSITION_STATEMENT_RESPONDENT, expectedCourtBundleData);
-        verify(cafcassNotificationService).sendEmail(caseData, Set.of(skeletonArgumentDoc),
-            SKELETON_ARGUMENT, expectedCourtBundleData);
+            verify(cafcassNotificationService).sendEmail(caseData, Set.of(caseSummaryDoc1, caseSummaryDoc2),
+                CASE_SUMMARY, expectedCourtBundleData);
+            verify(cafcassNotificationService).sendEmail(caseData, Set.of(positionStatementChildDoc),
+                POSITION_STATEMENT_CHILD, expectedCourtBundleData);
+            verify(cafcassNotificationService).sendEmail(caseData, Set.of(positionStatementRespondentDoc),
+                POSITION_STATEMENT_RESPONDENT, expectedCourtBundleData);
+            verify(cafcassNotificationService).sendEmail(caseData, Set.of(skeletonArgumentDoc),
+                SKELETON_ARGUMENT, expectedCourtBundleData);
+        }
     }
 
     @Test
     void shouldNotEmailCafcassWhenNoNewHearingDocument() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-            .thenReturn(
-                Optional.of(
-                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                )
-            );
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
 
-        String hearing = "Hearing";
-        final DocumentReference caseSummaryDoc1 = TestDataHelper.testDocumentReference("CaseSummary 1.pdf");
-        final DocumentReference caseSummaryDoc2 = TestDataHelper.testDocumentReference("CaseSummary 2.pdf");
-        final DocumentReference positionStatementChildDoc =
-            TestDataHelper.testDocumentReference("PositionStatementChild.pdf");
-        final DocumentReference positionStatementRespondentDoc =
-            TestDataHelper.testDocumentReference("PositionStatementRespondent.pdf");
-        final DocumentReference skeletonArgumentDoc =
-            TestDataHelper.testDocumentReference("SkeletonArgument.pdf");
+            String hearing = "Hearing";
+            final DocumentReference caseSummaryDoc1 = TestDataHelper.testDocumentReference("CaseSummary 1.pdf");
+            final DocumentReference caseSummaryDoc2 = TestDataHelper.testDocumentReference("CaseSummary 2.pdf");
+            final DocumentReference positionStatementChildDoc =
+                TestDataHelper.testDocumentReference("PositionStatementChild.pdf");
+            final DocumentReference positionStatementRespondentDoc =
+                TestDataHelper.testDocumentReference("PositionStatementRespondent.pdf");
+            final DocumentReference skeletonArgumentDoc =
+                TestDataHelper.testDocumentReference("SkeletonArgument.pdf");
 
-        final List<Element<CaseSummary>> caseSummaryList = wrapElements(
-            CaseSummary.builder().hearing(hearing).document(caseSummaryDoc1).build(),
-            CaseSummary.builder().hearing(hearing).document(caseSummaryDoc2).build());
-        final List<Element<PositionStatementChild>> positionStatementChildList = wrapElements(
-            PositionStatementChild.builder().hearing(hearing).document(positionStatementChildDoc).build());
-        final List<Element<PositionStatementRespondent>> positionStatementRespondentList = wrapElements(
-            PositionStatementRespondent.builder().hearing(hearing).document(positionStatementRespondentDoc).build());
-        final List<Element<SkeletonArgument>> skeletonArgumentList = wrapElements(
-            SkeletonArgument.builder().hearing(hearing).document(skeletonArgumentDoc).build());
+            final List<Element<CaseSummary>> caseSummaryList = wrapElements(
+                CaseSummary.builder().hearing(hearing).document(caseSummaryDoc1).build(),
+                CaseSummary.builder().hearing(hearing).document(caseSummaryDoc2).build());
+            final List<Element<PositionStatementChild>> positionStatementChildList = wrapElements(
+                PositionStatementChild.builder().hearing(hearing).document(positionStatementChildDoc).build());
+            final List<Element<PositionStatementRespondent>> positionStatementRespondentList = wrapElements(
+                PositionStatementRespondent.builder().hearing(hearing).document(positionStatementRespondentDoc)
+                    .build());
+            final List<Element<SkeletonArgument>> skeletonArgumentList = wrapElements(
+                SkeletonArgument.builder().hearing(hearing).document(skeletonArgumentDoc).build());
 
-        CaseData caseDataBefore = buildSubmittedCaseData().toBuilder()
-            .hearingDocuments(HearingDocuments.builder()
-                .caseSummaryList(caseSummaryList)
-                .skeletonArgumentList(skeletonArgumentList)
-                .positionStatementChildList(positionStatementChildList)
-                .positionStatementRespondentList(positionStatementRespondentList).build())
-            .build();
-        CaseData caseData = buildSubmittedCaseData().toBuilder()
-            .hearingDocuments(HearingDocuments.builder()
-                .skeletonArgumentList(skeletonArgumentList)
-                .caseSummaryList(caseSummaryList)
-                .positionStatementChildList(positionStatementChildList)
-                .positionStatementRespondentList(positionStatementRespondentList).build())
-            .build();
+            CaseData caseDataBefore = buildSubmittedCaseData().toBuilder()
+                .hearingDocuments(HearingDocuments.builder()
+                    .caseSummaryList(caseSummaryList)
+                    .skeletonArgumentList(skeletonArgumentList)
+                    .positionStatementChildList(positionStatementChildList)
+                    .positionStatementRespondentList(positionStatementRespondentList).build())
+                .build();
+            CaseData caseData = buildSubmittedCaseData().toBuilder()
+                .hearingDocuments(HearingDocuments.builder()
+                    .skeletonArgumentList(skeletonArgumentList)
+                    .caseSummaryList(caseSummaryList)
+                    .positionStatementChildList(positionStatementChildList)
+                    .positionStatementRespondentList(positionStatementRespondentList).build())
+                .build();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
-                caseData,
-                caseDataBefore,
-                DESIGNATED_LOCAL_AUTHORITY,
-                userDetailsLA()
-            );
-        furtherEvidenceUploadedEventHandler.sendHearingDocumentsToCafcass(furtherEvidenceUploadedEvent);
+            FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+                new FurtherEvidenceUploadedEvent(
+                    caseData,
+                    caseDataBefore,
+                    DESIGNATED_LOCAL_AUTHORITY,
+                    userDetailsLA()
+                );
+            furtherEvidenceUploadedEventHandler.sendHearingDocumentsToCafcass(furtherEvidenceUploadedEvent);
 
-        verify(cafcassNotificationService, never()).sendEmail(eq(caseData),
-            any(),
-            eq(CASE_SUMMARY),
-            any());
-        verify(cafcassNotificationService, never()).sendEmail(eq(caseData),
-            any(),
-            eq(POSITION_STATEMENT_CHILD),
-            any());
-        verify(cafcassNotificationService, never()).sendEmail(eq(caseData),
-            any(),
-            eq(POSITION_STATEMENT_RESPONDENT),
-            any());
-        verify(cafcassNotificationService, never()).sendEmail(eq(caseData),
-            any(),
-            eq(SKELETON_ARGUMENT),
-            any());
+            verify(cafcassNotificationService, never()).sendEmail(eq(caseData),
+                any(),
+                eq(CASE_SUMMARY),
+                any());
+            verify(cafcassNotificationService, never()).sendEmail(eq(caseData),
+                any(),
+                eq(POSITION_STATEMENT_CHILD),
+                any());
+            verify(cafcassNotificationService, never()).sendEmail(eq(caseData),
+                any(),
+                eq(POSITION_STATEMENT_RESPONDENT),
+                any());
+            verify(cafcassNotificationService, never()).sendEmail(eq(caseData),
+                any(),
+                eq(SKELETON_ARGUMENT),
+                any());
+        }
     }
 
     void shouldNotSendNotificationWhenNoNewCourtBundleIsUploadedByLA() {

@@ -6,6 +6,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
@@ -21,11 +23,11 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
+import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
@@ -54,8 +56,6 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.createCourtBundleList;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.userDetailsLA;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.userDetailsRespondentSolicitor;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -79,6 +79,10 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
     @InjectMocks
     private FurtherEvidenceUploadedEventHandler furtherEvidenceUploadedEventHandler;
 
+    private void mockHelper(MockedStatic<CafcassHelper> cafcassHelper, boolean notifyCafcass) {
+        cafcassHelper.when(() -> CafcassHelper.isNotifyingCafcass(any(), any()))
+            .thenReturn(notifyCafcass);
+    }
 
     @Test
     void shouldSendDocumentByPostWhenPDFUploadedByRespSolicitor() {
@@ -168,186 +172,175 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
 
     @Test
     void shouldEmailCafcassWhenNewBundleAdded() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
-        String hearing = "Hearing";
-        CaseData caseData = buildCaseDataWithCourtBundleList(
-            2,
-            hearing,
-            "LA");
-        CaseData caseDataBefore = commonCaseBuilder().build();
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
+            String hearing = "Hearing";
+            CaseData caseData = buildCaseDataWithCourtBundleList(
+                2,
+                hearing,
+                "LA");
+            CaseData caseDataBefore = commonCaseBuilder().build();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
-                caseData,
-                caseDataBefore,
-                DESIGNATED_LOCAL_AUTHORITY,
-                userDetailsLA()
-            );
-        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
+            FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+                new FurtherEvidenceUploadedEvent(
+                    caseData,
+                    caseDataBefore,
+                    DESIGNATED_LOCAL_AUTHORITY,
+                    userDetailsLA()
+                );
+            furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
 
-        List<HearingCourtBundle> courtBundles = unwrapElements(caseData.getHearingDocuments().getCourtBundleListV2());
-        Set<DocumentReference> documentReferences = courtBundles.stream()
-            .flatMap(hearingCourtBundle -> unwrapElements(hearingCourtBundle.getCourtBundle()).stream())
-            .map(CourtBundle::getDocument)
-            .collect(toSet());
+            List<HearingCourtBundle> courtBundles =
+                unwrapElements(caseData.getHearingDocuments().getCourtBundleListV2());
+            Set<DocumentReference> documentReferences = courtBundles.stream()
+                .flatMap(hearingCourtBundle -> unwrapElements(hearingCourtBundle.getCourtBundle()).stream())
+                .map(CourtBundle::getDocument)
+                .collect(toSet());
 
-        verify(cafcassNotificationService).sendEmail(eq(caseData),
-            eq(documentReferences),
-            eq(COURT_BUNDLE),
-            courtBundleCaptor.capture());
+            verify(cafcassNotificationService).sendEmail(eq(caseData),
+                eq(documentReferences),
+                eq(COURT_BUNDLE),
+                courtBundleCaptor.capture());
 
-        CourtBundleData courtBundleData = courtBundleCaptor.getValue();
-        assertThat(courtBundleData.getHearingDetails()).isEqualTo(hearing);
+            CourtBundleData courtBundleData = courtBundleCaptor.getValue();
+            assertThat(courtBundleData.getHearingDetails()).isEqualTo(hearing);
+        }
     }
 
     @Test
     void shouldNotEmailCafcassWhenNoNewBundle() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
-        String hearing = "Hearing";
-        CaseData caseData = buildCaseDataWithCourtBundleList(
-            2,
-            hearing,
-            "LA");
-        CaseData caseDataBefore = commonCaseBuilder()
-            .hearingDocuments(HearingDocuments.builder()
-                .courtBundleListV2(caseData.getHearingDocuments().getCourtBundleListV2()).build())
-            .build();
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
+            String hearing = "Hearing";
+            CaseData caseData = buildCaseDataWithCourtBundleList(
+                2,
+                hearing,
+                "LA");
+            CaseData caseDataBefore = commonCaseBuilder()
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(caseData.getHearingDocuments().getCourtBundleListV2()).build())
+                .build();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
-                caseData,
-                caseDataBefore,
-                DESIGNATED_LOCAL_AUTHORITY,
-                userDetailsLA()
-            );
-        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
+            FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+                new FurtherEvidenceUploadedEvent(
+                    caseData,
+                    caseDataBefore,
+                    DESIGNATED_LOCAL_AUTHORITY,
+                    userDetailsLA()
+                );
+            furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
 
-        verify(cafcassNotificationService, never()).sendEmail(eq(caseData),
-            any(),
-            eq(COURT_BUNDLE),
-            any());
+            verify(cafcassNotificationService, never()).sendEmail(eq(caseData),
+                any(),
+                eq(COURT_BUNDLE),
+                any());
+        }
     }
 
     @Test
     void shouldEmailCafcassWhenFirstBundleIsAdded() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
-        String hearing = "Hearing";
-        CaseData caseData = buildCaseDataWithCourtBundleList(
-            2,
-            hearing,
-            "LA");
-        List<Element<HearingCourtBundle>> courtBundleList = caseData.getHearingDocuments().getCourtBundleListV2();
-        Element<HearingCourtBundle> existingBundle = courtBundleList.remove(1);
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
+            String hearing = "Hearing";
+            CaseData caseData = buildCaseDataWithCourtBundleList(
+                2,
+                hearing,
+                "LA");
+            List<Element<HearingCourtBundle>> courtBundleList = caseData.getHearingDocuments().getCourtBundleListV2();
+            Element<HearingCourtBundle> existingBundle = courtBundleList.remove(1);
 
-        CaseData caseDataBefore = commonCaseBuilder()
-            .build();
+            CaseData caseDataBefore = commonCaseBuilder()
+                .build();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
-                caseData,
-                caseDataBefore,
-                DESIGNATED_LOCAL_AUTHORITY,
-                userDetailsLA()
-            );
-        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
-        Set<DocumentReference> documentReferences = courtBundleList.stream()
-            .map(courtBundle -> courtBundle.getValue().getCourtBundle().get(0).getValue().getDocument())
-            .collect(toSet());
+            FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+                new FurtherEvidenceUploadedEvent(
+                    caseData,
+                    caseDataBefore,
+                    DESIGNATED_LOCAL_AUTHORITY,
+                    userDetailsLA()
+                );
+            furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
+            Set<DocumentReference> documentReferences = courtBundleList.stream()
+                .map(courtBundle -> courtBundle.getValue().getCourtBundle().get(0).getValue().getDocument())
+                .collect(toSet());
 
-        verify(cafcassNotificationService).sendEmail(eq(caseData),
-            eq(documentReferences),
-            eq(COURT_BUNDLE),
-            courtBundleCaptor.capture());
+            verify(cafcassNotificationService).sendEmail(eq(caseData),
+                eq(documentReferences),
+                eq(COURT_BUNDLE),
+                courtBundleCaptor.capture());
 
-        CourtBundleData courtBundleData = courtBundleCaptor.getValue();
-        assertThat(courtBundleData.getHearingDetails()).isEqualTo(hearing);
+            CourtBundleData courtBundleData = courtBundleCaptor.getValue();
+            assertThat(courtBundleData.getHearingDetails()).isEqualTo(hearing);
+        }
     }
 
 
     @Test
     void shouldEmailCafcassWhenNewBundlesAreAdded() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
-        String hearing = "Hearing";
-        String secHearing = "secHearing";
-        String hearingOld = "Old";
-        List<Element<HearingCourtBundle>>  hearing1 = createCourtBundleList(2, hearing, "LA");
-        List<Element<HearingCourtBundle>> oldHearing = createCourtBundleList(1, hearingOld, "LA");
-        List<Element<HearingCourtBundle>>  hearing2 = createCourtBundleList(3, hearing, "LA");
-        List<Element<HearingCourtBundle>> secHearingBundle = createCourtBundleList(2, secHearing, "LA");
+        try (MockedStatic<CafcassHelper> cafcassHelper = Mockito.mockStatic(CafcassHelper.class)) {
+            mockHelper(cafcassHelper, true);
+            String hearing = "Hearing";
+            String secHearing = "secHearing";
+            String hearingOld = "Old";
+            List<Element<HearingCourtBundle>> hearing1 = createCourtBundleList(2, hearing, "LA");
+            List<Element<HearingCourtBundle>> oldHearing = createCourtBundleList(1, hearingOld, "LA");
+            List<Element<HearingCourtBundle>> hearing2 = createCourtBundleList(3, hearing, "LA");
+            List<Element<HearingCourtBundle>> secHearingBundle = createCourtBundleList(2, secHearing, "LA");
 
-        List<Element<HearingCourtBundle>> totalHearing = new ArrayList<>(hearing1);
-        totalHearing.addAll(oldHearing);
-        totalHearing.addAll(hearing2);
-        totalHearing.addAll(secHearingBundle);
+            List<Element<HearingCourtBundle>> totalHearing = new ArrayList<>(hearing1);
+            totalHearing.addAll(oldHearing);
+            totalHearing.addAll(hearing2);
+            totalHearing.addAll(secHearingBundle);
 
-        Collections.shuffle(totalHearing);
+            Collections.shuffle(totalHearing);
 
-        CaseData caseData = commonCaseBuilder()
-            .hearingDocuments(HearingDocuments.builder()
-                .courtBundleListV2(totalHearing)
-                .build())
-            .build();
+            CaseData caseData = commonCaseBuilder()
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(totalHearing)
+                    .build())
+                .build();
 
-        CaseData caseDataBefore = commonCaseBuilder()
-            .hearingDocuments(HearingDocuments.builder()
-                .courtBundleListV2(oldHearing)
-                .build())
-            .build();
+            CaseData caseDataBefore = commonCaseBuilder()
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(oldHearing)
+                    .build())
+                .build();
 
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
-                caseData,
-                caseDataBefore,
-                DESIGNATED_LOCAL_AUTHORITY,
-                userDetailsLA()
-            );
-        furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
-        List<Element<HearingCourtBundle>> expectedBundle = new ArrayList<>(hearing1);
-        expectedBundle.addAll(hearing2);
+            FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+                new FurtherEvidenceUploadedEvent(
+                    caseData,
+                    caseDataBefore,
+                    DESIGNATED_LOCAL_AUTHORITY,
+                    userDetailsLA()
+                );
+            furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
+            List<Element<HearingCourtBundle>> expectedBundle = new ArrayList<>(hearing1);
+            expectedBundle.addAll(hearing2);
 
-        Set<DocumentReference> documentReferences = expectedBundle.stream()
-            .map(courtBundle -> courtBundle.getValue().getCourtBundle().get(0).getValue().getDocument())
-            .collect(toSet());
+            Set<DocumentReference> documentReferences = expectedBundle.stream()
+                .map(courtBundle -> courtBundle.getValue().getCourtBundle().get(0).getValue().getDocument())
+                .collect(toSet());
 
-        verify(cafcassNotificationService).sendEmail(eq(caseData),
-            eq(documentReferences),
-            eq(COURT_BUNDLE),
-            courtBundleCaptor.capture());
+            verify(cafcassNotificationService).sendEmail(eq(caseData),
+                eq(documentReferences),
+                eq(COURT_BUNDLE),
+                courtBundleCaptor.capture());
 
-        CourtBundleData courtBundleData = courtBundleCaptor.getValue();
-        assertThat(courtBundleData.getHearingDetails()).isEqualTo(hearing);
+            CourtBundleData courtBundleData = courtBundleCaptor.getValue();
+            assertThat(courtBundleData.getHearingDetails()).isEqualTo(hearing);
 
-        Set<DocumentReference> secDocBundle = secHearingBundle.stream()
-            .map(courtBundle -> courtBundle.getValue().getCourtBundle().get(0).getValue().getDocument())
-            .collect(toSet());
+            Set<DocumentReference> secDocBundle = secHearingBundle.stream()
+                .map(courtBundle -> courtBundle.getValue().getCourtBundle().get(0).getValue().getDocument())
+                .collect(toSet());
 
-        verify(cafcassNotificationService).sendEmail(eq(caseData),
-            eq(secDocBundle),
-            eq(COURT_BUNDLE),
-            courtBundleCaptor.capture());
+            verify(cafcassNotificationService).sendEmail(eq(caseData),
+                eq(secDocBundle),
+                eq(COURT_BUNDLE),
+                courtBundleCaptor.capture());
 
-        courtBundleData = courtBundleCaptor.getValue();
-        assertThat(courtBundleData.getHearingDetails()).isEqualTo(secHearing);
+            courtBundleData = courtBundleCaptor.getValue();
+            assertThat(courtBundleData.getHearingDetails()).isEqualTo(secHearing);
+        }
     }
 
     private static List<Recipient> createRecipientsList() {
