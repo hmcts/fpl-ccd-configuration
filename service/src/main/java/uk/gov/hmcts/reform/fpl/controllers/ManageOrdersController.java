@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
@@ -139,10 +140,14 @@ public class ManageOrdersController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseDetails oldCaseDetails = callbackRequest.getCaseDetails();
 
-        CaseDetails updatedDetails = manageOrdersCaseDataFixer.fixAndRetriveCaseDetails(caseDetails);
-        Map<String, Object> data = updatedDetails.getData();
+        // Start event with concurrency controls
+        StartEventResponse startEventResponse = coreCaseDataService.startEvent(oldCaseDetails.getId(),
+            "internal-change-manage-order");
+
+        CaseDetails updatedDetails = manageOrdersCaseDataFixer.fixAndRetriveCaseDetails(
+            startEventResponse.getCaseDetails());
         CaseData fixedCaseData = manageOrdersCaseDataFixer.fix(getCaseData(updatedDetails));
 
         CaseData caseData;
@@ -151,18 +156,17 @@ public class ManageOrdersController extends CallbackController {
             updates = orderProcessing.postProcessDocument(fixedCaseData);
         } catch (Exception exception) {
             log.error("Error while processing manage orders document for case id {}.",
-                caseDetails.getId(), exception);
+                updatedDetails.getId(), exception);
         }
 
         if (updates.isEmpty()) {
-            caseData = getCaseData(callbackRequest);
+            caseData = getCaseData(startEventResponse.getCaseDetails());
         } else {
-            data.putAll(updates);
+            updatedDetails.getData().putAll(updates);
             caseData = getCaseData(updatedDetails);
         }
-        coreCaseDataService.triggerEvent(caseData.getId(),
-            "internal-change-manage-order",
-            updates);
+
+        coreCaseDataService.submitEvent(startEventResponse, caseData.getId(), updates);
 
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
         publishEvent(eventBuilder.build(caseData, caseDataBefore));

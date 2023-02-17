@@ -72,7 +72,7 @@ public class CoreCaseDataService {
      * @param caseId Case to update.
      * @param updates Map of fields to update.
      */
-    @Deprecated(since = "February 2023", forRemoval = true)
+    @Deprecated(since = "February 2023", forRemoval = false)
     public void updateCase(Long caseId, Map<String, Object> updates) {
         //
         triggerEvent(caseId, "internal-change-UPDATE_CASE", updates);
@@ -85,7 +85,7 @@ public class CoreCaseDataService {
      * @param event CCD event name to create and submit.
      * @param updates Map of fields to update.
      */
-    @Deprecated(since = "February 2023", forRemoval = true)
+    @Deprecated(since = "February 2023", forRemoval = false)
     public void triggerEvent(Long caseId, String event, Map<String, Object> updates) {
         triggerEvent(JURISDICTION, CASE_TYPE, caseId, event, updates);
     }
@@ -98,7 +98,7 @@ public class CoreCaseDataService {
      * @param caseId Case to update.
      * @param event CCD event name to create and submit.
      */
-    @Deprecated(since = "February 2023", forRemoval = true)
+    @Deprecated(since = "February 2023", forRemoval = false)
     public void triggerEvent(String jurisdiction, String caseType, Long caseId, String event) {
         triggerEvent(jurisdiction, caseType, caseId, event, emptyMap());
     }
@@ -112,7 +112,7 @@ public class CoreCaseDataService {
      * @param eventName CCD event name to create and submit.
      * @param eventData Map of fields to update.
      */
-    @Deprecated(since = "February 2023", forRemoval = true)
+    @Deprecated(since = "February 2023", forRemoval = false)
     public void triggerEvent(String jurisdiction,
                              String caseType,
                              Long caseId,
