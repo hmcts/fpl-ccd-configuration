@@ -17,7 +17,10 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.model.DfjAreaCourtMapping;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.DfjAreaLookUpService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
@@ -46,13 +49,17 @@ public class MigrateCaseController extends CallbackController {
     private final DocumentListService documentListService;
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
+    private final DfjAreaLookUpService dfjAreaLookUpService;
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
+        "DFPL-1124", this::run1124,
+        "DFPL-1124rollback", this::run1124Rollback,
         "DFPL-1144", this::run1144,
         "DFPL-872rollback", this::run872Rollback,
         "DFPL-1072", this::run1072,
         "DFPL-1163", this::run1163,
         "DFPL-1194", this::run1194
     );
+
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -72,6 +79,38 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
+    }
+
+    private void run1124(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        Court court = caseData.getCourt();
+        var caseId = caseData.getId();
+
+        if (court != null) {
+            DfjAreaCourtMapping dfjArea = dfjAreaLookUpService.getDfjArea(court.getCode());
+            caseDetails.getData().put("dfjArea", dfjArea.getDfjArea());
+            caseDetails.getData().put(dfjArea.getCourtField(), court.getCode());
+            log.info("Migration {id = DFPL-1124, case reference = {}} updated dfj area and relevant court field",
+                caseId);
+        } else {
+            log.warn("Migration {id = DFPL-1124, case reference = {}} doesn't have court info ",
+                caseId);
+        }
+    }
+
+
+    private void run1124Rollback(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        var caseId = caseData.getId();
+        if (caseData.getDfjArea() != null) {
+            caseDetails.getData().remove("dfjArea");
+            caseDetails.getData().keySet().removeAll(dfjAreaLookUpService.getAllCourtFields());
+            log.info("Rollback {id = DFPL-1124, case reference = {}} removed dfj area and relevant court field",
+                caseId);
+        } else {
+            log.warn("Rollback {id = DFPL-1124, case reference = {}} doesn't have dfj area and relevant court field",
+                caseId);
+        }
     }
 
     private void run1144(CaseDetails caseDetails) {
@@ -103,6 +142,7 @@ public class MigrateCaseController extends CallbackController {
                 caseId, caseData.getState().getValue());
         }
     }
+
 
     private void run872Rollback(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
