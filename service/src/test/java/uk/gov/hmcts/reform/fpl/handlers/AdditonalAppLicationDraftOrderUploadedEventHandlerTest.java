@@ -44,9 +44,9 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
     @InjectMocks
     private AdditonalAppLicationDraftOrderUploadedEventHandler underTest;
 
-    private void mockHelper(MockedStatic<CafcassHelper> cafcassHelper, boolean notifyCafcass) {
+    private void mockHelper(MockedStatic<CafcassHelper> cafcassHelper, boolean notifyCafcassEngland) {
         cafcassHelper.when(() -> CafcassHelper.isNotifyingCafcassEngland(any(), any()))
-            .thenReturn(notifyCafcass);
+            .thenReturn(notifyCafcassEngland);
     }
 
     @Test
