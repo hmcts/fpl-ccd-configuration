@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.fpl.config.CtscTeamLeadLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -111,9 +112,11 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
     @Test
     void shouldPublishPopulateSDOAndSDORemovedEventsIfNewSDOHasBeenRemoved() throws NotificationClientException {
         StandardDirectionOrder previousSDO = StandardDirectionOrder.builder().removalReason(REMOVAL_REASON).build();
-
         CaseDetails caseDetails = caseDetailsWithRemovableOrders(emptyList(), wrapElements(previousSDO), emptyList(),
             emptyList());
+        when(coreCaseDataService.startEvent(eq(CASE_ID), eq("populateSDO")))
+            .thenReturn(StartEventResponse.builder().caseDetails(caseDetails).build());
+
         CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), emptyList(), emptyList(),
             emptyList());
 
@@ -124,11 +127,13 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
 
         postSubmittedEvent(callbackRequest);
 
-        verify(coreCaseDataService, timeout(ASYNC_MAX_TIMEOUT)).triggerEvent(
-            eq(JURISDICTION),
-            eq(CASE_TYPE),
+        verify(coreCaseDataService, timeout(ASYNC_MAX_TIMEOUT)).startEvent(
             eq(CASE_ID),
-            eq("populateSDO"),
+            eq("populateSDO"));
+
+        verify(coreCaseDataService, timeout(ASYNC_MAX_TIMEOUT)).submitEvent(
+            any(),
+            eq(CASE_ID),
             anyMap());
 
         verify(notificationClient).sendEmail(
@@ -150,6 +155,9 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
         List<Element<StandardDirectionOrder>> hiddenSDOs = List.of(previousSDO, newSDO);
 
         CaseDetails caseDetails = caseDetailsWithRemovableOrders(emptyList(), hiddenSDOs, emptyList(), emptyList());
+        when(coreCaseDataService.startEvent(eq(CASE_ID), eq("populateSDO")))
+            .thenReturn(StartEventResponse.builder().caseDetails(caseDetails).build());
+
         CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), previousHiddenSDOs, emptyList(),
             emptyList());
 
@@ -160,11 +168,13 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
 
         postSubmittedEvent(callbackRequest);
 
-        verify(coreCaseDataService, timeout(ASYNC_MAX_TIMEOUT)).triggerEvent(
-            eq(JURISDICTION),
-            eq(CASE_TYPE),
-            eq(12345L),
-            eq("populateSDO"),
+        verify(coreCaseDataService, timeout(ASYNC_MAX_TIMEOUT)).startEvent(
+            eq(CASE_ID),
+            eq("populateSDO"));
+
+        verify(coreCaseDataService, timeout(ASYNC_MAX_TIMEOUT)).submitEvent(
+            any(),
+            eq(CASE_ID),
             anyMap());
 
         verify(notificationClient).sendEmail(
