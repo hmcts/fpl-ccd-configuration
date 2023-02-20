@@ -126,8 +126,8 @@ public class PlacementEventsHandler {
         final Placement placement = event.getPlacement();
 
         if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
-            Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
-                .map(CafcassLookupConfiguration.Cafcass::getEmail);
+            Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData
+                .getCaseLocalAuthority()).map(CafcassLookupConfiguration.Cafcass::getEmail);
             log.info("Send email to cafcass about {} new placement application", placement.getChildName());
 
             final NotifyData notifyData = contentProvider.getApplicationChangedCourtData(caseData, placement);
@@ -164,8 +164,8 @@ public class PlacementEventsHandler {
         final Placement placement = event.getPlacement();
 
         if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
-            Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
-                .map(CafcassLookupConfiguration.Cafcass::getEmail);
+            Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData
+                .getCaseLocalAuthority()).map(CafcassLookupConfiguration.Cafcass::getEmail);
 
             log.info("Send email to cafcass about {} child placement notice", placement.getChildName());
 
