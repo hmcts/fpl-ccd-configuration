@@ -3,8 +3,11 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseSummary;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
@@ -15,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +29,7 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
@@ -312,4 +317,57 @@ public class MigrateCaseService {
         return Map.of("applicationDocuments", applicationDocuments);
     }
 
+    public Map<String, Object> removeCaseSummaryByHearingId(CaseData caseData,
+                                                            String migrationId,
+                                                            UUID expectedHearingId) {
+        Long caseId = caseData.getId();
+        List<Element<CaseSummary>> caseSummaries =
+            caseData.getHearingDocuments().getCaseSummaryList()
+                .stream()
+                .filter(el -> !el.getId().equals(expectedHearingId))
+                .collect(toList());
+
+        if (caseSummaries.size() != caseData.getHearingDocuments().getCaseSummaryList().size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, case summary",
+                migrationId, caseId));
+        }
+        return Map.of("caseSummaryList", caseSummaries);
+    }
+
+    public Map<String, Object> revertChildExtensionDate(CaseData caseData, String migrationId, String childId,
+                                                        LocalDate completionDate,
+                                                        CaseExtensionReasonList extensionReason) {
+        List<Element<Child>> childrenInCase = caseData.getAllChildren();
+        UUID childUUID = UUID.fromString(childId);
+
+        if (isNotEmpty(childrenInCase)) {
+            if (ElementUtils.findElement(childUUID, childrenInCase).isEmpty()) {
+                throw new AssertionError(format(
+                    "Migration {id = %s}, case reference = %s} child %s not found",
+                    migrationId, caseData.getId(), childId));
+            }
+
+            List<Element<Child>> children = childrenInCase.stream()
+                .map(element -> {
+                    if (element.getId().equals(childUUID)) {
+                        return element(element.getId(),
+                            element.getValue().toBuilder()
+                                .party(element.getValue().getParty().toBuilder()
+                                    .completionDate(completionDate)
+                                    .extensionReason(extensionReason)
+                                    .build())
+                                .build());
+                    } else {
+                        return element;
+                    }
+                }).collect(toList());
+
+            return Map.of("children1", children);
+        } else {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s} doesn't have children",
+                migrationId, caseData.getId()));
+        }
+    }
 }

@@ -9,14 +9,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
+import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
-import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
@@ -30,7 +28,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList.TIMETABLE_FOR_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -63,87 +60,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Dfpl1064 {
-        private final long invalidCaseId = 1643728359986136L;
-        private final long validCaseId = 1659605693892067L;
-        private final String migrationId = "DFPL-1064";
-
-        @Test
-        void shouldThrowExceptionIfWrongCaseId() {
-            CaseData caseData = CaseData.builder()
-                .id(invalidCaseId)
-                .sendToCtsc(YesNo.YES.getValue())
-                .build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format(
-                    "Migration {id = %s, case reference = %s}, case id not present in allowed list",
-                    migrationId, invalidCaseId));
-        }
-
-        @Test
-        void shouldSetSendToCtscToNo() {
-            CaseData caseData = CaseData.builder()
-                .id(validCaseId)
-                .sendToCtsc(YesNo.YES.getValue())
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId)
-            );
-
-            CaseData responseData = extractCaseData(response);
-
-            assertThat(responseData.getSendToCtsc()).isEqualTo(YesNo.NO.getValue());
-        }
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class Dfpl1029 {
-
-        final String migrationId = "DFPL-1029";
-        final long expectedCaseId = 1638876373455956L;
-        final long incorrectCaseId = 111111111111111L;
-
-        @Test
-        void shouldThrowExceptionWhenIncorrectCaseId() {
-            CaseData caseData = CaseData.builder().id(incorrectCaseId).build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
-                .getRootCause()
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(String.format("Migration {id = %s, case reference = %s}, expected case id %d",
-                    migrationId, incorrectCaseId, expectedCaseId));
-        }
-
-        @Test
-        void shouldSetCaseStateToCaseManagement() {
-            CaseData caseData = CaseData.builder().id(expectedCaseId).build();
-
-            CaseDetails caseDetails = buildCaseDetails(caseData, migrationId);
-
-            // pick a few of the temp fields from ManageOrderDocumentScopedFieldsCalculator and set on CaseDetails
-            caseDetails.getData().put("others_label", "test");
-            caseDetails.getData().put("appointedGuardians_label", "test");
-            caseDetails.getData().put("manageOrdersCafcassRegion", "test");
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
-
-            // check that the migration has successfully removed them
-            assertThat(response.getData()).extracting("others_label").isNull();
-            assertThat(response.getData()).extracting("appointedGuardians_label").isNull();
-            assertThat(response.getData()).extracting("manageOrdersCafcassRegion").isNull();
-        }
-
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class Dfpl872 {
-        final String migrationId = "DFPL-872";
+    class Dfpl1144 {
+        final String migrationId = "DFPL-1144";
         final LocalDate extensionDate = LocalDate.now();
         final Long caseId = 1660300177298257L;
         final UUID child1Id = UUID.fromString("d76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0");
@@ -185,6 +103,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .caseCompletionDate(extensionDate)
                 .caseExtensionReasonList(TIMETABLE_FOR_PROCEEDINGS)
                 .children1(List.of(childToBeUpdated1, childToBeUpdated2))
+                .hearingOption(HearingOptions.NEW_HEARING)
                 .build();
 
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
@@ -195,6 +114,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             List<Element<Child>> expectedChildren = List.of(expectedChild1,expectedChild2);
 
             assertThat(responseData.getAllChildren()).isEqualTo(expectedChildren);
+            assertThat(responseData.getHearingOption()).isEqualTo(HearingOptions.EDIT_PAST_HEARING);
         }
 
         @Test
@@ -282,39 +202,5 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         CaseDetails caseDetails = asCaseDetails(caseData);
         caseDetails.getData().put("migrationId", migrationId);
         return caseDetails;
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class Dfpl1161 {
-
-        private final String migrationId = "DFPL-1161";
-        private final long validCaseId = 1660209462518487L;
-
-        @Test
-        void shouldRemoveAllPlacementCollections() {
-            List<Element<Placement>> placements = List.of(
-                element(Placement.builder()
-                    .application(testDocumentReference())
-                    .build()),
-                element(Placement.builder()
-                    .application(testDocumentReference())
-                    .build())
-            );
-            CaseData caseData = CaseData.builder()
-                .id(validCaseId)
-                .placementEventData(PlacementEventData.builder()
-                    .placements(placements)
-                    .build())
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId));
-            CaseData responseData = extractCaseData(response);
-
-            assertThat(responseData.getPlacementEventData().getPlacements()).isEmpty();
-            assertThat(response.getData()).extracting("placementsNonConfidential", "placementsNonConfidentialNotices")
-                .containsExactly(null, null);
-        }
     }
 }

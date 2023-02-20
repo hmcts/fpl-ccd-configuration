@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers.documents;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
+import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
@@ -43,11 +45,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASHARED;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.RESPONDENT_STATEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.DOCUMENT_SUB_TYPE;
@@ -171,6 +176,29 @@ public class ManageDocumentsLAController extends CallbackController {
         }
 
         return respond(caseDetails);
+    }
+
+    @PostMapping("/final-check/mid-event")
+    @java.lang.SuppressWarnings("java:S5852")
+    public AboutToStartOrSubmitCallbackResponse handleFinalCheckMidEvent(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        List<String> errors = new ArrayList<>();
+
+        if (FURTHER_EVIDENCE_DOCUMENTS.equals(caseData.getManageDocumentLA().getType())) {
+            List<Element<ApplicationDocument>> swetDocs = caseData.getApplicationDocuments().stream()
+                .filter(df -> !StringUtils.isEmpty(df.getValue().getIncludedInSWET()))
+                .collect(Collectors.toList());
+            if (!swetDocs.isEmpty()) {
+                Pattern pattern = Pattern.compile("(?s)(?!.*<[^>\\d\\n]+>*).*");
+                if (swetDocs.stream()
+                    .anyMatch(df -> !pattern.matcher(df.getValue().getIncludedInSWET()).matches())) {
+                    errors.add("The data entered is not valid for your input in SWET\n");
+                }
+            }
+        }
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/about-to-submit")
