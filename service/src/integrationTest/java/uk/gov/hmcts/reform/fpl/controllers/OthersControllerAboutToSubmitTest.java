@@ -100,8 +100,9 @@ class OthersControllerAboutToSubmitTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
-        assertThat(unwrapElements(caseData.getConfidentialOthers())).contains(confidentialOther());
-        assertThat(unwrapElements(caseData.getConfidentialOthers())).contains(confidentialOtherWithoutAddress());
+        assertThat(unwrapElements(caseData.getConfidentialOthers()))
+            .contains(confidentialOther())
+            .contains(confidentialOtherWithoutAddress());
     }
 
     private Other other() {
