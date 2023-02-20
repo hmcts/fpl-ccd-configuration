@@ -67,8 +67,9 @@ public class CoreCaseDataService {
     }
 
     /**
+     * Runs the UPDATE_CASE event on a given case.
      * @deprecated Method does not use CCD concurrency controls correctly, Use startEvent to retrieve current case
-     * data then submitEvent to submit it to avoid concurrency issues.
+     *     data then submitEvent to submit it to avoid concurrency issues.
      * @param caseId Case to update.
      * @param updates Map of fields to update.
      */
@@ -79,8 +80,9 @@ public class CoreCaseDataService {
     }
 
     /**
+     * Triggers a CCD event on the case.
      * @deprecated Method does not use CCD concurrency controls correctly, Use startEvent to retrieve current case
-     * data then submitEvent to submit it to avoid concurrency issues.
+     *     data then submitEvent to submit it to avoid concurrency issues.
      * @param caseId Case to update.
      * @param event CCD event name to create and submit.
      * @param updates Map of fields to update.
@@ -91,8 +93,9 @@ public class CoreCaseDataService {
     }
 
     /**
+     * Triggers a CCD event on the case in a given jurisdiction, casetype.
      * @deprecated Method does not use CCD concurrency controls correctly, Use startEvent to retrieve current case
-     * data then submitEvent to submit it to avoid concurrency issues.
+     *     data then submitEvent to submit it to avoid concurrency issues.
      * @param jurisdiction Jurisdiction of the case in CCD
      * @param caseType Type of the case in CCD
      * @param caseId Case to update.
@@ -104,8 +107,9 @@ public class CoreCaseDataService {
     }
 
     /**
+     * Triggers a CCD event on a case, given various params.
      * @deprecated Method does not use CCD concurrency controls correctly, Use startEvent to retrieve current case
-     * data then submitEvent to submit it to avoid concurrency issues.
+     *     data then submitEvent to submit it to avoid concurrency issues.
      * @param jurisdiction Jurisdiction of the case in CCD
      * @param caseType Type of the case in CCD
      * @param caseId Case to update.
