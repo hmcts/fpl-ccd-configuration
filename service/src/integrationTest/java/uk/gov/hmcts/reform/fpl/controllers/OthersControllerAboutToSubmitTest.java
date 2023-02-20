@@ -89,7 +89,7 @@ class OthersControllerAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldNotSaveConfidentialAddressWhenAddressIsNotKnown () {
+    void shouldNotSaveConfidentialAddressWhenAddressIsNotKnown() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("others", Others.builder()
                 .firstOther(other())
