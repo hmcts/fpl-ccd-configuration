@@ -88,12 +88,11 @@ public class SubmittedCaseEventHandler {
             return;
         }
 
-        Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
+        if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
+            Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
                 .map(CafcassLookupConfiguration.Cafcass::getEmail);
-
-        if (recipientIsWelsh.isPresent()) {
             NotifyData notifyData = cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData);
-            notificationService.sendEmail(CAFCASS_SUBMISSION_TEMPLATE, recipientIsWelsh.get(),
+            notificationService.sendEmail(CAFCASS_SUBMISSION_TEMPLATE, recipientIsWelsh.orElseThrow(),
                     notifyData, caseData.getId());
         }
     }

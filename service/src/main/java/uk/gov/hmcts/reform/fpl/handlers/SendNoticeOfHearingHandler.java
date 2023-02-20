@@ -79,10 +79,8 @@ public class SendNoticeOfHearingHandler {
     @EventListener
     public void notifyCafcass(final SendNoticeOfHearing event) {
         final CaseData caseData = event.getCaseData();
-        Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
-                .map(CafcassLookupConfiguration.Cafcass::getEmail);
 
-        if (recipientIsWelsh.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
             final String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 
             NotifyData notifyData = noticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(

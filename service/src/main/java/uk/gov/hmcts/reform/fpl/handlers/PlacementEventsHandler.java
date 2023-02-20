@@ -125,15 +125,14 @@ public class PlacementEventsHandler {
         final CaseData caseData = event.getCaseData();
         final Placement placement = event.getPlacement();
 
-        Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
-            .map(CafcassLookupConfiguration.Cafcass::getEmail);
-
-        if (recipientIsWelsh.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
+            Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
+                .map(CafcassLookupConfiguration.Cafcass::getEmail);
             log.info("Send email to cafcass about {} new placement application", placement.getChildName());
 
             final NotifyData notifyData = contentProvider.getApplicationChangedCourtData(caseData, placement);
 
-            notificationService.sendEmail(PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE, recipientIsWelsh.get(),
+            notificationService.sendEmail(PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE, recipientIsWelsh.orElseThrow(),
                 notifyData, caseData.getId());
         }
     }
@@ -164,16 +163,15 @@ public class PlacementEventsHandler {
         final CaseData caseData = event.getCaseData();
         final Placement placement = event.getPlacement();
 
-        Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
-            .map(CafcassLookupConfiguration.Cafcass::getEmail);
-
-        if (recipientIsWelsh.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
+            Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
+                .map(CafcassLookupConfiguration.Cafcass::getEmail);
 
             log.info("Send email to cafcass about {} child placement notice", placement.getChildName());
 
             final NotifyData notifyData = contentProvider.getNoticeChangedCafcassData(caseData, placement);
 
-            notificationService.sendEmail(PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE, recipientIsWelsh.get(),
+            notificationService.sendEmail(PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE, recipientIsWelsh.orElseThrow(),
                 notifyData, caseData.getId());
         }
     }

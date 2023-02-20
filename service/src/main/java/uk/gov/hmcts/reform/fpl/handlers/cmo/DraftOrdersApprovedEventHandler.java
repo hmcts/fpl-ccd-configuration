@@ -109,10 +109,10 @@ public class DraftOrdersApprovedEventHandler {
     @EventListener
     public void sendNotificationToCafcass(final DraftOrdersApproved event) {
         CaseData caseData = event.getCaseData();
-        final Optional<Cafcass> recipientIsWelsh =
-                cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority());
 
-        if (recipientIsWelsh.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
+            final Optional<Cafcass> recipientIsWelsh =
+                cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority());
             List<HearingOrder> approvedOrders = event.getApprovedOrders();
 
             final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
@@ -125,7 +125,7 @@ public class DraftOrdersApprovedEventHandler {
 
             notificationService.sendEmail(
                     JUDGE_APPROVES_DRAFT_ORDERS,
-                    recipientIsWelsh.get().getEmail(),
+                    recipientIsWelsh.orElseThrow().getEmail(),
                     content,
                     caseData.getId()
             );

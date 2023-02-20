@@ -136,10 +136,12 @@ public class GeneratedPlacementOrderEventHandler {
         recipients.add(courtService.getCourtEmail(caseData));
 
         //CAFCASS (WALES ONLY)
-        Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
-            .map(CafcassLookupConfiguration.Cafcass::getEmail);
-
-        recipientIsWelsh.ifPresent(recipients::add);
+        if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
+            Optional<String> recipientIsWelsh =
+                cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
+                    .map(CafcassLookupConfiguration.Cafcass::getEmail);
+            recipientIsWelsh.ifPresent(recipients::add);
+        }
         sendEmail(notifyData, recipients, caseData.getId());
     }
 
