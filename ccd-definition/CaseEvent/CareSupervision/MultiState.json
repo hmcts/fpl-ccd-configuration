@@ -515,7 +515,7 @@
     "ID": "placement",
     "Name": "Placement",
     "Description": "Placement",
-    "DisplayOrder": 28,
+    "DisplayOrder": 21,
     "PreConditionState(s)": "PREPARE_FOR_HEARING;FINAL_HEARING",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
