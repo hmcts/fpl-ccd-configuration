@@ -160,17 +160,11 @@ public class Other implements Representable, ConfidentialParty<Other> {
     }
 
     public Other removeAddress() {
-        Other other =  this.toBuilder()
-            .address(null)
-            .build();
-        return other;
+        return this.toBuilder().address(null).build();
     }
 
     public Other removeAddressNotKnowReason() {
-        Other other =  this.toBuilder()
-            .addressNotKnowReason(null)
-            .build();
-        return other;
+        return this.toBuilder().addressNotKnowReason(null).build();
     }
 
 }
