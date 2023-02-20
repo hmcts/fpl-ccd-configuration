@@ -98,7 +98,7 @@ public class CaseManagementOrderIssuedEventHandler {
 
             notificationService.sendEmail(
                     CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE,
-                    recipientIsWelsh.get().getEmail(),
+                    recipientIsWelsh.orElseThrow().getEmail(),
                     cafcassParameters,
                     caseData.getId()
             );
