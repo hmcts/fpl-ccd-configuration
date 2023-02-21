@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.cmo.SendOrderReminderService;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
 import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 
@@ -52,6 +53,8 @@ class CreateWAOrderChasingTasksTest {
     @Mock
     private WorkAllocationTaskService waTaskService;
     @Mock
+    private SendOrderReminderService sendOrderReminderService;
+    @Mock
     private CoreCaseDataService ccdService;
     @Mock
     private JobExecutionContext executionContext;
@@ -68,7 +71,8 @@ class CreateWAOrderChasingTasksTest {
         CaseConverter converter = new CaseConverter(mapper);
         underTest = new CreateWAOrderChasingTasks(converter,
             searchService,
-            waTaskService);
+            waTaskService,
+            sendOrderReminderService);
 
         JobDetail jobDetail = mock(JobDetail.class);
         JobKey jobKey = mock(JobKey.class);
