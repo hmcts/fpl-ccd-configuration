@@ -140,7 +140,11 @@ public class GeneratedPlacementOrderEventHandler {
             Optional<String> recipientIsWelsh =
                 cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
                     .map(CafcassLookupConfiguration.Cafcass::getEmail);
-            recipientIsWelsh.ifPresent(recipients::add);
+            if (recipientIsWelsh.isPresent()) {
+                log.info(String.format("Added cafcass (wales) email to recipients for template: {}",
+                    PLACEMENT_ORDER_GENERATED_NOTIFICATION_TEMPLATE));
+                recipients.add(recipientIsWelsh.get());
+            }
         }
         sendEmail(notifyData, recipients, caseData.getId());
     }
