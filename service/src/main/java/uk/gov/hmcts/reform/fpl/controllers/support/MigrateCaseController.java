@@ -122,12 +122,4 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL, nonConfidentialPlacementsToKeep);
         caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL_NOTICES, nonConfidentialNoticesPlacementsToKeep);
     }
-
-    private void run1194(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1194";
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1650979089365767L, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.removeCaseSummaryByHearingId(getCaseData(caseDetails),
-            migrationId, UUID.fromString("dd48e7bf-7b58-4ad7-8815-94835b6746bb")));
-    }
 }
