@@ -1295,13 +1295,13 @@
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-superuser",
           "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-solicitor"
         ],
         "CRUD": "CR"
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-solicitor",
+          "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
