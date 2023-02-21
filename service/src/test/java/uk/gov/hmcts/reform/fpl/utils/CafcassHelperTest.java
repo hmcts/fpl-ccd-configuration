@@ -24,7 +24,7 @@ public class CafcassHelperTest {
     private CafcassLookupConfiguration cafcassLookupConfiguration;
 
     @Test
-    void shouldReturTrueWhenCaseLocalAuthorityIsEngland() {
+    void shouldReturnTrueWhenCaseLocalAuthorityIsEngland() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
             .thenReturn(Optional.of(
                 new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)));
@@ -45,7 +45,7 @@ public class CafcassHelperTest {
     }
 
     @Test
-    void shouldReturTrueWhenCaseLocalAuthorityIsWelsh() {
+    void shouldReturnTrueWhenCaseLocalAuthorityIsWelsh() {
         when(cafcassLookupConfiguration.getCafcassWelsh(any()))
             .thenReturn(Optional.of(
                 new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)));
