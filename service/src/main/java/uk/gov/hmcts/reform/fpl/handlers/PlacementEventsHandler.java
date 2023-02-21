@@ -166,13 +166,14 @@ public class PlacementEventsHandler {
         if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
             Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData
                 .getCaseLocalAuthority()).map(CafcassLookupConfiguration.Cafcass::getEmail);
+            if (recipientIsWelsh.isPresent()) {
+                log.info("Send email to cafcass about {} child placement notice", placement.getChildName());
 
-            log.info("Send email to cafcass about {} child placement notice", placement.getChildName());
+                final NotifyData notifyData = contentProvider.getNoticeChangedCafcassData(caseData, placement);
 
-            final NotifyData notifyData = contentProvider.getNoticeChangedCafcassData(caseData, placement);
-
-            notificationService.sendEmail(PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE, recipientIsWelsh.orElseThrow(),
-                notifyData, caseData.getId());
+                notificationService.sendEmail(PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE, recipientIsWelsh.get(),
+                    notifyData, caseData.getId());
+            }
         }
     }
 
