@@ -79,7 +79,7 @@ public class CoreCaseDataService {
                 true,
                 caseDataContent);
         } catch (Exception exception) {
-            log.error("Trigger event cannot be completed due to exception: " + exception);
+            log.error("Trigger event cannot be completed due to exception.", exception);
         }
     }
 
