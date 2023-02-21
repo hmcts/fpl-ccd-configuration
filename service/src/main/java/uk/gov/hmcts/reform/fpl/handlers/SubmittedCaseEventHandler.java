@@ -91,9 +91,11 @@ public class SubmittedCaseEventHandler {
         if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
             Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData
                 .getCaseLocalAuthority()).map(CafcassLookupConfiguration.Cafcass::getEmail);
-            NotifyData notifyData = cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData);
-            notificationService.sendEmail(CAFCASS_SUBMISSION_TEMPLATE, recipientIsWelsh.orElseThrow(),
+            if (recipientIsWelsh.isPresent()) {
+                NotifyData notifyData = cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData);
+                notificationService.sendEmail(CAFCASS_SUBMISSION_TEMPLATE, recipientIsWelsh.get(),
                     notifyData, caseData.getId());
+            }
         }
     }
 
