@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
+import uk.gov.hmcts.reform.fpl.service.cmo.SendOrderReminderService;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
 import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.BooleanQuery;
@@ -48,6 +49,7 @@ public class CreateWAOrderChasingTasks implements Job {
     private final CaseConverter converter;
     private final SearchService searchService;
     private final WorkAllocationTaskService workAllocationTaskService;
+    private final SendOrderReminderService sendOrderReminderService;
 
     @Override
     @SneakyThrows
@@ -112,11 +114,11 @@ public class CreateWAOrderChasingTasks implements Job {
         log.info("Job '{}' finished. {}", jobName, buildStats(total, skipped, chased, failed));
     }
 
-    private boolean isInRange(HearingBooking booking) {
+    private boolean isInRange(Element<HearingBooking> booking) {
         // todo - check the dates on this query with some edge cases!
-        boolean beforeRange = booking.getEndDate().toLocalDate().isBefore(LocalDate.now().minusDays(5))
-            || booking.getEndDate().toLocalDate().isEqual(LocalDate.now().minusDays(5));
-        boolean afterRange = booking.getEndDate().toLocalDate().isAfter(LocalDate.now().minusDays(6));
+        boolean beforeRange = booking.getValue().getEndDate().toLocalDate().isBefore(LocalDate.now().minusDays(5))
+            || booking.getValue().getEndDate().toLocalDate().isEqual(LocalDate.now().minusDays(5));
+        boolean afterRange = booking.getValue().getEndDate().toLocalDate().isAfter(LocalDate.now().minusDays(6));
 
         return beforeRange && afterRange;
     }
@@ -126,13 +128,13 @@ public class CreateWAOrderChasingTasks implements Job {
         if (isEmpty(caseData.getHearingDetails())) {
             return false;
         }
-        List<HearingBooking> hearingsWithinRange = caseData.getHearingDetails().stream()
-                .map(Element::getValue)
+        List<Element<HearingBooking>> hearingsWithinRange = caseData.getHearingDetails().stream()
                 .filter(this::isInRange)
                 .collect(Collectors.toList());
 
         // ES cannot index nulls (automatically), also sometimes the cmo field is not present at all => manual check
-        return hearingsWithinRange.stream().anyMatch(booking -> !booking.hasCMOAssociation());
+        return hearingsWithinRange.stream().anyMatch(booking -> !booking.getValue().hasCMOAssociation()
+            && !sendOrderReminderService.checkSealedCMOExistsForHearing(caseData, booking.getId()));
     }
 
     private MustNot getInvalidStates() {

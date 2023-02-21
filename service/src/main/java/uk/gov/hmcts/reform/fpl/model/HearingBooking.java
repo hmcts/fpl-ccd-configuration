@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasEndDateAfterStartDate;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
 
+import javax.validation.constraints.Future;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,7 +30,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import javax.validation.constraints.Future;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;

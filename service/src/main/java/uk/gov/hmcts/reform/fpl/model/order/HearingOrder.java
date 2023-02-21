@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -48,6 +49,7 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     private DocumentReference lastUploadedOrder;
     private String hearing;
     // Case management order, 21 June 2020
+    private UUID hearingId;
     private LocalDate dateSent;
     private LocalDate dateIssued;
     private final LocalDate amendedDate;
@@ -64,18 +66,26 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     private String othersNotified;
 
     public static HearingOrder from(DocumentReference order, HearingBooking hearing, LocalDate date) {
-        return from(order, hearing, date, AGREED_CMO, null, null);
+        return from(order, hearing, date, AGREED_CMO, null, null, null);
     }
 
     public static HearingOrder from(DocumentReference order, HearingBooking hearing, LocalDate date,
                                     HearingOrderType orderType,
                                     List<Element<SupportingEvidenceBundle>> supportingDocs,
                                     LanguageTranslationRequirement translationRequirement) {
+        return from(order, hearing, date, orderType, supportingDocs, translationRequirement, null);
+    }
+
+    public static HearingOrder from(DocumentReference order, HearingBooking hearing, LocalDate date,
+                                    HearingOrderType orderType,
+                                    List<Element<SupportingEvidenceBundle>> supportingDocs,
+                                    LanguageTranslationRequirement translationRequirement, UUID hearingId) {
         return HearingOrder.builder()
             .type(orderType)
             .title(orderType == AGREED_CMO ? "Agreed CMO discussed at hearing" : "Draft CMO from advocates' meeting")
             .order(order)
             .hearing(hearing.toLabel())
+            .hearingId(hearingId)
             .dateSent(date)
             .status(orderType == AGREED_CMO ? SEND_TO_JUDGE : DRAFT)
             .judgeTitleAndName(formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()))

@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.time.LocalDateTime.now;
@@ -19,9 +20,16 @@ public class SendOrderReminderService {
 
     public List<HearingBooking> getPastHearingBookingsWithoutCMOs(CaseData caseData) {
         return caseData.getAllNonCancelledHearings().stream()
+            .filter(booking -> booking.getValue().getEndDate().isBefore(now())
+                && !booking.getValue().hasCMOAssociation()
+                && !checkSealedCMOExistsForHearing(caseData, booking.getId()))
             .map(Element::getValue)
-            .filter(booking -> booking.getEndDate().isBefore(now()) && !booking.hasCMOAssociation())
             .sorted(Comparator.comparing(HearingBooking::getStartDate))
             .collect(Collectors.toList());
+    }
+
+    public boolean checkSealedCMOExistsForHearing(CaseData caseData, UUID hearingId) {
+        return caseData.getSealedCMOs().stream()
+            .anyMatch(el -> hearingId.equals(el.getValue().getHearingId()));
     }
 }
