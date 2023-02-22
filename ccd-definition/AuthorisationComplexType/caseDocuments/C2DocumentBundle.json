@@ -38,6 +38,7 @@
           "[LASHARED]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-systemupdate",
           "caseworker-publiclaw-cafcass",
           "[BARRISTER]"
         ],
@@ -92,6 +93,7 @@
           "[LASHARED]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-systemupdate",
           "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "CRU"
@@ -145,6 +147,7 @@
           "[LASHARED]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-systemupdate",
           "caseworker-publiclaw-cafcass",
           "[BARRISTER]"
         ],
@@ -199,6 +202,7 @@
           "[LASHARED]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-systemupdate",
           "caseworker-publiclaw-cafcass",
           "[BARRISTER]"
         ],
@@ -253,6 +257,7 @@
           "[LASHARED]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-systemupdate",
           "caseworker-publiclaw-cafcass",
           "[BARRISTER]"
         ],
@@ -307,6 +312,7 @@
           "[LASHARED]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-systemupdate",
           "caseworker-publiclaw-cafcass",
           "[BARRISTER]"
         ],
@@ -361,6 +367,7 @@
           "[LASHARED]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-systemupdate",
           "caseworker-publiclaw-cafcass",
           "[BARRISTER]"
         ],
@@ -415,6 +422,7 @@
           "[LASHARED]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-systemupdate",
           "caseworker-publiclaw-cafcass",
           "[BARRISTER]"
         ],
@@ -469,6 +477,7 @@
           "[LASHARED]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-systemupdate",
           "caseworker-publiclaw-cafcass",
           "[BARRISTER]"
         ],
@@ -523,6 +532,7 @@
           "[LASHARED]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-systemupdate",
           "caseworker-publiclaw-cafcass",
           "[BARRISTER]"
         ],
@@ -546,7 +556,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-systemupdate"
         ],
         "CRUD": "CRU"
       },
@@ -611,6 +622,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-systemupdate",
           "[CAFCASSSOLICITOR]",
           "[SOLICITOR]",
           "[SOLICITORA]",
@@ -675,6 +687,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-systemupdate",
           "[LASOLICITOR]",
           "[LASHARED]",
           "[LABARRISTER]"
