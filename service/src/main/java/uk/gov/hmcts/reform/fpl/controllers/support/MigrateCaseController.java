@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.Placement;
@@ -59,6 +60,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1202", this::run1202,
         "DFPL-1195", this::run1195,
         "DFPL-1218", this::run1218,
+        "DFPL-1210", this::run1210,
         "DFPL-702", this::run702
     );
 
@@ -195,5 +197,15 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put(PLACEMENT, placementsToKeep);
         caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL, nonConfidentialPlacementsToKeep);
         caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL_NOTICES, nonConfidentialNoticesPlacementsToKeep);
+    }
+    
+    private void run1210(CaseDetails caseDetails) {
+        String migrationId = "DFPL-1210";
+        Map<String, Object> caseDetailsData = caseDetails.getData();
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1615556003529811L, migrationId);
+        migrateCaseService.doHearingOptionCheck(caseDetails.getId(),
+            Optional.of((String) caseDetails.getData().get("hearingOption")).orElse(""),
+            "EDIT_HEARING", migrationId);
+        caseDetailsData.put("hearingOption", HearingOptions.EDIT_PAST_HEARING);
     }
 }
