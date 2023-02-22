@@ -113,22 +113,24 @@ public class DraftOrdersApprovedEventHandler {
         if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
             final Optional<Cafcass> recipientIsWelsh =
                 cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority());
-            List<HearingOrder> approvedOrders = event.getApprovedOrders();
+            if (recipientIsWelsh.isPresent()) {
+                List<HearingOrder> approvedOrders = event.getApprovedOrders();
 
-            final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
-                caseData.getHearingDetails())
-                .map(Element::getValue)
-                .orElse(null);
+                final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
+                    caseData.getHearingDetails())
+                    .map(Element::getValue)
+                    .orElse(null);
 
-            NotifyData content = contentProvider.buildOrdersApprovedContent(caseData, hearing, approvedOrders,
-                DIGITAL_SERVICE);
+                NotifyData content = contentProvider.buildOrdersApprovedContent(caseData, hearing, approvedOrders,
+                    DIGITAL_SERVICE);
 
-            notificationService.sendEmail(
+                notificationService.sendEmail(
                     JUDGE_APPROVES_DRAFT_ORDERS,
-                    recipientIsWelsh.orElseThrow().getEmail(),
+                    recipientIsWelsh.get().getEmail(),
                     content,
                     caseData.getId()
-            );
+                );
+            }
         }
     }
 

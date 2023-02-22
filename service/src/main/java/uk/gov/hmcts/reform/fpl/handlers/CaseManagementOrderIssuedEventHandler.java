@@ -91,17 +91,19 @@ public class CaseManagementOrderIssuedEventHandler {
         if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
             final Optional<Cafcass> recipientIsWelsh =
                 cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority());
-            HearingOrder issuedCmo = event.getCmo();
+            if (recipientIsWelsh.isPresent()) {
+                HearingOrder issuedCmo = event.getCmo();
 
-            final IssuedCMOTemplate cafcassParameters = contentProvider.buildCMOIssuedNotificationParameters(
+                final IssuedCMOTemplate cafcassParameters = contentProvider.buildCMOIssuedNotificationParameters(
                     caseData, issuedCmo, DIGITAL_SERVICE);
 
-            notificationService.sendEmail(
+                notificationService.sendEmail(
                     CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE,
-                    recipientIsWelsh.orElseThrow().getEmail(),
+                    recipientIsWelsh.get().getEmail(),
                     cafcassParameters,
                     caseData.getId()
-            );
+                );
+            }
         }
     }
 
