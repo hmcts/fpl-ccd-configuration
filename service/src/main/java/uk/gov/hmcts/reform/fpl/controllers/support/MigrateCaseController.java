@@ -161,7 +161,7 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL, nonConfidentialPlacementsToKeep);
         caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL_NOTICES, nonConfidentialNoticesPlacementsToKeep);
     }
-
+    
     private void run1210(CaseDetails caseDetails) {
         String migrationId = "DFPL-1210";
         Map<String, Object> caseDetailsData = caseDetails.getData();
