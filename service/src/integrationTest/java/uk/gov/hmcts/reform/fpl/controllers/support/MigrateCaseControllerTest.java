@@ -9,25 +9,23 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
-import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
-import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList.TIMETABLE_FOR_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -58,149 +56,167 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             .hasMessage("No migration mapped to " + INVALID_MIGRATION_ID);
     }
 
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class Dfpl1144 {
-        final String migrationId = "DFPL-1144";
-        final LocalDate extensionDate = LocalDate.now();
-        final Long caseId = 1660300177298257L;
-        final UUID child1Id = UUID.fromString("d76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0");
-        final UUID child2Id = UUID.fromString("c76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0");
-        final Element<Child> childToBeUpdated1 = element(child1Id, Child.builder()
-            .party(ChildParty.builder()
-                .firstName("Jim")
-                .lastName("Bob")
-                .build())
-            .build());
-        final Element<Child> childToBeUpdated2 = element(child2Id, Child.builder()
-            .party(ChildParty.builder()
-                .firstName("Fred")
-                .lastName("Frederson")
-                .build())
-            .build());
-        final Element<Child> expectedChild1 = element(child1Id, Child.builder()
-            .party(ChildParty.builder()
-                .firstName("Jim")
-                .lastName("Bob")
-                .completionDate(extensionDate)
-                .extensionReason(TIMETABLE_FOR_PROCEEDINGS)
-                .build())
-            .build());
-        final Element<Child> expectedChild2 = element(child2Id, Child.builder()
-            .party(ChildParty.builder()
-                .firstName("Fred")
-                .lastName("Frederson")
-                .completionDate(extensionDate)
-                .extensionReason(TIMETABLE_FOR_PROCEEDINGS)
-                .build())
-            .build());
-
-        @Test
-        void shouldAddAdditionalFieldsToChildren() {
-            CaseData caseData = CaseData.builder()
-                .id(caseId)
-                .state(State.CASE_MANAGEMENT)
-                .caseCompletionDate(extensionDate)
-                .caseExtensionReasonList(TIMETABLE_FOR_PROCEEDINGS)
-                .children1(List.of(childToBeUpdated1, childToBeUpdated2))
-                .hearingOption(HearingOptions.NEW_HEARING)
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId)
-            );
-
-            CaseData responseData = extractCaseData(response);
-            List<Element<Child>> expectedChildren = List.of(expectedChild1,expectedChild2);
-
-            assertThat(responseData.getAllChildren()).isEqualTo(expectedChildren);
-            assertThat(responseData.getHearingOption()).isEqualTo(HearingOptions.EDIT_PAST_HEARING);
-        }
-
-        @Test
-        void shouldNotUpdateWhenNoExtensionPresent() {
-            CaseData caseData = CaseData.builder()
-                .id(caseId)
-                .state(State.CASE_MANAGEMENT)
-                .children1(List.of(childToBeUpdated1, childToBeUpdated2))
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId)
-            );
-
-            CaseData responseData = extractCaseData(response);
-            List<Element<Child>> unchangedChildren = List.of(childToBeUpdated1, childToBeUpdated2);
-
-            assertThat(responseData.getAllChildren()).isEqualTo(unchangedChildren);
-        }
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class Dfpl872Rollback {
-        final String migrationId = "DFPL-872rollback";
-        final LocalDate extensionDate = LocalDate.now();
-        final Long caseId = 1660300177298257L;
-        final UUID child1Id = UUID.fromString("d76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0");
-        final UUID child2Id = UUID.fromString("c76c0df0-2fe3-4ee7-aafa-3703bdc5b7e0");
-        final Element<Child> childToBeRolledBack1 = element(child1Id, Child.builder()
-            .party(ChildParty.builder()
-                .firstName("Jim")
-                .lastName("Bob")
-                .completionDate(extensionDate)
-                .extensionReason(TIMETABLE_FOR_PROCEEDINGS)
-                .build())
-            .build());
-        final Element<Child> childToBeRolledBack2 = element(child2Id, Child.builder()
-            .party(ChildParty.builder()
-                .firstName("Fred")
-                .lastName("Frederson")
-                .completionDate(extensionDate)
-                .extensionReason(TIMETABLE_FOR_PROCEEDINGS)
-                .build())
-            .build());
-        final Element<Child> expectedChild1 = element(child1Id, Child.builder()
-            .party(ChildParty.builder()
-                .firstName("Jim")
-                .lastName("Bob")
-                .completionDate(null)
-                .extensionReason(null)
-                .build())
-            .build());
-        final Element<Child> expectedChild2 = element(child2Id, Child.builder()
-            .party(ChildParty.builder()
-                .firstName("Fred")
-                .lastName("Frederson")
-                .completionDate(null)
-                .extensionReason(null)
-                .build())
-            .build());
-
-        @Test
-        void shouldRemoveNewExtensionFields() {
-            CaseData caseData = CaseData.builder()
-                .id(caseId)
-                .state(State.CASE_MANAGEMENT)
-                .caseCompletionDate(extensionDate)
-                .caseExtensionReasonList(TIMETABLE_FOR_PROCEEDINGS)
-                .children1(List.of(childToBeRolledBack1, childToBeRolledBack2))
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId)
-            );
-
-            CaseData responseData = extractCaseData(response);
-            List<Element<Child>> expectedChildren = List.of(expectedChild1, expectedChild2);
-
-            assertThat(responseData.getAllChildren()).isEqualTo(expectedChildren);
-        }
-    }
-
     private CaseDetails buildCaseDetails(CaseData caseData, String migrationId) {
         CaseDetails caseDetails = asCaseDetails(caseData);
         caseDetails.getData().put("migrationId", migrationId);
         return caseDetails;
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl1202 {
+
+        private final String migrationId = "DFPL-1202";
+        private final long validCaseId = 1649150882331141L;
+
+        @Test
+        void shouldRemoveAllPlacementCollections() {
+            List<Element<Placement>> placements = List.of(
+                element(Placement.builder()
+                    .application(testDocumentReference())
+                    .build()),
+                element(Placement.builder()
+                    .application(testDocumentReference())
+                    .build())
+            );
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .placementEventData(PlacementEventData.builder()
+                    .placements(placements)
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getPlacementEventData().getPlacements()).isEmpty();
+            assertThat(response.getData()).extracting("placementsNonConfidential", "placementsNonConfidentialNotices")
+                .containsExactly(null, null);
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl1195 {
+
+        private final String migrationId = "DFPL-1195";
+        private final long validCaseId = 1655911528192218L;
+
+        @Test
+        void shouldRemoveAllPlacementCollections() {
+            List<Element<Placement>> placements = List.of(
+                element(Placement.builder()
+                    .application(testDocumentReference())
+                    .build()),
+                element(Placement.builder()
+                    .application(testDocumentReference())
+                    .build())
+            );
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .placementEventData(PlacementEventData.builder()
+                    .placements(placements)
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getPlacementEventData().getPlacements()).isEmpty();
+            assertThat(response.getData()).extracting("placementsNonConfidential", "placementsNonConfidentialNotices")
+                .containsExactly(null, null);
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl1204 {
+        private final String migrationId = "DFPL-1204";
+        private final long validCaseId = 1638528543085011L;
+        private final UUID placementToRemove = UUID.fromString("88125c8b-8466-4af4-967f-197c3b82773c");
+        private final UUID placementToRemain = UUID.randomUUID();
+        private final DocumentReference documentToRemain = testDocumentReference();
+
+        @Test
+        void shouldOnlyRemoveSelectPlacement() {
+            List<Element<Placement>> placements = List.of(
+                element(placementToRemove, Placement.builder()
+                    .application(testDocumentReference())
+                    .build()),
+                element(placementToRemain, Placement.builder()
+                    .application(documentToRemain)
+                    .build())
+            );
+
+            List<Element<Placement>> placementsRemaining = List.of(
+                element(placementToRemain, Placement.builder()
+                    .application(documentToRemain)
+                    .build())
+            );
+
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .placementEventData(PlacementEventData.builder()
+                    .placements(placements)
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getPlacementEventData().getPlacements()).isEqualTo(placementsRemaining);
+            assertThat(responseData.getPlacementEventData()
+                .getPlacementsNonConfidential(true)).isEqualTo(placementsRemaining);
+            assertThat(responseData.getPlacementEventData()
+                .getPlacementsNonConfidential(false)).isEqualTo(placementsRemaining);
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl1218 {
+        private final String migrationId = "DFPL-1218";
+        private final long validCaseId = 1651753104228873L;
+        private final UUID placementToRemove = UUID.fromString("e32706b1-22e5-4bd9-ba05-355fe69028d0");
+        private final UUID placementToRemain = UUID.randomUUID();
+        private final DocumentReference documentToRemain = testDocumentReference();
+
+        @Test
+        void shouldOnlyRemoveSelectPlacement() {
+            List<Element<Placement>> placements = List.of(
+                element(placementToRemove, Placement.builder()
+                    .application(testDocumentReference())
+                    .build()),
+                element(placementToRemain, Placement.builder()
+                    .application(documentToRemain)
+                    .build())
+            );
+
+            List<Element<Placement>> placementsRemaining = List.of(
+                element(placementToRemain, Placement.builder()
+                    .application(documentToRemain)
+                    .build())
+            );
+
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .placementEventData(PlacementEventData.builder()
+                    .placements(placements)
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getPlacementEventData().getPlacements()).isEqualTo(placementsRemaining);
+            assertThat(responseData.getPlacementEventData()
+                .getPlacementsNonConfidential(true)).isEqualTo(placementsRemaining);
+            assertThat(responseData.getPlacementEventData()
+                .getPlacementsNonConfidential(false)).isEqualTo(placementsRemaining);
+        }
     }
 }
