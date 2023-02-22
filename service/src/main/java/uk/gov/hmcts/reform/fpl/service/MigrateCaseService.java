@@ -370,4 +370,14 @@ public class MigrateCaseService {
                 migrationId, caseData.getId()));
         }
     }
+
+    public void doHearingOptionCheck(long caseId, String hearingOption, String expectedHearingOption,
+                                     String migrationId) throws AssertionError {
+        if (!hearingOption.equals(expectedHearingOption)) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, unexpected hearing option %s",
+                migrationId, caseId, hearingOption
+            ));
+        }
+    }
 }
