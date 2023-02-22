@@ -45,7 +45,10 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1202", this::run1202,
         "DFPL-1195", this::run1195,
         "DFPL-1218", this::run1218,
-        "DFPL-1210", this::run1210
+        "DFPL-1210", this::run1210,
+        "DFPL-1238", this::run1238,
+        "DFPL-1241", this::run1241,
+        "DFPL-1244", this::run1244
     );
 
     @PostMapping("/about-to-submit")
@@ -66,6 +69,39 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
+    }
+
+    private void run1238(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1238";
+        var possibleCaseIds = List.of(1635423187428763L);
+
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().remove(PLACEMENT);
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL);
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL_NOTICES);
+    }
+
+    private void run1241(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1241";
+        var possibleCaseIds = List.of(1652968793683878L);
+
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().remove(PLACEMENT);
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL);
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL_NOTICES);
+    }
+
+    private void run1244(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1244";
+        var possibleCaseIds = List.of(1644912253936021L);
+
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().remove(PLACEMENT);
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL);
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL_NOTICES);
     }
 
     private void run1202(CaseDetails caseDetails) {
@@ -125,7 +161,7 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL, nonConfidentialPlacementsToKeep);
         caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL_NOTICES, nonConfidentialNoticesPlacementsToKeep);
     }
-    
+
     private void run1210(CaseDetails caseDetails) {
         String migrationId = "DFPL-1210";
         Map<String, Object> caseDetailsData = caseDetails.getData();
