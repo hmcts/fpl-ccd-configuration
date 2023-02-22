@@ -177,7 +177,6 @@ public class CaseData extends CaseDataParent {
     private Object outsourcingLAs;
     private Court court;
     private List<Element<Court>> pastCourtList;
-    private String courtCode;
     @JsonIgnore
     private String courtField;
     private String dfjArea;

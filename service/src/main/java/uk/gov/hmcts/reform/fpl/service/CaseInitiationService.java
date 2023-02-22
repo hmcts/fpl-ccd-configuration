@@ -266,7 +266,6 @@ public class CaseInitiationService {
                 DfjAreaCourtMapping dfjArea = dfjLookUpService.getDfjArea(court.getCode());
                 return caseData.toBuilder()
                     .court(court)
-                    .courtCode(court.getCode())
                     .courtField(dfjArea.getCourtField())
                     .dfjArea(dfjArea.getDfjArea())
                     .build();

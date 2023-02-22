@@ -373,7 +373,6 @@ class CaseInitiationServiceTest {
 
             assertThat(updatedCaseData.getCourt()).isEqualTo(court);
             assertThat(updatedCaseData.getMultiCourts()).isNull();
-            assertThat(updatedCaseData.getCourtCode()).isEqualTo(court.getCode());
             assertThat(updatedCaseData.getDfjArea()).isEqualTo("SWANSEA");
             assertThat(updatedCaseData.getCourtField()).isEqualTo("swanseaDFJCourt");
         }
@@ -412,7 +411,6 @@ class CaseInitiationServiceTest {
 
             assertThat(updatedCaseData.getCourt()).isEqualTo(court);
             assertThat(updatedCaseData.getMultiCourts()).isNull();
-            assertThat(updatedCaseData.getCourtCode()).isEqualTo(court.getCode());
             assertThat(updatedCaseData.getDfjArea()).isEqualTo("SWANSEA");
             assertThat(updatedCaseData.getCourtField()).isEqualTo("swanseaDFJCourt");
         }
