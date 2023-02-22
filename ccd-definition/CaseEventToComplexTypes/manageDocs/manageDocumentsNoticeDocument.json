@@ -49,7 +49,7 @@
     "CaseEventID": "manageDocuments",
     "CaseFieldID": "placementNoticeResponses",
     "ListElementCode": "documentAcknowledgeLabelForCYA",
-    "FieldDisplayOrder": 4,
+    "FieldDisplayOrder": "4",
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to this case</strong></div><br>",
     "FieldShowCondition": "documentAcknowledge=\"ACK_RELATED_TO_CASE\""
