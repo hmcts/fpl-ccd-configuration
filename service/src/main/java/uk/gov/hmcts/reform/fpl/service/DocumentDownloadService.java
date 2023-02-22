@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.fpl.exceptions.EmptyFileException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.utils.SecureDocStoreHelper;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.net.URI;
@@ -35,10 +36,8 @@ public class DocumentDownloadService {
     private final SystemUserService systemUserService;
 
     public byte[] downloadDocument(final String documentUrlString) {
-
-        if (featureToggleService.isSecureDocstoreEnabled()) {
-            return secureDocStoreService.downloadDocument(documentUrlString);
-        } else {
+        return SecureDocStoreHelper.of(secureDocStoreService, featureToggleService)
+            .download(documentUrlString, () -> {
             String userRoles = "caseworker-publiclaw-systemupdate";
             boolean useSystemUser = false;
             try {
@@ -71,7 +70,6 @@ public class DocumentDownloadService {
             }
             throw new IllegalArgumentException(String.format("Download of document from %s unsuccessful.",
                 documentUrlString));
-
-        }
+        });
     }
 }
