@@ -44,7 +44,7 @@
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "COMPLEX",
     "PageID": "ListHearingOrSendToAdmin",
-    "PageDisplayOrder": 7,
+    "PageDisplayOrder": 8,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
     "FieldShowCondition": "gatekeepingOrderListOrSendToAdmin=\"DO_NOT_SHOW\""
