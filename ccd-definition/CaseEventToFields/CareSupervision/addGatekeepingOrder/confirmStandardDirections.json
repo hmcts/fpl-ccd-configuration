@@ -7,7 +7,7 @@
     "PageFieldDisplayOrder": 0,
     "DisplayContext": "READONLY",
     "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "gatekeepingOrderHasHearing1=\"YES\"",
     "PageShowCondition": "directionsForAllParties !=\"\" OR directionsForLocalAuthority !=\"\" OR directionsForRespondents !=\"\" OR directionsForCafcass  !=\"\" OR directionsForOthers !=\"\" OR directionsForCourt !=\"\""
@@ -20,7 +20,7 @@
     "PageFieldDisplayOrder": 0,
     "DisplayContext": "READONLY",
     "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForAllPartiesLabel=\"DO_NOT_SHOW\""
   },
@@ -32,7 +32,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1
   },
   {
@@ -43,7 +43,7 @@
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
    "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForAllParties !=\"\""
   },
@@ -55,7 +55,7 @@
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
    "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForAllParties CONTAINS \"REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE\"",
     "ShowSummaryChangeOption": "Y"
@@ -68,7 +68,7 @@
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
    "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForAllParties CONTAINS \"REQUEST_HELP_TO_TAKE_PART_IN_PROCEEDINGS\"",
     "ShowSummaryChangeOption": "Y"
@@ -81,7 +81,7 @@
     "PageFieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
    "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForAllParties CONTAINS \"ASK_FOR_DISCLOSURE\"",
     "ShowSummaryChangeOption": "Y"
@@ -94,7 +94,7 @@
     "PageFieldDisplayOrder": 6,
     "DisplayContext": "COMPLEX",
    "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForAllParties CONTAINS \"ATTEND_HEARING\"",
     "ShowSummaryChangeOption": "Y"
@@ -107,7 +107,7 @@
     "PageFieldDisplayOrder": 7,
     "DisplayContext": "MANDATORY",
    "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForAllParties CONTAINS \"CONTACT_ALTERNATIVE_CARERS\"",
     "ShowSummaryChangeOption": "Y"
@@ -120,7 +120,7 @@
     "PageFieldDisplayOrder": 8,
     "DisplayContext": "READONLY",
    "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForLocalAuthority !=\"\""
   },
@@ -132,7 +132,7 @@
     "PageFieldDisplayOrder": 9,
     "DisplayContext": "COMPLEX",
    "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForLocalAuthority CONTAINS \"SEND_DOCUMENTS_TO_ALL_PARTIES\"",
     "ShowSummaryChangeOption": "Y"
@@ -145,7 +145,7 @@
     "PageFieldDisplayOrder": 10,
     "DisplayContext": "COMPLEX",
    "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForLocalAuthority CONTAINS \"SEND_MISSING_ANNEX\"",
     "ShowSummaryChangeOption": "Y"
@@ -158,7 +158,7 @@
     "PageFieldDisplayOrder": 11,
     "DisplayContext": "MANDATORY",
    "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForLocalAuthority CONTAINS \"IDENTIFY_ALTERNATIVE_CARERS\"",
     "ShowSummaryChangeOption": "Y"
@@ -171,7 +171,7 @@
     "PageFieldDisplayOrder": 12,
     "DisplayContext": "COMPLEX",
    "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForLocalAuthority CONTAINS \"SEND_TRANSLATED_DOCUMENTS\"",
     "ShowSummaryChangeOption": "Y"
@@ -184,7 +184,7 @@
     "PageFieldDisplayOrder": 13,
     "DisplayContext": "MANDATORY",
    "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForLocalAuthority CONTAINS \"LODGE_BUNDLE\"",
     "ShowSummaryChangeOption": "Y"
@@ -197,7 +197,7 @@
     "PageFieldDisplayOrder": 14,
     "DisplayContext": "MANDATORY",
    "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForLocalAuthority CONTAINS \"SEND_CASE_SUMMARY\"",
     "ShowSummaryChangeOption": "Y"
@@ -210,7 +210,7 @@
     "PageFieldDisplayOrder": 15,
     "DisplayContext": "COMPLEX",
    "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForLocalAuthority CONTAINS \"CONSIDER_JURISDICTION\"",
     "ShowSummaryChangeOption": "Y"
@@ -223,7 +223,7 @@
     "PageFieldDisplayOrder": 16,
     "DisplayContext": "READONLY",
    "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForRespondents CONTAINS \"SEND_RESPONSE_TO_THRESHOLD_STATEMENT\""
   },
@@ -235,7 +235,7 @@
     "PageFieldDisplayOrder": 17,
     "DisplayContext": "MANDATORY",
    "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForRespondents CONTAINS \"SEND_RESPONSE_TO_THRESHOLD_STATEMENT\"",
     "ShowSummaryChangeOption": "Y"
@@ -248,7 +248,7 @@
     "PageFieldDisplayOrder": 18,
     "DisplayContext": "READONLY",
    "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForCafcass !=\"\""
   },
@@ -260,7 +260,7 @@
     "PageFieldDisplayOrder": 19,
     "DisplayContext": "MANDATORY",
    "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForCafcass CONTAINS \"ARRANGE_ADVOCATES_MEETING\"",
     "ShowSummaryChangeOption": "Y"
@@ -273,7 +273,7 @@
     "PageFieldDisplayOrder": 20,
     "DisplayContext": "MANDATORY",
    "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForCafcass CONTAINS \"SEND_GUARDIANS_ANALYSIS\"",
     "ShowSummaryChangeOption": "Y"
@@ -286,7 +286,7 @@
     "PageFieldDisplayOrder": 21,
     "DisplayContext": "COMPLEX",
    "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForCafcass CONTAINS \"APPOINT_CHILDREN_GUARDIAN\"",
     "ShowSummaryChangeOption": "Y"
@@ -299,7 +299,7 @@
     "PageFieldDisplayOrder": 22,
     "DisplayContext": "READONLY",
    "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForOthers CONTAINS \"OBJECT_TO_REQUEST_FOR_DISCLOSURE\""
   },
@@ -311,7 +311,7 @@
     "PageFieldDisplayOrder": 23,
     "DisplayContext": "MANDATORY",
    "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForOthers CONTAINS \"OBJECT_TO_REQUEST_FOR_DISCLOSURE\"",
     "ShowSummaryChangeOption": "Y"
@@ -324,7 +324,7 @@
     "PageFieldDisplayOrder": 24,
     "DisplayContext": "READONLY",
    "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForCourt CONTAINS \"ARRANGE_INTERPRETERS\""
   },
@@ -336,7 +336,7 @@
     "PageFieldDisplayOrder": 25,
     "DisplayContext": "COMPLEX",
    "PageID": "ConfirmStandardDirections",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForCourt CONTAINS \"ARRANGE_INTERPRETERS\"",
     "ShowSummaryChangeOption": "Y"
