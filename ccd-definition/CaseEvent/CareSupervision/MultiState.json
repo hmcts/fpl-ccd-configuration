@@ -993,7 +993,7 @@
     "Name": "Applicant's details",
     "Description": "Applicant's details",
     "DisplayOrder": 6,
-    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
+    "PreConditionState(s)": "PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-local-authority/about-to-start",
