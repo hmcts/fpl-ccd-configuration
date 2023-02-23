@@ -130,7 +130,7 @@
     "FieldDisplayOrder": "12",
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>",
-    "FieldShowCondition": "supplementsBundle.documentAcknowledge!=\"ACK_RELATED_TO_CASE\""
+    "FieldShowCondition": "documentAcknowledge!=\"ACK_RELATED_TO_CASE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -141,7 +141,7 @@
     "FieldDisplayOrder": "12",
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to this case</strong></div><br>",
-    "FieldShowCondition": "supplementsBundle.documentAcknowledge=\"ACK_RELATED_TO_CASE\""
+    "FieldShowCondition": "documentAcknowledge=\"ACK_RELATED_TO_CASE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -210,7 +210,7 @@
     "FieldDisplayOrder": "18",
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>",
-    "FieldShowCondition": "supportingEvidenceBundle.documentAcknowledge!=\"ACK_RELATED_TO_CASE\""
+    "FieldShowCondition": "documentAcknowledge!=\"ACK_RELATED_TO_CASE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -221,7 +221,7 @@
     "FieldDisplayOrder": "18",
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to this case</strong></div><br>",
-    "FieldShowCondition": "supportingEvidenceBundle.documentAcknowledge=\"ACK_RELATED_TO_CASE\""
+    "FieldShowCondition": "documentAcknowledge=\"ACK_RELATED_TO_CASE\""
   },
   {
     "LiveFrom": "01/01/2017",
