@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -42,7 +44,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1204", this::run1204,
         "DFPL-1202", this::run1202,
         "DFPL-1195", this::run1195,
-        "DFPL-1218", this::run1218
+        "DFPL-1218", this::run1218,
+        "DFPL-1210", this::run1210
     );
 
     @PostMapping("/about-to-submit")
@@ -121,5 +124,15 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put(PLACEMENT, placementsToKeep);
         caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL, nonConfidentialPlacementsToKeep);
         caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL_NOTICES, nonConfidentialNoticesPlacementsToKeep);
+    }
+    
+    private void run1210(CaseDetails caseDetails) {
+        String migrationId = "DFPL-1210";
+        Map<String, Object> caseDetailsData = caseDetails.getData();
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1615556003529811L, migrationId);
+        migrateCaseService.doHearingOptionCheck(caseDetails.getId(),
+            Optional.of((String) caseDetails.getData().get("hearingOption")).orElse(""),
+            "EDIT_HEARING", migrationId);
+        caseDetailsData.put("hearingOption", HearingOptions.EDIT_PAST_HEARING);
     }
 }

@@ -58,6 +58,17 @@ class MigrateCaseServiceTest {
     private MigrateCaseService underTest;
 
     @Test
+    void shouldDoHearingOptionCheck() {
+        assertDoesNotThrow(() -> underTest.doHearingOptionCheck(1L, "EDIT_HEARING", "EDIT_HEARING", MIGRATION_ID));
+    }
+
+    @Test
+    void shouldThrowExceptionIfHearingOptionCheckFails() {
+        assertThrows(AssertionError.class, () -> underTest.doHearingOptionCheck(1L, "EDIT_PAST_HEARING",
+            "EDIT_HEARING", MIGRATION_ID));
+    }
+
+    @Test
     void shouldDoCaseIdCheck() {
         assertDoesNotThrow(() -> underTest.doCaseIdCheck(1L, 1L, MIGRATION_ID));
     }
