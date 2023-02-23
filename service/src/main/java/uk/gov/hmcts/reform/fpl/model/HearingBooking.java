@@ -156,8 +156,8 @@ public class HearingBooking implements TranslatableItem {
         HearingType hearingType = Optional.ofNullable(this.type)
             .orElseThrow(() -> new IllegalStateException("Unexpected null hearing type. " + this));
 
-        String type = hearingType.getLabel();
-        String label = format("%s hearing, %s", type, formatLocalDateTimeBaseUsingFormat(startDate, DATE));
+        String label =
+            format("%s hearing, %s", hearingType.getLabel(), formatLocalDateTimeBaseUsingFormat(startDate, DATE));
         String status = isAdjourned() ? "adjourned" : isVacated() ? "vacated" : null;
 
         return ofNullable(status).map(suffix -> label + " - " + suffix).orElse(label);
