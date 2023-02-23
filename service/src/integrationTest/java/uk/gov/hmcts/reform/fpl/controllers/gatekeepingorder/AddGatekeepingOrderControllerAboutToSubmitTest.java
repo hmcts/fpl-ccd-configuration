@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.AddGatekeepingOrderController;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
@@ -296,7 +297,6 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
             .orders(Orders.builder().orderType(List.of(CARE_ORDER)).build())
             .gatekeepingOrderRouter(GatekeepingOrderRoute.UPLOAD)
             .state(GATEKEEPING)
-            .allocationDecision(allocation)
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .useAllocatedJudge("Yes")
                 .legalAdvisorName("Chris Newport")
