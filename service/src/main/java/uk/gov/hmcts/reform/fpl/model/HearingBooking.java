@@ -39,7 +39,6 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.capitalize;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.NONE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.SOMETHING_ELSE;
@@ -49,7 +48,6 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_TO_BE_RE_LIS
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_AND_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.PHONE;
@@ -158,7 +156,7 @@ public class HearingBooking implements TranslatableItem {
         HearingType hearingType = Optional.ofNullable(this.type)
             .orElseThrow(() -> new IllegalStateException("Unexpected null hearing type. " + this));
 
-        String type = hearingType == OTHER ? capitalize(typeDetails) : hearingType.getLabel();
+        String type = hearingType.getLabel();
         String label = format("%s hearing, %s", type, formatLocalDateTimeBaseUsingFormat(startDate, DATE));
         String status = isAdjourned() ? "adjourned" : isVacated() ? "vacated" : null;
 
