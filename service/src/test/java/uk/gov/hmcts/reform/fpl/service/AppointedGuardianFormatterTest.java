@@ -61,7 +61,7 @@ class AppointedGuardianFormatterTest {
                 .build();
 
             String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
-            assertThat(formattedNames).isEqualTo("Remy Respondy is");
+            assertThat(formattedNames).isEqualTo("Remy Respondy is appointed as special guardian");
         }
 
         @Test
@@ -74,7 +74,8 @@ class AppointedGuardianFormatterTest {
                 .build();
 
             String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
-            assertThat(formattedNames).isEqualTo("Remy Respondy and Otto Otherman are");
+            assertThat(formattedNames)
+                .isEqualTo("Remy Respondy and Otto Otherman are appointed as special guardians");
         }
 
         @Test
@@ -82,7 +83,8 @@ class AppointedGuardianFormatterTest {
             CaseData caseData = getMultiplePeopleCaseData();
 
             String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
-            assertThat(formattedNames).isEqualTo("Remy Respondy, Otto Otherman and Bob Bothers are");
+            assertThat(formattedNames)
+                .isEqualTo("Remy Respondy, Otto Otherman and Bob Bothers are appointed as special guardians");
         }
 
         @Test
@@ -97,7 +99,8 @@ class AppointedGuardianFormatterTest {
                 .build();
 
             String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
-            assertThat(formattedNames).isEqualTo("Remy Respondy, Otto Otherman and Mummy Pig are");
+            assertThat(formattedNames).isEqualTo("Remy Respondy, Otto Otherman and Mummy Pig "
+                + "are appointed as special guardians");
         }
 
         @Test
@@ -112,7 +115,8 @@ class AppointedGuardianFormatterTest {
                 .build();
 
             String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
-            assertThat(formattedNames).isEqualTo("Remy Respondy, Otto Otherman, Mummy Pig and Peppa Pig are");
+            assertThat(formattedNames).isEqualTo("Remy Respondy, Otto Otherman, Mummy Pig and Peppa Pig "
+                + "are appointed as special guardians");
         }
 
         @Test
@@ -127,7 +131,7 @@ class AppointedGuardianFormatterTest {
                 .build();
 
             String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
-            assertThat(formattedNames).isEqualTo("Mummy Pig is");
+            assertThat(formattedNames).isEqualTo("Mummy Pig is appointed as special guardian");
         }
 
         @Test
@@ -142,7 +146,8 @@ class AppointedGuardianFormatterTest {
                 .build();
 
             String formattedNames = underTest.getGuardiansNamesForDocument(caseData);
-            assertThat(formattedNames).isEqualTo("Mummy Pig and Peppa Pig are");
+            assertThat(formattedNames)
+                .isEqualTo("Mummy Pig and Peppa Pig are appointed as special guardians");
         }
     }
 
