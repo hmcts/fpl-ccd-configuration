@@ -3,70 +3,70 @@
     "LiveFrom": "01/01/2017",
     "ID": "AllocationDecision",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "allocationDecision",
+    "CaseFieldID": "urgentHearingAllocation",
     "ListElementCode": "allocationDecision_Label",
     "FieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
-    "FieldShowCondition": "allocationDecision.allocationProposalPresent=\"Yes\""
+    "FieldShowCondition": "urgentHearingAllocation.allocationProposalPresent=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllocationDecision",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "allocationDecision",
+    "CaseFieldID": "urgentHearingAllocation",
     "ListElementCode": "allocationDecision_LabelReason",
     "FieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
-    "FieldShowCondition": "allocationDecision.allocationProposalPresent=\"Yes\""
+    "FieldShowCondition": "urgentHearingAllocation.allocationProposalPresent=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllocationDecision",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "allocationDecision",
+    "CaseFieldID": "urgentHearingAllocation",
     "ListElementCode": "missingAllocationDecision_Label",
     "FieldDisplayOrder": 3,
     "DisplayContext": "READONLY",
-    "FieldShowCondition": "allocationDecision.allocationProposalPresent=\"No\""
+    "FieldShowCondition": "urgentHearingAllocation.allocationProposalPresent=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllocationDecision",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "allocationDecision",
+    "CaseFieldID": "urgentHearingAllocation",
     "ListElementCode": "judgeLevelRadio",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "allocationDecision.allocationProposalPresent=\"Yes\""
+    "FieldShowCondition": "urgentHearingAllocation.allocationProposalPresent=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllocationDecision",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "allocationDecision",
+    "CaseFieldID": "urgentHearingAllocation",
     "ListElementCode": "proposal",
     "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "allocationDecision.allocationProposalPresent=\"No\" OR allocationDecision.judgeLevelRadio=\"No\""
+    "FieldShowCondition": "urgentHearingAllocation.allocationProposalPresent=\"No\" OR urgentHearingAllocation.judgeLevelRadio=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllocationDecision",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "allocationDecision",
+    "CaseFieldID": "urgentHearingAllocation",
     "ListElementCode": "proposalReason",
     "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "allocationDecision.allocationProposalPresent=\"No\" OR allocationDecision.judgeLevelRadio=\"No\""
+    "FieldShowCondition": "urgentHearingAllocation.allocationProposalPresent=\"No\" OR urgentHearingAllocation.judgeLevelRadio=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllocationDecision",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "allocationDecision",
+    "CaseFieldID": "urgentHearingAllocation",
     "ListElementCode": "allocationProposalPresent",
     "FieldDisplayOrder": 7,
     "DisplayContext": "READONLY",
-    "FieldShowCondition": "allocationDecision.allocationProposalPresent=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "urgentHearingAllocation.allocationProposalPresent=\"DO_NOT_SHOW\""
   }
 ]

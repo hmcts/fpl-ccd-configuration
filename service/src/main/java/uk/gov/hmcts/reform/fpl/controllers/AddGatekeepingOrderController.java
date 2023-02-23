@@ -13,11 +13,13 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
+import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
+import uk.gov.hmcts.reform.fpl.service.CourtLevelAllocationService;
 import uk.gov.hmcts.reform.fpl.service.GatekeepingOrderService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -57,6 +59,8 @@ public class AddGatekeepingOrderController extends CallbackController {
     private final GatekeepingOrderService orderService;
     private final NoticeOfProceedingsService nopService;
     private final CoreCaseDataService coreCaseDataService;
+
+    private final CourtLevelAllocationService allocationService;
     private final GatekeepingOrderRouteValidator routeValidator;
     private final UrgentGatekeepingOrderService urgentOrderService;
     private final GatekeepingOrderEventNotificationDecider notificationDecider;
@@ -65,7 +69,7 @@ public class AddGatekeepingOrderController extends CallbackController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         final CaseData caseData = getCaseData(callbackRequest.getCaseDetails());
-        final CaseDetailsMap data = dataFixer.fix(caseDetailsMap(callbackRequest.getCaseDetails()));
+        final CaseDetailsMap data = dataFixer.addLanguageRequirement(caseDetailsMap(callbackRequest.getCaseDetails()));
         final StandardDirectionOrder draftOrder = caseData.getStandardDirectionOrder();
 
         final GatekeepingOrderRoute draftOrderRoute = caseData.getGatekeepingOrderRouter();
@@ -94,6 +98,9 @@ public class AddGatekeepingOrderController extends CallbackController {
             data.put("gatekeepingOrderIssuingJudge", orderService.setAllocatedJudgeLabel(caseData.getAllocatedJudge(),
                 caseData.getGatekeepingOrderEventData().getGatekeepingOrderIssuingJudge()));
         }
+
+        final Allocation allocationDecision = allocationService.createDecision(caseData);
+        data.put("allocationDecision", allocationDecision);
 
         return respond(data);
     }
@@ -161,6 +168,7 @@ public class AddGatekeepingOrderController extends CallbackController {
 
         final CaseData caseData = orderService.updateStandardDirections(request.getCaseDetails());
         final CaseDetailsMap data = caseDetailsMap(request.getCaseDetails());
+
         final GatekeepingOrderSealDecision decision = caseData.getGatekeepingOrderEventData()
             .getGatekeepingOrderSealDecision();
 
@@ -207,6 +215,9 @@ public class AddGatekeepingOrderController extends CallbackController {
         if (decision.isSealed() || sdoRouter == URGENT) {
             removeTemporaryFields(data, "gatekeepingOrderIssuingJudge", "customDirections");
         }
+
+        final Allocation allocationDecision = allocationService.createAllocationDecisionIfNull(getCaseData(request));
+        data.put("allocationDecision", allocationDecision);
 
         return respond(data);
     }
