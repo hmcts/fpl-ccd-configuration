@@ -273,7 +273,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingTypeDetails",
     "Label": "Hearing type description",
-    "HintText": "For example, C2 application or fact finding hearing",
+    "HintText": "For example, C2 application or fact finding hearing\n and some more hint text here",
     "FieldType": "Text",
     "SecurityClassification": "Public",
     "Searchable": "N"
