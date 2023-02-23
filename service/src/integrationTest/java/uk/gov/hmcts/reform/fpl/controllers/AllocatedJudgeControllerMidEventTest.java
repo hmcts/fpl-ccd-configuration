@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@WebMvcTest(AllocationDecisionController.class)
+@WebMvcTest(AllocatedJudgeController.class)
 @OverrideAutoConfiguration(enabled = true)
 class AllocatedJudgeControllerMidEventTest extends AbstractCallbackTest {
     AllocatedJudgeControllerMidEventTest() {

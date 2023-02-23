@@ -34,11 +34,11 @@ public class CourtLevelAllocationService {
         return decisionBuilder.build();
     }
 
-    public Allocation setAllocationDecisionIfNull(CaseData caseData) {
-        return setAllocationDecisionIfNull(caseData, caseData.getAllocationDecision());
+    public Allocation createAllocationDecisionIfNull(CaseData caseData) {
+        return createAllocationDecisionIfNull(caseData, caseData.getAllocationDecision());
     }
 
-    public Allocation setAllocationDecisionIfNull(CaseData caseData, Allocation allocationDecision) {
+    public Allocation createAllocationDecisionIfNull(CaseData caseData, Allocation allocationDecision) {
         Allocation.AllocationBuilder decisionBuilder = populateDecision(allocationDecision);
 
         if (allocationDecision.getProposal() == null) {
