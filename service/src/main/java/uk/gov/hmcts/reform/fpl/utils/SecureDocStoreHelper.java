@@ -14,7 +14,6 @@ public class SecureDocStoreHelper {
 
     private FeatureToggleService featureToggleService;
     private SecureDocStoreService secureDocStoreService;
-    private String documentUrlString;
 
     private SecureDocStoreHelper(SecureDocStoreService secureDocStoreService,
                                  FeatureToggleService featureToggleService) {
@@ -34,7 +33,7 @@ public class SecureDocStoreHelper {
     @SneakyThrows
     public byte[] download(final String documentUrlString, Callable<byte[]> oldDmStoreApproach) {
         try {
-            log.info(String.format("Downloading document: %s", documentUrlString));
+            log.info("Downloading document: {}", documentUrlString);
             byte[] bytesFromSecureDocStore = secureDocStoreService.downloadDocument(documentUrlString);
             if (featureToggleService.isSecureDocstoreEnabled()) {
                 return bytesFromSecureDocStore;
@@ -47,7 +46,7 @@ public class SecureDocStoreHelper {
             }
         }
         if (!featureToggleService.isSecureDocstoreEnabled() && !isEmpty(oldDmStoreApproach)) {
-            log.info(String.format("Using old dm-store approach to download the document (%s).", documentUrlString));
+            log.info("Using old dm-store approach to download the document: {}.", documentUrlString);
             return oldDmStoreApproach.call();
         }
         throw new UnsupportedOperationException();
