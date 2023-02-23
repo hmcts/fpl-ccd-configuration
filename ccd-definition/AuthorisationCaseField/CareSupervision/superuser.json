@@ -1223,5 +1223,26 @@
     "CaseFieldID": "hiddenDocumentsSentToParties",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "gatekeepingOrderListOrSendToAdmin",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "listGatekeepingHearingLabel",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "gatekeepingOrderListOrSendToAdminReason",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRU"
   }
 ]
