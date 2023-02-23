@@ -38,6 +38,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -60,7 +61,6 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_TO_BE_RE_LIS
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_AND_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -258,10 +258,9 @@ public class ManageHearingsService {
             judgeAndLegalAdvisor = hearingBooking.getJudgeAndLegalAdvisor();
         }
 
-        if (OTHER.equals(hearingBooking.getType())) {
+        if (Objects.nonNull(hearingBooking.getTypeDetails())) {
             caseFields.put("hearingTypeDetails", hearingBooking.getTypeDetails());
         }
-
         caseFields.put("hearingType", hearingBooking.getType());
         caseFields.put("hearingTypeReason", hearingBooking.getTypeReason());
         caseFields.put(HEARING_START_DATE, hearingBooking.getStartDate());
