@@ -182,7 +182,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
     private CafcassLookupConfiguration cafcassLookupConfiguration;
     @Mock
     private FeatureToggleService featureToggleService;
-
     @Mock
     private WorkAllocationTaskService workAllocationTaskService;
     @Mock
