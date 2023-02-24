@@ -72,6 +72,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -1596,22 +1597,15 @@ class FurtherEvidenceUploadedEventHandlerTest {
         return List.of(CONFIDENTIAL_1, CONFIDENTIAL_2);
     }
 
-    private static Stream<Arguments> caseDataWithCorrespondence() {
-        return Stream.of(
-            Arguments.of(buildCaseDataWithCorrespondencesByLA()),
-            Arguments.of(buildCaseDataWithCorrespondencesBySolicitor())
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("caseDataWithCorrespondence")
-    void shouldCreateWorkAllocationTaskWhenNewCorrespondenceIsAdded(CaseData caseData) {
+    @Test
+    void shouldCreateWorkAllocationTaskWhenNewCorrespondenceIsAddedByLA() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
             .thenReturn(
                 Optional.of(
                     new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
                 )
             );
+        CaseData caseData = buildCaseDataWithCorrespondencesByLA();
         CaseData caseDataBefore = commonCaseBuilder().build();
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
@@ -1624,6 +1618,67 @@ class FurtherEvidenceUploadedEventHandlerTest {
         furtherEvidenceUploadedEventHandler.createWorkAllocationTask(furtherEvidenceUploadedEvent);
 
         verify(workAllocationTaskService).createWorkAllocationTask(caseData,
+            WorkAllocationTaskType.CORRESPONDENCE_UPLOADED);
+    }
+
+    @Test
+    void shouldCreateWorkAllocationTaskWhenNewCorrespondenceIsAddedBySolicitor() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+            .thenReturn(
+                Optional.of(
+                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                )
+            );
+        CaseData caseData = buildCaseDataWithCorrespondencesBySolicitor();
+        CaseData caseDataBefore = commonCaseBuilder().build();
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            new FurtherEvidenceUploadedEvent(
+                caseData,
+                caseDataBefore,
+                DESIGNATED_LOCAL_AUTHORITY,
+                userDetailsLA()
+            );
+        furtherEvidenceUploadedEventHandler.createWorkAllocationTask(furtherEvidenceUploadedEvent);
+
+        verify(workAllocationTaskService).createWorkAllocationTask(caseData,
+            WorkAllocationTaskType.CORRESPONDENCE_UPLOADED);
+    }
+
+    private static Stream<Arguments> createWorkAllocationByHmctsParam() {
+        return Stream.of(
+            Arguments.of(true, false, true),
+            Arguments.of(false, false, false),
+            Arguments.of(false, true, true)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("createWorkAllocationByHmctsParam")
+    void createWorkAllocationTaskWhenNewCorrespondenceIsAddedByHmcts(boolean isCafcassUser,
+                                                                     boolean isJudiciaryUser,
+                                                                     boolean shouldSend) {
+        given(userService.isCafcassUser()).willReturn(isCafcassUser);
+        given(userService.isJudiciaryUser()).willReturn(isJudiciaryUser);
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+            .thenReturn(
+                Optional.of(
+                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                )
+            );
+        CaseData caseData = buildCaseDataWithCorrespondencesByHmtcs();
+        CaseData caseDataBefore = commonCaseBuilder().build();
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            new FurtherEvidenceUploadedEvent(
+                caseData,
+                caseDataBefore,
+                DESIGNATED_LOCAL_AUTHORITY,
+                userDetailsLA()
+            );
+        furtherEvidenceUploadedEventHandler.createWorkAllocationTask(furtherEvidenceUploadedEvent);
+
+        verify(workAllocationTaskService, times(shouldSend ? 1 : 0)).createWorkAllocationTask(caseData,
             WorkAllocationTaskType.CORRESPONDENCE_UPLOADED);
     }
 }

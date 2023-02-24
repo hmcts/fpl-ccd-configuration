@@ -885,9 +885,11 @@ public class FurtherEvidenceUploadedEventHandler {
         CaseData caseData = event.getCaseData();
         CaseData caseDataBefore = event.getCaseDataBefore();
 
+        boolean shouldCheckHmctsChange = userService.isJudiciaryUser() || userService.isCafcassUser();
+
         if (!getNewCorrespondenceDocumentsByLA(caseData, caseDataBefore).getDocumentReferences().isEmpty()
             || !getNewCorrespondenceDocumentsBySolicitor(caseData, caseDataBefore).getDocumentReferences().isEmpty()
-            || (userService.isJudiciaryUser()
+            || (shouldCheckHmctsChange
                 && !getNewCorrespondenceDocumentsByHmtcs(caseData, caseDataBefore).getDocumentReferences().isEmpty())) {
             workAllocationTaskService.createWorkAllocationTask(caseData, CORRESPONDENCE_UPLOADED);
         }
