@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -25,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
-import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
@@ -55,16 +53,9 @@ import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CAFCASS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_LA;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_ISSUED_CAFCASS;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_ISSUED_CTSC;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_ISSUED_LA;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_AND_NOP_ISSUED_CAFCASS;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_AND_NOP_ISSUED_CTSC;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_AND_NOP_ISSUED_LA;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.WELSH_TO_ENGLISH;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
-import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.CAFCASS_EMAIL;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
@@ -96,11 +87,8 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
     private static final byte[] APPLICATION_BINARY = DOCUMENT_CONTENT;
     private static final CaseData GATEKEEPING_CASE_DATA = CaseData.builder().state(GATEKEEPING).build();
-    private static final CaseData CASE_MANAGEMENT_CASE_DATA = CaseData.builder().state(CASE_MANAGEMENT).build();
 
     private static final String DOC_UPLOADER_NAME = "MOCK";
-
-    private static final Court court = Court.builder().build();
 
     @MockBean
     TranslationRequestFormCreationService translationRequestFormCreationService;
@@ -150,47 +138,6 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldNotTriggerEventsWhenDraftAfterUrgentHearingOrder() {
-        postSubmittedEvent(toCallBackRequest(
-            buildCaseDataWithUrgentHearingOrderAndSDO(DRAFT), CASE_MANAGEMENT_CASE_DATA
-        ));
-
-        verifyNoInteractions(sealingService);
-        verify(eventService, never()).publishEvent(any());
-        verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any());
-    }
-
-    @Test
-    void shouldTriggerEventWhenUrgentHearingSubmitted() {
-        postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrder(), GATEKEEPING_CASE_DATA));
-
-        verify(sealingService).sealDocument(eq(URGENT_HEARING_ORDER_DOCUMENT), any(), eq(SealType.ENGLISH));
-        verifyEmails(URGENT_AND_NOP_ISSUED_CAFCASS, URGENT_AND_NOP_ISSUED_CTSC, URGENT_AND_NOP_ISSUED_LA);
-        verifyNoMoreNotificationsSent();
-    }
-
-    @Test
-    void shouldTriggerEventWhenUrgentHearingSubmittedAndRequestingTranslation() {
-        postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrderToTranslate(), GATEKEEPING_CASE_DATA));
-
-        verify(sealingService).sealDocument(eq(URGENT_HEARING_ORDER_DOCUMENT), any(), eq(SealType.ENGLISH));
-        verifyEmails(URGENT_AND_NOP_ISSUED_CAFCASS, URGENT_AND_NOP_ISSUED_CTSC, URGENT_AND_NOP_ISSUED_LA);
-        verifyEmailSentToTranslation();
-        verifyNoMoreNotificationsSent();
-    }
-
-    @Test
-    void shouldTriggerEventWhenUrgentWithNoPHearingSubmittedAndRequestingTranslation() {
-        postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrderToTranslateWithNop(),
-            GATEKEEPING_CASE_DATA));
-
-        verify(sealingService).sealDocument(eq(URGENT_HEARING_ORDER_DOCUMENT), any(), eq(SealType.ENGLISH));
-        verifyEmails(URGENT_AND_NOP_ISSUED_CAFCASS, URGENT_AND_NOP_ISSUED_CTSC, URGENT_AND_NOP_ISSUED_LA);
-        verifyEmailSentToTranslation(3);
-        verifyNoMoreNotificationsSent();
-    }
-
-    @Test
     void shouldTriggerEventWhenSDOSubmitted() {
         postSubmittedEvent(toCallBackRequest(buildCaseDataWithSDO(SEALED), GATEKEEPING_CASE_DATA));
 
@@ -220,29 +167,6 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldTriggerEventWhenSDOSubmittedAfterUrgentHearingOrder() {
-        postSubmittedEvent(toCallBackRequest(
-            buildCaseDataWithUrgentHearingOrderAndSDO(SEALED), CASE_MANAGEMENT_CASE_DATA
-        ));
-
-        verifyNoInteractions(sealingService);
-        verifyEmails(SDO_ISSUED_CAFCASS, SDO_ISSUED_CTSC, SDO_ISSUED_LA);
-        verifyNoMoreNotificationsSent();
-    }
-
-    @Test
-    void shouldTriggerEventWhenSDOSubmittedAfterUrgentHearingOrderWithTranslation() {
-        postSubmittedEvent(toCallBackRequest(
-            buildCaseDataWithUrgentHearingOrderAndSDOToTranslate(SEALED), CASE_MANAGEMENT_CASE_DATA
-        ));
-
-        verifyNoInteractions(sealingService);
-        verifyEmails(SDO_ISSUED_CAFCASS, SDO_ISSUED_CTSC, SDO_ISSUED_LA);
-        verifyEmailSentToTranslation();
-        verifyNoMoreNotificationsSent();
-    }
-
-    @Test
     void shouldTriggerSendDocumentEventWhenSubmitted() {
         postSubmittedEvent(toCallBackRequest(buildCaseDataWithSDO(SEALED), GATEKEEPING_CASE_DATA));
 
@@ -253,20 +177,6 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
             CASE_ID,
             SEND_DOCUMENT_EVENT,
             Map.of("documentToBeSent", SDO_DOCUMENT)
-        );
-    }
-
-    @Test
-    void shouldTriggerSendDocumentEventForUrgentHearingOrder() {
-        postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrder(), GATEKEEPING_CASE_DATA));
-
-        verify(sealingService).sealDocument(eq(URGENT_HEARING_ORDER_DOCUMENT), any(), eq(SealType.ENGLISH));
-        verify(coreCaseDataService).triggerEvent(
-            JURISDICTION,
-            CASE_TYPE,
-            CASE_ID,
-            SEND_DOCUMENT_EVENT,
-            Map.of("documentToBeSent", SEALED_DOCUMENT)
         );
     }
 
@@ -334,27 +244,6 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
             .build();
     }
 
-    private CaseData buildCaseDataWithUrgentHearingOrderAndSDO(OrderStatus status) {
-        return buildCaseDataWithUrgentHearingOrder().toBuilder()
-            .gatekeepingOrderRouter(GatekeepingOrderRoute.SERVICE)
-            .standardDirectionOrder(StandardDirectionOrder.builder()
-                .orderStatus(status)
-                .orderDoc(SDO_DOCUMENT)
-                .build())
-            .build();
-    }
-
-    private CaseData buildCaseDataWithUrgentHearingOrderAndSDOToTranslate(OrderStatus status) {
-        return buildCaseDataWithUrgentHearingOrderToTranslate().toBuilder()
-            .gatekeepingOrderRouter(GatekeepingOrderRoute.SERVICE)
-            .standardDirectionOrder(StandardDirectionOrder.builder()
-                .orderStatus(status)
-                .orderDoc(SDO_DOCUMENT)
-                .translationRequirements(WELSH_TO_ENGLISH)
-                .build())
-            .build();
-    }
-
     private CaseData buildCaseDataWithSDO(OrderStatus status) {
         return baseCaseData()
             .gatekeepingOrderRouter(GatekeepingOrderRoute.SERVICE)
@@ -394,50 +283,6 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
                     .translationRequirements(WELSH_TO_ENGLISH)
                     .build())
             )).build();
-    }
-
-    private CaseData buildCaseDataWithUrgentHearingOrder() {
-        return baseCaseData()
-            .gatekeepingOrderRouter(GatekeepingOrderRoute.URGENT)
-            .urgentHearingOrder(UrgentHearingOrder.builder()
-                .order(URGENT_HEARING_ORDER_DOCUMENT)
-                .unsealedOrder(URGENT_HEARING_ORDER_DOCUMENT)
-                .dateAdded(DATE_ADDED)
-                .build())
-            .build();
-    }
-
-    private CaseData buildCaseDataWithUrgentHearingOrderToTranslate() {
-        return baseCaseData()
-            .gatekeepingOrderRouter(GatekeepingOrderRoute.URGENT)
-            .urgentHearingOrder(UrgentHearingOrder.builder()
-                .order(URGENT_HEARING_ORDER_DOCUMENT)
-                .unsealedOrder(URGENT_HEARING_ORDER_DOCUMENT)
-                .dateAdded(DATE_ADDED)
-                .translationRequirements(WELSH_TO_ENGLISH)
-                .build())
-            .build();
-    }
-
-    private CaseData buildCaseDataWithUrgentHearingOrderToTranslateWithNop() {
-        return baseCaseData()
-            .gatekeepingOrderRouter(GatekeepingOrderRoute.URGENT)
-            .noticeOfProceedingsBundle(List.of(
-                element(DocumentBundle.builder()
-                    .document(C6_DOCUMENT)
-                    .translationRequirements(WELSH_TO_ENGLISH)
-                    .build()),
-                element(DocumentBundle.builder()
-                    .document(C6A_DOCUMENT)
-                    .translationRequirements(WELSH_TO_ENGLISH)
-                    .build())
-            )).urgentHearingOrder(UrgentHearingOrder.builder()
-                .order(URGENT_HEARING_ORDER_DOCUMENT)
-                .unsealedOrder(URGENT_HEARING_ORDER_DOCUMENT)
-                .dateAdded(DATE_ADDED)
-                .translationRequirements(WELSH_TO_ENGLISH)
-                .build())
-            .build();
     }
 
     private CaseData.CaseDataBuilder<?,?> baseCaseData() {
