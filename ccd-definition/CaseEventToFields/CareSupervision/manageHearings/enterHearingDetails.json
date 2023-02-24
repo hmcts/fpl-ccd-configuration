@@ -30,7 +30,7 @@
     "CaseEventID": "manageHearings",
     "CaseFieldID": "hearingTypeDetails",
     "PageFieldDisplayOrder": 3,
-    "DisplayContext": "Optional",
+    "DisplayContext": "OPTIONAL",
     "PageID": "EnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 5
