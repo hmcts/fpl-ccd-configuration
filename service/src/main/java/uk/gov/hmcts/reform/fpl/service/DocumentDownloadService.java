@@ -36,7 +36,7 @@ public class DocumentDownloadService {
     private final SystemUserService systemUserService;
 
     public byte[] downloadDocument(final String documentUrlString) {
-        return SecureDocStoreHelper.of(secureDocStoreService, featureToggleService).download(documentUrlString, () -> {
+        return new SecureDocStoreHelper(secureDocStoreService, featureToggleService).download(documentUrlString, () -> {
             String userRoles = "caseworker-publiclaw-systemupdate";
             boolean useSystemUser = false;
             try {

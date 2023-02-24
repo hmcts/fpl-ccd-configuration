@@ -20,15 +20,10 @@ public class SecureDocStoreHelper {
     private FeatureToggleService featureToggleService;
     private SecureDocStoreService secureDocStoreService;
 
-    private SecureDocStoreHelper(SecureDocStoreService secureDocStoreService,
+    public SecureDocStoreHelper(SecureDocStoreService secureDocStoreService,
                                  FeatureToggleService featureToggleService) {
         this.featureToggleService = featureToggleService;
         this.secureDocStoreService = secureDocStoreService;
-    }
-
-    public static SecureDocStoreHelper of(SecureDocStoreService secureDocStoreService,
-                                          FeatureToggleService featureToggleService) {
-        return new SecureDocStoreHelper(secureDocStoreService, featureToggleService);
     }
 
     public byte[] download(final String documentUrlString) {
@@ -90,7 +85,7 @@ public class SecureDocStoreHelper {
         return ret;
     }
 
-    private DocumentReference convertToDocumentReference(String documentUrlString, Document document) {
+    public static DocumentReference convertToDocumentReference(String documentUrlString, Document document) {
         DocumentReference ret = Optional.ofNullable(document)
             .map(doc -> DocumentReference.buildFromDocument(document)
                 .toBuilder()

@@ -43,7 +43,7 @@ public class UploadDocumentService {
     }
 
     public Document uploadDocument(byte[] byteArray, String fileName, String contentType) {
-        return SecureDocStoreHelper.of(secureDocStoreService, featureToggleService)
+        return new SecureDocStoreHelper(secureDocStoreService, featureToggleService)
             .uploadDocument(byteArray, fileName, contentType, () -> {
                 MultipartFile file = new InMemoryMultipartFile("files", fileName, contentType, byteArray);
 
