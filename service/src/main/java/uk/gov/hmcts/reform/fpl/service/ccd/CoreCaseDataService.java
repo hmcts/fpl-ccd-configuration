@@ -55,6 +55,11 @@ public class CoreCaseDataService {
         return null;
     }
 
+    public CaseDetails performPostSubmitCallbackUpdateCase(Long caseId,
+                                                           Function<CaseDetails, Map<String, Object>> changeFunction) {
+        return performPostSubmitCallback(caseId, "internal-change-UPDATE_CASE", changeFunction);
+    }
+
     public StartEventResponse startEvent(Long caseId, String eventName) {
         String userToken = systemUserService.getSysUserToken();
         String systemUpdateUserId = systemUserService.getUserId(userToken);

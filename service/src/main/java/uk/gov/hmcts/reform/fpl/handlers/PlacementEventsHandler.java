@@ -281,9 +281,11 @@ public class PlacementEventsHandler {
     }
 
     private void updateCase(CaseData caseData) {
-        final Map<String, Object> updates = Map.of("placementLastPaymentTime", time.now());
-
-        coreCaseDataService.updateCase(caseData.getId(), nullifyTemporaryFields(updates, PlacementEventData.class));
+        coreCaseDataService.performPostSubmitCallbackUpdateCase(caseData.getId(),
+            caseDetails -> {
+                final Map<String, Object> updates = Map.of("placementLastPaymentTime", time.now());
+                return nullifyTemporaryFields(updates, PlacementEventData.class);
+            });
     }
 
     private void handlePaymentNotTaken(CaseData caseData, OrderApplicant applicant) {
