@@ -35,6 +35,7 @@ public class SendDocumentService {
     private final SendLetterService sendLetters;
     private final CoreCaseDataService caseService;
     private final SentDocumentHistoryService sentDocuments;
+    private final CaseConverter caseConverter;
 
     public void sendDocuments(CaseData caseData, List<DocumentReference> documentToBeSent, List<Recipient> parties) {
         sendDocuments(new SendDocumentRequest(caseData,
@@ -63,7 +64,7 @@ public class SendDocumentService {
         }
 
         if (isNotEmpty(deliverableRecipients) && isNotEmpty(documentToBeSent)) {
-
+            // Perform sendLetter calls
             List<SentDocument> docs = documentToBeSent.stream()
                 .flatMap(document -> sendLetters.send(document.getDocumentReference(),
                     deliverableRecipients,
@@ -72,10 +73,15 @@ public class SendDocumentService {
                     document.getLanguage()).stream())
                 .collect(toList());
 
-            List<Element<SentDocuments>> documentsSent = sentDocuments.addToHistory(
-                caseData.getDocumentsSentToParties(), docs);
+            // Pop the audit trail on the case data if successful
+            caseService.performPostSubmitCallbackUpdateCase(caseData.getId(),
+                caseDetails -> {
+                    CaseData currentCaseData = caseConverter.convert(caseDetails);
+                    List<Element<SentDocuments>> documentsSent = sentDocuments.addToHistory(
+                        currentCaseData.getDocumentsSentToParties(), docs);
 
-            caseService.updateCase(caseData.getId(), Map.of("documentsSentToParties", documentsSent));
+                    return Map.of("documentsSentToParties", documentsSent);
+                });
         }
     }
 
