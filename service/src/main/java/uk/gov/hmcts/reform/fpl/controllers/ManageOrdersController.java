@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.io.FilenameUtils.getExtension;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Api
 @RestController
@@ -143,31 +144,28 @@ public class ManageOrdersController extends CallbackController {
         CaseDetails oldCaseDetails = callbackRequest.getCaseDetails();
 
         // Start event with concurrency controls
-        StartEventResponse startEventResponse = coreCaseDataService.startEvent(oldCaseDetails.getId(),
-            "internal-change-manage-order");
+        CaseDetails caseDetails = coreCaseDataService.performPostSubmitCallback(oldCaseDetails.getId(),
+            "internal-change-manage-order",
+            details -> {
+                CaseDetails updatedDetails = manageOrdersCaseDataFixer.fixAndRetriveCaseDetails(details);
+                CaseData fixedCaseData = manageOrdersCaseDataFixer.fix(getCaseData(updatedDetails));
 
-        CaseDetails updatedDetails = manageOrdersCaseDataFixer.fixAndRetriveCaseDetails(
-            startEventResponse.getCaseDetails());
-        CaseData fixedCaseData = manageOrdersCaseDataFixer.fix(getCaseData(updatedDetails));
+                Map<String, Object> caseDataUpdates = new HashMap<>();
+                try {
+                    caseDataUpdates = orderProcessing.postProcessDocument(fixedCaseData);
+                } catch (Exception exception) {
+                    log.error("Error while processing manage orders document for case id {}.",
+                        updatedDetails.getId(), exception);
+                }
+                return caseDataUpdates;
+            });
 
-        CaseData caseData;
-        Map<String, Object> updates = new HashMap<>();
-        try {
-            updates = orderProcessing.postProcessDocument(fixedCaseData);
-        } catch (Exception exception) {
-            log.error("Error while processing manage orders document for case id {}.",
-                updatedDetails.getId(), exception);
+        if (isEmpty(caseDetails)) {
+            // if our callback has failed 3 times, all we have is the prior caseData to send notifications based on
+            caseDetails = oldCaseDetails;
         }
 
-        if (updates.isEmpty()) {
-            caseData = getCaseData(startEventResponse.getCaseDetails());
-        } else {
-            updatedDetails.getData().putAll(updates);
-            caseData = getCaseData(updatedDetails);
-        }
-
-        coreCaseDataService.submitEvent(startEventResponse, caseData.getId(), updates);
-
+        CaseData caseData = getCaseData(caseDetails);
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
         publishEvent(eventBuilder.build(caseData, caseDataBefore));
     }

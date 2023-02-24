@@ -31,12 +31,8 @@ public class PopulateStandardDirectionsHandler {
     public void populateStandardDirections(PopulateStandardDirectionsEvent event) {
         CaseDetails oldCaseDetails = event.getCallbackRequest().getCaseDetails();
 
-        StartEventResponse startEventResponse = coreCaseDataService.startEvent(oldCaseDetails.getId(), "populateSDO");
-
-        CaseData caseData = caseConverter.convert(startEventResponse.getCaseDetails());
-        Map<String, List<Element<Direction>>> populatedDirections
-            = standardDirectionsService.populateStandardDirections(caseData);
-
-        coreCaseDataService.submitEvent(startEventResponse, oldCaseDetails.getId(), (Map) populatedDirections);
+        coreCaseDataService.performPostSubmitCallback(oldCaseDetails.getId(), "populateSDO",
+            caseDetails -> (Map) standardDirectionsService.populateStandardDirections(caseConverter.convert(caseDetails))
+        );
     }
 }

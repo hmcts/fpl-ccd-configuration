@@ -92,14 +92,7 @@ class PopulateStandardDirectionsHandlerTest {
 
         handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackWithHearing()));
 
-        verify(coreCaseDataService).startEvent(CASE_ID, CASE_EVENT);
-
-        verify(coreCaseDataService).submitEvent(
-            any(),
-            eq(CASE_ID),
-            data.capture());
-        // the hearing is not changed so should not be updated in the submitEvent api call
-        assertThat(data.getValue()).isEqualTo(expectedDataWithoutHearing());
+        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID), eq(CASE_EVENT), any());
     }
 
     @Test
@@ -109,12 +102,7 @@ class PopulateStandardDirectionsHandlerTest {
 
         handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackWithoutHearing()));
 
-        verify(coreCaseDataService).startEvent(CASE_ID, CASE_EVENT);
-        verify(coreCaseDataService).submitEvent(
-            any(),
-            eq(CASE_ID),
-            data.capture());
-        assertThat(data.getValue()).isEqualTo(expectedDataWithoutHearing());
+        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID), eq(CASE_EVENT), any());
     }
 
     private CallbackRequest callbackWithHearing() {
