@@ -753,9 +753,7 @@
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
-          "[LASHARED]",
-          "[SOLICITORA]",
-          "[CHILDSOLICITORA]"
+          "[LASHARED]"
         ],
         "CRUD": "CR"
       }
