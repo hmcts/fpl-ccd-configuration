@@ -58,7 +58,7 @@ class SecureDocStoreHelperTest {
             } else {
                 byte[] actualData = underTest.download(DOCUMENT_URL_STRING);
                 assertThat(actualData).isEqualTo(resultFromSecureDocStore);
-                assertThat(logs.getInfos()).containsExactly(format("Downloading document: {}", DOCUMENT_URL_STRING));
+                assertThat(logs.getInfos()).containsExactly(format("Downloading document: %s", DOCUMENT_URL_STRING));
             }
         }
 
