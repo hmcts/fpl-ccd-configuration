@@ -14,10 +14,10 @@ import uk.gov.hmcts.reform.fpl.utils.extension.TestLogger;
 import uk.gov.hmcts.reform.fpl.utils.extension.TestLogs;
 import uk.gov.hmcts.reform.fpl.utils.extension.TestLogsExtension;
 
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
-import static java.lang.String.format;
 
 @ExtendWith({SpringExtension.class, TestLogsExtension.class})
 class SecureDocStoreHelperTest {
@@ -136,8 +136,8 @@ class SecureDocStoreHelperTest {
                 assertThat(actualDoc).isEqualTo(fromOldDmStoreApproach);
                 assertThat(logs.getErrorThrowableClassNames()).contains("java.lang.RuntimeException");
                 assertThat(logs.getErrorThrowableMessages()).contains("TEST RUNTIME EXCEPTION");
-                assertThat(logs.getErrors()).contains(
-                    "↑ ↑ ↑ ↑ ↑ ↑ ↑ EXCEPTION CAUGHT WHEN UPLOADING DOCUMENT (SECURE DOC STORE: DISABLED) ↑ ↑ ↑ ↑ ↑ ↑ ↑");
+                assertThat(logs.getErrors()).contains("↑ ↑ ↑ ↑ ↑ ↑ ↑ EXCEPTION CAUGHT WHEN UPLOADING DOCUMENT "
+                    + "(SECURE DOC STORE: DISABLED) ↑ ↑ ↑ ↑ ↑ ↑ ↑");
                 assertThat(logs.getInfos())
                     .contains(
                         format("Using old dm-store approach to upload document: %s (%s).", FILE_NAME, CONTENT_TYPE));
