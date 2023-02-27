@@ -13,6 +13,7 @@ public class C43ChildArrangementOrderDocmosisParameters extends DocmosisParamete
     String orderHeader;
     String orderMessage;
     String orderByConsent;
+    String recitalsOrPreamble;
     String orderDetails;
     String furtherDirections;
     String localAuthorityName;
