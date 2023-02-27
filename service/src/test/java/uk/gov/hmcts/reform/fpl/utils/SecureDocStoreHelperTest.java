@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -35,6 +36,21 @@ class SecureDocStoreHelperTest {
 
     @Nested
     class DownloadDocument {
+
+        @Test
+        void shouldThrownUnsupportedOperationExceptionIfOldApproachNotProvidedWhenToggledOff() {
+            byte[] resultFromSecureDocStore = "DATA_FROM_NEW".getBytes();
+            when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(false);
+            when(secureDocStoreService.downloadDocument(DOCUMENT_URL_STRING)).thenReturn(resultFromSecureDocStore);
+
+            SecureDocStoreHelper underTest = new SecureDocStoreHelper(secureDocStoreService, featureToggleService);
+
+            assertThatThrownBy(() -> underTest.download(DOCUMENT_URL_STRING))
+                .isInstanceOf(UnsupportedOperationException.class);
+            assertThat(logs.getErrors()).isEmpty();
+            assertThat(logs.getInfos()).contains(
+                format("Downloaded document attempted from CDAM without error: %s", DOCUMENT_URL_STRING));
+        }
 
         @ParameterizedTest
         @ValueSource(booleans = { true, false})
@@ -93,6 +109,21 @@ class SecureDocStoreHelperTest {
 
     @Nested
     class GetDocumentMetadata {
+
+        @Test
+        void shouldThrownUnsupportedOperationExceptionIfOldApproachNotProvidedWhenToggledOff() {
+            Document resultFromSecureDocStore = Document.builder().build();
+            when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(false);
+            when(secureDocStoreService.getDocumentMetadata(DOCUMENT_URL_STRING)).thenReturn(resultFromSecureDocStore);
+
+            SecureDocStoreHelper underTest = new SecureDocStoreHelper(secureDocStoreService, featureToggleService);
+
+            assertThatThrownBy(() -> underTest.getDocumentMetadata(DOCUMENT_URL_STRING))
+                .isInstanceOf(UnsupportedOperationException.class);
+            assertThat(logs.getErrors()).isEmpty();
+            assertThat(logs.getInfos()).contains(
+                format("Downloaded document meta data attempted from CDAM without error: %s", DOCUMENT_URL_STRING));
+        }
 
         @ParameterizedTest
         @ValueSource(booleans = { false})
@@ -157,13 +188,29 @@ class SecureDocStoreHelperTest {
     @Nested
     class UploadDocument {
 
+        @Test
+        void shouldThrownUnsupportedOperationExceptionIfOldApproachNotProvidedWhenToggledOff() {
+            Document resultFromSecureDocStore = Document.builder().build();
+            when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(false);
+            when(secureDocStoreService.uploadDocument("DATA".getBytes(), FILE_NAME, CONTENT_TYPE))
+                .thenReturn(resultFromSecureDocStore);
+
+            SecureDocStoreHelper underTest = new SecureDocStoreHelper(secureDocStoreService, featureToggleService);
+
+            assertThatThrownBy(() -> underTest.uploadDocument("DATA".getBytes(), FILE_NAME, CONTENT_TYPE))
+                .isInstanceOf(UnsupportedOperationException.class);
+            assertThat(logs.getErrors()).isEmpty();
+            assertThat(logs.getInfos()).contains(
+                format("Uploaded document attempted from CDAM without error: %s (%s)", FILE_NAME, CONTENT_TYPE));
+        }
+
         @ParameterizedTest
         @ValueSource(booleans = {true, false})
         void shouldReturnDocument(boolean toggleOn) {
-            Document fromSecureDocStore = Document.builder().build();
+            Document resultFromSecureDocStore = Document.builder().build();
             when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(toggleOn);
             when(secureDocStoreService.uploadDocument("DATA".getBytes(), FILE_NAME, CONTENT_TYPE))
-                .thenReturn(fromSecureDocStore);
+                .thenReturn(resultFromSecureDocStore);
 
             SecureDocStoreHelper underTest = new SecureDocStoreHelper(secureDocStoreService, featureToggleService);
 
@@ -181,7 +228,7 @@ class SecureDocStoreHelperTest {
                     format("Uploaded document attempted from CDAM without error: %s (%s)", FILE_NAME, CONTENT_TYPE));
             } else {
                 Document actualDoc = underTest.uploadDocument("DATA".getBytes(), FILE_NAME, CONTENT_TYPE);
-                assertThat(actualDoc).isEqualTo(fromSecureDocStore);
+                assertThat(actualDoc).isEqualTo(resultFromSecureDocStore);
                 assertThat(logs.getInfos()).containsExactly(format("Uploading document file name: %s (%s)",
                     FILE_NAME, CONTENT_TYPE));
             }
