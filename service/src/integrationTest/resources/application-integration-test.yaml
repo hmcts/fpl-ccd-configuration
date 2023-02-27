@@ -159,3 +159,8 @@ case_document_am:
   url: http://localhost:4455
   health:
     url: ${case_document_am.url}/health
+
+contacts:
+  passport_office:
+    address: 'passport office, some address, somewhere'
+    email: 'passport-office@example.com'
