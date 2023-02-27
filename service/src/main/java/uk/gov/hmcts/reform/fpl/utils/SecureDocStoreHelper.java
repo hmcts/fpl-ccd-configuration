@@ -45,7 +45,7 @@ public class SecureDocStoreHelper {
             if (featureToggleService.isSecureDocstoreEnabled()) {
                 return bytesFromSecureDocStore;
             } else {
-                log.info("Downloaded document attempted from CDAM without error: {", documentUrlString);
+                log.info("Downloaded document attempted from CDAM without error: {}", documentUrlString);
             }
         } catch (Exception t) {
             if (!featureToggleService.isSecureDocstoreEnabled()) {

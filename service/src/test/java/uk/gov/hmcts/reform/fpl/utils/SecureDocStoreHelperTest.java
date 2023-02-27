@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SecureDocStoreService;
 import uk.gov.hmcts.reform.fpl.utils.extension.TestLogger;
@@ -33,7 +34,7 @@ class SecureDocStoreHelperTest {
     private static final String DOCUMENT_URL_STRING = "http://localhost/test123";
 
     @Nested
-    class DocumentDownload {
+    class DownloadDocument {
 
         @ParameterizedTest
         @ValueSource(booleans = { false})
@@ -52,6 +53,8 @@ class SecureDocStoreHelperTest {
                 assertThat(logs.getErrors()).isEmpty();
                 assertThat(logs.getInfos()).contains(
                     format("Using old dm-store approach to download the document: %s.", DOCUMENT_URL_STRING));
+                assertThat(logs.getInfos()).contains(
+                    format("Downloaded document attempted from CDAM without error: %s", DOCUMENT_URL_STRING));
             } else {
                 byte[] actualData = underTest.download(DOCUMENT_URL_STRING);
                 assertThat(actualData).isEqualTo(resultFromSecureDocStore);
@@ -89,7 +92,70 @@ class SecureDocStoreHelperTest {
     }
 
     @Nested
-    class DocumentUpload {
+    class GetDocumentMetadata {
+
+        @ParameterizedTest
+        @ValueSource(booleans = { false})
+        void shouldDownloadDocument(boolean toggleOn) {
+            Document resultFromSecureDocStore = Document.builder().build();
+            when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(toggleOn);
+            when(secureDocStoreService.getDocumentMetadata(DOCUMENT_URL_STRING)).thenReturn(resultFromSecureDocStore);
+
+            SecureDocStoreHelper underTest = new SecureDocStoreHelper(secureDocStoreService, featureToggleService);
+
+            if (toggleOn == false) {
+                DocumentReference resultFromOldDmStoreApproach = DocumentReference.builder().build();
+                DocumentReference actualMetadata = underTest.getDocumentMetadata(DOCUMENT_URL_STRING,
+                    () -> resultFromOldDmStoreApproach);
+
+                assertThat(actualMetadata).isEqualTo(resultFromOldDmStoreApproach);
+                assertThat(logs.getErrors()).isEmpty();
+                assertThat(logs.getInfos()).contains(
+                    format("Downloaded document meta data attempted from CDAM without error: %s", DOCUMENT_URL_STRING));
+                assertThat(logs.getInfos()).contains(
+                    format("Using old dm-store approach to download document meta data: %s.", DOCUMENT_URL_STRING));
+            } else {
+                DocumentReference actualMetadata = underTest.getDocumentMetadata(DOCUMENT_URL_STRING);
+                assertThat(actualMetadata).isEqualTo(SecureDocStoreHelper
+                    .convertToDocumentReference(DOCUMENT_URL_STRING, resultFromSecureDocStore));
+                assertThat(logs.getInfos()).containsExactly(format("Downloading document meta data: {}",
+                    DOCUMENT_URL_STRING));
+            }
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldLogExceptionWhenDocStoreApiFailure(boolean toggleOn) {
+            when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(toggleOn);
+            when(secureDocStoreService.getDocumentMetadata(DOCUMENT_URL_STRING)).thenThrow(
+                new RuntimeException("TEST RUNTIME EXCEPTION"));
+
+            SecureDocStoreHelper underTest = new SecureDocStoreHelper(secureDocStoreService, featureToggleService);
+
+            if (toggleOn == false) {
+                DocumentReference resultFromOldDmStoreApproach = DocumentReference.builder().build();
+                DocumentReference actualMetadata = underTest.getDocumentMetadata(DOCUMENT_URL_STRING,
+                    () -> resultFromOldDmStoreApproach);
+
+                assertThat(actualMetadata).isEqualTo(resultFromOldDmStoreApproach);
+                assertThat(logs.getErrorThrowableClassNames()).contains("java.lang.RuntimeException");
+                assertThat(logs.getErrorThrowableMessages()).contains("TEST RUNTIME EXCEPTION");
+                assertThat(logs.getErrors()).contains(
+                    "↑ ↑ ↑ ↑ ↑ ↑ ↑ EXCEPTION CAUGHT WHEN DOWNLOADING METADATA "
+                        + "(SECURE DOC STORE: DISABLED) ↑ ↑ ↑ ↑ ↑ ↑ ↑");
+                assertThat(logs.getInfos())
+                    .contains(
+                        format("Using old dm-store approach to download document meta data: %s.", DOCUMENT_URL_STRING));
+            } else {
+                assertThatThrownBy(() -> underTest.getDocumentMetadata(DOCUMENT_URL_STRING))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessage("TEST RUNTIME EXCEPTION");
+            }
+        }
+    }
+
+    @Nested
+    class UploadDocument {
 
         @ParameterizedTest
         @ValueSource(booleans = {true, false})
@@ -111,6 +177,8 @@ class SecureDocStoreHelperTest {
                 assertThat(logs.getInfos())
                     .contains(
                         format("Using old dm-store approach to upload document: %s (%s).", FILE_NAME, CONTENT_TYPE));
+                assertThat(logs.getInfos()).contains(
+                    format("Uploaded document attempted from CDAM without error: %s (%s)", FILE_NAME, CONTENT_TYPE));
             } else {
                 Document actualDoc = underTest.uploadDocument("DATA".getBytes(), FILE_NAME, CONTENT_TYPE);
                 assertThat(actualDoc).isEqualTo(fromSecureDocStore);
