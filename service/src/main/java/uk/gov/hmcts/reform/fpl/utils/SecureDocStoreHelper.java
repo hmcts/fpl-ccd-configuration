@@ -21,7 +21,7 @@ public class SecureDocStoreHelper {
     private SecureDocStoreService secureDocStoreService;
 
     public SecureDocStoreHelper(SecureDocStoreService secureDocStoreService,
-                                 FeatureToggleService featureToggleService) {
+                                FeatureToggleService featureToggleService) {
         this.featureToggleService = featureToggleService;
         this.secureDocStoreService = secureDocStoreService;
     }
