@@ -30,5 +30,6 @@
     "test:crossbrowser": "./bin/run-crossbrowser-tests.sh",
     "prepare": "husky install"
   },
+  "packageManager": "yarn@3.3.0",
   "license": "MIT"
 }
