@@ -37,7 +37,7 @@ class SecureDocStoreHelperTest {
     class DownloadDocument {
 
         @ParameterizedTest
-        @ValueSource(booleans = { false})
+        @ValueSource(booleans = { true, false})
         void shouldDownloadDocument(boolean toggleOn) {
             byte[] resultFromSecureDocStore = "DATA_FROM_NEW".getBytes();
             when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(toggleOn);
