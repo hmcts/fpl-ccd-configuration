@@ -78,7 +78,6 @@ public class AdditionalApplicationsUploadedEventHandler {
     @EventListener
     @Async
     public void sendAdditionalApplicationsByPost(final AdditionalApplicationsUploadedEvent event) {
-        log.info("HITTINGSENDADDITIONALEVENT");
         final CaseData caseData = event.getCaseData();
         AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
         final List<DocumentReference> documents = getApplicationDocuments(uploadedBundle);
