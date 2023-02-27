@@ -78,6 +78,20 @@ class SecureDocStoreHelperTest {
             }
         }
 
+        @Test
+        void shouldThrowExceptionWhenToggledOn() {
+            when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(true);
+            when(secureDocStoreService.downloadDocument(DOCUMENT_URL_STRING)).thenThrow(
+                new RuntimeException("TEST RUNTIME EXCEPTION"));
+
+            SecureDocStoreHelper underTest = new SecureDocStoreHelper(secureDocStoreService, featureToggleService);
+            assertThatThrownBy(() -> underTest.download(DOCUMENT_URL_STRING))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("TEST RUNTIME EXCEPTION");
+            assertThat(logs.getErrors()).doesNotContain(
+                "↑ ↑ ↑ ↑ ↑ ↑ ↑ EXCEPTION CAUGHT (SECURE DOC STORE: DISABLED) ↑ ↑ ↑ ↑ ↑ ↑ ↑");
+        }
+
         @ParameterizedTest
         @ValueSource(booleans = {true, false})
         void shouldLogExceptionWhenDocStoreApiFailure(boolean toggleOn) {
@@ -152,6 +166,21 @@ class SecureDocStoreHelperTest {
                 assertThat(logs.getInfos()).containsExactly(format("Downloading document meta data: {}",
                     DOCUMENT_URL_STRING));
             }
+        }
+
+        @Test
+        void shouldThrowExceptionWhenToggledOn() {
+            when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(true);
+            when(secureDocStoreService.getDocumentMetadata(DOCUMENT_URL_STRING)).thenThrow(
+                new RuntimeException("TEST RUNTIME EXCEPTION"));
+
+            SecureDocStoreHelper underTest = new SecureDocStoreHelper(secureDocStoreService, featureToggleService);
+            assertThatThrownBy(() -> underTest.getDocumentMetadata(DOCUMENT_URL_STRING))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("TEST RUNTIME EXCEPTION");
+            assertThat(logs.getErrors()).doesNotContain(
+                "↑ ↑ ↑ ↑ ↑ ↑ ↑ EXCEPTION CAUGHT WHEN DOWNLOADING METADATA "
+                    + "(SECURE DOC STORE: DISABLED) ↑ ↑ ↑ ↑ ↑ ↑ ↑");
         }
 
         @ParameterizedTest
@@ -232,6 +261,20 @@ class SecureDocStoreHelperTest {
                 assertThat(logs.getInfos()).containsExactly(format("Uploading document file name: %s (%s)",
                     FILE_NAME, CONTENT_TYPE));
             }
+        }
+
+        @Test
+        void shouldThrowExceptionWhenToggledOn() {
+            when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(true);
+            when(secureDocStoreService.uploadDocument("DATA".getBytes(), FILE_NAME, CONTENT_TYPE)).thenThrow(
+                new RuntimeException("TEST RUNTIME EXCEPTION"));
+
+            SecureDocStoreHelper underTest = new SecureDocStoreHelper(secureDocStoreService, featureToggleService);
+            assertThatThrownBy(() -> underTest.uploadDocument("DATA".getBytes(), FILE_NAME, CONTENT_TYPE))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("TEST RUNTIME EXCEPTION");
+            assertThat(logs.getErrors()).doesNotContain("↑ ↑ ↑ ↑ ↑ ↑ ↑ EXCEPTION CAUGHT WHEN UPLOADING DOCUMENT "
+                + "(SECURE DOC STORE: DISABLED) ↑ ↑ ↑ ↑ ↑ ↑ ↑");
         }
 
         @ParameterizedTest
