@@ -226,7 +226,8 @@ class SecureDocStoreHelperTest {
 
             SecureDocStoreHelper underTest = new SecureDocStoreHelper(secureDocStoreService, featureToggleService);
 
-            assertThatThrownBy(() -> underTest.uploadDocument("DATA".getBytes(), FILE_NAME, CONTENT_TYPE))
+            byte[] data = "DATA".getBytes();
+            assertThatThrownBy(() -> underTest.uploadDocument(data, FILE_NAME, CONTENT_TYPE))
                 .isInstanceOf(UnsupportedOperationException.class);
             assertThat(logs.getErrors()).isEmpty();
             assertThat(logs.getInfos()).contains(
@@ -270,7 +271,8 @@ class SecureDocStoreHelperTest {
                 new RuntimeException("TEST RUNTIME EXCEPTION"));
 
             SecureDocStoreHelper underTest = new SecureDocStoreHelper(secureDocStoreService, featureToggleService);
-            assertThatThrownBy(() -> underTest.uploadDocument("DATA".getBytes(), FILE_NAME, CONTENT_TYPE))
+            byte[] data = "DATA".getBytes();
+            assertThatThrownBy(() -> underTest.uploadDocument(data, FILE_NAME, CONTENT_TYPE))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("TEST RUNTIME EXCEPTION");
             assertThat(logs.getErrors()).doesNotContain("↑ ↑ ↑ ↑ ↑ ↑ ↑ EXCEPTION CAUGHT WHEN UPLOADING DOCUMENT "
@@ -300,7 +302,8 @@ class SecureDocStoreHelperTest {
                     .contains(
                         format("Using old dm-store approach to upload document: %s (%s).", FILE_NAME, CONTENT_TYPE));
             } else {
-                assertThatThrownBy(() -> underTest.uploadDocument("DATA".getBytes(), FILE_NAME, CONTENT_TYPE))
+                byte[] data = "DATA".getBytes();
+                assertThatThrownBy(() -> underTest.uploadDocument(data, FILE_NAME, CONTENT_TYPE))
                     .isInstanceOf(RuntimeException.class)
                     .hasMessage("TEST RUNTIME EXCEPTION");
             }
