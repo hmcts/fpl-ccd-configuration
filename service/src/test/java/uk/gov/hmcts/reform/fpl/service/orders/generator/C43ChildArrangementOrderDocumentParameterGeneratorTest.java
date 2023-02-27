@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.enums.ChildArrangementsOrderType;
@@ -21,9 +23,14 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.service.orders.generator.C43ChildArrangementOrderDocumentParameterGenerator.CONDITIONS_MESSAGE;
+import static uk.gov.hmcts.reform.fpl.service.orders.generator.C43ChildArrangementOrderDocumentParameterGenerator.NOTICE_MESSAGE;
+import static uk.gov.hmcts.reform.fpl.service.orders.generator.C43ChildArrangementOrderDocumentParameterGenerator.WARNING_MESSAGE;
 
 @ExtendWith({MockitoExtension.class})
 public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
+    private static final String PASSPORT_OFFICE_EMAIL = "passport-office@example.com";
+    private static final String PASSPORT_OFFICE_ADDRESS = "Passport Office, some address, somewhere";
     private static final String LA_CODE = "LA_CODE";
     private static final String LA_NAME = "Local Authority Name";
     private static final String CONSENT = "By consent";
@@ -32,11 +39,11 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
     private static final String DIRECTIONS = "Directions";
     private static final String FURTHER_DIRECTIONS = "Further directions";
     private static final String ORDER_TITLE = "Title";
-    private static final String CHILD_LIVE_TEXT = "The Child Arrangement Order is for the child to live with.\n\n";
+    private static final String CHILD_LIVE_TEXT = "The Child Arrangement Order is for the child to live with.";
     private static final String CHILD_CONTACT_TEXT =
-        "The Child Arrangement Order is for the child to have contact with.\n\n";
+        "The Child Arrangement Order is for the child to have contact with.";
     private static final String BOTH_ARRANGEMENT_TEXT =
-        "The Child Arrangement Order is for the child to live with and have contact with.\n\n";
+        "The Child Arrangement Order is for the child to live with and have contact with.";
     private static final ChildArrangementsOrderType CHILD_LIVE = ChildArrangementsOrderType.CHILD_LIVE;
     private static final ChildArrangementsOrderType CHILD_CONTACT = ChildArrangementsOrderType.CHILD_CONTACT;
 
@@ -51,6 +58,12 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
 
     @InjectMocks
     private C43ChildArrangementOrderDocumentParameterGenerator underTest;
+
+    @BeforeEach
+    public void setup() {
+        ReflectionTestUtils.setField(underTest, "passportOfficeEmail", PASSPORT_OFFICE_EMAIL);
+        ReflectionTestUtils.setField(underTest, "passportOfficeAddress", PASSPORT_OFFICE_ADDRESS);
+    }
 
     @Test
     void accept() {
@@ -72,7 +85,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
 
         assertThat(generatedParameters).isEqualTo(expectedCommonParametersChildArrangementOrder()
             .orderHeader(ORDER_HEADER)
-            .orderMessage(C43ChildArrangementOrderDocumentParameterGenerator.WARNING_MESSAGE)
+            .orderMessage(WARNING_MESSAGE)
             .build());
     }
 
@@ -163,33 +176,37 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
 
     private C43ChildArrangementOrderDocmosisParameters.C43ChildArrangementOrderDocmosisParametersBuilder<?, ?>
         expectedCommonParameters() {
-        String orderDetails = String.format("The Court orders\n\n%s", RECITALS_AND_PREAMBLES);
+        String orderDetails = "The Court orders";
         String directions = String.format("%s\n\n%s\n\n%s", DIRECTIONS, FURTHER_DIRECTIONS,
-            C43ChildArrangementOrderDocumentParameterGenerator.CONDITIONS_MESSAGE);
+            CONDITIONS_MESSAGE);
+        String noticeMessage = String.format(NOTICE_MESSAGE, PASSPORT_OFFICE_ADDRESS, PASSPORT_OFFICE_EMAIL);
 
         return C43ChildArrangementOrderDocmosisParameters.builder()
             .orderTitle(ORDER_TITLE)
+            .recitalsOrPreamble(RECITALS_AND_PREAMBLES)
             .orderByConsent(CONSENT)
             .orderDetails(orderDetails)
             .furtherDirections(directions)
             .localAuthorityName(LA_NAME)
             .noticeHeader("Notice")
-            .noticeMessage(C43ChildArrangementOrderDocumentParameterGenerator.NOTICE_MESSAGE);
+            .noticeMessage(noticeMessage);
     }
 
     private C43ChildArrangementOrderDocmosisParameters.C43ChildArrangementOrderDocmosisParametersBuilder<?, ?>
         expectedCommonParametersChildArrangementOrder() {
-        String orderDetails = String.format("%sThe Court orders\n\n%s", CHILD_LIVE_TEXT, RECITALS_AND_PREAMBLES);
+        String orderDetails = String.format("The Court orders\n\n%s", CHILD_LIVE_TEXT);
         String directions = String.format("%s\n\n%s\n\n%s", DIRECTIONS, FURTHER_DIRECTIONS,
-            C43ChildArrangementOrderDocumentParameterGenerator.CONDITIONS_MESSAGE);
+            CONDITIONS_MESSAGE);
+        String noticeMessage = String.format(NOTICE_MESSAGE, PASSPORT_OFFICE_ADDRESS, PASSPORT_OFFICE_EMAIL);
 
         return C43ChildArrangementOrderDocmosisParameters.builder()
             .orderTitle(ORDER_TITLE)
+            .recitalsOrPreamble(RECITALS_AND_PREAMBLES)
             .orderByConsent(CONSENT)
             .orderDetails(orderDetails)
             .furtherDirections(directions)
             .localAuthorityName(LA_NAME)
             .noticeHeader("Notice")
-            .noticeMessage(C43ChildArrangementOrderDocumentParameterGenerator.NOTICE_MESSAGE);
+            .noticeMessage(noticeMessage);
     }
 }
