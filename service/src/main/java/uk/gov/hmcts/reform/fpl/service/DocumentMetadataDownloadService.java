@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.utils.SecureDocStoreHelper;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.net.URI;
+import java.util.Optional;
 
 import static java.lang.String.join;
 
@@ -48,17 +49,23 @@ public class DocumentMetadataDownloadService {
                 userRoles);
         final String _userRoles = userRoles;
 
-        return new SecureDocStoreHelper(secureDocStoreService, featureToggleService)
-            .getDocumentMetadata(documentUrlString, () -> {
-                uk.gov.hmcts.reform.document.domain.Document document =
-                    documentMetadataDownloadClient.getDocumentMetadata(
-                        authorisation,
-                        authTokenGenerator.generate(),
-                        _userRoles,
-                        userId,
-                        URI.create(documentUrlString).getPath()
-                    );
-                return SecureDocStoreHelper.convertToDocumentReference(documentUrlString, document);
-            });
+        DocumentReference ret = null;
+        try {
+            return ret = new SecureDocStoreHelper(secureDocStoreService, featureToggleService)
+                .getDocumentMetadata(documentUrlString, () -> {
+                    uk.gov.hmcts.reform.document.domain.Document document =
+                        documentMetadataDownloadClient.getDocumentMetadata(
+                            authorisation,
+                            authTokenGenerator.generate(),
+                            _userRoles,
+                            userId,
+                            URI.create(documentUrlString).getPath()
+                        );
+                    return SecureDocStoreHelper.convertToDocumentReference(documentUrlString, document);
+                });
+        } finally {
+            log.info("Size of document {}: {}", documentUrlString, Optional.ofNullable(ret)
+                .map(doc -> doc.getSize()).orElse(0L));
+        }
     }
 }

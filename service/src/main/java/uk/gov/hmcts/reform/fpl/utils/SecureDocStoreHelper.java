@@ -61,10 +61,6 @@ public class SecureDocStoreHelper {
         throw new UnsupportedOperationException();
     }
 
-    private static void logSizeOfDocument(String documentUrlString, long size) {
-        log.info("Size of document {}: {}", documentUrlString, size);
-    }
-
     private static Supplier<IllegalArgumentException> exceptionSupplier(String documentUrlString) {
         return () -> new IllegalArgumentException(
             String.join(":",
@@ -81,7 +77,6 @@ public class SecureDocStoreHelper {
                 .size(document.size)
                 .build())
             .orElseThrow(exceptionSupplier(documentUrlString));
-        logSizeOfDocument(documentUrlString, Optional.ofNullable(document).map(doc -> doc.size).orElse(0L));
         return ret;
     }
 
@@ -92,7 +87,6 @@ public class SecureDocStoreHelper {
                 .size(document.size)
                 .build())
             .orElseThrow(exceptionSupplier(documentUrlString));
-        logSizeOfDocument(documentUrlString, Optional.ofNullable(document).map(doc -> doc.size).orElse(0L));
         return ret;
     }
 

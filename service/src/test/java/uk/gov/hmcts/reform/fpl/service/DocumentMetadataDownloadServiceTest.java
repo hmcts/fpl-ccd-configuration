@@ -12,6 +12,9 @@ import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.utils.extension.TestLogger;
+import uk.gov.hmcts.reform.fpl.utils.extension.TestLogs;
+import uk.gov.hmcts.reform.fpl.utils.extension.TestLogsExtension;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
@@ -30,13 +33,16 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith({SpringExtension.class, TestLogsExtension.class})
 class DocumentMetadataDownloadServiceTest {
     private static final String AUTH_TOKEN = "token";
     private static final String SERVICE_AUTH_TOKEN = "service-token";
     private static final String USER_ID = "8a0a7c46-631c-4a55-9b81-4cc9fb9798f4";
     private static final String SYSTEM_USER_TOKEN = "system-user-token";
     private static final String SYSTEM_USER_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
+
+    @TestLogs
+    private TestLogger logs = new TestLogger(DocumentMetadataDownloadService.class);
 
     @Mock
     private DocumentMetadataDownloadClientApi documentMetadataDownloadClient;
@@ -156,6 +162,9 @@ class DocumentMetadataDownloadServiceTest {
 
         verify(secureDocStoreService).getDocumentMetadata(document.links.self.href);
         verifyNoInteractions(documentMetadataDownloadClient);
+        assertThat(logs.getInfos()).contains(String.format("Size of document %s: %s",
+            "http://localhost:4455/cases/documents/46f068e9-a395-49b3-a819-18e8c1327f11",
+            "1221560"));
     }
 
     @Test
@@ -179,5 +188,8 @@ class DocumentMetadataDownloadServiceTest {
             "caseworker-publiclaw-systemupdate",
             SYSTEM_USER_ID,
             "/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
+        assertThat(logs.getInfos()).contains(String.format("Size of document %s: %s",
+            "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
+            "72552"));
     }
 }
