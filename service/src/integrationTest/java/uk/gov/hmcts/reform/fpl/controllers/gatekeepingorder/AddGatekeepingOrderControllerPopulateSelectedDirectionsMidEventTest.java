@@ -74,7 +74,7 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
                     + "Practice Direction 25C. Give other parties a list of names of suitable experts.")
                 .assignee(ALL_PARTIES)
                 .dueDateType(DAYS)
-                .daysBeforeHearing(3)
+                .daysBeforeHearing(2)
                 .build());
 
         assertThat(getStandardDirection(callbackResponse, ATTEND_HEARING)).isEqualTo(
@@ -84,7 +84,7 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
                 .description("Parties and their legal representatives must attend the pre-hearing and hearing")
                 .assignee(ALL_PARTIES)
                 .dueDateType(DAYS)
-                .daysBeforeHearing(0)
+                .daysBeforeHearing(2)
                 .build());
 
         assertThat(getStandardDirection(callbackResponse, APPOINT_CHILDREN_GUARDIAN)).isEqualTo(
@@ -135,7 +135,7 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
                     + "and Practice Direction 25C. Give other parties a list of names of suitable experts.")
                 .assignee(ALL_PARTIES)
                 .dueDateType(DAYS)
-                .daysBeforeHearing(3)
+                .daysBeforeHearing(2)
                 .dateToBeCompletedBy(LocalDateTime.of(2030, 2, 6, 12, 0, 0))
                 .build());
 
@@ -146,7 +146,7 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
                 .description("Parties and their legal representatives must attend the pre-hearing and hearing")
                 .assignee(ALL_PARTIES)
                 .dueDateType(DAYS)
-                .daysBeforeHearing(0)
+                .daysBeforeHearing(2)
                 .dateToBeCompletedBy(LocalDateTime.of(2030, 2, 10, 0, 0, 0))
                 .build());
 

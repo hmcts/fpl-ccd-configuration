@@ -264,6 +264,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "direction-APPOINT_CHILDREN_GUARDIAN_IMMEDIATE",
+    "Label": "Appoint a children's guardian",
+    "FieldType": "ImmediateStandardDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "direction-OBJECT_TO_REQUEST_FOR_DISCLOSURE",
     "Label": "Object to a request for disclosure",
     "FieldType": "StandardDirection",
@@ -276,6 +285,15 @@
     "ID": "direction-ARRANGE_INTERPRETERS",
     "Label": "Arrange interpreters",
     "FieldType": "EditableStandardDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "direction-ARRANGE_INTERPRETERS_IMMEDIATE",
+    "Label": "Arrange interpreters",
+    "FieldType": "ImmediateStandardDirection",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

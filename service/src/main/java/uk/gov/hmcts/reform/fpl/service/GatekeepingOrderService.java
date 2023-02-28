@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -45,6 +46,8 @@ import static org.apache.commons.lang3.ObjectUtils.firstNonNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionType.APPOINT_CHILDREN_GUARDIAN_IMMEDIATE;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionType.ARRANGE_INTERPRETERS_IMMEDIATE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
@@ -303,9 +306,14 @@ public class GatekeepingOrderService {
     private StandardDirection buildStandardDirection(DirectionType type, HearingBooking hearing) {
         final DirectionConfiguration directionConfig = ordersLookupService.getDirectionConfiguration(type);
 
+        DirectionDueDateType dueDateType =
+            APPOINT_CHILDREN_GUARDIAN_IMMEDIATE.equals(type) || ARRANGE_INTERPRETERS_IMMEDIATE.equals(type)
+                ? null
+                : DAYS;
+
         return StandardDirection.builder()
             .dateToBeCompletedBy(calculateDirectionDueDate(hearing, directionConfig.getDisplay()))
-            .dueDateType(DAYS)
+            .dueDateType(dueDateType)
             .build()
             .applyConfig(directionConfig);
     }
@@ -325,12 +333,13 @@ public class GatekeepingOrderService {
             return null;
         }
 
-        final Integer daysBefore = Optional.ofNullable(workingDays).orElse(Optional.ofNullable(display.getDelta())
+        final int daysBefore = Optional.ofNullable(workingDays).orElse(Optional.ofNullable(display.getDelta())
             .map(Integer::parseInt)
             .orElse(0));
 
         LocalDate deadline = daysBefore == 0 ? hearingDay : calendarService.getWorkingDayFrom(hearingDay, daysBefore);
+        LocalTime deadlineTime = LocalTime.parse(defaultIfNull(hearing.getStartDate().format(DateTimeFormatter.ofPattern("HH:mm:ss")), "00:00:00"));
 
-        return LocalDateTime.of(deadline, LocalTime.parse(defaultIfNull(display.getTime(), "00:00:00")));
+        return LocalDateTime.of(deadline, deadlineTime);
     }
 }
