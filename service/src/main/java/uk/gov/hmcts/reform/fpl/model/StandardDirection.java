@@ -11,8 +11,6 @@ import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 
 import java.time.LocalDateTime;
 
-import static java.lang.Integer.valueOf;
-import static java.lang.Math.abs;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Data

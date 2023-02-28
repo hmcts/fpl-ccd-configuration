@@ -136,7 +136,7 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
                 .assignee(ALL_PARTIES)
                 .dueDateType(DAYS)
                 .daysBeforeHearing(2)
-                .dateToBeCompletedBy(LocalDateTime.of(2030, 2, 6, 12, 0, 0))
+                .dateToBeCompletedBy(LocalDateTime.of(2030, 2, 6, 15, 0, 0))
                 .build());
 
         assertThat(getStandardDirection(response, ATTEND_HEARING)).isEqualTo(
@@ -147,7 +147,7 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
                 .assignee(ALL_PARTIES)
                 .dueDateType(DAYS)
                 .daysBeforeHearing(2)
-                .dateToBeCompletedBy(LocalDateTime.of(2030, 2, 10, 0, 0, 0))
+                .dateToBeCompletedBy(LocalDateTime.of(2030, 2, 10, 15, 0, 0))
                 .build());
 
         assertThat(getStandardDirection(response, APPOINT_CHILDREN_GUARDIAN)).isEqualTo(
@@ -158,7 +158,7 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
                 .assignee(CAFCASS)
                 .dueDateType(DAYS)
                 .daysBeforeHearing(2)
-                .dateToBeCompletedBy(LocalDateTime.of(2030, 2, 7, 16, 0, 0))
+                .dateToBeCompletedBy(LocalDateTime.of(2030, 2, 7, 15, 0, 0))
                 .build());
     }
 
