@@ -10,9 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
@@ -24,7 +22,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -139,7 +136,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         private final String migrationId = "DFPL-1204";
         private final long validCaseId = 1638528543085011L;
         private final UUID placementToRemove = UUID.fromString("88125c8b-8466-4af4-967f-197c3b82773c");
-        private final UUID placementToRemain = randomUUID();
+        private final UUID placementToRemain = UUID.randomUUID();
         private final DocumentReference documentToRemain = testDocumentReference();
 
         @Test
@@ -184,7 +181,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         private final String migrationId = "DFPL-1218";
         private final long validCaseId = 1651753104228873L;
         private final UUID placementToRemove = UUID.fromString("e32706b1-22e5-4bd9-ba05-355fe69028d0");
-        private final UUID placementToRemain = randomUUID();
+        private final UUID placementToRemain = UUID.randomUUID();
         private final DocumentReference documentToRemain = testDocumentReference();
 
         @Test
