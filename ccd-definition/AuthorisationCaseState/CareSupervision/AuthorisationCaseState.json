@@ -7,7 +7,8 @@
       "caseworker-publiclaw-solicitor",
       "caseworker-publiclaw-systemupdate",
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-ras-validation"
     ],
     "CRUD": "CRU"
   },
@@ -26,7 +27,8 @@
       "caseworker-publiclaw-bulkscan",
       "caseworker-publiclaw-bulkscansystemupdate",
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-ras-validation"
     ],
     "CRUD": "CRU"
   },
@@ -45,7 +47,8 @@
       "caseworker-publiclaw-bulkscan",
       "caseworker-publiclaw-bulkscansystemupdate",
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-ras-validation"
     ],
     "CRUD": "CRU"
   },
@@ -64,7 +67,8 @@
       "caseworker-publiclaw-bulkscan",
       "caseworker-publiclaw-bulkscansystemupdate",
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-ras-validation"
     ],
     "CRUD": "CRU"
   },
@@ -82,7 +86,8 @@
       "caseworker-publiclaw-judiciary",
       "caseworker-publiclaw-magistrate",
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-ras-validation"
     ],
     "CRUD": "CRU"
   },
@@ -95,7 +100,8 @@
       "caseworker-publiclaw-courtadmin",
       "caseworker-publiclaw-systemupdate",
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-ras-validation"
     ],
     "CRUD": "CRU"
   },
@@ -114,7 +120,8 @@
       "caseworker-publiclaw-bulkscan",
       "caseworker-publiclaw-bulkscansystemupdate",
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-ras-validation"
     ],
     "CRUD": "CRU"
   },
