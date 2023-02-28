@@ -16,6 +16,8 @@ import uk.gov.hmcts.reform.fpl.model.DfjAreaCourtMapping;
 import uk.gov.hmcts.reform.fpl.service.CourtSelectionService;
 import uk.gov.hmcts.reform.fpl.service.DfjAreaLookUpService;
 
+import java.util.Objects;
+
 @Api
 @RestController
 @RequestMapping("/callback/select-court")
@@ -43,7 +45,7 @@ public class CourtSelectionController extends CallbackController {
         caseDetails.getData().put("court", selectedCourt);
         caseDetails.getData().remove("courtsList");
 
-        if (selectedCourt != null) {
+        if (Objects.nonNull(selectedCourt)) {
             DfjAreaCourtMapping dfjArea = dfjAreaLookUpService.getDfjArea(selectedCourt.getCode());
             caseDetails.getData().keySet().removeAll(dfjAreaLookUpService.getAllCourtFields());
             caseDetails.getData().put("dfjArea", dfjArea.getDfjArea());

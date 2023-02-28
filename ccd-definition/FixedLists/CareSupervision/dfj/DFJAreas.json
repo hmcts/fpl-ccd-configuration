@@ -168,11 +168,11 @@
     "DisplayOrder": 24
   },
   {
-  "LiveFrom": "01/01/2017",
-  "ID": "DFJArea",
-  "ListElementCode": "BRIGHTON",
-  "ListElement": "Brighton",
-  "DisplayOrder": 25
+    "LiveFrom": "01/01/2017",
+    "ID": "DFJArea",
+    "ListElementCode": "BRIGHTON",
+    "ListElement": "Brighton",
+    "DisplayOrder": 25
   },
   {
     "LiveFrom": "01/01/2017",

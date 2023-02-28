@@ -276,7 +276,7 @@
     "CaseFieldID": "watfordDFJCourt",
     "Label": "Court",
     "DisplayOrder": 2,
-    "FieldShowCondition" : "dfjArea = \"Watford\""
+    "FieldShowCondition" : "dfjArea = \"WATFORD\""
   },
   {
     "LiveFrom": "01/01/2017",
