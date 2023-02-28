@@ -37,6 +37,7 @@ public class MigrateCaseController extends CallbackController {
     private static final String PLACEMENT = "placements";
     private static final String PLACEMENT_NON_CONFIDENTIAL = "placementsNonConfidential";
     private static final String PLACEMENT_NON_CONFIDENTIAL_NOTICES = "placementsNonConfidentialNotices";
+    private static final String POSITION_STATEMENT_LIST_CHILD = "positionStatementChildListV2";
 
     private final MigrateCaseService migrateCaseService;
 
@@ -45,7 +46,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1202", this::run1202,
         "DFPL-1195", this::run1195,
         "DFPL-1218", this::run1218,
-        "DFPL-1210", this::run1210
+        "DFPL-1210", this::run1210,
+        "DFPL-1243", this::run1243
     );
 
     @PostMapping("/about-to-submit")
@@ -108,6 +110,15 @@ public class MigrateCaseController extends CallbackController {
         removeSpecificPlacements(caseDetails, placementToRemove);
     }
 
+    private void run1243(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1243";
+        var possibleCaseIds = List.of(1675697653441050L);
+
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().remove(POSITION_STATEMENT_LIST_CHILD);
+    }
+
     private void removeSpecificPlacements(CaseDetails caseDetails,UUID placementToRemove) {
         CaseData caseData = getCaseData(caseDetails);
 
@@ -125,7 +136,7 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL, nonConfidentialPlacementsToKeep);
         caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL_NOTICES, nonConfidentialNoticesPlacementsToKeep);
     }
-    
+
     private void run1210(CaseDetails caseDetails) {
         String migrationId = "DFPL-1210";
         Map<String, Object> caseDetailsData = caseDetails.getData();
