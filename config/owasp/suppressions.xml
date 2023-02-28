@@ -205,4 +205,7 @@
   <suppress>
     <vulnerabilityName>1089600</vulnerabilityName>
   </suppress>
+  <suppress>
+    <cve>CVE-2022-45688</cve>
+  </suppress>
 </suppressions>
