@@ -2,21 +2,24 @@
   "name": "fpl-ccd-configuration",
   "version": "1.0.0",
   "description": "FPL CCD e2e tests",
+  "engines": {
+    "node": "^16.13 || >=18"
+  },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
     "codeceptjs": "3.4.1",
-    "dateformat": "^4.5.1",
+    "dateformat": "^4.6.3",
     "eslint": "7.32.0",
     "eslint-plugin-codeceptjs": "^1.3.0",
-    "glob": "^7.1.7",
+    "glob": "^7.2.3",
     "html_codesniffer": "^2.5.1",
-    "husky": "^7.0.2",
+    "husky": "^7.0.4",
     "lodash": "^4.17.21",
-    "mocha-junit-reporter": "^2.0.0",
-    "mocha-multi": "^1.1.3",
-    "mochawesome": "^6.2.2",
+    "mocha-junit-reporter": "^2.2.0",
+    "mocha-multi": "^1.1.7",
+    "mochawesome": "^6.3.1",
     "moment": "2.29.1",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.9",
     "puppeteer": "19.7.2",
     "webdriverio": "8.3.10"
   },
@@ -31,5 +34,8 @@
     "prepare": "husky install"
   },
   "packageManager": "yarn@3.3.0",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "yarn": "^1.22.19"
+  }
 }
