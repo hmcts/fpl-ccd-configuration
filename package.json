@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "FPL CCD e2e tests",
   "engines": {
-    "node": "19.7.0"
+    "node": ">=16.13"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
