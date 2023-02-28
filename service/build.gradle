@@ -89,11 +89,11 @@ task integration(type: Test, description: 'Runs the integration tests.', group: 
 check.dependsOn integration
 
 task installDependencies(type: Exec, description: 'Installs Yarn dependencies.') {
-  commandLine '/usr/bin/yarn', '--mutex', 'network', '--frozen-lockfile', '--silent', 'install'
+  commandLine '/usr/bin/yarn', '--mutex', 'network', '--immutable', '--silent', 'install'
 }
 
 task checkDependenciesIntegrity(type: Exec, description: 'Checks integrity of Yarn dependencies.') {
-  commandLine '/usr/bin/yarn', '--mutex', 'network', '--frozen-lockfile', '--silent', 'check', '--integrity'
+  commandLine '/usr/bin/yarn', '--mutex', 'network', '--immutable', '--silent', 'check', '--integrity'
 }
 
 task lintUserInterfaceTests(type: Exec, description: 'Runs linting of E2E tests.') {
