@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import static java.util.UUID.fromString;
 import static java.util.stream.Collectors.toList;
 
 @Api
@@ -95,7 +96,7 @@ public class MigrateCaseController extends CallbackController {
     private void run1204(CaseDetails caseDetails) {
         var migrationId = "DFPL-1204";
         var possibleCaseIds = List.of(1638528543085011L);
-        final UUID placementToRemove = UUID.fromString("88125c8b-8466-4af4-967f-197c3b82773c");
+        final UUID placementToRemove = fromString("88125c8b-8466-4af4-967f-197c3b82773c");
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
         removeSpecificPlacements(caseDetails, placementToRemove);
@@ -104,7 +105,7 @@ public class MigrateCaseController extends CallbackController {
     private void run1218(CaseDetails caseDetails) {
         var migrationId = "DFPL-1218";
         var possibleCaseIds = List.of(1651753104228873L);
-        final UUID placementToRemove = UUID.fromString("e32706b1-22e5-4bd9-ba05-355fe69028d0");
+        final UUID placementToRemove = fromString("e32706b1-22e5-4bd9-ba05-355fe69028d0");
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
         removeSpecificPlacements(caseDetails, placementToRemove);
@@ -116,7 +117,8 @@ public class MigrateCaseController extends CallbackController {
 
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
-        caseDetails.getData().remove(POSITION_STATEMENT_LIST_CHILD);
+        caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(getCaseData(caseDetails),
+            migrationId, fromString("ffab9b6e-436f-4c7f-afba-ee646b9fb307")));
     }
 
     private void removeSpecificPlacements(CaseDetails caseDetails,UUID placementToRemove) {
