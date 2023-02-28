@@ -38,7 +38,6 @@ public class MigrateCaseController extends CallbackController {
     private static final String PLACEMENT = "placements";
     private static final String PLACEMENT_NON_CONFIDENTIAL = "placementsNonConfidential";
     private static final String PLACEMENT_NON_CONFIDENTIAL_NOTICES = "placementsNonConfidentialNotices";
-    private static final String POSITION_STATEMENT_LIST_CHILD = "positionStatementChildListV2";
 
     private final MigrateCaseService migrateCaseService;
 
@@ -138,7 +137,7 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL, nonConfidentialPlacementsToKeep);
         caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL_NOTICES, nonConfidentialNoticesPlacementsToKeep);
     }
-
+    
     private void run1210(CaseDetails caseDetails) {
         String migrationId = "DFPL-1210";
         Map<String, Object> caseDetailsData = caseDetails.getData();
