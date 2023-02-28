@@ -243,8 +243,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                     );
                 }
 
-                // update with our newly converted bundles (may not have changed at all, but we can't tell easily as it could be
-                // a supplement
+                // update with our newly converted bundles (may not have changed at all, but we can't tell easily as it
+                // could be a supplement
                 List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle
                     = caseDataCurrent.getAdditionalApplicationsBundle().stream()
                     .filter(bundle -> !bundle.getId().equals(lastBundleId))
