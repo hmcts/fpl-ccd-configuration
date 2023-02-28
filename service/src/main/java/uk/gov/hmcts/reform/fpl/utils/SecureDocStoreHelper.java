@@ -71,23 +71,21 @@ public class SecureDocStoreHelper {
 
     public static DocumentReference convertToDocumentReference(String documentUrlString,
                                                          uk.gov.hmcts.reform.document.domain.Document document) {
-        DocumentReference ret = Optional.ofNullable(document)
+        return Optional.ofNullable(document)
             .map(doc -> DocumentReference.buildFromDocument(document)
                 .toBuilder()
                 .size(document.size)
                 .build())
             .orElseThrow(exceptionSupplier(documentUrlString));
-        return ret;
     }
 
     public static DocumentReference convertToDocumentReference(String documentUrlString, Document document) {
-        DocumentReference ret = Optional.ofNullable(document)
+        return Optional.ofNullable(document)
             .map(doc -> DocumentReference.buildFromDocument(document)
                 .toBuilder()
                 .size(document.size)
                 .build())
             .orElseThrow(exceptionSupplier(documentUrlString));
-        return ret;
     }
 
     public DocumentReference getDocumentMetadata(String documentUrlString) {

@@ -24,7 +24,6 @@ public class DocumentMetadataDownloadService {
     private final DocumentMetadataDownloadClientApi documentMetadataDownloadClient;
     private final IdamClient idamClient;
     private final RequestData requestData;
-
     private final FeatureToggleService featureToggleService;
     private final SecureDocStoreService secureDocStoreService;
     private final SystemUserService systemUserService;
@@ -51,7 +50,7 @@ public class DocumentMetadataDownloadService {
 
         DocumentReference ret = null;
         try {
-            return ret = new SecureDocStoreHelper(secureDocStoreService, featureToggleService)
+            ret = new SecureDocStoreHelper(secureDocStoreService, featureToggleService)
                 .getDocumentMetadata(documentUrlString, () -> {
                     uk.gov.hmcts.reform.document.domain.Document document =
                         documentMetadataDownloadClient.getDocumentMetadata(
@@ -63,6 +62,7 @@ public class DocumentMetadataDownloadService {
                         );
                     return SecureDocStoreHelper.convertToDocumentReference(documentUrlString, document);
                 });
+            return ret;
         } finally {
             log.info("Size of document {}: {}", documentUrlString, Optional.ofNullable(ret)
                 .map(doc -> doc.getSize()).orElse(0L));
