@@ -222,35 +222,4 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .getPlacementsNonConfidential(false)).isEqualTo(placementsRemaining);
         }
     }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class Dfpl1243 {
-
-        private final String migrationId = "DFPL-1243";
-        private final long validCaseId = 1675697653441050L;
-
-        @Test
-        void shouldRemoveAllPositionStatements() {
-            PositionStatementChild positionStatementChild =
-                PositionStatementChild.builder()
-                    .hearing("Test hearing")
-                    .hearingId(randomUUID())
-                    .childId(randomUUID())
-                    .childName("Tom Smith")
-                    .build();
-
-            CaseData caseData = CaseData.builder()
-                .id(validCaseId)
-                .hearingDocuments(HearingDocuments.builder()
-                    .positionStatementChildListV2(List.of(element(positionStatementChild))).build())
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId));
-            CaseData responseData = extractCaseData(response);
-
-            assertThat(responseData.getHearingDocuments().getPositionStatementChildListV2()).isEmpty();
-        }
-    }
 }
