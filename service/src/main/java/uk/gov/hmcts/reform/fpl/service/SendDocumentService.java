@@ -107,13 +107,13 @@ public class SendDocumentService {
         }
     }
 
-    private Address getPartyAddress (Element<Respondent> respondent, CaseData caseData) {
-         if (respondent.getValue().containsConfidentialDetails()) {
-             return ElementUtils.getElement(respondent.getId(), caseData.getConfidentialRespondents())
+    private Address getPartyAddress(Element<Respondent> respondent, CaseData caseData) {
+        if (respondent.getValue().containsConfidentialDetails()) {
+            return ElementUtils.getElement(respondent.getId(), caseData.getConfidentialRespondents())
                  .getValue().getParty().getAddress();
-         }
+        }
 
-         return respondent.getValue().getParty().getAddress();
+        return respondent.getValue().getParty().getAddress();
     }
 
     private boolean hasNoLegalRepresentation(Respondent respondent) {
