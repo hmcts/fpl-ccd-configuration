@@ -5,3 +5,4 @@ spring:
     import:
       - application-integration-test.yaml
       - optional:application-email-template-test.yaml # won't be present in prod code
+

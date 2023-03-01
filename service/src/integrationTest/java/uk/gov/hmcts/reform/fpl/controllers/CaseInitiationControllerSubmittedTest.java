@@ -20,7 +20,9 @@ import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 import uk.gov.hmcts.reform.rd.model.OrganisationUsers;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -206,5 +208,27 @@ class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
             .collect(toList());
 
         return OrganisationUsers.builder().users(users).build();
+    }
+
+    @Test
+    void shouldInvokeSubmitSupplementaryData() {
+        final Organisation organisation = testOrganisation();
+
+        final CaseData caseData = CaseData.builder()
+            .id(nextLong())
+            .state(OPEN)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .outsourcingPolicy(organisationPolicy(
+                organisation.getOrganisationIdentifier(), organisation.getName(), LASOLICITOR))
+            .build();
+
+        postSubmittedEvent(caseData);
+
+        Map<String, Map<String, Map<String, Object>>> supplementaryData = new HashMap<>();
+        supplementaryData.put("supplementary_data_updates",
+            Map.of("$set", Map.of("HMCTSServiceId", "ABA3")));
+
+        verify(coreCaseDataApi).submitSupplementaryData(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN,
+            caseData.getId().toString(), supplementaryData);
     }
 }

@@ -117,5 +117,77 @@
       "caseworker-approver"
     ],
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseStateID": "Open",
+    "UserRoles": [
+      "GS_profile"
+    ],
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseStateID": "Submitted",
+    "UserRoles": [
+      "GS_profile"
+    ],
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseStateID": "Gatekeeping",
+    "UserRoles": [
+      "GS_profile"
+    ],
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseStateID": "PREPARE_FOR_HEARING",
+    "UserRoles": [
+      "GS_profile"
+    ],
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseStateID": "CLOSED",
+    "UserRoles": [
+      "GS_profile"
+    ],
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseStateID": "Deleted",
+    "UserRoles": [
+      "GS_profile"
+    ],
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseStateID": "RETURNED",
+    "UserRoles": [
+      "GS_profile"
+    ],
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseStateID": "FINAL_HEARING",
+    "UserRoles": [
+      "GS_profile"
+    ],
+    "CRUD": "R"
   }
 ]
