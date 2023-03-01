@@ -10,7 +10,6 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "PageShowCondition": "useServiceRoute=\"\" AND useUploadRoute=\"\"",
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/pre-populate/mid-event"
+    "PageShowCondition": "useServiceRoute=\"\" AND useUploadRoute=\"\""
   }
 ]

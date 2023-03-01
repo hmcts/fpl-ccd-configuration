@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
@@ -18,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.CourtLevelAllocationService;
 import uk.gov.hmcts.reform.fpl.service.GatekeepingOrderService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
@@ -26,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderDataFixer;
 import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderEventNotificationDecider;
 import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderRouteValidator;
-import uk.gov.hmcts.reform.fpl.service.sdo.UrgentGatekeepingOrderService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.HashMap;
@@ -43,7 +40,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.URGENT;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
@@ -55,14 +52,12 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AddGatekeepingOrderController extends CallbackController {
 
-    private final CaseConverter caseConverter;
     private final GatekeepingOrderService orderService;
     private final NoticeOfProceedingsService nopService;
     private final CoreCaseDataService coreCaseDataService;
 
     private final CourtLevelAllocationService allocationService;
     private final GatekeepingOrderRouteValidator routeValidator;
-    private final UrgentGatekeepingOrderService urgentOrderService;
     private final GatekeepingOrderEventNotificationDecider notificationDecider;
     private final GatekeepingOrderDataFixer dataFixer;
 
@@ -105,22 +100,6 @@ public class AddGatekeepingOrderController extends CallbackController {
         return respond(data);
     }
 
-    @PostMapping("/pre-populate/mid-event")
-    public CallbackResponse handleMidEventPrePopulation(@RequestBody CallbackRequest request) {
-        final CaseDetails caseDetails = request.getCaseDetails();
-        final CaseData caseData = getCaseData(caseDetails);
-
-        if (caseData.getGatekeepingOrderRouter() == URGENT) {
-            final List<String> errors = routeValidator.allowAccessToUrgentHearingRoute(caseData);
-            if (!errors.isEmpty()) {
-                return respond(caseDetails, errors);
-            }
-            caseDetails.getData().putAll(caseConverter.toMap(urgentOrderService.prePopulate(caseData)));
-        }
-
-        return respond(caseDetails);
-    }
-
     @PostMapping("/direction-selection/mid-event")
     public AboutToStartOrSubmitCallbackResponse populateSelectedDirections(@RequestBody CallbackRequest request) {
         final CaseDetails caseDetails = request.getCaseDetails();
@@ -151,10 +130,6 @@ public class AddGatekeepingOrderController extends CallbackController {
         final CaseData caseData = orderService.updateStandardDirections(request.getCaseDetails());
         final CaseDetailsMap data = caseDetailsMap(request.getCaseDetails());
 
-        if (caseData.getGatekeepingOrderRouter() == URGENT) {
-            throw new UnsupportedOperationException("The prepare-decision callback does not support urgent route");
-        }
-
         data.put("gatekeepingOrderSealDecision", orderService.buildSealDecision(caseData));
 
         if (caseData.getGatekeepingOrderRouter() == SERVICE) {
@@ -175,9 +150,6 @@ public class AddGatekeepingOrderController extends CallbackController {
         final GatekeepingOrderRoute sdoRouter = caseData.getGatekeepingOrderRouter();
 
         switch (sdoRouter) {
-            case URGENT:
-                data.putAll(urgentOrderService.finalise(caseData));
-                break;
             case UPLOAD:
                 data.put("standardDirectionOrder", orderService.buildOrderFromUploadedFile(caseData));
                 break;
@@ -186,7 +158,7 @@ public class AddGatekeepingOrderController extends CallbackController {
                 break;
         }
 
-        if (URGENT == sdoRouter || decision.isSealed()) {
+        if (decision.isSealed()) {
             data.put("state", CASE_MANAGEMENT);
             if (GATEKEEPING == caseData.getState()) {
                 request.getCaseDetails().setData(data);
@@ -212,7 +184,7 @@ public class AddGatekeepingOrderController extends CallbackController {
             "gatekeepingOrderHasHearing2"
         );
 
-        if (decision.isSealed() || sdoRouter == URGENT) {
+        if (decision.isSealed()) {
             removeTemporaryFields(data, "gatekeepingOrderIssuingJudge", "customDirections");
         }
 
@@ -231,13 +203,9 @@ public class AddGatekeepingOrderController extends CallbackController {
         final GatekeepingOrderRoute sdoRouter = caseData.getGatekeepingOrderRouter();
 
         Map<String, Object> updates = new HashMap<>();
-        switch (sdoRouter) {
-            case URGENT:
-                updates.putAll(urgentOrderService.sealDocumentAfterEventSubmitted(caseData));
-                break;
-            case UPLOAD:
-                updates.put("standardDirectionOrder", orderService.sealDocumentAfterEventSubmitted(caseData));
-                break;
+
+        if (sdoRouter == UPLOAD) {
+            updates.put("standardDirectionOrder", orderService.sealDocumentAfterEventSubmitted(caseData));
         }
 
         final CaseData caseDataAfterSealing;
@@ -276,8 +244,7 @@ public class AddGatekeepingOrderController extends CallbackController {
             .getGatekeepingOrderSealDecision();
         removeTemporaryFields(caseDetails, "gatekeepingOrderSealDecision");
 
-        final GatekeepingOrderRoute sdoRouter = caseData.getGatekeepingOrderRouter();
-        if (decision.isSealed() || sdoRouter == URGENT) {
+        if (decision.isSealed()) {
             removeTemporaryFields(caseDetails, "gatekeepingOrderRouter");
         }
 

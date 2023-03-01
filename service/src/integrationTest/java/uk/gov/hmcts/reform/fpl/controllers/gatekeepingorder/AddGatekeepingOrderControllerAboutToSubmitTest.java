@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers.gatekeepingorder;
 
-import org.assertj.core.api.AssertionsForClassTypes;
-import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -38,9 +36,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
-import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
@@ -75,7 +71,6 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testHearing;
 
 @WebMvcTest(AddGatekeepingOrderController.class)
@@ -254,63 +249,6 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
                 .build());
         assertThat(response.getData()).doesNotContainKeys("customDirections",
             "standardDirections", "gatekeepingOrderIssuingJudge");
-    }
-
-    @ParameterizedTest
-    @MethodSource("translationRequirements")
-    void shouldBuildUrgentHearingOrderAndAddAllocationDecision(LanguageTranslationRequirement translationRequirements) {
-
-        final DocumentReference urgentReference = testDocumentReference();
-        final DocumentReference sealedUrgentReference = testDocumentReference();
-        final Allocation allocation = Allocation.builder()
-            .judgeLevelRadio("No")
-            .proposal("Section 9 circuit judge")
-            .proposalReason("some reason")
-            .allocationProposalPresent("Yes")
-            .build();
-        Court court = Court.builder().build();
-        CaseData caseData = CaseData.builder()
-            .court(court)
-            .hearingDetails(wrapElements(HearingBooking.builder()
-                .startDate(now())
-                .endDate(now().plusDays(1))
-                .venue("EXAMPLE")
-                .build()))
-            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
-            .familyManCaseNumber("1234")
-            .orders(Orders.builder().orderType(List.of(CARE_ORDER)).build())
-            .gatekeepingOrderRouter(GatekeepingOrderRoute.URGENT)
-            .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
-                .urgentHearingAllocation(allocation)
-                .urgentHearingOrderDocument(urgentReference)
-                .urgentGatekeepingTranslationRequirements(translationRequirements)
-                .build())
-            .state(GATEKEEPING)
-            .id(1234123412341234L)
-            .build();
-
-        given(sealingService.sealDocument(urgentReference, court, SealType.ENGLISH)).willReturn(sealedUrgentReference);
-
-        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
-
-        Allocation expectedAllocation = allocation.toBuilder().judgeLevelRadio(null).build();
-
-        AssertionsForClassTypes.assertThat(responseData.getAllocationDecision()).isEqualTo(expectedAllocation);
-        AssertionsForInterfaceTypes.assertThat(responseData.getNoticeOfProceedingsBundle())
-            .extracting(Element::getValue)
-            .containsExactly(DocumentBundle.builder().document(C6_REFERENCE)
-                .translationRequirements(translationRequirements)
-                .build()
-            );
-        AssertionsForClassTypes.assertThat(responseData.getUrgentHearingOrder()).isEqualTo(
-            UrgentHearingOrder.builder()
-                .allocation("Section 9 circuit judge")
-                .order(urgentReference)
-                .unsealedOrder(urgentReference)
-                .dateAdded(dateNow())
-                .translationRequirements(translationRequirements)
-                .build()
-        );
     }
 
     @Test
