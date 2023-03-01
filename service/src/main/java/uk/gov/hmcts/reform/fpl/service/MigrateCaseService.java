@@ -131,6 +131,10 @@ public class MigrateCaseService {
                 .filter(el -> !el.getId().equals(expectedPositionStatementId))
                 .collect(toList());
 
+        if (positionStatementChildListResult.size() == 0) {
+            return Map.of("positionStatementChildListV2", null);
+        }
+
         if (positionStatementChildListResult.size() != caseData.getHearingDocuments()
             .getPositionStatementChildListV2().size() - 1) {
             throw new AssertionError(format(
