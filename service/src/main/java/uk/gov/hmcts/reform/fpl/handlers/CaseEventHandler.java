@@ -37,18 +37,16 @@ public class CaseEventHandler {
 
         if (caseData.getState() == OPEN) {
 
-            final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
-            final List<EventValidationErrors> eventErrors = caseSubmissionChecker.validateAsGroups(caseData);
-            final Map<Event, String> taskHintsMap = taskListService.getTaskHints(caseData);
-            final String taskList = taskListRenderer.render(tasks, eventErrors, getApplicationType(caseData),
-                Optional.of(taskHintsMap));
-
-            coreCaseDataService.triggerEvent(
-                JURISDICTION,
-                CASE_TYPE,
-                caseData.getId(),
-                "internal-update-task-list",
-                Map.of("taskList", taskList));
+            coreCaseDataService.performPostSubmitCallback(caseData.getId(), "internal-update-task-list",
+                caseDetails -> {
+                    final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
+                    final List<EventValidationErrors> eventErrors = caseSubmissionChecker.validateAsGroups(caseData);
+                    final Map<Event, String> taskHintsMap = taskListService.getTaskHints(caseData);
+                    final String taskList = taskListRenderer.render(tasks, eventErrors, getApplicationType(caseData),
+                        Optional.of(taskHintsMap));
+                    return Map.of("taskList", taskList);
+                }
+            );
         }
     }
 
