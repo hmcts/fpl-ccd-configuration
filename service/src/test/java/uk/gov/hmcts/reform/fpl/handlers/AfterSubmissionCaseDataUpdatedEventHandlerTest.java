@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.summary.CaseSummaryService;
 
@@ -42,11 +43,13 @@ class AfterSubmissionCaseDataUpdatedEventHandlerTest {
     private final CoreCaseDataService coreCaseDataService = mock(CoreCaseDataService.class);
     private final CaseSummaryService caseSummaryService = mock(CaseSummaryService.class);
     private final ObjectMapper objectMapper = mock(ObjectMapper.class);
+    private final CaseConverter caseConverter = mock(CaseConverter.class);
 
     AfterSubmissionCaseDataUpdatedEventHandler underTest = new AfterSubmissionCaseDataUpdatedEventHandler(
         coreCaseDataService,
         caseSummaryService,
-        objectMapper);
+        objectMapper,
+        caseConverter);
 
     @Test
     void testIfNoCaseDataBefore() {
