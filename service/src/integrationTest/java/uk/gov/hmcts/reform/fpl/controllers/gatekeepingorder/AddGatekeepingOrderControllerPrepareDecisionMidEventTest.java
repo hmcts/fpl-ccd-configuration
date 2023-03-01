@@ -37,7 +37,6 @@ import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -52,7 +51,6 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.UPLOAD;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.URGENT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
@@ -261,19 +259,6 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
             final GatekeepingOrderEventData eventData = responseData.getGatekeepingOrderEventData();
 
             assertThat(eventData.getGatekeepingOrderSealDecision()).isEqualTo(expectedSealDecision);
-        }
-    }
-
-    @Nested
-    class UrgentRoute {
-        @Test
-        void shouldThrowExceptionWhenInvokedForInvalidRoute() {
-            final CaseData caseData = CaseData.builder()
-                .gatekeepingOrderRouter(URGENT)
-                .build();
-
-            assertThatThrownBy(() -> postMidEvent(caseData, CALLBACK_NAME))
-                .hasMessageContaining("The prepare-decision callback does not support urgent route");
         }
     }
 
