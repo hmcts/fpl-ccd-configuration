@@ -339,12 +339,10 @@ public class StandardDirectionsOrderController extends CallbackController {
         );
 
         event.ifPresent(eventToPublish -> {
-            coreCaseDataService.triggerEvent(
-                JURISDICTION,
-                CASE_TYPE,
+            coreCaseDataService.performPostSubmitCallback(
                 caseData.getId(),
                 "internal-change-SEND_DOCUMENT",
-                Map.of("documentToBeSent", eventToPublish.getOrder())
+                caseDetails -> Map.of("documentToBeSent", eventToPublish.getOrder())
             );
 
             publishEvent(eventToPublish);
