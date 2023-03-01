@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
@@ -316,6 +317,24 @@ public class MigrateCaseService {
         return Map.of("applicationDocuments", applicationDocuments);
     }
 
+    public Map<String, Object> removeCaseSummaryByHearingId(CaseData caseData,
+                                                            String migrationId,
+                                                            UUID expectedHearingId) {
+        Long caseId = caseData.getId();
+        List<Element<CaseSummary>> caseSummaries =
+            caseData.getHearingDocuments().getCaseSummaryList()
+                .stream()
+                .filter(el -> !el.getId().equals(expectedHearingId))
+                .collect(toList());
+
+        if (caseSummaries.size() != caseData.getHearingDocuments().getCaseSummaryList().size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, case summary",
+                migrationId, caseId));
+        }
+        return Map.of("caseSummaryList", caseSummaries);
+    }
+
     public Map<String, Object> revertChildExtensionDate(CaseData caseData, String migrationId, String childId,
                                                         LocalDate completionDate,
                                                         CaseExtensionReasonList extensionReason) {
@@ -325,7 +344,7 @@ public class MigrateCaseService {
         if (isNotEmpty(childrenInCase)) {
             if (ElementUtils.findElement(childUUID, childrenInCase).isEmpty()) {
                 throw new AssertionError(format(
-                    "Migration {id = {}}, case reference = {}} child {} not found",
+                    "Migration {id = %s}, case reference = %s} child %s not found",
                     migrationId, caseData.getId(), childId));
             }
 
@@ -347,8 +366,18 @@ public class MigrateCaseService {
             return Map.of("children1", children);
         } else {
             throw new AssertionError(format(
-                "Migration {id = {}, case reference = {}} doesn't have children",
+                "Migration {id = %s, case reference = %s} doesn't have children",
                 migrationId, caseData.getId()));
+        }
+    }
+
+    public void doHearingOptionCheck(long caseId, String hearingOption, String expectedHearingOption,
+                                     String migrationId) throws AssertionError {
+        if (!hearingOption.equals(expectedHearingOption)) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, unexpected hearing option %s",
+                migrationId, caseId, hearingOption
+            ));
         }
     }
 }
