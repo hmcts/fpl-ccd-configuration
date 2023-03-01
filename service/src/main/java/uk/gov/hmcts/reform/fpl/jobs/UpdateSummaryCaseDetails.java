@@ -82,17 +82,19 @@ public class UpdateSummaryCaseDetails implements Job {
                 for (CaseDetails caseDetails : cases) {
                     final Long caseId = caseDetails.getId();
                     try {
-                        CaseData caseData = converter.convert(caseDetails);
-                        Map<String, Object> updatedData = summaryService.generateSummaryFields(caseData);
-                        if (shouldUpdate(updatedData, caseData)) {
-                            log.debug("Job '{}' updating case {}", jobName, caseId);
-                            ccdService.triggerEvent(JURISDICTION, CASE_TYPE, caseId, EVENT_NAME, updatedData);
-                            log.info("Job '{}' updated case {}", jobName, caseId);
-                            updated++;
-                        } else {
-                            log.debug("Job '{}' skipped case {}", jobName, caseId);
-                            skipped++;
-                        }
+                        ccdService.performPostSubmitCallback(
+                            caseId,
+                            EVENT_NAME,
+                            caseDetails1 -> {
+                                CaseData caseData = converter.convert(caseDetails1);
+                                Map<String, Object> updatedData = summaryService.generateSummaryFields(caseData);
+                                if (shouldUpdate(updatedData, caseData)) {
+                                    log.debug("Job '{}' updating case {}", jobName, caseId);
+                                    return updatedData;
+                                }
+                                return Map.of();
+                            }
+                        );
                     } catch (Exception e) {
                         log.error("Job '{}' could not update case {} due to {}", jobName, caseId, e.getMessage(), e);
                         failed++;
