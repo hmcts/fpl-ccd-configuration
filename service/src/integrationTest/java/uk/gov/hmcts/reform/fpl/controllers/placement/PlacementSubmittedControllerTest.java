@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
+import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
@@ -121,6 +122,9 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
 
     @MockBean
     private DocumentConversionService documentConversionService;
+
+    @MockBean
+    private WorkAllocationTaskService workAllocationTaskService;
 
     @BeforeEach
     void init() {
