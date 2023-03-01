@@ -34,6 +34,7 @@ import java.util.Map;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.allNotNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -213,44 +214,44 @@ public class AddGatekeepingOrderController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest request) {
-        CaseData caseData = getCaseData(request);
-        final CaseDetails caseDetails = request.getCaseDetails();
-        final Map<String, Object> data = caseDetails.getData();
+        final CaseDetails oldCaseDetails = request.getCaseDetails();
 
-        final GatekeepingOrderRoute sdoRouter = caseData.getGatekeepingOrderRouter();
-
-        Map<String, Object> updates = new HashMap<>();
-        switch (sdoRouter) {
-            case URGENT:
-                updates.putAll(urgentOrderService.sealDocumentAfterEventSubmitted(caseData));
-                break;
-            case UPLOAD:
-                updates.put("standardDirectionOrder", orderService.sealDocumentAfterEventSubmitted(caseData));
-                break;
-        }
-
-        final CaseData caseDataAfterSealing;
-        if (updates.isEmpty()) {
-            caseDataAfterSealing = caseData;
-        } else {
-            data.putAll(updates);
-            caseDataAfterSealing = getCaseData(caseDetails);
-        }
-
-        coreCaseDataService.triggerEvent(caseDataAfterSealing.getId(),
+        CaseDetails caseDetails = coreCaseDataService.performPostSubmitCallback(oldCaseDetails.getId(),
             "internal-change-add-gatekeeping",
-            updates);
+            details -> {
+                CaseData caseData = getCaseData(details);
+                final GatekeepingOrderRoute sdoRouter = caseData.getGatekeepingOrderRouter();
+
+                Map<String, Object> updates = new HashMap<>();
+                switch (sdoRouter) {
+                    case URGENT:
+                        updates.putAll(urgentOrderService.sealDocumentAfterEventSubmitted(caseData));
+                        break;
+                    case UPLOAD:
+                        updates.put("standardDirectionOrder", orderService.sealDocumentAfterEventSubmitted(caseData));
+                        break;
+                }
+                return updates;
+            }
+        );
+
+        if (isEmpty(caseDetails)) {
+            // if our callback has failed 3 times, all we have is the prior caseData to send notifications based on
+            caseDetails = oldCaseDetails;
+        }
+
+        final CaseData caseData = getCaseData(caseDetails);
 
         CaseData caseDataBefore = getCaseDataBefore(request);
 
-        notificationDecider.buildEventToPublish(caseDataAfterSealing, caseDataBefore.getState())
+        notificationDecider.buildEventToPublish(caseData, caseDataBefore.getState())
             .ifPresent(eventToPublish -> {
-                coreCaseDataService.triggerEvent(
-                    JURISDICTION,
-                    CASE_TYPE,
-                    caseDataAfterSealing.getId(),
+                // TODO - to be refactored into the SendDocumentService (as part of the event handler)
+                coreCaseDataService.performPostSubmitCallback(
+                    caseData.getId(),
                     "internal-change-SEND_DOCUMENT",
-                    Map.of("documentToBeSent", eventToPublish.getOrder()));
+                    caseDetails1 -> Map.of("documentToBeSent", eventToPublish.getOrder())
+                );
 
                 publishEvent(eventToPublish);
             });
