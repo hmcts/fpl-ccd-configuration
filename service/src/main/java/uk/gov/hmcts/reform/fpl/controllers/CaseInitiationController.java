@@ -16,6 +16,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseInitiationService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
+import java.util.Objects;
+
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 
 @Api
@@ -75,8 +77,10 @@ public class CaseInitiationController extends CallbackController {
         caseDetails.putIfNotEmpty("court", updatedCaseData.getCourt());
         caseDetails.putIfNotEmpty("multiCourts", updatedCaseData.getMultiCourts());
         caseDetails.putIfNotEmpty("representativeType", updatedCaseData.getRepresentativeType());
-        caseDetails.putIfNotEmpty("dfjArea", updatedCaseData.getDfjArea());
-        caseDetails.putIfNotEmpty(updatedCaseData.getCourtField(), updatedCaseData.getCourt().getCode());
+        if (Objects.nonNull(updatedCaseData.getDfjArea())) {
+            caseDetails.putIfNotEmpty("dfjArea", updatedCaseData.getDfjArea());
+            caseDetails.putIfNotEmpty(updatedCaseData.getCourtField(), updatedCaseData.getCourt().getCode());
+        }
 
         caseDetails.removeAll("outsourcingType", "outsourcingLAs", "sharingWithUsers", "isOutsourcedCase");
 
