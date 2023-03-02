@@ -7,7 +7,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
     "PageID": "ListHearingOrSendToAdmin",
-    "PageDisplayOrder": 8,
+    "PageDisplayOrder": 7,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y"
   },
@@ -19,7 +19,7 @@
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
     "PageID": "ListHearingOrSendToAdmin",
-    "PageDisplayOrder": 8,
+    "PageDisplayOrder": 7,
     "PageColumnNumber": 1,
     "FieldShowCondition": "gatekeepingOrderListOrSendToAdmin=\"YES\""
   },
@@ -31,7 +31,7 @@
   "PageFieldDisplayOrder": 3,
   "DisplayContext": "OPTIONAL",
   "PageID": "ListHearingOrSendToAdmin",
-  "PageDisplayOrder": 8,
+  "PageDisplayOrder": 7,
   "PageColumnNumber": 1,
   "FieldShowCondition": "gatekeepingOrderListOrSendToAdmin=\"NO\"",
   "ShowSummaryChangeOption": "Y"
