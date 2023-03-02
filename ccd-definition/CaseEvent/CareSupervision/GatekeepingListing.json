@@ -1,0 +1,19 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "listGatekeepingHearing",
+    "Name": "List Gatekeeping Hearing",
+    "Description": "Manage hearing booking details and add allocated judge to a case",
+    "DisplayOrder": 1,
+    "PreConditionState(s)": "GATEKEEPING_LISTING",
+    "PostConditionState": "PREPARE_FOR_HEARING",
+    "SecurityClassification": "Public",
+    "ShowSummary": "Y",
+    "ShowEventNotes": "Y",
+    "EndButtonLabel": "Save and continue",
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/list-gatekeeping-hearing/about-to-start",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/list-gatekeeping-hearing/about-to-submit",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/list-gatekeeping-hearing/submitted"
+  }
+]
