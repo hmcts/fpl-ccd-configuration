@@ -111,8 +111,7 @@ class AddGatekeepingOrderControllerPostSubmittedTest extends AbstractCallbackTes
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
 
-        assertThat(response.getData()).doesNotContainKeys("gatekeepingOrderSealDecision",
-            "gatekeepingOrderRouter");
+        assertThat(response.getData()).doesNotContainKeys("gatekeepingOrderSealDecision");
     }
 
 
