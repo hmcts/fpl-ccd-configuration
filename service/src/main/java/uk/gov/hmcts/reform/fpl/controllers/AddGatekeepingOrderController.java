@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -36,8 +35,6 @@ import static org.apache.commons.lang3.ObjectUtils.allNotNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.UPLOAD;
@@ -158,16 +155,6 @@ public class AddGatekeepingOrderController extends CallbackController {
                 break;
         }
 
-        if (decision.isSealed()) {
-            data.put("state", CASE_MANAGEMENT);
-            if (GATEKEEPING == caseData.getState()) {
-                request.getCaseDetails().setData(data);
-                List<DocmosisTemplates> nopTemplates = orderService.getNoticeOfProceedingsTemplates(caseData);
-                data.put("noticeOfProceedingsBundle",
-                    nopService.uploadNoticesOfProceedings(getCaseData(request.getCaseDetails()), nopTemplates));
-            }
-        }
-
         removeTemporaryFields(data,
             "urgentHearingOrderDocument",
             "urgentHearingAllocation",
@@ -183,10 +170,6 @@ public class AddGatekeepingOrderController extends CallbackController {
             "gatekeepingOrderHasHearing1",
             "gatekeepingOrderHasHearing2"
         );
-
-        if (decision.isSealed()) {
-            removeTemporaryFields(data, "gatekeepingOrderIssuingJudge", "customDirections");
-        }
 
         final Allocation allocationDecision = allocationService.createAllocationDecisionIfNull(getCaseData(request));
         data.put("allocationDecision", allocationDecision);
@@ -243,10 +226,6 @@ public class AddGatekeepingOrderController extends CallbackController {
         final GatekeepingOrderSealDecision decision = caseData.getGatekeepingOrderEventData()
             .getGatekeepingOrderSealDecision();
         removeTemporaryFields(caseDetails, "gatekeepingOrderSealDecision");
-
-        if (decision.isSealed()) {
-            removeTemporaryFields(caseDetails, "gatekeepingOrderRouter");
-        }
 
         return respond(caseDetails);
     }
