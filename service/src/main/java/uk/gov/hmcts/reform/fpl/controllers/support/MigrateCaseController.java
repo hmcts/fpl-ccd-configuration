@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
+import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 
 @Api
@@ -39,13 +41,15 @@ public class MigrateCaseController extends CallbackController {
     private static final String PLACEMENT_NON_CONFIDENTIAL_NOTICES = "placementsNonConfidentialNotices";
 
     private final MigrateCaseService migrateCaseService;
+    private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-1204", this::run1204,
         "DFPL-1202", this::run1202,
         "DFPL-1195", this::run1195,
         "DFPL-1218", this::run1218,
-        "DFPL-1210", this::run1210
+        "DFPL-1210", this::run1210,
+        "DFPL-1282", this::run1282
     );
 
     @PostMapping("/about-to-submit")
@@ -134,5 +138,21 @@ public class MigrateCaseController extends CallbackController {
             Optional.of((String) caseDetails.getData().get("hearingOption")).orElse(""),
             "EDIT_HEARING", migrationId);
         caseDetailsData.put("hearingOption", HearingOptions.EDIT_PAST_HEARING);
+    }
+
+    private void run1282(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1282";
+        var expectedCaseId = 1670402369344671L;
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        Long caseId = caseData.getId();
+        if (caseId != expectedCaseId) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId
+            ));
+        }
+        fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
     }
 }
