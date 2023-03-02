@@ -138,24 +138,5 @@
       "caseworker-approver"
     ],
     "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseStateID": "GATEKEEPING_LISTING",
-    "UserRoles": [
-      "caseworker-publiclaw-solicitor",
-      "caseworker-publiclaw-courtadmin",
-      "caseworker-publiclaw-cafcass",
-      "caseworker-publiclaw-judiciary",
-      "caseworker-publiclaw-magistrate",
-      "caseworker-publiclaw-gatekeeper",
-      "caseworker-publiclaw-systemupdate",
-      "caseworker-publiclaw-bulkscan",
-      "caseworker-publiclaw-bulkscansystemupdate",
-      "caseworker-caa",
-      "caseworker-approver"
-    ],
-    "CRUD": "CRU"
   }
 ]
