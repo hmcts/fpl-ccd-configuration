@@ -41,11 +41,10 @@ public class MigrateCaseController extends CallbackController {
     private final MigrateCaseService migrateCaseService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1204", this::run1204,
-        "DFPL-1202", this::run1202,
         "DFPL-1195", this::run1195,
         "DFPL-1218", this::run1218,
-        "DFPL-1210", this::run1210
+        "DFPL-1210", this::run1210,
+        "DFPL-1277", this::run1277
     );
 
     @PostMapping("/about-to-submit")
@@ -68,17 +67,6 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private void run1202(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1202";
-        var possibleCaseIds = List.of(1649150882331141L);
-
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        caseDetails.getData().remove(PLACEMENT);
-        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL);
-        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL_NOTICES);
-    }
-
     private void run1195(CaseDetails caseDetails) {
         var migrationId = "DFPL-1195";
         var possibleCaseIds = List.of(1655911528192218L);
@@ -90,10 +78,10 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL_NOTICES);
     }
 
-    private void run1204(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1204";
-        var possibleCaseIds = List.of(1638528543085011L);
-        final UUID placementToRemove = UUID.fromString("88125c8b-8466-4af4-967f-197c3b82773c");
+    private void run1277(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1277";
+        var possibleCaseIds = List.of(1659933720451883L);
+        final UUID placementToRemove = UUID.fromString("f1b6d2d8-e960-4b36-a9ae-56723c25ac31");
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
         removeSpecificPlacements(caseDetails, placementToRemove);

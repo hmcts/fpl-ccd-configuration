@@ -64,40 +64,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Dfpl1202 {
-
-        private final String migrationId = "DFPL-1202";
-        private final long validCaseId = 1649150882331141L;
-
-        @Test
-        void shouldRemoveAllPlacementCollections() {
-            List<Element<Placement>> placements = List.of(
-                element(Placement.builder()
-                    .application(testDocumentReference())
-                    .build()),
-                element(Placement.builder()
-                    .application(testDocumentReference())
-                    .build())
-            );
-            CaseData caseData = CaseData.builder()
-                .id(validCaseId)
-                .placementEventData(PlacementEventData.builder()
-                    .placements(placements)
-                    .build())
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId));
-            CaseData responseData = extractCaseData(response);
-
-            assertThat(responseData.getPlacementEventData().getPlacements()).isEmpty();
-            assertThat(response.getData()).extracting("placementsNonConfidential", "placementsNonConfidentialNotices")
-                .containsExactly(null, null);
-        }
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
     class Dfpl1195 {
 
         private final String migrationId = "DFPL-1195";
@@ -132,10 +98,10 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Dfpl1204 {
-        private final String migrationId = "DFPL-1204";
-        private final long validCaseId = 1638528543085011L;
-        private final UUID placementToRemove = UUID.fromString("88125c8b-8466-4af4-967f-197c3b82773c");
+    class Dfpl1277 {
+        private final String migrationId = "DFPL-1277";
+        private final long validCaseId = 1659933720451883L;
+        private final UUID placementToRemove = UUID.fromString("f1b6d2d8-e960-4b36-a9ae-56723c25ac31");
         private final UUID placementToRemain = UUID.randomUUID();
         private final DocumentReference documentToRemain = testDocumentReference();
 
