@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
@@ -179,5 +180,22 @@ public class OthersService {
 
     private boolean otherExists(Others others) {
         return others != null && (others.getFirstOther() != null || others.getAdditionalOthers() != null);
+    }
+
+    public Others removeAddressOrAddressNotKnowReason(CaseData caseData) {
+        List<Element<Other>> updatedOthers = new ArrayList<>();
+
+        caseData.getAllOthers().forEach(element -> {
+            Other other = element.getValue();
+            if (!isNull(other.getAddressKnow())) {
+                updatedOthers.add(other.getAddressKnow().equals(YesNo.NO.getValue())
+                    ? element(element.getId(), other.removeAddress())
+                    : element(element.getId(), other.removeAddressNotKnowReason()));
+            } else {
+                updatedOthers.add(element);
+            }
+        });
+
+        return Others.from(updatedOthers);
     }
 }
