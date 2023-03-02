@@ -141,9 +141,6 @@ public class AddGatekeepingOrderController extends CallbackController {
         final CaseData caseData = orderService.updateStandardDirections(request.getCaseDetails());
         final CaseDetailsMap data = caseDetailsMap(request.getCaseDetails());
 
-        final GatekeepingOrderSealDecision decision = caseData.getGatekeepingOrderEventData()
-            .getGatekeepingOrderSealDecision();
-
         final GatekeepingOrderRoute sdoRouter = caseData.getGatekeepingOrderRouter();
 
         switch (sdoRouter) {
@@ -221,10 +218,7 @@ public class AddGatekeepingOrderController extends CallbackController {
 
     @PostMapping("/post-submit-callback/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handlePostSubmittedEvent(@RequestBody CallbackRequest request) {
-        final CaseData caseData = getCaseData(request);
         final CaseDetails caseDetails = request.getCaseDetails();
-        final GatekeepingOrderSealDecision decision = caseData.getGatekeepingOrderEventData()
-            .getGatekeepingOrderSealDecision();
         removeTemporaryFields(caseDetails, "gatekeepingOrderSealDecision");
 
         return respond(caseDetails);
