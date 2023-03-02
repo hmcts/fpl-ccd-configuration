@@ -235,6 +235,11 @@
     "dfjArea": "NOTTINGHAM"
   },
   {
+    "courtCode": "305",
+    "courtField": "readingDFJCourt",
+    "dfjArea": "READING"
+  },
+  {
     "courtCode": "291",
     "courtField": "readingDFJCourt",
     "dfjArea": "READING"
