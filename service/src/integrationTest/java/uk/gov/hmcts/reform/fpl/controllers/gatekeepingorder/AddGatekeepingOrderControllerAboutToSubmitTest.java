@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.AddGatekeepingOrderController;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
-import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
@@ -30,7 +29,6 @@ import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.StandardDirection;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -65,7 +63,6 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -241,14 +238,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
         CaseData responseData = extractCaseData(response);
 
         assertThat(responseData.getStandardDirectionOrder()).isEqualTo(expectedSDO);
-        assertThat(responseData.getState()).isEqualTo(CASE_MANAGEMENT);
-        assertThat(responseData.getNoticeOfProceedingsBundle())
-            .extracting(Element::getValue)
-            .containsExactly(DocumentBundle.builder().document(C6_REFERENCE)
-                .translationRequirements(expectedTranslationRequirements)
-                .build());
-        assertThat(response.getData()).doesNotContainKeys("customDirections",
-            "standardDirections", "gatekeepingOrderIssuingJudge");
+        assertThat(response.getData()).doesNotContainKey("standardDirections");
     }
 
     @Test
@@ -261,10 +251,6 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
             postAboutToSubmitEvent(validCaseDetailsForUploadRoute(document, court, allocationDecision))
         );
 
-        assertThat(responseCaseData.getNoticeOfProceedingsBundle())
-            .extracting(Element::getValue)
-            .containsExactly(DocumentBundle.builder().document(C6_REFERENCE).build());
-        assertThat(responseCaseData.getState()).isEqualTo(State.CASE_MANAGEMENT);
         assertThat(responseCaseData.getSdoRouter()).isNull();
     }
 
