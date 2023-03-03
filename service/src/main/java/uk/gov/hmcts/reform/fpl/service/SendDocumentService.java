@@ -102,9 +102,9 @@ public class SendDocumentService {
                 .map(respondent -> respondent.getValue().getParty().toBuilder()
                         .address(getPartyAddress(respondent, caseData)).build())
                 .collect(toList());
-        } else {
-            return emptyList();
         }
+
+        return emptyList();
     }
 
     private Address getPartyAddress(Element<Respondent> respondent, CaseData caseData) {
