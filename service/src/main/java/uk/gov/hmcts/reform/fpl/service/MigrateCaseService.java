@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
@@ -37,6 +38,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public class MigrateCaseService {
 
     private final CaseNoteService caseNoteService;
+    private final DocumentListService documentListService;
 
     public Map<String, Object> removeHearingOrderBundleDraft(CaseData caseData, String migrationId, UUID bundleId,
                                                              UUID orderId) {
@@ -379,5 +381,9 @@ public class MigrateCaseService {
                 migrationId, caseId, hearingOption
             ));
         }
+    }
+
+    public Map<String, Object> refreshDocumentViews(CaseData caseData) {
+        return documentListService.getDocumentView(caseData);
     }
 }

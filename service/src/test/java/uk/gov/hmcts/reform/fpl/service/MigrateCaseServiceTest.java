@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
+import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -43,6 +44,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.Constants.COURT_1;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith({MockitoExtension.class})
@@ -53,6 +57,8 @@ class MigrateCaseServiceTest {
 
     @Mock
     private CaseNoteService caseNoteService;
+    @Mock
+    private DocumentListService documentListService;
 
     @InjectMocks
     private MigrateCaseService underTest;
@@ -922,6 +928,17 @@ class MigrateCaseServiceTest {
                 .hasMessage(format(
                     "Migration {id = %s, case reference = %s} doesn't have children",
                     MIGRATION_ID, 1L));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RefreshDocumentView {
+        @Test
+        void shouldInvokeDocumentListServiceForRefreshingDocumentViews() {
+            CaseData data  = CaseData.builder().build();
+            underTest.refreshDocumentViews(data);
+            verify(documentListService).getDocumentView(data);
         }
     }
 }

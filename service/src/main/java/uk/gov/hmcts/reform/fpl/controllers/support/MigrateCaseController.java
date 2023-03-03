@@ -45,7 +45,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1202", this::run1202,
         "DFPL-1195", this::run1195,
         "DFPL-1218", this::run1218,
-        "DFPL-1210", this::run1210
+        "DFPL-1210", this::run1210,
+        "DFPL-1226", this::run1226
     );
 
     @PostMapping("/about-to-submit")
@@ -134,5 +135,12 @@ public class MigrateCaseController extends CallbackController {
             Optional.of((String) caseDetails.getData().get("hearingOption")).orElse(""),
             "EDIT_HEARING", migrationId);
         caseDetailsData.put("hearingOption", HearingOptions.EDIT_PAST_HEARING);
+    }
+
+    private void run1226(CaseDetails caseDetails) {
+        String migrationId = "DFPL-1226";
+        long caseId = 1669719457646284L;
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), caseId, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(getCaseData(caseDetails)));
     }
 }
