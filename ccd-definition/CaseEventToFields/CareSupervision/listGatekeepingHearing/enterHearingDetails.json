@@ -6,10 +6,10 @@
     "CaseFieldID": "hasSession",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
-    "PageID": "EnterHearingDetails",
+    "PageID": "ListGatekeepingHearingEnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2,
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-hearings/validate-hearing-dates/mid-event",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/list-gatekeeping-hearing/validate-hearing-dates/mid-event",
     "FieldShowCondition": "allocatedJudge=\"DO_NOT_SHOW\""
   },
   {
@@ -19,7 +19,7 @@
     "CaseFieldID": "firstHearingFlag",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
-    "PageID": "EnterHearingDetails",
+    "PageID": "ListGatekeepingHearingEnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2,
     "FieldShowCondition": "allocatedJudge=\"DO_NOT_SHOW\""
@@ -31,7 +31,7 @@
     "CaseFieldID": "hasPreviousHearingVenue",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
-    "PageID": "EnterHearingDetails",
+    "PageID": "ListGatekeepingHearingEnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2,
     "FieldShowCondition": "allocatedJudge=\"DO_NOT_SHOW\""
@@ -43,7 +43,7 @@
     "CaseFieldID": "listGatekeepingHearingType",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
-    "PageID": "EnterHearingDetails",
+    "PageID": "ListGatekeepingHearingEnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2
   },
@@ -54,7 +54,7 @@
     "CaseFieldID": "hearingTypeReason",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
-    "PageID": "EnterHearingDetails",
+    "PageID": "ListGatekeepingHearingEnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2,
     "FieldShowCondition": "listGatekeepingHearingType=\"ACCELERATED_DISCHARGE_OF_CARE\""
@@ -66,7 +66,7 @@
     "CaseFieldID": "hearingVenue",
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
-    "PageID": "EnterHearingDetails",
+    "PageID": "ListGatekeepingHearingEnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2,
     "FieldShowCondition": "firstHearingFlag!=\"No\" OR hasPreviousHearingVenue=\"No\""
@@ -78,7 +78,7 @@
     "CaseFieldID": "previousHearingVenue",
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "COMPLEX",
-    "PageID": "EnterHearingDetails",
+    "PageID": "ListGatekeepingHearingEnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2,
     "CaseEventFieldLabel": " ",
@@ -91,7 +91,7 @@
     "CaseFieldID": "hearingAttendance",
     "PageFieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
-    "PageID": "EnterHearingDetails",
+    "PageID": "ListGatekeepingHearingEnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2
   },
@@ -102,7 +102,7 @@
     "CaseFieldID": "hearingAttendanceDetails",
     "PageFieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL",
-    "PageID": "EnterHearingDetails",
+    "PageID": "ListGatekeepingHearingEnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2
   },
@@ -113,7 +113,7 @@
     "CaseFieldID": "hearingStartDate",
     "PageFieldDisplayOrder": 7,
     "DisplayContext": "MANDATORY",
-    "PageID": "EnterHearingDetails",
+    "PageID": "ListGatekeepingHearingEnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2
   },
@@ -124,7 +124,7 @@
     "CaseFieldID": "hearingDuration",
     "PageFieldDisplayOrder": 8,
     "DisplayContext": "MANDATORY",
-    "PageID": "EnterHearingDetails",
+    "PageID": "ListGatekeepingHearingEnterHearingDetails",
     "ShowSummaryChangeOption": "N",
     "PageDisplayOrder": 2
   },
@@ -135,7 +135,7 @@
     "CaseFieldID": "hearingHours",
     "PageFieldDisplayOrder": 9,
     "DisplayContext": "MANDATORY",
-    "PageID": "EnterHearingDetails",
+    "PageID": "ListGatekeepingHearingEnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "FieldShowCondition": "hearingDuration=\"HOURS_MINS\"",
     "PageDisplayOrder": 2
@@ -147,7 +147,7 @@
     "CaseFieldID": "hearingMinutes",
     "PageFieldDisplayOrder": 10,
     "DisplayContext": "MANDATORY",
-    "PageID": "EnterHearingDetails",
+    "PageID": "ListGatekeepingHearingEnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "FieldShowCondition": "hearingDuration=\"HOURS_MINS\"",
     "PageDisplayOrder": 2
@@ -159,7 +159,7 @@
     "CaseFieldID": "hearingDays",
     "PageFieldDisplayOrder": 11,
     "DisplayContext": "MANDATORY",
-    "PageID": "EnterHearingDetails",
+    "PageID": "ListGatekeepingHearingEnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "FieldShowCondition": "hearingDuration=\"DAYS\"",
     "PageDisplayOrder": 2
@@ -171,7 +171,7 @@
     "CaseFieldID": "hearingEndDateTime",
     "PageFieldDisplayOrder": 12,
     "DisplayContext": "MANDATORY",
-    "PageID": "EnterHearingDetails",
+    "PageID": "ListGatekeepingHearingEnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "FieldShowCondition":"hearingDuration=\"DATE_TIME\"",
     "PageDisplayOrder": 2
@@ -183,7 +183,7 @@
     "CaseFieldID": "showConfirmPastHearingDatesPage",
     "PageFieldDisplayOrder": 13,
     "DisplayContext": "READONLY",
-    "PageID": "EnterHearingDetails",
+    "PageID": "ListGatekeepingHearingEnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "FieldShowCondition": "hearingStartDate=\"DO_NOT_SHOW\"",
     "PageDisplayOrder": 2
@@ -195,7 +195,7 @@
     "CaseFieldID": "startDateFlag",
     "PageFieldDisplayOrder": 14,
     "DisplayContext": "READONLY",
-    "PageID": "EnterHearingDetails",
+    "PageID": "ListGatekeepingHearingEnterHearingDetails",
     "ShowSummaryChangeOption": "N",
     "FieldShowCondition": "hearingStartDate=\"DO_NOT_SHOW\"",
     "PageDisplayOrder": 2
@@ -207,7 +207,7 @@
     "CaseFieldID": "endDateFlag",
     "PageFieldDisplayOrder": 15,
     "DisplayContext": "READONLY",
-    "PageID": "EnterHearingDetails",
+    "PageID": "ListGatekeepingHearingEnterHearingDetails",
     "ShowSummaryChangeOption": "N",
     "FieldShowCondition": "hearingStartDate=\"DO_NOT_SHOW\"",
     "PageDisplayOrder": 2
@@ -219,7 +219,7 @@
     "CaseFieldID": "preHearingAttendanceDetails",
     "PageFieldDisplayOrder": 16,
     "DisplayContext": "MANDATORY",
-    "PageID": "EnterHearingDetails",
+    "PageID": "ListGatekeepingHearingEnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2
   },
@@ -230,7 +230,7 @@
     "CaseFieldID": "hearingEndDate",
     "PageFieldDisplayOrder": 17,
     "DisplayContext": "READONLY",
-    "PageID": "EnterHearingDetails",
+    "PageID": "ListGatekeepingHearingEnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "FieldShowCondition": "hearingStartDate=\"DO_NOT_SHOW\"",
     "PageDisplayOrder": 2
