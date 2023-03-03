@@ -88,11 +88,29 @@ class OthersControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(response.getData()).doesNotContainKey("others");
     }
 
+    @Test
+    void shouldNotSaveConfidentialAddressWhenAddressIsNotKnown() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("others", Others.builder()
+                .firstOther(other())
+                .additionalOthers(additionalOthersWithoutAddress())
+                .build()))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+
+        assertThat(unwrapElements(caseData.getConfidentialOthers()))
+            .contains(confidentialOther())
+            .contains(confidentialOtherWithoutAddress());
+    }
+
     private Other other() {
         return Other.builder()
             .name("other")
             .address(Address.builder().addressLine1("506 Abbey Lane").build())
             .telephone("01227 123456")
+            .addressKnow("Yes")
             .detailsHidden("Yes")
             .build();
     }
@@ -100,6 +118,7 @@ class OthersControllerAboutToSubmitTest extends AbstractCallbackTest {
     private Other otherWithDetailsRemoved() {
         return Other.builder()
             .name("other")
+            .addressKnow("Yes")
             .detailsHidden("Yes")
             .build();
     }
@@ -113,11 +132,28 @@ class OthersControllerAboutToSubmitTest extends AbstractCallbackTest {
             .build()));
     }
 
+    private List<Element<Other>> additionalOthersWithoutAddress() {
+        return newArrayList(element(ADDITIONAL_OTHER_ID, Other.builder()
+            .name("additional other")
+            .address(Address.builder().addressLine1("101 London Road").build())
+            .telephone("07122 123456")
+            .addressKnow("No")
+            .detailsHidden("Yes")
+            .build()));
+    }
+
     private Other confidentialOther() {
         return Other.builder()
             .name("other")
             .address(Address.builder().addressLine1("506 Abbey Lane").build())
             .telephone("01227 123456")
+            .build();
+    }
+
+    private Other confidentialOtherWithoutAddress() {
+        return Other.builder()
+            .name("additional other")
+            .telephone("07122 123456")
             .build();
     }
 }
