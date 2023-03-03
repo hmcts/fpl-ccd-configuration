@@ -8,12 +8,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
 import uk.gov.hmcts.reform.fpl.service.PastHearingDatesValidatorService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
@@ -22,6 +25,9 @@ import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.hearing.ManageHearingsOthersGenerator;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
+import java.util.List;
+import java.util.Optional;
+
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -29,6 +35,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.DEFAULT_PRE_ATTENDANCE;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PREVIOUS_HEARING_VENUE_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 
 @Api
 @RestController
@@ -89,6 +96,70 @@ public class ListGatekeepingHearingController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
+    }
+
+    @PostMapping("allocated-judge/mid-event")
+    public AboutToStartOrSubmitCallbackResponse allocatedJudgeMidEvent(@RequestBody CallbackRequest callbackRequest) {
+
+        final CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        final CaseData caseData = getCaseData(caseDetails);
+        final Judge allocatedJudge = caseData.getAllocatedJudge();
+
+        final Optional<String> error = validateEmailService.validate(allocatedJudge.getJudgeEmailAddress());
+
+        if (error.isPresent()) {
+            return respond(caseDetails, List.of(error.get()));
+        }
+
+        caseDetails.getData().put(
+            "judgeAndLegalAdvisor",
+            JudgeAndLegalAdvisor.builder()
+                .allocatedJudgeLabel(buildAllocatedJudgeLabel(allocatedJudge))
+                .build());
+
+        return respond(caseDetails);
+    }
+
+    @PostMapping("/validate-hearing-dates/mid-event")
+    public CallbackResponse validateHearingDatesMidEvent(@RequestBody CallbackRequest callbackRequest) {
+
+        final CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        final CaseData caseData = getCaseData(caseDetails);
+
+        final List<String> errors = pastHearingDatesValidatorService.validateHearingIntegers(caseDetails);
+        errors.addAll(
+            pastHearingDatesValidatorService.validateHearingDates(caseData.getHearingStartDate(),
+                caseData.getHearingEndDateTime()));
+        errors.addAll(
+            pastHearingDatesValidatorService.validateDays(caseData.getHearingDuration(),
+                caseData.getHearingDays()));
+        errors.addAll(
+            pastHearingDatesValidatorService.validateHoursMinutes(
+                caseData.getHearingDuration(),
+                caseData.getHearingHours(),
+                caseData.getHearingMinutes()));
+
+        caseDetails.getData().putAll(hearingsService.populateFieldsWhenPastHearingDateAdded(caseData));
+
+        return respond(caseDetails, errors);
+    }
+
+    @PostMapping("/validate-judge-email/mid-event")
+    public CallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        JudgeAndLegalAdvisor tempJudge = caseData.getJudgeAndLegalAdvisor();
+
+        if (caseData.hasSelectedTemporaryJudge(tempJudge)) {
+            Optional<String> error = validateEmailService.validate(tempJudge.getJudgeEmailAddress());
+
+            if (error.isPresent()) {
+                return respond(caseDetails, List.of(error.get()));
+            }
+        }
+
+        return respond(caseDetails);
     }
 
     private void setNewHearing(final CaseDetails caseDetails) {
