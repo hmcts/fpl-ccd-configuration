@@ -270,7 +270,7 @@ class GatekeepingOrderServiceTest {
             .title(directionConfiguration.getTitle())
             .description(directionConfiguration.getText())
             .assignee(directionConfiguration.getAssignee())
-            .daysBeforeHearing(1)
+            .daysBeforeHearing(2)
             .dateToBeCompletedBy(null)
             .dueDateType(DAYS)
             .build();
@@ -285,7 +285,7 @@ class GatekeepingOrderServiceTest {
 
         final int dueDateDaysBeforeHearing = 2;
         final LocalDateTime hearingDate = LocalDateTime.of(2050, 1, 10, 12, 0, 0);
-        final LocalDateTime directionDueDate = LocalDateTime.of(2050, 1, 8, 0, 0, 0);
+        final LocalDateTime directionDueDate = LocalDateTime.of(2050, 1, 8, 12, 0, 0);
 
         final HearingBooking hearing1 = HearingBooking.builder()
             .type(CASE_MANAGEMENT)
@@ -329,7 +329,7 @@ class GatekeepingOrderServiceTest {
     void shouldCreateDirectionFromConfAndSetDefaultDatesFromHearingWhenDefaultDaysBeforeHearingIs0(DirectionType type) {
 
         final LocalDateTime hearingDate = LocalDateTime.of(2050, 1, 10, 12, 0, 0);
-        final LocalDateTime directionDueDate = LocalDateTime.of(2050, 1, 10, 0, 0, 0);
+        final LocalDateTime directionDueDate = LocalDateTime.of(2050, 1, 10, 12, 0, 0);
 
         final HearingBooking hearing = HearingBooking.builder()
             .type(CASE_MANAGEMENT)
@@ -353,7 +353,7 @@ class GatekeepingOrderServiceTest {
             .title(directionConfiguration.getTitle())
             .description(directionConfiguration.getText())
             .assignee(directionConfiguration.getAssignee())
-            .daysBeforeHearing(0)
+            .daysBeforeHearing(2)
             .dateToBeCompletedBy(directionDueDate)
             .dueDateType(DAYS)
             .build();
