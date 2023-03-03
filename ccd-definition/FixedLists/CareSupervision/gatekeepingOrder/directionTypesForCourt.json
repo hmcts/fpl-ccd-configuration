@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "DirectionTypesForCourt",
-    "ListElementCode": "ARRANGE_INTERPRETERS",
+    "ListElementCode": "ARRANGE_INTERPRETERS_IMMEDIATE",
     "ListElement": "Arrange interpreters",
     "DisplayOrder": 1
   }

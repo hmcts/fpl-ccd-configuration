@@ -11,8 +11,6 @@ import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 
 import java.time.LocalDateTime;
 
-import static java.lang.Integer.valueOf;
-import static java.lang.Math.abs;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Data
@@ -26,6 +24,7 @@ public class StandardDirection {
     private LocalDateTime dateToBeCompletedBy;
     private Integer daysBeforeHearing;
     private final DirectionDueDateType dueDateType;
+    private static final Integer DEFAULT_DAYS_BEFORE_HEARING = 2;
 
     @JsonIgnore
     public StandardDirection applyConfig(DirectionConfiguration config) {
@@ -33,7 +32,7 @@ public class StandardDirection {
             .type(config.getType())
             .title(config.getTitle())
             .assignee(config.getAssignee())
-            .daysBeforeHearing(defaultIfNull(daysBeforeHearing, abs(valueOf(config.getDisplay().getDelta()))))
+            .daysBeforeHearing(defaultIfNull(daysBeforeHearing, DEFAULT_DAYS_BEFORE_HEARING))
             .description(defaultIfNull(description, config.getText()))
             .build();
     }
