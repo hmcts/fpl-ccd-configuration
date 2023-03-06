@@ -82,7 +82,7 @@ public class FeatureToggleService {
     }
 
     public boolean isSecureDocstoreEnabled() {
-        return ldClient.boolVariation("secure-docstore-enabled", createLDUser(), false);
+        return false;
     }
 
     private LDUser createLDUser() {
