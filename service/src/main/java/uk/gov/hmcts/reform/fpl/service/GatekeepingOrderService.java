@@ -305,21 +305,23 @@ public class GatekeepingOrderService {
 
     private StandardDirection buildStandardDirection(DirectionType type, HearingBooking hearing) {
         final DirectionConfiguration directionConfig = ordersLookupService.getDirectionConfiguration(type);
+        final boolean isImmediateStandardDirection =
+            APPOINT_CHILDREN_GUARDIAN_IMMEDIATE.equals(type) || ARRANGE_INTERPRETERS_IMMEDIATE.equals(type);
+        final Integer defaultDaysBeforeHearing = 2;
 
-        if (APPOINT_CHILDREN_GUARDIAN_IMMEDIATE.equals(type) || ARRANGE_INTERPRETERS_IMMEDIATE.equals(type)) {
-            return StandardDirection.builder()
-                .type(directionConfig.getType())
-                .title(directionConfig.getTitle())
-                .assignee(directionConfig.getAssignee())
-                .description(directionConfig.getText())
-                .build();
-        } else {
-            return StandardDirection.builder()
-                .dateToBeCompletedBy(calculateDirectionDueDate(hearing, directionConfig.getDisplay()))
-                .dueDateType(DAYS)
-                .build()
-                .applyConfig(directionConfig);
-        }
+        return StandardDirection.builder()
+            .type(directionConfig.getType())
+            .title(directionConfig.getTitle())
+            .assignee(directionConfig.getAssignee())
+            .description(directionConfig.getText())
+            .dateToBeCompletedBy(
+                isImmediateStandardDirection
+                    ? null
+                    : calculateDirectionDueDate(hearing, directionConfig.getDisplay())
+            )
+            .dueDateType(isImmediateStandardDirection ? null : DAYS)
+            .daysBeforeHearing(isImmediateStandardDirection ? null : defaultDaysBeforeHearing)
+            .build();
     }
 
     private LocalDateTime calculateDirectionDueDate(HearingBooking hearing, Display display) {
