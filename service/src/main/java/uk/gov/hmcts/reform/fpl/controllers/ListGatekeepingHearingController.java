@@ -12,12 +12,16 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.service.GatekeepingOrderService;
 import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
+import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.PastHearingDatesValidatorService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
@@ -33,8 +37,11 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.DEFAULT_PRE_ATTENDANCE;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PREVIOUS_HEARING_VENUE_KEY;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 
 @Api
@@ -59,6 +66,8 @@ public class ListGatekeepingHearingController extends CallbackController {
     private final PastHearingDatesValidatorService pastHearingDatesValidatorService;
     private final ValidateEmailService validateEmailService;
     private final ManageHearingsOthersGenerator othersGenerator;
+    private final GatekeepingOrderService orderService;
+    private final NoticeOfProceedingsService nopService;
 
     @PostMapping("/about-to-start")
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -90,6 +99,36 @@ public class ListGatekeepingHearingController extends CallbackController {
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
         final CaseDetailsMap data = caseDetailsMap(caseDetails);
+
+        hearingsService.findAndSetPreviousVenueId(caseData);
+
+        //Get the hearing type
+        data.put("hearingType", data.get("listGatekeepingHearingType"));
+
+        //Set hearing
+        final HearingBooking hearingBooking = hearingsService.getCurrentHearingBooking(caseData);
+        final Element<HearingBooking> hearingBookingElement = element(hearingBooking);
+
+        hearingsService.addOrUpdate(hearingBookingElement, caseData);
+        hearingsService.sendNoticeOfHearing(caseData, hearingBooking);
+
+        data.put(SELECTED_HEARING_ID, hearingBookingElement.getId());
+
+        data.putIfNotEmpty(CANCELLED_HEARING_DETAILS_KEY, caseData.getCancelledHearingDetails());
+        data.putIfNotEmpty(HEARING_DOCUMENT_BUNDLE_KEY, caseData.getHearingFurtherEvidenceDocuments());
+        data.putIfNotEmpty(HEARING_DETAILS_KEY, caseData.getHearingDetails());
+        data.put(HEARING_ORDERS_BUNDLES_DRAFTS, caseData.getHearingOrdersBundlesDrafts());
+        data.put(DRAFT_UPLOADED_CMOS, caseData.getDraftUploadedCMOs());
+
+        data.keySet().removeAll(hearingsService.caseFieldsToBeRemoved());
+
+        //Add gatekeeping order
+        callbackRequest.getCaseDetails().setData(data);
+        final List<DocmosisTemplates> nopTemplates = orderService.getNoticeOfProceedingsTemplates(caseData);
+        data.put("noticeOfProceedingsBundle",
+            nopService.uploadNoticesOfProceedings(getCaseData(callbackRequest.getCaseDetails()), nopTemplates));
+
+        removeTemporaryFields(data, "gatekeepingOrderIssuingJudge", "customDirections");
 
         return respond(data);
     }
