@@ -35,7 +35,8 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-1210", this::run1210,
         "DFPL-1262", this::run1262,
-        "DFPL-1274", this::run1274
+        "DFPL-1274", this::run1274,
+        "DFPL-1277", this::run1277
     );
 
     @PostMapping("/about-to-submit")
@@ -81,6 +82,15 @@ public class MigrateCaseController extends CallbackController {
         var migrationId = "DFPL-1274";
         var possibleCaseIds = List.of(1665570034617577L);
         final UUID placementToRemove = UUID.fromString("91217531-42de-4f1c-99b7-aded7233d832");
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removeSpecificPlacements(getCaseData(caseDetails),
+            placementToRemove));
+    }
+
+    private void run1277(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1277";
+        var possibleCaseIds = List.of(1659933720451883L);
+        final UUID placementToRemove = UUID.fromString("f1b6d2d8-e960-4b36-a9ae-56723c25ac31");
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
         caseDetails.getData().putAll(migrateCaseService.removeSpecificPlacements(getCaseData(caseDetails),
             placementToRemove));
