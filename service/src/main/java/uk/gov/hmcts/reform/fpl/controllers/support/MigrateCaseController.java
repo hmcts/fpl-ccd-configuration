@@ -138,9 +138,7 @@ public class MigrateCaseController extends CallbackController {
     }
 
     private void run1226(CaseDetails caseDetails) {
-        String migrationId = "DFPL-1226";
-        long caseId = 1669719457646284L;
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), caseId, migrationId);
+        migrateCaseService.doDocumentViewNCCheck(caseDetails.getId(), "DFPL-1226", caseDetails);
         caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(getCaseData(caseDetails)));
     }
 }

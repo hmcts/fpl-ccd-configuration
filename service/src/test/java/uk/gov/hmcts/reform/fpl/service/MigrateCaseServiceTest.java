@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
@@ -45,8 +46,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.Constants.COURT_1;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith({MockitoExtension.class})
@@ -940,5 +939,40 @@ class MigrateCaseServiceTest {
             underTest.refreshDocumentViews(data);
             verify(documentListService).getDocumentView(data);
         }
+    }
+
+    @Test
+    void shouldNotThrowWhenNoCofidentialDocumentInDocumentViewNC() {
+        assertDoesNotThrow(() -> underTest.doDocumentViewNCCheck(1L, MIGRATION_ID,
+            CaseDetails.builder().data(Map.of("documentViewNC", "\"<p><div class='width-50'>\\n"
+                + "\\n<details class=\\\"govuk-details\\\"><summary class=\\\"govuk-details__summary\\\">"
+                + "Applicant's statements and application documents</summary>"
+                + "<div class=\\\"govuk-details__text\\\"><details class=\\\"govuk-details\\\">"
+                + "<summary class=\\\"govuk-details__summary\\\">Genogram</summary>"
+                + "<div class=\\\"govuk-details__text\\\"><details class=\\\"govuk-details\\\">"
+                + "<dt class=\\\"govuk-summary-list__key\\\">"
+                + "<img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/"
+                + "master/resources/confidential.png' title='Confidential'/></dt>"
+                + "<summary class=\\\"govuk-details__summary\\\">complete guide to fpla-ccd-configuration.pdf</summary>"
+                + "<div class=\\\"govuk-details__text\\\"><dl class=\\\"govuk-summary-list\\\">"
+                + "<div class=\\\"govuk-summary-list__row\\\">")).build()));
+    }
+
+    @Test
+    void shouldThrowWhenNoCofidentialDocumentInDocumentViewNC() {
+        assertThatThrownBy(() -> underTest.doDocumentViewNCCheck(1L, MIGRATION_ID,
+            CaseDetails.builder().data(Map.of("documentViewNC", "\"<p><div class='width-50'>\\n"
+                + "\\n<details class=\\\"govuk-details\\\"><summary class=\\\"govuk-details__summary\\\">"
+                + "Applicant's statements and application documents</summary>"
+                + "<div class=\\\"govuk-details__text\\\"><details class=\\\"govuk-details\\\">"
+                + "<summary class=\\\"govuk-details__summary\\\">Genogram</summary>"
+                + "<div class=\\\"govuk-details__text\\\"><details class=\\\"govuk-details\\\">"
+                + "<summary class=\\\"govuk-details__summary\\\">complete guide to fpla-ccd-configuration.pdf</summary>"
+                + "<div class=\\\"govuk-details__text\\\"><dl class=\\\"govuk-summary-list\\\">"
+                + "<div class=\\\"govuk-summary-list__row\\\">")).build()))
+            .isInstanceOf(AssertionError.class)
+            .hasMessage(format(
+                "Migration {id = %s, case reference = %s}, expected documentViewNC contains confidential doc.",
+                MIGRATION_ID, 1L));
     }
 }

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -385,5 +386,15 @@ public class MigrateCaseService {
 
     public Map<String, Object> refreshDocumentViews(CaseData caseData) {
         return documentListService.getDocumentView(caseData);
+    }
+
+    public void doDocumentViewNCCheck(long caseId, String migrationId, CaseDetails caseDetails) throws AssertionError {
+        String documentViewNC = (String) caseDetails.getData().get("documentViewNC");
+        if (!Optional.ofNullable(documentViewNC).orElse("").contains("title='Confidential'")) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected documentViewNC contains confidential doc.",
+                migrationId, caseId
+            ));
+        }
     }
 }
