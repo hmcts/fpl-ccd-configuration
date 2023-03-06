@@ -209,9 +209,6 @@
     <cve>CVE-2022-45688</cve>
   </suppress>
   <suppress>
-    <cve>CVE-2023-24998</cve>
-  </suppress>
-  <suppress>
     <vulnerabilityName>1091168</vulnerabilityName>
   </suppress>
   <suppress>
