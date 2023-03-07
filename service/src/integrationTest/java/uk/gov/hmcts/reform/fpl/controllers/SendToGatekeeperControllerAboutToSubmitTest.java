@@ -35,7 +35,7 @@ class SendToGatekeeperControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         assertThat(updatedCaseData.getAllParties()).hasSize(5);
         assertThat(updatedCaseData.getAllPartiesCustom()).isNull();
-        assertThat(updatedCaseData.getLocalAuthorityDirections()).hasSize(7);
+        assertThat(updatedCaseData.getLocalAuthorityDirections()).hasSize(8);
         assertThat(updatedCaseData.getLocalAuthorityDirectionsCustom()).isNull();
         assertThat(updatedCaseData.getCourtDirections()).hasSize(1);
         assertThat(updatedCaseData.getCourtDirectionsCustom()).isNull();
