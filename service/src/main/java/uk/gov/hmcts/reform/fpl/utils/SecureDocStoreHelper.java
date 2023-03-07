@@ -44,8 +44,6 @@ public class SecureDocStoreHelper {
             byte[] bytesFromSecureDocStore = secureDocStoreService.downloadDocument(documentUrlString);
             if (featureToggleService.isSecureDocstoreEnabled()) {
                 return bytesFromSecureDocStore;
-            } else {
-                log.info("Downloaded document attempted from CDAM without error: {}", documentUrlString);
             }
         } catch (Exception t) {
             if (!featureToggleService.isSecureDocstoreEnabled()) {
@@ -55,7 +53,6 @@ public class SecureDocStoreHelper {
             }
         }
         if (!featureToggleService.isSecureDocstoreEnabled() && !isEmpty(oldDmStoreApproach)) {
-            log.info("Using old dm-store approach to download the document: {}.", documentUrlString);
             return oldDmStoreApproach.call();
         }
         throw new UnsupportedOperationException();
@@ -117,12 +114,9 @@ public class SecureDocStoreHelper {
 
         if (featureToggleService.isSecureDocstoreEnabled()) {
             return convertToDocumentReference(documentUrlString, document);
-        } else {
-            log.info("Downloaded document meta data attempted from CDAM without error: {}", documentUrlString);
         }
 
         if (!featureToggleService.isSecureDocstoreEnabled() && !isEmpty(oldDmStoreApproach)) {
-            log.info("Using old dm-store approach to download document meta data: {}.", documentUrlString);
             return oldDmStoreApproach.call();
         }
         throw new UnsupportedOperationException();
@@ -148,8 +142,6 @@ public class SecureDocStoreHelper {
             Document ret = secureDocStoreService.uploadDocument(byteArrayOfFile, fileName, contentType);
             if (featureToggleService.isSecureDocstoreEnabled()) {
                 return ret;
-            } else {
-                log.info("Uploaded document attempted from CDAM without error: {} ({})", fileName, contentType);
             }
         } catch (Exception t) {
             if (!featureToggleService.isSecureDocstoreEnabled()) {
@@ -161,7 +153,6 @@ public class SecureDocStoreHelper {
         }
 
         if (!featureToggleService.isSecureDocstoreEnabled() && !isEmpty(oldDmStoreApproach)) {
-            log.info("Using old dm-store approach to upload document: {} ({}).", fileName, contentType);
             return oldDmStoreApproach.call();
         }
         throw new UnsupportedOperationException();

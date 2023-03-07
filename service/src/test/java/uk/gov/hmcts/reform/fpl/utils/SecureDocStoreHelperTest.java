@@ -48,8 +48,6 @@ class SecureDocStoreHelperTest {
             assertThatThrownBy(() -> underTest.download(DOCUMENT_URL_STRING))
                 .isInstanceOf(UnsupportedOperationException.class);
             assertThat(logs.getErrors()).isEmpty();
-            assertThat(logs.getInfos()).contains(
-                format("Downloaded document attempted from CDAM without error: %s", DOCUMENT_URL_STRING));
         }
 
         @ParameterizedTest
@@ -67,10 +65,6 @@ class SecureDocStoreHelperTest {
 
                 assertThat(actualData).isEqualTo(resultFromOldDmStoreApproach);
                 assertThat(logs.getErrors()).isEmpty();
-                assertThat(logs.getInfos()).contains(
-                    format("Using old dm-store approach to download the document: %s.", DOCUMENT_URL_STRING));
-                assertThat(logs.getInfos()).contains(
-                    format("Downloaded document attempted from CDAM without error: %s", DOCUMENT_URL_STRING));
             } else {
                 byte[] actualData = underTest.download(DOCUMENT_URL_STRING);
                 assertThat(actualData).isEqualTo(resultFromSecureDocStore);
@@ -110,9 +104,6 @@ class SecureDocStoreHelperTest {
                 assertThat(logs.getErrorThrowableMessages()).contains("TEST RUNTIME EXCEPTION");
                 assertThat(logs.getErrors()).contains(
                     "↑ ↑ ↑ ↑ ↑ ↑ ↑ EXCEPTION CAUGHT (SECURE DOC STORE: DISABLED) ↑ ↑ ↑ ↑ ↑ ↑ ↑");
-                assertThat(logs.getInfos())
-                    .contains(
-                        format("Using old dm-store approach to download the document: %s.", DOCUMENT_URL_STRING));
             } else {
                 assertThatThrownBy(() -> underTest.download(DOCUMENT_URL_STRING))
                     .isInstanceOf(RuntimeException.class)
@@ -135,8 +126,6 @@ class SecureDocStoreHelperTest {
             assertThatThrownBy(() -> underTest.getDocumentMetadata(DOCUMENT_URL_STRING))
                 .isInstanceOf(UnsupportedOperationException.class);
             assertThat(logs.getErrors()).isEmpty();
-            assertThat(logs.getInfos()).contains(
-                format("Downloaded document meta data attempted from CDAM without error: %s", DOCUMENT_URL_STRING));
         }
 
         @ParameterizedTest
@@ -155,10 +144,6 @@ class SecureDocStoreHelperTest {
 
                 assertThat(actualMetadata).isEqualTo(resultFromOldDmStoreApproach);
                 assertThat(logs.getErrors()).isEmpty();
-                assertThat(logs.getInfos()).contains(
-                    format("Downloaded document meta data attempted from CDAM without error: %s", DOCUMENT_URL_STRING));
-                assertThat(logs.getInfos()).contains(
-                    format("Using old dm-store approach to download document meta data: %s.", DOCUMENT_URL_STRING));
             } else {
                 DocumentReference actualMetadata = underTest.getDocumentMetadata(DOCUMENT_URL_STRING);
                 assertThat(actualMetadata).isEqualTo(SecureDocStoreHelper
@@ -203,9 +188,6 @@ class SecureDocStoreHelperTest {
                 assertThat(logs.getErrors()).contains(
                     "↑ ↑ ↑ ↑ ↑ ↑ ↑ EXCEPTION CAUGHT WHEN DOWNLOADING METADATA "
                         + "(SECURE DOC STORE: DISABLED) ↑ ↑ ↑ ↑ ↑ ↑ ↑");
-                assertThat(logs.getInfos())
-                    .contains(
-                        format("Using old dm-store approach to download document meta data: %s.", DOCUMENT_URL_STRING));
             } else {
                 assertThatThrownBy(() -> underTest.getDocumentMetadata(DOCUMENT_URL_STRING))
                     .isInstanceOf(RuntimeException.class)
@@ -230,8 +212,6 @@ class SecureDocStoreHelperTest {
             assertThatThrownBy(() -> underTest.uploadDocument(data, FILE_NAME, CONTENT_TYPE))
                 .isInstanceOf(UnsupportedOperationException.class);
             assertThat(logs.getErrors()).isEmpty();
-            assertThat(logs.getInfos()).contains(
-                format("Uploaded document attempted from CDAM without error: %s (%s)", FILE_NAME, CONTENT_TYPE));
         }
 
         @ParameterizedTest
@@ -251,11 +231,6 @@ class SecureDocStoreHelperTest {
 
                 assertThat(actualDoc).isEqualTo(fromOldDmStoreApproach);
                 assertThat(logs.getErrors()).isEmpty();
-                assertThat(logs.getInfos())
-                    .contains(
-                        format("Using old dm-store approach to upload document: %s (%s).", FILE_NAME, CONTENT_TYPE));
-                assertThat(logs.getInfos()).contains(
-                    format("Uploaded document attempted from CDAM without error: %s (%s)", FILE_NAME, CONTENT_TYPE));
             } else {
                 Document actualDoc = underTest.uploadDocument("DATA".getBytes(), FILE_NAME, CONTENT_TYPE);
                 assertThat(actualDoc).isEqualTo(resultFromSecureDocStore);
@@ -298,9 +273,6 @@ class SecureDocStoreHelperTest {
                 assertThat(logs.getErrorThrowableMessages()).contains("TEST RUNTIME EXCEPTION");
                 assertThat(logs.getErrors()).contains("↑ ↑ ↑ ↑ ↑ ↑ ↑ EXCEPTION CAUGHT WHEN UPLOADING DOCUMENT "
                     + "(SECURE DOC STORE: DISABLED) ↑ ↑ ↑ ↑ ↑ ↑ ↑");
-                assertThat(logs.getInfos())
-                    .contains(
-                        format("Using old dm-store approach to upload document: %s (%s).", FILE_NAME, CONTENT_TYPE));
             } else {
                 byte[] data = "DATA".getBytes();
                 assertThatThrownBy(() -> underTest.uploadDocument(data, FILE_NAME, CONTENT_TYPE))
