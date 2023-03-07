@@ -12,13 +12,11 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -33,7 +31,6 @@ public class MigrateCaseController extends CallbackController {
     private final MigrateCaseService migrateCaseService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1210", this::run1210,
         "DFPL-1262", this::run1262,
         "DFPL-1274", this::run1274,
         "DFPL-1277", this::run1277,
@@ -60,16 +57,6 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
     
-    private void run1210(CaseDetails caseDetails) {
-        String migrationId = "DFPL-1210";
-        Map<String, Object> caseDetailsData = caseDetails.getData();
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1615556003529811L, migrationId);
-        migrateCaseService.doHearingOptionCheck(caseDetails.getId(),
-            Optional.of((String) caseDetails.getData().get("hearingOption")).orElse(""),
-            "EDIT_HEARING", migrationId);
-        caseDetailsData.put("hearingOption", HearingOptions.EDIT_PAST_HEARING);
-    }
-
     private void run1262(CaseDetails caseDetails) {
         var migrationId = "DFPL-1262";
         var possibleCaseIds = List.of(1651753104228873L);
