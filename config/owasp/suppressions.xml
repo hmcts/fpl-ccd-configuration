@@ -232,4 +232,8 @@
   <suppress>
     <cve>CVE-2023-24998</cve>
   </suppress>
+  <suppress>
+    <vulnerabilityName>1091238</vulnerabilityName>
+    <vulnerabilityName>1091239</vulnerabilityName>
+  </suppress>
 </suppressions>
