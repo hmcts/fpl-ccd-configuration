@@ -984,4 +984,118 @@ class MigrateCaseServiceTest {
         }
 
     }
+
+    @Nested
+    class RemoveDraftUploadedCMO {
+
+        private final UUID orderIdToRemove = UUID.randomUUID();
+        private final UUID orderIdToKeep = UUID.randomUUID();
+
+        private final Element<HearingOrder> orderToRemove = element(orderIdToRemove, HearingOrder.builder().build());
+
+        private final Element<HearingOrder> orderToKeep = element(orderIdToKeep, HearingOrder.builder().build());
+
+        @Test
+        void shouldClearDraftUploadedCMOsWithNoOrderPostMigration() {
+            List<Element<HearingOrder>> hearingOrders = new ArrayList<>();
+            hearingOrders.add(orderToRemove);
+            CaseData caseData = CaseData.builder()
+                .draftUploadedCMOs(List.of(orderToRemove))
+                .build();
+
+            Map<String, Object> fields = underTest.removeDraftUploadedCMOs(caseData, MIGRATION_ID,
+                orderIdToRemove);
+
+            assertThat(fields.get("draftUploadedCMOs")).isEqualTo(List.of());
+        }
+
+        @Test
+        @SuppressWarnings("unchecked")
+        void shouldLeaveOtherOrdersIntact() {
+            List<Element<HearingOrder>> draftUploadedCMOs = new ArrayList<>();
+            draftUploadedCMOs.add(orderToKeep);
+            draftUploadedCMOs.add(orderToRemove);
+
+            CaseData caseData = CaseData.builder()
+                .draftUploadedCMOs(draftUploadedCMOs)
+                .build();
+
+            Map<String, Object> fields = underTest.removeDraftUploadedCMOs(caseData, MIGRATION_ID,
+                orderIdToRemove);
+
+            List<Element<HearingOrder>> result =
+                (List<Element<HearingOrder>>) fields.get("draftUploadedCMOs");
+
+            assertThat(result).hasSize(1);
+            assertThat(result).containsExactly(orderToKeep);
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoOrderFound() {
+            CaseData caseData = CaseData.builder()
+                .draftUploadedCMOs(List.of())
+                .build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.removeDraftUploadedCMOs(caseData, MIGRATION_ID,
+                    orderIdToRemove));
+        }
+    }
+
+    @Nested
+    class RemoveHearingOrdersBundlesDraft {
+
+        private final UUID orderIdToRemove = UUID.randomUUID();
+        private final UUID orderIdToKeep = UUID.randomUUID();
+
+        private final Element<HearingOrdersBundle> bundleToRemove = element(orderIdToRemove,
+            HearingOrdersBundle.builder().build());
+
+        private final Element<HearingOrdersBundle> bundleToKeep = element(orderIdToKeep,
+            HearingOrdersBundle.builder().build());
+
+        @Test
+        void shouldClearHearingOrderBundleWithNoOrderPostMigration() {
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(List.of(bundleToRemove))
+                .build();
+
+            Map<String, Object> fields = underTest.removeHearingOrdersBundlesDrafts(caseData, MIGRATION_ID,
+                orderIdToRemove);
+
+            assertThat(fields.get("hearingOrdersBundlesDrafts")).isEqualTo(List.of());
+        }
+
+        @Test
+        @SuppressWarnings("unchecked")
+        void shouldLeaveOtherOrdersIntact() {
+            List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts = new ArrayList<>();
+            hearingOrdersBundlesDrafts.add(bundleToKeep);
+            hearingOrdersBundlesDrafts.add(bundleToRemove);
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(hearingOrdersBundlesDrafts)
+                .build();
+
+            Map<String, Object> fields = underTest.removeHearingOrdersBundlesDrafts(caseData, MIGRATION_ID,
+                orderIdToRemove);
+
+            List<Element<HearingOrdersBundle>> result =
+                (List<Element<HearingOrdersBundle>>) fields.get("hearingOrdersBundlesDrafts");
+
+            assertThat(result).hasSize(1);
+            assertThat(result).containsExactly(bundleToKeep);
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoOrderFound() {
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(List.of())
+                .build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.removeHearingOrdersBundlesDrafts(caseData, MIGRATION_ID,
+                    orderIdToRemove));
+        }
+    }
 }
