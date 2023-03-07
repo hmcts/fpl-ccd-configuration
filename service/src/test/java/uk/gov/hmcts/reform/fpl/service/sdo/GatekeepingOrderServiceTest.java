@@ -67,6 +67,8 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DATE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionType.APPOINT_CHILDREN_GUARDIAN_IMMEDIATE;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionType.ARRANGE_INTERPRETERS_IMMEDIATE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6A;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
@@ -261,6 +263,9 @@ class GatekeepingOrderServiceTest {
             .data(newHashMap(Map.of("directionsForAllParties", List.of(type))))
             .build();
 
+        final boolean isImmediateStandardDirection =
+            APPOINT_CHILDREN_GUARDIAN_IMMEDIATE.equals(type) || ARRANGE_INTERPRETERS_IMMEDIATE.equals(type);
+
         when(ordersLookupService.getDirectionConfiguration(type)).thenReturn(directionConfiguration);
 
         underTest.populateStandardDirections(caseDetails);
@@ -270,9 +275,9 @@ class GatekeepingOrderServiceTest {
             .title(directionConfiguration.getTitle())
             .description(directionConfiguration.getText())
             .assignee(directionConfiguration.getAssignee())
-            .daysBeforeHearing(2)
+            .daysBeforeHearing(isImmediateStandardDirection ? null : 2)
             .dateToBeCompletedBy(null)
-            .dueDateType(DAYS)
+            .dueDateType(isImmediateStandardDirection ? null : DAYS)
             .build();
 
         assertThat(caseDetails.getData().get("direction-" + type)).isEqualTo(expectedDirection);
@@ -309,6 +314,9 @@ class GatekeepingOrderServiceTest {
                 "hearingDetails", wrapElements(hearing1, hearing2))))
             .build();
 
+        final boolean isImmediateStandardDirection =
+            APPOINT_CHILDREN_GUARDIAN_IMMEDIATE.equals(type) || ARRANGE_INTERPRETERS_IMMEDIATE.equals(type);
+
         underTest.populateStandardDirections(caseDetails);
 
         final StandardDirection expectedDirection = StandardDirection.builder()
@@ -316,9 +324,9 @@ class GatekeepingOrderServiceTest {
             .title(directionConfiguration.getTitle())
             .description(directionConfiguration.getText())
             .assignee(directionConfiguration.getAssignee())
-            .daysBeforeHearing(dueDateDaysBeforeHearing)
-            .dateToBeCompletedBy(directionDueDate)
-            .dueDateType(DAYS)
+            .daysBeforeHearing(isImmediateStandardDirection ? null : dueDateDaysBeforeHearing)
+            .dateToBeCompletedBy(isImmediateStandardDirection ? null : directionDueDate)
+            .dueDateType(isImmediateStandardDirection ? null : DAYS)
             .build();
 
         assertThat(caseDetails.getData().get("direction-" + type)).isEqualTo(expectedDirection);
@@ -346,6 +354,9 @@ class GatekeepingOrderServiceTest {
                 "hearingDetails", wrapElements(hearing))))
             .build();
 
+        final boolean isImmediateStandardDirection =
+            APPOINT_CHILDREN_GUARDIAN_IMMEDIATE.equals(type) || ARRANGE_INTERPRETERS_IMMEDIATE.equals(type);
+
         underTest.populateStandardDirections(caseDetails);
 
         final StandardDirection expectedDirection = StandardDirection.builder()
@@ -353,9 +364,9 @@ class GatekeepingOrderServiceTest {
             .title(directionConfiguration.getTitle())
             .description(directionConfiguration.getText())
             .assignee(directionConfiguration.getAssignee())
-            .daysBeforeHearing(2)
-            .dateToBeCompletedBy(directionDueDate)
-            .dueDateType(DAYS)
+            .daysBeforeHearing(isImmediateStandardDirection ? null : 2)
+            .dateToBeCompletedBy(isImmediateStandardDirection ? null : directionDueDate)
+            .dueDateType(isImmediateStandardDirection ? null : DAYS)
             .build();
 
         assertThat(caseDetails.getData().get("direction-" + type)).isEqualTo(expectedDirection);
@@ -436,19 +447,22 @@ class GatekeepingOrderServiceTest {
 
         final DirectionConfiguration directionConfiguration = directionConfiguration(type, 0);
 
+        final boolean isImmediateStandardDirection =
+            APPOINT_CHILDREN_GUARDIAN_IMMEDIATE.equals(type) || ARRANGE_INTERPRETERS_IMMEDIATE.equals(type);
+
         final StandardDirection oldDirectionDraft = StandardDirection.builder()
             .type(type)
             .title("title")
             .description("Text")
             .assignee(COURT)
-            .daysBeforeHearing(0)
-            .dateToBeCompletedBy(LocalDateTime.now())
-            .dueDateType(DATE)
+            .daysBeforeHearing(isImmediateStandardDirection ? null : 0)
+            .dateToBeCompletedBy(isImmediateStandardDirection ? null : LocalDateTime.now())
+            .dueDateType(isImmediateStandardDirection ? null : DATE)
             .build();
 
         final StandardDirection newDirectionDraft = StandardDirection.builder()
-            .daysBeforeHearing(10)
-            .dueDateType(DAYS)
+            .daysBeforeHearing(isImmediateStandardDirection ? null : 10)
+            .dueDateType(isImmediateStandardDirection ? null : DAYS)
             .build();
 
         final StandardDirection expectedDirection = StandardDirection.builder()
@@ -456,9 +470,9 @@ class GatekeepingOrderServiceTest {
             .title(directionConfiguration.getTitle())
             .description(directionConfiguration.getText())
             .assignee(directionConfiguration.getAssignee())
-            .daysBeforeHearing(newDirectionDraft.getDaysBeforeHearing())
+            .daysBeforeHearing(isImmediateStandardDirection ? null : newDirectionDraft.getDaysBeforeHearing())
             .dateToBeCompletedBy(null)
-            .dueDateType(DAYS)
+            .dueDateType(isImmediateStandardDirection ? null : DAYS)
             .build();
 
         final CaseDetails caseDetails = CaseDetails.builder()

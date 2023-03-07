@@ -307,7 +307,7 @@ public class GatekeepingOrderService {
         final DirectionConfiguration directionConfig = ordersLookupService.getDirectionConfiguration(type);
         final boolean isImmediateStandardDirection =
             APPOINT_CHILDREN_GUARDIAN_IMMEDIATE.equals(type) || ARRANGE_INTERPRETERS_IMMEDIATE.equals(type);
-        final Integer defaultDaysBeforeHearing = 2;
+        final int defaultDaysBeforeHearing = 2;
 
         return StandardDirection.builder()
             .type(directionConfig.getType())
@@ -344,7 +344,11 @@ public class GatekeepingOrderService {
             .orElse(0));
 
         LocalDate deadline = daysBefore == 0 ? hearingDay : calendarService.getWorkingDayFrom(hearingDay, daysBefore);
-        LocalTime deadlineTime = LocalTime.parse(defaultIfNull(hearing.getStartDate().format(DateTimeFormatter.ofPattern("HH:mm:ss")), "00:00:00"));
+        LocalTime deadlineTime =
+            LocalTime.parse(
+                defaultIfNull(hearing.getStartDate().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
+                    "00:00:00")
+            );
 
         return LocalDateTime.of(deadline, deadlineTime);
 

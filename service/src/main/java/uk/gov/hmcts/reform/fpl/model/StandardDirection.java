@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import java.time.LocalDateTime;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionType.APPOINT_CHILDREN_GUARDIAN_IMMEDIATE;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionType.ARRANGE_INTERPRETERS_IMMEDIATE;
 
 @Data
 @SuperBuilder(toBuilder = true)
@@ -32,8 +34,17 @@ public class StandardDirection {
             .type(config.getType())
             .title(config.getTitle())
             .assignee(config.getAssignee())
-            .daysBeforeHearing(defaultIfNull(daysBeforeHearing, DEFAULT_DAYS_BEFORE_HEARING))
+            .daysBeforeHearing(
+                isImmediateStandardDirection(config.getType())
+                    ? null
+                    : defaultIfNull(daysBeforeHearing, DEFAULT_DAYS_BEFORE_HEARING)
+            )
             .description(defaultIfNull(description, config.getText()))
             .build();
+    }
+
+    @JsonIgnore
+    public boolean isImmediateStandardDirection(DirectionType type) {
+        return APPOINT_CHILDREN_GUARDIAN_IMMEDIATE.equals(type) || ARRANGE_INTERPRETERS_IMMEDIATE.equals(type);
     }
 }
