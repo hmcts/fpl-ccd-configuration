@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
+import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
@@ -38,6 +39,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MigrateCaseService {
 
+    private static final String PLACEMENT = "placements";
+    private static final String PLACEMENT_NON_CONFIDENTIAL = "placementsNonConfidential";
+    private static final String PLACEMENT_NON_CONFIDENTIAL_NOTICES = "placementsNonConfidentialNotices";
     private final CaseNoteService caseNoteService;
     private final DocumentListService documentListService;
 
@@ -396,5 +400,25 @@ public class MigrateCaseService {
                 migrationId, caseId
             ));
         }
+    }
+    
+    public Map<String, Object> removeSpecificPlacements(CaseData caseData, UUID placementToRemove) {
+        List<Element<Placement>> placementsToKeep = caseData.getPlacementEventData().getPlacements().stream()
+            .filter(x -> !x.getId().equals(placementToRemove)).collect(toList());
+        caseData.getPlacementEventData().setPlacements(placementsToKeep);
+
+        List<Element<Placement>> nonConfidentialPlacementsToKeep = caseData.getPlacementEventData()
+            .getPlacementsNonConfidential(false);
+
+        List<Element<Placement>> nonConfidentialNoticesPlacementsToKeep = caseData.getPlacementEventData()
+            .getPlacementsNonConfidential(true);
+
+        Map<String, Object> ret =  new HashMap<String, Object>();
+        ret.put(PLACEMENT, placementsToKeep.isEmpty() ? null : placementsToKeep);
+        ret.put(PLACEMENT_NON_CONFIDENTIAL, nonConfidentialPlacementsToKeep.isEmpty() ? null :
+            nonConfidentialPlacementsToKeep);
+        ret.put(PLACEMENT_NON_CONFIDENTIAL_NOTICES, nonConfidentialNoticesPlacementsToKeep.isEmpty() ? null :
+            nonConfidentialNoticesPlacementsToKeep);
+        return ret;
     }
 }
