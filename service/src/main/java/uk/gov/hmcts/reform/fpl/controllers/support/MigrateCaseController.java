@@ -35,7 +35,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1274", this::run1274,
         "DFPL-1277", this::run1277,
         "DFPL-1290", this::run1290,
-        "DFPL-1294", this::run1294
+        "DFPL-1294", this::run1294,
+        "DFPL-1261", this::run1261
     );
 
     @PostMapping("/about-to-submit")
@@ -101,5 +102,17 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
         caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(getCaseData(caseDetails),
             migrationId, expectedPositionStatementId));
+    }
+
+    private void run1261(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1261";
+        var possibleCaseIds = List.of(1661855469987973L);
+        final UUID expectedOrderId = UUID.fromString("ef610598-8bfd-42c2-9edd-0cd142b45f07");
+        final UUID expectedHearingOrderBundleId = UUID.fromString("2f588328-4f6c-4da6-817b-b8c007d2a61d");
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removeDraftUploadedCMOs(getCaseData(caseDetails),
+            migrationId, expectedOrderId));
+        caseDetails.getData().putAll(migrateCaseService.removeHearingOrdersBundlesDrafts(getCaseData(caseDetails),
+            migrationId, expectedHearingOrderBundleId));
     }
 }
