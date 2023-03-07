@@ -6,7 +6,7 @@
     "CaseFieldID": "languageRequirement",
     "PageFieldDisplayOrder": 0,
     "DisplayContext": "READONLY",
-    "PageID": "SendNoticeOfHearing",
+    "PageID": "ListGatekeepingHearingSendNoticeOfHearing",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 8,
     "FieldShowCondition": "allocatedJudge=\"DO_NOT_SHOW\"",
@@ -19,7 +19,7 @@
     "CaseFieldID": "sendNoticeOfHearingTranslationRequirements",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
-    "PageID": "SendNoticeOfHearing",
+    "PageID": "ListGatekeepingHearingSendNoticeOfHearing",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 4,
     "CaseEventFieldLabel": "Does the hearing notice need to be translated?"
