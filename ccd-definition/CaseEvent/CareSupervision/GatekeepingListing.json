@@ -7,7 +7,7 @@
     "Description": "Manage hearing booking details and add allocated judge to a case",
     "DisplayOrder": 1,
     "PreConditionState(s)": "GATEKEEPING_LISTING",
-    "PostConditionState": "PREPARE_FOR_HEARING",
+    "PostConditionState": "GATEKEEPING_LISTING",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
     "ShowEventNotes": "Y",

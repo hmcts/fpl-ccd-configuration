@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -60,6 +61,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getJudgeF
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Slf4j
 public class GatekeepingOrderService {
 
     private final Time time;
@@ -116,6 +118,7 @@ public class GatekeepingOrderService {
         StandardDirectionOrder currentOrder = buildBaseGatekeepingOrder(caseData);
 
         if (decision.isSealed()) {
+            log.error("**********  buildOrderFromGeneratedFile ");
             DocumentReference sealedDocument = buildFromDocument(generateOrder(caseData));
 
             return currentOrder.toBuilder()
