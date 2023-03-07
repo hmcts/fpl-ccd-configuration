@@ -1579,10 +1579,15 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
           "caseworker-publiclaw-gatekeeper"
         ],
         "CRUD": "CR"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
       }
     ]
   },
