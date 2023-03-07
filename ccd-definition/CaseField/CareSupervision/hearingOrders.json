@@ -53,7 +53,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "uploadCMOMessageAcknowledgeLabel",
     "FieldType": "Label",
-    "Label": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>",
+    "Label": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -63,7 +63,7 @@
     "ID": "uploadCMOMessageAcknowledge",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "DocumentAcknowledge",
-    "Label": "Tick to confirm this document is related to Familyman Case number/Names/CCD",
+    "Label": "Tick to confirm this document is related to this case",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
