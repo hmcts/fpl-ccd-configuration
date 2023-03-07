@@ -176,6 +176,20 @@
       }
     },
     {
+      "type": "REDUCE_TIME_FOR_SERVICE",
+      "title": "Reduce time for service of notice of the proceedings",
+      "text": "",
+      "assignee": "LOCAL_AUTHORITY",
+      "display": {
+        "due": "BY",
+        "templateDateFormat": "h:mma, d MMMM yyyy",
+        "directionRemovable": true,
+        "showDateOnly": true,
+        "delta": "-1",
+        "time": "12:00:00"
+      }
+    },
+    {
       "type": "SEND_RESPONSE_TO_THRESHOLD_STATEMENT",
       "title": "Send response to threshold statement to all parties",
       "text": "Send a written statement to the court and all parties, showing:\n\n- the parents' response to the local authority's threshold statement\n- the parents' proposals for placing the children, immediately and long-term\n- whether they agree to a family group conference if one has not taken place yet\n\nIf the parents do not do this, the court can assume they do not disagree with allegations in the threshold statement.\n",
