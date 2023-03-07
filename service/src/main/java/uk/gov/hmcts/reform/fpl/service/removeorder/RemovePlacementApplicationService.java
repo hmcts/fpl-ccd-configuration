@@ -58,8 +58,6 @@ public class RemovePlacementApplicationService {
         UUID removedPlacementId = getSelectedPlacementId(caseData);
         List<Element<Placement>> placements = caseData.getPlacementEventData().getPlacements();
 
-        Element<Placement> placementToBeRemoved = getSelectedPlacement(removedPlacementId, placements);
-
         List<Element<Placement>> updatedPlacements = ElementUtils.removeElementWithUUID(placements, removedPlacementId);
         PlacementEventData updatedPlacementData = PlacementEventData.builder().placements(updatedPlacements).build();
 
@@ -83,6 +81,8 @@ public class RemovePlacementApplicationService {
         } else {
             caseDetailsMap.put("placementsNonConfidentialNotices", placementsNonConfidentialNotices);
         }
+
+        Element<Placement> placementToBeRemoved = getSelectedPlacement(removedPlacementId, placements);
 
         List<Element<RemovedPlacement>> removedPlacements = caseData.getRemovalToolData().getRemovedPlacements();
         removedPlacements.add(element(placementToBeRemoved.getId(),
