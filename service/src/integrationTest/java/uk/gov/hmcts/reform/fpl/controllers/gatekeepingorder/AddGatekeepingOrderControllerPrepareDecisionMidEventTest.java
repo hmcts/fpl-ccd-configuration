@@ -45,6 +45,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.APPOINT_CHILDREN_GUARDIAN;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionType.REDUCE_TIME_FOR_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.SEND_CASE_SUMMARY;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
@@ -146,6 +147,50 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
             assertThat(eventData.getStandardDirections())
                 .extracting(Element::getValue)
                 .contains(localAuthorityStandardDirection, cafcassStandardDirection);
+        }
+
+        @Test
+        void shouldSetDraftDocumentStandardDirectionsForReduceTimeForService() {
+            final String nextSteps = NEXT_STEPS
+                + "* the first hearing details\n\n"
+                + "* the allocated judge\n\n"
+                + "* the judge issuing the order";
+
+            final StandardDirection localAuthorityStandardDirection = StandardDirection.builder()
+                .type(REDUCE_TIME_FOR_SERVICE)
+                .title("Reduce time for service of notice of the proceedings")
+                .description("")
+                .assignee(LOCAL_AUTHORITY)
+                .dueDateType(DAYS)
+                .daysBeforeHearing(2)
+                .build();
+
+            final CaseDetails caseDetails = CaseDetails.builder()
+                .id(1234567890123456L)
+                .data(Map.of(
+                    "gatekeepingOrderRouter", SERVICE,
+                    "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
+                    "dateSubmitted", dateNow(),
+                    "applicants", getApplicant("Legacy applicant name"),
+                    "directionsForLocalAuthority", List.of(localAuthorityStandardDirection.getType()),
+                    "direction-REDUCE_TIME_FOR_SERVICE", localAuthorityStandardDirection))
+                .build();
+
+            final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
+                .draftDocument(DOCUMENT_REFERENCE)
+                .dateOfIssue(dateNow())
+                .nextSteps(nextSteps)
+                .build();
+
+            final CaseData responseData = extractCaseData(postMidEvent(caseDetails, CALLBACK_NAME));
+            final GatekeepingOrderEventData eventData = responseData.getGatekeepingOrderEventData();
+
+            assertThat(eventData.getGatekeepingOrderSealDecision())
+                .isEqualTo(expectedSealDecision);
+
+            assertThat(eventData.getStandardDirections())
+                .extracting(Element::getValue)
+                .contains(localAuthorityStandardDirection);
         }
 
         @Test
