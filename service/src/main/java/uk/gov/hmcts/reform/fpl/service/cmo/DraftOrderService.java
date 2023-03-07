@@ -156,7 +156,8 @@ public class DraftOrderService {
                 time.now().toLocalDate(),
                 eventData.isCmoAgreed() ? AGREED_CMO : DRAFT_CMO,
                 null,
-                eventData.getCmoToSendTranslationRequirements()
+                eventData.getCmoToSendTranslationRequirements(),
+                hearing.getId()
             ));
 
             Optional<UUID> previousCmoId = updateHearingWithCmoId(hearing.getValue(), order);
