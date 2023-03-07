@@ -102,9 +102,6 @@ public class ListGatekeepingHearingController extends CallbackController {
 
         hearingsService.findAndSetPreviousVenueId(caseData);
 
-        //Get the hearing type
-        data.put("hearingType", data.get("listGatekeepingHearingType"));
-
         //Set hearing
         final HearingBooking hearingBooking = hearingsService.getCurrentHearingBooking(caseData);
         final Element<HearingBooking> hearingBookingElement = element(hearingBooking);
