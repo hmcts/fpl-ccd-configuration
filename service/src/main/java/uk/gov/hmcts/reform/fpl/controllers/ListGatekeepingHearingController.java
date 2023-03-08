@@ -191,12 +191,17 @@ public class ListGatekeepingHearingController extends CallbackController {
     public CallbackResponse validateHearingDatesMidEvent(@RequestBody CallbackRequest callbackRequest) {
 
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        final List<String> integerErrors = pastHearingDatesValidatorService.validateHearingIntegers(caseDetails);
+
+        if (!integerErrors.isEmpty()) {
+            return respond(caseDetails, integerErrors);
+        }
+
         final CaseData caseData = getCaseData(caseDetails);
 
-        final List<String> errors = pastHearingDatesValidatorService.validateHearingIntegers(caseDetails);
-        errors.addAll(
-            pastHearingDatesValidatorService.validateHearingDates(caseData.getHearingStartDate(),
-                caseData.getHearingEndDateTime()));
+        final List<String> errors = pastHearingDatesValidatorService.validateHearingDates(
+            caseData.getHearingStartDate(),
+            caseData.getHearingEndDateTime());
         errors.addAll(
             pastHearingDatesValidatorService.validateDays(caseData.getHearingDuration(),
                 caseData.getHearingDays()));
