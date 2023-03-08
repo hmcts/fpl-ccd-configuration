@@ -14,12 +14,15 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.SystemUserService;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
 import static java.util.Collections.emptyMap;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 
@@ -31,7 +34,7 @@ public class CoreCaseDataService {
     private final CoreCaseDataApi coreCaseDataApi;
     private final RequestData requestData;
     private final SystemUserService systemUserService;
-    private final CaseConverter caseConverter;
+    private final CCDConcurrencyHelper concurrencyHelper;
 
     public CaseDetails performPostSubmitCallback(Long caseId,
                                           String eventName,
@@ -39,13 +42,18 @@ public class CoreCaseDataService {
         int retries = 0;
         while (retries < 3) {
             try {
-                StartEventResponse startEventResponse = startEvent(caseId, eventName);
+                StartEventResponse startEventResponse = concurrencyHelper.startEvent(caseId, eventName);
+                CaseDetails caseDetails = startEventResponse.getCaseDetails();
+                // Work around immutable maps
+                HashMap<String, Object> caseDetailsMap = new HashMap<>(caseDetails.getData());
+                caseDetails.setData(caseDetailsMap);
+
                 Map<String, Object> updates = changeFunction.apply(startEventResponse.getCaseDetails());
 
-                submitEvent(startEventResponse, caseId, updates);
-                CaseDetails after = startEventResponse.getCaseDetails();
-                after.getData().putAll(updates);
-                return after;
+                concurrencyHelper.submitEvent(startEventResponse, caseId, updates);
+
+                caseDetails.getData().putAll(updates);
+                return caseDetails;
             } catch (Exception e) {
                 log.error("Failed to create event on ccd", e);
                 retries++;
@@ -60,43 +68,6 @@ public class CoreCaseDataService {
         return performPostSubmitCallback(caseId, "internal-change-UPDATE_CASE", changeFunction);
     }
 
-    public StartEventResponse startEvent(Long caseId, String eventName) {
-        String userToken = systemUserService.getSysUserToken();
-        String systemUpdateUserId = systemUserService.getUserId(userToken);
-
-        return coreCaseDataApi.startEventForCaseWorker(
-            userToken,
-            authTokenGenerator.generate(),
-            systemUpdateUserId,
-            JURISDICTION,
-            CASE_TYPE,
-            caseId.toString(),
-            eventName);
-    }
-
-    public void submitEvent(StartEventResponse startEventResponse, Long caseId, Map<String, Object> eventData) {
-        String userToken = systemUserService.getSysUserToken();
-        String systemUpdateUserId = systemUserService.getUserId(userToken);
-
-        CaseDataContent caseDataContent = CaseDataContent.builder()
-            .eventToken(startEventResponse.getToken())
-            .event(Event.builder()
-                .id(startEventResponse.getEventId())
-                .build())
-            .data(eventData)
-            .build();
-
-        coreCaseDataApi.submitEventForCaseWorker(
-            userToken,
-            authTokenGenerator.generate(),
-            systemUpdateUserId,
-            JURISDICTION,
-            CASE_TYPE,
-            caseId.toString(),
-            true,
-            caseDataContent);
-
-    }
 
     /**
      * Runs the UPDATE_CASE event on a given case.

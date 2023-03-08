@@ -48,6 +48,8 @@ class CoreCaseDataServiceTest {
     @Mock
     private CoreCaseDataApi coreCaseDataApi;
     @Mock
+    private CCDConcurrencyHelper concurrencyHelper;
+    @Mock
     private RequestData requestData;
 
     @Spy
@@ -73,46 +75,6 @@ class CoreCaseDataServiceTest {
             when(coreCaseDataApi.startEventForCaseWorker(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, userId, JURISDICTION,
                 CASE_TYPE, Long.toString(CASE_ID), eventId))
                 .thenReturn(buildStartEventResponse(eventId, eventToken));
-        }
-
-        @Test
-        void shouldStartEvent() {
-            service.startEvent(CASE_ID, eventId);
-
-            verify(coreCaseDataApi).startEventForCaseWorker(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, userId,
-                JURISDICTION, CASE_TYPE, Long.toString(CASE_ID), eventId);
-        }
-
-        @Test
-        void shouldSubmitEventWithoutCaseData() {
-            StartEventResponse startEventResponse = StartEventResponse.builder()
-                .eventId(eventId)
-                .token(eventToken)
-                .caseDetails(CaseDetails.builder().data(emptyMap()).build())
-                .build();
-
-            service.submitEvent(startEventResponse, CASE_ID, emptyMap());
-
-            verify(coreCaseDataApi).submitEventForCaseWorker(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, userId, JURISDICTION,
-                CASE_TYPE, Long.toString(CASE_ID), true,
-                buildCaseDataContent(eventId, eventToken, emptyMap()));
-        }
-
-        @Test
-        void shouldSubmitEventWithCaseData() {
-            StartEventResponse startEventResponse = StartEventResponse.builder()
-                .eventId(eventId)
-                .token(eventToken)
-                .caseDetails(CaseDetails.builder().data(Map.of("id", 12345L)).build())
-                .build();
-
-            Map<String, Object> updates = Map.of("caseName", "new case name");
-
-            service.submitEvent(startEventResponse, CASE_ID, updates);
-
-            verify(coreCaseDataApi).submitEventForCaseWorker(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, userId, JURISDICTION,
-                CASE_TYPE, Long.toString(CASE_ID), true,
-                buildCaseDataContent(eventId, eventToken, updates));
         }
 
         @Test

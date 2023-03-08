@@ -7,6 +7,8 @@ import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
@@ -21,7 +23,9 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderPostSubmitHelper;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDate;
@@ -77,6 +81,7 @@ class ManageOrdersAmendedSubmittedControllerTest extends AbstractCallbackTest {
     private static final GeneratedOrder ORDER = GeneratedOrder.builder().document(ORDER_DOCUMENT)
         .others(emptyList()).build();
     private static final String MEDIA_TYPE = "application/pdf";
+    public static final String INTERNAL_CHANGE_MANAGE_ORDER = "internal-change-manage-order";
 
     @MockBean
     private DocumentDownloadService downloadService;
@@ -85,7 +90,7 @@ class ManageOrdersAmendedSubmittedControllerTest extends AbstractCallbackTest {
     @MockBean
     private Time time; // mocking to ensure time that is stamped into the doc matches the one in the test doc
     @MockBean
-    private CoreCaseDataService coreCaseDataService;
+    private CCDConcurrencyHelper concurrencyHelper;
     @MockBean
     private EventService eventPublisher;
     @Captor
@@ -108,12 +113,18 @@ class ManageOrdersAmendedSubmittedControllerTest extends AbstractCallbackTest {
     @Test
     void shouldAmendGeneratedOrder() {
         CaseData caseData = buildCaseData(ORDER_ID, ORDER_DOCUMENT);
+        when(concurrencyHelper.startEvent(any(), any())).thenReturn(StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(INTERNAL_CHANGE_MANAGE_ORDER)
+            .token("token")
+            .build());
+
         postSubmittedEvent(caseData);
 
         verify(uploadService).uploadDocument(documentBinaries.capture(), eq("amended_order.pdf"), eq(MEDIA_TYPE));
         assertThat(documentBinaries.getValue()).isEqualTo(STAMPED_BINARIES);
-        verify(coreCaseDataService).triggerEvent(eq(caseData.getId()), eq("internal-change-manage-order"),
-            updateData.capture());
+        verify(concurrencyHelper).startEvent(eq(caseData.getId()), eq(INTERNAL_CHANGE_MANAGE_ORDER));
+        verify(concurrencyHelper).submitEvent(any(), eq(caseData.getId()), updateData.capture());
 
         Map<String, Object> updates = asCaseDetails(caseData).getData();
         updates.putAll(updateData.getValue());
@@ -126,12 +137,18 @@ class ManageOrdersAmendedSubmittedControllerTest extends AbstractCallbackTest {
     @Test
     void shouldAmendCMO() {
         CaseData caseData = buildCaseData(CMO_ID, CMO_DOCUMENT);
+        when(concurrencyHelper.startEvent(any(), any())).thenReturn(StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(INTERNAL_CHANGE_MANAGE_ORDER)
+            .token("token")
+            .build());
+
         postSubmittedEvent(caseData);
 
         verify(uploadService).uploadDocument(documentBinaries.capture(), eq("amended_cmo.pdf"), eq(MEDIA_TYPE));
         assertThat(documentBinaries.getValue()).isEqualTo(STAMPED_BINARIES);
-        verify(coreCaseDataService).triggerEvent(eq(caseData.getId()), eq("internal-change-manage-order"),
-            updateData.capture());
+        verify(concurrencyHelper).startEvent(eq(caseData.getId()), eq(INTERNAL_CHANGE_MANAGE_ORDER));
+        verify(concurrencyHelper).submitEvent(any(), eq(caseData.getId()), updateData.capture());
 
         Map<String, Object> updates = asCaseDetails(caseData).getData();
         updates.putAll(updateData.getValue());
@@ -144,12 +161,18 @@ class ManageOrdersAmendedSubmittedControllerTest extends AbstractCallbackTest {
     @Test
     void shouldAmendSDO() {
         CaseData caseData = buildCaseData(SDO_ID, SDO_DOCUMENT);
+        when(concurrencyHelper.startEvent(any(), any())).thenReturn(StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(INTERNAL_CHANGE_MANAGE_ORDER)
+            .token("token")
+            .build());
+
         postSubmittedEvent(caseData);
 
         verify(uploadService).uploadDocument(documentBinaries.capture(), eq("amended_sdo.pdf"), eq(MEDIA_TYPE));
         assertThat(documentBinaries.getValue()).isEqualTo(STAMPED_BINARIES);
-        verify(coreCaseDataService).triggerEvent(eq(caseData.getId()), eq("internal-change-manage-order"),
-            updateData.capture());
+        verify(concurrencyHelper).startEvent(eq(caseData.getId()), eq(INTERNAL_CHANGE_MANAGE_ORDER));
+        verify(concurrencyHelper).submitEvent(any(), eq(caseData.getId()), updateData.capture());
 
         Map<String, Object> updates = asCaseDetails(caseData).getData();
         updates.putAll(updateData.getValue());
@@ -162,12 +185,18 @@ class ManageOrdersAmendedSubmittedControllerTest extends AbstractCallbackTest {
     @Test
     void shouldAmendUHO() {
         CaseData caseData = buildCaseData(UHO_ID, UHO_DOCUMENT);
+        when(concurrencyHelper.startEvent(any(), any())).thenReturn(StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(INTERNAL_CHANGE_MANAGE_ORDER)
+            .token("token")
+            .build());
+
         postSubmittedEvent(caseData);
 
         verify(uploadService).uploadDocument(documentBinaries.capture(), eq("amended_uho.pdf"), eq(MEDIA_TYPE));
         assertThat(documentBinaries.getValue()).isEqualTo(STAMPED_BINARIES);
-        verify(coreCaseDataService).triggerEvent(eq(caseData.getId()), eq("internal-change-manage-order"),
-            updateData.capture());
+        verify(concurrencyHelper).startEvent(eq(caseData.getId()), eq(INTERNAL_CHANGE_MANAGE_ORDER));
+        verify(concurrencyHelper).submitEvent(any(), eq(caseData.getId()), updateData.capture());
 
         Map<String, Object> updates = asCaseDetails(caseData).getData();
         updates.putAll(updateData.getValue());

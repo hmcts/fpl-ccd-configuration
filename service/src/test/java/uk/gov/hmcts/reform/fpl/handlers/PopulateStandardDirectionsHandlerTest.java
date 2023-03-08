@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.util.HashMap;
@@ -86,9 +87,6 @@ class PopulateStandardDirectionsHandlerTest {
 
     @Test
     void shouldTriggerEventWithCorrectData() {
-        given(coreCaseDataService.startEvent(CASE_ID, CASE_EVENT))
-            .willReturn(StartEventResponse.builder().caseDetails(callbackWithHearing().getCaseDetails()).build());
-
         handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackWithHearing()));
 
         verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID), eq(CASE_EVENT), any());
@@ -96,9 +94,6 @@ class PopulateStandardDirectionsHandlerTest {
 
     @Test
     void shouldCallStandardDirectionsServiceWithNullIfNoFirstHearing() {
-        given(coreCaseDataService.startEvent(CASE_ID, CASE_EVENT))
-            .willReturn(StartEventResponse.builder().caseDetails(callbackWithoutHearing().getCaseDetails()).build());
-
         handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackWithoutHearing()));
 
         verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID), eq(CASE_EVENT), any());

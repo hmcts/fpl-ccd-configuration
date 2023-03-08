@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderOperationPostPopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderPostSubmitHelper;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrdersEventBuilder;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderProcessingService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderShowHideQuestionsCalculator;
@@ -50,6 +51,7 @@ public class ManageOrdersController extends CallbackController {
     private final AmendableOrderListBuilder amendableOrderListBuilder;
     private final CoreCaseDataService coreCaseDataService;
     private final ManageOrdersEventBuilder eventBuilder;
+    private final ManageOrderPostSubmitHelper postSubmitHelper;
     private static final String PDF = "pdf";
 
     @PostMapping("/about-to-start")
@@ -144,20 +146,7 @@ public class ManageOrdersController extends CallbackController {
 
         // Start event with concurrency controls
         CaseDetails caseDetails = coreCaseDataService.performPostSubmitCallback(oldCaseDetails.getId(),
-            "internal-change-manage-order",
-            details -> {
-                CaseDetails updatedDetails = manageOrdersCaseDataFixer.fixAndRetriveCaseDetails(details);
-                CaseData fixedCaseData = manageOrdersCaseDataFixer.fix(getCaseData(updatedDetails));
-
-                Map<String, Object> caseDataUpdates = new HashMap<>();
-                try {
-                    caseDataUpdates = orderProcessing.postProcessDocument(fixedCaseData);
-                } catch (Exception exception) {
-                    log.error("Error while processing manage orders document for case id {}.",
-                        updatedDetails.getId(), exception);
-                }
-                return caseDataUpdates;
-            });
+            "internal-change-manage-order", postSubmitHelper::getPostSubmitUpdates);
 
         if (isEmpty(caseDetails)) {
             // if our callback has failed 3 times, all we have is the prior caseData to send notifications based on
