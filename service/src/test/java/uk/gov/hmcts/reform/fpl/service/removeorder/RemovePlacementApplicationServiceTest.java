@@ -129,7 +129,7 @@ class RemovePlacementApplicationServiceTest {
                 "removedPlacements", List.of(element(PLACEMENT_TO_BE_REMOVED.getId(),
                     RemovedPlacement.builder()
                         .removalReason("remove reason")
-                        .removedPlacement(PLACEMENT_TO_BE_REMOVED.getValue())
+                        .placement(PLACEMENT_TO_BE_REMOVED.getValue())
                         .build()))
             )));
     }
@@ -164,7 +164,7 @@ class RemovePlacementApplicationServiceTest {
                 "removedPlacements", List.of(element(PLACEMENT_TO_BE_REMOVED.getId(),
                     RemovedPlacement.builder()
                         .removalReason("remove reason")
-                        .removedPlacement(PLACEMENT_TO_BE_REMOVED.getValue())
+                        .placement(PLACEMENT_TO_BE_REMOVED.getValue())
                         .build()))
             )));
     }

@@ -522,8 +522,6 @@ class ElementUtilsTest {
         }
     }
 
-
-
     @Nested
     class RemoveElement {
 
@@ -552,6 +550,17 @@ class ElementUtilsTest {
 
             assertThat(ElementUtils.removeElementWithUUID(elements, UUID.randomUUID()))
                 .containsOnly(element1, element2, element3);
+        }
+
+        @Test
+        void shouldRemoveElementIfOnlyOneElementExist() {
+            UUID id = UUID.randomUUID();
+
+            Element<String> elementToBeRemoved = element(id, "element to be removed");
+
+            List<Element<String>> elements = List.of(elementToBeRemoved);
+
+            assertThat(ElementUtils.removeElementWithUUID(elements, id)).isEmpty();
         }
     }
 }

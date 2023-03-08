@@ -85,10 +85,10 @@ public class RemovePlacementApplicationService {
         Element<Placement> placementToBeRemoved = getSelectedPlacement(removedPlacementId, placements);
 
         List<Element<RemovedPlacement>> removedPlacements = caseData.getRemovalToolData().getRemovedPlacements();
-        removedPlacements.add(element(placementToBeRemoved.getId(),
+        removedPlacements.add(element(removedPlacementId,
             RemovedPlacement.builder()
                 .removalReason(caseData.getRemovalToolData().getReasonToRemovePlacementApplication())
-                .removedPlacement(placementToBeRemoved.getValue())
+                .placement(placementToBeRemoved.getValue())
                 .build()));
         caseDetailsMap.put("removedPlacements", removedPlacements);
     }

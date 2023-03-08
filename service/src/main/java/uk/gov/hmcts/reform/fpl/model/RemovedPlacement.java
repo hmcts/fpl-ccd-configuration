@@ -9,5 +9,5 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class RemovedPlacement {
     String removalReason;
-    Placement removedPlacement;
+    Placement placement;
 }
