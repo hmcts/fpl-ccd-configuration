@@ -3,12 +3,18 @@ package uk.gov.hmcts.reform.fpl.controllers.listgatekeepinghearing;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
+import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
+import uk.gov.hmcts.reform.fpl.controllers.ListGatekeepingHearingController;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
@@ -35,11 +41,12 @@ import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
-import static java.util.Map.entry;
-import static java.util.Map.ofEntries;
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -51,17 +58,21 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DATE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.ATTEND_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.CUSTOM;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.SecureDocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 
-class ListGatekeepingHearingControllerAboutToSubmitTest extends ListGatekeepingHearingControllerTest {
+@OverrideAutoConfiguration(enabled = true)
+@WebMvcTest(ListGatekeepingHearingController.class)
+class ListGatekeepingHearingControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     private static final Document SDO_DOCUMENT = testDocument();
     private static final Document C6_DOCUMENT = testDocument();
@@ -98,7 +109,7 @@ class ListGatekeepingHearingControllerAboutToSubmitTest extends ListGatekeepingH
         final String caseLanguageRequirement,
         final LanguageTranslationRequirement expectedTranslationRequirements) {
 
-        mockDocuments();
+        mockDocumentGenerationAndUpload();
 
         final Allocation allocationDecision = createAllocation("Lay justices", "Reason");
         final CustomDirection customDirection =
@@ -121,48 +132,43 @@ class ListGatekeepingHearingControllerAboutToSubmitTest extends ListGatekeepingH
                 .daysBeforeHearing(0)
                 .build();
 
-        final HearingBooking hearingBooking = HearingBooking.builder()
-            .startDate(LocalDateTime.now())
-            .endDate(LocalDateTime.now().plusDays(1))
-            .venue("Venue").build();
-
         final GatekeepingOrderSealDecision gatekeepingOrderSealDecision = GatekeepingOrderSealDecision.builder()
             .orderStatus(SEALED)
             .dateOfIssue(time.now().toLocalDate())
             .draftDocument(SDO_REFERENCE)
             .build();
 
-        final HearingBooking newHearing = testHearing(now().plusDays(2));
+        final HearingBooking newHearing = createHearing(now().plusDays(2));
+
+        final Map<String, Object> caseDataMap = new HashMap<>();
+        caseDataMap.put("children1", createPopulatedChildren(now().toLocalDate()));
+        caseDataMap.put("sendNoticeOfHearing", "Yes");
+        caseDataMap.put("hearingType", newHearing.getType());
+        caseDataMap.put("hearingVenue", newHearing.getVenue());
+        caseDataMap.put("hearingVenueCustom", newHearing.getVenueCustomAddress());
+        caseDataMap.put("hearingStartDate", newHearing.getStartDate());
+        caseDataMap.put("hearingEndDate", newHearing.getEndDate());
+        caseDataMap.put("hearingAttendance", newHearing.getAttendance());
+        caseDataMap.put("judgeAndLegalAdvisor", newHearing.getJudgeAndLegalAdvisor());
+        caseDataMap.put("noticeOfHearingNotes", null);
+        caseDataMap.put("languageRequirement", caseLanguageRequirement);
+        caseDataMap.put("gatekeepingOrderRouter", SERVICE);
+        caseDataMap.put("caseLocalAuthority", LOCAL_AUTHORITY_1_CODE);
+        caseDataMap.put("dateSubmitted", dateNow());
+        caseDataMap.put("applicants", getApplicant());
+        caseDataMap.put("orders", Orders.builder().orderType(List.of(CARE_ORDER)).build());
+        caseDataMap.put("gatekeepingOrderIssuingJudge", JudgeAndLegalAdvisor.builder().build());
+        caseDataMap.put("gatekeepingOrderSealDecision", gatekeepingOrderSealDecision);
+        caseDataMap.put("gatekeepingTranslationRequirements", expectedTranslationRequirements);
+        caseDataMap.put("directionsForAllParties", List.of(ATTEND_HEARING));
+        caseDataMap.put("direction-ATTEND_HEARING", standardDirection);
+        caseDataMap.put("allocationDecision", allocationDecision);
+        caseDataMap.put("customDirections", wrapElements(customDirection));
 
         final CaseDetails caseData = CaseDetails.builder()
             .id(1234123412341234L)
             .state(GATEKEEPING.getLabel())
-            .data(ofEntries(
-                entry("hearingType", newHearing.getType()),
-                entry("hearingVenue", newHearing.getVenue()),
-                entry("hearingVenueCustom", newHearing.getVenueCustomAddress()),
-                entry("hearingStartDate", newHearing.getStartDate()),
-                entry("hearingEndDate", newHearing.getEndDate()),
-                entry("hearingAttendance", newHearing.getAttendance()),
-                entry("judgeAndLegalAdvisor", newHearing.getJudgeAndLegalAdvisor()),
-                entry("noticeOfHearingNotes", ""),
-                entry("sendNoticeOfHearing", "Yes"),
-                entry("children1", createPopulatedChildren(now().toLocalDate())),
-
-                entry("languageRequirement", caseLanguageRequirement),
-                entry("gatekeepingOrderRouter", SERVICE),
-                entry("caseLocalAuthority", LOCAL_AUTHORITY_1_CODE),
-                entry("dateSubmitted", dateNow()),
-                entry("applicants", getApplicant()),
-                entry("hearingDetails", wrapElements(hearingBooking)),
-                entry("orders", Orders.builder().orderType(List.of(CARE_ORDER)).build()),
-                entry("gatekeepingOrderIssuingJudge", JudgeAndLegalAdvisor.builder().build()),
-                entry("gatekeepingOrderSealDecision", gatekeepingOrderSealDecision),
-                entry("gatekeepingTranslationRequirements", expectedTranslationRequirements),
-                entry("directionsForAllParties", List.of(ATTEND_HEARING)),
-                entry("direction-ATTEND_HEARING", standardDirection),
-                entry("allocationDecision", allocationDecision),
-                entry("customDirections", wrapElements(customDirection))))
+            .data(caseDataMap)
             .build();
 
         final StandardDirectionOrder expectedSDO = StandardDirectionOrder.builder()
@@ -188,21 +194,17 @@ class ListGatekeepingHearingControllerAboutToSubmitTest extends ListGatekeepingH
         assertThat(response.getData()).doesNotContainKeys("customDirections",
             "standardDirections", "gatekeepingOrderIssuingJudge");
 
-        //TODO: Add hearing assertions
+        final HearingBooking hearingAfterCallback = newHearing.toBuilder().noticeOfHearing(
+            DocumentReference.buildFromDocument(document())).build();
 
-        //assertThat(updatedCaseData.getHearingDetails()).extracting(Element::getValue).containsExactly(newHearing);
-        //assertThat(updatedCaseData.getFirstHearingFlag()).isNull();
-        //assertThat(updatedCaseData.getSelectedHearingId())
-        //    .isIn(findElementsId(newHearing, updatedCaseData.getHearingDetails()));
-        //final HearingBooking hearingAfterCallback = newHearing.toBuilder().noticeOfHearing(
-        //    DocumentReference.buildFromDocument(document())).build();
-
-        //assertThat(responseData.getHearingDetails()).extracting(Element::getValue)
-        //    .containsExactly(hearingAfterCallback);
-        //assertThat(responseData.getFirstHearingFlag()).isNull();
+        assertThat(responseData.getHearingDetails()).extracting(Element::getValue)
+            .containsExactly(hearingAfterCallback);
+        assertThat(responseData.getFirstHearingFlag()).isNull();
+        assertThat(responseData.getSelectedHearingId())
+            .isEqualTo(responseData.getHearingDetails().get(0).getId());
     }
 
-    private void mockDocuments() {
+    private void mockDocumentGenerationAndUpload() {
 
         final byte[] sdoBinaries = testDocumentBinaries();
         final byte[] c6Binaries = testDocumentBinaries();
@@ -236,10 +238,28 @@ class ListGatekeepingHearingControllerAboutToSubmitTest extends ListGatekeepingH
     }
 
     private Allocation createAllocation(String proposal, String judgeLevelRadio) {
-        Allocation allocationDecision = Allocation.builder()
+        return Allocation.builder()
             .proposal(proposal)
             .judgeLevelRadio(judgeLevelRadio)
             .build();
-        return allocationDecision;
+    }
+
+    private HearingBooking createHearing(final LocalDateTime startDate) {
+        return HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(startDate)
+            .endDate(startDate.plusDays(1))
+            .endDateDerived("No")
+            .hearingJudgeLabel("Her Honour Judge Judy")
+            .legalAdvisorLabel("")
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
+                .judgeLastName("Judy")
+                .build())
+            .others(emptyList())
+            .venueCustomAddress(Address.builder().build())
+            .attendance(List.of(IN_PERSON))
+            .othersNotified("")
+            .build();
     }
 }
