@@ -38,7 +38,19 @@
     "ListElementCode": "documentAcknowledgeLabel",
     "FieldDisplayOrder": 4,
     "DisplayContext": "READONLY",
-    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>",
+    "FieldShowCondition": "documentAcknowledge!=\"ACK_RELATED_TO_CASE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "ListElementCode": "documentAcknowledgeLabelForCYA",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to this case</strong></div><br>",
+    "FieldShowCondition": "documentAcknowledge=\"ACK_RELATED_TO_CASE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -48,7 +60,7 @@
     "ListElementCode": "documentAcknowledge",
     "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
+    "EventElementLabel": "Tick to confirm this document is related to this case"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -117,7 +129,19 @@
     "ListElementCode": "supplementsBundle.documentAcknowledgeLabel",
     "FieldDisplayOrder": "12",
     "DisplayContext": "READONLY",
-    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>",
+    "FieldShowCondition": "documentAcknowledge!=\"ACK_RELATED_TO_CASE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "ListElementCode": "supplementsBundle.documentAcknowledgeLabelForCYA",
+    "FieldDisplayOrder": "12",
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to this case</strong></div><br>",
+    "FieldShowCondition": "documentAcknowledge=\"ACK_RELATED_TO_CASE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -127,7 +151,7 @@
     "ListElementCode": "supplementsBundle.documentAcknowledge",
     "FieldDisplayOrder": "13",
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
+    "EventElementLabel": "Tick to confirm this document is related to this case"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -185,7 +209,19 @@
     "ListElementCode": "supportingEvidenceBundle.documentAcknowledgeLabel",
     "FieldDisplayOrder": "18",
     "DisplayContext": "READONLY",
-    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>",
+    "FieldShowCondition": "documentAcknowledge!=\"ACK_RELATED_TO_CASE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "ListElementCode": "supportingEvidenceBundle.documentAcknowledgeLabelForCYA",
+    "FieldDisplayOrder": "18",
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to this case</strong></div><br>",
+    "FieldShowCondition": "documentAcknowledge=\"ACK_RELATED_TO_CASE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -195,6 +231,6 @@
     "ListElementCode": "supportingEvidenceBundle.documentAcknowledge",
     "FieldDisplayOrder": "19",
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
+    "EventElementLabel": "Tick to confirm this document is related to this case"
   }
 ]
