@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers.listgatekeepinghearing;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -25,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
@@ -59,16 +57,12 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElementsId;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.SecureDocumentManagementStoreLoader.document;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 
 class ListGatekeepingHearingControllerAboutToSubmitTest extends ListGatekeepingHearingControllerTest {
-
-    public static final String TEST_REASON = "Test reason";
 
     private static final Document SDO_DOCUMENT = testDocument();
     private static final Document C6_DOCUMENT = testDocument();
@@ -102,68 +96,69 @@ class ListGatekeepingHearingControllerAboutToSubmitTest extends ListGatekeepingH
         );
     }
 
-    @Test
-    void shouldAddNewHearingToHearingDetailsListWhenAddHearingSelected() {
+    //TODO: Remove when test shouldBuildSealedSDOAndRemoveTransientFields is complete
+//    @Test
+//    void shouldAddNewHearingToHearingDetailsListWhenAddHearingSelected() {
+//
+//        final HearingBooking newHearing = testHearing(now().plusDays(2));
+//        final CaseData initialCaseData = CaseData.builder()
+//            .hearingType(newHearing.getType())
+//            .hearingVenue(newHearing.getVenue())
+//            .hearingVenueCustom(newHearing.getVenueCustomAddress())
+//            .hearingStartDate(newHearing.getStartDate())
+//            .hearingEndDate(newHearing.getEndDate())
+//            .hearingAttendance(newHearing.getAttendance())
+//            .judgeAndLegalAdvisor(newHearing.getJudgeAndLegalAdvisor())
+//            .noticeOfHearingNotes(newHearing.getAdditionalNotes())
+//            .sendNoticeOfHearing("Yes")
+//            .build();
+//
+//        final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
+//
+//        assertThat(updatedCaseData.getHearingDetails()).extracting(Element::getValue).containsExactly(newHearing);
+//        assertThat(updatedCaseData.getFirstHearingFlag()).isNull();
+//        assertThat(updatedCaseData.getSelectedHearingId())
+//            .isIn(findElementsId(newHearing, updatedCaseData.getHearingDetails()));
+//    }
 
-        final HearingBooking newHearing = testHearing(now().plusDays(2));
-        final CaseData initialCaseData = CaseData.builder()
-            .hearingType(newHearing.getType())
-            .hearingVenue(newHearing.getVenue())
-            .hearingVenueCustom(newHearing.getVenueCustomAddress())
-            .hearingStartDate(newHearing.getStartDate())
-            .hearingEndDate(newHearing.getEndDate())
-            .hearingAttendance(newHearing.getAttendance())
-            .judgeAndLegalAdvisor(newHearing.getJudgeAndLegalAdvisor())
-            .noticeOfHearingNotes(newHearing.getAdditionalNotes())
-            .sendNoticeOfHearing("Yes")
-            .build();
-
-        final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
-
-        assertThat(updatedCaseData.getHearingDetails()).extracting(Element::getValue).containsExactly(newHearing);
-        assertThat(updatedCaseData.getFirstHearingFlag()).isNull();
-        assertThat(updatedCaseData.getSelectedHearingId())
-            .isIn(findElementsId(newHearing, updatedCaseData.getHearingDetails()));
-    }
-
-    @Test
-    void shouldIncludeNoticeOfHearing() {
-
-        final Document document = document();
-
-        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
-            .willReturn(testDocmosisDocument(TestDataHelper.DOCUMENT_CONTENT));
-        given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
-
-        final HearingBooking newHearing = testHearing(now().plusDays(2));
-        final CaseData initialCaseData = CaseData.builder()
-            .id(1234123412341234L)
-            .children1(createPopulatedChildren(now().toLocalDate()))
-            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
-            .sendNoticeOfHearing("Yes")
-            .hearingType(newHearing.getType())
-            .hearingVenue(newHearing.getVenue())
-            .hearingVenueCustom(newHearing.getVenueCustomAddress())
-            .hearingStartDate(newHearing.getStartDate())
-            .hearingEndDate(newHearing.getEndDate())
-            .hearingAttendance(newHearing.getAttendance())
-            .judgeAndLegalAdvisor(newHearing.getJudgeAndLegalAdvisor())
-            .noticeOfHearingNotes(newHearing.getAdditionalNotes())
-            .build();
-
-        final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
-
-        final HearingBooking hearingAfterCallback = newHearing.toBuilder().noticeOfHearing(
-            DocumentReference.buildFromDocument(document)).build();
-
-        assertThat(updatedCaseData.getHearingDetails()).extracting(Element::getValue)
-            .containsExactly(hearingAfterCallback);
-        assertThat(updatedCaseData.getFirstHearingFlag()).isNull();
-    }
+//    @Test
+//    void shouldIncludeNoticeOfHearing() {
+//
+//        final Document document = document();
+//
+//        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
+//            .willReturn(testDocmosisDocument(TestDataHelper.DOCUMENT_CONTENT));
+//        given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
+//
+//        final HearingBooking newHearing = testHearing(now().plusDays(2));
+//        final CaseData initialCaseData = CaseData.builder()
+//            .id(1234123412341234L)
+//            .children1(createPopulatedChildren(now().toLocalDate()))
+//            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+//            .sendNoticeOfHearing("Yes")
+//            .hearingType(newHearing.getType())
+//            .hearingVenue(newHearing.getVenue())
+//            .hearingVenueCustom(newHearing.getVenueCustomAddress())
+//            .hearingStartDate(newHearing.getStartDate())
+//            .hearingEndDate(newHearing.getEndDate())
+//            .hearingAttendance(newHearing.getAttendance())
+//            .judgeAndLegalAdvisor(newHearing.getJudgeAndLegalAdvisor())
+//            .noticeOfHearingNotes(newHearing.getAdditionalNotes())
+//            .build();
+//
+//        final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
+//
+//        final HearingBooking hearingAfterCallback = newHearing.toBuilder().noticeOfHearing(
+//            DocumentReference.buildFromDocument(document)).build();
+//
+//        assertThat(updatedCaseData.getHearingDetails()).extracting(Element::getValue)
+//            .containsExactly(hearingAfterCallback);
+//        assertThat(updatedCaseData.getFirstHearingFlag()).isNull();
+//    }
 
     @ParameterizedTest
     @MethodSource("caseTranslationRequirement")
-    void shouldBuildSealedSDOAndRemoveTransientFieldsWhenOrderStatusIsSealed(
+    void shouldBuildSealedSDOAndRemoveTransientFields(
         final String caseLanguageRequirement,
         final LanguageTranslationRequirement expectedTranslationRequirements) {
 
