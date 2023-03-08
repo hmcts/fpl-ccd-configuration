@@ -27,7 +27,6 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -81,9 +80,6 @@ class ListGatekeepingHearingControllerAboutToSubmitTest extends ListGatekeepingH
     @MockBean
     private UploadDocumentService uploadDocumentService;
 
-    @MockBean
-    private DocumentSealingService sealingService;
-
     ListGatekeepingHearingControllerAboutToSubmitTest() {
         super("list-gatekeeping-hearing");
     }
@@ -95,66 +91,6 @@ class ListGatekeepingHearingControllerAboutToSubmitTest extends ListGatekeepingH
             Arguments.of("", LanguageTranslationRequirement.NO)
         );
     }
-
-    //TODO: Remove when test shouldBuildSealedSDOAndRemoveTransientFields is complete
-//    @Test
-//    void shouldAddNewHearingToHearingDetailsListWhenAddHearingSelected() {
-//
-//        final HearingBooking newHearing = testHearing(now().plusDays(2));
-//        final CaseData initialCaseData = CaseData.builder()
-//            .hearingType(newHearing.getType())
-//            .hearingVenue(newHearing.getVenue())
-//            .hearingVenueCustom(newHearing.getVenueCustomAddress())
-//            .hearingStartDate(newHearing.getStartDate())
-//            .hearingEndDate(newHearing.getEndDate())
-//            .hearingAttendance(newHearing.getAttendance())
-//            .judgeAndLegalAdvisor(newHearing.getJudgeAndLegalAdvisor())
-//            .noticeOfHearingNotes(newHearing.getAdditionalNotes())
-//            .sendNoticeOfHearing("Yes")
-//            .build();
-//
-//        final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
-//
-//        assertThat(updatedCaseData.getHearingDetails()).extracting(Element::getValue).containsExactly(newHearing);
-//        assertThat(updatedCaseData.getFirstHearingFlag()).isNull();
-//        assertThat(updatedCaseData.getSelectedHearingId())
-//            .isIn(findElementsId(newHearing, updatedCaseData.getHearingDetails()));
-//    }
-
-//    @Test
-//    void shouldIncludeNoticeOfHearing() {
-//
-//        final Document document = document();
-//
-//        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
-//            .willReturn(testDocmosisDocument(TestDataHelper.DOCUMENT_CONTENT));
-//        given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
-//
-//        final HearingBooking newHearing = testHearing(now().plusDays(2));
-//        final CaseData initialCaseData = CaseData.builder()
-//            .id(1234123412341234L)
-//            .children1(createPopulatedChildren(now().toLocalDate()))
-//            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
-//            .sendNoticeOfHearing("Yes")
-//            .hearingType(newHearing.getType())
-//            .hearingVenue(newHearing.getVenue())
-//            .hearingVenueCustom(newHearing.getVenueCustomAddress())
-//            .hearingStartDate(newHearing.getStartDate())
-//            .hearingEndDate(newHearing.getEndDate())
-//            .hearingAttendance(newHearing.getAttendance())
-//            .judgeAndLegalAdvisor(newHearing.getJudgeAndLegalAdvisor())
-//            .noticeOfHearingNotes(newHearing.getAdditionalNotes())
-//            .build();
-//
-//        final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
-//
-//        final HearingBooking hearingAfterCallback = newHearing.toBuilder().noticeOfHearing(
-//            DocumentReference.buildFromDocument(document)).build();
-//
-//        assertThat(updatedCaseData.getHearingDetails()).extracting(Element::getValue)
-//            .containsExactly(hearingAfterCallback);
-//        assertThat(updatedCaseData.getFirstHearingFlag()).isNull();
-//    }
 
     @ParameterizedTest
     @MethodSource("caseTranslationRequirement")
@@ -253,12 +189,17 @@ class ListGatekeepingHearingControllerAboutToSubmitTest extends ListGatekeepingH
             "standardDirections", "gatekeepingOrderIssuingJudge");
 
         //TODO: Add hearing assertions
-//        final HearingBooking hearingAfterCallback = newHearing.toBuilder().noticeOfHearing(
-//            DocumentReference.buildFromDocument(document())).build();
-//
-//        assertThat(responseData.getHearingDetails()).extracting(Element::getValue)
-//            .containsExactly(hearingAfterCallback);
-//        assertThat(responseData.getFirstHearingFlag()).isNull();
+
+        //assertThat(updatedCaseData.getHearingDetails()).extracting(Element::getValue).containsExactly(newHearing);
+        //assertThat(updatedCaseData.getFirstHearingFlag()).isNull();
+        //assertThat(updatedCaseData.getSelectedHearingId())
+        //    .isIn(findElementsId(newHearing, updatedCaseData.getHearingDetails()));
+        //final HearingBooking hearingAfterCallback = newHearing.toBuilder().noticeOfHearing(
+        //    DocumentReference.buildFromDocument(document())).build();
+
+        //assertThat(responseData.getHearingDetails()).extracting(Element::getValue)
+        //    .containsExactly(hearingAfterCallback);
+        //assertThat(responseData.getFirstHearingFlag()).isNull();
     }
 
     private void mockDocuments() {
@@ -273,7 +214,8 @@ class ListGatekeepingHearingControllerAboutToSubmitTest extends ListGatekeepingH
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisNoticeOfHearing.class), any()))
             .willReturn(new DocmosisDocument("filename.pdf", documentContent));
 
-        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisStandardDirectionOrder.class), any()))
+        given(docmosisDocumentGeneratorService
+            .generateDocmosisDocument(any(DocmosisStandardDirectionOrder.class), any()))
             .willReturn(new DocmosisDocument(sealedOrderFileName, sdoBinaries));
 
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisNoticeOfProceeding.class), any()))
