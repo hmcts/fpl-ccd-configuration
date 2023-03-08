@@ -15,6 +15,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
+import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
+import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
+import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
+import uk.gov.hmcts.reform.fpl.events.TemporaryHearingJudgeAllocationEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -30,23 +34,29 @@ import uk.gov.hmcts.reform.fpl.service.PastHearingDatesValidatorService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.hearing.ManageHearingsOthersGenerator;
+import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderEventNotificationDecider;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
-import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
-import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_NOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.DEFAULT_PRE_ATTENDANCE;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PREVIOUS_HEARING_VENUE_KEY;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingListingState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -77,6 +87,8 @@ public class ListGatekeepingHearingController extends CallbackController {
     private final ManageHearingsOthersGenerator othersGenerator;
     private final GatekeepingOrderService orderService;
     private final NoticeOfProceedingsService nopService;
+    private final CoreCaseDataService coreCaseDataService;
+    private final GatekeepingOrderEventNotificationDecider notificationDecider;
 
     private final CaseConverter converter;
 
@@ -142,6 +154,58 @@ public class ListGatekeepingHearingController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
+
+        CaseData caseData = getCaseData(callbackRequest);
+        publishEvent(new AfterSubmissionCaseDataUpdated(getCaseData(callbackRequest),
+            getCaseDataBefore(callbackRequest)));
+        if (isNotEmpty(caseData.getSelectedHearingId())) {
+            if (isInGatekeepingListingState(callbackRequest.getCaseDetails())
+                && standardDirectionsService.hasEmptyDates(caseData)) {
+                publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
+            }
+            hearingsService.findHearingBooking(caseData.getSelectedHearingId(), caseData.getHearingDetails())
+                .ifPresent(hearingBooking -> {
+                    if (isNotEmpty(hearingBooking.getNoticeOfHearing())) {
+                        publishEvent(new SendNoticeOfHearing(caseData, hearingBooking));
+                    }
+                    if (isNewOrReListedHearing(caseData) && isTemporaryHearingJudge(hearingBooking)) {
+                        publishEvent(new TemporaryHearingJudgeAllocationEvent(caseData, hearingBooking));
+                    }
+                });
+        }
+
+        final CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        final Map<String, Object> data = caseDetails.getData();
+
+        Map<String, Object> updates = new HashMap<>();
+
+        updates.put("standardDirectionOrder", orderService.sealDocumentAfterEventSubmitted(caseData));
+
+        final CaseData caseDataAfterSealing;
+        if (updates.isEmpty()) {
+            caseDataAfterSealing = caseData;
+        } else {
+            data.putAll(updates);
+            caseDataAfterSealing = getCaseData(caseDetails);
+        }
+
+        coreCaseDataService.triggerEvent(caseDataAfterSealing.getId(),
+            "internal-change-add-gatekeeping",
+            updates);
+
+        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
+
+        notificationDecider.buildEventToPublish(caseDataAfterSealing, caseDataBefore.getState())
+            .ifPresent(eventToPublish -> {
+                coreCaseDataService.triggerEvent(
+                    JURISDICTION,
+                    CASE_TYPE,
+                    caseDataAfterSealing.getId(),
+                    "internal-change-SEND_DOCUMENT",
+                    Map.of("documentToBeSent", eventToPublish.getOrder()));
+
+                publishEvent(eventToPublish);
+            });
     }
 
     @PostMapping("allocated-judge/mid-event")
@@ -278,5 +342,14 @@ public class ListGatekeepingHearingController extends CallbackController {
         var eventDataMap = converter.toMap(eventData);
         eventDataMap.putAll(caseData);
         return converter.convert(eventDataMap, CaseData.class);
+    }
+
+    private boolean isNewOrReListedHearing(CaseData caseData) {
+        return caseData.getHearingOption() == null
+            || NEW_HEARING.equals(caseData.getHearingOption()) || RE_LIST_NOW.equals(caseData.getHearingReListOption());
+    }
+
+    private boolean isTemporaryHearingJudge(HearingBooking hearingBooking) {
+        return (hearingBooking.getHearingJudgeLabel() != null);
     }
 }

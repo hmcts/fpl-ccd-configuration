@@ -24,7 +24,6 @@ public class GatekeepingOrderEventNotificationDecider {
             caseData.getStandardDirectionOrder(), StandardDirectionOrder.builder().build()
         );
         UrgentHearingOrder urgentHearingOrder = caseData.getUrgentHearingOrder();
-
         if (sdo.isDraft() && (null == urgentHearingOrder || !isInGatekeeping(previousState))) {
             return Optional.empty();
         }
