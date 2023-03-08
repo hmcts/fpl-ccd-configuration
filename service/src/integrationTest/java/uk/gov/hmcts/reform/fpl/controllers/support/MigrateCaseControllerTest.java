@@ -49,4 +49,106 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         caseDetails.getData().put("migrationId", migrationId);
         return caseDetails;
     }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl1238 {
+
+        private final String migrationId = "DFPL-1238";
+        private final long validCaseId = 1635423187428763L;
+
+        @Test
+        void shouldRemoveAllPlacementCollections() {
+            List<Element<Placement>> placements = List.of(
+                element(Placement.builder()
+                    .application(testDocumentReference())
+                    .build()),
+                element(Placement.builder()
+                    .application(testDocumentReference())
+                    .build())
+            );
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .placementEventData(PlacementEventData.builder()
+                    .placements(placements)
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getPlacementEventData().getPlacements()).isEmpty();
+            assertThat(response.getData()).extracting("placementsNonConfidential", "placementsNonConfidentialNotices")
+                .containsExactly(null, null);
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl1241 {
+
+        private final String migrationId = "DFPL-1241";
+        private final long validCaseId = 1652968793683878L;
+
+        @Test
+        void shouldRemoveAllPlacementCollections() {
+            List<Element<Placement>> placements = List.of(
+                element(Placement.builder()
+                    .application(testDocumentReference())
+                    .build()),
+                element(Placement.builder()
+                    .application(testDocumentReference())
+                    .build())
+            );
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .placementEventData(PlacementEventData.builder()
+                    .placements(placements)
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getPlacementEventData().getPlacements()).isEmpty();
+            assertThat(response.getData()).extracting("placementsNonConfidential", "placementsNonConfidentialNotices")
+                .containsExactly(null, null);
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl1244 {
+
+        private final String migrationId = "DFPL-1244";
+        private final long validCaseId = 1644912253936021L;
+
+        @Test
+        void shouldRemoveAllPlacementCollections() {
+            List<Element<Placement>> placements = List.of(
+                element(Placement.builder()
+                    .application(testDocumentReference())
+                    .build()),
+                element(Placement.builder()
+                    .application(testDocumentReference())
+                    .build())
+            );
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .placementEventData(PlacementEventData.builder()
+                    .placements(placements)
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getPlacementEventData().getPlacements()).isEmpty();
+            assertThat(response.getData()).extracting("placementsNonConfidential", "placementsNonConfidentialNotices")
+                .containsExactly(null, null);
+        }
+    }
 }
