@@ -47,6 +47,15 @@ public class UpdateSummaryCaseDetails implements Job {
     private final FeatureToggleService toggleService;
     private final CaseSummaryService summaryService;
 
+    public Map<String, Object> getUpdates(CaseDetails caseDetails) {
+        CaseData caseData = converter.convert(caseDetails);
+        Map<String, Object> updatedData = summaryService.generateSummaryFields(caseData);
+        if (shouldUpdate(updatedData, caseData)) {
+            return updatedData;
+        }
+        return Map.of();
+    }
+
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
         final String jobName = jobExecutionContext.getJobDetail().getKey().getName();
@@ -80,18 +89,11 @@ public class UpdateSummaryCaseDetails implements Job {
                 for (CaseDetails caseDetails : cases) {
                     final Long caseId = caseDetails.getId();
                     try {
+                        log.debug("Job '{}' updating case {}", jobName, caseId);
                         ccdService.performPostSubmitCallback(
                             caseId,
                             EVENT_NAME,
-                            caseDetails1 -> {
-                                CaseData caseData = converter.convert(caseDetails1);
-                                Map<String, Object> updatedData = summaryService.generateSummaryFields(caseData);
-                                if (shouldUpdate(updatedData, caseData)) {
-                                    log.debug("Job '{}' updating case {}", jobName, caseId);
-                                    return updatedData;
-                                }
-                                return Map.of();
-                            }
+                            this::getUpdates
                         );
                     } catch (Exception e) {
                         log.error("Job '{}' could not update case {} due to {}", jobName, caseId, e.getMessage(), e);
@@ -153,8 +155,8 @@ public class UpdateSummaryCaseDetails implements Job {
         double percentFailed = failed * 100.0 / total;
 
         return String.format("total cases: %1$d, "
-                + "updated cases: %2$d/%1$d (%5$.0f%%), "
-                + "failed cases: %4$d/%1$d (%7$.0f%%)",
+                + "updated cases: %2$d/%1$d (%4$.0f%%), "
+                + "failed cases: %3$d/%1$d (%5$.0f%%)",
             total, updated, failed, percentUpdated, percentFailed
         );
     }

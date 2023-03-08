@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
@@ -281,11 +282,12 @@ public class PlacementEventsHandler {
     }
 
     private void updateCase(CaseData caseData) {
-        coreCaseDataService.performPostSubmitCallbackUpdateCase(caseData.getId(),
-            caseDetails -> {
-                final Map<String, Object> updates = Map.of("placementLastPaymentTime", time.now());
-                return nullifyTemporaryFields(updates, PlacementEventData.class);
-            });
+        coreCaseDataService.performPostSubmitCallbackUpdateCase(caseData.getId(), this::getUpdates);
+    }
+
+    public Map<String, Object> getUpdates(CaseDetails caseDetails) {
+        final Map<String, Object> updates = Map.of("placementLastPaymentTime", time.now());
+        return nullifyTemporaryFields(updates, PlacementEventData.class);
     }
 
     private void handlePaymentNotTaken(CaseData caseData, OrderApplicant applicant) {

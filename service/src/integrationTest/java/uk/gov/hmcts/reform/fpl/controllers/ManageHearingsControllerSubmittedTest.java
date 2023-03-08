@@ -420,7 +420,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             eq(SERVICE_AUTH_TOKEN),
             printRequestCaptor.capture());
 
-        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(eq(sendToPartiesResp ),
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(eq(sendToPartiesResp),
             eq(CASE_ID), caseCaptor.capture());
 
         LetterWithPdfsRequest expectedPrintRequest1 = printRequest(CASE_ID, noticeOfHearing,

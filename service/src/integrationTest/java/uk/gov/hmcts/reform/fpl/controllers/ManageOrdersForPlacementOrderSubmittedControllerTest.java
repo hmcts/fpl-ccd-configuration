@@ -47,6 +47,7 @@ import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -196,7 +197,7 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
             eq(OrderCafcassData.builder().documentName(ORDER_DOCUMENT_REFERENCE.getFilename()).build()));
 
         verify(concurrencyHelper, times(2)).startEvent(any(), any());
-        verify(concurrencyHelper, times(2)).submitEvent(any(), any(), any());
+        verify(concurrencyHelper, times(1)).submitEvent(any(), any(), any()); // skip no updates
     }
 
     @Test
@@ -248,7 +249,7 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
             eq(OrderCafcassData.builder().documentName(ORDER_DOCUMENT_REFERENCE.getFilename()).build()));
 
         verify(concurrencyHelper, times(1)).startEvent(any(), any());
-        verify(concurrencyHelper, times(1)).submitEvent(any(), any(), any());
+        verify(concurrencyHelper, never()).submitEvent(any(), any(), any()); // skip as no updates
 
     }
 
@@ -323,7 +324,8 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
                                                         UUID secondLetterId,
                                                         Element<Respondent> firstParent,
                                                         Element<Respondent> secondParent) {
-        checkUntil(() -> verify(concurrencyHelper, times(2)).submitEvent(any(), eq(TEST_CASE_ID), caseDataDelta.capture()));
+        checkUntil(() -> verify(concurrencyHelper, times(1))
+            .submitEvent(any(), eq(TEST_CASE_ID), caseDataDelta.capture()));
         List<Element<SentDocuments>> documentsSent = mapper.convertValue(
             caseDataDelta.getValue().get("documentsSentToParties"), new TypeReference<>() {
             }

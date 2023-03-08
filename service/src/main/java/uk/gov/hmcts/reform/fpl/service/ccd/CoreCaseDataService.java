@@ -39,7 +39,6 @@ public class CoreCaseDataService {
         int retries = 0;
         while (retries < 3) {
             try {
-                log.info("Performing post submit callback {} on {}", eventName, caseId);
                 StartEventResponse startEventResponse = concurrencyHelper.startEvent(caseId, eventName);
                 CaseDetails caseDetails = startEventResponse.getCaseDetails();
                 // Work around immutable maps
@@ -48,8 +47,12 @@ public class CoreCaseDataService {
 
                 Map<String, Object> updates = changeFunction.apply(startEventResponse.getCaseDetails());
 
-                concurrencyHelper.submitEvent(startEventResponse, caseId, updates);
-
+                if (!updates.isEmpty()) {
+                    log.info("Submitting event {} on case {}", eventName, caseId);
+                    concurrencyHelper.submitEvent(startEventResponse, caseId, updates);
+                } else {
+                    log.info("No updates, skipping submit event");
+                }
                 caseDetails.getData().putAll(updates);
                 return caseDetails;
             } catch (Exception e) {

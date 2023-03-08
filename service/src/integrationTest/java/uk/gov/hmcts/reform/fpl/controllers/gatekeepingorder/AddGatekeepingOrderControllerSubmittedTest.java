@@ -164,7 +164,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
 
         verifyNoInteractions(sealingService);
         verify(eventService, never()).publishEvent(any());
-        verify(concurrencyHelper).submitEvent(any(), any(), any()); // we always hit internal-change
+        verify(concurrencyHelper, never()).submitEvent(any(), any(), any()); // we skip if no updates
     }
 
     @Test

@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.utils.extension.TestLogs;
 import uk.gov.hmcts.reform.fpl.utils.extension.TestLogsExtension;
 
 import java.util.List;
-import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -143,17 +142,13 @@ class SendDocumentServiceTest {
             when(sendLetters.send(any(), any(), any(), any(), eq(ENGLISH)))
                 .thenReturn(sentDocuments);
 
-            when(sentDocumentsService.addToHistory(caseData.getDocumentsSentToParties(), sentDocuments))
-                .thenReturn(sentDocumentsHistory);
-
             underTest.sendDocuments(caseData, List.of(document), List.of(recipient1, recipient2, recipient3));
 
             verify(sendLetters)
                 .send(document, List.of(recipient3), caseData.getId(), caseData.getFamilyManCaseNumber(),
                     ENGLISH);
 
-            verify(caseService)
-                .updateCase(caseData.getId(), Map.of("documentsSentToParties", sentDocumentsHistory));
+            verify(caseService).performPostSubmitCallbackUpdateCase(eq(caseData.getId()), any());
 
             assertThat(logs.getErrors())
                 .containsExactly("Case 100 has 2 recipients with incomplete postal information");
@@ -186,14 +181,6 @@ class SendDocumentServiceTest {
             when(sendLetters.send(eq(document2), any(), any(), any(), eq(ENGLISH)))
                 .thenReturn(List.of(sentDocument2ForRecipient1, sentDocument2ForRecipient2));
 
-            when(sentDocumentsService.addToHistory(caseData.getDocumentsSentToParties(),
-                List.of(
-                    sentDocument1ForRecipient1,
-                    sentDocument1ForRecipient2,
-                    sentDocument2ForRecipient1,
-                    sentDocument2ForRecipient2)))
-                .thenReturn(sentDocumentsHistory);
-
             underTest.sendDocuments(caseData, List.of(document1, document2), List.of(recipient1, recipient2));
 
             verify(sendLetters)
@@ -204,8 +191,7 @@ class SendDocumentServiceTest {
                 .send(document2, List.of(recipient1, recipient2), caseData.getId(), caseData.getFamilyManCaseNumber(),
                     ENGLISH);
 
-            verify(caseService)
-                .updateCase(caseData.getId(), Map.of("documentsSentToParties", sentDocumentsHistory));
+            verify(caseService).performPostSubmitCallbackUpdateCase(eq(caseData.getId()), any());
 
             assertThat(logs.getErrors()).isEmpty();
         }
@@ -237,14 +223,6 @@ class SendDocumentServiceTest {
             when(sendLetters.send(eq(document2), any(), any(), any(), eq(ENGLISH)))
                 .thenReturn(List.of(sentDocument2ForRecipient1, sentDocument2ForRecipient2));
 
-            when(sentDocumentsService.addToHistory(caseData.getDocumentsSentToParties(),
-                List.of(
-                    sentDocument1ForRecipient1,
-                    sentDocument1ForRecipient2,
-                    sentDocument2ForRecipient1,
-                    sentDocument2ForRecipient2)))
-                .thenReturn(sentDocumentsHistory);
-
             underTest.sendDocuments(
                 new SendDocumentRequest(
                     caseData, List.of(
@@ -266,8 +244,7 @@ class SendDocumentServiceTest {
                 .send(document2, List.of(recipient1, recipient2), caseData.getId(), caseData.getFamilyManCaseNumber(),
                     ENGLISH);
 
-            verify(caseService)
-                .updateCase(caseData.getId(), Map.of("documentsSentToParties", sentDocumentsHistory));
+            verify(caseService).performPostSubmitCallbackUpdateCase(eq(caseData.getId()), any());
 
             assertThat(logs.getErrors()).isEmpty();
         }
