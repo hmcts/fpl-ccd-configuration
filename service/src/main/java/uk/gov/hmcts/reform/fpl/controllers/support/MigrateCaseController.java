@@ -27,6 +27,9 @@ import java.util.function.Consumer;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
+    private static final String PLACEMENT = "placements";
+    private static final String PLACEMENT_NON_CONFIDENTIAL = "placementsNonConfidential";
+    private static final String PLACEMENT_NON_CONFIDENTIAL_NOTICES = "placementsNonConfidentialNotices";
 
     private final MigrateCaseService migrateCaseService;
 
@@ -36,6 +39,9 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1277", this::run1277,
         "DFPL-1290", this::run1290,
         "DFPL-1294", this::run1294,
+        "DFPL-1238", this::run1238,
+        "DFPL-1241", this::run1241,
+        "DFPL-1244", this::run1244,
         "DFPL-1270", this::run1270
     );
 
@@ -57,6 +63,39 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
+    }
+
+    private void run1238(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1238";
+        var possibleCaseIds = List.of(1635423187428763L);
+
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().remove(PLACEMENT);
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL);
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL_NOTICES);
+    }
+
+    private void run1241(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1241";
+        var possibleCaseIds = List.of(1652968793683878L);
+
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().remove(PLACEMENT);
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL);
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL_NOTICES);
+    }
+
+    private void run1244(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1244";
+        var possibleCaseIds = List.of(1644912253936021L);
+
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().remove(PLACEMENT);
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL);
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL_NOTICES);
     }
     
     private void run1262(CaseDetails caseDetails) {
