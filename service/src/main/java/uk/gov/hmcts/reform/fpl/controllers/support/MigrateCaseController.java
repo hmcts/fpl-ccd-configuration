@@ -27,6 +27,9 @@ import java.util.function.Consumer;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
+    private static final String PLACEMENT = "placements";
+    private static final String PLACEMENT_NON_CONFIDENTIAL = "placementsNonConfidential";
+    private static final String PLACEMENT_NON_CONFIDENTIAL_NOTICES = "placementsNonConfidentialNotices";
 
     private final MigrateCaseService migrateCaseService;
 
