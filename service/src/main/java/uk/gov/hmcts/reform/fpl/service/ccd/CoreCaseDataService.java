@@ -23,7 +23,6 @@ import static java.util.Collections.emptyMap;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 
-@Slf4j
 @Service
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -40,6 +39,7 @@ public class CoreCaseDataService {
         int retries = 0;
         while (retries < 3) {
             try {
+                log.info("Performing post submit callback {} on {}", eventName, caseId);
                 StartEventResponse startEventResponse = concurrencyHelper.startEvent(caseId, eventName);
                 CaseDetails caseDetails = startEventResponse.getCaseDetails();
                 // Work around immutable maps
@@ -76,7 +76,6 @@ public class CoreCaseDataService {
      */
     @Deprecated(since = "February 2023", forRemoval = false)
     public void updateCase(Long caseId, Map<String, Object> updates) {
-        //
         triggerEvent(caseId, "internal-change-UPDATE_CASE", updates);
     }
 

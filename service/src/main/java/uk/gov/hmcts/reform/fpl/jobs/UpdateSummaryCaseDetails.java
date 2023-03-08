@@ -57,8 +57,6 @@ public class UpdateSummaryCaseDetails implements Job {
         final ESQuery query = buildQuery(toggleService.isSummaryTabFirstCronRunEnabled());
 
         int total;
-        int updated = 0;
-        int failed = 0;
 
         try {
             total = searchService.searchResultsSize(query);
@@ -70,6 +68,9 @@ public class UpdateSummaryCaseDetails implements Job {
             log.info("Job '{}' finished unsuccessfully.", jobName);
             return;
         }
+
+        int updated = 0;
+        int failed = 0;
 
         int pages = paginate(total);
         log.debug("Job '{}' split the search query over {} pages", jobName, pages);

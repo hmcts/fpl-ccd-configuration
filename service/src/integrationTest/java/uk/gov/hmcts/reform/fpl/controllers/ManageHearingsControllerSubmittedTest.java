@@ -305,8 +305,8 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         verifyNoInteractions(notificationClient);
         verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
         verify(concurrencyHelper).submitEvent(any(),
-            CASE_ID,
-            caseSummary("Yes", "Case management", LocalDate.of(2050, 5, 20)));
+            eq(CASE_ID),
+            eq(caseSummary("Yes", "Case management", LocalDate.of(2050, 5, 20))));
         verifyNoMoreInteractions(concurrencyHelper);
     }
 
@@ -379,11 +379,23 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             Language.ENGLISH))
             .willReturn(testDocmosisDocument(COVERSHEET_RESPONDENT_BINARY));
 
-        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+        final StartEventResponse sendToPartiesResp = StartEventResponse.builder()
             .caseDetails(asCaseDetails(cd))
-            .eventId(i.getArgument(1))
+            .eventId("internal-change-UPDATE_CASE")
             .token("token")
-            .build());
+            .build();
+
+        final StartEventResponse updateCaseResp = StartEventResponse.builder()
+            .caseDetails(asCaseDetails(cd))
+            .eventId("internal-update-case-summary")
+            .token("token")
+            .build();
+
+        when(concurrencyHelper.startEvent(any(), eq("internal-change-UPDATE_CASE")))
+            .thenReturn(sendToPartiesResp);
+
+        when(concurrencyHelper.startEvent(any(), eq("internal-update-case-summary")))
+            .thenReturn(updateCaseResp);
         postSubmittedEvent(toCallBackRequest(cd, cdb));
 
         verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
@@ -408,7 +420,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             eq(SERVICE_AUTH_TOKEN),
             printRequestCaptor.capture());
 
-        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(),
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(eq(sendToPartiesResp ),
             eq(CASE_ID), caseCaptor.capture());
 
         LetterWithPdfsRequest expectedPrintRequest1 = printRequest(CASE_ID, noticeOfHearing,
@@ -438,8 +450,8 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .extracting(Element::getValue)
             .containsExactly(expectedDocumentSentToRespondent);
 
-        verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
-        verify(concurrencyHelper).submitEvent(any(), eq(CASE_ID), anyMap());
+        verify(concurrencyHelper, times(2)).startEvent(eq(CASE_ID), any());
+        verify(concurrencyHelper, times(2)).submitEvent(any(), eq(CASE_ID), anyMap());
 
         verify(cafcassNotificationService, never()).sendEmail(any(), any(), any(), any());
 
@@ -615,6 +627,12 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .state("Submitted")
             .build();
 
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(caseDetails)
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
         postSubmittedEvent(caseDetails);
 
         verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
@@ -623,6 +641,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             anyMap(),
             eq(NOTIFICATION_REFERENCE));
 
+        verify(concurrencyHelper).startEvent(eq(CASE_ID), any());
         verify(concurrencyHelper).submitEvent(any(), eq(CASE_ID), anyMap());
 
         verifyNoMoreInteractions(concurrencyHelper);
@@ -667,6 +686,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         verifyNoInteractions(notificationClient);
 
+        verify(concurrencyHelper).startEvent(eq(CASE_ID), any());
         verify(concurrencyHelper).submitEvent(any(), eq(CASE_ID), anyMap());
 
         verifyNoMoreInteractions(concurrencyHelper);
@@ -710,6 +730,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         verifyNoInteractions(notificationClient);
 
+        verify(concurrencyHelper).startEvent(eq(CASE_ID), any());
         verify(concurrencyHelper).submitEvent(any(), eq(CASE_ID), anyMap());
 
         verifyNoMoreInteractions(concurrencyHelper);

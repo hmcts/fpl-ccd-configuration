@@ -107,6 +107,7 @@ class CCDConcurrencyHelperTest {
 
 
     }
+
     private StartEventResponse buildStartEventResponse(String eventId, String eventToken) {
         return StartEventResponse.builder().eventId(eventId).token(eventToken).build();
     }

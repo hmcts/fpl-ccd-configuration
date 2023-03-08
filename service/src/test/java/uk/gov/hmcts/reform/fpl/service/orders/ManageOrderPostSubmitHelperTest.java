@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.orders;
 
 import feign.FeignException;
-import feign.Request;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

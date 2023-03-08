@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.DirtiesContext;
+import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.AddGatekeepingOrderController;
 import uk.gov.hmcts.reform.fpl.docmosis.DocmosisHelper;
@@ -29,7 +30,7 @@ import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 import uk.gov.hmcts.reform.fpl.service.translation.TranslationRequestFormCreationService;
 import uk.gov.service.notify.NotificationClient;
@@ -49,8 +50,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CAFCASS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CTSC;
@@ -69,6 +68,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.CAFCASS_EMAIL;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntilSecs;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
@@ -118,7 +118,7 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
     DocmosisHelper docmosisHelper;
 
     @MockBean
-    private CoreCaseDataService coreCaseDataService;
+    private CCDConcurrencyHelper concurrencyHelper;
 
     @MockBean
     private DocumentDownloadService documentDownloadService;
@@ -146,23 +146,37 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
 
         verifyNoInteractions(sealingService);
         verify(eventService, never()).publishEvent(any());
-        verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any());
+        verify(concurrencyHelper, never()).submitEvent(any(), any(), any());
     }
 
     @Test
     void shouldNotTriggerEventsWhenDraftAfterUrgentHearingOrder() {
+        final CaseData caseData = buildCaseDataWithUrgentHearingOrderAndSDO(DRAFT);
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
         postSubmittedEvent(toCallBackRequest(
-            buildCaseDataWithUrgentHearingOrderAndSDO(DRAFT), CASE_MANAGEMENT_CASE_DATA
+            caseData, CASE_MANAGEMENT_CASE_DATA
         ));
 
         verifyNoInteractions(sealingService);
         verify(eventService, never()).publishEvent(any());
-        verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any());
+        verify(concurrencyHelper).submitEvent(any(), any(), any()); // we always hit internal-change
     }
 
     @Test
     void shouldTriggerEventWhenUrgentHearingSubmitted() {
-        postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrder(), GATEKEEPING_CASE_DATA));
+        final CaseData caseData = buildCaseDataWithUrgentHearingOrder();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
+        postSubmittedEvent(toCallBackRequest(caseData, GATEKEEPING_CASE_DATA));
 
         verify(sealingService).sealDocument(eq(URGENT_HEARING_ORDER_DOCUMENT), any(), eq(SealType.ENGLISH));
         verifyEmails(URGENT_AND_NOP_ISSUED_CAFCASS, URGENT_AND_NOP_ISSUED_CTSC, URGENT_AND_NOP_ISSUED_LA);
@@ -171,7 +185,14 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldTriggerEventWhenUrgentHearingSubmittedAndRequestingTranslation() {
-        postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrderToTranslate(), GATEKEEPING_CASE_DATA));
+        final CaseData caseData = buildCaseDataWithUrgentHearingOrderToTranslate();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
+        postSubmittedEvent(toCallBackRequest(caseData, GATEKEEPING_CASE_DATA));
 
         verify(sealingService).sealDocument(eq(URGENT_HEARING_ORDER_DOCUMENT), any(), eq(SealType.ENGLISH));
         verifyEmails(URGENT_AND_NOP_ISSUED_CAFCASS, URGENT_AND_NOP_ISSUED_CTSC, URGENT_AND_NOP_ISSUED_LA);
@@ -181,7 +202,14 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldTriggerEventWhenUrgentWithNoPHearingSubmittedAndRequestingTranslation() {
-        postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrderToTranslateWithNop(),
+        final CaseData caseData = buildCaseDataWithUrgentHearingOrderToTranslateWithNop();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
+        postSubmittedEvent(toCallBackRequest(caseData,
             GATEKEEPING_CASE_DATA));
 
         verify(sealingService).sealDocument(eq(URGENT_HEARING_ORDER_DOCUMENT), any(), eq(SealType.ENGLISH));
@@ -192,7 +220,14 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldTriggerEventWhenSDOSubmitted() {
-        postSubmittedEvent(toCallBackRequest(buildCaseDataWithSDO(SEALED), GATEKEEPING_CASE_DATA));
+        final CaseData caseData = buildCaseDataWithSDO(SEALED);
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
+        postSubmittedEvent(toCallBackRequest(caseData, GATEKEEPING_CASE_DATA));
 
         verifyNoInteractions(sealingService);
         verifyEmails(SDO_AND_NOP_ISSUED_CAFCASS, SDO_AND_NOP_ISSUED_CTSC, SDO_AND_NOP_ISSUED_LA);
@@ -201,7 +236,14 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldTriggerEventWhenSDOSubmittedWithTranslation() {
-        postSubmittedEvent(toCallBackRequest(buildCaseDataWithSDOToTranslate(SEALED), GATEKEEPING_CASE_DATA));
+        CaseData caseData = buildCaseDataWithSDOToTranslate(SEALED);
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
+        postSubmittedEvent(toCallBackRequest(caseData, GATEKEEPING_CASE_DATA));
 
         verifyNoInteractions(sealingService);
         verifyEmails(SDO_AND_NOP_ISSUED_CAFCASS, SDO_AND_NOP_ISSUED_CTSC, SDO_AND_NOP_ISSUED_LA);
@@ -211,7 +253,14 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldTriggerEventWhenSDOAndNoticeOfProceedingsSubmittedWithTranslation() {
-        postSubmittedEvent(toCallBackRequest(buildCaseDataWithSDOAndNopToTranslate(SEALED), GATEKEEPING_CASE_DATA));
+        CaseData caseData = buildCaseDataWithSDOAndNopToTranslate(SEALED);
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
+        postSubmittedEvent(toCallBackRequest(caseData, GATEKEEPING_CASE_DATA));
 
         verifyNoInteractions(sealingService);
         verifyEmails(SDO_AND_NOP_ISSUED_CAFCASS, SDO_AND_NOP_ISSUED_CTSC, SDO_AND_NOP_ISSUED_LA);
@@ -221,8 +270,15 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldTriggerEventWhenSDOSubmittedAfterUrgentHearingOrder() {
+        final CaseData caseData = buildCaseDataWithUrgentHearingOrderAndSDO(SEALED);
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
         postSubmittedEvent(toCallBackRequest(
-            buildCaseDataWithUrgentHearingOrderAndSDO(SEALED), CASE_MANAGEMENT_CASE_DATA
+            caseData, CASE_MANAGEMENT_CASE_DATA
         ));
 
         verifyNoInteractions(sealingService);
@@ -232,8 +288,15 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldTriggerEventWhenSDOSubmittedAfterUrgentHearingOrderWithTranslation() {
+        final CaseData caseData = buildCaseDataWithUrgentHearingOrderAndSDOToTranslate(SEALED);
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
         postSubmittedEvent(toCallBackRequest(
-            buildCaseDataWithUrgentHearingOrderAndSDOToTranslate(SEALED), CASE_MANAGEMENT_CASE_DATA
+            caseData, CASE_MANAGEMENT_CASE_DATA
         ));
 
         verifyNoInteractions(sealingService);
@@ -244,64 +307,79 @@ class AddGatekeepingOrderControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldTriggerSendDocumentEventWhenSubmitted() {
-        postSubmittedEvent(toCallBackRequest(buildCaseDataWithSDO(SEALED), GATEKEEPING_CASE_DATA));
+        CaseData caseData = buildCaseDataWithSDO(SEALED);
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
+        postSubmittedEvent(toCallBackRequest(caseData, GATEKEEPING_CASE_DATA));
 
         verifyNoInteractions(sealingService);
-        verify(coreCaseDataService).triggerEvent(
-            JURISDICTION,
-            CASE_TYPE,
-            CASE_ID,
-            SEND_DOCUMENT_EVENT,
-            Map.of("documentToBeSent", SDO_DOCUMENT)
+        verify(concurrencyHelper).submitEvent(any(),
+            eq(CASE_ID),
+            eq(Map.of("documentToBeSent", SDO_DOCUMENT))
         );
     }
 
     @Test
     void shouldTriggerSendDocumentEventForUrgentHearingOrder() {
-        postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrder(), GATEKEEPING_CASE_DATA));
+        CaseData caseData = buildCaseDataWithUrgentHearingOrder();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
+        postSubmittedEvent(toCallBackRequest(caseData, GATEKEEPING_CASE_DATA));
 
         verify(sealingService).sealDocument(eq(URGENT_HEARING_ORDER_DOCUMENT), any(), eq(SealType.ENGLISH));
-        verify(coreCaseDataService).triggerEvent(
-            JURISDICTION,
-            CASE_TYPE,
-            CASE_ID,
-            SEND_DOCUMENT_EVENT,
-            Map.of("documentToBeSent", SEALED_DOCUMENT)
+        verify(concurrencyHelper).submitEvent(
+            any(),
+            eq(CASE_ID),
+            eq(Map.of("documentToBeSent", SEALED_DOCUMENT))
         );
     }
 
     @Test
     void shouldSealUploadedDocumentIfOrderStatusIsSealed() {
         CaseData caseData = buildCaseDataWithUploadedSDO(SEALED);
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
         postSubmittedEvent(toCallBackRequest(
             caseData, GATEKEEPING_CASE_DATA
         ));
 
         verify(sealingService).sealDocument(eq(SDO_DOCUMENT), any(), eq(SealType.ENGLISH));
-        verify(coreCaseDataService).triggerEvent(eq(caseData.getId()),eq("internal-change-add-gatekeeping"), any());
+        verify(concurrencyHelper, times(2)).submitEvent(any(), eq(caseData.getId()), any());
     }
 
     private void verifyEmails(String cafcassTemplate, String ctcsTemplate, String laTemplate) {
-        checkUntil(() -> verify(notificationClient).sendEmail(
+        checkUntilSecs(() -> verify(notificationClient).sendEmail(
             eq(cafcassTemplate),
             eq(CAFCASS_EMAIL),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
-        ));
+        ), 2);
 
-        checkUntil(() -> verify(notificationClient).sendEmail(
+        checkUntilSecs(() -> verify(notificationClient).sendEmail(
             eq(laTemplate),
             eq("shared@test1.org.uk"),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
-        ));
+        ), 2);
 
-        checkUntil(() -> verify(notificationClient).sendEmail(
+        checkUntilSecs(() -> verify(notificationClient).sendEmail(
             eq(ctcsTemplate),
             eq("FamilyPublicLaw+ctsc@gmail.com"),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
-        ));
+        ), 2);
     }
 
     private void verifyEmailSentToTranslation() {
