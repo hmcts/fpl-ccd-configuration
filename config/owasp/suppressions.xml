@@ -152,6 +152,9 @@
     <cve>CVE-2022-3064</cve>
   </suppress>
   <suppress>
+    <cve>CVE-2023-24998</cve>
+  </suppress>
+  <suppress>
     <vulnerabilityName>1089130</vulnerabilityName>
   </suppress>
   <suppress>
@@ -228,5 +231,9 @@
   </suppress>
   <suppress>
     <cve>CVE-2023-24998</cve>
+  </suppress>
+  <suppress>
+    <vulnerabilityName>1091238</vulnerabilityName>
+    <vulnerabilityName>1091239</vulnerabilityName>
   </suppress>
 </suppressions>
