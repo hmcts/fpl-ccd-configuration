@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -87,6 +88,7 @@ public class ListGatekeepingHearingController extends CallbackController {
         }
 
         caseDetails.getData().putAll(hearingsService.populateHearingLists(caseData));
+        caseDetails.getData().put("sendNoticeOfHearing", YES.getValue());
 
         setNewHearing(caseDetails);
 
@@ -97,7 +99,7 @@ public class ListGatekeepingHearingController extends CallbackController {
     public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
 
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        final CaseData caseData = getCaseData(caseDetails);
+        final CaseData caseData = orderService.updateStandardDirections(callbackRequest.getCaseDetails());
         final CaseDetailsMap data = caseDetailsMap(caseDetails);
 
         hearingsService.findAndSetPreviousVenueId(caseData);
@@ -117,15 +119,44 @@ public class ListGatekeepingHearingController extends CallbackController {
         data.put(HEARING_ORDERS_BUNDLES_DRAFTS, caseData.getHearingOrdersBundlesDrafts());
         data.put(DRAFT_UPLOADED_CMOS, caseData.getDraftUploadedCMOs());
 
-        data.keySet().removeAll(hearingsService.caseFieldsToBeRemoved());
-
         //Add gatekeeping order
+        final GatekeepingOrderRoute sdoRouter = caseData.getGatekeepingOrderRouter();
+
+        data.put("gatekeepingOrderSealDecision", orderService.buildSealedDecision(caseData));
+
+        switch (sdoRouter) {
+            case UPLOAD:
+                data.put("standardDirectionOrder", orderService.buildOrderFromUploadedFile(caseData));
+                break;
+            case SERVICE:
+                data.put("standardDirectionOrder", orderService.buildOrderFromGeneratedFile(caseData));
+                break;
+        }
+
         callbackRequest.getCaseDetails().setData(data);
         final List<DocmosisTemplates> nopTemplates = orderService.getNoticeOfProceedingsTemplates(caseData);
         data.put("noticeOfProceedingsBundle",
             nopService.uploadNoticesOfProceedings(getCaseData(callbackRequest.getCaseDetails()), nopTemplates));
 
-        removeTemporaryFields(data, "gatekeepingOrderIssuingJudge", "customDirections");
+        removeTemporaryFields(data,
+            "urgentHearingOrderDocument",
+            "urgentHearingAllocation",
+            "showUrgentHearingAllocation",
+            "currentSDO",
+            "preparedSDO",
+            "replacementSDO",
+            "useServiceRoute",
+            "useUploadRoute",
+            "judgeAndLegalAdvisor",
+            "gatekeepingOrderHearingDate1",
+            "gatekeepingOrderHearingDate2",
+            "gatekeepingOrderHasHearing1",
+            "gatekeepingOrderHasHearing2",
+            "gatekeepingOrderIssuingJudge",
+            "customDirections"
+        );
+
+        data.keySet().removeAll(hearingsService.caseFieldsToBeRemoved());
 
         return respond(data);
     }

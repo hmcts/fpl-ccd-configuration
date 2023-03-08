@@ -151,22 +151,6 @@ public class AddGatekeepingOrderController extends CallbackController {
                 break;
         }
 
-        removeTemporaryFields(data,
-            "urgentHearingOrderDocument",
-            "urgentHearingAllocation",
-            "showUrgentHearingAllocation",
-            "currentSDO",
-            "preparedSDO",
-            "replacementSDO",
-            "useServiceRoute",
-            "useUploadRoute",
-            "judgeAndLegalAdvisor",
-            "gatekeepingOrderHearingDate1",
-            "gatekeepingOrderHearingDate2",
-            "gatekeepingOrderHasHearing1",
-            "gatekeepingOrderHasHearing2"
-        );
-
         final Allocation allocationDecision = allocationService.createAllocationDecisionIfNull(getCaseData(request));
         data.put("allocationDecision", allocationDecision);
 
