@@ -6,9 +6,11 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
+import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
@@ -35,6 +37,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MigrateCaseService {
 
+    private static final String PLACEMENT = "placements";
+    private static final String PLACEMENT_NON_CONFIDENTIAL = "placementsNonConfidential";
+    private static final String PLACEMENT_NON_CONFIDENTIAL_NOTICES = "placementsNonConfidentialNotices";
     private final CaseNoteService caseNoteService;
 
     public Map<String, Object> removeHearingOrderBundleDraft(CaseData caseData, String migrationId, UUID bundleId,
@@ -316,6 +321,24 @@ public class MigrateCaseService {
         return Map.of("applicationDocuments", applicationDocuments);
     }
 
+    public Map<String, Object> removeCaseSummaryByHearingId(CaseData caseData,
+                                                            String migrationId,
+                                                            UUID expectedHearingId) {
+        Long caseId = caseData.getId();
+        List<Element<CaseSummary>> caseSummaries =
+            caseData.getHearingDocuments().getCaseSummaryList()
+                .stream()
+                .filter(el -> !el.getId().equals(expectedHearingId))
+                .collect(toList());
+
+        if (caseSummaries.size() != caseData.getHearingDocuments().getCaseSummaryList().size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, case summary",
+                migrationId, caseId));
+        }
+        return Map.of("caseSummaryList", caseSummaries);
+    }
+
     public Map<String, Object> revertChildExtensionDate(CaseData caseData, String migrationId, String childId,
                                                         LocalDate completionDate,
                                                         CaseExtensionReasonList extensionReason) {
@@ -350,5 +373,35 @@ public class MigrateCaseService {
                 "Migration {id = %s, case reference = %s} doesn't have children",
                 migrationId, caseData.getId()));
         }
+    }
+
+    public void doHearingOptionCheck(long caseId, String hearingOption, String expectedHearingOption,
+                                     String migrationId) throws AssertionError {
+        if (!hearingOption.equals(expectedHearingOption)) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, unexpected hearing option %s",
+                migrationId, caseId, hearingOption
+            ));
+        }
+    }
+
+    public Map<String, Object> removeSpecificPlacements(CaseData caseData, UUID placementToRemove) {
+        List<Element<Placement>> placementsToKeep = caseData.getPlacementEventData().getPlacements().stream()
+            .filter(x -> !x.getId().equals(placementToRemove)).collect(toList());
+        caseData.getPlacementEventData().setPlacements(placementsToKeep);
+
+        List<Element<Placement>> nonConfidentialPlacementsToKeep = caseData.getPlacementEventData()
+            .getPlacementsNonConfidential(false);
+
+        List<Element<Placement>> nonConfidentialNoticesPlacementsToKeep = caseData.getPlacementEventData()
+            .getPlacementsNonConfidential(true);
+
+        Map<String, Object> ret =  new HashMap<String, Object>();
+        ret.put(PLACEMENT, placementsToKeep.isEmpty() ? null : placementsToKeep);
+        ret.put(PLACEMENT_NON_CONFIDENTIAL, nonConfidentialPlacementsToKeep.isEmpty() ? null :
+            nonConfidentialPlacementsToKeep);
+        ret.put(PLACEMENT_NON_CONFIDENTIAL_NOTICES, nonConfidentialNoticesPlacementsToKeep.isEmpty() ? null :
+            nonConfidentialNoticesPlacementsToKeep);
+        return ret;
     }
 }
