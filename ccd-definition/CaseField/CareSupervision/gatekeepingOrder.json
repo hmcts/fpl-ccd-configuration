@@ -100,6 +100,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "directionsForCafcassUpdated",
+    "Label": " ",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DirectionTypesForCafcassUpdated",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "directionsForOthers",
     "Label": " ",
     "FieldType": "MultiSelectList",
@@ -114,6 +124,16 @@
     "Label": " ",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "DirectionTypesForCourt",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "directionsForCourtUpdated",
+    "Label": " ",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DirectionTypesForCourtUpdated",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
