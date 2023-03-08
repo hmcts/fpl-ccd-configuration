@@ -18,6 +18,9 @@ import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
@@ -38,6 +41,7 @@ import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOrganisation;
 
 @WebMvcTest(MigrateCaseController.class)
@@ -200,6 +204,107 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             verify(coreCaseDataApi).submitSupplementaryData(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN,
                 caseData.getId().toString(), supplementaryData);
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl1238 {
+
+        private final String migrationId = "DFPL-1238";
+        private final long validCaseId = 1635423187428763L;
+
+        @Test
+        void shouldRemoveAllPlacementCollections() {
+            List<Element<Placement>> placements = List.of(
+                element(Placement.builder()
+                    .application(testDocumentReference())
+                    .build()),
+                element(Placement.builder()
+                    .application(testDocumentReference())
+                    .build())
+            );
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .placementEventData(PlacementEventData.builder()
+                    .placements(placements)
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getPlacementEventData().getPlacements()).isEmpty();
+            assertThat(response.getData()).extracting("placementsNonConfidential", "placementsNonConfidentialNotices")
+                .containsExactly(null, null);
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl1241 {
+
+        private final String migrationId = "DFPL-1241";
+        private final long validCaseId = 1652968793683878L;
+
+        @Test
+        void shouldRemoveAllPlacementCollections() {
+            List<Element<Placement>> placements = List.of(
+                element(Placement.builder()
+                    .application(testDocumentReference())
+                    .build()),
+                element(Placement.builder()
+                    .application(testDocumentReference())
+                    .build())
+            );
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .placementEventData(PlacementEventData.builder()
+                    .placements(placements)
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getPlacementEventData().getPlacements()).isEmpty();
+            assertThat(response.getData()).extracting("placementsNonConfidential", "placementsNonConfidentialNotices")
+                .containsExactly(null, null);
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl1244 {
+
+        private final String migrationId = "DFPL-1244";
+        private final long validCaseId = 1644912253936021L;
+
+        @Test
+        void shouldRemoveAllPlacementCollections() {
+            List<Element<Placement>> placements = List.of(
+                element(Placement.builder()
+                    .application(testDocumentReference())
+                    .build()),
+                element(Placement.builder()
+                    .application(testDocumentReference())
+                    .build())
+            );
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .placementEventData(PlacementEventData.builder()
+                    .placements(placements)
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getPlacementEventData().getPlacements()).isEmpty();
+            assertThat(response.getData()).extracting("placementsNonConfidential", "placementsNonConfidentialNotices")
+                .containsExactly(null, null);
         }
     }
 }
