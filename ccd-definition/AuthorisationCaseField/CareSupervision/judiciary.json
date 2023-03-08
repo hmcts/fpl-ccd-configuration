@@ -3677,6 +3677,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "direction-REDUCE_TIME_FOR_SERVICE",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "direction-SEND_RESPONSE_TO_THRESHOLD_STATEMENT",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRUD"
