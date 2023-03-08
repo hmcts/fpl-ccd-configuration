@@ -169,7 +169,7 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().remove(PLACEMENT);
         caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL);
-        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL_NOTICES);\
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL_NOTICES);
     }
     
     private void run1262(CaseDetails caseDetails) {
