@@ -557,6 +557,36 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             anyString());
     }
 
+    @Test
+    void shouldSendNotificationsWhenTriggerEventFails() {
+        given(uploadAdditionalApplicationsService.getApplicationTypes(any()))
+            .willReturn(List.of(ApplicationType.C2_APPLICATION));
+
+        CaseDetails caseDetails = buildCaseDetails(YES, YES);
+        Map<String, Object> updates = Map.of(
+            "additionalApplicationsBundle", caseDetails.getData().get("additionalApplicationsBundle")
+        );
+
+        doNothing().when(coreCaseDataService).triggerEvent(
+            caseDetails.getId(),
+            "internal-change-upload-add-apps",
+            updates);
+
+        postSubmittedEvent(caseDetails);
+
+        checkUntil(() -> verify(notificationClient).sendEmail(
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS),
+            any(),
+            any(),
+            any()));
+
+        checkUntil(() -> verify(notificationClient).sendEmail(
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
+            any(),
+            any(),
+            any()));
+    }
+
     private CaseDetails buildCaseDetails(YesNo enableCtsc, YesNo usePbaPayment) {
         return createCase(ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
