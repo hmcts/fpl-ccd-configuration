@@ -127,13 +127,13 @@ public class ListGatekeepingHearingController extends CallbackController {
 
         eventData = mergeEventAndCaseData(eventData, caseData);
         caseData.put("gatekeepingOrderSealDecision", orderService.buildSealedDecision(eventData));
+        eventData = mergeEventAndCaseData(eventData, caseData);
 
         switch (sdoRouter) {
             case UPLOAD:
                 caseData.put("standardDirectionOrder", orderService.buildOrderFromUploadedFile(eventData));
                 break;
             case SERVICE:
-                eventData = mergeEventAndCaseData(eventData, caseData);
                 caseData.put("standardDirectionOrder", orderService.buildOrderFromGeneratedFile(eventData));
                 break;
         }
