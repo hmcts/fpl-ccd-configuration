@@ -551,6 +551,7 @@ class DraftOrderServiceTest {
                     .supportingDocs(null)
                     .judgeTitleAndName("His Honour Judge Dredd")
                     .hearing("Case management hearing, 2 March 2020")
+                    .hearingId(hearings.get(0).getId())
                     .dateSent(time.now().toLocalDate())
                     .translationRequirements(TRANSLATION_REQUIREMENTS)
                     .order(eventData.getUploadedCaseManagementOrder())
@@ -690,6 +691,7 @@ class DraftOrderServiceTest {
                 .dateSent(time.now().toLocalDate())
                 .order(eventData.getUploadedCaseManagementOrder())
                 .hearing("Case management hearing, 2 March 2020")
+                .hearingId(selectedHearing.getId())
                 .judgeTitleAndName("His Honour Judge Dredd")
                 .build();
 

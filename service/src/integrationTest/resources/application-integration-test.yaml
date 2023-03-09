@@ -86,7 +86,7 @@ fpl:
   local_authority_code_to_name:
     mapping: 'test1=>Test 1 Local Authority;test2=>Test 2 Local Authority;test3=>Test 3 Local Authority'
   local_authority_code_to_hmcts_court:
-    mapping: 'test1=>Family Court:court1@family-court.com:11;test2=>Family Court 2:court2@family-court.com:22;test3=>Family Court 3 A:court3a@family-court.com:31|Family Court 3 B:court3b@family-court.com:32'
+    mapping: 'test1=>Family Court:court1@family-court.com:344;test2=>Family Court 2:court2@family-court.com:22;test3=>Family Court 3 A:court3a@family-court.com:31|Family Court 3 B:court3b@family-court.com:32'
   local_authority_code_to_cafcass:
     mapping: 'test1=>cafcass:cafcass@cafcass.com;test2=>cafcass:cafcass@cafcass.com;test3=>Cafcass Cymru:cafcass@cafcass.com'
   local_authority_code_to_shared_inbox:
@@ -159,3 +159,8 @@ case_document_am:
   url: http://localhost:4455
   health:
     url: ${case_document_am.url}/health
+
+contacts:
+  passport_office:
+    address: 'passport office, some address, somewhere'
+    email: 'passport-office@example.com'

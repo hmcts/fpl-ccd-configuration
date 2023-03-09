@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
+import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -26,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
+import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -57,6 +59,7 @@ public class CaseManagementOrderIssuedEventHandler {
     private final SendDocumentService sendDocumentService;
     private final TranslationRequestService translationRequestService;
     private final CafcassNotificationService cafcassNotificationService;
+    private final WorkAllocationTaskService workAllocationTaskService;
 
     @EventListener
     @Async
@@ -202,4 +205,10 @@ public class CaseManagementOrderIssuedEventHandler {
         );
     }
 
+    @Async
+    @EventListener
+    public void createWorkAllocationTask(CaseManagementOrderIssuedEvent event) {
+        CaseData caseData = event.getCaseData();
+        workAllocationTaskService.createWorkAllocationTask(caseData, WorkAllocationTaskType.CMO_REVIEWED);
+    }
 }

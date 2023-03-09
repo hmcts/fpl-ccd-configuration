@@ -13,7 +13,8 @@
       "caseworker-publiclaw-bulkscan",
       "caseworker-publiclaw-bulkscansystemupdate",
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-ras-validation"
     ],
     "CRUD": "CRU"
   },
@@ -28,5 +29,11 @@
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "RU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "UserRole": "GS_profile",
+    "CRUD": "R"
   }
 ]

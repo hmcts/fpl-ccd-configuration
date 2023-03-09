@@ -54,6 +54,7 @@ import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.event.CaseProgressionReportEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ChildExtensionEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
+import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthoritiesEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
@@ -957,7 +958,8 @@ public class CaseData extends CaseDataParent {
     private final List<Element<HearingOrder>> ordersToBeSent;
 
     @JsonUnwrapped
-    private final ReviewDraftOrdersData reviewDraftOrdersData;
+    @Builder.Default
+    private final ReviewDraftOrdersData reviewDraftOrdersData = ReviewDraftOrdersData.builder().build();
 
     public List<Element<HearingOrder>> getSealedCMOs() {
         return defaultIfNull(sealedCMOs, new ArrayList<>());
@@ -1166,7 +1168,9 @@ public class CaseData extends CaseDataParent {
     private final LocalAuthoritiesEventData localAuthoritiesEventData = LocalAuthoritiesEventData.builder().build();
 
     @JsonUnwrapped
-    private final CaseProgressionReportEventData caseProgressionReportEventData;
+    @Builder.Default
+    private final CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData
+        .builder().build();
 
     @JsonUnwrapped
     @Builder.Default
@@ -1231,6 +1235,11 @@ public class CaseData extends CaseDataParent {
             .map(Orders::isRefuseContactWithChildApplication)
             .orElse(false);
     }
+
+    @JsonUnwrapped
+    @Builder.Default
+    protected final ConfirmApplicationReviewedEventData confirmApplicationReviewedEventData =
+        ConfirmApplicationReviewedEventData.builder().build();
 
     @JsonIgnore
     public boolean isEducationSupervisionApplication() {

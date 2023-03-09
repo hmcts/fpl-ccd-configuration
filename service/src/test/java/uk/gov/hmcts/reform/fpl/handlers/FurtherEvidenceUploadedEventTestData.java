@@ -375,9 +375,14 @@ public class FurtherEvidenceUploadedEventTestData {
     }
 
     public static CaseData.CaseDataBuilder<?,?> commonCaseBuilder() {
+        return commonCaseBuilder(false);
+    }
+
+    public static CaseData.CaseDataBuilder<?,?> commonCaseBuilder(boolean standaloneApplication) {
         return CaseData.builder()
             .id(CASE_ID)
             .familyManCaseNumber(CASE_ID.toString())
+            .caseLocalAuthority(standaloneApplication ? null : "SA")
             .hearingDetails(wrapElements(HearingBooking.builder().startDate((HEARING_DATE)).build()));
     }
 

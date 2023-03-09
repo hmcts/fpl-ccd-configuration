@@ -17,7 +17,7 @@
     "ListElementCode": "sender",
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "judicialMessageMetaData.senderType=\"LOCAL_COURT_ADMIN\" OR judicialMessageMetaData.senderType=\"OTHER\""
+    "FieldShowCondition": "judicialMessageMetaData.senderType=\"LOCAL_COURT_ADMIN\" OR judicialMessageMetaData.senderType=\"OTHER\" OR judicialMessageMetaData.senderType=\"HEARING_JUDGE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -36,7 +36,7 @@
     "ListElementCode": "recipient",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "judicialMessageMetaData.recipientType=\"JUDICIARY\" OR judicialMessageMetaData.recipientType=\"LOCAL_COURT_ADMIN\" OR judicialMessageMetaData.recipientType=\"OTHER\""
+    "FieldShowCondition": "judicialMessageMetaData.recipientType=\"JUDICIARY\" OR judicialMessageMetaData.recipientType=\"LOCAL_COURT_ADMIN\" OR judicialMessageMetaData.recipientType=\"OTHER\" OR judicialMessageMetaData.recipientType=\"HEARING_JUDGE\""
   },
   {
     "LiveFrom": "01/01/2017",

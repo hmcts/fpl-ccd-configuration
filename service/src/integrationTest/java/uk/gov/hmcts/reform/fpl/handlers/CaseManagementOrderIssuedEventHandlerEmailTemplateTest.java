@@ -42,6 +42,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderLanguageRequire
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.others.OthersNotifiedGenerator;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
+import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.ChildSelectionUtils;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -80,7 +81,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     @MockBean(AppointedGuardianFormatter.class), @MockBean(SealedOrderLanguageRequirementGenerator.class),
     @MockBean(TranslationRequestService.class), @MockBean(OthersService.class), @MockBean(OtherRecipientsInbox.class),
     @MockBean(SendDocumentService.class), @MockBean(OthersNotifiedGenerator.class),
-    @MockBean(OrderNotificationDocumentService.class), @MockBean(PlacementService.class)
+    @MockBean(OrderNotificationDocumentService.class), @MockBean(PlacementService.class),
+    @MockBean(WorkAllocationTaskService.class)
 })
 class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final String RESPONDENT_LAST_NAME = "khorne";

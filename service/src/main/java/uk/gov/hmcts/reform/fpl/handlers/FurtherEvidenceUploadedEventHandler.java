@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
@@ -31,12 +32,16 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.FurtherDocument;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
+import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
+import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
@@ -64,7 +69,10 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.barristers;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE;
+import static uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType.CORRESPONDENCE_UPLOADED;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.ALL_LAS;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.CHILD_SOLICITOR;
@@ -96,9 +104,36 @@ public class FurtherEvidenceUploadedEventHandler {
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private static final String PDF = "pdf";
     private static final String LIST = "•";
+    private final UserService userService;
+    private final WorkAllocationTaskService workAllocationTaskService;
+    private final FeatureToggleService featureToggleService;
+
+    private DocumentUploaderType getUploaderType(Long id) {
+
+        final Set<CaseRole> caseRoles = userService.getCaseRoles(id);
+
+        if (caseRoles.stream().anyMatch(representativeSolicitors()::contains)) {
+            return DocumentUploaderType.SOLICITOR;
+        }
+
+        if (caseRoles.stream().anyMatch(barristers()::contains)) {
+            return DocumentUploaderType.BARRISTER;
+        }
+
+        return DocumentUploaderType.HMCTS;
+    }
+
+    private boolean shouldNotSendNotification(CaseData caseData) {
+        DocumentUploaderType userType = getUploaderType(caseData.getId());
+        return !(this.featureToggleService.isNewDocumentUploadNotificationEnabled()
+            || (!DocumentUploaderType.SOLICITOR.equals(userType) && !DocumentUploaderType.BARRISTER.equals(userType)));
+    }
 
     @EventListener
     public void sendDocumentsUploadedNotification(final FurtherEvidenceUploadedEvent event) {
+        if (shouldNotSendNotification(event.getCaseData())) {
+            return;
+        }
         final CaseData caseData = event.getCaseData();
         final CaseData caseDataBefore = event.getCaseDataBefore();
         final UserDetails uploader = event.getInitiatedBy();
@@ -131,6 +166,9 @@ public class FurtherEvidenceUploadedEventHandler {
 
     @EventListener
     public void sendDocumentsByPost(final FurtherEvidenceUploadedEvent event) {
+        if (shouldNotSendNotification(event.getCaseData())) {
+            return;
+        }
         DocumentUploaderType userType = event.getUserType();
 
         if (userType == SOLICITOR) {
@@ -150,6 +188,9 @@ public class FurtherEvidenceUploadedEventHandler {
 
     @EventListener
     public void sendCourtBundlesUploadedNotification(final FurtherEvidenceUploadedEvent event) {
+        if (shouldNotSendNotification(event.getCaseData())) {
+            return;
+        }
         final CaseData caseData = event.getCaseData();
         final CaseData caseDataBefore = event.getCaseDataBefore();
 
@@ -176,6 +217,9 @@ public class FurtherEvidenceUploadedEventHandler {
 
     @EventListener
     public void sendHearingDocumentsUploadedNotification(final FurtherEvidenceUploadedEvent event) {
+        if (shouldNotSendNotification(event.getCaseData())) {
+            return;
+        }
         final CaseData caseData = event.getCaseData();
         final CaseData caseDataBefore = event.getCaseDataBefore();
         final UserDetails uploader = event.getInitiatedBy();
@@ -216,13 +260,13 @@ public class FurtherEvidenceUploadedEventHandler {
 
     @EventListener
     public void sendHearingDocumentsToCafcass(final FurtherEvidenceUploadedEvent event) {
+        if (shouldNotSendNotification(event.getCaseData())) {
+            return;
+        }
         final CaseData caseData = event.getCaseData();
         final CaseData caseDataBefore = event.getCaseDataBefore();
 
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-            cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
             List<HearingDocument> newCaseSummaries = getNewHearingDocuments(
                 caseData.getHearingDocuments().getCaseSummaryList(),
                 caseDataBefore.getHearingDocuments().getCaseSummaryList());
@@ -250,6 +294,9 @@ public class FurtherEvidenceUploadedEventHandler {
 
     private void sendHearingDocumentsToCafcass(CaseData caseData, List<HearingDocument> newHearingDocuments,
                                                CafcassRequestEmailContentProvider provider) {
+        if (shouldNotSendNotification(caseData)) {
+            return;
+        }
         Map<String, Set<DocumentReference>> newHearingDocs = newHearingDocuments.stream()
             .collect(groupingBy(HearingDocument::getHearing,
                 mapping(HearingDocument::getDocument, toSet())));
@@ -266,12 +313,12 @@ public class FurtherEvidenceUploadedEventHandler {
 
     @EventListener
     public void sendCourtBundlesToCafcass(final FurtherEvidenceUploadedEvent event) {
+        if (shouldNotSendNotification(event.getCaseData())) {
+            return;
+        }
         final CaseData caseData = event.getCaseData();
 
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
             final CaseData caseDataBefore = event.getCaseDataBefore();
 
             Map<String, Set<DocumentReference>> newCourtBundles = getNewCourtBundles(caseData, caseDataBefore);
@@ -294,12 +341,12 @@ public class FurtherEvidenceUploadedEventHandler {
 
     @EventListener
     public void sendDocumentsToCafcass(final FurtherEvidenceUploadedEvent event) {
+        if (shouldNotSendNotification(event.getCaseData())) {
+            return;
+        }
         final CaseData caseData = event.getCaseData();
 
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcass(caseData, cafcassLookupConfiguration)) {
             final CaseData caseDataBefore = event.getCaseDataBefore();
             final DocumentUploaderType userType = event.getUserType();
             final Set<DocumentReference> documentReferences = new HashSet<>();
@@ -823,10 +870,28 @@ public class FurtherEvidenceUploadedEventHandler {
     @Async
     @EventListener
     public void notifyTranslationTeam(FurtherEvidenceUploadedEvent event) {
+        if (shouldNotSendNotification(event.getCaseData())) {
+            return;
+        }
         furtherEvidenceDifferenceCalculator.calculate(event.getCaseData(), event.getCaseDataBefore())
             .forEach(bundle -> translationRequestService.sendRequest(event.getCaseData(),
                 Optional.ofNullable(bundle.getValue().getTranslationRequirements()),
                 bundle.getValue().getDocument(), bundle.getValue().asLabel())
             );
+    }
+
+    @EventListener
+    public void createWorkAllocationTask(FurtherEvidenceUploadedEvent event) {
+        CaseData caseData = event.getCaseData();
+        CaseData caseDataBefore = event.getCaseDataBefore();
+
+        boolean shouldCheckHmctsChange = userService.isJudiciaryUser() || userService.isCafcassUser();
+
+        if (!getNewCorrespondenceDocumentsByLA(caseData, caseDataBefore).getDocumentReferences().isEmpty()
+            || !getNewCorrespondenceDocumentsBySolicitor(caseData, caseDataBefore).getDocumentReferences().isEmpty()
+            || (shouldCheckHmctsChange
+                && !getNewCorrespondenceDocumentsByHmtcs(caseData, caseDataBefore).getDocumentReferences().isEmpty())) {
+            workAllocationTaskService.createWorkAllocationTask(caseData, CORRESPONDENCE_UPLOADED);
+        }
     }
 }
