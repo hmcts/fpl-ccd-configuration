@@ -944,7 +944,7 @@ class MigrateCaseServiceTest {
     }
 
     @Test
-    void shouldNotThrowWhenNoCofidentialDocumentInDocumentViewNC() {
+    void shouldNotThrowWhenNoConfidentialDocumentInDocumentViewNC() {
         assertDoesNotThrow(() -> underTest.doDocumentViewNCCheck(1L, MIGRATION_ID,
             CaseDetails.builder().data(Map.of("documentViewNC", "\"<p><div class='width-50'>\\n"
                 + "\\n<details class=\\\"govuk-details\\\"><summary class=\\\"govuk-details__summary\\\">"
@@ -961,7 +961,7 @@ class MigrateCaseServiceTest {
     }
 
     @Test
-    void shouldThrowWhenNoCofidentialDocumentInDocumentViewNC() {
+    void shouldThrowWhenNoConfidentialDocumentInDocumentViewNC() {
         assertThatThrownBy(() -> underTest.doDocumentViewNCCheck(1L, MIGRATION_ID,
             CaseDetails.builder().data(Map.of("documentViewNC", "\"<p><div class='width-50'>\\n"
                 + "\\n<details class=\\\"govuk-details\\\"><summary class=\\\"govuk-details__summary\\\">"
