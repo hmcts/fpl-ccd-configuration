@@ -118,7 +118,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             // court code (344) is defined by application-integration-test.yaml (by LOCAL_AUTHORITY_3_USER_EMAIL)
             // epimms id is defined in courts.json by looking up court code 344
             @SuppressWarnings("unchecked")
-            Map<String,  String> caseManagementLocation = (Map<String, String>)
+            Map<String, String> caseManagementLocation = (Map<String, String>)
                 caseDetails.get("caseManagementLocation");
             assertThat(caseManagementLocation).containsEntry("baseLocation", "234946");
             assertThat(caseManagementLocation).containsEntry("region", "7");
@@ -126,7 +126,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             Map<String, Map<String, String>> caseManagementCategory = (Map<String, Map<String, String>>)
                 caseDetails.get("caseManagementCategory");
             assertThat(caseManagementCategory).containsKey("value");
-            Map<String, String> caseManagementCategoryValue =  caseManagementCategory.get("value");
+            Map<String, String> caseManagementCategoryValue = caseManagementCategory.get("value");
             assertThat(caseManagementCategoryValue).containsEntry("code", "FPL");
             assertThat(caseManagementCategoryValue).containsEntry("label", "Family Public Law");
 
@@ -165,7 +165,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             // court code (344) is defined by application-integration-test.yaml (by LOCAL_AUTHORITY_3_USER_EMAIL)
             // epimms id is defined in courts.json by looking up court code 344
             @SuppressWarnings("unchecked")
-            Map<String,  String> caseManagementLocation = (Map<String, String>)
+            Map<String, String> caseManagementLocation = (Map<String, String>)
                 caseDetails.get("caseManagementLocation");
             assertThat(caseManagementLocation).containsEntry("baseLocation", "234946");
             assertThat(caseManagementLocation).containsEntry("region", "7");
@@ -173,7 +173,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             Map<String, Map<String, String>> caseManagementCategory = (Map<String, Map<String, String>>)
                 caseDetails.get("caseManagementCategory");
             assertThat(caseManagementCategory).containsKey("value");
-            Map<String, String> caseManagementCategoryValue =  caseManagementCategory.get("value");
+            Map<String, String> caseManagementCategoryValue = caseManagementCategory.get("value");
             assertThat(caseManagementCategoryValue).containsEntry("code", "FPL");
             assertThat(caseManagementCategoryValue).containsEntry("label", "Family Public Law");
 
@@ -204,6 +204,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             verify(coreCaseDataApi).submitSupplementaryData(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN,
                 caseData.getId().toString(), supplementaryData);
+        }
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -308,3 +309,4 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
     }
 }
+
