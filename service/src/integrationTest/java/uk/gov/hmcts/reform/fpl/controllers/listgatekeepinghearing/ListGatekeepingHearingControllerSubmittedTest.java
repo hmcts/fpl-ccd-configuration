@@ -274,6 +274,7 @@ class ListGatekeepingHearingControllerSubmittedTest extends ListGatekeepingHeari
 
     @Test
     void shouldTriggerEventWhenSDOSubmitted() {
+        //CaseData.builder().state(GATEKEEPING_LISTING).build()
         postSubmittedEvent(toCallBackRequest(buildCaseDataWithSDO(SEALED), GATEKEEPING_LISTING_CASE_DATA));
 
         verifyNoInteractions(sealingService);
@@ -310,11 +311,17 @@ class ListGatekeepingHearingControllerSubmittedTest extends ListGatekeepingHeari
             .hearingDetails(List.of(existingHearing))
             .representatives(List.of(REPRESENTATIVE_DIGITAL, REPRESENTATIVE_EMAIL, REPRESENTATIVE_POST))
             .respondents1(wrapElements(RESPONDENT_REPRESENTED, RESPONDENT_NOT_REPRESENTED))
+            .gatekeepingOrderRouter(GatekeepingOrderRoute.SERVICE)
+            .standardDirectionOrder(StandardDirectionOrder.builder()
+                .orderStatus(SEALED)
+                .orderDoc(SDO_DOCUMENT)
+                .build())
             .build();
 
         final CaseData cd = cdb.toBuilder()
             .hearingDetails(List.of(hearingWithNotice, existingHearing))
             .selectedHearingId(hearingWithNotice.getId())
+//            .state(GATEKEEPING_LISTING)
             .build();
 
         givenFplService();
@@ -410,6 +417,8 @@ class ListGatekeepingHearingControllerSubmittedTest extends ListGatekeepingHeari
         verify(cafcassNotificationService,never()).sendEmail(any(), any(), any(), any());
 
 //        verifyNoMoreInteractions(coreCaseDataService);
+//        verifyNoInteractions(sealingService);
+//        verifyEmails(SDO_AND_NOP_ISSUED_CAFCASS, SDO_AND_NOP_ISSUED_CTSC, SDO_AND_NOP_ISSUED_LA);
     }
 
     @Test

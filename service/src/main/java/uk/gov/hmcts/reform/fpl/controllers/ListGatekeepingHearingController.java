@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
@@ -44,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -164,7 +166,10 @@ public class ListGatekeepingHearingController extends CallbackController {
 
         Map<String, Object> updates = new HashMap<>();
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
-
+//TODO: check if order is sealed?
+//        StandardDirectionOrder sdo = defaultIfNull(
+//            caseData.getStandardDirectionOrder(), StandardDirectionOrder.builder().build()
+//        );
         if (sdoRouter == UPLOAD) {
             updates.put("standardDirectionOrder", orderService.sealDocumentAfterEventSubmitted(caseData));
         }
@@ -192,8 +197,8 @@ public class ListGatekeepingHearingController extends CallbackController {
 
                 publishEvent(eventToPublish);
             });
-
-//        publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
+log.debug("SDO sent");
+        publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
 
         if (isNotEmpty(caseData.getSelectedHearingId())) {
             if (isInGatekeepingListingState(caseDetails)
@@ -210,6 +215,7 @@ public class ListGatekeepingHearingController extends CallbackController {
                     }
                 });
         }
+log.debug("Notifications sent");
     }
 
     @PostMapping("allocated-judge/mid-event")
