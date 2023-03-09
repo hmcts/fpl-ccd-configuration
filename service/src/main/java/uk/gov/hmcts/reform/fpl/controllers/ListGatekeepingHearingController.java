@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.GatekeepingOrderService;
 import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
@@ -70,6 +71,8 @@ public class ListGatekeepingHearingController extends CallbackController {
     private final GatekeepingOrderService orderService;
     private final NoticeOfProceedingsService nopService;
 
+    private final CaseConverter converter;
+
     @PostMapping("/about-to-start")
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
 
@@ -99,46 +102,48 @@ public class ListGatekeepingHearingController extends CallbackController {
     public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
 
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        final CaseData caseData = orderService.updateStandardDirections(callbackRequest.getCaseDetails());
-        final CaseDetailsMap data = caseDetailsMap(caseDetails);
+        CaseData eventData = orderService.updateStandardDirections(callbackRequest.getCaseDetails());
+        final CaseDetailsMap caseData = caseDetailsMap(caseDetails);
 
-        hearingsService.findAndSetPreviousVenueId(caseData);
+        hearingsService.findAndSetPreviousVenueId(eventData);
 
         //Set hearing
-        final HearingBooking hearingBooking = hearingsService.getCurrentHearingBooking(caseData);
+        final HearingBooking hearingBooking = hearingsService.getCurrentHearingBooking(converter.convert(caseData, CaseData.class));
         final Element<HearingBooking> hearingBookingElement = element(hearingBooking);
 
-        hearingsService.addOrUpdate(hearingBookingElement, caseData);
-        hearingsService.sendNoticeOfHearing(caseData, hearingBooking);
+        hearingsService.addOrUpdate(hearingBookingElement, eventData);
+        hearingsService.sendNoticeOfHearing(eventData, hearingBooking);
 
-        data.put(SELECTED_HEARING_ID, hearingBookingElement.getId());
+        caseData.put(SELECTED_HEARING_ID, hearingBookingElement.getId());
 
-        data.putIfNotEmpty(CANCELLED_HEARING_DETAILS_KEY, caseData.getCancelledHearingDetails());
-        data.putIfNotEmpty(HEARING_DOCUMENT_BUNDLE_KEY, caseData.getHearingFurtherEvidenceDocuments());
-        data.putIfNotEmpty(HEARING_DETAILS_KEY, caseData.getHearingDetails());
-        data.put(HEARING_ORDERS_BUNDLES_DRAFTS, caseData.getHearingOrdersBundlesDrafts());
-        data.put(DRAFT_UPLOADED_CMOS, caseData.getDraftUploadedCMOs());
+        caseData.putIfNotEmpty(CANCELLED_HEARING_DETAILS_KEY, eventData.getCancelledHearingDetails());
+        caseData.putIfNotEmpty(HEARING_DOCUMENT_BUNDLE_KEY, eventData.getHearingFurtherEvidenceDocuments());
+        caseData.putIfNotEmpty(HEARING_DETAILS_KEY, eventData.getHearingDetails());
+        caseData.put(HEARING_ORDERS_BUNDLES_DRAFTS, eventData.getHearingOrdersBundlesDrafts());
+        caseData.put(DRAFT_UPLOADED_CMOS, eventData.getDraftUploadedCMOs());
 
         //Add gatekeeping order
-        final GatekeepingOrderRoute sdoRouter = caseData.getGatekeepingOrderRouter();
+        final GatekeepingOrderRoute sdoRouter = eventData.getGatekeepingOrderRouter();
 
-        data.put("gatekeepingOrderSealDecision", orderService.buildSealedDecision(caseData));
+        eventData = mergeEventAndCaseData(eventData, caseData);
+        caseData.put("gatekeepingOrderSealDecision", orderService.buildSealedDecision(eventData));
 
         switch (sdoRouter) {
             case UPLOAD:
-                data.put("standardDirectionOrder", orderService.buildOrderFromUploadedFile(caseData));
+                caseData.put("standardDirectionOrder", orderService.buildOrderFromUploadedFile(eventData));
                 break;
             case SERVICE:
-                data.put("standardDirectionOrder", orderService.buildOrderFromGeneratedFile(caseData));
+                eventData = mergeEventAndCaseData(eventData, caseData);
+                caseData.put("standardDirectionOrder", orderService.buildOrderFromGeneratedFile(eventData));
                 break;
         }
 
-        callbackRequest.getCaseDetails().setData(data);
-        final List<DocmosisTemplates> nopTemplates = orderService.getNoticeOfProceedingsTemplates(caseData);
-        data.put("noticeOfProceedingsBundle",
+        callbackRequest.getCaseDetails().setData(caseData);
+        final List<DocmosisTemplates> nopTemplates = orderService.getNoticeOfProceedingsTemplates(eventData);
+        caseData.put("noticeOfProceedingsBundle",
             nopService.uploadNoticesOfProceedings(getCaseData(callbackRequest.getCaseDetails()), nopTemplates));
 
-        removeTemporaryFields(data,
+        removeTemporaryFields(caseData,
             "urgentHearingOrderDocument",
             "urgentHearingAllocation",
             "showUrgentHearingAllocation",
@@ -156,9 +161,9 @@ public class ListGatekeepingHearingController extends CallbackController {
             "customDirections"
         );
 
-        data.keySet().removeAll(hearingsService.caseFieldsToBeRemoved());
+        caseData.keySet().removeAll(hearingsService.caseFieldsToBeRemoved());
 
-        return respond(data);
+        return respond(caseData);
     }
 
     @PostMapping("/submitted")
@@ -250,5 +255,11 @@ public class ListGatekeepingHearingController extends CallbackController {
             ? YES.getValue() : NO.getValue());
         caseDetails.getData()
             .putAll(othersGenerator.generate(caseData, HearingBooking.builder().build()));
+    }
+
+    private CaseData mergeEventAndCaseData(final CaseData eventData, final CaseDetailsMap caseData) {
+        var eventDataMap = converter.toMap(eventData);
+        eventDataMap.putAll(caseData);
+        return converter.convert(eventDataMap, CaseData.class);
     }
 }
