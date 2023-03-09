@@ -100,8 +100,8 @@ check.dependsOn integration
  }*/
 
  task updateNode(type: Exec, description: 'Update node for yarn v3 install.') {
-   commandLine 'nvm', 'install', '16.19.1'
-   commandLine 'nvm', 'use', '16.19.1'
+   commandLine 'usr/bin/nvm', 'install', '16.19.1'
+   commandLine 'usr/bin/nvm', 'use', '16.19.1'
  }
 
 task installDependencies(type: Exec, description: 'Installs Yarn dependencies.') {
