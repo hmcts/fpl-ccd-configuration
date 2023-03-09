@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
+import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING_LISTING;
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO_AND_NOP;
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.URGENT_AND_NOP;
@@ -32,7 +33,8 @@ public class GatekeepingOrderEventNotificationDecider {
             event.order(sdo.getOrderDoc());
             event.languageTranslationRequirement(sdo.getTranslationRequirements());
             // if we are in the gatekeeping state send the NoP related notifications
-            event.notificationGroup(isInGatekeeping(previousState) ? SDO_AND_NOP : SDO);
+            event.notificationGroup((isInGatekeeping(previousState) || isInGatekeepingListing(previousState))
+                ? SDO_AND_NOP : SDO);
             event.orderTitle(sdo.asLabel());
         } else {
             event.order(urgentHearingOrder.getOrder());
@@ -46,5 +48,9 @@ public class GatekeepingOrderEventNotificationDecider {
 
     private boolean isInGatekeeping(State previousState) {
         return GATEKEEPING == previousState;
+    }
+
+    private boolean isInGatekeepingListing(State previousState) {
+        return GATEKEEPING_LISTING == previousState;
     }
 }

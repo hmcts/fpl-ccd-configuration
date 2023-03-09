@@ -53,6 +53,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_NOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.DEFAULT_PRE_ATTENDANCE;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PREVIOUS_HEARING_VENUE_KEY;
@@ -156,30 +157,17 @@ public class ListGatekeepingHearingController extends CallbackController {
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
 
         CaseData caseData = getCaseData(callbackRequest);
-        publishEvent(new AfterSubmissionCaseDataUpdated(getCaseData(callbackRequest),
-            getCaseDataBefore(callbackRequest)));
-        if (isNotEmpty(caseData.getSelectedHearingId())) {
-            if (isInGatekeepingListingState(callbackRequest.getCaseDetails())
-                && standardDirectionsService.hasEmptyDates(caseData)) {
-                publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
-            }
-            hearingsService.findHearingBooking(caseData.getSelectedHearingId(), caseData.getHearingDetails())
-                .ifPresent(hearingBooking -> {
-                    if (isNotEmpty(hearingBooking.getNoticeOfHearing())) {
-                        publishEvent(new SendNoticeOfHearing(caseData, hearingBooking));
-                    }
-                    if (isNewOrReListedHearing(caseData) && isTemporaryHearingJudge(hearingBooking)) {
-                        publishEvent(new TemporaryHearingJudgeAllocationEvent(caseData, hearingBooking));
-                    }
-                });
-        }
-
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final Map<String, Object> data = caseDetails.getData();
 
-        Map<String, Object> updates = new HashMap<>();
+        final GatekeepingOrderRoute sdoRouter = caseData.getGatekeepingOrderRouter();
 
-        updates.put("standardDirectionOrder", orderService.sealDocumentAfterEventSubmitted(caseData));
+        Map<String, Object> updates = new HashMap<>();
+        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
+
+        if (sdoRouter == UPLOAD) {
+            updates.put("standardDirectionOrder", orderService.sealDocumentAfterEventSubmitted(caseData));
+        }
 
         final CaseData caseDataAfterSealing;
         if (updates.isEmpty()) {
@@ -193,8 +181,6 @@ public class ListGatekeepingHearingController extends CallbackController {
             "internal-change-add-gatekeeping",
             updates);
 
-        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
-
         notificationDecider.buildEventToPublish(caseDataAfterSealing, caseDataBefore.getState())
             .ifPresent(eventToPublish -> {
                 coreCaseDataService.triggerEvent(
@@ -206,6 +192,24 @@ public class ListGatekeepingHearingController extends CallbackController {
 
                 publishEvent(eventToPublish);
             });
+
+//        publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
+
+        if (isNotEmpty(caseData.getSelectedHearingId())) {
+            if (isInGatekeepingListingState(caseDetails)
+                && standardDirectionsService.hasEmptyDates(caseData)) {
+                publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
+            }
+            hearingsService.findHearingBooking(caseData.getSelectedHearingId(), caseData.getHearingDetails())
+                .ifPresent(hearingBooking -> {
+                    if (isNotEmpty(hearingBooking.getNoticeOfHearing())) {
+                        publishEvent(new SendNoticeOfHearing(caseData, hearingBooking));
+                    }
+                    if (isNewOrReListedHearing(caseData) && isTemporaryHearingJudge(hearingBooking)) {
+                        publishEvent(new TemporaryHearingJudgeAllocationEvent(caseData, hearingBooking));
+                    }
+                });
+        }
     }
 
     @PostMapping("allocated-judge/mid-event")
