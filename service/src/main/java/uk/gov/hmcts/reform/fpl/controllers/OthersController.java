@@ -43,6 +43,9 @@ public class OthersController extends CallbackController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        Others updatedOthers = othersService.removeAddressOrAddressNotKnowReason(getCaseData(caseDetails));
+        caseDetails.getData().put("others", updatedOthers);
+
         CaseData caseData = getCaseData(caseDetails);
         List<Element<Other>> allOthers = caseData.getAllOthers();
 

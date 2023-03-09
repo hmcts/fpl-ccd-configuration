@@ -467,4 +467,51 @@ class OthersServiceTest {
         assertThat(selected).isNotNull();
         assertThat(selected.getValue().getName()).isEqualTo(expectedName);
     }
+
+    @Test
+    void shouldReturnUnchanged() {
+        Other firstOther = Other.builder()
+            .name("First Other")
+            .address(Address.builder().addressLine1("Address Line 1").build())
+            .addressNotKnowReason("Some reason")
+            .addressKnow(null)
+            .build();
+
+        CaseData caseData = buildCaseDataWithOthers(firstOther, null, null);
+        Others updatedOthers = service.removeAddressOrAddressNotKnowReason(caseData);
+        assertThat(updatedOthers).isNotNull();
+        assertThat(updatedOthers.getFirstOther()).isEqualTo(firstOther);
+    }
+
+    @Test
+    void shouldRemoveAddress() {
+        Other firstOther = Other.builder()
+            .name("First Other")
+            .address(Address.builder().addressLine1("Address Line 1").build())
+            .addressNotKnowReason("Some reason")
+            .addressKnow("No")
+            .build();
+
+        CaseData caseData = buildCaseDataWithOthers(firstOther, null, null);
+        Others updatedOthers = service.removeAddressOrAddressNotKnowReason(caseData);
+        assertThat(updatedOthers).isNotNull();
+        assertThat(updatedOthers.getFirstOther().getAddressNotKnowReason()).isNotNull();
+        assertThat(updatedOthers.getFirstOther().getAddress()).isNull();
+    }
+
+    @Test
+    void shouldRemoveAddressNotKnowReason() {
+        Other firstOther = Other.builder()
+            .name("First Other")
+            .address(Address.builder().addressLine1("Address Line 1").build())
+            .addressNotKnowReason("Some reason")
+            .addressKnow("Yes")
+            .build();
+
+        CaseData caseData = buildCaseDataWithOthers(firstOther, null, null);
+        Others updatedOthers = service.removeAddressOrAddressNotKnowReason(caseData);
+        assertThat(updatedOthers).isNotNull();
+        assertThat(updatedOthers.getFirstOther().getAddressNotKnowReason()).isNull();
+        assertThat(updatedOthers.getFirstOther().getAddress()).isNotNull();
+    }
 }
