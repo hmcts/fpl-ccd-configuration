@@ -1689,6 +1689,7 @@
           "[EPSMANAGING]",
           "[LAMANAGING]",
           "[LASHARED]",
+          "[LABARRISTER]",
           "caseworker-publiclaw-courtadmin"
         ],
         "CRUD": "CR"
@@ -1721,6 +1722,7 @@
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
+          "[LABARRISTER]",
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate",
           "caseworker-publiclaw-gatekeeper",
