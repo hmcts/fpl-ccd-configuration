@@ -330,7 +330,7 @@ public class FurtherEvidenceUploadedEventTestData {
                 .uploadedBy(uploadedBy)
                 .document(docRef)
                 .dateTimeUploaded(LocalDateTime.now())
-                .confidential(confidential ? List.of() : List.of("CONFIDENTIAL"))
+                .confidential(confidential ? List.of("CONFIDENTIAL") : List.of())
                 .build();
     }
 
