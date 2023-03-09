@@ -64,9 +64,6 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
     private static final String CALLBACK_NAME = "prepare-decision";
     private static final Document DOCUMENT = testDocument();
     private static final DocumentReference DOCUMENT_REFERENCE = DocumentReference.buildFromDocument(DOCUMENT);
-    private static final String NEXT_STEPS = "## Next steps\n\n"
-        + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-        + "You cannot seal and send the order until adding:\n\n";
 
     @MockBean
     private DocmosisDocumentGeneratorService documentGeneratorService;
@@ -95,11 +92,7 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
         }
 
         @Test
-        void shouldSetDraftDocumentStandardDirectionsAndNextStepsLabelWhenMandatoryInformationMissing() {
-            final String nextSteps = NEXT_STEPS
-                + "* the first hearing details\n\n"
-                + "* the allocated judge\n\n"
-                + "* the judge issuing the order";
+        void shouldSetDraftDocumentStandardDirectionsWhenMandatoryInformationMissing() {
 
             final StandardDirection localAuthorityStandardDirection = StandardDirection.builder()
                 .type(SEND_CASE_SUMMARY)
@@ -135,7 +128,6 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(DOCUMENT_REFERENCE)
                 .dateOfIssue(dateNow())
-                .nextSteps(nextSteps)
                 .build();
 
             final CaseData responseData = extractCaseData(postMidEvent(caseDetails, CALLBACK_NAME));
@@ -209,7 +201,6 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
             GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(DOCUMENT_REFERENCE)
                 .dateOfIssue(dateNow())
-                .nextSteps(null)
                 .build();
 
             DocmosisStandardDirectionOrder expectedDocumentCustomization = expectedDocumentCustomization().toBuilder()
@@ -240,7 +231,6 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
             GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(DOCUMENT_REFERENCE)
                 .dateOfIssue(dateNow())
-                .nextSteps(null)
                 .build();
 
             DocmosisStandardDirectionOrder expectedDocumentCustomization = expectedDocumentCustomization().toBuilder()
@@ -260,11 +250,7 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
     class UploadRoute {
 
         @Test
-        void shouldSetDraftDocumentStandardDirectionsAndNextStepsLabelWhenMandatoryInformationMissing() {
-            final String nextSteps = NEXT_STEPS
-                + "* the first hearing details\n\n"
-                + "* the allocated judge\n\n"
-                + "* the judge issuing the order";
+        void shouldSetDraftDocumentStandardDirectionsWhenMandatoryInformationMissing() {
 
             final CaseData caseDetails = CaseData.builder()
                 .gatekeepingOrderRouter(UPLOAD)
@@ -274,7 +260,6 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(DOCUMENT_REFERENCE)
                 .dateOfIssue(dateNow())
-                .nextSteps(nextSteps)
                 .build();
 
             final CaseData responseData = extractCaseData(postMidEvent(caseDetails, CALLBACK_NAME));

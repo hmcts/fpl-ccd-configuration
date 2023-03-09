@@ -18,7 +18,6 @@ public class GatekeepingOrderSealDecision {
     private final DocumentReference draftDocument;
     private final LocalDate dateOfIssue;
     private final OrderStatus orderStatus;
-    private final String nextSteps;
 
     @JsonIgnore
     public boolean isSealed() {
