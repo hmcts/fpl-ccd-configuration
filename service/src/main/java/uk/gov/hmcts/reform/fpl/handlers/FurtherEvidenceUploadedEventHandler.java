@@ -37,6 +37,7 @@ import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
@@ -470,6 +471,12 @@ public class FurtherEvidenceUploadedEventHandler {
                 );
     }
 
+    @SuppressWarnings("unchecked")
+    private <T> boolean isNewElement(List<Element<T>> beforeElement, Element<T> test) {
+        return ElementUtils.findElement(test.getId(), (List<Element<T>>) defaultIfNull(beforeElement, List.of()))
+            .isPresent() == false;
+    }
+
     private DocumentInfo getNewApplicationDocuments(CaseData caseData, CaseData caseDataBefore) {
         List<ApplicationDocument> newApplicationDocuments = unwrapElements(caseData.getApplicationDocuments());
         List<ApplicationDocument> oldApplicationDocuments = unwrapElements(caseDataBefore.getApplicationDocuments());
@@ -503,7 +510,7 @@ public class FurtherEvidenceUploadedEventHandler {
         List<Element<ApplicationDocument>> beforeApplicationDocuments) {
         List<Element<ApplicationDocument>> newApplicationDocuments = new ArrayList<>();
         defaultIfNull(applicationDocuments, new ArrayList<Element<ApplicationDocument>>()).forEach(newDoc -> {
-            if (!defaultIfNull(beforeApplicationDocuments, List.of()).contains(newDoc)) {
+            if (isNewElement(beforeApplicationDocuments, newDoc)) {
                 newApplicationDocuments.add(newDoc);
             }
         });
@@ -515,7 +522,7 @@ public class FurtherEvidenceUploadedEventHandler {
         List<Element<SupportingEvidenceBundle>> beforeSupportingEvidenceBundle) {
         List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle = new ArrayList<>();
         defaultIfNull(supportingEvidenceBundle, new ArrayList<Element<SupportingEvidenceBundle>>()).forEach(newDoc -> {
-            if (!defaultIfNull(beforeSupportingEvidenceBundle, List.of()).contains(newDoc)) {
+            if (isNewElement(beforeSupportingEvidenceBundle, newDoc)) {
                 newSupportingEvidenceBundle.add(newDoc);
             }
         });
