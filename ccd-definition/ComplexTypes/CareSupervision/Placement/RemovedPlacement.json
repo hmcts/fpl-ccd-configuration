@@ -10,7 +10,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "RemovedPlacement",
-    "ListElementCode": "removedPlacement",
+    "ListElementCode": "placement",
     "FieldType": "Placement",
     "ElementLabel": "Removed placement application",
     "SecurityClassification": "Public"
