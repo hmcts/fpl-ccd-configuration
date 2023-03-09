@@ -270,6 +270,12 @@ public class FurtherEvidenceUploadedEventTestData {
             createDummyEvidenceBundle(CONFIDENTIAL_2, uploadedBy, true, PDF_DOCUMENT_2, type));
     }
 
+    public static List<Element<SupportingEvidenceBundle>> buildNonConfidentialDocumentList(final String uploadedBy) {
+        return wrapElements(
+            createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, false, PDF_DOCUMENT_1),
+            createDummyEvidenceBundle(CONFIDENTIAL_2, uploadedBy, false, PDF_DOCUMENT_2));
+    }
+
     public static List<Element<SupportingEvidenceBundle>> buildNonConfidentialPdfDocumentList(final String uploadedBy) {
         return buildNonConfidentialPdfDocumentList(uploadedBy, DEFAULT_FURTHER_EVIDENCE_TYPE);
     }
@@ -311,14 +317,20 @@ public class FurtherEvidenceUploadedEventTestData {
         return document.build();
     }
 
-    public static ApplicationDocument createDummyApplicationDocument(final String name, final String uploadedBy,
+    public static ApplicationDocument createDummyApplicationDocument(String name, String uploadedBy,
                                                                      DocumentReference docRef) {
+        return createDummyApplicationDocument(name,uploadedBy, docRef, false);
+    }
+
+    public static ApplicationDocument createDummyApplicationDocument(final String name, final String uploadedBy,
+                                                                     DocumentReference docRef, boolean confidential) {
         return ApplicationDocument.builder()
                 .documentName(name)
                 .documentType(BIRTH_CERTIFICATE)
                 .uploadedBy(uploadedBy)
                 .document(docRef)
                 .dateTimeUploaded(LocalDateTime.now())
+                .confidential(confidential ? List.of() : List.of("CONFIDENTIAL"))
                 .build();
     }
 

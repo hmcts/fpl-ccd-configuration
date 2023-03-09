@@ -99,6 +99,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildConfidentialDocumentList;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildHearingFurtherEvidenceBundle;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildNonConfidentialDocumentList;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildNonConfidentialPdfDocumentList;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildRespondentStatementsList;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildSubmittedCaseData;
@@ -1569,5 +1570,31 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     private static List<String> buildConfidentialDocumentsNamesList() {
         return List.of(CONFIDENTIAL_1, CONFIDENTIAL_2);
+    }
+
+    @Test
+    void shouldNotSendNotificationWhenApplicationDocumentConfidentialCheckBoxChangedByLA() {
+        // Further documents for main application -> Further application documents
+        verifyNotificationFurtherDocumentsTemplate(
+            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY,
+            (caseData) ->  caseData.getApplicationDocuments().addAll(
+                wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER,
+                    PDF_DOCUMENT_1, false))),
+            (caseData) ->  caseData.getApplicationDocuments().addAll(
+                wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER,
+                    PDF_DOCUMENT_1, true))),
+            Set.of(), null);
+    }
+
+    @Test
+    void shouldNotSendNotificationWhenFurtherEvidenceDocumentsLAConfidentialCheckBoxChangedByLA() {
+        // Further documents for main application -> Respondent Statement
+        verifyNotificationFurtherDocumentsTemplate(
+            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY,
+            (caseData) ->  caseData.getRespondentStatements().addAll(
+                buildRespondentStatementsList(buildNonConfidentialDocumentList(LA_USER))),
+            (caseData) ->  caseData.getRespondentStatements().addAll(
+                buildRespondentStatementsList(buildConfidentialDocumentList(LA_USER))),
+            Set.of(), null);
     }
 }
