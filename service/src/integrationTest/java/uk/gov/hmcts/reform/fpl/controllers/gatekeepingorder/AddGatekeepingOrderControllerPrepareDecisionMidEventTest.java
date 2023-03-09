@@ -143,10 +143,6 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
 
         @Test
         void shouldSetDraftDocumentStandardDirectionsForReduceTimeForService() {
-            final String nextSteps = NEXT_STEPS
-                + "* the first hearing details\n\n"
-                + "* the allocated judge\n\n"
-                + "* the judge issuing the order";
 
             final StandardDirection localAuthorityStandardDirection = StandardDirection.builder()
                 .type(REDUCE_TIME_FOR_SERVICE)
@@ -171,7 +167,6 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(DOCUMENT_REFERENCE)
                 .dateOfIssue(dateNow())
-                .nextSteps(nextSteps)
                 .build();
 
             final CaseData responseData = extractCaseData(postMidEvent(caseDetails, CALLBACK_NAME));
