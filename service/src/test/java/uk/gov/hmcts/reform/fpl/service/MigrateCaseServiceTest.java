@@ -977,8 +977,7 @@ class MigrateCaseServiceTest {
                 "Migration {id = %s, case reference = %s}, expected documentViewNC contains confidential doc.",
                 MIGRATION_ID, 1L));
     }
-
-
+    
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class RemovePlacementApplication {
