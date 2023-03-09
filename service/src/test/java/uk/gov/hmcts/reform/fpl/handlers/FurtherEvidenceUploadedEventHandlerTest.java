@@ -1583,56 +1583,45 @@ class FurtherEvidenceUploadedEventHandlerTest {
         }
     }
 
+    static class RespondentStatementTestCasesArg implements ArgumentsProvider {
+
+        @Override
+        public Stream<Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                Arguments.of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS), NON_CONFIDENTIAL, false),
+                Arguments.of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
+                    Set.of(ALL_LAS), CONFIDENTIAL, true),
+                Arguments.of(userDetailsHMCTS(), HMCTS, HMCTS_USER,
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS), NON_CONFIDENTIAL, false),
+                Arguments.of(userDetailsHMCTS(), HMCTS, HMCTS_USER,
+                    Set.of(), CONFIDENTIAL, true),
+                Arguments.of(userDetailsRespondentSolicitor(), SOLICITOR, REP_USER,
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS), NON_CONFIDENTIAL, false)
+            );
+        }
+    }
+
     @Nested
     class RespondentStatement {
 
-        @Test
-        void shouldSendNotificationForNewUploadByLA() {
+        @ParameterizedTest
+        @ArgumentsSource(RespondentStatementTestCasesArg.class)
+        void shouldSendNotificationForNewUpload(UserDetails userDetails,
+                                                DocumentUploaderType uploadedType,
+                                                String uploadedBy,
+                                                Set<DocumentUploadNotificationUserType> notificationTypes,
+                                                List<String> expectedDocumentNames,
+                                                boolean confidential) {
             verifyNotificationFurtherDocumentsTemplate(
-                userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
+                userDetails, uploadedType, EMPTY_CASE_DATA_MODIFIER,
                 (caseData) ->  caseData.getRespondentStatements().addAll(
-                    buildRespondentStatementsList(buildNonConfidentialPdfDocumentList(LA_USER))),
-                Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
-                NON_CONFIDENTIAL);
-        }
-
-        @Test
-        void shouldSendNotificationForNewConfidentialUploadByLA() {
-            verifyNotificationFurtherDocumentsTemplate(
-                userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
-                (caseData) ->  caseData.getRespondentStatements().addAll(
-                    buildRespondentStatementsList(buildConfidentialDocumentList(LA_USER))),
-                Set.of(ALL_LAS),
-                CONFIDENTIAL);
-        }
-
-        @Test
-        void shouldSendNotificationForNewUploadByHMCTS() {
-            verifyNotificationFurtherDocumentsTemplate(
-                userDetailsHMCTS(), HMCTS, EMPTY_CASE_DATA_MODIFIER,
-                (caseData) ->  caseData.getRespondentStatements().addAll(
-                    buildRespondentStatementsList(buildNonConfidentialPdfDocumentList(HMCTS_USER))),
-                Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
-                NON_CONFIDENTIAL);
-        }
-
-        @Test
-        void shouldSendNotificationForNewConfidentialUploadByHMCTS() {
-            verifyNotificationFurtherDocumentsTemplate(
-                userDetailsHMCTS(), HMCTS, EMPTY_CASE_DATA_MODIFIER,
-                (caseData) ->  caseData.getRespondentStatements().addAll(
-                    buildRespondentStatementsList(buildConfidentialDocumentList(HMCTS_USER))),
-                Set.of(), CONFIDENTIAL);
-        }
-
-        @Test
-        void shouldSendNotificationForNewUploadByRespondentSolicitor() {
-            verifyNotificationFurtherDocumentsTemplate(
-                userDetailsRespondentSolicitor(), SOLICITOR, EMPTY_CASE_DATA_MODIFIER,
-                (caseData) ->  caseData.getRespondentStatements().addAll(
-                    buildRespondentStatementsList(buildNonConfidentialPdfDocumentList(REP_USER))),
-                Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
-                NON_CONFIDENTIAL);
+                    buildRespondentStatementsList(
+                        confidential
+                            ? buildConfidentialDocumentList(uploadedBy)
+                            : buildNonConfidentialPdfDocumentList(uploadedBy)
+                    )),
+                notificationTypes, expectedDocumentNames);
         }
 
         @ParameterizedTest
@@ -1650,7 +1639,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 Set.of(), null);
         }
 
-        // TODO
+        //TODO
 //        @ParameterizedTest
 //        @ArgumentsSource(Confidentials.class)
 //        void shouldSendNotificationWhenUpdatingDocumentInRespondentStatementByLA(boolean oldConfidential,
