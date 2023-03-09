@@ -18,7 +18,19 @@
     "ListElementCode": "documentAcknowledgeLabel",
     "FieldDisplayOrder": 4,
     "DisplayContext": "READONLY",
-    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to Familyman Case number/Names/CCD</strong></div><br>"
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>",
+    "FieldShowCondition": "documentAcknowledge!=\"ACK_RELATED_TO_CASE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PlacementNoticeDocument",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "placementNoticeResponses",
+    "ListElementCode": "documentAcknowledgeLabelForCYA",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to this case</strong></div><br>",
+    "FieldShowCondition": "documentAcknowledge=\"ACK_RELATED_TO_CASE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -28,7 +40,7 @@
     "ListElementCode": "documentAcknowledge",
     "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related to Familyman Case number/Names/CCD"
+    "EventElementLabel": "Tick to confirm this document is related to this case"
   },
   {
     "LiveFrom": "01/01/2017",
