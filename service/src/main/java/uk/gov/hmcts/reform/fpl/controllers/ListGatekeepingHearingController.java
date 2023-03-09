@@ -187,7 +187,7 @@ public class ListGatekeepingHearingController extends CallbackController {
                     JURISDICTION,
                     CASE_TYPE,
                     caseDataAfterSealing.getId(),
-                    "internal-change-SEND_DOCUMENT",
+                    "internal-change-UPDATE-CASE",
                     Map.of("documentToBeSent", eventToPublish.getOrder()));
 
                 publishEvent(eventToPublish);
