@@ -239,10 +239,4 @@
     <vulnerabilityName>1091238</vulnerabilityName>
     <vulnerabilityName>1091239</vulnerabilityName>
   </suppress>
-  <suppress>
-    <vulnerabilityName>1091238</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1091239</vulnerabilityName>
-  </suppress>
 </suppressions>
