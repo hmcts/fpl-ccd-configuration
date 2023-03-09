@@ -2,6 +2,9 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -53,6 +56,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.time.LocalDateTime.now;
 import static java.util.Collections.emptyList;
@@ -85,6 +89,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.NON_CONFIDENTIAL_1;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.NON_CONFIDENTIAL_2;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.PDF_DOCUMENT_1;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.PDF_DOCUMENT_2;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithAdditionalApplicationBundle;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithApplicationDocuments;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithC2AdditionalApplicationBundle;
@@ -99,13 +104,13 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildConfidentialDocumentList;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildHearingFurtherEvidenceBundle;
-import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildNonConfidentialDocumentList;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildNonConfidentialPdfDocumentList;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildRespondentStatementsList;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildSubmittedCaseData;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.commonCaseBuilder;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.createCourtBundleList;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.createDummyApplicationDocument;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.createDummyEvidenceBundle;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.userDetailsHMCTS;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.userDetailsLA;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.userDetailsRespondentSolicitor;
@@ -1572,29 +1577,78 @@ class FurtherEvidenceUploadedEventHandlerTest {
         return List.of(CONFIDENTIAL_1, CONFIDENTIAL_2);
     }
 
-    @Test
-    void shouldNotSendNotificationWhenApplicationDocumentConfidentialCheckBoxChangedByLA() {
+    private static Stream<Arguments> oldNewConfidentialCombination() {
+        Stream.Builder<Arguments> builder = Stream.builder();
+        builder.add(Arguments.of(true, true));
+        builder.add(Arguments.of(true, false));
+        builder.add(Arguments.of(false, true));
+        builder.add(Arguments.of(false, false));
+        return builder.build();
+    }
+
+    @ParameterizedTest
+    @MethodSource("oldNewConfidentialCombination")
+    void shouldNotSendNotificationWhenConfidentialChangeOnlyInApplicationDocumentByLA(boolean oldConfidential,
+                                                                                      boolean newConfidential) {
         // Further documents for main application -> Further application documents
         verifyNotificationFurtherDocumentsTemplate(
             userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY,
             (caseData) ->  caseData.getApplicationDocuments().addAll(
                 wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER,
-                    PDF_DOCUMENT_1, false))),
+                    PDF_DOCUMENT_1, oldConfidential))),
             (caseData) ->  caseData.getApplicationDocuments().addAll(
                 wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER,
-                    PDF_DOCUMENT_1, true))),
+                    PDF_DOCUMENT_1, newConfidential))),
             Set.of(), null);
     }
 
-    @Test
-    void shouldNotSendNotificationWhenFurtherEvidenceDocumentsLAConfidentialCheckBoxChangedByLA() {
+    @ParameterizedTest
+    @MethodSource("oldNewConfidentialCombination")
+    void shouldNotSendNotificationWhenConfidentialChangeOnlyInRespondentStatementByLA(boolean oldConfidential,
+                                                                                      boolean newConfidential) {
         // Further documents for main application -> Respondent Statement
         verifyNotificationFurtherDocumentsTemplate(
             userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY,
             (caseData) ->  caseData.getRespondentStatements().addAll(
-                buildRespondentStatementsList(buildNonConfidentialDocumentList(LA_USER))),
+                buildRespondentStatementsList(wrapElements(
+                    createDummyEvidenceBundle(CONFIDENTIAL_1, LA_USER, oldConfidential, PDF_DOCUMENT_1)))),
             (caseData) ->  caseData.getRespondentStatements().addAll(
-                buildRespondentStatementsList(buildConfidentialDocumentList(LA_USER))),
+                buildRespondentStatementsList(wrapElements(
+                    createDummyEvidenceBundle(CONFIDENTIAL_1, LA_USER, newConfidential, PDF_DOCUMENT_1)))),
             Set.of(), null);
+    }
+
+    @ParameterizedTest
+    @MethodSource("oldNewConfidentialCombination")
+    void shouldSendNotificationWhenUpdatingDocumentInApplicationDocumentByLA(boolean oldConfidential,
+                                                                             boolean newConfidential) {
+        // Further documents for main application -> Further application documents
+        verifyNotificationFurtherDocumentsTemplate(
+            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY,
+            (caseData) ->  caseData.getApplicationDocuments().addAll(
+                wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER,
+                    PDF_DOCUMENT_1, oldConfidential))),
+            (caseData) ->  caseData.getApplicationDocuments().addAll(
+                wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER,
+                    PDF_DOCUMENT_2, newConfidential))),
+            Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+            List.of(BIRTH_CERTIFICATE.getLabel()));
+    }
+
+    @ParameterizedTest
+    @MethodSource("oldNewConfidentialCombination")
+    void shouldSendNotificationWhenUpdatingDocumentInRespondentStatementByLA(boolean oldConfidential,
+                                                                             boolean newConfidential) {
+        // Further documents for main application -> Respondent Statement
+        verifyNotificationFurtherDocumentsTemplate(
+            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY,
+            (caseData) ->  caseData.getRespondentStatements().addAll(
+                buildRespondentStatementsList(wrapElements(
+                    createDummyEvidenceBundle(CONFIDENTIAL_1, LA_USER, oldConfidential, PDF_DOCUMENT_1)))),
+            (caseData) ->  caseData.getRespondentStatements().addAll(
+                buildRespondentStatementsList(wrapElements(
+                    createDummyEvidenceBundle(CONFIDENTIAL_1, LA_USER, newConfidential, PDF_DOCUMENT_2)))),
+            Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+            NON_CONFIDENTIAL);
     }
 }
