@@ -5,10 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.utils.SecureDocStoreHelper;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.net.URI;
@@ -24,7 +24,6 @@ public class DocumentMetadataDownloadService {
     private final DocumentMetadataDownloadClientApi documentMetadataDownloadClient;
     private final IdamClient idamClient;
     private final RequestData requestData;
-
     private final FeatureToggleService featureToggleService;
     private final SecureDocStoreService secureDocStoreService;
     private final SystemUserService systemUserService;
@@ -47,47 +46,26 @@ public class DocumentMetadataDownloadService {
                 documentUrlString,
                 userId,
                 userRoles);
+        final String _userRoles = userRoles;
 
-        if (featureToggleService.isSecureDocstoreEnabled()) {
-            Document document = secureDocStoreService.getDocumentMetadata(documentUrlString);
-
-            DocumentReference ret = Optional.ofNullable(document)
-                .map(doc -> DocumentReference.buildFromDocument(document)
-                    .toBuilder()
-                    .size(document.size)
-                    .build())
-                .orElseThrow(() -> new IllegalArgumentException(
-                        String.join(":",
-                            "Download of meta data unsuccessful for document :",
-                            documentUrlString)
-                    )
-                );
-            log.info("Size of document {}: {}", documentUrlString, Optional.ofNullable(document)
-                .map(doc -> doc.size).orElse(0L));
+        DocumentReference ret = null;
+        try {
+            ret = new SecureDocStoreHelper(secureDocStoreService, featureToggleService)
+                .getDocumentMetadata(documentUrlString, () -> {
+                    uk.gov.hmcts.reform.document.domain.Document document =
+                        documentMetadataDownloadClient.getDocumentMetadata(
+                            authorisation,
+                            authTokenGenerator.generate(),
+                            _userRoles,
+                            userId,
+                            URI.create(documentUrlString).getPath()
+                        );
+                    return SecureDocStoreHelper.convertToDocumentReference(documentUrlString, document);
+                });
             return ret;
-        } else {
-            uk.gov.hmcts.reform.document.domain.Document document = documentMetadataDownloadClient.getDocumentMetadata(
-                authorisation,
-                authTokenGenerator.generate(),
-                userRoles,
-                userId,
-                URI.create(documentUrlString).getPath()
-            );
-
-            DocumentReference ret =  Optional.ofNullable(document)
-                .map(doc -> DocumentReference.buildFromDocument(document)
-                    .toBuilder()
-                    .size(document.size)
-                    .build())
-                .orElseThrow(() -> new IllegalArgumentException(
-                        String.join(":",
-                            "Download of meta data unsuccessful for document :",
-                            documentUrlString)
-                    )
-                );
-            log.info("Size of document {}: {}", documentUrlString, Optional.ofNullable(document)
-                .map(doc -> doc.size).orElse(0L));
-            return ret;
+        } finally {
+            log.info("Size of document {}: {}", documentUrlString, Optional.ofNullable(ret)
+                .map(doc -> doc.getSize()).orElse(0L));
         }
     }
 }
