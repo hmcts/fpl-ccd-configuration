@@ -8,6 +8,9 @@ def type = "java"
 
 def product = "fpl"
 def component = "case-service"
+
+def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
+
 AppPipelineConfig pipelineConf;
 
 def serviceSecrets = [
@@ -260,6 +263,9 @@ withPipeline(type, product, component) {
   }
 
   before('functionalTest:preview') {
+    yarnBuilder.yarn('yarn-update')
+    yarnBuilder.yarn('install-dependancies')
+    yarnBuilder.yarn('check-dependancy-integrity')
     env.PARALLEL_CHUNKS = 12
     env.TESTS_SELECTOR = '(?=.*)^(?!.*(@smoke-tests|@flaky))'
   }
