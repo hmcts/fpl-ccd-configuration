@@ -48,7 +48,6 @@ import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -90,9 +89,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudgeAndLegalAdvi
 @SpringBootTest(classes = {JacksonAutoConfiguration.class, CaseConverter.class, GatekeepingOrderService.class,
     FixedTimeConfiguration.class})
 class GatekeepingOrderServiceTest {
-    private static final String NEXT_STEPS = "## Next steps\n\n"
-        + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-        + "You cannot seal and send the order until adding:\n\n";
 
     private static final Document DOCUMENT = testDocument();
     private static final DocumentReference REFERENCE = buildFromDocument(DOCUMENT);
@@ -127,100 +123,6 @@ class GatekeepingOrderServiceTest {
     @BeforeEach
     void setUp() {
         given(documentService.getDocumentFromDocmosisOrderTemplate(any(), eq(SDO))).willReturn(DOCUMENT);
-    }
-
-    @Test
-    void shouldNotBuildNextStepsLabelWhenAllRequiredInformationPresent() {
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(wrapElements(HearingBooking.builder().startDate(LocalDateTime.now()).build()))
-            .allocatedJudge(Judge.builder().judgeLastName("Judy").build())
-            .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
-                .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder().useAllocatedJudge("Yes").build())
-                .build())
-            .build();
-
-        GatekeepingOrderSealDecision expected = GatekeepingOrderSealDecision.builder()
-            .draftDocument(REFERENCE)
-            .orderStatus(null)
-            .nextSteps(null)
-            .dateOfIssue(LocalDate.now())
-            .build();
-
-        assertThat(underTest.buildSealDecision(caseData)).isEqualTo(expected);
-    }
-
-    @Test
-    void shouldBuildNextStepsLabelWhenNoHearingDetails() {
-        CaseData caseData = CaseData.builder()
-            .allocatedJudge(Judge.builder().judgeLastName("Judy").build())
-            .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
-                .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder().useAllocatedJudge("Yes").build())
-                .build())
-            .build();
-
-        GatekeepingOrderSealDecision expected = GatekeepingOrderSealDecision.builder()
-            .draftDocument(REFERENCE)
-            .orderStatus(null)
-            .nextSteps(NEXT_STEPS + "* the first hearing details")
-            .dateOfIssue(LocalDate.now())
-            .build();
-
-        assertThat(underTest.buildSealDecision(caseData)).isEqualTo(expected);
-    }
-
-    @Test
-    void shouldBuildNextStepsLabelWhenNoAllocatedJudge() {
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(wrapElements(HearingBooking.builder().startDate(LocalDateTime.now()).build()))
-            .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
-                .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder().useAllocatedJudge("No")
-                    .judgeTitle(HIS_HONOUR_JUDGE)
-                    .judgeLastName("Nelson")
-                    .build())
-                .build())
-            .build();
-
-        GatekeepingOrderSealDecision expected = GatekeepingOrderSealDecision.builder()
-            .draftDocument(REFERENCE)
-            .orderStatus(null)
-            .nextSteps(NEXT_STEPS + "* the allocated judge")
-            .dateOfIssue(LocalDate.now())
-            .build();
-
-        assertThat(underTest.buildSealDecision(caseData)).isEqualTo(expected);
-    }
-
-    @Test
-    void shouldBuildNextStepsLabelWhenNoIssuingJudge() {
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(wrapElements(HearingBooking.builder().startDate(LocalDateTime.now()).build()))
-            .allocatedJudge(Judge.builder().judgeLastName("Judy").build())
-            .build();
-
-        GatekeepingOrderSealDecision expected = GatekeepingOrderSealDecision.builder()
-            .draftDocument(REFERENCE)
-            .orderStatus(null)
-            .nextSteps(NEXT_STEPS + "* the judge issuing the order")
-            .dateOfIssue(LocalDate.now())
-            .build();
-
-        assertThat(underTest.buildSealDecision(caseData)).isEqualTo(expected);
-    }
-
-    @Test
-    void shouldBuildNextStepsLabelWhenAllFieldsMandatoryFieldsMissing() {
-        CaseData caseData = CaseData.builder().build();
-
-        GatekeepingOrderSealDecision expected = GatekeepingOrderSealDecision.builder()
-            .draftDocument(REFERENCE)
-            .orderStatus(null)
-            .nextSteps(NEXT_STEPS + "* the first hearing details\n\n"
-                + "* the allocated judge\n\n"
-                + "* the judge issuing the order")
-            .dateOfIssue(LocalDate.now())
-            .build();
-
-        assertThat(underTest.buildSealDecision(caseData)).isEqualTo(expected);
     }
 
     @Test
@@ -541,12 +443,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(generatedOrder)
-                .nextSteps("## Next steps\n\n"
-                    + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-                    + "You cannot seal and send the order until adding:\n\n"
-                    + "* the first hearing details\n\n"
-                    + "* the allocated judge\n\n"
-                    + "* the judge issuing the order")
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -567,11 +463,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(generatedOrder)
-                .nextSteps("## Next steps\n\n"
-                    + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-                    + "You cannot seal and send the order until adding:\n\n"
-                    + "* the first hearing details\n\n"
-                    + "* the judge issuing the order")
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -592,11 +483,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(generatedOrder)
-                .nextSteps("## Next steps\n\n"
-                    + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-                    + "You cannot seal and send the order until adding:\n\n"
-                    + "* the allocated judge\n\n"
-                    + "* the judge issuing the order")
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -619,11 +505,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(generatedOrder)
-                .nextSteps("## Next steps\n\n"
-                    + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-                    + "You cannot seal and send the order until adding:\n\n"
-                    + "* the first hearing details\n\n"
-                    + "* the allocated judge")
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -648,7 +529,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(generatedOrder)
-                .nextSteps(null)
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -687,12 +567,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(replacementSDO)
-                .nextSteps("## Next steps\n\n"
-                    + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-                    + "You cannot seal and send the order until adding:\n\n"
-                    + "* the first hearing details\n\n"
-                    + "* the allocated judge\n\n"
-                    + "* the judge issuing the order")
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -715,12 +589,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(preparedSDO)
-                .nextSteps("## Next steps\n\n"
-                    + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-                    + "You cannot seal and send the order until adding:\n\n"
-                    + "* the first hearing details\n\n"
-                    + "* the allocated judge\n\n"
-                    + "* the judge issuing the order")
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -729,7 +597,7 @@ class GatekeepingOrderServiceTest {
         }
 
         @Test
-        void shouldUsePreviouslyCurrentOrderWhenNoPreviouseOrderNorReplacement() {
+        void shouldUsePreviouslyCurrentOrderWhenNoPreviousOrderNorReplacement() {
             final CaseData caseData = CaseData.builder()
                 .gatekeepingOrderRouter(uploadRoute)
                 .replacementSDO(null)
@@ -743,12 +611,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(currentSDO)
-                .nextSteps("## Next steps\n\n"
-                    + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-                    + "You cannot seal and send the order until adding:\n\n"
-                    + "* the first hearing details\n\n"
-                    + "* the allocated judge\n\n"
-                    + "* the judge issuing the order")
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -767,12 +629,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(replacementSDO)
-                .nextSteps("## Next steps\n\n"
-                    + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-                    + "You cannot seal and send the order until adding:\n\n"
-                    + "* the first hearing details\n\n"
-                    + "* the allocated judge\n\n"
-                    + "* the judge issuing the order")
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -792,11 +648,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(replacementSDO)
-                .nextSteps("## Next steps\n\n"
-                    + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-                    + "You cannot seal and send the order until adding:\n\n"
-                    + "* the first hearing details\n\n"
-                    + "* the judge issuing the order")
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -816,11 +667,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(replacementSDO)
-                .nextSteps("## Next steps\n\n"
-                    + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-                    + "You cannot seal and send the order until adding:\n\n"
-                    + "* the allocated judge\n\n"
-                    + "* the judge issuing the order")
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -842,11 +688,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(replacementSDO)
-                .nextSteps("## Next steps\n\n"
-                    + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-                    + "You cannot seal and send the order until adding:\n\n"
-                    + "* the first hearing details\n\n"
-                    + "* the allocated judge")
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -870,7 +711,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(replacementSDO)
-                .nextSteps(null)
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();

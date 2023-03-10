@@ -78,7 +78,6 @@ public class GatekeepingOrderService {
 
         return GatekeepingOrderSealDecision.builder()
             .draftDocument(order)
-            .nextSteps(buildNextStepsLabel(caseData))
             .dateOfIssue(LocalDate.now())
             .orderStatus(null)
             .build();
@@ -145,35 +144,6 @@ public class GatekeepingOrderService {
         }
 
         return judgeAndLegalAdvisor.isUsingAllocatedJudge() || isNotEmpty(judgeAndLegalAdvisor.getJudgeTitle());
-    }
-
-    //this constructs a label which hides the option to seal if mandatory information is missing
-    //previous button can break this functionality as logic uses a hidden field (EUI-3922)
-    private String buildNextStepsLabel(CaseData caseData) {
-        List<String> requiredMissingInformation = new ArrayList<>();
-
-        if (caseData.getFirstHearing().isEmpty()) {
-            requiredMissingInformation.add("* the first hearing details");
-        }
-
-        if (isEmpty(caseData.getAllocatedJudge())) {
-            requiredMissingInformation.add("* the allocated judge");
-        }
-
-        if (!hasEnteredIssuingJudge(caseData.getGatekeepingOrderEventData().getGatekeepingOrderIssuingJudge())) {
-            requiredMissingInformation.add("* the judge issuing the order");
-        }
-
-        if (requiredMissingInformation.isEmpty()) {
-            return null;
-        } else {
-            final String nextStepsLabel = "## Next steps\n\n"
-                + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-                + "You cannot seal and send the order until adding:";
-            requiredMissingInformation.add(0, nextStepsLabel);
-
-            return String.join("\n\n", requiredMissingInformation);
-        }
     }
 
     private StandardDirectionOrder buildBaseGatekeepingOrder(CaseData caseData) {

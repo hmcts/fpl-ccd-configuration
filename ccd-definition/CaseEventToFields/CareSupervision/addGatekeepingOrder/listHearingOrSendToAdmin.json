@@ -7,7 +7,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
     "PageID": "ListHearingOrSendToAdmin",
-    "PageDisplayOrder": 8,
+    "PageDisplayOrder": 7,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y"
   },
@@ -19,7 +19,7 @@
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
     "PageID": "ListHearingOrSendToAdmin",
-    "PageDisplayOrder": 8,
+    "PageDisplayOrder": 7,
     "PageColumnNumber": 1,
     "FieldShowCondition": "gatekeepingOrderListOrSendToAdmin=\"YES\""
   },
@@ -31,9 +31,22 @@
   "PageFieldDisplayOrder": 3,
   "DisplayContext": "OPTIONAL",
   "PageID": "ListHearingOrSendToAdmin",
-  "PageDisplayOrder": 8,
+  "PageDisplayOrder": 7,
   "PageColumnNumber": 1,
   "FieldShowCondition": "gatekeepingOrderListOrSendToAdmin=\"NO\"",
   "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "gatekeepingOrderSealDecision",
+    "PageFieldDisplayOrder": 4,
+    "DisplayContext": "COMPLEX",
+    "PageID": "ListHearingOrSendToAdmin",
+    "PageDisplayOrder": 7,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "gatekeepingOrderListOrSendToAdmin=\"DO_NOT_SHOW\""
   }
 ]
