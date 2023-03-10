@@ -185,7 +185,7 @@ task runCodeceptSmokeTest(type: Test, description: 'Runs the old codecept smoke 
 }
 
 task functional(description: 'Runs the functional tests.') {
-  dependsOn(inStrictOrder(lintUserInterfaceTests, runApiTests, runBrowserTests))
+  dependsOn(inStrictOrder(runApiTests, runBrowserTests))
 }
 
 task contract(description: 'Runs the contract tests.') {

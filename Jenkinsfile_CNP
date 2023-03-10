@@ -265,6 +265,7 @@ withPipeline(type, product, component) {
   before('functionalTest:preview') {
     yarnBuilder.yarn('yarn-update')
     yarnBuilder.yarn('install-dependancies')
+    yarnBuilder.yarn('lint-ui-tests')
     env.PARALLEL_CHUNKS = 12
     env.TESTS_SELECTOR = '(?=.*)^(?!.*(@smoke-tests|@flaky))'
   }
