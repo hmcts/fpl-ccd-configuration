@@ -1552,20 +1552,24 @@ class FurtherEvidenceUploadedEventHandlerTest {
             Set.of(), null);
     }
 
-    static class Confidentials implements ArgumentsProvider {
+    static class ConfidentialChangeArgs implements ArgumentsProvider {
 
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
-                Arguments.of(true, true),
-                Arguments.of(true, false),
-                Arguments.of(false, true),
-                Arguments.of(false, false)
+                Arguments.of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, true, true),
+                Arguments.of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, true, false),
+                Arguments.of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, false, true),
+                Arguments.of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, false, false),
+                Arguments.of(userDetailsHMCTS(), HMCTS, HMCTS_USER, true, true),
+                Arguments.of(userDetailsHMCTS(), HMCTS, HMCTS_USER, true, false),
+                Arguments.of(userDetailsHMCTS(), HMCTS, HMCTS_USER, false, true),
+                Arguments.of(userDetailsHMCTS(), HMCTS, HMCTS_USER, false, false)
             );
         }
     }
 
-    static class RespondentStatementTestCasesArg implements ArgumentsProvider {
+    static class RespondentStatementArgs implements ArgumentsProvider {
 
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
@@ -1589,7 +1593,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
     class RespondentStatement {
 
         @ParameterizedTest
-        @ArgumentsSource(RespondentStatementTestCasesArg.class)
+        @ArgumentsSource(RespondentStatementArgs.class)
         void shouldSendNotificationForNewUpload(UserDetails userDetails,
                                                 DocumentUploaderType uploadedType,
                                                 String uploadedBy,
@@ -1608,7 +1612,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         }
 
         @ParameterizedTest
-        @ArgumentsSource(RespondentStatementTestCasesArg.class)
+        @ArgumentsSource(RespondentStatementArgs.class)
         void shouldSendNotificationForUpdatingWhenReplacingDocument(
             UserDetails userDetails,
             DocumentUploaderType uploadedType,
@@ -1630,17 +1634,20 @@ class FurtherEvidenceUploadedEventHandlerTest {
         }
 
         @ParameterizedTest
-        @ArgumentsSource(Confidentials.class)
-        void shouldNotSendNotificationForChangingConfidentialPropertyOnlyByLA(boolean oldConfidential,
-                                                                              boolean newConfidential) {
+        @ArgumentsSource(ConfidentialChangeArgs.class)
+        void shouldNotSendNotificationForConfidentialChangeOnly(UserDetails userDetails,
+                                                                DocumentUploaderType uploadedType,
+                                                                String uploadedBy,
+                                                                boolean oldConfidential,
+                                                                boolean newConfidential) {
             verifyNotificationFurtherDocumentsTemplate(
-                userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY,
+                userDetails, uploadedType,
                 (caseData) ->  caseData.getRespondentStatements().addAll(
                     buildRespondentStatementsList(wrapElements(
-                        createDummyEvidenceBundle(CONFIDENTIAL_1, LA_USER, oldConfidential, PDF_DOCUMENT_1)))),
+                        createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, oldConfidential, PDF_DOCUMENT_1)))),
                 (caseData) ->  caseData.getRespondentStatements().addAll(
                     buildRespondentStatementsList(wrapElements(
-                        createDummyEvidenceBundle(CONFIDENTIAL_1, LA_USER, newConfidential, PDF_DOCUMENT_1)))),
+                        createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, newConfidential, PDF_DOCUMENT_1)))),
                 Set.of(), null);
         }
     }
