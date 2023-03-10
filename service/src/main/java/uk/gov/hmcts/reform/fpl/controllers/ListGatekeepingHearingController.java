@@ -107,41 +107,8 @@ public class ListGatekeepingHearingController extends CallbackController {
 
         hearingsService.findAndSetPreviousVenueId(eventData);
 
-        //Set hearing
-        final HearingBooking hearingBooking = hearingsService.getCurrentHearingBooking(converter.convert(caseData, CaseData.class));
-        final Element<HearingBooking> hearingBookingElement = element(hearingBooking);
-
-        hearingsService.addOrUpdate(hearingBookingElement, eventData);
-        hearingsService.sendNoticeOfHearing(eventData, hearingBooking);
-
-        caseData.put(SELECTED_HEARING_ID, hearingBookingElement.getId());
-
-        caseData.putIfNotEmpty(CANCELLED_HEARING_DETAILS_KEY, eventData.getCancelledHearingDetails());
-        caseData.putIfNotEmpty(HEARING_DOCUMENT_BUNDLE_KEY, eventData.getHearingFurtherEvidenceDocuments());
-        caseData.putIfNotEmpty(HEARING_DETAILS_KEY, eventData.getHearingDetails());
-        caseData.put(HEARING_ORDERS_BUNDLES_DRAFTS, eventData.getHearingOrdersBundlesDrafts());
-        caseData.put(DRAFT_UPLOADED_CMOS, eventData.getDraftUploadedCMOs());
-
-        //Add gatekeeping order
-        final GatekeepingOrderRoute sdoRouter = eventData.getGatekeepingOrderRouter();
-
-        eventData = mergeEventAndCaseData(eventData, caseData);
-        caseData.put("gatekeepingOrderSealDecision", orderService.buildSealedDecision(eventData));
-        eventData = mergeEventAndCaseData(eventData, caseData);
-
-        switch (sdoRouter) {
-            case UPLOAD:
-                caseData.put("standardDirectionOrder", orderService.buildOrderFromUploadedFile(eventData));
-                break;
-            case SERVICE:
-                caseData.put("standardDirectionOrder", orderService.buildOrderFromGeneratedFile(eventData));
-                break;
-        }
-
-        callbackRequest.getCaseDetails().setData(caseData);
-        final List<DocmosisTemplates> nopTemplates = orderService.getNoticeOfProceedingsTemplates(eventData);
-        caseData.put("noticeOfProceedingsBundle",
-            nopService.uploadNoticesOfProceedings(getCaseData(callbackRequest.getCaseDetails()), nopTemplates));
+        createHearing(eventData, caseData);
+        createGatekeepingOrder(callbackRequest, eventData, caseData);
 
         removeTemporaryFields(caseData,
             "urgentHearingOrderDocument",
@@ -255,6 +222,48 @@ public class ListGatekeepingHearingController extends CallbackController {
             ? YES.getValue() : NO.getValue());
         caseDetails.getData()
             .putAll(othersGenerator.generate(caseData, HearingBooking.builder().build()));
+    }
+
+    private void createHearing(final CaseData eventData, final CaseDetailsMap caseData) {
+
+        final HearingBooking hearingBooking = hearingsService.getCurrentHearingBooking(converter.convert(caseData, CaseData.class));
+        final Element<HearingBooking> hearingBookingElement = element(hearingBooking);
+
+        hearingsService.addOrUpdate(hearingBookingElement, eventData);
+        hearingsService.sendNoticeOfHearing(eventData, hearingBooking);
+
+        caseData.put(SELECTED_HEARING_ID, hearingBookingElement.getId());
+
+        caseData.putIfNotEmpty(CANCELLED_HEARING_DETAILS_KEY, eventData.getCancelledHearingDetails());
+        caseData.putIfNotEmpty(HEARING_DOCUMENT_BUNDLE_KEY, eventData.getHearingFurtherEvidenceDocuments());
+        caseData.putIfNotEmpty(HEARING_DETAILS_KEY, eventData.getHearingDetails());
+        caseData.put(HEARING_ORDERS_BUNDLES_DRAFTS, eventData.getHearingOrdersBundlesDrafts());
+        caseData.put(DRAFT_UPLOADED_CMOS, eventData.getDraftUploadedCMOs());
+    }
+
+    private void createGatekeepingOrder(final CallbackRequest callbackRequest,
+                                        CaseData eventData,
+                                        final CaseDetailsMap caseData) {
+
+        final GatekeepingOrderRoute sdoRouter = eventData.getGatekeepingOrderRouter();
+
+        eventData = mergeEventAndCaseData(eventData, caseData);
+        caseData.put("gatekeepingOrderSealDecision", orderService.buildSealedDecision(eventData));
+        eventData = mergeEventAndCaseData(eventData, caseData);
+
+        switch (sdoRouter) {
+            case UPLOAD:
+                caseData.put("standardDirectionOrder", orderService.buildOrderFromUploadedFile(eventData));
+                break;
+            case SERVICE:
+                caseData.put("standardDirectionOrder", orderService.buildOrderFromGeneratedFile(eventData));
+                break;
+        }
+
+        callbackRequest.getCaseDetails().setData(caseData);
+        final List<DocmosisTemplates> nopTemplates = orderService.getNoticeOfProceedingsTemplates(eventData);
+        caseData.put("noticeOfProceedingsBundle",
+            nopService.uploadNoticesOfProceedings(getCaseData(callbackRequest.getCaseDetails()), nopTemplates));
     }
 
     private CaseData mergeEventAndCaseData(final CaseData eventData, final CaseDetailsMap caseData) {
