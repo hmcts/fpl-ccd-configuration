@@ -95,8 +95,10 @@ class ListGatekeepingHearingControllerAboutToStartTest extends AbstractCallbackT
 
         assertThat(responseDataMap.get("sendNoticeOfHearing")).isEqualTo(YES.getValue());
     }
+
     @Test
     void shouldPopulateFlagsAndHearingLists() {
+        
         var emptyListMap = hearingListMap(List.of());
         var pastHearing = element(testHearing(LocalDateTime.now().minusDays(2)));
         var futureHearing = element(testHearing(LocalDateTime.now().plusDays(2)));
