@@ -20,6 +20,7 @@ import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.reflect.FieldUtils.getFieldsListWithAnnotation;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
+import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING_LISTING;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 
@@ -105,6 +106,10 @@ public class CaseDetailsHelper {
 
     public static boolean isInGatekeepingState(CaseDetails caseDetails) {
         return isInState(GATEKEEPING, caseDetails);
+    }
+
+    public static boolean isInGatekeepingListingState(CaseDetails caseDetails) {
+        return isInState(GATEKEEPING_LISTING, caseDetails);
     }
 
     public static boolean isInState(State state, CaseDetails caseDetails) {
