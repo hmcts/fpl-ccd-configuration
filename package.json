@@ -35,8 +35,7 @@
     "test:crossbrowser": "./bin/run-crossbrowser-tests.sh",
     "prepare": "husky install",
     "yarn-update": "yarn set version 3.x",
-    "install-dependancies": "/usr/bin/yarn --immutable --silent install",
-    "check-dependancy-integrity": "/usr/bin/yarn --immutable --silent check --integrity"
+    "install-dependancies": "/usr/bin/yarn install --immutable --silent"
   },
   "packageManager": "yarn@3.3.0",
   "license": "MIT"
