@@ -65,6 +65,7 @@ java:
         - ctsc-inbox
         - ctsc-team-lead-inbox
         - rcj-family-high-court-inbox
+        - court-to-court-admin-mapping
 
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-xui-idam-pr

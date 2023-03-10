@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -234,10 +233,10 @@ class GatekeepingOrderEventHandlerTest {
 
         underTest.notifyCourtAdmin(gatekeepingOrderEvent);
 
-        verify(notificationService).sendEmail(eq(COURT_ADMIN_LISTING_TEMPLATE),
-            eq("FamilyPublicLaw+ctsc@gmail.com"),
-            eq(NOTIFY_DATA),
-            eq(1123L)
+        verify(notificationService).sendEmail(COURT_ADMIN_LISTING_TEMPLATE,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            NOTIFY_DATA,
+            1123L
         );
     }
 
@@ -262,10 +261,10 @@ class GatekeepingOrderEventHandlerTest {
 
         underTest.notifyCourtAdmin(gatekeepingOrderEvent);
 
-        verify(notificationService, never()).sendEmail(eq(COURT_ADMIN_LISTING_TEMPLATE),
-            eq("FamilyPublicLaw+ctsc@gmail.com"),
-            eq(NOTIFY_DATA),
-            eq(1123L)
+        verify(notificationService, never()).sendEmail(COURT_ADMIN_LISTING_TEMPLATE,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            NOTIFY_DATA,
+            1123L
         );
     }
 
