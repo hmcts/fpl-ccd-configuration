@@ -36,7 +36,7 @@ public class SDOIssuedContentProvider extends AbstractEmailContentProvider {
             .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
             .documentLink(linkToAttachedDocument(order))
             .isReasonPresent(Optional.ofNullable(reason).map(value -> "yes").orElse("no"))
-            .reason(reason)
+            .reason(Optional.ofNullable(reason).orElse(""))
             .build();
     }
 }

@@ -140,7 +140,7 @@ class SDOIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest
             .courtName("Family Court")
             .caseNumber("FAM NUM")
             .isReasonPresent("no")
-            .reason(reason)
+            .reason("")
             .build();
 
         assertThat(actualData).isEqualTo(expectedData);
