@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.FurtherDocument;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithDocument;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
@@ -471,10 +472,17 @@ public class FurtherEvidenceUploadedEventHandler {
                 );
     }
 
-    @SuppressWarnings("unchecked")
-    private <T> boolean isNewElement(List<Element<T>> beforeElement, Element<T> test) {
-        return ElementUtils.findElement(test.getId(), (List<Element<T>>) defaultIfNull(beforeElement, List.of()))
-            .isPresent() == false;
+    private boolean hasNewDocumentUploaded(List<Element<WithDocument>> existingElements,
+                                           Element<? extends WithDocument> test) {
+        Optional<Element<WithDocument>> hitElement = ElementUtils.findElement(test.getId(),
+            defaultIfNull(existingElements, List.of()));
+        if (!hitElement.isPresent()) {
+            return true;
+        } else {
+            return !Optional.ofNullable(test.getValue().getDocument()).orElse(DocumentReference.builder().build())
+                .equals(Optional.ofNullable(hitElement.get().getValue().getDocument())
+                    .orElse(DocumentReference.builder().build()));
+        }
     }
 
     private DocumentInfo getNewApplicationDocuments(CaseData caseData, CaseData caseDataBefore) {
@@ -505,24 +513,26 @@ public class FurtherEvidenceUploadedEventHandler {
                 );
     }
 
+    @SuppressWarnings("unchecked")
     private List<Element<ApplicationDocument>> getNewApplicationDocuments(
         List<Element<ApplicationDocument>> applicationDocuments,
         List<Element<ApplicationDocument>> beforeApplicationDocuments) {
         List<Element<ApplicationDocument>> newApplicationDocuments = new ArrayList<>();
         defaultIfNull(applicationDocuments, new ArrayList<Element<ApplicationDocument>>()).forEach(newDoc -> {
-            if (isNewElement(beforeApplicationDocuments, newDoc)) {
+            if (hasNewDocumentUploaded((List) beforeApplicationDocuments, newDoc)) {
                 newApplicationDocuments.add(newDoc);
             }
         });
         return newApplicationDocuments;
     }
 
+    @SuppressWarnings("unchecked")
     private List<Element<SupportingEvidenceBundle>> getNewSupportingEvidenceBundle(
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
         List<Element<SupportingEvidenceBundle>> beforeSupportingEvidenceBundle) {
         List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle = new ArrayList<>();
         defaultIfNull(supportingEvidenceBundle, new ArrayList<Element<SupportingEvidenceBundle>>()).forEach(newDoc -> {
-            if (isNewElement(beforeSupportingEvidenceBundle, newDoc)) {
+            if (hasNewDocumentUploaded((List) beforeSupportingEvidenceBundle, newDoc)) {
                 newSupportingEvidenceBundle.add(newDoc);
             }
         });
