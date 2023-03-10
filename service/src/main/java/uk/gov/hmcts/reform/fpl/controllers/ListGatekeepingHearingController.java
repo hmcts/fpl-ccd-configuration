@@ -226,7 +226,8 @@ public class ListGatekeepingHearingController extends CallbackController {
 
     private void createHearing(final CaseData eventData, final CaseDetailsMap caseData) {
 
-        final HearingBooking hearingBooking = hearingsService.getCurrentHearingBooking(converter.convert(caseData, CaseData.class));
+        final HearingBooking hearingBooking =
+            hearingsService.getCurrentHearingBooking(converter.convert(caseData, CaseData.class));
         final Element<HearingBooking> hearingBookingElement = element(hearingBooking);
 
         hearingsService.addOrUpdate(hearingBookingElement, eventData);
