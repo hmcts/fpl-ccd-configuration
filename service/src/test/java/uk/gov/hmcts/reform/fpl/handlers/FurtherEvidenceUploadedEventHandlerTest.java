@@ -243,50 +243,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     @Test
-    void shouldSendNotificationWhenNonConfidentialAnyOtherDocIsUploadedByLA() {
-        // Further documents for main application -> Any other document does not relate to a hearing
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) -> caseData.getFurtherEvidenceDocumentsLA().addAll(buildNonConfidentialPdfDocumentList(LA_USER)),
-            Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
-            NON_CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenNonConfidentialNoticeOfActingOrIssueIsUploadedByLA() {
-        // Further documents for main application -> Any other document does not relate to a hearing
-        // No notification to CAFCASS if uploading NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) -> caseData.getFurtherEvidenceDocumentsLA().addAll(buildNonConfidentialPdfDocumentList(LA_USER,
-                NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
-            Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
-            NON_CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenConfidentialAnyOtherDocIsUploadedByLA() {
-        // Further documents for main application -> Any other document does not relate to a hearing
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getFurtherEvidenceDocumentsLA().addAll(buildConfidentialDocumentList(LA_USER)),
-            Set.of(ALL_LAS),
-            CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenConfidentialNoticeOfActingOrIssueIsUploadedByLA() {
-        // Further documents for main application -> Any other document does not relate to a hearing
-        // No notification to CAFCASS if uploading NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getFurtherEvidenceDocumentsLA().addAll(buildConfidentialDocumentList(LA_USER,
-                NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
-            Set.of(ALL_LAS),
-            CONFIDENTIAL);
-    }
-
-    @Test
     void shouldSendNotificationWhenNonConfidentialAnyOtherDocRelatingToHearingIsUploadedByLA() {
         // Further documents for main application -> Any other document relates to a hearing
         verifyNotificationFurtherDocumentsTemplate(
@@ -1700,6 +1656,45 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
                         PDF_DOCUMENT_1, newConfidential))),
                 Set.of(), null);
+        }
+    }
+
+    static class AnyOtherDocumentUploadedByLAArgs implements ArgumentsProvider {
+
+        @Override
+        public Stream<Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                Arguments.of(Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+                    NON_CONFIDENTIAL,
+                    buildNonConfidentialPdfDocumentList(LA_USER)),
+                Arguments.of(Set.of(ALL_LAS),
+                    CONFIDENTIAL,
+                    buildConfidentialDocumentList(LA_USER)),
+                // Not notifying CAFCASS if document type is NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
+                Arguments.of(Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
+                    NON_CONFIDENTIAL,
+                    buildNonConfidentialPdfDocumentList(LA_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
+                Arguments.of(Set.of(ALL_LAS),
+                    CONFIDENTIAL,
+                    buildConfidentialDocumentList(LA_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE))
+            );
+        }
+    }
+
+    @Nested
+    class AnyOtherDocument {
+
+        @ParameterizedTest
+        @ArgumentsSource(AnyOtherDocumentUploadedByLAArgs.class)
+        void shouldSendNotificationForNewUploadByLA(
+            Set<DocumentUploadNotificationUserType> notificationTypes,
+            List<String> expectedDocumentNames,
+            List<Element<SupportingEvidenceBundle>> updatingDocument) {
+            verifyNotificationFurtherDocumentsTemplate(
+                userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY,
+                EMPTY_CASE_DATA_MODIFIER,
+                (caseData) -> caseData.getFurtherEvidenceDocumentsLA().addAll(updatingDocument),
+                notificationTypes, expectedDocumentNames);
         }
     }
 }
