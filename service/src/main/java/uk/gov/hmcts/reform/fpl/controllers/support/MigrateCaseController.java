@@ -41,7 +41,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1294", this::run1294,
         "DFPL-1238", this::run1238,
         "DFPL-1241", this::run1241,
-        "DFPL-1244", this::run1244
+        "DFPL-1244", this::run1244,
+        "DFPL-1263", this::run1263
     );
 
     @PostMapping("/about-to-submit")
@@ -96,7 +97,7 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL);
         caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL_NOTICES);
     }
-    
+
     private void run1262(CaseDetails caseDetails) {
         var migrationId = "DFPL-1262";
         var possibleCaseIds = List.of(1651753104228873L);
@@ -140,5 +141,12 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
         caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(getCaseData(caseDetails),
             migrationId, expectedPositionStatementId));
+    }
+
+    private void run1263(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1263";
+        var possibleCaseIds = List.of(1661171715678642L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.renameApplicationDocuments(getCaseData(caseDetails)));
     }
 }
