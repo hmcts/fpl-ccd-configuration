@@ -1465,6 +1465,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
             any());
     }
 
+    @Test
     void shouldNotSendNotificationWhenNoNewCourtBundleIsUploadedByLA() {
         String hearing1 = "1stHearing";
         String hearing2 = "2ndHearing";
