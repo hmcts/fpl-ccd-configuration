@@ -245,6 +245,20 @@
       }
     },
     {
+      "type": "APPOINT_CHILDREN_GUARDIAN_IMMEDIATE",
+      "title": "Appoint a children's guardian",
+      "text": "",
+      "assignee": "CAFCASS",
+      "display": {
+        "due": "BY",
+        "templateDateFormat": "h:mma, d MMMM yyyy",
+        "directionRemovable": true,
+        "showDateOnly": false,
+        "delta": "-2",
+        "time": "16:00:00"
+      }
+    },
+    {
       "type": "OBJECT_TO_REQUEST_FOR_DISCLOSURE",
       "title": "Object to a request for disclosure",
       "text": "If you object to the disclosure request, attend the case management hearing or write to the court to explain your objection.\n\nAnything disclosed in this case is confidential. It cannot be shown to any third party without the court's permission.\n",
@@ -260,6 +274,20 @@
     },
     {
       "type": "ARRANGE_INTERPRETERS",
+      "title": "Arrange interpreters",
+      "text": "At all hearings, the court must arrange an interpreter for [Respondent’s Name] in [Language].",
+      "assignee": "COURT",
+      "display": {
+        "due": "BY",
+        "templateDateFormat": "h:mma, d MMMM yyyy",
+        "directionRemovable": true,
+        "showDateOnly": false,
+        "delta": "-2",
+        "time": "16:00:00"
+      }
+    },
+    {
+      "type": "ARRANGE_INTERPRETERS_IMMEDIATE",
       "title": "Arrange interpreters",
       "text": "At all hearings, the court must arrange an interpreter for [Respondent’s Name] in [Language].",
       "assignee": "COURT",

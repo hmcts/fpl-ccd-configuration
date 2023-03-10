@@ -47,8 +47,10 @@ public class GatekeepingOrderEventData {
     List<DirectionType> directionsForLocalAuthority;
     List<DirectionType> directionsForRespondents;
     List<DirectionType> directionsForCafcass;
+    List<DirectionType> directionsForCafcassUpdated;
     List<DirectionType> directionsForOthers;
     List<DirectionType> directionsForCourt;
+    List<DirectionType> directionsForCourtUpdated;
 
     List<Element<CustomDirection>> customDirections;
     List<Element<StandardDirection>> standardDirections;
@@ -70,8 +72,9 @@ public class GatekeepingOrderEventData {
 
     @JsonIgnore
     public List<DirectionType> getRequestedDirections() {
-        return Stream.of(directionsForAllParties, directionsForLocalAuthority, directionsForRespondents,
-            directionsForCafcass, directionsForOthers, directionsForCourt)
+        return Stream.of(directionsForAllParties, directionsForLocalAuthority,
+            directionsForRespondents, directionsForCafcass, directionsForCafcassUpdated,
+            directionsForOthers, directionsForCourt, directionsForCourtUpdated)
             .filter(Objects::nonNull)
             .flatMap(Collection::stream)
             .collect(toList());
