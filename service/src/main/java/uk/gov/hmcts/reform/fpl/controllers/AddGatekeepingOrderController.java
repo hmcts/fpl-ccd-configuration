@@ -49,12 +49,9 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class AddGatekeepingOrderController extends CallbackController {
 
     private final GatekeepingOrderService orderService;
-    private final NoticeOfProceedingsService nopService;
-    private final CoreCaseDataService coreCaseDataService;
 
     private final CourtLevelAllocationService allocationService;
     private final GatekeepingOrderRouteValidator routeValidator;
-    private final GatekeepingOrderEventNotificationDecider notificationDecider;
     private final GatekeepingOrderDataFixer dataFixer;
 
     @PostMapping("/about-to-start")
@@ -155,55 +152,5 @@ public class AddGatekeepingOrderController extends CallbackController {
         data.put("allocationDecision", allocationDecision);
 
         return respond(data);
-    }
-
-    @PostMapping("/submitted")
-    public void handleSubmittedEvent(@RequestBody CallbackRequest request) {
-        CaseData caseData = getCaseData(request);
-        final CaseDetails caseDetails = request.getCaseDetails();
-        final Map<String, Object> data = caseDetails.getData();
-
-        final GatekeepingOrderRoute sdoRouter = caseData.getGatekeepingOrderRouter();
-
-        Map<String, Object> updates = new HashMap<>();
-
-        if (sdoRouter == UPLOAD) {
-            updates.put("standardDirectionOrder", orderService.sealDocumentAfterEventSubmitted(caseData));
-        }
-
-        final CaseData caseDataAfterSealing;
-        if (updates.isEmpty()) {
-            caseDataAfterSealing = caseData;
-        } else {
-            data.putAll(updates);
-            caseDataAfterSealing = getCaseData(caseDetails);
-        }
-
-        coreCaseDataService.triggerEvent(caseDataAfterSealing.getId(),
-            "internal-change-add-gatekeeping",
-            updates);
-
-        CaseData caseDataBefore = getCaseDataBefore(request);
-
-        notificationDecider.buildEventToPublish(caseDataAfterSealing, caseDataBefore.getState())
-            .ifPresent(eventToPublish -> {
-                coreCaseDataService.triggerEvent(
-                    JURISDICTION,
-                    CASE_TYPE,
-                    caseDataAfterSealing.getId(),
-                    "internal-change-SEND_DOCUMENT",
-                    Map.of("documentToBeSent", eventToPublish.getOrder()));
-
-                publishEvent(eventToPublish);
-            });
-    }
-
-
-    @PostMapping("/post-submit-callback/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handlePostSubmittedEvent(@RequestBody CallbackRequest request) {
-        final CaseDetails caseDetails = request.getCaseDetails();
-        removeTemporaryFields(caseDetails, "gatekeepingOrderSealDecision");
-
-        return respond(caseDetails);
     }
 }

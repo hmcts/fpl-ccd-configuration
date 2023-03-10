@@ -28,16 +28,23 @@ import uk.gov.hmcts.reform.fpl.service.PastHearingDatesValidatorService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.hearing.ManageHearingsOthersGenerator;
+import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderEventNotificationDecider;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.DEFAULT_PRE_ATTENDANCE;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PREVIOUS_HEARING_VENUE_KEY;
@@ -70,6 +77,8 @@ public class ListGatekeepingHearingController extends CallbackController {
     private final ManageHearingsOthersGenerator othersGenerator;
     private final GatekeepingOrderService orderService;
     private final NoticeOfProceedingsService nopService;
+    private final GatekeepingOrderEventNotificationDecider notificationDecider;
+    private final CoreCaseDataService coreCaseDataService;
 
     private final CaseConverter converter;
 
@@ -131,10 +140,6 @@ public class ListGatekeepingHearingController extends CallbackController {
         caseData.keySet().removeAll(hearingsService.caseFieldsToBeRemoved());
 
         return respond(caseData);
-    }
-
-    @PostMapping("/submitted")
-    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
     }
 
     @PostMapping("allocated-judge/mid-event")
@@ -202,6 +207,56 @@ public class ListGatekeepingHearingController extends CallbackController {
                 return respond(caseDetails, List.of(error.get()));
             }
         }
+
+        return respond(caseDetails);
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmittedEvent(@RequestBody CallbackRequest request) {
+        CaseData caseData = getCaseData(request);
+        final CaseDetails caseDetails = request.getCaseDetails();
+        final Map<String, Object> data = caseDetails.getData();
+
+        final GatekeepingOrderRoute sdoRouter = caseData.getGatekeepingOrderRouter();
+
+        Map<String, Object> updates = new HashMap<>();
+
+        if (sdoRouter == UPLOAD) {
+            updates.put("standardDirectionOrder", orderService.sealDocumentAfterEventSubmitted(caseData));
+        }
+
+        final CaseData caseDataAfterSealing;
+        if (updates.isEmpty()) {
+            caseDataAfterSealing = caseData;
+        } else {
+            data.putAll(updates);
+            caseDataAfterSealing = getCaseData(caseDetails);
+        }
+
+        coreCaseDataService.triggerEvent(caseDataAfterSealing.getId(),
+            "internal-change-add-gatekeeping",
+            updates);
+
+        CaseData caseDataBefore = getCaseDataBefore(request);
+
+        notificationDecider.buildEventToPublish(caseDataAfterSealing, caseDataBefore.getState())
+            .ifPresent(eventToPublish -> {
+                coreCaseDataService.triggerEvent(
+                    JURISDICTION,
+                    CASE_TYPE,
+                    caseDataAfterSealing.getId(),
+                    "internal-change-SEND_DOCUMENT",
+                    Map.of("documentToBeSent", eventToPublish.getOrder()));
+
+                publishEvent(eventToPublish);
+            });
+    }
+
+
+    @PostMapping("/post-submit-callback/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handlePostSubmittedEvent(@RequestBody CallbackRequest request) {
+        final CaseDetails caseDetails = request.getCaseDetails();
+        removeTemporaryFields(caseDetails, "gatekeepingOrderSealDecision");
 
         return respond(caseDetails);
     }
