@@ -76,7 +76,7 @@ public class GatekeepingOrderService {
 
         return GatekeepingOrderSealDecision.builder()
             .draftDocument(order)
-            .dateOfIssue(LocalDate.now())
+            .dateOfIssue(time.now().toLocalDate())
             .orderStatus(null)
             .build();
     }
@@ -86,7 +86,7 @@ public class GatekeepingOrderService {
 
         return GatekeepingOrderSealDecision.builder()
             .draftDocument(order)
-            .dateOfIssue(LocalDate.now())
+            .dateOfIssue(time.now().toLocalDate())
             .orderStatus(SEALED)
             .build();
     }
