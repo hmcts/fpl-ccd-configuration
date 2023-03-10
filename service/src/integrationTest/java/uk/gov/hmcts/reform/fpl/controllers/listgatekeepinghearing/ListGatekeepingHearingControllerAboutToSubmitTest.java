@@ -53,6 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
@@ -85,7 +86,8 @@ class ListGatekeepingHearingControllerAboutToSubmitTest extends AbstractCallback
         .surname("Smith")
         .build();
 
-    private final Time time = new FixedTimeConfiguration().fixedDateTime(LocalDateTime.of(2021, 3, 3, 0, 0, 0));
+    @MockBean
+    private Time time;
 
     @MockBean
     private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
@@ -111,6 +113,7 @@ class ListGatekeepingHearingControllerAboutToSubmitTest extends AbstractCallback
         final String caseLanguageRequirement,
         final LanguageTranslationRequirement expectedTranslationRequirements) {
 
+        when(time.now()).thenReturn(LocalDateTime.of(2021, 3, 3, 0, 0, 0));
         mockDocumentGenerationAndUpload();
 
         final Allocation allocationDecision = createAllocation("Lay justices", "Reason");
@@ -177,7 +180,7 @@ class ListGatekeepingHearingControllerAboutToSubmitTest extends AbstractCallback
             .orderDoc(SDO_REFERENCE)
             .unsealedDocumentCopy(SDO_REFERENCE)
             .orderStatus(SEALED)
-            .dateOfIssue(LocalDate.now().format(DateTimeFormatter.ofPattern("d MMMM yyyy")))
+            .dateOfIssue("3 March 2021")
             .customDirections(wrapElements(customDirection))
             .standardDirections(wrapElements(standardDirection))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
