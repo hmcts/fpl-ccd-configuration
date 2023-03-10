@@ -1,0 +1,83 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ImmediateStandardDirection",
+    "ListElementCode": "immediateStandardDirectionLabel",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Used to enforce show conditions"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ImmediateStandardDirection",
+    "ListElementCode": "title",
+    "FieldType": "Text",
+    "ElementLabel": "Type",
+    "HintText": "You must include a brief direction summary",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "immediateStandardDirectionLabel = \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ImmediateStandardDirection",
+    "ListElementCode": "description",
+    "FieldType": "TextArea",
+    "ElementLabel": "Description",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ImmediateStandardDirection",
+    "ListElementCode": "type",
+    "FieldType": "Text",
+    "ElementLabel": "Type",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "immediateStandardDirectionLabel = \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ImmediateStandardDirection",
+    "ListElementCode": "assignee",
+    "FieldType": "Text",
+    "ElementLabel": "Type",
+    "HintText": "You must include a brief direction summary",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "immediateStandardDirectionLabel = \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ImmediateStandardDirection",
+    "ListElementCode": "dueDateType",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "DirectionDueDateType",
+    "ElementLabel": "Due date",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "immediateStandardDirectionLabel = \"DO NOT SHOW\"",
+    "Comment": "Used to conform to existing standard direction object"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ImmediateStandardDirection",
+    "ListElementCode": "dateToBeCompletedBy",
+    "FieldType": "DateTime",
+    "ElementLabel": "Date and time",
+    "HintText": "Use 24h format",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "immediateStandardDirectionLabel = \"DO NOT SHOW\"",
+    "Comment": "Used to conform to existing standard direction object"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ImmediateStandardDirection",
+    "ListElementCode": "daysBeforeHearing",
+    "FieldType": "Number",
+    "ElementLabel": "Number of days",
+    "Min": 0,
+    "Max": 365,
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "immediateStandardDirectionLabel = \"DO NOT SHOW\"",
+    "Comment": "Used to conform to existing standard direction object"
+  }
+]
