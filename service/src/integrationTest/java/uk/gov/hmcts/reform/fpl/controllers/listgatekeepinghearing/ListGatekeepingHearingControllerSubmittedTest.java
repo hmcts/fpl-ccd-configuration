@@ -9,19 +9,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.DirtiesContext;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
+import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.ListGatekeepingHearingController;
 import uk.gov.hmcts.reform.fpl.docmosis.DocmosisHelper;
-import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
-import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
-import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.ChildParty;
-import uk.gov.hmcts.reform.fpl.model.Direction;
-import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -33,9 +26,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
-import uk.gov.hmcts.reform.fpl.model.document.SealType;
-import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
-import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
@@ -54,7 +44,6 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -72,39 +61,28 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CTSC_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_3_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_3_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CAFCASS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_LA;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.WELSH_TO_ENGLISH;
-import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
-import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING_LISTING;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
+import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.CAFCASS_EMAIL;
 import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.COVERSHEET_PDF;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
@@ -120,33 +98,30 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 @WebMvcTest(ListGatekeepingHearingController.class)
 @OverrideAutoConfiguration(enabled = true)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class ListGatekeepingHearingControllerSubmittedTest extends ListGatekeepingHearingControllerTest {
-    private static final Long CASE_ID = 1L;
-    private static final String FAMILY_MAN_NUMBER = "FMN1";
+class ListGatekeepingHearingControllerSubmittedTest extends AbstractCallbackTest {
+    private static final long CASE_ID = 12345L;
     private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
-    private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
-    private static final DocumentReference SDO_DOCUMENT = testDocumentReference();
-    private static final CaseData GATEKEEPING_LISTING_CASE_DATA = CaseData.builder().state(GATEKEEPING_LISTING).build();
+    private static final String FAMILY_MAN_NUMBER = "FMN1";
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
-    private static final byte[] DOCUMENT_PDF_BINARIES = readBytes("documents/document1.pdf");
-    private static final DocmosisDocument DOCMOSIS_PDF_DOCUMENT = testDocmosisDocument(DOCUMENT_PDF_BINARIES)
-        .toBuilder().documentTitle("pdf.pdf").build();
-    private static final byte[] APPLICATION_BINARY = DOCUMENT_CONTENT;
-    private static final DocumentReference SEALED_DOCUMENT = testDocumentReference();
-    private static final DocumentReference URGENT_HEARING_ORDER_DOCUMENT = testDocumentReference();
-    private static final byte[] NOTICE_OF_HEARING_BINARY = testDocumentBinary();
-    private static final String DOC_UPLOADER_NAME = "MOCK";
-    private static final LocalDate DATE_ADDED = LocalDate.of(2023, 2, 4);
-    private static final DocumentReference C6_DOCUMENT = testDocumentReference("notice_of_proceedings_c6.pdf");
-    private static final DocumentReference C6A_DOCUMENT = testDocumentReference("notice_of_proceedings_c6a.pdf");
     private static final UUID LETTER_1_ID = randomUUID();
     private static final UUID LETTER_2_ID = randomUUID();
     private static final Document NOTICE_OF_HEARING_DOCUMENT = testDocument();
     private static final Document COVERSHEET_REPRESENTATIVE = testDocument();
     private static final Document COVERSHEET_RESPONDENT = testDocument();
+    private static final DocumentReference NOTICE_OF_HEARING = testDocumentReference();
+    private static final DocumentReference SDO_DOCUMENT = testDocumentReference();
+    private static final DocumentReference SEALED_DOCUMENT = testDocumentReference();
+    private static final DocumentReference C6_DOCUMENT = testDocumentReference("notice_of_proceedings_c6.pdf");
+    private static final DocumentReference C6A_DOCUMENT = testDocumentReference("notice_of_proceedings_c6a.pdf");
+    private static final byte[] NOTICE_OF_HEARING_BINARY = testDocumentBinary();
     private static final byte[] COVERSHEET_REPRESENTATIVE_BINARY = testDocumentBinary();
     private static final byte[] COVERSHEET_RESPONDENT_BINARY = testDocumentBinary();
-
+    private static final byte[] DOCUMENT_PDF_BINARIES = readBytes("documents/document1.pdf");
+    private static final byte[] APPLICATION_BINARY = DOCUMENT_CONTENT;
+    private static final LocalDateTime START_DATE = LocalDateTime.of(2050, 5, 20, 13, 0);
+    private static final LocalDateTime END_DATE = LocalDateTime.of(2050, 5, 20, 14, 0);
+    private static final DocmosisDocument DOCMOSIS_PDF_DOCUMENT = testDocmosisDocument(DOCUMENT_PDF_BINARIES)
+        .toBuilder().documentTitle("pdf.pdf").build();
     private final Element<HearingBooking> hearingWithoutNotice = element(HearingBooking.builder()
         .type(CASE_MANAGEMENT)
         .startDate(LocalDateTime.of(2050, 5, 20, 13, 0))
@@ -187,15 +162,6 @@ class ListGatekeepingHearingControllerSubmittedTest extends ListGatekeepingHeari
             .address(testAddress())
             .build())
         .representedBy(wrapElements(REPRESENTATIVE_POST.getId(), REPRESENTATIVE_DIGITAL.getId()))
-        .build();
-
-    private static final Child CHILDREN = Child.builder()
-        .party(ChildParty.builder()
-            .firstName("Jade")
-            .lastName("Connor")
-            .dateOfBirth(LocalDate.now())
-            .address(testAddress())
-            .build())
         .build();
 
     @Captor
@@ -242,95 +208,21 @@ class ListGatekeepingHearingControllerSubmittedTest extends ListGatekeepingHeari
         when(documentDownloadService.downloadDocument(any())).thenReturn(APPLICATION_BINARY);
         when(docmosisHelper.extractPdfContent(APPLICATION_BINARY)).thenReturn("Some content");
         when(sealingService.sealDocument(eq(SDO_DOCUMENT), any(), any())).thenReturn(SEALED_DOCUMENT);
-        when(sealingService.sealDocument(eq(URGENT_HEARING_ORDER_DOCUMENT), any(), any())).thenReturn(SEALED_DOCUMENT);
-    }
-
-    @Test
-    void shouldNotTriggerEventsWhenDraft() {
-        postSubmittedEvent(toCallBackRequest(buildCaseDataWithSDO(DRAFT), GATEKEEPING_LISTING_CASE_DATA));
-
-        verifyNoInteractions(sealingService);
-        verify(eventService, never()).publishEvent(any());
-        verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any());
-    }
-
-    @Test
-    void shouldDoNothingWhenNoHearingAddedOrUpdated() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .id(CASE_ID)
-            .data(buildData(List.of(hearingWithoutNotice), hearingWithoutNotice.getId()))
-            .build();
-
-        postSubmittedEvent(caseDetails);
-
-        verifyNoInteractions(notificationClient);
-        verify(coreCaseDataService).triggerEvent(JURISDICTION,
-            CASE_TYPE,
-            CASE_ID,
-            "internal-update-case-summary",
-            caseSummary("Yes", "Case management", LocalDate.of(2050, 5, 20)));
-        verifyNoMoreInteractions(coreCaseDataService);
-    }
-
-    @Test
-    void shouldTriggerEventWhenSDOSubmitted() {
-        //CaseData.builder().state(GATEKEEPING_LISTING).build()
-        postSubmittedEvent(toCallBackRequest(buildCaseDataWithSDO(SEALED), GATEKEEPING_LISTING_CASE_DATA));
-
-        verifyNoInteractions(sealingService);
-        verifyEmails(SDO_AND_NOP_ISSUED_CAFCASS, SDO_AND_NOP_ISSUED_CTSC, SDO_AND_NOP_ISSUED_LA);
-        verifyNoMoreNotificationsSent();
     }
 
     @Test
     void shouldTriggerSendNoticeOfHearingEventForNewHearingWhenNoticeOfHearingPresent()
         throws NotificationClientException {
-        final DocumentReference noticeOfHearing = testDocumentReference();
-
-        final Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
-            .type(CASE_MANAGEMENT)
-            .startDate(LocalDateTime.of(2050, 5, 20, 13, 0))
-            .endDate(LocalDateTime.of(2050, 5, 20, 14, 0))
-            .noticeOfHearing(noticeOfHearing)
-            .venue("96")
-            .build());
-
-        final Element<HearingBooking> existingHearing = element(HearingBooking.builder()
-            .type(ISSUE_RESOLUTION)
-            .startDate(LocalDateTime.of(2020, 5, 20, 13, 0))
-            .endDate(LocalDateTime.of(2020, 5, 20, 14, 0))
-            .noticeOfHearing(testDocumentReference())
-            .venue("162")
-            .others(emptyList())
-            .build());
-
-        final CaseData cdb = CaseData.builder()
-            .id(CASE_ID)
-            .familyManCaseNumber(FAMILY_MAN_NUMBER)
-            .caseLocalAuthority(LOCAL_AUTHORITY_3_CODE)
-            .hearingDetails(List.of(existingHearing))
-            .representatives(List.of(REPRESENTATIVE_DIGITAL, REPRESENTATIVE_EMAIL, REPRESENTATIVE_POST))
-            .respondents1(wrapElements(RESPONDENT_REPRESENTED, RESPONDENT_NOT_REPRESENTED))
-            .gatekeepingOrderRouter(GatekeepingOrderRoute.SERVICE)
-            .standardDirectionOrder(StandardDirectionOrder.builder()
-                .orderStatus(SEALED)
-                .orderDoc(SDO_DOCUMENT)
-                .build())
-            .build();
-
-        final CaseData cd = cdb.toBuilder()
-            .hearingDetails(List.of(hearingWithNotice, existingHearing))
-            .selectedHearingId(hearingWithNotice.getId())
-//            .state(GATEKEEPING_LISTING)
-            .build();
+        final CaseData cdb = caseDataWithSDOAndNopAndNohToTranslateBefore;
+        final CaseData cd = caseDataWithSDOAndNopAndNohToTranslateAfter;
 
         givenFplService();
 
-        given(documentDownloadService.downloadDocument(noticeOfHearing.getBinaryUrl()))
+        given(documentDownloadService.downloadDocument(NOTICE_OF_HEARING.getBinaryUrl()))
             .willReturn(NOTICE_OF_HEARING_BINARY);
 
-        given(documentConversionService.convertToPdf(noticeOfHearing))
-            .willReturn(noticeOfHearing);
+        given(documentConversionService.convertToPdf(NOTICE_OF_HEARING))
+            .willReturn(NOTICE_OF_HEARING);
 
         given(otherRecipientsInbox.getNonSelectedRecipients(
             EMAIL,
@@ -343,7 +235,7 @@ class ListGatekeepingHearingControllerSubmittedTest extends ListGatekeepingHeari
             .willReturn(new SendLetterResponse(LETTER_1_ID))
             .willReturn(new SendLetterResponse(LETTER_2_ID));
 
-        given(uploadDocumentService.uploadPDF(NOTICE_OF_HEARING_BINARY, noticeOfHearing.getFilename()))
+        given(uploadDocumentService.uploadPDF(NOTICE_OF_HEARING_BINARY, NOTICE_OF_HEARING.getFilename()))
             .willReturn(NOTICE_OF_HEARING_DOCUMENT);
         given(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY, COVERSHEET_PDF))
             .willReturn(COVERSHEET_REPRESENTATIVE);
@@ -377,6 +269,26 @@ class ListGatekeepingHearingControllerSubmittedTest extends ListGatekeepingHeari
             anyMap(),
             eq(NOTIFICATION_REFERENCE));
 
+        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+            eq(SDO_AND_NOP_ISSUED_CAFCASS),
+            eq(CAFCASS_EMAIL),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE));
+
+        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+            eq(SDO_AND_NOP_ISSUED_LA),
+            eq(LOCAL_AUTHORITY_3_INBOX),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE));
+
+        verify(notificationClient).sendEmail(
+            eq(SDO_AND_NOP_ISSUED_CTSC),
+            eq(DEFAULT_CTSC_EMAIL),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE));
+
+        verifyEmailSentToTranslation(3);
+
         verify(sendLetterApi, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2)).sendLetter(
             eq(SERVICE_AUTH_TOKEN),
             printRequestCaptor.capture());
@@ -384,10 +296,10 @@ class ListGatekeepingHearingControllerSubmittedTest extends ListGatekeepingHeari
         verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).updateCase(
             eq(CASE_ID), caseCaptor.capture());
 
-        LetterWithPdfsRequest expectedPrintRequest1 = printRequest(CASE_ID, noticeOfHearing,
+        LetterWithPdfsRequest expectedPrintRequest1 = printRequest(CASE_ID, NOTICE_OF_HEARING,
             COVERSHEET_REPRESENTATIVE_BINARY, NOTICE_OF_HEARING_BINARY);
 
-        LetterWithPdfsRequest expectedPrintRequest2 = printRequest(CASE_ID, noticeOfHearing,
+        LetterWithPdfsRequest expectedPrintRequest2 = printRequest(CASE_ID, NOTICE_OF_HEARING,
             COVERSHEET_RESPONDENT_BINARY, NOTICE_OF_HEARING_BINARY);
 
         SentDocument expectedDocumentSentToRepresentative = documentSent(REPRESENTATIVE_POST.getValue(),
@@ -415,83 +327,9 @@ class ListGatekeepingHearingControllerSubmittedTest extends ListGatekeepingHeari
             eq("internal-update-case-summary"), anyMap());
 
         verify(cafcassNotificationService,never()).sendEmail(any(), any(), any(), any());
+//        verifyNoMoreNotificationsSent();
 
 //        verifyNoMoreInteractions(coreCaseDataService);
-//        verifyNoInteractions(sealingService);
-//        verifyEmails(SDO_AND_NOP_ISSUED_CAFCASS, SDO_AND_NOP_ISSUED_CTSC, SDO_AND_NOP_ISSUED_LA);
-    }
-
-    @Test
-    void shouldTriggerEventWhenSDOSubmittedWithTranslation() {
-        postSubmittedEvent(toCallBackRequest(buildCaseDataWithSDOToTranslate(SEALED), GATEKEEPING_LISTING_CASE_DATA));
-
-        verifyNoInteractions(sealingService);
-        verifyEmails(SDO_AND_NOP_ISSUED_CAFCASS, SDO_AND_NOP_ISSUED_CTSC, SDO_AND_NOP_ISSUED_LA);
-        verifyEmailSentToTranslation();
-        verifyNoMoreNotificationsSent();
-    }
-
-    @Test
-    void shouldTriggerEventWhenSDOAndNoticeOfProceedingsSubmittedWithTranslation() {
-        postSubmittedEvent(toCallBackRequest(buildCaseDataWithSDOAndNopToTranslate(SEALED),
-            GATEKEEPING_LISTING_CASE_DATA));
-
-        verifyNoInteractions(sealingService);
-        verifyEmails(SDO_AND_NOP_ISSUED_CAFCASS, SDO_AND_NOP_ISSUED_CTSC, SDO_AND_NOP_ISSUED_LA);
-        verifyEmailSentToTranslation(3);
-        verifyNoMoreNotificationsSent();
-    }
-
-    @Test
-    void shouldTriggerSendDocumentEventWhenSubmitted() {
-        postSubmittedEvent(toCallBackRequest(buildCaseDataWithSDO(SEALED), GATEKEEPING_LISTING_CASE_DATA));
-
-        verifyNoInteractions(sealingService);
-        verify(coreCaseDataService).triggerEvent(
-            JURISDICTION,
-            CASE_TYPE,
-            CASE_ID,
-            SEND_DOCUMENT_EVENT,
-            Map.of("documentToBeSent", SDO_DOCUMENT)
-        );
-    }
-
-    @Test
-    void shouldSealUploadedDocumentIfOrderStatusIsSealed() {
-        CaseData caseData = buildCaseDataWithUploadedSDO(SEALED);
-        postSubmittedEvent(toCallBackRequest(
-            caseData, GATEKEEPING_LISTING_CASE_DATA
-        ));
-
-        verify(sealingService).sealDocument(eq(SDO_DOCUMENT), any(), eq(SealType.ENGLISH));
-        verify(coreCaseDataService).triggerEvent(eq(caseData.getId()),eq("internal-change-add-gatekeeping"), any());
-    }
-
-    private void verifyEmails(String cafcassTemplate, String ctcsTemplate, String laTemplate) {
-        checkUntil(() -> verify(notificationClient).sendEmail(
-            eq(cafcassTemplate),
-            eq(CAFCASS_EMAIL),
-            anyMap(),
-            eq(NOTIFICATION_REFERENCE)
-        ));
-
-        checkUntil(() -> verify(notificationClient).sendEmail(
-            eq(laTemplate),
-            eq("shared@test1.org.uk"),
-            anyMap(),
-            eq(NOTIFICATION_REFERENCE)
-        ));
-
-        checkUntil(() -> verify(notificationClient).sendEmail(
-            eq(ctcsTemplate),
-            eq("FamilyPublicLaw+ctsc@gmail.com"),
-            anyMap(),
-            eq(NOTIFICATION_REFERENCE)
-        ));
-    }
-
-    private void verifyEmailSentToTranslation() {
-        checkUntil(() -> verify(emailService).sendEmail(eq("sender@example.com"), any()));
     }
 
     private void verifyEmailSentToTranslation(int timesCalled) {
@@ -502,134 +340,44 @@ class ListGatekeepingHearingControllerSubmittedTest extends ListGatekeepingHeari
         checkThat(() -> verifyNoMoreInteractions(notificationClient, emailService), Duration.ofSeconds(2));
     }
 
-    private CaseData buildCaseDataWithUploadedSDO(OrderStatus status) {
-        return baseCaseData()
-            .gatekeepingOrderRouter(GatekeepingOrderRoute.UPLOAD)
-            .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
-                .gatekeepingOrderSealDecision(GatekeepingOrderSealDecision.builder()
-                    .orderStatus(status).build())
-                .build())
-            .standardDirectionOrder(StandardDirectionOrder.builder()
-                .orderStatus(status)
-                .orderDoc(SDO_DOCUMENT)
-                .unsealedDocumentCopy(SDO_DOCUMENT)
-                .uploader(DOC_UPLOADER_NAME)
-                .dateOfUpload(DATE_ADDED)
-                .translationRequirements(LanguageTranslationRequirement.NO)
-                .build())
-            .build();
-    }
+    final Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
+        .type(CASE_MANAGEMENT)
+        .startDate(START_DATE)
+        .endDate(END_DATE)
+        .noticeOfHearing(NOTICE_OF_HEARING)
+        .venue("96")
+        .build());
 
-    private CaseData buildCaseDataWithSDO(OrderStatus status) {
-        return baseCaseData()
-            .gatekeepingOrderRouter(GatekeepingOrderRoute.SERVICE)
-            .standardDirectionOrder(StandardDirectionOrder.builder()
-                .orderStatus(status)
-                .orderDoc(SDO_DOCUMENT)
-                .build())
-            .build();
-    }
-
-    private CaseData buildCaseDataWithSDOToTranslate(OrderStatus status) {
-        return baseCaseData()
-            .gatekeepingOrderRouter(GatekeepingOrderRoute.SERVICE)
-            .standardDirectionOrder(StandardDirectionOrder.builder()
-                .orderStatus(status)
-                .orderDoc(SDO_DOCUMENT)
+    private final CaseData caseDataWithSDOAndNopAndNohToTranslateBefore = CaseData.builder()
+        .id(CASE_ID)
+        .familyManCaseNumber(FAMILY_MAN_NUMBER)
+        .caseLocalAuthority(LOCAL_AUTHORITY_3_CODE)
+        .hearingDetails(null)
+        .state(GATEKEEPING)
+        .respondents1(wrapElements(RESPONDENT_REPRESENTED, RESPONDENT_NOT_REPRESENTED))
+        .representatives(List.of(REPRESENTATIVE_DIGITAL,
+            REPRESENTATIVE_EMAIL, REPRESENTATIVE_POST))
+        .gatekeepingOrderRouter(GatekeepingOrderRoute.SERVICE)
+        .standardDirectionOrder(StandardDirectionOrder.builder()
+            .orderStatus(SEALED)
+            .orderDoc(SDO_DOCUMENT)
+            .translationRequirements(WELSH_TO_ENGLISH)
+            .build())
+        .noticeOfProceedingsBundle(List.of(
+            element(DocumentBundle.builder()
+                .document(C6_DOCUMENT)
+                .translationRequirements(WELSH_TO_ENGLISH)
+                .build()),
+            element(DocumentBundle.builder()
+                .document(C6A_DOCUMENT)
                 .translationRequirements(WELSH_TO_ENGLISH)
                 .build())
+        )).build();
+
+    private final CaseData caseDataWithSDOAndNopAndNohToTranslateAfter =
+        caseDataWithSDOAndNopAndNohToTranslateBefore.toBuilder()
+            .hearingDetails(List.of(hearingWithNotice))
+            .selectedHearingId(hearingWithNotice.getId())
+            .state(GATEKEEPING)
             .build();
-    }
-
-    private CaseData buildCaseDataWithSDOAndNopToTranslate(OrderStatus status) {
-        return baseCaseData()
-            .gatekeepingOrderRouter(GatekeepingOrderRoute.SERVICE)
-            .standardDirectionOrder(StandardDirectionOrder.builder()
-                .orderStatus(status)
-                .orderDoc(SDO_DOCUMENT)
-                .translationRequirements(WELSH_TO_ENGLISH)
-                .build())
-            .noticeOfProceedingsBundle(List.of(
-                element(DocumentBundle.builder()
-                    .document(C6_DOCUMENT)
-                    .translationRequirements(WELSH_TO_ENGLISH)
-                    .build()),
-                element(DocumentBundle.builder()
-                    .document(C6A_DOCUMENT)
-                    .translationRequirements(WELSH_TO_ENGLISH)
-                    .build())
-            )).build();
-    }
-
-    private CaseData.CaseDataBuilder<?,?> baseCaseData() {
-        return CaseData.builder()
-            .id(CASE_ID)
-            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
-            .hearingDetails(wrapElements(HearingBooking.builder()
-                .startDate(LocalDateTime.of(2020, 10, 20, 11, 11, 11))
-                .endDate(LocalDateTime.of(2020, 11, 20, 11, 11, 11))
-                .build()))
-            .respondents1(wrapElements(Respondent.builder()
-                .party(RespondentParty.builder()
-                    .dateOfBirth(dateNow().plusDays(1))
-                    .lastName("Moley")
-                    .relationshipToChild("Uncle")
-                    .build())
-                .build()));
-    }
-
-    private Map<String, Object> buildData(List<Element<HearingBooking>> hearings, UUID selectedHearing) {
-        return Map.of("hearingDetails", hearings,
-            "selectedHearingId", selectedHearing,
-            "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
-            "representatives", createRepresentatives(RepresentativeServingPreferences.EMAIL),
-            ALL_PARTIES.getValue(),
-            wrapElements(
-                buildDirection("allParties1"),
-                buildDirection("allParties2", LocalDateTime.of(2060, 1, 1, 13, 0, 0)),
-                buildDirection("allParties3"),
-                buildDirection("allParties4"),
-                buildDirection("allParties5", LocalDateTime.of(2060, 2, 2, 14, 0, 0))),
-            LOCAL_AUTHORITY.getValue(),
-            wrapElements(
-                buildDirection("la1", LocalDateTime.of(2060, 3, 3, 13, 0, 0)),
-                buildDirection("la2", LocalDateTime.of(2060, 4, 4, 14, 0, 0)),
-                buildDirection("la3"),
-                buildDirection("la4"),
-                buildDirection("la5", LocalDateTime.of(2060, 5, 5, 15, 0, 0)),
-                buildDirection("la6"),
-                buildDirection("la7", LocalDateTime.of(2060, 6, 6, 16, 0, 0))),
-            PARENTS_AND_RESPONDENTS.getValue(), wrapElements(
-                buildDirection("p&r1")),
-            CAFCASS.getValue(), wrapElements(
-                buildDirection("cafcass1"),
-                buildDirection("cafcass2", LocalDateTime.of(2060, 7, 7, 17, 0, 0)),
-                buildDirection("cafcass3")),
-            OTHERS.getValue(), wrapElements(
-                buildDirection("others1")),
-            COURT.getValue(), wrapElements(
-                buildDirection("court1", LocalDateTime.of(2060, 8, 8, 18, 0, 0))));
-    }
-
-    private Direction buildDirection(String text) {
-        return Direction.builder().directionText(text).build();
-    }
-
-    private Direction buildDirection(String text, LocalDateTime dateTime) {
-        return Direction.builder().directionText(text).dateToBeCompletedBy(dateTime).build();
-    }
-
-    private Map<String, Object> caseSummary(String hasNextHearing, String hearingType, LocalDate hearingDate) {
-        return caseConverter.toMap(SyntheticCaseSummary.builder()
-            .caseSummaryHasNextHearing(hasNextHearing)
-            .caseSummaryNextHearingType(hearingType)
-            .caseSummaryNextHearingDate(hearingDate)
-            .caseSummaryCourtName(COURT_NAME)
-            .caseSummaryLanguageRequirement("No")
-            .caseSummaryLALanguageRequirement("No")
-            .caseSummaryHighCourtCase("No")
-            .caseSummaryLAHighCourtCase("No")
-            .caseSummaryLATabHidden("Yes")
-            .build());
-    }
 }

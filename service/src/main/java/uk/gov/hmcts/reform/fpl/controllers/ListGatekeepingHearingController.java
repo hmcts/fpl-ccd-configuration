@@ -20,11 +20,9 @@ import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.events.TemporaryHearingJudgeAllocationEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
@@ -45,7 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -54,8 +51,6 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_NOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.DEFAULT_PRE_ATTENDANCE;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PREVIOUS_HEARING_VENUE_KEY;
@@ -166,27 +161,26 @@ public class ListGatekeepingHearingController extends CallbackController {
 
         Map<String, Object> updates = new HashMap<>();
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
-//TODO: check if order is sealed?
-//        StandardDirectionOrder sdo = defaultIfNull(
-//            caseData.getStandardDirectionOrder(), StandardDirectionOrder.builder().build()
-//        );
-        if (sdoRouter == UPLOAD) {
-            updates.put("standardDirectionOrder", orderService.sealDocumentAfterEventSubmitted(caseData));
-        }
 
-        final CaseData caseDataAfterSealing;
-        if (updates.isEmpty()) {
-            caseDataAfterSealing = caseData;
-        } else {
-            data.putAll(updates);
-            caseDataAfterSealing = getCaseData(caseDetails);
-        }
 
-        coreCaseDataService.triggerEvent(caseDataAfterSealing.getId(),
-            "internal-change-add-gatekeeping",
-            updates);
+//        if (sdoRouter == UPLOAD) {
+//            updates.put("standardDirectionOrder", orderService.sealDocumentAfterEventSubmitted(caseData));
+//        }
+//
+//        final CaseData caseDataAfterSealing;
+//        if (updates.isEmpty()) {
+//            caseDataAfterSealing = caseData;
+//        } else {
+//            data.putAll(updates);
+//            caseDataAfterSealing = getCaseData(caseDetails);
+//        }
+//
+//        coreCaseDataService.triggerEvent(caseDataAfterSealing.getId(),
+//            "internal-change-add-gatekeeping",
+//            updates);
 
-        notificationDecider.buildEventToPublish(caseDataAfterSealing, caseDataBefore.getState())
+        final CaseData caseDataAfterSealing = caseData;
+        notificationDecider.buildGatekeepingEventToPublish(caseDataAfterSealing, caseDataBefore.getState())
             .ifPresent(eventToPublish -> {
                 coreCaseDataService.triggerEvent(
                     JURISDICTION,
@@ -197,7 +191,7 @@ public class ListGatekeepingHearingController extends CallbackController {
 
                 publishEvent(eventToPublish);
             });
-log.debug("SDO sent");
+
         publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
 
         if (isNotEmpty(caseData.getSelectedHearingId())) {
@@ -215,7 +209,6 @@ log.debug("SDO sent");
                     }
                 });
         }
-log.debug("Notifications sent");
     }
 
     @PostMapping("allocated-judge/mid-event")
