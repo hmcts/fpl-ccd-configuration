@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -28,7 +27,6 @@ import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.COURT_ADMIN_LISTING_TEMPLATE;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GatekeepingOrderEventHandler {
@@ -101,17 +99,15 @@ public class GatekeepingOrderEventHandler {
     @EventListener
     public void notifyCourtAdmin(GatekeepingOrderEvent event) {
         CaseData caseData = event.getCaseData();
-        log.info("caseData.getId() {} : event.isSentToAdmin {} ", caseData.getId(), event.isSentToAdmin());
+
         if (event.isSentToAdmin()) {
             NotifyData notifyData = standardContentProvider.buildNotificationParameters(caseData,
                 event.getOrder(),
                 event.getSendToAdminReason());
-            log.info("notifyData {} ", notifyData);
+
             String recipient = hmctsCourtToCourtAdminLookupConfiguration.getEmail(caseData.getCourt().getCode());
-            log.info("recipient {} ", recipient);
             notificationService
                 .sendEmail(COURT_ADMIN_LISTING_TEMPLATE, recipient, notifyData, caseData.getId());
-            log.info("email sent {} ", COURT_ADMIN_LISTING_TEMPLATE);
         }
     }
 

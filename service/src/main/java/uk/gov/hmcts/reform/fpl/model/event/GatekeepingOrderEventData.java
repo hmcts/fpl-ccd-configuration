@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
-import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.fpl.enums.DirectionType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -30,7 +29,6 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.reflect.FieldUtils.getFieldsListWithAnnotation;
 
-@Slf4j
 @Data
 @Builder(toBuilder = true)
 @Jacksonized
@@ -95,11 +93,6 @@ public class GatekeepingOrderEventData {
     }
 
     public boolean isSentToAdmin() {
-        log.info("gatekeepingOrderListOrSendToAdmin {} : evaluated to {} ", gatekeepingOrderListOrSendToAdmin,
-            Optional.ofNullable(gatekeepingOrderListOrSendToAdmin)
-                .map(value -> value.equals("NO"))
-                .orElse(false));
-
         return Optional.ofNullable(gatekeepingOrderListOrSendToAdmin)
             .map(value -> value.equals("NO"))
             .orElse(false);
