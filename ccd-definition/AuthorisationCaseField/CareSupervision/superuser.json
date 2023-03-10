@@ -884,6 +884,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "directionsForCafcassUpdated",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "directionsForOthers",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRU"
@@ -892,6 +899,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "directionsForCourt",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "directionsForCourtUpdated",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRU"
   },
@@ -1017,6 +1031,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "direction-APPOINT_CHILDREN_GUARDIAN_IMMEDIATE",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "direction-OBJECT_TO_REQUEST_FOR_DISCLOSURE",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRUD"
@@ -1025,6 +1046,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "direction-ARRANGE_INTERPRETERS",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "direction-ARRANGE_INTERPRETERS_IMMEDIATE",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRUD"
   },
