@@ -54,6 +54,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.PLACEMENT_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.PLACEMENT_NOTICE;
+import static uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService.UPDATE_CASE_EVENT;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.nullifyTemporaryFields;
 
 @Slf4j
@@ -282,7 +283,7 @@ public class PlacementEventsHandler {
     }
 
     private void updateCase(CaseData caseData) {
-        coreCaseDataService.performPostSubmitCallbackUpdateCase(caseData.getId(), this::getUpdates);
+        coreCaseDataService.performPostSubmitCallback(caseData.getId(), UPDATE_CASE_EVENT, this::getUpdates);
     }
 
     public Map<String, Object> getUpdates(CaseDetails caseDetails) {

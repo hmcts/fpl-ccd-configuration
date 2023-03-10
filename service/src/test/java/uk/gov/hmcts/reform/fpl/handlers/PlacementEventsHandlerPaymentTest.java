@@ -48,6 +48,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.A50_PLACEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.CaseConverter.MAP_TYPE;
+import static uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService.UPDATE_CASE_EVENT;
 
 @ExtendWith({MockitoExtension.class, TestLogsExtension.class})
 class PlacementEventsHandlerPaymentTest {
@@ -134,7 +135,7 @@ class PlacementEventsHandlerPaymentTest {
         expectedCaseUpdates.put("placement", null);
 
         verify(paymentService).makePaymentForPlacement(caseData, "HMCTS");
-        verify(coreCaseDataService).performPostSubmitCallbackUpdateCase(eq(CASE_ID), any());
+        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID), eq(UPDATE_CASE_EVENT), any());
 
         verifyNoInteractions(eventService);
     }
@@ -163,7 +164,7 @@ class PlacementEventsHandlerPaymentTest {
         underTest.takeApplicationPayment(event);
 
         verify(paymentService).makePaymentForPlacement(caseData, "Test local authority");
-        verify(coreCaseDataService).performPostSubmitCallbackUpdateCase(eq(CASE_ID), any());
+        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID), eq(UPDATE_CASE_EVENT), any());
 
         verifyNoInteractions(eventService);
     }
@@ -234,7 +235,7 @@ class PlacementEventsHandlerPaymentTest {
 
 
         verify(paymentService).makePaymentForPlacement(caseData, "HMCTS");
-        verify(coreCaseDataService).performPostSubmitCallbackUpdateCase(eq(CASE_ID), any());
+        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID), eq(UPDATE_CASE_EVENT), any());
         verify(eventService).publishEvent(FailedPBAPaymentEvent.builder()
             .caseData(caseData)
             .applicant(OrderApplicant.builder()
@@ -281,7 +282,7 @@ class PlacementEventsHandlerPaymentTest {
         expectedCaseUpdates.put("placement", null);
 
         verify(paymentService).makePaymentForPlacement(caseData, "Test local authority");
-        verify(coreCaseDataService).performPostSubmitCallbackUpdateCase(eq(CASE_ID), any());
+        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID), eq(UPDATE_CASE_EVENT), any());
         verify(eventService).publishEvent(FailedPBAPaymentEvent.builder()
             .caseData(caseData)
             .applicant(OrderApplicant.builder()

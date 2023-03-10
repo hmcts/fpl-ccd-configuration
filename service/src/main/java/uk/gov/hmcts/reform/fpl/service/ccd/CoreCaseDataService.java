@@ -27,6 +27,10 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CoreCaseDataService {
+
+    public static final String UPDATE_CASE_EVENT = "internal-change-UPDATE_CASE";
+    private static final int RETRIES = 3;
+
     private final AuthTokenGenerator authTokenGenerator;
     private final CoreCaseDataApi coreCaseDataApi;
     private final RequestData requestData;
@@ -37,7 +41,7 @@ public class CoreCaseDataService {
                                           String eventName,
                                           Function<CaseDetails, Map<String, Object>> changeFunction) {
         int retries = 0;
-        while (retries < 3) {
+        while (retries < RETRIES) {
             try {
                 StartEventResponse startEventResponse = concurrencyHelper.startEvent(caseId, eventName);
                 CaseDetails caseDetails = startEventResponse.getCaseDetails();
@@ -45,7 +49,7 @@ public class CoreCaseDataService {
                 HashMap<String, Object> caseDetailsMap = new HashMap<>(caseDetails.getData());
                 caseDetails.setData(caseDetailsMap);
 
-                Map<String, Object> updates = changeFunction.apply(startEventResponse.getCaseDetails());
+                Map<String, Object> updates = changeFunction.apply(caseDetails);
 
                 if (!updates.isEmpty()) {
                     log.info("Submitting event {} on case {}", eventName, caseId);
@@ -63,12 +67,6 @@ public class CoreCaseDataService {
         log.error("All 3 retries failed");
         return null;
     }
-
-    public CaseDetails performPostSubmitCallbackUpdateCase(Long caseId,
-                                                           Function<CaseDetails, Map<String, Object>> changeFunction) {
-        return performPostSubmitCallback(caseId, "internal-change-UPDATE_CASE", changeFunction);
-    }
-
 
     /**
      * Runs the UPDATE_CASE event on a given case.

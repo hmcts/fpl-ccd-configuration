@@ -40,6 +40,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Language.ENGLISH;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Language.WELSH;
+import static uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService.UPDATE_CASE_EVENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
@@ -148,7 +149,7 @@ class SendDocumentServiceTest {
                 .send(document, List.of(recipient3), caseData.getId(), caseData.getFamilyManCaseNumber(),
                     ENGLISH);
 
-            verify(caseService).performPostSubmitCallbackUpdateCase(eq(caseData.getId()), any());
+            verify(caseService).performPostSubmitCallback(eq(caseData.getId()), eq(UPDATE_CASE_EVENT), any());
 
             assertThat(logs.getErrors())
                 .containsExactly("Case 100 has 2 recipients with incomplete postal information");
@@ -191,7 +192,7 @@ class SendDocumentServiceTest {
                 .send(document2, List.of(recipient1, recipient2), caseData.getId(), caseData.getFamilyManCaseNumber(),
                     ENGLISH);
 
-            verify(caseService).performPostSubmitCallbackUpdateCase(eq(caseData.getId()), any());
+            verify(caseService).performPostSubmitCallback(eq(caseData.getId()), eq(UPDATE_CASE_EVENT), any());
 
             assertThat(logs.getErrors()).isEmpty();
         }
@@ -244,7 +245,7 @@ class SendDocumentServiceTest {
                 .send(document2, List.of(recipient1, recipient2), caseData.getId(), caseData.getFamilyManCaseNumber(),
                     ENGLISH);
 
-            verify(caseService).performPostSubmitCallbackUpdateCase(eq(caseData.getId()), any());
+            verify(caseService).performPostSubmitCallback(eq(caseData.getId()), eq(UPDATE_CASE_EVENT), any());
 
             assertThat(logs.getErrors()).isEmpty();
         }

@@ -25,6 +25,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService.UPDATE_CASE_EVENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Slf4j
@@ -74,7 +75,7 @@ public class SendDocumentService {
                 .collect(toList());
 
             // Pop the audit trail on the case data if successful
-            caseService.performPostSubmitCallbackUpdateCase(caseData.getId(),
+            caseService.performPostSubmitCallback(caseData.getId(), UPDATE_CASE_EVENT,
                 caseDetails -> {
                     CaseData currentCaseData = caseConverter.convert(caseDetails);
                     List<Element<SentDocuments>> documentsSent = sentDocuments.addToHistory(
