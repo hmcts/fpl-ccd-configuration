@@ -203,7 +203,6 @@ class ListGatekeepingHearingControllerSubmittedTest extends AbstractCallbackTest
 
     @BeforeEach
     void init() {
-        // TODO: add this to the only test
         when(translationRequestFormCreationService.buildTranslationRequestDocuments(any()))
             .thenReturn(DOCMOSIS_PDF_DOCUMENT);
         when(documentDownloadService.downloadDocument(any())).thenReturn(APPLICATION_BINARY);
