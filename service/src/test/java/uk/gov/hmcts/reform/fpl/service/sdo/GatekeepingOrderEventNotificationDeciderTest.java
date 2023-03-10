@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 
 import java.time.LocalDate;
@@ -117,6 +118,33 @@ class GatekeepingOrderEventNotificationDeciderTest {
             .languageTranslationRequirement(WELSH_TO_ENGLISH)
             .orderTitle("Gatekeeping order - 6 August 2020")
             .caseData(caseData)
+            .build()
+        );
+    }
+
+    @Test
+    void buildEventToPublishForSDOAndNoPWhenInGateKeepingOrderPresent() {
+        CaseData caseData = CaseData.builder()
+            .standardDirectionOrder(StandardDirectionOrder.builder()
+                .orderStatus(OrderStatus.SEALED)
+                .orderDoc(ORDER)
+                .dateOfIssue("6 August 2020")
+                .translationRequirements(WELSH_TO_ENGLISH)
+                .build())
+            .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .gatekeepingOrderListOrSendToAdminReason("Please complete")
+                .gatekeepingOrderListOrSendToAdmin("NO")
+                .build())
+            .build();
+
+        assertThat(underTest.buildEventToPublish(caseData, GATEKEEPING)).contains(GatekeepingOrderEvent.builder()
+            .notificationGroup(SDO_AND_NOP)
+            .order(ORDER)
+            .orderTitle("Gatekeeping order - 6 August 2020")
+            .languageTranslationRequirement(WELSH_TO_ENGLISH)
+            .caseData(caseData)
+            .sendToAdminReason("Please complete")
+            .isSentToAdmin(true)
             .build()
         );
     }

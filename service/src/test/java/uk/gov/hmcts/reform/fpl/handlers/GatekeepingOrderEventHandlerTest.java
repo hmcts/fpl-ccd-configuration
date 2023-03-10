@@ -7,10 +7,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtToCourtAdminLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup;
 import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
@@ -25,10 +27,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.COURT_ADMIN_LISTING_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CAFCASS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_AND_NOP_ISSUED_CTSC;
@@ -72,7 +77,8 @@ class GatekeepingOrderEventHandlerTest {
     private SDOIssuedCafcassContentProvider cafcassContentProvider;
     @Mock
     private TranslationRequestService translationRequestService;
-
+    @Mock
+    private HmctsCourtToCourtAdminLookupConfiguration hmctsCourtToCourtAdminLookupConfiguration;
     @InjectMocks
     private GatekeepingOrderEventHandler underTest;
 
@@ -197,6 +203,70 @@ class GatekeepingOrderEventHandlerTest {
             DOCUMENT_C6A, "Notice of proceedings (C6A)");
 
         verifyNoMoreInteractions(translationRequestService);
+    }
+
+    @Test
+    void shouldNotifyCourtAdminWhenJudgeRequestListing() {
+        CaseData caseData = CaseData.builder()
+            .id(1123L)
+            .court(Court.builder()
+                .code("344")
+                .name("Family Court")
+                .build()
+            )
+            .familyManCaseNumber("FamilyMan1234")
+            .build();
+
+        GatekeepingOrderEvent gatekeepingOrderEvent = gatekeepingOrderEvent(URGENT_AND_NOP, caseData)
+            .toBuilder()
+            .order(ORDER)
+            .orderTitle(ORDER_TITLE)
+            .isSentToAdmin(true)
+            .sendToAdminReason("Please complete")
+            .build();
+
+        given(hmctsCourtToCourtAdminLookupConfiguration.getEmail("344"))
+            .willReturn("FamilyPublicLaw+ctsc@gmail.com");
+
+        given(standardContentProvider.buildNotificationParameters(caseData,
+            ORDER,
+            gatekeepingOrderEvent.getSendToAdminReason())).willReturn(NOTIFY_DATA);
+
+        underTest.notifyCourtAdmin(gatekeepingOrderEvent);
+
+        verify(notificationService).sendEmail(eq(COURT_ADMIN_LISTING_TEMPLATE),
+            eq("FamilyPublicLaw+ctsc@gmail.com"),
+            eq(NOTIFY_DATA),
+            eq(1123L)
+        );
+    }
+
+    @Test
+    void shouldNotNotifyCourtAdminWhenJudgeHasCompletedListing() {
+        CaseData caseData = CaseData.builder()
+            .id(1123L)
+            .court(Court.builder()
+                .code("344")
+                .name("Family Court")
+                .build()
+            )
+            .familyManCaseNumber("FamilyMan1234")
+            .build();
+
+        GatekeepingOrderEvent gatekeepingOrderEvent = gatekeepingOrderEvent(URGENT_AND_NOP, caseData)
+            .toBuilder()
+            .order(ORDER)
+            .orderTitle(ORDER_TITLE)
+            .isSentToAdmin(false)
+            .build();
+
+        underTest.notifyCourtAdmin(gatekeepingOrderEvent);
+
+        verify(notificationService, never()).sendEmail(eq(COURT_ADMIN_LISTING_TEMPLATE),
+            eq("FamilyPublicLaw+ctsc@gmail.com"),
+            eq(NOTIFY_DATA),
+            eq(1123L)
+        );
     }
 
     private GatekeepingOrderEvent gatekeepingOrderEvent(GatekeepingOrderNotificationGroup group, CaseData caseData) {

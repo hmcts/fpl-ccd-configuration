@@ -15,4 +15,8 @@ public class SDONotifyData implements NotifyData {
     String caseUrl; // optional, not in the cafcass version due to it having the below field instead
     Map<String, Object> documentLink; // optional, only the cafcass version has this populated
     String callout;
+    String reason;
+    String courtName;
+    String caseNumber;
+    boolean isReasonPresent;
 }

@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtToCourtAdminLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -24,6 +25,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.COURT_ADMIN_LISTING_TEMPLATE;
+
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GatekeepingOrderEventHandler {
@@ -34,6 +37,7 @@ public class GatekeepingOrderEventHandler {
     private final SDOIssuedCafcassContentProvider cafcassContentProvider;
     private final SDOIssuedContentProvider standardContentProvider;
     private final TranslationRequestService translationRequestService;
+    private final HmctsCourtToCourtAdminLookupConfiguration hmctsCourtToCourtAdminLookupConfiguration;
 
     @Async
     @EventListener
@@ -90,4 +94,22 @@ public class GatekeepingOrderEventHandler {
                 nop.getValue().getDocument(), nop.getValue().asLabel())
             );
     }
+
+    @Async
+    @EventListener
+    public void notifyCourtAdmin(GatekeepingOrderEvent event) {
+        CaseData caseData = event.getCaseData();
+
+        if (event.isSentToAdmin()) {
+            NotifyData notifyData = standardContentProvider.buildNotificationParameters(caseData,
+                event.getOrder(),
+                event.getSendToAdminReason());
+
+            String recipient = hmctsCourtToCourtAdminLookupConfiguration.getEmail(caseData.getCourt().getCode());
+            notificationService
+                .sendEmail(COURT_ADMIN_LISTING_TEMPLATE, recipient, notifyData, caseData.getId());
+        }
+    }
+
+
 }
