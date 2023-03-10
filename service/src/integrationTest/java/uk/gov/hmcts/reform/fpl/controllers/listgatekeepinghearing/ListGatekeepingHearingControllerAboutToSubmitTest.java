@@ -48,7 +48,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static java.time.format.FormatStyle.LONG;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -178,7 +177,7 @@ class ListGatekeepingHearingControllerAboutToSubmitTest extends AbstractCallback
             .orderDoc(SDO_REFERENCE)
             .unsealedDocumentCopy(SDO_REFERENCE)
             .orderStatus(SEALED)
-            .dateOfIssue(LocalDate.now().format(DateTimeFormatter.ofLocalizedDate(LONG)))
+            .dateOfIssue(LocalDate.now().format(DateTimeFormatter.ofPattern("d MMMM yyyy")))
             .customDirections(wrapElements(customDirection))
             .standardDirections(wrapElements(standardDirection))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
