@@ -180,7 +180,7 @@ class ListGatekeepingHearingControllerAboutToSubmitTest extends AbstractCallback
             .orderDoc(SDO_REFERENCE)
             .unsealedDocumentCopy(SDO_REFERENCE)
             .orderStatus(SEALED)
-            .dateOfIssue(LocalDate.now().format(DateTimeFormatter.ofPattern("d MMMM yyyy")))
+            .dateOfIssue("3 March 2021")
             .customDirections(wrapElements(customDirection))
             .standardDirections(wrapElements(standardDirection))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
