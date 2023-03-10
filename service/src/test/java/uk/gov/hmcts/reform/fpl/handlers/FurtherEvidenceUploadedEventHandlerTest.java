@@ -8,7 +8,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -24,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUser
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.Address;
-import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -43,6 +41,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithDocument;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
@@ -93,6 +92,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.NON_CONFIDENTIAL_1;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.NON_CONFIDENTIAL_2;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.PDF_DOCUMENT_1;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.PDF_DOCUMENT_2;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithAdditionalApplicationBundle;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithApplicationDocuments;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithC2AdditionalApplicationBundle;
@@ -240,18 +240,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
         } else {
             verify(furtherEvidenceNotificationService, never()).sendNotification(any(), any(), any(), any());
         }
-    }
-
-    @Test
-    void shouldSendNotificationWhenApplicationDocumentIsUploadedByLA() {
-        // Further documents for main application -> Further application documents
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getApplicationDocuments().addAll(
-                wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER,
-                    PDF_DOCUMENT_1))),
-            Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
-            List.of(BIRTH_CERTIFICATE.getLabel()));
     }
 
     @Test
@@ -1026,7 +1014,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         Set<DocumentReference> documentReferences = unwrapElements(caseData.getApplicationDocuments())
                 .stream()
-                .map(ApplicationDocument::getDocument)
+                .map(WithDocument::getDocument)
                 .collect(toSet());
 
         verify(cafcassNotificationService).sendEmail(
@@ -1064,7 +1052,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         Set<DocumentReference> documentReferences = unwrapElements(caseData.getApplicationDocuments())
                 .stream()
-                .map(ApplicationDocument::getDocument)
+                .map(WithDocument::getDocument)
                 .collect(toSet());
 
         verify(cafcassNotificationService, never()).sendEmail(
@@ -1528,32 +1516,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         return List.of(CONFIDENTIAL_1, CONFIDENTIAL_2);
     }
 
-    private static Stream<Arguments> oldNewConfidentialCombination() {
-        Stream.Builder<Arguments> builder = Stream.builder();
-        builder.add(Arguments.of(true, true));
-        builder.add(Arguments.of(true, false));
-        builder.add(Arguments.of(false, true));
-        builder.add(Arguments.of(false, false));
-        return builder.build();
-    }
-
-    @ParameterizedTest
-    @MethodSource("oldNewConfidentialCombination")
-    void shouldNotSendNotificationWhenConfidentialChangeOnlyInApplicationDocumentByLA(boolean oldConfidential,
-                                                                                      boolean newConfidential) {
-        // Further documents for main application -> Further application documents
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY,
-            (caseData) ->  caseData.getApplicationDocuments().addAll(
-                wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER,
-                    PDF_DOCUMENT_1, oldConfidential))),
-            (caseData) ->  caseData.getApplicationDocuments().addAll(
-                wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER,
-                    PDF_DOCUMENT_1, newConfidential))),
-            Set.of(), null);
-    }
-
-    static class ConfidentialChangeArgs implements ArgumentsProvider {
+    static class RespondentStatementConfidentialChangeArgs implements ArgumentsProvider {
 
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
@@ -1635,7 +1598,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         }
 
         @ParameterizedTest
-        @ArgumentsSource(ConfidentialChangeArgs.class)
+        @ArgumentsSource(RespondentStatementConfidentialChangeArgs.class)
         void shouldNotSendNotificationForConfidentialChangeOnly(UserDetails userDetails,
                                                                 DocumentUploaderType uploadedType,
                                                                 String uploadedBy,
@@ -1649,6 +1612,93 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 (caseData) ->  caseData.getRespondentStatements().addAll(
                     buildRespondentStatementsList(wrapElements(
                         createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, newConfidential, PDF_DOCUMENT_1)))),
+                Set.of(), null);
+        }
+    }
+
+    static class ApplicationDocumentArgs implements ArgumentsProvider {
+
+        @Override
+        public Stream<Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                Arguments.of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+                    List.of(BIRTH_CERTIFICATE.getLabel()), false),
+                Arguments.of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
+                    Set.of(ALL_LAS),
+                    List.of(BIRTH_CERTIFICATE.getLabel()), true)
+            // Note: Only LAs can upload application documents
+            );
+        }
+    }
+
+    static class ApplicationDocumentConfidentialChangeArgs implements ArgumentsProvider {
+
+        @Override
+        public Stream<Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                Arguments.of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, true, true),
+                Arguments.of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, true, false),
+                Arguments.of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, false, true),
+                Arguments.of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, false, false)
+            );
+        }
+    }
+
+    @Nested
+    class ApplicationDocument {
+
+        @ParameterizedTest
+        @ArgumentsSource(ApplicationDocumentArgs.class)
+        void shouldSendNotificationForNewUpload(UserDetails userDetails,
+                                                DocumentUploaderType uploadedType,
+                                                String uploadedBy,
+                                                Set<DocumentUploadNotificationUserType> notificationTypes,
+                                                List<String> expectedDocumentNames,
+                                                boolean confidential) {
+            verifyNotificationFurtherDocumentsTemplate(
+                userDetails, uploadedType, EMPTY_CASE_DATA_MODIFIER,
+                (caseData) ->  caseData.getApplicationDocuments().addAll(
+                    wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
+                        PDF_DOCUMENT_1, confidential))),
+                notificationTypes, expectedDocumentNames);
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(ApplicationDocumentArgs.class)
+        void shouldSendNotificationForUpdatingWhenReplacingDocument(
+            UserDetails userDetails,
+            DocumentUploaderType uploadedType,
+            String uploadedBy,
+            Set<DocumentUploadNotificationUserType> notificationTypes,
+            List<String> expectedDocumentNames,
+            boolean confidential) {
+            verifyNotificationFurtherDocumentsTemplate(
+                userDetails, uploadedType,
+                (caseData) ->  caseData.getApplicationDocuments().addAll(
+                    wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
+                        PDF_DOCUMENT_2, confidential))),
+                (caseData) ->  caseData.getApplicationDocuments().addAll(
+                    wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
+                        PDF_DOCUMENT_1, confidential))),
+                notificationTypes, expectedDocumentNames);
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(ApplicationDocumentConfidentialChangeArgs.class)
+        void shouldNotSendNotificationForConfidentialChangeOnly(UserDetails userDetails,
+                                                                DocumentUploaderType uploadedType,
+                                                                String uploadedBy,
+                                                                boolean oldConfidential,
+                                                                boolean newConfidential) {
+            verifyNotificationFurtherDocumentsTemplate(
+                userDetails, uploadedType,
+                (caseData) ->  caseData.getApplicationDocuments().addAll(
+                    wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
+                        PDF_DOCUMENT_1, oldConfidential))),
+                (caseData) ->  caseData.getApplicationDocuments().addAll(
+                    wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
+                        PDF_DOCUMENT_1, newConfidential))),
                 Set.of(), null);
         }
     }
