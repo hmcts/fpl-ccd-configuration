@@ -18,5 +18,5 @@ public class SDONotifyData implements NotifyData {
     String reason;
     String courtName;
     String caseNumber;
-    boolean isReasonPresent;
+    String isReasonPresent;
 }

@@ -98,7 +98,7 @@ class SDOIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest
             ))
             .courtName("Family Court")
             .caseNumber("FAM NUM")
-            .isReasonPresent(true)
+            .isReasonPresent("yes")
             .reason(reason)
             .build();
 
@@ -139,7 +139,7 @@ class SDOIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest
             ))
             .courtName("Family Court")
             .caseNumber("FAM NUM")
-            .isReasonPresent(false)
+            .isReasonPresent("no")
             .reason(reason)
             .build();
 
