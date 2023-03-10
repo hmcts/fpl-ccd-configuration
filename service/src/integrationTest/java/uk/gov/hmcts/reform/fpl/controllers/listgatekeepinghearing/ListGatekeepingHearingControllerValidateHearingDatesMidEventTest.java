@@ -282,7 +282,9 @@ class ListGatekeepingHearingControllerValidateHearingDatesMidEventTest extends A
         final CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("hearingDays", "0.75"))
             .build();
-        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "validate-hearing-dates");
+        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+            caseDetails,
+            "validate-hearing-dates");
 
         assertThat(callbackResponse.getErrors())
             .containsExactlyInAnyOrder("Hearing length, in days should be a whole number");
