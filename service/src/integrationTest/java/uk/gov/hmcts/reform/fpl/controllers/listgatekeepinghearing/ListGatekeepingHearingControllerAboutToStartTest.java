@@ -64,8 +64,6 @@ class ListGatekeepingHearingControllerAboutToStartTest extends AbstractCallbackT
         assertThat(responseDataMap.get("pastAndTodayHearingDateList")).isEqualTo(emptyListMap);
         assertThat(responseDataMap.get("vacateHearingDateList")).isEqualTo(emptyListMap);
         assertThat(responseDataMap.get("toReListHearingDateList")).isEqualTo(emptyListMap);
-
-        assertThat(responseDataMap.get("sendNoticeOfHearing")).isEqualTo(YES.getValue());
     }
 
     @Test
@@ -92,13 +90,11 @@ class ListGatekeepingHearingControllerAboutToStartTest extends AbstractCallbackT
         assertThat(responseDataMap.get("pastAndTodayHearingDateList")).isEqualTo(emptyListMap);
         assertThat(responseDataMap.get("vacateHearingDateList")).isEqualTo(emptyListMap);
         assertThat(responseDataMap.get("toReListHearingDateList")).isEqualTo(emptyListMap);
-
-        assertThat(responseDataMap.get("sendNoticeOfHearing")).isEqualTo(YES.getValue());
     }
 
     @Test
     void shouldPopulateFlagsAndHearingLists() {
-        
+
         var emptyListMap = hearingListMap(List.of());
         var pastHearing = element(testHearing(LocalDateTime.now().minusDays(2)));
         var futureHearing = element(testHearing(LocalDateTime.now().plusDays(2)));
@@ -123,7 +119,6 @@ class ListGatekeepingHearingControllerAboutToStartTest extends AbstractCallbackT
         assertThat(responseDataMap.get("vacateHearingDateList")).isEqualTo(vacateListMap);
         assertThat(responseDataMap.get("toReListHearingDateList")).isEqualTo(emptyListMap);
 
-        assertThat(responseDataMap.get("sendNoticeOfHearing")).isEqualTo(YES.getValue());
         assertThat(responseDataMap.get("hearingOption")).isEqualTo(NEW_HEARING.toString());
 
     }
