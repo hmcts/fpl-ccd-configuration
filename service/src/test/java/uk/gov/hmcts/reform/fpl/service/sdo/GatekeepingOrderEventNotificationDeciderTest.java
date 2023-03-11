@@ -121,14 +121,14 @@ class GatekeepingOrderEventNotificationDeciderTest {
                 .build())
             .build();
 
-        assertThat(underTest.buildEventToPublish(caseData, GATEKEEPING_LISTING)).contains(GatekeepingOrderEvent.builder()
+        assertThat(underTest.buildEventToPublish(caseData, GATEKEEPING_LISTING))
+            .contains(GatekeepingOrderEvent.builder()
             .notificationGroup(SDO_AND_NOP)
             .order(ORDER)
             .orderTitle("Gatekeeping order - 6 August 2020")
             .languageTranslationRequirement(WELSH_TO_ENGLISH)
             .caseData(caseData)
-            .build()
-        );
+            .build());
     }
 
     @Test
