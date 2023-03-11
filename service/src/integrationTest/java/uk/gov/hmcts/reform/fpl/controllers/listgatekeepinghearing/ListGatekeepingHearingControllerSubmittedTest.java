@@ -1,18 +1,15 @@
 package uk.gov.hmcts.reform.fpl.controllers.listgatekeepinghearing;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.DirtiesContext;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.ListGatekeepingHearingController;
-import uk.gov.hmcts.reform.fpl.docmosis.DocmosisHelper;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -28,8 +25,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
-import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
-import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -63,7 +58,6 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CTSC_EMAIL;
@@ -109,7 +103,6 @@ class ListGatekeepingHearingControllerSubmittedTest extends AbstractCallbackTest
     private static final Document COVERSHEET_REPRESENTATIVE = testDocument();
     private static final Document COVERSHEET_RESPONDENT = testDocument();
     private static final DocumentReference NOTICE_OF_HEARING = testDocumentReference();
-    private static final DocumentReference SDO_DOCUMENT = testDocumentReference();
     private static final DocumentReference SEALED_DOCUMENT = testDocumentReference();
     private static final DocumentReference C6_DOCUMENT = testDocumentReference("notice_of_proceedings_c6.pdf");
     private static final DocumentReference C6A_DOCUMENT = testDocumentReference("notice_of_proceedings_c6a.pdf");
@@ -168,8 +161,6 @@ class ListGatekeepingHearingControllerSubmittedTest extends AbstractCallbackTest
     @MockBean
     private EmailService emailService;
     @MockBean
-    private DocumentSealingService sealingService;
-    @MockBean
     TranslationRequestFormCreationService translationRequestFormCreationService;
     @MockBean
     private DocumentDownloadService documentDownloadService;
@@ -178,13 +169,9 @@ class ListGatekeepingHearingControllerSubmittedTest extends AbstractCallbackTest
     @MockBean
     private DocumentConversionService documentConversionService;
     @MockBean
-    DocmosisHelper docmosisHelper;
-    @MockBean
     private DocmosisCoverDocumentsService documentService;
     @Captor
     private ArgumentCaptor<LetterWithPdfsRequest> printRequestCaptor;
-    @SpyBean
-    private EventService eventService;
     @MockBean
     private CoreCaseDataService coreCaseDataService;
     @MockBean
@@ -199,8 +186,6 @@ class ListGatekeepingHearingControllerSubmittedTest extends AbstractCallbackTest
     @Test
     void shouldSendNoticeOHearingAndNoticeOfProceedingsAndSDOWithTranslations()
         throws NotificationClientException {
-        final CaseData cdb = caseDataWithSDOAndNopAndNohToTranslateBefore;
-        final CaseData cd = caseDataWithSDOAndNopAndNohToTranslateAfter;
 
         givenFplService();
         given(translationRequestFormCreationService.buildTranslationRequestDocuments(any()))
@@ -217,7 +202,7 @@ class ListGatekeepingHearingControllerSubmittedTest extends AbstractCallbackTest
 
         given(otherRecipientsInbox.getNonSelectedRecipients(
             EMAIL,
-            cdb,
+            caseDataWithSDOAndNopAndNohToTranslateBefore,
             emptyList(),
             element -> element.getValue().getEmail())
         ).willReturn(emptySet());
@@ -240,7 +225,8 @@ class ListGatekeepingHearingControllerSubmittedTest extends AbstractCallbackTest
             Language.ENGLISH))
             .willReturn(testDocmosisDocument(COVERSHEET_RESPONDENT_BINARY));
 
-        postSubmittedEvent(toCallBackRequest(cd, cdb));
+        postSubmittedEvent(toCallBackRequest(caseDataWithSDOAndNopAndNohToTranslateAfter,
+            caseDataWithSDOAndNopAndNohToTranslateBefore));
 
         verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(NOTICE_OF_NEW_HEARING),
