@@ -101,7 +101,6 @@ public class ListGatekeepingHearingController extends CallbackController {
         }
 
         caseDetails.getData().putAll(hearingsService.populateHearingLists(caseData));
-        caseDetails.getData().put("sendNoticeOfHearing", YES.getValue());
 
         setNewHearing(caseDetails);
 
@@ -112,6 +111,7 @@ public class ListGatekeepingHearingController extends CallbackController {
     public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
 
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        caseDetails.getData().put("sendNoticeOfHearing", YES.getValue());
         CaseData eventData = orderService.updateStandardDirections(callbackRequest.getCaseDetails());
         final CaseDetailsMap caseData = caseDetailsMap(caseDetails);
 
