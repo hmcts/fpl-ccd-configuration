@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.controllers.gatekeepingorder;
+package uk.gov.hmcts.reform.fpl.controllers.listgatekeepinghearing;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
-import uk.gov.hmcts.reform.fpl.controllers.AddGatekeepingOrderController;
+import uk.gov.hmcts.reform.fpl.controllers.ListGatekeepingHearingController;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
@@ -42,19 +42,17 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 
-@WebMvcTest(AddGatekeepingOrderController.class)
+@WebMvcTest(ListGatekeepingHearingController.class)
 @OverrideAutoConfiguration(enabled = true)
-class AddGatekeepingOrderControllerPostSubmittedTest extends AbstractCallbackTest {
-
-    AddGatekeepingOrderControllerPostSubmittedTest() {
-        super("add-gatekeeping-order/post-submit-callback");
-    }
+class ListGatekeepingHearingControllerPostSubmittedTest extends AbstractCallbackTest {
 
     private static final Document SDO_DOCUMENT = testDocument();
     private static final DocumentReference SDO_REFERENCE = DocumentReference.buildFromDocument(SDO_DOCUMENT);
-
     private final Time time = new FixedTimeConfiguration().fixedDateTime(LocalDateTime.of(2021, 3, 3, 0, 0, 0));
 
+    ListGatekeepingHearingControllerPostSubmittedTest() {
+        super("list-gatekeeping-hearing/post-submit-callback");
+    }
 
     @Test
     void removeTemporaryFields() {

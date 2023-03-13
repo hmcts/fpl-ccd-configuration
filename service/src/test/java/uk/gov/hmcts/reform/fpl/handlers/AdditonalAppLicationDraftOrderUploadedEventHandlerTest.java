@@ -60,6 +60,7 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
 
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .additionalApplicationsBundle(
                 wrapElements(
                     AdditionalApplicationsBundle.builder()
@@ -72,6 +73,7 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
 
         CaseData caseDataBefore = CaseData.builder()
                 .id(RandomUtils.nextLong())
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .build();
 
         underTest.sendDocumentsToCafcass(new AdditonalAppLicationDraftOrderUploadedEvent(
@@ -105,6 +107,7 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
 
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .additionalApplicationsBundle(
                 wrapElements(
                     AdditionalApplicationsBundle.builder()
@@ -117,6 +120,7 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
 
         CaseData caseDataBefore = CaseData.builder()
             .id(RandomUtils.nextLong())
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .additionalApplicationsBundle(
                 wrapElements(
                     AdditionalApplicationsBundle.builder()
@@ -154,6 +158,7 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
 
         CaseData caseData = CaseData.builder()
                 .id(CASE_ID)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .additionalApplicationsBundle(
                         wrapElements(
                                 AdditionalApplicationsBundle.builder()
@@ -166,6 +171,7 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
 
         CaseData caseDataBefore = CaseData.builder()
                 .id(RandomUtils.nextLong())
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .build();
 
         underTest.sendDocumentsToCafcass(new AdditonalAppLicationDraftOrderUploadedEvent(
@@ -193,6 +199,7 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
 
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .additionalApplicationsBundle(
                 wrapElements(
                     AdditionalApplicationsBundle.builder()
@@ -207,6 +214,7 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
 
         CaseData caseDataBefore = CaseData.builder()
                 .id(RandomUtils.nextLong())
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .build();
 
         underTest.sendDocumentsToCafcass(new AdditonalAppLicationDraftOrderUploadedEvent(
@@ -232,6 +240,7 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
 
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .additionalApplicationsBundle(
                 wrapElements(
                     AdditionalApplicationsBundle.builder()
@@ -246,6 +255,7 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
 
         CaseData caseDataBefore = CaseData.builder()
             .id(RandomUtils.nextLong())
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .build();
 
         underTest.sendDocumentsToCafcass(new AdditonalAppLicationDraftOrderUploadedEvent(

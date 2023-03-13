@@ -52,6 +52,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -78,8 +79,18 @@ public class GatekeepingOrderService {
 
         return GatekeepingOrderSealDecision.builder()
             .draftDocument(order)
-            .dateOfIssue(LocalDate.now())
+            .dateOfIssue(time.now().toLocalDate())
             .orderStatus(null)
+            .build();
+    }
+
+    public GatekeepingOrderSealDecision buildSealedDecision(CaseData caseData) {
+        DocumentReference order = getOrderDocument(caseData);
+
+        return GatekeepingOrderSealDecision.builder()
+            .draftDocument(order)
+            .dateOfIssue(time.now().toLocalDate())
+            .orderStatus(SEALED)
             .build();
     }
 
@@ -314,10 +325,13 @@ public class GatekeepingOrderService {
             .orElse(0));
 
         LocalDate deadline = daysBefore == 0 ? hearingDay : calendarService.getWorkingDayFrom(hearingDay, daysBefore);
+
         LocalTime deadlineTime =
             LocalTime.parse(
-                defaultIfNull(hearing.getStartDate().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
-                    "00:00:00")
+                Optional.of(hearing)
+                .map(HearingBooking::getStartDate)
+                .map(startDate -> startDate.format(DateTimeFormatter.ofPattern("HH:mm:ss")))
+                .orElse("00:00:00")
             );
 
         return LocalDateTime.of(deadline, deadlineTime);
