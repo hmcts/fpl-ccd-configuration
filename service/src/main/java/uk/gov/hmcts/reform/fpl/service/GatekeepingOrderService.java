@@ -314,11 +314,13 @@ public class GatekeepingOrderService {
             .orElse(0));
 
         LocalDate deadline = daysBefore == 0 ? hearingDay : calendarService.getWorkingDayFrom(hearingDay, daysBefore);
+
         LocalTime deadlineTime =
             LocalTime.parse(
-                isNotEmpty(hearing) && isNotEmpty(hearing.getStartDate())
-                    ? hearing.getStartDate().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
-                    : "00:00:00"
+                Optional.of(hearing)
+                .map(HearingBooking::getStartDate)
+                .map(startDate -> startDate.format(DateTimeFormatter.ofPattern("HH:mm:ss")))
+                .orElse("00:00:00")
             );
 
         return LocalDateTime.of(deadline, deadlineTime);
