@@ -113,6 +113,7 @@ class DraftsOrdersUploadedEventHandlerTest {
 
         final CaseData caseData = CaseData.builder()
                 .id(CASE_ID)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .allocatedJudge(allocatedJudge())
                 .hearingDetails(List.of(hearing, selectedHearing))
                 .hearingOrdersBundlesDrafts(wrapElements(bundle, selectedHearingBundle))
@@ -167,6 +168,7 @@ class DraftsOrdersUploadedEventHandlerTest {
 
         final CaseData caseData = CaseData.builder()
                 .id(CASE_ID)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .allocatedJudge(allocatedJudge())
                 .hearingDetails(List.of(hearing, selectedHearing))
                 .hearingOrdersBundlesDrafts(wrapElements(bundle, selectedHearingBundle))
@@ -192,6 +194,7 @@ class DraftsOrdersUploadedEventHandlerTest {
 
         final CaseData caseData = CaseData.builder()
                 .id(CASE_ID)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .build();
 
         underTest.sendNotificationToCafcass(new DraftOrdersUploaded(caseData));
@@ -217,6 +220,7 @@ class DraftsOrdersUploadedEventHandlerTest {
 
         final CaseData caseData = CaseData.builder()
             .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .allocatedJudge(allocatedJudge())
             .hearingDetails(List.of(hearing, selectedHearing))
             .hearingOrdersBundlesDrafts(wrapElements(bundle, selectedHearingBundle))
@@ -254,6 +258,7 @@ class DraftsOrdersUploadedEventHandlerTest {
 
         final CaseData caseData = CaseData.builder()
             .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .allocatedJudge(judge)
             .hearingDetails(List.of(hearing1, selectedHearing))
             .hearingOrdersBundlesDrafts(wrapElements(bundle1, selectedHearingBundle))
@@ -280,6 +285,7 @@ class DraftsOrdersUploadedEventHandlerTest {
     void shouldNotSendEmailIfNoHearingOrders() {
         final CaseData caseData = CaseData.builder()
             .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .allocatedJudge(allocatedJudge())
             .hearingOrdersBundlesDrafts(null)
             .build();
@@ -298,6 +304,7 @@ class DraftsOrdersUploadedEventHandlerTest {
 
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .hearingDetails(List.of(hearing1))
             .hearingOrdersBundlesDrafts(ElementUtils.wrapElements(bundle))
             .lastHearingOrderDraftsHearingId(hearing1.getId())

@@ -32,6 +32,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.BIRTH_CERTIFICATE;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -67,6 +68,7 @@ public class FurtherEvidenceUploadedEventTestData {
 
     public static CaseData buildSubmittedCaseData() {
         return commonCaseBuilder()
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .applicationDocuments(new ArrayList<>())
             .hearingDocuments(HearingDocuments.builder()
                 .courtBundleListV2(new ArrayList<>())
@@ -87,6 +89,7 @@ public class FurtherEvidenceUploadedEventTestData {
 
     public static CaseData buildCaseDataWithNonConfidentialLADocuments(FurtherEvidenceType type) {
         return commonCaseBuilder()
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .furtherEvidenceDocumentsLA(buildNonConfidentialPdfDocumentList(LA_USER, type))
             .build();
     }
@@ -113,6 +116,7 @@ public class FurtherEvidenceUploadedEventTestData {
 
     public static CaseData buildCaseDataWithNonConfidentialPDFDocumentsSolicitor(final String uploadedBy) {
         return commonCaseBuilder()
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .furtherEvidenceDocumentsSolicitor(
                 removeEvidenceBundleType(buildNonConfidentialPdfDocumentList(uploadedBy)))
             .build();
@@ -121,6 +125,7 @@ public class FurtherEvidenceUploadedEventTestData {
     public static CaseData buildCaseDataWithNonConfidentialPDFDocumentsSolicitor(final String uploadedBy,
                                                                                  FurtherEvidenceType type) {
         return commonCaseBuilder()
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .furtherEvidenceDocumentsSolicitor(
                 buildNonConfidentialPdfDocumentList(uploadedBy, type))
             .build();
@@ -150,6 +155,7 @@ public class FurtherEvidenceUploadedEventTestData {
 
     public static CaseData buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor() {
         return commonCaseBuilder()
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .respondentStatements(buildRespondentStatementsList(
                 removeEvidenceBundleType(buildNonConfidentialPdfDocumentList(REP_USER))))
             .build();
@@ -157,18 +163,21 @@ public class FurtherEvidenceUploadedEventTestData {
 
     public static CaseData buildCaseDataWithCorrespondencesByHmtcs() {
         return commonCaseBuilder()
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .correspondenceDocuments((buildNonConfidentialPdfDocumentList(HMCTS_USER)))
                 .build();
     }
 
     public static CaseData buildCaseDataWithCorrespondencesByLA() {
         return commonCaseBuilder()
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .correspondenceDocumentsLA((buildNonConfidentialPdfDocumentList(LA_USER)))
                 .build();
     }
 
     public static CaseData buildCaseDataWithCorrespondencesBySolicitor() {
         return commonCaseBuilder()
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .correspondenceDocumentsSolicitor(
                     removeEvidenceBundleType((buildNonConfidentialPdfDocumentList(REP_SOLICITOR_USER_EMAIL))))
                 .build();
@@ -180,6 +189,7 @@ public class FurtherEvidenceUploadedEventTestData {
                 .supportingEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER))
                 .build();
         return commonCaseBuilder()
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .hearingFurtherEvidenceDocuments(wrapElements(bundle))
                 .build();
     }
@@ -209,6 +219,7 @@ public class FurtherEvidenceUploadedEventTestData {
 
 
         return commonCaseBuilder()
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle))
                 .build();
     }
@@ -228,6 +239,7 @@ public class FurtherEvidenceUploadedEventTestData {
 
 
         return commonCaseBuilder()
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle))
                 .build();
     }
@@ -248,6 +260,7 @@ public class FurtherEvidenceUploadedEventTestData {
 
     public static CaseData buildCaseDataWithApplicationDocuments() {
         return commonCaseBuilder()
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .applicationDocuments(
                     wrapElements(
                             createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER, PDF_DOCUMENT_1),
@@ -328,6 +341,7 @@ public class FurtherEvidenceUploadedEventTestData {
                 .courtBundleListV2(
                     createCourtBundleList(count, hearing, uploadedBy)
                 ).build())
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .build();
     }
 

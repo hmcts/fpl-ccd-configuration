@@ -31,6 +31,9 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
+    private static final String PLACEMENT = "placements";
+    private static final String PLACEMENT_NON_CONFIDENTIAL = "placementsNonConfidential";
+    private static final String PLACEMENT_NON_CONFIDENTIAL_NOTICES = "placementsNonConfidentialNotices";
 
     private final MigrateCaseService migrateCaseService;
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
@@ -40,6 +43,10 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1274", this::run1274,
         "DFPL-1277", this::run1277,
         "DFPL-1290", this::run1290,
+        "DFPL-1294", this::run1294,
+        "DFPL-1238", this::run1238,
+        "DFPL-1241", this::run1241,
+        "DFPL-1244", this::run1244,
         "DFPL-1282", this::run1282
     );
 
@@ -61,6 +68,39 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
+    }
+
+    private void run1238(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1238";
+        var possibleCaseIds = List.of(1635423187428763L);
+
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().remove(PLACEMENT);
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL);
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL_NOTICES);
+    }
+
+    private void run1241(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1241";
+        var possibleCaseIds = List.of(1652968793683878L);
+
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().remove(PLACEMENT);
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL);
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL_NOTICES);
+    }
+
+    private void run1244(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1244";
+        var possibleCaseIds = List.of(1644912253936021L);
+
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().remove(PLACEMENT);
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL);
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL_NOTICES);
     }
     
     private void run1262(CaseDetails caseDetails) {
@@ -113,5 +153,14 @@ public class MigrateCaseController extends CallbackController {
             ));
         }
         fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
+    }
+    
+    private void run1294(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1294";
+        var possibleCaseIds = List.of(1676971632816123L);
+        final UUID expectedPositionStatementId = UUID.fromString("d74874b8-3ee3-4f06-8e01-a86209ffa31e");
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(getCaseData(caseDetails),
+            migrationId, expectedPositionStatementId));
     }
 }
