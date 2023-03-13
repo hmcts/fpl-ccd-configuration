@@ -13,12 +13,16 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
+import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.function.Consumer;
+
+import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 
 @Api
 @RestController
@@ -32,6 +36,7 @@ public class MigrateCaseController extends CallbackController {
     private static final String PLACEMENT_NON_CONFIDENTIAL_NOTICES = "placementsNonConfidentialNotices";
 
     private final MigrateCaseService migrateCaseService;
+    private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-1262", this::run1262,
@@ -42,7 +47,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1238", this::run1238,
         "DFPL-1241", this::run1241,
         "DFPL-1243", this::run1243,
-        "DFPL-1244", this::run1244
+        "DFPL-1244", this::run1244,
+        "DFPL-1282", this::run1282
     );
 
     @PostMapping("/about-to-submit")
@@ -134,6 +140,22 @@ public class MigrateCaseController extends CallbackController {
             placementToRemove));
     }
 
+    private void run1282(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1282";
+        var expectedCaseId = 1670402369344671L;
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        Long caseId = caseData.getId();
+        if (caseId != expectedCaseId) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId
+            ));
+        }
+        fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
+    }
+    
     private void run1294(CaseDetails caseDetails) {
         var migrationId = "DFPL-1294";
         var possibleCaseIds = List.of(1676971632816123L);
