@@ -188,15 +188,16 @@ public class ListGatekeepingHearingController extends CallbackController {
         return respond(caseDetails, errors);
     }
 
-    @PostMapping("/validate-judge-email/mid-event")
-    public CallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
+    @PostMapping("validate-judge-email/mid-event")
+    public CallbackResponse validateJudgeEmailMidEvent(@RequestBody CallbackRequest callbackRequest) {
 
-        JudgeAndLegalAdvisor tempJudge = caseData.getJudgeAndLegalAdvisor();
+        final CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        final CaseData caseData = getCaseData(caseDetails);
+
+        final JudgeAndLegalAdvisor tempJudge = caseData.getJudgeAndLegalAdvisor();
 
         if (caseData.hasSelectedTemporaryJudge(tempJudge)) {
-            Optional<String> error = validateEmailService.validate(tempJudge.getJudgeEmailAddress());
+            final Optional<String> error = validateEmailService.validate(tempJudge.getJudgeEmailAddress());
 
             if (error.isPresent()) {
                 return respond(caseDetails, List.of(error.get()));
