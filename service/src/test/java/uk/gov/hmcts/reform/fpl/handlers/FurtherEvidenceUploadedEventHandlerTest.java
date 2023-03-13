@@ -1372,6 +1372,32 @@ class FurtherEvidenceUploadedEventHandlerTest {
         return List.of(CONFIDENTIAL_1, CONFIDENTIAL_2);
     }
 
+    private static String getUploadedBy(DocumentUploaderType uploaderType) {
+        switch (uploaderType) {
+            case DESIGNATED_LOCAL_AUTHORITY:
+                return LA_USER;
+            case HMCTS:
+                return HMCTS_USER;
+            case SOLICITOR:
+                return REP_USER;
+            default:
+                throw new AssertionError("unexpected uploaderType");
+        }
+    }
+
+    private static UserDetails getUserDetails(DocumentUploaderType uploaderType) {
+        switch (uploaderType) {
+            case DESIGNATED_LOCAL_AUTHORITY:
+                return userDetailsLA();
+            case HMCTS:
+                return userDetailsHMCTS();
+            case SOLICITOR:
+                return userDetailsRespondentSolicitor();
+            default:
+                throw new AssertionError("unexpected uploaderType");
+        }
+    }
+
     static class RespondentStatementConfidentialChangeArgs implements ArgumentsProvider {
 
         @Override
@@ -1657,32 +1683,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 (caseData) -> document(caseData, uploaderType).addAll(documents),
                 (caseData) -> document(caseData, uploaderType).addAll(documents),
                 Set.of(), null);
-        }
-    }
-
-    private static String getUploadedBy(DocumentUploaderType uploaderType) {
-        switch (uploaderType) {
-            case DESIGNATED_LOCAL_AUTHORITY:
-                return LA_USER;
-            case HMCTS:
-                return HMCTS_USER;
-            case SOLICITOR:
-                return REP_USER;
-            default:
-                throw new AssertionError("unexpected uploaderType");
-        }
-    }
-
-    private static UserDetails getUserDetails(DocumentUploaderType uploaderType) {
-        switch (uploaderType) {
-            case DESIGNATED_LOCAL_AUTHORITY:
-                return userDetailsLA();
-            case HMCTS:
-                return userDetailsHMCTS();
-            case SOLICITOR:
-                return userDetailsRespondentSolicitor();
-            default:
-                throw new AssertionError("unexpected uploaderType");
         }
     }
 }
