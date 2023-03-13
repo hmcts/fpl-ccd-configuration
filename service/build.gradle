@@ -88,14 +88,6 @@ task integration(type: Test, description: 'Runs the integration tests.', group: 
 }
 check.dependsOn integration
 
-task installDependencies(type: Exec, description: 'Installs Yarn dependencies.') {
-  commandLine '/usr/bin/yarn', '--mutex', 'network', '--immutable', '--silent', 'install'
-}
-
-task checkDependenciesIntegrity(type: Exec, description: 'Checks integrity of Yarn dependencies.') {
-  commandLine '/usr/bin/yarn', '--mutex', 'network', '--immutable', '--silent', 'check', '--integrity'
-}
-
 task lintUserInterfaceTests(type: Exec, description: 'Runs linting of E2E tests.') {
   commandLine '/usr/bin/yarn', '--silent', 'lint'
 }
@@ -136,7 +128,6 @@ task runContractTests(type: Test, description: 'Runs contract tests.', group: 'V
     classpath = sourceSets.contractTest.runtimeClasspath
     systemProperty 'pact.rootDir', "pacts"
     testLogging.showStandardStreams = true
-
 }
 
 task runAndPublishConsumerPactTests(type: Test, description: 'Publish pact test to broker.', group: 'Verification') {
@@ -189,7 +180,7 @@ task functional(description: 'Runs the functional tests.') {
 }
 
 task contract(description: 'Runs the contract tests.') {
-    dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, runContractTests))
+    dependsOn(inStrictOrder(runContractTests))
 }
 
 task runCrossBrowserTests(type: Exec, description: 'Runs ExpertUI cross brower tests.') {
@@ -200,7 +191,7 @@ task runCrossBrowserTests(type: Exec, description: 'Runs ExpertUI cross brower t
 }
 
 task crossbrowser(description: 'Runs crossbrowser tests.') {
-  dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runCrossBrowserTests))
+  dependsOn(inStrictOrder(lintUserInterfaceTests, runCrossBrowserTests))
 }
 
 task fortifyScan(type: JavaExec)  {
