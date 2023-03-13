@@ -1571,10 +1571,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     buildHearingFurtherEvidenceBundle(buildConfidentialDocumentList(LA_USER,
                         NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
                     HEARING_RELATED_YES),
-                of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS),
-                    CONFIDENTIAL,
-                    buildHearingFurtherEvidenceBundle(buildConfidentialDocumentList(LA_USER)),
-                    HEARING_RELATED_YES),
                 // By HMCTS
                 of(HMCTS, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
                     NON_CONFIDENTIAL,
