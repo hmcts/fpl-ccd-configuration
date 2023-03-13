@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers.listgatekeepinghearing;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -127,6 +126,7 @@ class ListGatekeepingHearingControllerSubmittedTest extends AbstractCallbackTest
         verifyEmails(SDO_AND_NOP_ISSUED_CAFCASS, SDO_AND_NOP_ISSUED_CTSC, SDO_AND_NOP_ISSUED_LA);
         verifyNoMoreNotificationsSent();
     }
+
     //TODO: Fix tests
     void shouldTriggerEventWhenSDOSubmittedWithTranslation() {
 
@@ -137,6 +137,7 @@ class ListGatekeepingHearingControllerSubmittedTest extends AbstractCallbackTest
         verifyEmailSentToTranslation();
         verifyNoMoreNotificationsSent();
     }
+
     //TODO: Fix tests
     void shouldTriggerEventWhenSDOAndNoticeOfProceedingsSubmittedWithTranslation() {
 
@@ -147,6 +148,7 @@ class ListGatekeepingHearingControllerSubmittedTest extends AbstractCallbackTest
         verifyEmailSentToTranslation(3);
         verifyNoMoreNotificationsSent();
     }
+
     //TODO: Fix tests
     void shouldTriggerSendDocumentEventWhenSubmitted() {
 
@@ -161,6 +163,7 @@ class ListGatekeepingHearingControllerSubmittedTest extends AbstractCallbackTest
             Map.of("documentToBeSent", SDO_DOCUMENT)
         );
     }
+
     //TODO: Fix tests
     void shouldSealUploadedDocumentIfOrderStatusIsSealed() {
 
