@@ -356,9 +356,9 @@ public class ListGatekeepingHearingController extends CallbackController {
     }
 
     private boolean needTemporaryHearingJudgeAllocated(CaseData caseData, HearingBooking hearingBooking) {
-        return Objects.nonNull(hearingBooking.getHearingJudgeLabel()) &&
-            (Objects.isNull(caseData.getHearingOption()) ||
-                NEW_HEARING.equals(caseData.getHearingOption()) ||
-                RE_LIST_NOW.equals(caseData.getHearingReListOption()));
+        return Objects.nonNull(hearingBooking.getHearingJudgeLabel())
+            && (Objects.isNull(caseData.getHearingOption())
+            || NEW_HEARING.equals(caseData.getHearingOption())
+            || RE_LIST_NOW.equals(caseData.getHearingReListOption()));
     }
 }
