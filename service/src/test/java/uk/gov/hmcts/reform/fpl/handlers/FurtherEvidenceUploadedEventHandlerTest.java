@@ -1563,7 +1563,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
                 // By DESIGNATED_LOCAL_AUTHORITY
-                Arguments.of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+                Arguments.of(DESIGNATED_LOCAL_AUTHORITY,
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
                     NON_CONFIDENTIAL,
                     buildNonConfidentialPdfDocumentList(LA_USER)),
                 Arguments.of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS),
