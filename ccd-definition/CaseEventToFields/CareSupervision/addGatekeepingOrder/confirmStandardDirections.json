@@ -20,7 +20,8 @@
     "DisplayContext": "READONLY",
     "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 4,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "PageShowCondition": "gatekeepingOrderRouter=\"SERVICE\" OR useServiceRoute=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -250,19 +251,32 @@
     "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "directionsForCafcass !=\"\""
+    "FieldShowCondition": "directionsForCafcassUpdated !=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-APPOINT_CHILDREN_GUARDIAN_IMMEDIATE",
+    "PageFieldDisplayOrder": 20,
+    "DisplayContext": "COMPLEX",
+    "PageID": "ConfirmStandardDirections",
+    "PageDisplayOrder": 4,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "directionsForCafcassUpdated CONTAINS \"APPOINT_CHILDREN_GUARDIAN\"",
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
     "CaseFieldID": "direction-ARRANGE_ADVOCATES_MEETING",
-    "PageFieldDisplayOrder": 20,
+    "PageFieldDisplayOrder": 21,
     "DisplayContext": "MANDATORY",
     "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "directionsForCafcass CONTAINS \"ARRANGE_ADVOCATES_MEETING\"",
+    "FieldShowCondition": "directionsForCafcassUpdated CONTAINS \"ARRANGE_ADVOCATES_MEETING\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -270,12 +284,12 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
     "CaseFieldID": "direction-SEND_GUARDIANS_ANALYSIS",
-    "PageFieldDisplayOrder": 21,
+    "PageFieldDisplayOrder": 22,
     "DisplayContext": "MANDATORY",
     "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "directionsForCafcass CONTAINS \"SEND_GUARDIANS_ANALYSIS\"",
+    "FieldShowCondition": "directionsForCafcassUpdated CONTAINS \"SEND_GUARDIANS_ANALYSIS\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -283,20 +297,19 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
     "CaseFieldID": "direction-APPOINT_CHILDREN_GUARDIAN",
-    "PageFieldDisplayOrder": 22,
+    "PageFieldDisplayOrder": 23,
     "DisplayContext": "COMPLEX",
     "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "directionsForCafcass CONTAINS \"APPOINT_CHILDREN_GUARDIAN\"",
-    "ShowSummaryChangeOption": "Y"
+    "FieldShowCondition": "directionsForAllPartiesLabel=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
     "CaseFieldID": "directionsForOthersLabel",
-    "PageFieldDisplayOrder": 23,
+    "PageFieldDisplayOrder": 24,
     "DisplayContext": "READONLY",
     "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 4,
@@ -308,7 +321,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
     "CaseFieldID": "direction-OBJECT_TO_REQUEST_FOR_DISCLOSURE",
-    "PageFieldDisplayOrder": 24,
+    "PageFieldDisplayOrder": 25,
     "DisplayContext": "MANDATORY",
     "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 4,
@@ -321,24 +334,36 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
     "CaseFieldID": "directionsForCourtLabel",
-    "PageFieldDisplayOrder": 25,
+    "PageFieldDisplayOrder": 26,
     "DisplayContext": "READONLY",
     "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "directionsForCourt CONTAINS \"ARRANGE_INTERPRETERS\""
+    "FieldShowCondition": "directionsForCourtUpdated CONTAINS \"ARRANGE_INTERPRETERS\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
     "CaseFieldID": "direction-ARRANGE_INTERPRETERS",
-    "PageFieldDisplayOrder": 26,
+    "PageFieldDisplayOrder": 27,
     "DisplayContext": "COMPLEX",
     "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "directionsForCourt CONTAINS \"ARRANGE_INTERPRETERS\"",
+    "FieldShowCondition": "directionsForAllPartiesLabel=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-ARRANGE_INTERPRETERS_IMMEDIATE",
+    "PageFieldDisplayOrder": 28,
+    "DisplayContext": "COMPLEX",
+    "PageID": "ConfirmStandardDirections",
+    "PageDisplayOrder": 4,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "directionsForCourtUpdated CONTAINS \"ARRANGE_INTERPRETERS\"",
     "ShowSummaryChangeOption": "Y"
   }
 ]

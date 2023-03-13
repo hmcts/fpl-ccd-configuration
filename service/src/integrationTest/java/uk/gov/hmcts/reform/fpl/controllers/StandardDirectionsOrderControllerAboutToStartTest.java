@@ -116,8 +116,8 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractCallback
         assertThat(actualCaseData.getLocalAuthorityDirections()).hasSize(8);
         assertThat(actualCaseData.getRespondentDirections()).hasSize(1);
         assertThat(actualCaseData.getOtherPartiesDirections()).hasSize(1);
-        assertThat(actualCaseData.getCafcassDirections()).hasSize(3);
-        assertThat(actualCaseData.getCourtDirections()).hasSize(1);
+        assertThat(actualCaseData.getCafcassDirections()).hasSize(4);
+        assertThat(actualCaseData.getCourtDirections()).hasSize(2);
     }
 
     @Test
