@@ -108,7 +108,7 @@ task runBrowserTests(type: Exec, description: 'Runs brower tests.') {
   onlyIf {
     return System.env.SKIP_BROWSER_TESTS == null || System.env.SKIP_BROWSER_TESTS == 'false'
   }
-  commandLine '/usr/bin/yarn', '--silent', 'test:functional'
+  commandLine '/usr/bin/yarn', 'test:functional'
 }
 
 task runApiTests(type: Test, description: 'Runs api tests.', group: 'Verification') {
@@ -181,7 +181,7 @@ task smoke(type: Test, description: 'Runs smoke test.', group: 'Verification') {
 }
 
 task runCodeceptSmokeTest(type: Test, description: 'Runs the old codecept smoke test.', group: 'Verification') {
-  dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runSmokeTests))
+  dependsOn(inStrictOrder(runSmokeTests))
 }
 
 task functional(description: 'Runs the functional tests.') {
@@ -196,7 +196,7 @@ task runCrossBrowserTests(type: Exec, description: 'Runs ExpertUI cross brower t
   onlyIf {
     return System.env.SKIP_BROWSER_TESTS == null || System.env.SKIP_BROWSER_TESTS == 'false'
   }
-  commandLine '/usr/bin/yarn', '--silent', 'test:crossbrowser'
+  commandLine '/usr/bin/yarn', 'test:crossbrowser'
 }
 
 task crossbrowser(description: 'Runs crossbrowser tests.') {
