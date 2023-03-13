@@ -40,7 +40,6 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
-import uk.gov.hmcts.reform.sendletter.api.Letter;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
@@ -269,7 +268,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             anyMap(),
             eq(notificationReference(CASE_ID))));
 
-        verify(sendLetterApi, never()).sendLetter(any(), any(Letter.class));
+        verify(sendLetterApi, never()).sendLetter(any(), any(LetterWithPdfsRequest.class));
     }
 
     @Test
