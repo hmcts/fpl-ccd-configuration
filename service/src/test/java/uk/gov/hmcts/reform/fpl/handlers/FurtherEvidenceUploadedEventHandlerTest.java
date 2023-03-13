@@ -8,7 +8,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -66,6 +65,7 @@ import static java.time.LocalDateTime.now;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.of;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
@@ -1342,14 +1342,14 @@ class FurtherEvidenceUploadedEventHandlerTest {
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
-                Arguments.of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, true, true),
-                Arguments.of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, true, false),
-                Arguments.of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, false, true),
-                Arguments.of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, false, false),
-                Arguments.of(userDetailsHMCTS(), HMCTS, HMCTS_USER, true, true),
-                Arguments.of(userDetailsHMCTS(), HMCTS, HMCTS_USER, true, false),
-                Arguments.of(userDetailsHMCTS(), HMCTS, HMCTS_USER, false, true),
-                Arguments.of(userDetailsHMCTS(), HMCTS, HMCTS_USER, false, false)
+                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, true, true),
+                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, true, false),
+                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, false, true),
+                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, false, false),
+                of(userDetailsHMCTS(), HMCTS, HMCTS_USER, true, true),
+                of(userDetailsHMCTS(), HMCTS, HMCTS_USER, true, false),
+                of(userDetailsHMCTS(), HMCTS, HMCTS_USER, false, true),
+                of(userDetailsHMCTS(), HMCTS, HMCTS_USER, false, false)
             );
         }
     }
@@ -1359,15 +1359,15 @@ class FurtherEvidenceUploadedEventHandlerTest {
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
-                Arguments.of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
+                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS), NON_CONFIDENTIAL, false),
-                Arguments.of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
+                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
                     Set.of(ALL_LAS), CONFIDENTIAL, true),
-                Arguments.of(userDetailsHMCTS(), HMCTS, HMCTS_USER,
+                of(userDetailsHMCTS(), HMCTS, HMCTS_USER,
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS), NON_CONFIDENTIAL, false),
-                Arguments.of(userDetailsHMCTS(), HMCTS, HMCTS_USER,
+                of(userDetailsHMCTS(), HMCTS, HMCTS_USER,
                     Set.of(), CONFIDENTIAL, true),
-                Arguments.of(userDetailsRespondentSolicitor(), SOLICITOR, REP_USER,
+                of(userDetailsRespondentSolicitor(), SOLICITOR, REP_USER,
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS), NON_CONFIDENTIAL, false)
             // Note: Respondent/Child Solicitor cannot upload confidential document
             );
@@ -1442,10 +1442,10 @@ class FurtherEvidenceUploadedEventHandlerTest {
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
-                Arguments.of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
+                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
                     List.of(BIRTH_CERTIFICATE.getLabel()), false),
-                Arguments.of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
+                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
                     Set.of(ALL_LAS),
                     List.of(BIRTH_CERTIFICATE.getLabel()), true)
             // Note: Only LAs can upload application documents
@@ -1458,10 +1458,10 @@ class FurtherEvidenceUploadedEventHandlerTest {
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
-                Arguments.of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, true, true),
-                Arguments.of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, true, false),
-                Arguments.of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, false, true),
-                Arguments.of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, false, false)
+                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, true, true),
+                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, true, false),
+                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, false, true),
+                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, false, false)
             );
         }
     }
@@ -1533,68 +1533,73 @@ class FurtherEvidenceUploadedEventHandlerTest {
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
                 // By DESIGNATED_LOCAL_AUTHORITY
-                Arguments.of(DESIGNATED_LOCAL_AUTHORITY,
+                of(DESIGNATED_LOCAL_AUTHORITY,
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
                     NON_CONFIDENTIAL,
                     buildNonConfidentialPdfDocumentList(LA_USER),
                     HEARING_RELATED_NO),
-                Arguments.of(DESIGNATED_LOCAL_AUTHORITY,
+                of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS),
+                    CONFIDENTIAL,
+                    buildConfidentialDocumentList(LA_USER),
+                    HEARING_RELATED_NO),
+                of(DESIGNATED_LOCAL_AUTHORITY,
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
                     NON_CONFIDENTIAL,
                     buildHearingFurtherEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER)),
                     HEARING_RELATED_YES),
-                Arguments.of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS),
+                of(DESIGNATED_LOCAL_AUTHORITY,
+                    Set.of(ALL_LAS),
                     CONFIDENTIAL,
-                    buildConfidentialDocumentList(LA_USER),
-                    HEARING_RELATED_NO),
+                    buildHearingFurtherEvidenceBundle(buildConfidentialDocumentList(LA_USER)),
+                    HEARING_RELATED_YES),
                 // Not notifying CAFCASS if document type is NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
-                Arguments.of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
+                of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
                     NON_CONFIDENTIAL,
                     buildNonConfidentialPdfDocumentList(LA_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE),
                     HEARING_RELATED_NO),
-                Arguments.of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
+                of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
                     NON_CONFIDENTIAL,
                     buildHearingFurtherEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER,
                         NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
                     HEARING_RELATED_YES),
-                Arguments.of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS),
+                of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS),
                     CONFIDENTIAL,
                     buildConfidentialDocumentList(LA_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE),
                     HEARING_RELATED_NO),
-                Arguments.of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS),
+                of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS),
                     CONFIDENTIAL,
                     buildHearingFurtherEvidenceBundle(buildConfidentialDocumentList(LA_USER,
                         NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
                     HEARING_RELATED_YES),
-                Arguments.of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS),
+                of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS),
                     CONFIDENTIAL,
                     buildHearingFurtherEvidenceBundle(buildConfidentialDocumentList(LA_USER)),
                     HEARING_RELATED_YES),
                 // By HMCTS
-                Arguments.of(HMCTS, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+                of(HMCTS, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
                     NON_CONFIDENTIAL,
                     buildNonConfidentialPdfDocumentList(HMCTS_USER),
                     HEARING_RELATED_NO),
                 // Not notifying CAFCASS if document type is NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
-                Arguments.of(HMCTS, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
+                of(HMCTS, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
                     NON_CONFIDENTIAL,
                     buildNonConfidentialPdfDocumentList(HMCTS_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE),
                     HEARING_RELATED_NO),
-                Arguments.of(HMCTS, Set.of(),
+                of(HMCTS, Set.of(),
                     CONFIDENTIAL,
                     buildConfidentialDocumentList(HMCTS_USER),
                     HEARING_RELATED_NO),
-                Arguments.of(HMCTS, Set.of(),
+                of(HMCTS, Set.of(),
                     CONFIDENTIAL,
                     buildConfidentialDocumentList(HMCTS_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE),
                     HEARING_RELATED_NO),
                 // By Solicitor
-                Arguments.of(SOLICITOR, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+                of(SOLICITOR, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
                     NON_CONFIDENTIAL,
                     buildNonConfidentialPdfDocumentList(REP_USER),
                     HEARING_RELATED_NO),
                 // Not notifying CAFCASS if document type is NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
-                Arguments.of(SOLICITOR, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
+                of(SOLICITOR, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
                     NON_CONFIDENTIAL,
                     buildNonConfidentialPdfDocumentList(REP_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE),
                     HEARING_RELATED_NO)
