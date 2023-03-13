@@ -17,9 +17,6 @@ public class GatekeepingOrderEvent {
     GatekeepingOrderNotificationGroup notificationGroup;
     LanguageTranslationRequirement languageTranslationRequirement;
     String orderTitle;
-    String sendToAdminReason;
-    boolean isSentToAdmin;
-    String gatekeepingOrderListOrSendToAdmin;
 
     public Optional<LanguageTranslationRequirement> getLanguageTranslationRequirement() {
         return Optional.ofNullable(languageTranslationRequirement);

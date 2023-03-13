@@ -5,10 +5,8 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -42,12 +40,6 @@ public class GatekeepingOrderEventNotificationDecider {
             event.notificationGroup(URGENT_AND_NOP);
             event.languageTranslationRequirement(urgentHearingOrder.getTranslationRequirements());
             event.orderTitle(urgentHearingOrder.asLabel());
-        }
-
-        GatekeepingOrderEventData gatekeepingOrderEventData = caseData.getGatekeepingOrderEventData();
-        if (Objects.nonNull(gatekeepingOrderEventData)) {
-            event.isSentToAdmin(gatekeepingOrderEventData.isSentToAdmin());
-            event.sendToAdminReason(gatekeepingOrderEventData.getSendToAdminReason());
         }
 
         return Optional.of(event.build());

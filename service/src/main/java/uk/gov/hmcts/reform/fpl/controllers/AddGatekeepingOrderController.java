@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderDataFixer;
 import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderEventNotificationDecider;
 import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderRouteValidator;
+import uk.gov.hmcts.reform.fpl.service.sdo.ListAdminEventNotificationDecider;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.HashMap;
@@ -54,7 +55,8 @@ public class AddGatekeepingOrderController extends CallbackController {
 
     private final CourtLevelAllocationService allocationService;
     private final GatekeepingOrderRouteValidator routeValidator;
-    private final GatekeepingOrderEventNotificationDecider notificationDecider;
+    private final GatekeepingOrderEventNotificationDecider gatekeepingOrderEventNotificationDecider;
+    private final ListAdminEventNotificationDecider notificationDecider;
     private final GatekeepingOrderDataFixer dataFixer;
 
     @PostMapping("/about-to-start")
@@ -201,7 +203,7 @@ public class AddGatekeepingOrderController extends CallbackController {
 
         CaseData caseDataBefore = getCaseDataBefore(request);
 
-        notificationDecider.buildEventToPublish(caseDataAfterSealing, caseDataBefore.getState())
+        gatekeepingOrderEventNotificationDecider.buildEventToPublish(caseDataAfterSealing, caseDataBefore.getState())
             .ifPresent(eventToPublish -> {
                 coreCaseDataService.triggerEvent(
                     JURISDICTION,
@@ -212,6 +214,9 @@ public class AddGatekeepingOrderController extends CallbackController {
 
                 publishEvent(eventToPublish);
             });
+
+        notificationDecider.buildEventToPublish(caseData)
+            .ifPresent(this::publishEvent);
     }
 
 
