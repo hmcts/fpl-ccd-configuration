@@ -137,7 +137,7 @@ public class ListGatekeepingHearingController extends CallbackController {
         return respond(caseData);
     }
 
-    @PostMapping("allocated-judge/mid-event")
+    @PostMapping("/allocated-judge/mid-event")
     public AboutToStartOrSubmitCallbackResponse allocatedJudgeMidEvent(@RequestBody CallbackRequest callbackRequest) {
 
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
