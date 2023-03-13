@@ -45,7 +45,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1243", this::run1243,
         "DFPL-1282", this::run1282,      
         "DFPL-1270", this::run1270,
-        "DFPL-1297", this::run1297
+        "DFPL-1297", this::run1297,
+        "DFPL-1263", this::run1263
     );
 
     @PostMapping("/about-to-submit")
@@ -141,5 +142,12 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(getCaseData(caseDetails),
             migrationId, UUID.fromString("ffab9b6e-436f-4c7f-afba-ee646b9fb307")));
+    }
+
+    private void run1263(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1263";
+        var possibleCaseIds = List.of(1661171715678642L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.renameApplicationDocuments(getCaseData(caseDetails)));
     }
 }
