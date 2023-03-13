@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -288,109 +289,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE))),
             Set.of(ALL_LAS),
             CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldNotSendNotificationWhenAnyOtherDocsAreRemovedByLA() {
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY,
-            (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(
-                buildNonConfidentialPdfDocumentList(LA_USER)),
-            EMPTY_CASE_DATA_MODIFIER,
-            Set.of(),null);
-    }
-
-    @Test
-    void shouldNotSendNotificationWhenDocumentsAreSameByLA() {
-        List<Element<SupportingEvidenceBundle>> documents =
-            buildNonConfidentialPdfDocumentList(LA_USER);
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY,
-            (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(documents),
-            (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(documents), Set.of(),null);
-    }
-
-    @Test
-    void shouldSendNotificationWhenNonConfidentialAnyOtherDocIsUploadedByHMCTS() {
-        // Further documents for main application -> Any other document
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsHMCTS(), HMCTS, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(
-                buildNonConfidentialPdfDocumentList(HMCTS_USER)),
-            Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
-            NON_CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenNonConfidentialNoticeOfActingOrIssueIsUploadedByHMCTS() {
-        // Further documents for main application -> Any other document
-        // No notification to CAFCASS if uploading NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsHMCTS(), HMCTS, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(
-                buildNonConfidentialPdfDocumentList(HMCTS_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
-            Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
-            NON_CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenConfidentialAnyOtherDocIsUploadedByHMCTS() {
-        // Further documents for main application -> Any other document
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsHMCTS(), HMCTS, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(
-                buildConfidentialDocumentList(HMCTS_USER)),
-            Set.of(), CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenConfidentialNoticeOfActingOrIssueIsUploadedByHMCTS() {
-        // Further documents for main application -> Any other document
-        // No notification to CAFCASS if uploading NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsHMCTS(), HMCTS, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(
-                buildConfidentialDocumentList(HMCTS_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
-            Set.of(), CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldNotSendNotificationWhenAnyOtherDocsAreRemovedByHMCTS() {
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsHMCTS(), HMCTS,
-            (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(
-                buildNonConfidentialPdfDocumentList(HMCTS_USER)),
-            EMPTY_CASE_DATA_MODIFIER, Set.of(), null);
-    }
-
-    @Test
-    void shouldNotSendNotificationWhenDocumentsAreSameByHMCTS() {
-        List<Element<SupportingEvidenceBundle>> documents =
-            buildNonConfidentialPdfDocumentList(HMCTS_USER);
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsHMCTS(), HMCTS,
-            (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(documents),
-            (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(documents), Set.of(), null);
-    }
-
-    @Test
-    void shouldSendNotificationWhenAnyOtherDocIsUploadedByRespSolicitor() {
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsRespondentSolicitor(), SOLICITOR, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getFurtherEvidenceDocumentsSolicitor().addAll(
-                buildNonConfidentialPdfDocumentList(REP_USER)),
-            Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
-            NON_CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenNoticeOfActingOrIssueIsUploadedByRespSolicitor() {
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsRespondentSolicitor(), SOLICITOR, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getFurtherEvidenceDocumentsSolicitor().addAll(
-                buildNonConfidentialPdfDocumentList(REP_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
-            Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
-            NON_CONFIDENTIAL);
     }
 
     @Test
@@ -1659,24 +1557,47 @@ class FurtherEvidenceUploadedEventHandlerTest {
         }
     }
 
-    static class AnyOtherDocumentUploadedByLAArgs implements ArgumentsProvider {
+    static class AnyOtherDocumentUploadArgs implements ArgumentsProvider {
 
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
-                Arguments.of(Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+                // By DESIGNATED_LOCAL_AUTHORITY
+                Arguments.of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
                     NON_CONFIDENTIAL,
                     buildNonConfidentialPdfDocumentList(LA_USER)),
-                Arguments.of(Set.of(ALL_LAS),
+                Arguments.of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS),
                     CONFIDENTIAL,
                     buildConfidentialDocumentList(LA_USER)),
                 // Not notifying CAFCASS if document type is NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
-                Arguments.of(Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
+                Arguments.of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
                     NON_CONFIDENTIAL,
                     buildNonConfidentialPdfDocumentList(LA_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
-                Arguments.of(Set.of(ALL_LAS),
+                Arguments.of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS),
                     CONFIDENTIAL,
-                    buildConfidentialDocumentList(LA_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE))
+                    buildConfidentialDocumentList(LA_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
+                // By HMCTS
+                Arguments.of(HMCTS, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+                    NON_CONFIDENTIAL,
+                    buildNonConfidentialPdfDocumentList(HMCTS_USER)),
+                // Not notifying CAFCASS if document type is NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
+                Arguments.of(HMCTS, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
+                    NON_CONFIDENTIAL,
+                    buildNonConfidentialPdfDocumentList(HMCTS_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
+                Arguments.of(HMCTS, Set.of(),
+                    CONFIDENTIAL,
+                    buildConfidentialDocumentList(HMCTS_USER)),
+                Arguments.of(HMCTS, Set.of(),
+                    CONFIDENTIAL,
+                    buildConfidentialDocumentList(HMCTS_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
+                // By Solicitor
+                Arguments.of(SOLICITOR, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+                    NON_CONFIDENTIAL,
+                    buildNonConfidentialPdfDocumentList(REP_USER)),
+                // Not notifying CAFCASS if document type is NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
+                Arguments.of(SOLICITOR, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
+                    NON_CONFIDENTIAL,
+                    buildNonConfidentialPdfDocumentList(REP_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE))
             );
         }
     }
@@ -1684,17 +1605,81 @@ class FurtherEvidenceUploadedEventHandlerTest {
     @Nested
     class AnyOtherDocument {
 
+        private List<Element<SupportingEvidenceBundle>> document(CaseData caseData, DocumentUploaderType uploaderType) {
+            switch (uploaderType) {
+                case DESIGNATED_LOCAL_AUTHORITY:
+                    return caseData.getFurtherEvidenceDocumentsLA();
+                case HMCTS:
+                    return caseData.getFurtherEvidenceDocuments();
+                case SOLICITOR:
+                    return caseData.getFurtherEvidenceDocumentsSolicitor();
+                default:
+                    throw new AssertionError("unexpected uploaderType");
+            }
+        }
+
         @ParameterizedTest
-        @ArgumentsSource(AnyOtherDocumentUploadedByLAArgs.class)
-        void shouldSendNotificationForNewUploadByLA(
+        @ArgumentsSource(AnyOtherDocumentUploadArgs.class)
+        void shouldSendNotificationForNewUpload(DocumentUploaderType uploaderType,
             Set<DocumentUploadNotificationUserType> notificationTypes,
             List<String> expectedDocumentNames,
             List<Element<SupportingEvidenceBundle>> updatingDocument) {
             verifyNotificationFurtherDocumentsTemplate(
-                userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY,
+                getUserDetails(uploaderType), uploaderType,
                 EMPTY_CASE_DATA_MODIFIER,
-                (caseData) -> caseData.getFurtherEvidenceDocumentsLA().addAll(updatingDocument),
+                (caseData) -> document(caseData, uploaderType).addAll(updatingDocument),
                 notificationTypes, expectedDocumentNames);
+        }
+
+        @ParameterizedTest(name = "{0}")
+        @EnumSource(value = DocumentUploaderType.class, names = {"SOLICITOR",
+            "DESIGNATED_LOCAL_AUTHORITY", "HMCTS"})
+        void shouldNotSendNotificationWhenDocsAreRemoved(DocumentUploaderType uploaderType) {
+            verifyNotificationFurtherDocumentsTemplate(
+                getUserDetails(uploaderType), uploaderType,
+                (caseData) -> document(caseData, uploaderType)
+                    .addAll(buildNonConfidentialPdfDocumentList(getUploadedBy(uploaderType))),
+                EMPTY_CASE_DATA_MODIFIER,
+                Set.of(), null);
+        }
+
+        @ParameterizedTest(name = "{0}")
+        @EnumSource(value = DocumentUploaderType.class, names = {"SOLICITOR",
+            "DESIGNATED_LOCAL_AUTHORITY", "HMCTS"})
+        void shouldNotSendNotificationWhenDocsAreTheSame(DocumentUploaderType uploaderType) {
+            List<Element<SupportingEvidenceBundle>> documents =
+                buildNonConfidentialPdfDocumentList(getUploadedBy(uploaderType));
+            verifyNotificationFurtherDocumentsTemplate(
+                getUserDetails(uploaderType), uploaderType,
+                (caseData) -> document(caseData, uploaderType).addAll(documents),
+                (caseData) -> document(caseData, uploaderType).addAll(documents),
+                Set.of(), null);
+        }
+    }
+
+    private static String getUploadedBy(DocumentUploaderType uploaderType) {
+        switch (uploaderType) {
+            case DESIGNATED_LOCAL_AUTHORITY:
+                return LA_USER;
+            case HMCTS:
+                return HMCTS_USER;
+            case SOLICITOR:
+                return REP_USER;
+            default:
+                throw new AssertionError("unexpected uploaderType");
+        }
+    }
+
+    private static UserDetails getUserDetails(DocumentUploaderType uploaderType) {
+        switch (uploaderType) {
+            case DESIGNATED_LOCAL_AUTHORITY:
+                return userDetailsLA();
+            case HMCTS:
+                return userDetailsHMCTS();
+            case SOLICITOR:
+                return userDetailsRespondentSolicitor();
+            default:
+                throw new AssertionError("unexpected uploaderType");
         }
     }
 }
