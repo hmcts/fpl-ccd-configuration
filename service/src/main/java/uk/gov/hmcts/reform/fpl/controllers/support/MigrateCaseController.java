@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
@@ -22,7 +23,6 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
-import static java.util.stream.Collectors.toList;
 
 @Api
 @RestController
@@ -39,10 +39,6 @@ public class MigrateCaseController extends CallbackController {
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1262", this::run1262,
-        "DFPL-1274", this::run1274,
-        "DFPL-1277", this::run1277,
-        "DFPL-1290", this::run1290,
         "DFPL-1294", this::run1294,
         "DFPL-1238", this::run1238,
         "DFPL-1241", this::run1241,
@@ -102,42 +98,6 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove(PLACEMENT);
         caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL);
         caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL_NOTICES);
-    }
-    
-    private void run1262(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1262";
-        var possibleCaseIds = List.of(1651753104228873L);
-        final UUID placementToRemove = UUID.fromString("195e9334-a308-4992-a890-8d6c8643dc1f");
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        caseDetails.getData().putAll(migrateCaseService.removeSpecificPlacements(getCaseData(caseDetails),
-            placementToRemove));
-    }
-
-    private void run1274(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1274";
-        var possibleCaseIds = List.of(1665570034617577L);
-        final UUID placementToRemove = UUID.fromString("91217531-42de-4f1c-99b7-aded7233d832");
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        caseDetails.getData().putAll(migrateCaseService.removeSpecificPlacements(getCaseData(caseDetails),
-            placementToRemove));
-    }
-
-    private void run1277(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1277";
-        var possibleCaseIds = List.of(1659933720451883L);
-        final UUID placementToRemove = UUID.fromString("f1b6d2d8-e960-4b36-a9ae-56723c25ac31");
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        caseDetails.getData().putAll(migrateCaseService.removeSpecificPlacements(getCaseData(caseDetails),
-            placementToRemove));
-    }
-
-    private void run1290(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1290";
-        var possibleCaseIds = List.of(1644931377783283L);
-        final UUID placementToRemove = UUID.fromString("959bd38f-72d9-42ef-b01d-e5b02aabacfa");
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        caseDetails.getData().putAll(migrateCaseService.removeSpecificPlacements(getCaseData(caseDetails),
-            placementToRemove));
     }
 
     private void run1282(CaseDetails caseDetails) {
