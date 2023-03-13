@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OutsourcedCaseContentProvider;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
+import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.util.Collection;
 import java.util.List;
@@ -87,13 +88,14 @@ public class SubmittedCaseEventHandler {
             return;
         }
 
-        Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
-                .map(CafcassLookupConfiguration.Cafcass::getEmail);
-
-        if (recipientIsWelsh.isPresent()) {
-            NotifyData notifyData = cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData);
-            notificationService.sendEmail(CAFCASS_SUBMISSION_TEMPLATE, recipientIsWelsh.get(),
+        if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
+            Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData
+                .getCaseLocalAuthority()).map(CafcassLookupConfiguration.Cafcass::getEmail);
+            if (recipientIsWelsh.isPresent()) {
+                NotifyData notifyData = cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData);
+                notificationService.sendEmail(CAFCASS_SUBMISSION_TEMPLATE, recipientIsWelsh.get(),
                     notifyData, caseData.getId());
+            }
         }
     }
 
@@ -107,10 +109,7 @@ public class SubmittedCaseEventHandler {
             return;
         }
 
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             Set<DocumentReference> documentReferences = Optional.ofNullable(caseData.getC110A().getSubmittedForm())
                     .map(documentReference ->
                         documentReference.toBuilder()

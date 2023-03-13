@@ -1796,6 +1796,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "relatingLA",
+    "Label": "Select the local authority which relates to the case",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "AuthorityFixedList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "outsourcingLAs",
     "Label": "Select the local authority you're representing",
     "FieldType": "DynamicList",

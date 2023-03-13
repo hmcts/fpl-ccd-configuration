@@ -15,14 +15,27 @@ public class CafcassHelper {
     private CafcassHelper() {
     }
 
-    public static boolean isNotifyingCafcass(CaseData caseData, CafcassLookupConfiguration cafcassLookupConfiguration) {
+    public static boolean isNotifyingCafcassEngland(CaseData caseData,
+                                                    CafcassLookupConfiguration cafcassLookupConfiguration) {
         final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland
             = isEmpty(caseData.getCaseLocalAuthority())
             ? Optional.empty() : cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
         if (isEmpty(caseData.getCaseLocalAuthority())) {
-            log.info(format("Not sending notification to cafcass since caseLocalAuthority is null for case: %s",
+            log.info(format("Not sending notification to England CAFCASS since caseLocalAuthority is null for case: %s",
                 caseData.getId()));
         }
         return recipientIsEngland.isPresent();
+    }
+
+    public static boolean isNotifyingCafcassWelsh(CaseData caseData,
+                                                  CafcassLookupConfiguration cafcassLookupConfiguration) {
+        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsWelsh
+            = isEmpty(caseData.getCaseLocalAuthority())
+            ? Optional.empty() : cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority());
+        if (isEmpty(caseData.getCaseLocalAuthority())) {
+            log.info(format("Not sending notification to Welsh CAFCASS since caseLocalAuthority is null for case: %s",
+                caseData.getId()));
+        }
+        return recipientIsWelsh.isPresent();
     }
 }

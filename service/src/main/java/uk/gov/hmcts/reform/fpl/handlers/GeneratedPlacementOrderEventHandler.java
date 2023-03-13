@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
+import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -73,10 +74,7 @@ public class GeneratedPlacementOrderEventHandler {
     public void sendPlacementOrderEmailToCafcassEngland(final GeneratedPlacementOrderEvent orderEvent) {
         CaseData caseData = orderEvent.getCaseData();
 
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-            cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             cafcassNotificationService.sendEmail(caseData,
                 of(orderEvent.getOrderDocument(), orderEvent.getOrderNotificationDocument()),
                 ORDER,
@@ -151,10 +149,16 @@ public class GeneratedPlacementOrderEventHandler {
         recipients.add(courtService.getCourtEmail(caseData));
 
         //CAFCASS (WALES ONLY)
-        Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
-            .map(CafcassLookupConfiguration.Cafcass::getEmail);
-
-        recipientIsWelsh.ifPresent(recipients::add);
+        if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
+            Optional<String> recipientIsWelsh =
+                cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
+                    .map(CafcassLookupConfiguration.Cafcass::getEmail);
+            if (recipientIsWelsh.isPresent()) {
+                log.info(String.format("Added cafcass (wales) email to recipients for template: {}",
+                    PLACEMENT_ORDER_GENERATED_NOTIFICATION_TEMPLATE));
+                recipients.add(recipientIsWelsh.get());
+            }
+        }
         sendEmail(notifyData, recipients, caseData.getId());
     }
 
