@@ -425,12 +425,14 @@ class FurtherEvidenceUploadedEventHandlerTest {
         Collections.shuffle(totalHearing);
 
         CaseData caseData = commonCaseBuilder()
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .hearingDocuments(HearingDocuments.builder()
                 .courtBundleListV2(totalHearing)
                 .build())
             .build();
 
         CaseData caseDataBefore = commonCaseBuilder()
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .hearingDocuments(HearingDocuments.builder()
                 .courtBundleListV2(oldHearing)
                 .build())
