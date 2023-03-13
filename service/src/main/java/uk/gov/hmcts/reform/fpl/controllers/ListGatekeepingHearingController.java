@@ -103,6 +103,7 @@ public class ListGatekeepingHearingController extends CallbackController {
         }
 
         caseDetails.getData().putAll(hearingsService.populateHearingLists(caseData));
+        caseDetails.getData().put("sendNoticeOfHearing", YES.getValue());
 
         setNewHearing(caseDetails);
 
