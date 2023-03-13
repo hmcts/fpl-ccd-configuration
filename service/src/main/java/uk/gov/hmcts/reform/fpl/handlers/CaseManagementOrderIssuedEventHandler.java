@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
+import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -87,21 +88,22 @@ public class CaseManagementOrderIssuedEventHandler {
     public void notifyCafcass(final CaseManagementOrderIssuedEvent event) {
         CaseData caseData = event.getCaseData();
 
-        final Optional<Cafcass> recipientIsWelsh =
+        if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
+            final Optional<Cafcass> recipientIsWelsh =
                 cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority());
+            if (recipientIsWelsh.isPresent()) {
+                HearingOrder issuedCmo = event.getCmo();
 
-        if (recipientIsWelsh.isPresent()) {
-            HearingOrder issuedCmo = event.getCmo();
-
-            final IssuedCMOTemplate cafcassParameters = contentProvider.buildCMOIssuedNotificationParameters(
+                final IssuedCMOTemplate cafcassParameters = contentProvider.buildCMOIssuedNotificationParameters(
                     caseData, issuedCmo, DIGITAL_SERVICE);
 
-            notificationService.sendEmail(
+                notificationService.sendEmail(
                     CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE,
                     recipientIsWelsh.get().getEmail(),
                     cafcassParameters,
                     caseData.getId()
-            );
+                );
+            }
         }
     }
 
@@ -110,10 +112,7 @@ public class CaseManagementOrderIssuedEventHandler {
     public void notifyCafcassViaSendGrid(final CaseManagementOrderIssuedEvent event) {
         CaseData caseData = event.getCaseData();
         HearingOrder issuedCmo = event.getCmo();
-        final Optional<Cafcass> recipientIsEngland =
-                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             LocalDateTime hearingStartDate = findElement(caseData.getLastHearingOrderDraftsHearingId(),
                     caseData.getHearingDetails())
                     .map(Element::getValue)
