@@ -1324,19 +1324,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
         return List.of(CONFIDENTIAL_1, CONFIDENTIAL_2);
     }
 
-    private static String getUploadedBy(DocumentUploaderType uploaderType) {
-        switch (uploaderType) {
-            case DESIGNATED_LOCAL_AUTHORITY:
-                return LA_USER;
-            case HMCTS:
-                return HMCTS_USER;
-            case SOLICITOR:
-                return REP_USER;
-            default:
-                throw new AssertionError("unexpected uploaderType");
-        }
-    }
-
     private static UserDetails getUserDetails(DocumentUploaderType uploaderType) {
         switch (uploaderType) {
             case DESIGNATED_LOCAL_AUTHORITY:
@@ -1651,28 +1638,45 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 notificationTypes, expectedDocumentNames);
         }
 
-        @ParameterizedTest(name = "{0}")
-        @EnumSource(value = DocumentUploaderType.class, names = {"SOLICITOR",
-            "DESIGNATED_LOCAL_AUTHORITY", "HMCTS"})
-        void shouldNotSendNotificationWhenDocsAreRemoved(DocumentUploaderType uploaderType) {
+        @ParameterizedTest
+        @ArgumentsSource(AnyOtherDocumentUploadArgs.class)
+        @SuppressWarnings("unchecked")
+        void shouldNotSendNotificationWhenDocsAreRemoved(DocumentUploaderType uploaderType,
+                                                         Set<DocumentUploadNotificationUserType> notificationTypes,
+                                                         List<String> expectedDocumentNames,
+                                                         List<?> originalDocuments,
+                                                         boolean isRelatingToHearing) {
             verifyNotificationFurtherDocumentsTemplate(
                 getUserDetails(uploaderType), uploaderType,
-                (caseData) -> document(caseData, uploaderType)
-                    .addAll(buildNonConfidentialPdfDocumentList(getUploadedBy(uploaderType))),
+                isRelatingToHearing
+                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
+                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) originalDocuments)
+                    : (caseData) -> document(caseData, uploaderType)
+                    .addAll((List<Element<SupportingEvidenceBundle>>) originalDocuments),
                 EMPTY_CASE_DATA_MODIFIER,
                 Set.of(), null);
         }
 
-        @ParameterizedTest(name = "{0}")
-        @EnumSource(value = DocumentUploaderType.class, names = {"SOLICITOR",
-            "DESIGNATED_LOCAL_AUTHORITY", "HMCTS"})
-        void shouldNotSendNotificationWhenDocsAreTheSame(DocumentUploaderType uploaderType) {
-            List<Element<SupportingEvidenceBundle>> documents =
-                buildNonConfidentialPdfDocumentList(getUploadedBy(uploaderType));
+        @ParameterizedTest
+        @ArgumentsSource(AnyOtherDocumentUploadArgs.class)
+        @SuppressWarnings("unchecked")
+        void shouldNotSendNotificationWhenDocsAreTheSame(DocumentUploaderType uploaderType,
+                                                Set<DocumentUploadNotificationUserType> notificationTypes,
+                                                List<String> expectedDocumentNames,
+                                                List<?> updatingDocument,
+                                                boolean isRelatingToHearing) {
             verifyNotificationFurtherDocumentsTemplate(
                 getUserDetails(uploaderType), uploaderType,
-                (caseData) -> document(caseData, uploaderType).addAll(documents),
-                (caseData) -> document(caseData, uploaderType).addAll(documents),
+                isRelatingToHearing
+                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
+                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) updatingDocument)
+                    : (caseData) -> document(caseData, uploaderType)
+                    .addAll((List<Element<SupportingEvidenceBundle>>) updatingDocument),
+                isRelatingToHearing
+                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
+                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) updatingDocument)
+                    : (caseData) -> document(caseData, uploaderType)
+                    .addAll((List<Element<SupportingEvidenceBundle>>) updatingDocument),
                 Set.of(), null);
         }
     }
