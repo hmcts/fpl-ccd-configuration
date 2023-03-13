@@ -42,6 +42,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.DEFAULT_PRE_ATTENDANCE;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
@@ -303,13 +304,10 @@ public class ListGatekeepingHearingController extends CallbackController {
         caseData.put("gatekeepingOrderSealDecision", orderService.buildSealedDecision(eventData));
         eventData = mergeEventAndCaseData(eventData, caseData);
 
-        switch (sdoRouter) {
-            case UPLOAD:
-                caseData.put("standardDirectionOrder", orderService.buildOrderFromUploadedFile(eventData));
-                break;
-            case SERVICE:
-                caseData.put("standardDirectionOrder", orderService.buildOrderFromGeneratedFile(eventData));
-                break;
+        if (UPLOAD == sdoRouter) {
+            caseData.put("standardDirectionOrder", orderService.buildOrderFromUploadedFile(eventData));
+        } else if (SERVICE == sdoRouter) {
+            caseData.put("standardDirectionOrder", orderService.buildOrderFromGeneratedFile(eventData));
         }
 
         callbackRequest.getCaseDetails().setData(caseData);

@@ -39,6 +39,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -63,6 +64,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -106,7 +108,7 @@ class ListGatekeepingHearingControllerAboutToSubmitTest extends AbstractCallback
 
     @ParameterizedTest
     @MethodSource("caseTranslationRequirement")
-    void shouldBuildSealedSDOAndRemoveTransientFields(
+    void shouldBuildSealedSDOAndRemoveTransientFieldsForServiceRoute(
         final String caseLanguageRequirement,
         final LanguageTranslationRequirement expectedTranslationRequirements) {
 
@@ -182,6 +184,109 @@ class ListGatekeepingHearingControllerAboutToSubmitTest extends AbstractCallback
             .standardDirections(wrapElements(standardDirection))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
             .translationRequirements(expectedTranslationRequirements)
+            .build();
+
+        final AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
+        final CaseData responseData = extractCaseData(response);
+
+        assertThat(responseData.getStandardDirectionOrder()).isEqualTo(expectedSDO);
+        assertThat(responseData.getNoticeOfProceedingsBundle())
+            .extracting(Element::getValue)
+            .containsExactly(DocumentBundle.builder().document(C6_REFERENCE)
+                .translationRequirements(expectedTranslationRequirements)
+                .build());
+        assertThat(response.getData()).doesNotContainKeys("customDirections",
+            "standardDirections", "gatekeepingOrderIssuingJudge");
+
+        final HearingBooking hearingAfterCallback = newHearing.toBuilder().noticeOfHearing(
+            DocumentReference.buildFromDocument(document())).build();
+
+        assertThat(responseData.getHearingDetails()).extracting(Element::getValue)
+            .containsExactly(hearingAfterCallback);
+        assertThat(responseData.getFirstHearingFlag()).isNull();
+        assertThat(responseData.getSelectedHearingId())
+            .isEqualTo(responseData.getHearingDetails().get(0).getId());
+    }
+
+    @ParameterizedTest
+    @MethodSource("caseTranslationRequirement")
+    void shouldBuildSealedSDOAndRemoveTransientFieldsForUploadRoute(
+        final String caseLanguageRequirement,
+        final LanguageTranslationRequirement expectedTranslationRequirements) {
+
+        when(time.now()).thenReturn(LocalDateTime.of(2021, 3, 3, 0, 0, 0));
+        mockDocumentGenerationAndUpload();
+
+        final Allocation allocationDecision = createAllocation("Lay justices", "Reason");
+        final CustomDirection customDirection =
+            CustomDirection.builder()
+                .type(CUSTOM)
+                .assignee(CAFCASS)
+                .title("Test direction")
+                .dueDateType(DAYS)
+                .daysBeforeHearing(2)
+                .build();
+
+        final StandardDirection standardDirection =
+            StandardDirection.builder()
+                .type(ATTEND_HEARING)
+                .assignee(ALL_PARTIES)
+                .dueDateType(DATE)
+                .title("Attend the pre-hearing and hearing")
+                .description("Parties and their legal representatives must attend the pre-hearing and hearing")
+                .dateToBeCompletedBy(LocalDateTime.of(2030, 1, 10, 12, 0, 0))
+                .daysBeforeHearing(0)
+                .build();
+
+        final GatekeepingOrderSealDecision gatekeepingOrderSealDecision = GatekeepingOrderSealDecision.builder()
+            .orderStatus(SEALED)
+            .dateOfIssue(time.now().toLocalDate())
+            .draftDocument(SDO_REFERENCE)
+            .build();
+
+        final HearingBooking newHearing = createHearing(now().plusDays(2));
+
+        final Map<String, Object> caseDataMap = new HashMap<>();
+        caseDataMap.put("children1", createPopulatedChildren(now().toLocalDate()));
+        caseDataMap.put("sendNoticeOfHearing", "Yes");
+        caseDataMap.put("hearingType", newHearing.getType());
+        caseDataMap.put("hearingVenue", newHearing.getVenue());
+        caseDataMap.put("hearingVenueCustom", newHearing.getVenueCustomAddress());
+        caseDataMap.put("hearingStartDate", newHearing.getStartDate());
+        caseDataMap.put("hearingEndDate", newHearing.getEndDate());
+        caseDataMap.put("hearingAttendance", newHearing.getAttendance());
+        caseDataMap.put("judgeAndLegalAdvisor", newHearing.getJudgeAndLegalAdvisor());
+        caseDataMap.put("noticeOfHearingNotes", null);
+        caseDataMap.put("languageRequirement", caseLanguageRequirement);
+        caseDataMap.put("gatekeepingOrderRouter", UPLOAD);
+        caseDataMap.put("caseLocalAuthority", LOCAL_AUTHORITY_1_CODE);
+        caseDataMap.put("dateSubmitted", dateNow());
+        caseDataMap.put("applicants", getApplicant());
+        caseDataMap.put("orders", Orders.builder().orderType(List.of(CARE_ORDER)).build());
+        caseDataMap.put("gatekeepingOrderIssuingJudge", JudgeAndLegalAdvisor.builder().build());
+        caseDataMap.put("gatekeepingOrderSealDecision", gatekeepingOrderSealDecision);
+        caseDataMap.put("gatekeepingTranslationRequirements", expectedTranslationRequirements);
+        caseDataMap.put("directionsForAllParties", List.of(ATTEND_HEARING));
+        caseDataMap.put("direction-ATTEND_HEARING", standardDirection);
+        caseDataMap.put("allocationDecision", allocationDecision);
+        caseDataMap.put("customDirections", wrapElements(customDirection));
+
+        final CaseDetails caseData = CaseDetails.builder()
+            .id(1234123412341234L)
+            .state(GATEKEEPING.getLabel())
+            .data(caseDataMap)
+            .build();
+
+        final StandardDirectionOrder expectedSDO = StandardDirectionOrder.builder()
+            .orderDoc(null)
+            .unsealedDocumentCopy(null)
+            .orderStatus(SEALED)
+            .dateOfUpload(LocalDate.of(2021, 3, 3))
+            .customDirections(wrapElements(customDirection))
+            .standardDirections(wrapElements(standardDirection))
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
+            .translationRequirements(expectedTranslationRequirements)
+            .uploader("John Smith")
             .build();
 
         final AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
