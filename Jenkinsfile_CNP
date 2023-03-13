@@ -252,12 +252,10 @@ withPipeline(type, product, component) {
   }
 
   before('functionalTest:aat') {
-    env.SKIP_BROWSER_TESTS = 'true'
   }
 
   before('functionalTest:demo') {
     env.SKIP_API_TESTS = 'true'
-    env.SKIP_BROWSER_TESTS = 'true'
   }
 
   afterAlways('functionalTest:aat') {
@@ -277,6 +275,9 @@ withPipeline(type, product, component) {
   }
 
   afterAlways('functionalTest:preview') {
+    env.PARALLEL_CHUNKS = 12
+    env.TESTS_SELECTOR = '(?=.*)^(?!.*(@smoke-tests|@flaky))'
+    yarnBuilder.yarn('test:functional')
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'

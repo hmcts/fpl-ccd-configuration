@@ -89,18 +89,11 @@ task integration(type: Test, description: 'Runs the integration tests.', group: 
 check.dependsOn integration
 
 task lintUserInterfaceTests(type: Exec, description: 'Runs linting of E2E tests.') {
-  commandLine '/usr/bin/yarn', '--silent', 'lint'
+  commandLine '/usr/bin/yarn', 'lint'
 }
 
 task runSmokeTests(type: Exec, description: 'Runs smoke tests.') {
-  commandLine '/usr/bin/yarn', '--silent', 'test:smoke'
-}
-
-task runBrowserTests(type: Exec, description: 'Runs brower tests.') {
-  onlyIf {
-    return System.env.SKIP_BROWSER_TESTS == null || System.env.SKIP_BROWSER_TESTS == 'false'
-  }
-  commandLine '/usr/bin/yarn', 'test:functional'
+  commandLine '/usr/bin/yarn', 'test:smoke'
 }
 
 task runApiTests(type: Test, description: 'Runs api tests.', group: 'Verification') {
@@ -176,7 +169,7 @@ task runCodeceptSmokeTest(type: Test, description: 'Runs the old codecept smoke 
 }
 
 task functional(description: 'Runs the functional tests.') {
-  dependsOn(inStrictOrder(runApiTests, runBrowserTests))
+  dependsOn(inStrictOrder(runApiTests))
 }
 
 task contract(description: 'Runs the contract tests.') {
