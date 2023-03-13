@@ -1398,8 +1398,7 @@
           "[CHILDSOLICITORO]",
           "[CAFCASSSOLICITOR]",
           "[BARRISTER]",
-          "[LABARRISTER]",
-          "caseworker-publiclaw-solicitor"
+          "[LABARRISTER]"
         ],
         "CRUD": "CR"
       }
