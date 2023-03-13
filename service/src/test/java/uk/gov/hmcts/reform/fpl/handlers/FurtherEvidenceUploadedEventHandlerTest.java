@@ -244,54 +244,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     @Test
-    void shouldSendNotificationWhenNonConfidentialAnyOtherDocRelatingToHearingIsUploadedByLA() {
-        // Further documents for main application -> Any other document relates to a hearing
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getHearingFurtherEvidenceDocuments().addAll(
-                buildHearingFurtherEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER))),
-            Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
-            NON_CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenNonConfidentialNoticeOfActingOrIssueRelatingToHearingIsUploadedByLA() {
-        // Further documents for main application -> Any other document relates to a hearing
-        // No notification to CAFCASS if uploading NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getHearingFurtherEvidenceDocuments().addAll(
-                buildHearingFurtherEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER,
-                    NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE))),
-            Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
-            NON_CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenConfidentialAnyOtherDocRelatingToHearingIsUploadedByLA() {
-        // Further documents for main application -> Any other document relates to a hearing
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getHearingFurtherEvidenceDocuments().addAll(
-                buildHearingFurtherEvidenceBundle(buildConfidentialDocumentList(LA_USER))),
-            Set.of(ALL_LAS),
-            CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenConfidentialNoticeOfActingOrIssueRelatingToHearingIsUploadedByLA() {
-        // Further documents for main application -> Any other document relates to a hearing
-        // No notification to CAFCASS if uploading NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getHearingFurtherEvidenceDocuments().addAll(
-                buildHearingFurtherEvidenceBundle(buildConfidentialDocumentList(LA_USER,
-                    NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE))),
-            Set.of(ALL_LAS),
-            CONFIDENTIAL);
-    }
-
-    @Test
     void shouldNotNotifyTranslationTeamWhenNoChange() {
         when(calculator.calculate(CASE_DATA, CASE_DATA_BEFORE)).thenReturn(List.of());
 
@@ -1587,6 +1539,9 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     static class AnyOtherDocumentUploadArgs implements ArgumentsProvider {
 
+        static final boolean HEARING_RELATED_YES = true;
+        static final boolean HEARING_RELATED_NO = false;
+
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
@@ -1594,39 +1549,68 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 Arguments.of(DESIGNATED_LOCAL_AUTHORITY,
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
                     NON_CONFIDENTIAL,
-                    buildNonConfidentialPdfDocumentList(LA_USER)),
+                    buildNonConfidentialPdfDocumentList(LA_USER),
+                    HEARING_RELATED_NO),
+                Arguments.of(DESIGNATED_LOCAL_AUTHORITY,
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+                    NON_CONFIDENTIAL,
+                    buildHearingFurtherEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER)),
+                    HEARING_RELATED_YES),
                 Arguments.of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS),
                     CONFIDENTIAL,
-                    buildConfidentialDocumentList(LA_USER)),
+                    buildConfidentialDocumentList(LA_USER),
+                    HEARING_RELATED_NO),
                 // Not notifying CAFCASS if document type is NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
                 Arguments.of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
                     NON_CONFIDENTIAL,
-                    buildNonConfidentialPdfDocumentList(LA_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
+                    buildNonConfidentialPdfDocumentList(LA_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE),
+                    HEARING_RELATED_NO),
+                Arguments.of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
+                    NON_CONFIDENTIAL,
+                    buildHearingFurtherEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER,
+                        NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
+                    HEARING_RELATED_YES),
                 Arguments.of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS),
                     CONFIDENTIAL,
-                    buildConfidentialDocumentList(LA_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
+                    buildConfidentialDocumentList(LA_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE),
+                    HEARING_RELATED_NO),
+                Arguments.of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS),
+                    CONFIDENTIAL,
+                    buildHearingFurtherEvidenceBundle(buildConfidentialDocumentList(LA_USER,
+                        NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
+                    HEARING_RELATED_YES),
+                Arguments.of(DESIGNATED_LOCAL_AUTHORITY, Set.of(ALL_LAS),
+                    CONFIDENTIAL,
+                    buildHearingFurtherEvidenceBundle(buildConfidentialDocumentList(LA_USER)),
+                    HEARING_RELATED_YES),
                 // By HMCTS
                 Arguments.of(HMCTS, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
                     NON_CONFIDENTIAL,
-                    buildNonConfidentialPdfDocumentList(HMCTS_USER)),
+                    buildNonConfidentialPdfDocumentList(HMCTS_USER),
+                    HEARING_RELATED_NO),
                 // Not notifying CAFCASS if document type is NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
                 Arguments.of(HMCTS, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
                     NON_CONFIDENTIAL,
-                    buildNonConfidentialPdfDocumentList(HMCTS_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
+                    buildNonConfidentialPdfDocumentList(HMCTS_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE),
+                    HEARING_RELATED_NO),
                 Arguments.of(HMCTS, Set.of(),
                     CONFIDENTIAL,
-                    buildConfidentialDocumentList(HMCTS_USER)),
+                    buildConfidentialDocumentList(HMCTS_USER),
+                    HEARING_RELATED_NO),
                 Arguments.of(HMCTS, Set.of(),
                     CONFIDENTIAL,
-                    buildConfidentialDocumentList(HMCTS_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
+                    buildConfidentialDocumentList(HMCTS_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE),
+                    HEARING_RELATED_NO),
                 // By Solicitor
                 Arguments.of(SOLICITOR, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
                     NON_CONFIDENTIAL,
-                    buildNonConfidentialPdfDocumentList(REP_USER)),
+                    buildNonConfidentialPdfDocumentList(REP_USER),
+                    HEARING_RELATED_NO),
                 // Not notifying CAFCASS if document type is NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
                 Arguments.of(SOLICITOR, Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
                     NON_CONFIDENTIAL,
-                    buildNonConfidentialPdfDocumentList(REP_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE))
+                    buildNonConfidentialPdfDocumentList(REP_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE),
+                    HEARING_RELATED_NO)
             );
         }
     }
@@ -1634,7 +1618,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
     @Nested
     class AnyOtherDocument {
 
-        private List<Element<SupportingEvidenceBundle>> document(CaseData caseData, DocumentUploaderType uploaderType) {
+        private List<Element<SupportingEvidenceBundle>> document(CaseData caseData,
+                                                                 DocumentUploaderType uploaderType) {
             switch (uploaderType) {
                 case DESIGNATED_LOCAL_AUTHORITY:
                     return caseData.getFurtherEvidenceDocumentsLA();
@@ -1649,14 +1634,20 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         @ParameterizedTest
         @ArgumentsSource(AnyOtherDocumentUploadArgs.class)
+        @SuppressWarnings("unchecked")
         void shouldSendNotificationForNewUpload(DocumentUploaderType uploaderType,
             Set<DocumentUploadNotificationUserType> notificationTypes,
             List<String> expectedDocumentNames,
-            List<Element<SupportingEvidenceBundle>> updatingDocument) {
+            List<?> updatingDocument,
+            boolean isRelatingToHearing) {
             verifyNotificationFurtherDocumentsTemplate(
                 getUserDetails(uploaderType), uploaderType,
                 EMPTY_CASE_DATA_MODIFIER,
-                (caseData) -> document(caseData, uploaderType).addAll(updatingDocument),
+                isRelatingToHearing
+                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
+                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) updatingDocument)
+                    : (caseData) -> document(caseData, uploaderType)
+                    .addAll((List<Element<SupportingEvidenceBundle>>) updatingDocument),
                 notificationTypes, expectedDocumentNames);
         }
 
