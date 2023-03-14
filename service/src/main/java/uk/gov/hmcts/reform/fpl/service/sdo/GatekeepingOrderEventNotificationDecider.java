@@ -29,7 +29,7 @@ public class GatekeepingOrderEventNotificationDecider {
         if (sdo.isDraft() && (null == urgentHearingOrder || !GATEKEEPING_LISTING.equals(previousState))) {
             return Optional.empty();
         }
-gat
+
         if (null != sdo.getOrderDoc()) {
             event.order(sdo.getOrderDoc());
             event.languageTranslationRequirement(sdo.getTranslationRequirements());
