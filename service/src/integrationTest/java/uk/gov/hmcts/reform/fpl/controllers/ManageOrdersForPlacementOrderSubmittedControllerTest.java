@@ -47,7 +47,6 @@ import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -64,6 +63,7 @@ import static uk.gov.hmcts.reform.fpl.model.configuration.Language.ENGLISH;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.A70_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.COVERSHEET_PDF;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntilSecs;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.documentSent;
@@ -197,7 +197,7 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
             eq(OrderCafcassData.builder().documentName(ORDER_DOCUMENT_REFERENCE.getFilename()).build()));
 
         verify(concurrencyHelper, times(2)).startEvent(any(), any());
-        verify(concurrencyHelper, times(1)).submitEvent(any(), any(), any()); // skip no updates
+        verify(concurrencyHelper, times(2)).submitEvent(any(), any(), any());
     }
 
     @Test
@@ -249,7 +249,7 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
             eq(OrderCafcassData.builder().documentName(ORDER_DOCUMENT_REFERENCE.getFilename()).build()));
 
         verify(concurrencyHelper, times(1)).startEvent(any(), any());
-        verify(concurrencyHelper, never()).submitEvent(any(), any(), any()); // skip as no updates
+        verify(concurrencyHelper, times(1)).submitEvent(any(), any(), any());
 
     }
 
@@ -324,8 +324,8 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
                                                         UUID secondLetterId,
                                                         Element<Respondent> firstParent,
                                                         Element<Respondent> secondParent) {
-        checkUntil(() -> verify(concurrencyHelper, times(1))
-            .submitEvent(any(), eq(TEST_CASE_ID), caseDataDelta.capture()));
+        checkUntilSecs(() -> verify(concurrencyHelper, times(2))
+            .submitEvent(any(), eq(TEST_CASE_ID), caseDataDelta.capture()), 2);
         List<Element<SentDocuments>> documentsSent = mapper.convertValue(
             caseDataDelta.getValue().get("documentsSentToParties"), new TypeReference<>() {
             }

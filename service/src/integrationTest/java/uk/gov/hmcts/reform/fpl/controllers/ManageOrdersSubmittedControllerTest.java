@@ -239,7 +239,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         verify(sendLetterApi, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2)).sendLetter(eq(SERVICE_AUTH_TOKEN),
             printRequest.capture());
-        verify(concurrencyHelper, times(1)).submitEvent(any(), eq(CASE_ID), caseDataDelta.capture());
+        verify(concurrencyHelper, times(2)).submitEvent(any(), eq(CASE_ID), caseDataDelta.capture());
 
         LetterWithPdfsRequest expectedPrintRequest1 = printRequest(
             CASE_ID, ORDER, COVERSHEET_REPRESENTATIVE_BINARY, ORDER_BINARY
@@ -477,7 +477,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         checkUntilSecs(() -> {
             verify(sendLetterApi, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2)).sendLetter(eq(SERVICE_AUTH_TOKEN),
                 printRequest.capture());
-            verify(concurrencyHelper, times(1)).submitEvent(any(), eq(CASE_ID), caseDataDelta.capture());
+            verify(concurrencyHelper, times(2)).submitEvent(any(), eq(CASE_ID), caseDataDelta.capture());
         }, 2);
 
         LetterWithPdfsRequest expectedPrintRequest1 = printRequest(
