@@ -26,10 +26,10 @@ public class GatekeepingOrderEventNotificationDecider {
         );
         UrgentHearingOrder urgentHearingOrder = caseData.getUrgentHearingOrder();
 
-        if (sdo.isDraft() && (null == urgentHearingOrder || !isInGatekeeping(previousState))) {
+        if (sdo.isDraft() && (null == urgentHearingOrder || !GATEKEEPING_LISTING.equals(previousState))) {
             return Optional.empty();
         }
-
+gat
         if (null != sdo.getOrderDoc()) {
             event.order(sdo.getOrderDoc());
             event.languageTranslationRequirement(sdo.getTranslationRequirements());
@@ -44,13 +44,5 @@ public class GatekeepingOrderEventNotificationDecider {
         }
 
         return Optional.of(event.build());
-    }
-
-    private boolean isInGatekeeping(State previousState) {
-        return GATEKEEPING == previousState;
-    }
-
-    private boolean isInGatekeepingListing(State previousState) {
-        return GATEKEEPING_LISTING == previousState;
     }
 }
