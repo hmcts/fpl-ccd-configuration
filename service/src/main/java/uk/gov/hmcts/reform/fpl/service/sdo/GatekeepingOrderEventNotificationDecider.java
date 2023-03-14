@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING_LISTING;
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO_AND_NOP;
