@@ -108,10 +108,6 @@ public class CaseDetailsHelper {
         return isInState(GATEKEEPING, caseDetails);
     }
 
-    public static boolean isInGatekeepingListingState(CaseDetails caseDetails) {
-        return isInState(GATEKEEPING_LISTING, caseDetails);
-    }
-
     public static boolean isInState(State state, CaseDetails caseDetails) {
         return state.getValue().equals(caseDetails.getState());
     }
