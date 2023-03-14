@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING_LISTING;
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO_AND_NOP;
@@ -25,10 +26,9 @@ public class GatekeepingOrderEventNotificationDecider {
         );
         UrgentHearingOrder urgentHearingOrder = caseData.getUrgentHearingOrder();
 
-        if (sdo.isDraft() && (null == urgentHearingOrder || !isInGatekeeping(previousState))) {
+        if (sdo.isDraft() && (null == urgentHearingOrder || !GATEKEEPING_LISTING.equals(previousState))) {
             return Optional.empty();
         }
-
 
         if (null != sdo.getOrderDoc()) {
             event.order(sdo.getOrderDoc());
