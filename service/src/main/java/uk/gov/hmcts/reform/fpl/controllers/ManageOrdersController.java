@@ -145,7 +145,7 @@ public class ManageOrdersController extends CallbackController {
 
         // Start event with concurrency controls
         CaseDetails caseDetails = coreCaseDataService.performPostSubmitCallback(oldCaseDetails.getId(),
-            "internal-change-manage-order", postSubmitHelper::getPostSubmitUpdates);
+            "internal-change-manage-order", postSubmitHelper::getPostSubmitUpdates, true);
 
         if (isEmpty(caseDetails)) {
             // if our callback has failed 3 times, all we have is the prior caseData to send notifications based on
