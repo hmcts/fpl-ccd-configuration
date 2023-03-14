@@ -464,10 +464,10 @@ public class FurtherEvidenceUploadedEventHandler {
                 );
     }
 
-    private boolean hasNewDocumentUploaded(List<Element<WithDocument>> existingElements,
-                                           Element<? extends WithDocument> test) {
-        Optional<Element<WithDocument>> hitElement = ElementUtils.findElement(test.getId(),
-            defaultIfNull(existingElements, List.of()));
+    private <T extends WithDocument> boolean hasNewDocumentUploaded(List<Element<T>> existingElements,
+                                                                    Element<T> test) {
+        Optional<Element<T>> hitElement = ElementUtils.findElement(test.getId(), defaultIfNull(existingElements,
+            List.of()));
         if (!hitElement.isPresent()) {
             return true;
         } else {
@@ -505,26 +505,24 @@ public class FurtherEvidenceUploadedEventHandler {
                 );
     }
 
-    @SuppressWarnings("unchecked")
     private List<Element<ApplicationDocument>> getNewApplicationDocuments(
         List<Element<ApplicationDocument>> applicationDocuments,
         List<Element<ApplicationDocument>> beforeApplicationDocuments) {
         List<Element<ApplicationDocument>> newApplicationDocuments = new ArrayList<>();
         defaultIfNull(applicationDocuments, new ArrayList<Element<ApplicationDocument>>()).forEach(newDoc -> {
-            if (hasNewDocumentUploaded((List) beforeApplicationDocuments, newDoc)) {
+            if (hasNewDocumentUploaded(beforeApplicationDocuments, newDoc)) {
                 newApplicationDocuments.add(newDoc);
             }
         });
         return newApplicationDocuments;
     }
 
-    @SuppressWarnings("unchecked")
     private List<Element<SupportingEvidenceBundle>> getNewSupportingEvidenceBundle(
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
         List<Element<SupportingEvidenceBundle>> beforeSupportingEvidenceBundle) {
         List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle = new ArrayList<>();
         defaultIfNull(supportingEvidenceBundle, new ArrayList<Element<SupportingEvidenceBundle>>()).forEach(newDoc -> {
-            if (hasNewDocumentUploaded((List) beforeSupportingEvidenceBundle, newDoc)) {
+            if (hasNewDocumentUploaded(beforeSupportingEvidenceBundle, newDoc)) {
                 newSupportingEvidenceBundle.add(newDoc);
             }
         });
