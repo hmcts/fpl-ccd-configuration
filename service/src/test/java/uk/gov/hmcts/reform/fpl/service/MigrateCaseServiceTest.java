@@ -4,11 +4,15 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
@@ -36,9 +40,11 @@ import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -1049,6 +1055,67 @@ class MigrateCaseServiceTest {
             Map<String, Object> updates = underTest.renameApplicationDocuments(caseData);
 
             assertThat(updates).extracting("applicationDocuments").asList().containsExactly(expectedDoc1, expectedDoc2);
+        }
+    }
+
+    static Stream<Arguments> createPossibleOrderType() {
+        String invalidOrderType = "EDUCATION_SUPERVISION__ORDER";
+        String validOrderType = "EDUCATION_SUPERVISION_ORDER";
+        return Stream.of(
+            Arguments.of(List.of(invalidOrderType), List.of(validOrderType)),
+            Arguments.of(List.of(invalidOrderType, "DEF"), List.of(validOrderType, "DEF")),
+            Arguments.of(List.of("ABC", invalidOrderType), List.of("ABC", validOrderType)),
+            Arguments.of(List.of("ABC", invalidOrderType, "DEF"), List.of("ABC", validOrderType, "DEF"))
+        );
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class FixOrderTypeTypo {
+
+        @ParameterizedTest
+        @SuppressWarnings("unchecked")
+        @MethodSource("uk.gov.hmcts.reform.fpl.service.MigrateCaseServiceTest#createPossibleOrderType")
+        void shouldChangeInvalidOrderType(List<String> orderType, List<String> expectedOrderType) {
+            CaseDetails caseDetails = CaseDetails.builder().data(
+                Map.of("orders", Map.of("orderType", orderType))
+            ).build();
+
+            assertThat(underTest.fixOrderTypeTypo(MIGRATION_ID, caseDetails)).containsEntry("orders",
+                Map.of("orderType", expectedOrderType));
+        }
+
+        @Test
+        void shouldThrowAssertionErrorIfOrdersMissing() {
+            CaseDetails caseDetails = CaseDetails.builder().data(Map.of()).build();
+
+            assertThatThrownBy(() -> underTest.fixOrderTypeTypo(MIGRATION_ID, caseDetails))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = test-migration}, case does not have [orders]");
+        }
+
+        @Test
+        void shouldThrowAssertionErrorIfOrderTypeMissing() {
+            Map<String, Object> orders = new HashMap<>();
+            orders.put("orders", Map.of());
+            CaseDetails caseDetails = CaseDetails.builder().data(orders).build();
+
+            assertThatThrownBy(() -> underTest.fixOrderTypeTypo(MIGRATION_ID, caseDetails))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = test-migration}, case does not have [orders.orderType] "
+                    + "or missing target invalid order type [EDUCATION_SUPERVISION__ORDER]");
+        }
+
+        @Test
+        void shouldThrowAssertionErrorIfCaseDoesNotContainInvalidOrderType() {
+            Map<String, Object> orders = new HashMap<>();
+            orders.put("orders", Map.of("orderType", List.of("ABC")));
+            CaseDetails caseDetails = CaseDetails.builder().data(orders).build();
+
+            assertThatThrownBy(() -> underTest.fixOrderTypeTypo(MIGRATION_ID, caseDetails))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = test-migration}, case does not have [orders.orderType] "
+                    + "or missing target invalid order type [EDUCATION_SUPERVISION__ORDER]");
         }
     }
 }
