@@ -18,10 +18,10 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.representative.RegisteredRepresentativeSolicitorContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.representative.UnregisteredRepresentativeSolicitorContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.diff.PartyRepresentativeDiffCalculator;
+import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,11 +46,8 @@ public class ChildrenUpdatedEventHandler {
         CaseData caseData = event.getCaseData();
         CaseData caseDataBefore = event.getCaseDataBefore();
 
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-            cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-
-        if (recipientIsEngland.isPresent() && childrenService.hasAddressChange(caseData.getAllChildren(),
-            caseDataBefore.getAllChildren())) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)
+            && childrenService.hasAddressChange(caseData.getAllChildren(), caseDataBefore.getAllChildren())) {
             cafcassNotificationService.sendEmail(caseData, CHANGE_OF_ADDRESS,
                 ChangeOfAddressData.builder().children(true).build());
         }
