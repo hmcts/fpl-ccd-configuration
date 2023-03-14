@@ -270,13 +270,10 @@ withPipeline(type, product, component) {
     yarnBuilder.yarn('yarn-update')
     yarnBuilder.yarn('install-dependencies')
     yarnBuilder.yarn('lint-ui-tests')
-    env.PARALLEL_CHUNKS = 12
-    env.TESTS_SELECTOR = '(?=.*)^(?!.*(@smoke-tests|@flaky))'
   }
 
   afterAlways('functionalTest:preview') {
     env.PARALLEL_CHUNKS = 12
-    env.TESTS_SELECTOR = '(?=.*)^(?!.*(@smoke-tests|@flaky))'
     yarnBuilder.yarn('test:functional')
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
@@ -306,7 +303,6 @@ withPipeline(type, product, component) {
     yarnBuilder.yarn('lint-ui-tests')
     env.URL = "https://manage-case.aat.platform.hmcts.net"
     env.TEST_CONF_FPL_URL = "https://fpl-case-service-staging.service.core-compute-aat.internal"
-    env.SMOKE_TESTS_SELECTOR = "@smoke-tests"
   }
 
   def branchesToSync = ['demo', 'perftest', 'ithc']
