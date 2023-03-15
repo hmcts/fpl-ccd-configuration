@@ -122,13 +122,13 @@
     <vulnerabilityName>CVE-2022-31569</vulnerabilityName>
   </suppress>
   <suppress>
-   <vulnerabilityName>CVE-2022-31197</vulnerabilityName>
+    <vulnerabilityName>CVE-2022-31197</vulnerabilityName>
   </suppress>
   <suppress>
     <cpe>cpe:/a:snakeyaml_project:snakeyaml</cpe>
   </suppress>
   <suppress>
-   <cve>CVE-2022-42003</cve>
+    <cve>CVE-2022-42003</cve>
   </suppress>
   <suppress>
     <cve>CVE-2022-42004</cve>
@@ -143,13 +143,16 @@
     <cve>CVE-2021-37533</cve>
   </suppress>
   <suppress>
-   <cve>CVE-2021-4277</cve>
+    <cve>CVE-2021-4277</cve>
   </suppress>
   <suppress>
     <cve>CVE-2021-4235</cve>
   </suppress>
   <suppress>
     <cve>CVE-2022-3064</cve>
+  </suppress>
+  <suppress>
+    <cve>CVE-2023-24998</cve>
   </suppress>
   <suppress>
     <vulnerabilityName>1089130</vulnerabilityName>
@@ -233,6 +236,7 @@
     <vulnerabilityName>1091239</vulnerabilityName>
   </suppress>
   <suppress>
-    <cve>CVE-2023-24998</cve>
+    <vulnerabilityName>1091238</vulnerabilityName>
+    <vulnerabilityName>1091239</vulnerabilityName>
   </suppress>
 </suppressions>

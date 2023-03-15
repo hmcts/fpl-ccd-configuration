@@ -41,15 +41,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "nextStepsLabel",
-    "Label": "${gatekeepingOrderSealDecision.nextSteps}",
-    "FieldType": "Label",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "standardDirections",
     "Label": "Standard directions",
     "FieldType": "Collection",
@@ -100,6 +91,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "directionsForCafcassUpdated",
+    "Label": " ",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DirectionTypesForCafcassUpdated",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "directionsForOthers",
     "Label": " ",
     "FieldType": "MultiSelectList",
@@ -114,6 +115,16 @@
     "Label": " ",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "DirectionTypesForCourt",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "directionsForCourtUpdated",
+    "Label": " ",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DirectionTypesForCourtUpdated",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -228,6 +239,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "direction-REDUCE_TIME_FOR_SERVICE",
+    "Label": "Reduce time for service of notice of the proceedings",
+    "FieldType": "StandardDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "direction-SEND_RESPONSE_TO_THRESHOLD_STATEMENT",
     "Label": "Send response to threshold statement to all parties",
     "FieldType": "StandardDirection",
@@ -264,6 +284,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "direction-APPOINT_CHILDREN_GUARDIAN_IMMEDIATE",
+    "Label": "Appoint a children's guardian",
+    "FieldType": "ImmediateStandardDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "direction-OBJECT_TO_REQUEST_FOR_DISCLOSURE",
     "Label": "Object to a request for disclosure",
     "FieldType": "StandardDirection",
@@ -276,6 +305,15 @@
     "ID": "direction-ARRANGE_INTERPRETERS",
     "Label": "Arrange interpreters",
     "FieldType": "EditableStandardDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "direction-ARRANGE_INTERPRETERS_IMMEDIATE",
+    "Label": "Arrange interpreters",
+    "FieldType": "ImmediateStandardDirection",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
