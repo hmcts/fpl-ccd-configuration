@@ -69,10 +69,13 @@ public class AddUrgentDirectionsController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         final CaseData caseData = getCaseData(callbackRequest.getCaseDetails());
         final CaseDetailsMap data = dataFixer.addLanguageRequirement(caseDetailsMap(callbackRequest.getCaseDetails()));
+
+        //TODO: check if this is the order we need to be looking at
         final StandardDirectionOrder draftOrder = caseData.getStandardDirectionOrder();
 
         final UrgentDirectionsRoute draftOrderRoute = caseData.getUrgentDirectionsRouter();
 
+        //TODO: check what order we need to validate against here
         final List<String> errors = routeValidator.allowAccessToEvent(caseData);
 
         if (isNotEmpty(errors)) {
@@ -94,6 +97,7 @@ public class AddUrgentDirectionsController extends CallbackController {
         }
 
         if (nonNull(caseData.getAllocatedJudge())) {
+            //TODO: do we need to create an urgentDirectionsOrderEventData
             data.put("gatekeepingOrderIssuingJudge", orderService.setAllocatedJudgeLabel(caseData.getAllocatedJudge(),
                 caseData.getGatekeepingOrderEventData().getGatekeepingOrderIssuingJudge()));
         }
@@ -150,9 +154,10 @@ public class AddUrgentDirectionsController extends CallbackController {
         final CaseData caseData = orderService.updateStandardDirections(request.getCaseDetails());
         final CaseDetailsMap data = caseDetailsMap(request.getCaseDetails());
 
-        if (Objects.nonNull(caseData.getUrgentDirectionsRouter())) {
-            throw new UnsupportedOperationException("The prepare-decision callback does not support urgent route");
-        }
+        //TODO: need to work out if this callback is needed for urgent directions
+//        if (Objects.nonNull(caseData.getUrgentDirectionsRouter())) {
+//            throw new UnsupportedOperationException("The prepare-decision callback does not support urgent route");
+//        }
 
         data.put("gatekeepingOrderSealDecision", orderService.buildSealDecision(caseData));
 
