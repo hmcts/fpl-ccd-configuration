@@ -7,12 +7,15 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
+import uk.gov.hmcts.reform.calendar.client.BankHolidaysApi;
+import uk.gov.hmcts.reform.calendar.model.BankHolidays;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.ListGatekeepingHearingController;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -26,7 +29,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
-import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
@@ -53,7 +55,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -67,6 +68,12 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CAFCASS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_LA;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.WELSH_TO_ENGLISH;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
@@ -157,8 +164,6 @@ class ListGatekeepingHearingControllerSubmittedTest extends AbstractCallbackTest
     @MockBean
     private NotificationClient notificationClient;
     @MockBean
-    private CafcassNotificationService cafcassNotificationService;
-    @MockBean
     private EmailService emailService;
     @MockBean
     TranslationRequestFormCreationService translationRequestFormCreationService;
@@ -178,13 +183,15 @@ class ListGatekeepingHearingControllerSubmittedTest extends AbstractCallbackTest
     private OtherRecipientsInbox otherRecipientsInbox;
     @MockBean
     private SendLetterApi sendLetterApi;
+    @MockBean
+    private BankHolidaysApi bankHolidaysApi;
 
     ListGatekeepingHearingControllerSubmittedTest() {
         super("list-gatekeeping-hearing");
     }
 
     @Test
-    void shouldSendNoticeOHearingAndNoticeOfProceedingsAndSDOWithTranslations()
+    void shouldSendNoticeOfHearingAndNoticeOfProceedingsAndSDOWithTranslations()
         throws NotificationClientException {
 
         givenFplService();
@@ -224,6 +231,12 @@ class ListGatekeepingHearingControllerSubmittedTest extends AbstractCallbackTest
         given(documentService.createCoverDocuments(FAMILY_MAN_NUMBER, CASE_ID, RESPONDENT_NOT_REPRESENTED.getParty(),
             Language.ENGLISH))
             .willReturn(testDocmosisDocument(COVERSHEET_RESPONDENT_BINARY));
+
+        given(bankHolidaysApi.retrieveAll()) // there are no holidays :(
+            .willReturn(
+                BankHolidays.builder()
+                    .englandAndWales(BankHolidays.Division.builder().events(List.of()).build())
+                    .build());
 
         postSubmittedEvent(toCallBackRequest(caseDataWithSDOAndNopAndNohToTranslateAfter,
             caseDataWithSDOAndNopAndNohToTranslateBefore));
@@ -315,7 +328,8 @@ class ListGatekeepingHearingControllerSubmittedTest extends AbstractCallbackTest
         verify(coreCaseDataService).triggerEvent(eq(CASE_ID),
             eq("internal-change-add-gatekeeping"), anyMap());
 
-        verify(cafcassNotificationService,never()).sendEmail(any(), any(), any(), any());
+        verify(coreCaseDataService).triggerEvent(any(), any(), eq(CASE_ID),
+            eq("populateSDO"), anyMap());
 
         verifyNoMoreNotificationsSent();
         verifyNoMoreInteractions(coreCaseDataService);
@@ -327,6 +341,10 @@ class ListGatekeepingHearingControllerSubmittedTest extends AbstractCallbackTest
 
     private void verifyNoMoreNotificationsSent() {
         checkThat(() -> verifyNoMoreInteractions(notificationClient, emailService), Duration.ofSeconds(2));
+    }
+
+    private List<Element<Direction>> buildDirections(Direction direction) {
+        return wrapElements(direction.toBuilder().directionType("Direction").build());
     }
 
     final Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
@@ -343,6 +361,12 @@ class ListGatekeepingHearingControllerSubmittedTest extends AbstractCallbackTest
         .caseLocalAuthority(LOCAL_AUTHORITY_3_CODE)
         .hearingDetails(null)
         .state(State.GATEKEEPING_LISTING)
+        .localAuthorityDirections(buildDirections(Direction.builder().assignee(LOCAL_AUTHORITY).build()))
+        .allParties(buildDirections(Direction.builder().assignee(ALL_PARTIES).build()))
+        .respondentDirections(buildDirections(Direction.builder().assignee(PARENTS_AND_RESPONDENTS).build()))
+        .cafcassDirections(buildDirections(Direction.builder().assignee(CAFCASS).build()))
+        .otherPartiesDirections(buildDirections(Direction.builder().assignee(OTHERS).build()))
+        .courtDirections(buildDirections(Direction.builder().assignee(COURT).build()))
         .respondents1(wrapElements(RESPONDENT_REPRESENTED, RESPONDENT_NOT_REPRESENTED))
         .representatives(List.of(REPRESENTATIVE_DIGITAL,
             REPRESENTATIVE_EMAIL, REPRESENTATIVE_POST))
@@ -369,4 +393,5 @@ class ListGatekeepingHearingControllerSubmittedTest extends AbstractCallbackTest
             .selectedHearingId(hearingWithNotice.getId())
             .state(State.CASE_MANAGEMENT)
             .build();
+
 }
