@@ -82,7 +82,8 @@
       "caseworker-publiclaw-judiciary",
       "caseworker-publiclaw-magistrate",
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-publiclaw-cafcass"
     ],
     "CRUD": "CRU"
   },
@@ -95,7 +96,8 @@
       "caseworker-publiclaw-courtadmin",
       "caseworker-publiclaw-systemupdate",
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-publiclaw-cafcass"
     ],
     "CRUD": "CRU"
   },
