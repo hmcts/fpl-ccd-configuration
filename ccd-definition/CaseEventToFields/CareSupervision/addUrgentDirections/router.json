@@ -7,7 +7,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "Router",
-    "PageDisplayOrder": 2,
+    "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
     "FieldShowCondition": "urgentDirectionsRouter=\"DO NOT SHOW\""
@@ -20,7 +20,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "Router",
-    "PageDisplayOrder": 2,
+    "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
     "FieldShowCondition": "urgentDirectionsRouter=\"DO NOT SHOW\""
@@ -33,7 +33,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
     "PageID": "Router",
-    "PageDisplayOrder": 2,
+    "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
     "PageShowCondition": "useServiceRoute=\"\" AND useUploadRoute=\"\""
