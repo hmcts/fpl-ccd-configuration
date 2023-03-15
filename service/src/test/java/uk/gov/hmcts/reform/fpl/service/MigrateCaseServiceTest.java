@@ -1098,4 +1098,70 @@ class MigrateCaseServiceTest {
                     orderIdToRemove));
         }
     }
+
+    class RenameApplicationDocuments {
+
+        @Test
+        void shouldRemoveAngularBracketsFromDocumentNames() {
+            UUID docId = UUID.randomUUID();
+            Element<ApplicationDocument> appDoc = element(docId, ApplicationDocument.builder()
+                .documentName("PA>S")
+                .build());
+
+            Element<ApplicationDocument> expectedDoc = element(docId, ApplicationDocument.builder()
+                .documentName("PAS")
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .applicationDocuments(List.of(appDoc))
+                .build();
+
+            Map<String, Object> updates = underTest.renameApplicationDocuments(caseData);
+
+            assertThat(updates).extracting("applicationDocuments").asList().containsExactly(expectedDoc);
+        }
+
+        @Test
+        void shouldDoNothingIfNoAngularBrackets() {
+            Element<ApplicationDocument> appDoc = element(ApplicationDocument.builder()
+                .documentName("PAS")
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .applicationDocuments(List.of(appDoc))
+                .build();
+
+            Map<String, Object> updates = underTest.renameApplicationDocuments(caseData);
+
+            assertThat(updates).extracting("applicationDocuments").asList().containsExactly(appDoc);
+        }
+
+        @Test
+        void shouldRenameMultipleDocsIfAngularBrackets() {
+            UUID docId1 = UUID.randomUUID();
+            UUID docId2 = UUID.randomUUID();
+            Element<ApplicationDocument> appDoc1 = element(docId1, ApplicationDocument.builder()
+                .documentName("PA>S")
+                .build());
+            Element<ApplicationDocument> appDoc2 = element(docId2, ApplicationDocument.builder()
+                .documentName("PA<S")
+                .build());
+
+            Element<ApplicationDocument> expectedDoc1 = element(docId1, ApplicationDocument.builder()
+                .documentName("PAS")
+                .build());
+
+            Element<ApplicationDocument> expectedDoc2 = element(docId2, ApplicationDocument.builder()
+                .documentName("PAS")
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .applicationDocuments(List.of(appDoc1, appDoc2))
+                .build();
+
+            Map<String, Object> updates = underTest.renameApplicationDocuments(caseData);
+
+            assertThat(updates).extracting("applicationDocuments").asList().containsExactly(expectedDoc1, expectedDoc2);
+        }
+    }
 }

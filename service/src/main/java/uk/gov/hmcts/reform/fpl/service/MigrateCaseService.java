@@ -31,6 +31,7 @@ import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
@@ -433,5 +434,24 @@ public class MigrateCaseService {
                 migrationId, caseId));
         }
         return Map.of("hearingOrdersBundlesDrafts", hearingOrdersBundlesDrafts);
+    }
+
+    public Map<String, Object> renameApplicationDocuments(CaseData caseData) {
+        List<Element<ApplicationDocument>> updatedList = caseData.getApplicationDocuments().stream()
+            .map(el -> {
+                String currentName = el.getValue().getDocumentName();
+                el.getValue().setDocumentName(stripIllegalCharacters(currentName));
+                return el;
+            }).collect(toList());
+
+        return Map.of("applicationDocuments", updatedList);
+    }
+
+    private String stripIllegalCharacters(String str) {
+        if (isEmpty(str)) {
+            return str;
+        }
+        return str.replace("<", "")
+            .replace(">", "");
     }
 }
