@@ -223,7 +223,7 @@
     "CaseFieldID": "directionsForRespondentsLabel",
     "PageFieldDisplayOrder": 17,
     "DisplayContext": "READONLY",
-   "PageID": "ConfirmStandardDirections",
+    "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "FieldShowCondition": "directionsForRespondents CONTAINS \"SEND_RESPONSE_TO_THRESHOLD_STATEMENT\""
