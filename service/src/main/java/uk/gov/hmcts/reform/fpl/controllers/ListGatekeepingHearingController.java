@@ -48,7 +48,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_NOW;
-import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING_LISTING;
+import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
@@ -304,7 +304,7 @@ public class ListGatekeepingHearingController extends CallbackController {
         final CaseDetails caseDetails = request.getCaseDetails();
 
         if (isNotEmpty(caseData.getSelectedHearingId())) {
-            if (isInState(GATEKEEPING_LISTING, caseDetails) && standardDirectionsService.hasEmptyDates(caseData)) {
+            if (isInState(CASE_MANAGEMENT, caseDetails) && standardDirectionsService.hasEmptyDates(caseData)) {
                 publishEvent(new PopulateStandardDirectionsOrderDatesEvent(request));
             }
 
