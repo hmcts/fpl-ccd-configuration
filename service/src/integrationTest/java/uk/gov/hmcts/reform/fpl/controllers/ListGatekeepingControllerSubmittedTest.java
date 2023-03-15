@@ -222,7 +222,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             .caseTypeId(CASE_TYPE)
             .id(CASE_ID)
             .data(buildData(List.of(hearingWithoutNotice), hearingWithoutNotice.getId()))
-            .state("GATEKEEPING_LISTING")
+            .state("PREPARE_FOR_HEARING")
             .build();
         CaseDetails caseDetailsBefore = CaseDetails.builder().data(Map.of()).build();
 
