@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
@@ -23,6 +24,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Api
 @RestController
@@ -47,7 +49,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1270", this::run1270,
         "DFPL-1297", this::run1297,
         "DFPL-1263", this::run1263,
-        "DFPL-1291", this::run1291
+        "DFPL-1291", this::run1291,
+        "DFPL-1310", this::run1310
     );
 
     @PostMapping("/about-to-submit")
@@ -157,6 +160,19 @@ public class MigrateCaseController extends CallbackController {
         var possibleCaseIds = List.of(1620403322799028L);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
         caseDetails.getData().putAll(migrateCaseService.addCourt("165")); // Carlisle
+    }
+
+    private void run1310(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1310";
+        Court court = getCaseData(caseDetails).getCourt();
+        if (!isEmpty(court) && court.getCode().equals("150")) {
+            caseDetails.getData().putAll(migrateCaseService.addCourt("554"));
+        } else {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected court id = 150, was = %s",
+                migrationId, caseDetails.getId(), isEmpty(court) ? "null" : court.getCode()
+            ));
+        }
     }
 
 }
