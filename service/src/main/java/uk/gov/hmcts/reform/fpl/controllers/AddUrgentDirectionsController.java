@@ -220,8 +220,9 @@ public class AddUrgentDirectionsController extends CallbackController {
 //            removeTemporaryFields(data, "gatekeepingOrderIssuingJudge", "customDirections");
 //        }
 
-        final Allocation allocationDecision = allocationService.createAllocationDecisionIfNull(getCaseData(request));
-        data.put("allocationDecision", allocationDecision);
+        //TODO: find out how to populate the allocation decision, since we've removed that question
+//        final Allocation allocationDecision = allocationService.createAllocationDecisionIfNull(getCaseData(request));
+//        data.put("allocationDecision", allocationDecision);
 
         return respond(data);
     }
