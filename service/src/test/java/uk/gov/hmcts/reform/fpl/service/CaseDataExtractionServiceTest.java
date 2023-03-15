@@ -49,6 +49,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.PHONE;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.VIDEO;
+import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.REMOTE_HEARING_VENUE;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.DEFAULT_PRE_ATTENDANCE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
@@ -283,7 +284,7 @@ class CaseDataExtractionServiceTest {
             .hearingTime("3:30pm - 4:30pm")
             .hearingAttendance("Remote - video call")
             .preHearingAttendance(DEFAULT_PRE_ATTENDANCE)
-            .hearingVenue("Remote hearing at Venue. Details and instructions will be sent by the local court.")
+            .hearingVenue(String.format(REMOTE_HEARING_VENUE, getDefaultVenueAddress()))
             .hearingJudgeTitleAndName("Her Honour Judge Law")
             .hearingLegalAdvisorName("Peter Parker")
             .hearingStartDate(formatLocalDateTimeBaseUsingFormat(hearingBooking.getStartDate(), DATE_TIME))
@@ -308,7 +309,7 @@ class CaseDataExtractionServiceTest {
             .hearingTime("3:30pm - 4:30pm")
             .hearingAttendance("Remote - video call")
             .preHearingAttendance("10 minutes before hearing")
-            .hearingVenue("Remote hearing at Venue. Details and instructions will be sent by the local court.")
+            .hearingVenue(String.format(REMOTE_HEARING_VENUE, getDefaultVenueAddress()))
             .hearingJudgeTitleAndName("Her Honour Judge Law")
             .hearingLegalAdvisorName("Peter Parker")
             .hearingStartDate(formatLocalDateTimeBaseUsingFormat(hearingBooking.getStartDate(), DATE_TIME))
@@ -333,7 +334,7 @@ class CaseDataExtractionServiceTest {
             .hearingAttendance("Remote - phone call")
             .hearingAttendanceDetails("+44 777 777 777")
             .preHearingAttendance("30 minutes before the hearing")
-            .hearingVenue("Remote hearing at Venue. Details and instructions will be sent by the local court.")
+            .hearingVenue(String.format(REMOTE_HEARING_VENUE, getDefaultVenueAddress()))
             .hearingJudgeTitleAndName("Her Honour Judge Law")
             .hearingLegalAdvisorName("Peter Parker")
             .hearingStartDate(formatLocalDateTimeBaseUsingFormat(hearingBooking.getStartDate(), DATE_TIME))
@@ -362,7 +363,7 @@ class CaseDataExtractionServiceTest {
             .hearingAttendance("Remote - video call")
             .hearingAttendanceDetails("Join: https://remote-hearing.gov.uk/1")
             .preHearingAttendance("30 minutes before the hearing")
-            .hearingVenue("Remote hearing at Venue. Details and instructions will be sent by the local court.")
+            .hearingVenue(String.format(REMOTE_HEARING_VENUE, getDefaultVenueAddress()))
             .hearingJudgeTitleAndName("Her Honour Judge Law")
             .hearingLegalAdvisorName("Peter Parker")
             .hearingStartDate(formatLocalDateTimeBaseUsingFormat(hearingBooking.getStartDate(), DATE_TIME))
@@ -386,7 +387,7 @@ class CaseDataExtractionServiceTest {
             .hearingTime("3:30pm - 4:30pm")
             .hearingAttendance("Remote - video call")
             .preHearingAttendance("30 minutes before the hearing")
-            .hearingVenue("Remote hearing at some building. Details and instructions will be sent by the local court.")
+            .hearingVenue(String.format(REMOTE_HEARING_VENUE, "some building, somewhere"))
             .hearingJudgeTitleAndName("Her Honour Judge Law")
             .hearingLegalAdvisorName("Peter Parker")
             .hearingStartDate(formatLocalDateTimeBaseUsingFormat(hearingBooking.getStartDate(), DATE_TIME))
@@ -416,7 +417,7 @@ class CaseDataExtractionServiceTest {
             .hearingAttendance("Remote - phone call, remote - video call")
             .hearingAttendanceDetails("Phone: +44 777 777 777, Video: https://remote-hearing.gov.uk/1")
             .preHearingAttendance("30 minutes before the hearing")
-            .hearingVenue("Remote hearing at some building. Details and instructions will be sent by the local court.")
+            .hearingVenue(String.format(REMOTE_HEARING_VENUE, "some building, somewhere"))
             .hearingJudgeTitleAndName("Her Honour Judge Law")
             .hearingLegalAdvisorName("Peter Parker")
             .hearingStartDate(formatLocalDateTimeBaseUsingFormat(hearingBooking.getStartDate(), DATE_TIME))
@@ -547,6 +548,13 @@ class CaseDataExtractionServiceTest {
             assertThat(service.getHearingAttendance(hearingBooking))
                 .contains("In person, remote - video call, remote - phone call");
         }
+    }
+
+    private String getDefaultVenueAddress() {
+        return hearingVenueLookUpService
+            .getHearingVenue("Venue")
+            .getAddress()
+            .getAddressAsString(", ");
     }
 
     private DocmosisDirection.Builder expectedDirection(String title) {

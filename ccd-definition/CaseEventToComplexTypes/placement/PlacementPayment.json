@@ -20,6 +20,6 @@
     "CaseEventID": "placement",
     "CaseFieldID": "placementPayment",
     "ListElementCode": "fileReference",
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   }
 ]

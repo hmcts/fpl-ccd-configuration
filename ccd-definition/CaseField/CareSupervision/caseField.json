@@ -79,7 +79,8 @@
     "HintText": "Include the applicant's name and respondent's last name. For example, Endley Council v Smith/Tate/Jones",
     "FieldType": "Text",
     "SecurityClassification": "Public",
-    "Searchable": "Y"
+    "Searchable": "Y",
+    "RegularExpression": "^(?!.*<[^>\\d]+>*).*"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -587,7 +588,8 @@
     "Label": "FamilyMan case number",
     "FieldType": "Text",
     "SecurityClassification": "Public",
-    "Searchable": "Y"
+    "Searchable": "Y",
+    "RegularExpression": "^[a-zA-Z0-9]*$"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1790,6 +1792,16 @@
     "SecurityClassification": "Public",
     "Searchable": "N",
     "Comment": "Generic YesOrNo to aid with redirect on refresh within multi paged events"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "relatingLA",
+    "Label": "Select the local authority which relates to the case",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "AuthorityFixedList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",

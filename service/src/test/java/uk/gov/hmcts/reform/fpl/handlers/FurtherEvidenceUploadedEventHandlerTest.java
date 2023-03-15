@@ -240,7 +240,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
             (caseData) ->  caseData.getApplicationDocuments().addAll(
                 wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER,
                     PDF_DOCUMENT_1))),
-            Set.of(ALL_LAS),
+            Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
             List.of(BIRTH_CERTIFICATE.getLabel()));
     }
 
@@ -627,12 +627,14 @@ class FurtherEvidenceUploadedEventHandlerTest {
         Collections.shuffle(totalHearing);
 
         CaseData caseData = commonCaseBuilder()
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .hearingDocuments(HearingDocuments.builder()
                 .courtBundleListV2(totalHearing)
                 .build())
             .build();
 
         CaseData caseDataBefore = commonCaseBuilder()
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .hearingDocuments(HearingDocuments.builder()
                 .courtBundleListV2(oldHearing)
                 .build())

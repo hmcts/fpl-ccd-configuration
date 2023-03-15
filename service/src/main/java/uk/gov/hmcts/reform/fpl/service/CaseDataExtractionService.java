@@ -42,7 +42,6 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.trim;
 import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DAYS;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
-import static uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService.HEARING_VENUE_ID_OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -53,7 +52,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalA
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseDataExtractionService {
-    private static final String REMOTE_HEARING_VENUE = "Remote hearing at %s. Details and instructions will be "
+    protected static final String REMOTE_HEARING_VENUE = "Remote hearing at %s. Details and instructions will be "
         + "sent by the local court.";
 
     private final HearingVenueLookUpService hearingVenueLookUpService;
@@ -214,13 +213,11 @@ public class CaseDataExtractionService {
     private String buildHearingVenue(HearingBooking hearing) {
         HearingVenue venue = hearingVenueLookUpService.getHearingVenue(hearing);
         if (venue.getAddress() != null) {
+            String venueAddress = hearingVenueLookUpService.buildHearingVenue(venue);
             if (hearing.isRemote()) {
-                String venueName = HEARING_VENUE_ID_OTHER.equals(venue.getHearingVenueId())
-                    ? venue.getAddress().getAddressLine1() : venue.getVenue();
-                // assuming that the building name is in address line 1
-                return String.format(REMOTE_HEARING_VENUE, venueName);
+                return String.format(REMOTE_HEARING_VENUE, venueAddress);
             } else {
-                return hearingVenueLookUpService.buildHearingVenue(venue);
+                return venueAddress;
             }
         } else {
             // enters this if:
@@ -228,11 +225,7 @@ public class CaseDataExtractionService {
             //  • the second hearing uses the same venue
             String previousAddress = hearing.getCustomPreviousVenue();
             if (hearing.isRemote()) {
-                // going to have to assume that the building name of the venue is before the first comma,
-                // but the user could have entered anything, by limiting to 0 even if the string is empty something
-                // is still returned
-                String[] splitAddress = previousAddress.split(",", 0);
-                return String.format(REMOTE_HEARING_VENUE, splitAddress[0]);
+                return String.format(REMOTE_HEARING_VENUE, previousAddress);
             } else {
                 return previousAddress;
             }

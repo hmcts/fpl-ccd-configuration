@@ -3,10 +3,14 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseSummary;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
+import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
@@ -15,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,12 +30,17 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MigrateCaseService {
 
+    private static final String PLACEMENT = "placements";
+    private static final String PLACEMENT_NON_CONFIDENTIAL = "placementsNonConfidential";
+    private static final String PLACEMENT_NON_CONFIDENTIAL_NOTICES = "placementsNonConfidentialNotices";
     private final CaseNoteService caseNoteService;
 
     public Map<String, Object> removeHearingOrderBundleDraft(CaseData caseData, String migrationId, UUID bundleId,
@@ -312,4 +322,106 @@ public class MigrateCaseService {
         return Map.of("applicationDocuments", applicationDocuments);
     }
 
+    public Map<String, Object> removeCaseSummaryByHearingId(CaseData caseData,
+                                                            String migrationId,
+                                                            UUID expectedHearingId) {
+        Long caseId = caseData.getId();
+        List<Element<CaseSummary>> caseSummaries =
+            caseData.getHearingDocuments().getCaseSummaryList()
+                .stream()
+                .filter(el -> !el.getId().equals(expectedHearingId))
+                .collect(toList());
+
+        if (caseSummaries.size() != caseData.getHearingDocuments().getCaseSummaryList().size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, case summary",
+                migrationId, caseId));
+        }
+        return Map.of("caseSummaryList", caseSummaries);
+    }
+
+    public Map<String, Object> revertChildExtensionDate(CaseData caseData, String migrationId, String childId,
+                                                        LocalDate completionDate,
+                                                        CaseExtensionReasonList extensionReason) {
+        List<Element<Child>> childrenInCase = caseData.getAllChildren();
+        UUID childUUID = UUID.fromString(childId);
+
+        if (isNotEmpty(childrenInCase)) {
+            if (ElementUtils.findElement(childUUID, childrenInCase).isEmpty()) {
+                throw new AssertionError(format(
+                    "Migration {id = %s}, case reference = %s} child %s not found",
+                    migrationId, caseData.getId(), childId));
+            }
+
+            List<Element<Child>> children = childrenInCase.stream()
+                .map(element -> {
+                    if (element.getId().equals(childUUID)) {
+                        return element(element.getId(),
+                            element.getValue().toBuilder()
+                                .party(element.getValue().getParty().toBuilder()
+                                    .completionDate(completionDate)
+                                    .extensionReason(extensionReason)
+                                    .build())
+                                .build());
+                    } else {
+                        return element;
+                    }
+                }).collect(toList());
+
+            return Map.of("children1", children);
+        } else {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s} doesn't have children",
+                migrationId, caseData.getId()));
+        }
+    }
+
+    public void doHearingOptionCheck(long caseId, String hearingOption, String expectedHearingOption,
+                                     String migrationId) throws AssertionError {
+        if (!hearingOption.equals(expectedHearingOption)) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, unexpected hearing option %s",
+                migrationId, caseId, hearingOption
+            ));
+        }
+    }
+
+    public Map<String, Object> removeSpecificPlacements(CaseData caseData, UUID placementToRemove) {
+        List<Element<Placement>> placementsToKeep = caseData.getPlacementEventData().getPlacements().stream()
+            .filter(x -> !x.getId().equals(placementToRemove)).collect(toList());
+        caseData.getPlacementEventData().setPlacements(placementsToKeep);
+
+        List<Element<Placement>> nonConfidentialPlacementsToKeep = caseData.getPlacementEventData()
+            .getPlacementsNonConfidential(false);
+
+        List<Element<Placement>> nonConfidentialNoticesPlacementsToKeep = caseData.getPlacementEventData()
+            .getPlacementsNonConfidential(true);
+
+        Map<String, Object> ret =  new HashMap<String, Object>();
+        ret.put(PLACEMENT, placementsToKeep.isEmpty() ? null : placementsToKeep);
+        ret.put(PLACEMENT_NON_CONFIDENTIAL, nonConfidentialPlacementsToKeep.isEmpty() ? null :
+            nonConfidentialPlacementsToKeep);
+        ret.put(PLACEMENT_NON_CONFIDENTIAL_NOTICES, nonConfidentialNoticesPlacementsToKeep.isEmpty() ? null :
+            nonConfidentialNoticesPlacementsToKeep);
+        return ret;
+    }
+
+    public Map<String, Object> renameApplicationDocuments(CaseData caseData) {
+        List<Element<ApplicationDocument>> updatedList = caseData.getApplicationDocuments().stream()
+            .map(el -> {
+                String currentName = el.getValue().getDocumentName();
+                el.getValue().setDocumentName(stripIllegalCharacters(currentName));
+                return el;
+            }).collect(toList());
+
+        return Map.of("applicationDocuments", updatedList);
+    }
+
+    private String stripIllegalCharacters(String str) {
+        if (isEmpty(str)) {
+            return str;
+        }
+        return str.replace("<", "")
+            .replace(">", "");
+    }
 }

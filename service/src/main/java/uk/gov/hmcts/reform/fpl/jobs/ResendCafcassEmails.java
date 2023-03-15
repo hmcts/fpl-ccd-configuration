@@ -111,7 +111,7 @@ public class ResendCafcassEmails implements Job {
         } catch (Exception e) {
             if (Thread.interrupted()) {
                 // if this exception was on Thread.sleep rather than get case details
-                throw e;
+                Thread.currentThread().interrupt();
             }
             log.error("Job '{}' could not search for cases due to {}", jobName, e.getMessage(), e);
             failed += ES_DEFAULT_SIZE;
