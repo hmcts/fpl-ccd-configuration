@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.UrgentDirectionsRoute;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
@@ -244,6 +245,7 @@ public class CaseData extends CaseDataParent {
 
     private GatekeepingOrderRoute sdoRouter;
     private GatekeepingOrderRoute gatekeepingOrderRouter;
+    private UrgentDirectionsRoute urgentDirectionsRouter;
 
     private final DocumentReference preparedSDO;
     private final DocumentReference replacementSDO;
