@@ -5,17 +5,14 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
 import uk.gov.hmcts.reform.document.domain.UploadResponse;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-
-import java.util.Optional;
+import uk.gov.hmcts.reform.fpl.utils.SecureDocStoreHelper;
 
 import static com.google.common.collect.Lists.newArrayList;
-
 
 @Service
 @Slf4j
@@ -45,44 +42,26 @@ public class UploadDocumentService {
         return uploadDocument(pdf, fileName, MediaType.APPLICATION_PDF_VALUE);
     }
 
-    public Document uploadDocument(byte[] pdf, String fileName, String contentType) {
+    public Document uploadDocument(byte[] byteArray, String fileName, String contentType) {
+        return new SecureDocStoreHelper(secureDocStoreService, featureToggleService)
+            .uploadDocument(byteArray, fileName, contentType, () -> {
+                MultipartFile file = new InMemoryMultipartFile("files", fileName, contentType, byteArray);
 
-        if (featureToggleService.isSecureDocstoreEnabled()) {
-            return secureDocStoreService.uploadDocument(pdf, fileName, contentType);
-        } else {
-            MultipartFile file = new InMemoryMultipartFile("files", fileName, contentType, pdf);
+                UploadResponse response = documentUploadClient.upload(requestData.authorisation(),
+                    authTokenGenerator.generate(), requestData.userId(), newArrayList(file));
 
-            UploadResponse response = documentUploadClient.upload(requestData.authorisation(),
-                authTokenGenerator.generate(), requestData.userId(), newArrayList(file));
+                uk.gov.hmcts.reform.document.domain.Document document = response.getEmbedded().getDocuments().stream()
+                    .findFirst()
+                    .orElseThrow(() ->
+                        new RuntimeException("Document upload failed due to empty result"));
+                log.debug("Document upload resulted with links: {}, {}", document.links.self.href,
+                    document.links.binary.href);
 
-            uk.gov.hmcts.reform.document.domain.Document document = response.getEmbedded().getDocuments().stream()
-                .findFirst()
-                .orElseThrow(() ->
-                    new RuntimeException("Document upload failed due to empty result"));
-            log.debug("Document upload resulted with links: {}, {}", document.links.self.href,
-                document.links.binary.href);
-
-            return oldToSecureDocument(document);
-        }
+                return oldToSecureDocument(document);
+            });
     }
 
     public static Document oldToSecureDocument(uk.gov.hmcts.reform.document.domain.Document document) {
-        Document.Links links = new Document.Links();
-        links.binary = new Document.Link();
-        links.self = new Document.Link();
-        links.binary.href = document.links.binary.href;
-        links.self.href = document.links.self.href;
-
-        return Document.builder()
-            .classification(Classification.valueOf(Optional.ofNullable(document.classification)
-                .orElse(Classification.RESTRICTED.name())))
-            .size(document.size)
-            .mimeType(document.mimeType)
-            .originalDocumentName(document.originalDocumentName)
-            .createdOn(document.createdOn)
-            .modifiedOn(document.modifiedOn)
-            .createdBy(document.createdBy)
-            .links(links)
-            .build();
+        return SecureDocStoreHelper.oldToSecureDocument(document);
     }
 }

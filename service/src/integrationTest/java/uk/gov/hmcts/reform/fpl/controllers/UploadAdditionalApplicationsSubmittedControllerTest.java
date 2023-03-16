@@ -40,7 +40,6 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
-import uk.gov.hmcts.reform.sendletter.api.Letter;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
@@ -269,7 +268,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             anyMap(),
             eq(notificationReference(CASE_ID))));
 
-        verify(sendLetterApi, never()).sendLetter(any(), any(Letter.class));
+        verify(sendLetterApi, never()).sendLetter(any(), any(LetterWithPdfsRequest.class));
     }
 
     @Test
@@ -555,6 +554,36 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             anyString(),
             anyMap(),
             anyString());
+    }
+
+    @Test
+    void shouldSendNotificationsWhenTriggerEventFails() {
+        given(uploadAdditionalApplicationsService.getApplicationTypes(any()))
+            .willReturn(List.of(ApplicationType.C2_APPLICATION));
+
+        CaseDetails caseDetails = buildCaseDetails(YES, YES);
+        Map<String, Object> updates = Map.of(
+            "additionalApplicationsBundle", caseDetails.getData().get("additionalApplicationsBundle")
+        );
+
+        doNothing().when(coreCaseDataService).triggerEvent(
+            caseDetails.getId(),
+            "internal-change-upload-add-apps",
+            updates);
+
+        postSubmittedEvent(caseDetails);
+
+        checkUntil(() -> verify(notificationClient).sendEmail(
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS),
+            any(),
+            any(),
+            any()));
+
+        checkUntil(() -> verify(notificationClient).sendEmail(
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
+            any(),
+            any(),
+            any()));
     }
 
     private CaseDetails buildCaseDetails(YesNo enableCtsc, YesNo usePbaPayment) {

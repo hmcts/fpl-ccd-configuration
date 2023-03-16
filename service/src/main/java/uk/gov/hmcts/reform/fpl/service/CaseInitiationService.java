@@ -239,6 +239,8 @@ public class CaseInitiationService {
                         currentUserOrganisationId,
                         currentUserOrganisationName,
                         isRespondentSolicitor ? SOLICITORA : CHILDSOLICITORA))
+                    .caseLocalAuthority(caseData.getRelatingLA())
+                    .caseLocalAuthorityName(localAuthorities.getLocalAuthorityName(caseData.getRelatingLA()))
                     .representativeType(caseData.getRepresentativeType())
                     .build();
 
