@@ -342,6 +342,7 @@
           "[EPSMANAGING]",
           "[LAMANAGING]",
           "[SOLICITORA]",
+          "[LABARRISTER]",
           "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
@@ -437,6 +438,7 @@
           "[LASHARED]",
           "[SOLICITORA]",
           "[CHILDSOLICITORA]",
+          "[LABARRISTER]",
           "caseworker-publiclaw-judiciary"
         ],
         "CRUD": "CR"
