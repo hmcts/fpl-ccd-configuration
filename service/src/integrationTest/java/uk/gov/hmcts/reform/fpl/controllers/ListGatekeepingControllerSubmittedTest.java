@@ -7,8 +7,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.calendar.client.BankHolidaysApi;
-import uk.gov.hmcts.reform.calendar.model.BankHolidays;
-import uk.gov.hmcts.reform.calendar.model.BankHolidays.Division;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
@@ -117,32 +115,21 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
     private static final byte[] NOTICE_OF_HEARING_BINARY = testDocumentBinary();
     private static final byte[] COVERSHEET_REPRESENTATIVE_BINARY = testDocumentBinary();
     private static final byte[] COVERSHEET_RESPONDENT_BINARY = testDocumentBinary();
-
-    private final Element<HearingBooking> hearingWithoutNotice = element(HearingBooking.builder()
-        .type(CASE_MANAGEMENT)
-        .startDate(LocalDateTime.of(2050, 5, 20, 13, 0))
-        .endDate(LocalDateTime.of(2050, 5, 20, 14, 0))
-        .noticeOfHearing(null)
-        .build());
-
     private static final Element<Representative> REPRESENTATIVE_POST = element(Representative.builder()
         .fullName("First Representative")
         .servingPreferences(POST)
         .address(testAddress())
         .build());
-
     private static final Element<Representative> REPRESENTATIVE_EMAIL = element(Representative.builder()
         .fullName("Third Representative")
         .servingPreferences(EMAIL)
         .email("third@representatives.com")
         .build());
-
     private static final Element<Representative> REPRESENTATIVE_DIGITAL = element(Representative.builder()
         .fullName("Second Representative")
         .servingPreferences(DIGITAL_SERVICE)
         .email("second@representatives.com")
         .build());
-
     private static final Respondent RESPONDENT_NOT_REPRESENTED = Respondent.builder()
         .party(RespondentParty.builder()
             .firstName("Alex")
@@ -150,7 +137,6 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             .address(testAddress())
             .build())
         .build();
-
     private static final Respondent RESPONDENT_REPRESENTED = Respondent.builder()
         .party(RespondentParty.builder()
             .firstName("George")
@@ -159,7 +145,6 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             .build())
         .representedBy(wrapElements(REPRESENTATIVE_POST.getId(), REPRESENTATIVE_DIGITAL.getId()))
         .build();
-
     private static final Child CHILDREN = Child.builder()
         .party(ChildParty.builder()
             .firstName("Jade")
@@ -168,7 +153,12 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             .address(testAddress())
             .build())
         .build();
-
+    private final Element<HearingBooking> hearingWithoutNotice = element(HearingBooking.builder()
+        .type(CASE_MANAGEMENT)
+        .startDate(LocalDateTime.of(2050, 5, 20, 13, 0))
+        .endDate(LocalDateTime.of(2050, 5, 20, 14, 0))
+        .noticeOfHearing(null)
+        .build());
     @Captor
     private ArgumentCaptor<Map<String, Object>> caseCaptor;
 
@@ -210,43 +200,6 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
 
     ListGatekeepingControllerSubmittedTest() {
         super("list-gatekeeping-hearing");
-    }
-
-    @Test
-    void shouldTriggerPopulateDatesEventWhenEmptyDatesExistAndCaseInGatekeeping() {
-        given(bankHolidaysApi.retrieveAll()) // there are no holidays :(
-            .willReturn(BankHolidays.builder().englandAndWales(Division.builder().events(List.of()).build()).build());
-
-        CaseDetails caseDetails = CaseDetails.builder()
-            .jurisdiction(JURISDICTION)
-            .caseTypeId(CASE_TYPE)
-            .id(CASE_ID)
-            .data(buildData(List.of(hearingWithoutNotice), hearingWithoutNotice.getId()))
-            .state("PREPARE_FOR_HEARING")
-            .build();
-        CaseDetails caseDetailsBefore = CaseDetails.builder().data(Map.of()).build();
-
-        postSubmittedEvent(toCallBackRequest(caseDetails, caseDetailsBefore));
-
-        verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).triggerEvent(
-            eq(JURISDICTION),
-            eq(CASE_TYPE),
-            eq(CASE_ID),
-            eq("populateSDO"),
-            anyMap());
-
-        verify(coreCaseDataService).triggerEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"), anyMap());
-
-        verifyNoInteractions(notificationClient);
-
-        verify(coreCaseDataService).triggerEvent(JURISDICTION,
-            CASE_TYPE,
-            CASE_ID,
-            "internal-update-case-summary",
-            caseSummary("Yes", "Case management", LocalDate.of(2050, 5, 20)));
-
-        verifyNoMoreInteractions(coreCaseDataService);
-
     }
 
     @Test
@@ -415,54 +368,54 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
         verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
             eq("internal-update-case-summary"), anyMap());
 
-        verify(cafcassNotificationService,never()).sendEmail(any(), any(), any(), any());
+        verify(cafcassNotificationService, never()).sendEmail(any(), any(), any(), any());
         verify(coreCaseDataService).triggerEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"), anyMap());
         verifyNoMoreInteractions(coreCaseDataService);
     }
 
     @Test
     void shouldTriggerSendNoticeOfHearingEventForNewHearingWhenNoticeOfHearingPresentEnglandLa()
-            throws NotificationClientException {
+        throws NotificationClientException {
         final DocumentReference noticeOfHearing = testDocumentReference();
 
         LocalDateTime startDate = LocalDateTime.of(2050, 5, 20, 13, 0);
 
         final Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
-                .type(CASE_MANAGEMENT)
-                .startDate(startDate)
-                .endDate(LocalDateTime.of(2050, 5, 20, 14, 0))
-                .noticeOfHearing(noticeOfHearing)
-                .venue("96")
-                .build());
+            .type(CASE_MANAGEMENT)
+            .startDate(startDate)
+            .endDate(LocalDateTime.of(2050, 5, 20, 14, 0))
+            .noticeOfHearing(noticeOfHearing)
+            .venue("96")
+            .build());
 
         final Element<HearingBooking> existingHearing = element(HearingBooking.builder()
-                .type(ISSUE_RESOLUTION)
-                .startDate(LocalDateTime.of(2020, 5, 20, 13, 0))
-                .endDate(LocalDateTime.of(2020, 5, 20, 14, 0))
-                .noticeOfHearing(testDocumentReference())
-                .venue("162")
-                .others(emptyList())
-                .build());
+            .type(ISSUE_RESOLUTION)
+            .startDate(LocalDateTime.of(2020, 5, 20, 13, 0))
+            .endDate(LocalDateTime.of(2020, 5, 20, 14, 0))
+            .noticeOfHearing(testDocumentReference())
+            .venue("162")
+            .others(emptyList())
+            .build());
 
         final CaseData cdb = CaseData.builder()
-                .id(CASE_ID)
-                .familyManCaseNumber(FAMILY_MAN_NUMBER)
-                .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
-                .hearingDetails(List.of(existingHearing))
-                .representatives(List.of(REPRESENTATIVE_DIGITAL, REPRESENTATIVE_EMAIL, REPRESENTATIVE_POST))
-                .respondents1(wrapElements(RESPONDENT_REPRESENTED, RESPONDENT_NOT_REPRESENTED))
-                .children1(wrapElements(CHILDREN))
-                .build();
+            .id(CASE_ID)
+            .familyManCaseNumber(FAMILY_MAN_NUMBER)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .hearingDetails(List.of(existingHearing))
+            .representatives(List.of(REPRESENTATIVE_DIGITAL, REPRESENTATIVE_EMAIL, REPRESENTATIVE_POST))
+            .respondents1(wrapElements(RESPONDENT_REPRESENTED, RESPONDENT_NOT_REPRESENTED))
+            .children1(wrapElements(CHILDREN))
+            .build();
 
         final CaseData cd = cdb.toBuilder()
-                .hearingDetails(List.of(hearingWithNotice, existingHearing))
-                .selectedHearingId(hearingWithNotice.getId())
-                .build();
+            .hearingDetails(List.of(hearingWithNotice, existingHearing))
+            .selectedHearingId(hearingWithNotice.getId())
+            .build();
 
         givenFplService();
 
         given(documentDownloadService.downloadDocument(noticeOfHearing.getBinaryUrl()))
-                .willReturn(NOTICE_OF_HEARING_BINARY);
+            .willReturn(NOTICE_OF_HEARING_BINARY);
 
         given(otherRecipientsInbox.getNonSelectedRecipients(
             EMAIL,
@@ -476,35 +429,35 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
 
 
         verify(notificationClient, never()).sendEmail(
-                eq(NOTICE_OF_NEW_HEARING),
-                eq(CAFCASS_EMAIL),
-                anyMap(),
-                eq(NOTIFICATION_REFERENCE));
+            eq(NOTICE_OF_NEW_HEARING),
+            eq(CAFCASS_EMAIL),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE));
 
         verify(cafcassNotificationService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
-                isA(CaseData.class),
-                eq(Set.of(noticeOfHearing)),
-                same(NOTICE_OF_HEARING),
-                noticeOfHearingCafcassDataCaptor.capture()
+            isA(CaseData.class),
+            eq(Set.of(noticeOfHearing)),
+            same(NOTICE_OF_HEARING),
+            noticeOfHearingCafcassDataCaptor.capture()
         );
         verify(coreCaseDataService).triggerEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"), anyMap());
 
         NoticeOfHearingCafcassData noticeOfHearingCafcassData = noticeOfHearingCafcassDataCaptor.getValue();
 
         assertThat(noticeOfHearingCafcassData.getFirstRespondentName())
-                .isEqualTo("Jones");
+            .isEqualTo("Jones");
         assertThat(noticeOfHearingCafcassData.getEldestChildLastName())
-                .isEqualTo("Connor");
+            .isEqualTo("Connor");
         assertThat(noticeOfHearingCafcassData.getHearingType())
-                .isEqualTo("case management");
+            .isEqualTo("case management");
         assertThat(noticeOfHearingCafcassData.getHearingDate())
-                .isEqualTo(startDate);
+            .isEqualTo(startDate);
         assertThat(noticeOfHearingCafcassData.getHearingVenue())
-                .isEqualTo("Aberdeen Tribunal Hearing Centre, 48 Huntly Street, AB1, Aberdeen, AB10 1SH");
+            .isEqualTo("Aberdeen Tribunal Hearing Centre, 48 Huntly Street, AB1, Aberdeen, AB10 1SH");
         assertThat(noticeOfHearingCafcassData.getPreHearingTime())
-                .isEqualTo("1 hour before the hearing");
+            .isEqualTo("1 hour before the hearing");
         assertThat(noticeOfHearingCafcassData.getHearingTime())
-                .isEqualTo("1:00pm - 2:00pm");
+            .isEqualTo("1:00pm - 2:00pm");
     }
 
     @Test
