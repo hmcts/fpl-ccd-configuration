@@ -98,7 +98,7 @@ class ListGatekeepingHearingControllerAboutToStartTest extends AbstractCallbackT
 
     @Test
     void shouldPopulateFlagsAndHearingLists() {
-        
+
         var emptyListMap = hearingListMap(List.of());
         var pastHearing = element(testHearing(LocalDateTime.now().minusDays(2)));
         var futureHearing = element(testHearing(LocalDateTime.now().plusDays(2)));
