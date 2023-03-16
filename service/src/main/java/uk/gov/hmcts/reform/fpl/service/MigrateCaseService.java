@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -415,6 +416,30 @@ public class MigrateCaseService {
             }).collect(toList());
 
         return Map.of("applicationDocuments", updatedList);
+    }
+
+    public Map<String, Object> removeJudicialMessage(CaseData caseData, String migrationId, String messageId) {
+        return Map.of("judicialMessages",
+                removeJudicialMessageFormList(caseData.getJudicialMessages(), messageId, migrationId,
+                    caseData.getId()));
+    }
+
+    private List<Element<JudicialMessage>> removeJudicialMessageFormList(List<Element<JudicialMessage>> messages,
+                                                              String messageId, String migrationId, Long caseId) {
+
+        UUID targetMessageId = UUID.fromString(messageId);
+        List<Element<JudicialMessage>> resultList = Optional.ofNullable(messages).orElseThrow(() ->
+                new AssertionError(format("Migration {id = %s, case reference = %s}, judicial message is null",
+                    migrationId, caseId)))
+            .stream().filter(message -> !message.getId().equals(targetMessageId))
+            .collect(toList());
+
+        if (resultList.size() != messages.size() - 1) {
+            throw new AssertionError(format("Migration {id = %s, case reference = %s}, judicial message %s not found",
+                migrationId, caseId, messageId));
+        }
+
+        return resultList;
     }
 
     private String stripIllegalCharacters(String str) {
