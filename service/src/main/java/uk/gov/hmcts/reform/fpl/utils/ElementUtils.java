@@ -167,4 +167,10 @@ public class ElementUtils {
             .map(ElementUtils::element)
             .collect(toList());
     }
+
+    public static <T> List<Element<T>> removeElementWithUUID(List<Element<T>> elements, UUID id) {
+        return nullSafeCollection(elements).stream()
+            .filter(element -> !element.getId().equals(id))
+            .collect(toList());
+    }
 }
