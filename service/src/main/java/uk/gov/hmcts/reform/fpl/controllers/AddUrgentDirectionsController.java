@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.CourtLevelAllocationService;
 import uk.gov.hmcts.reform.fpl.service.GatekeepingOrderService;
-import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderDataFixer;
 import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderEventNotificationDecider;
@@ -59,7 +58,7 @@ public class AddUrgentDirectionsController extends CallbackController {
     private final GatekeepingOrderRouteValidator routeValidator;
     private final GatekeepingOrderDataFixer dataFixer;
     private final CaseConverter caseConverter;
-    private final NoticeOfProceedingsService nopService;
+    //private final NoticeOfProceedingsService nopService;
     private final CoreCaseDataService coreCaseDataService;
     private final UrgentGatekeepingOrderService urgentOrderService;
     private final GatekeepingOrderEventNotificationDecider notificationDecider;
@@ -155,9 +154,9 @@ public class AddUrgentDirectionsController extends CallbackController {
         final CaseDetailsMap data = caseDetailsMap(request.getCaseDetails());
 
         //TODO: need to work out if this callback is needed for urgent directions
-//        if (Objects.nonNull(caseData.getUrgentDirectionsRouter())) {
-//            throw new UnsupportedOperationException("The prepare-decision callback does not support urgent route");
-//        }
+        //if (Objects.nonNull(caseData.getUrgentDirectionsRouter())) {
+        //    throw new UnsupportedOperationException("The prepare-decision callback does not support urgent route");
+        //}
 
         data.put("gatekeepingOrderSealDecision", orderService.buildSealDecision(caseData));
 
@@ -179,9 +178,9 @@ public class AddUrgentDirectionsController extends CallbackController {
         final UrgentDirectionsRoute sdoRouter = caseData.getUrgentDirectionsRouter();
 
         switch (sdoRouter) {
-//            case URGENT:
-//                data.putAll(urgentOrderService.finalise(caseData));
-//                break;
+            //case URGENT:
+            //    data.putAll(urgentOrderService.finalise(caseData));
+            //    break;
             case UPLOAD:
                 data.put("standardDirectionOrder", orderService.buildOrderFromUploadedFile(caseData));
                 break;
@@ -190,15 +189,15 @@ public class AddUrgentDirectionsController extends CallbackController {
                 break;
         }
 
-//        if (URGENT == sdoRouter || decision.isSealed()) {
-//            data.put("state", CASE_MANAGEMENT);
-//            if (GATEKEEPING == caseData.getState()) {
-//                request.getCaseDetails().setData(data);
-//                List<DocmosisTemplates> nopTemplates = orderService.getNoticeOfProceedingsTemplates(caseData);
-//                data.put("noticeOfProceedingsBundle",
-//                    nopService.uploadNoticesOfProceedings(getCaseData(request.getCaseDetails()), nopTemplates));
-//            }
-//        }
+        //if (URGENT == sdoRouter || decision.isSealed()) {
+        //    data.put("state", CASE_MANAGEMENT);
+        //    if (GATEKEEPING == caseData.getState()) {
+        //        request.getCaseDetails().setData(data);
+        //        List<DocmosisTemplates> nopTemplates = orderService.getNoticeOfProceedingsTemplates(caseData);
+        //        data.put("noticeOfProceedingsBundle",
+        //            nopService.uploadNoticesOfProceedings(getCaseData(request.getCaseDetails()), nopTemplates));
+        //    }
+        //}
 
         removeTemporaryFields(data,
             "urgentHearingOrderDocument",
@@ -216,13 +215,13 @@ public class AddUrgentDirectionsController extends CallbackController {
             "gatekeepingOrderHasHearing2"
         );
 
-//        if (decision.isSealed() || sdoRouter == URGENT) {
-//            removeTemporaryFields(data, "gatekeepingOrderIssuingJudge", "customDirections");
-//        }
+        //if (decision.isSealed() || sdoRouter == URGENT) {
+        //    removeTemporaryFields(data, "gatekeepingOrderIssuingJudge", "customDirections");
+        //}
 
         //TODO: find out how to populate the allocation decision, since we've removed that question
-//        final Allocation allocationDecision = allocationService.createAllocationDecisionIfNull(getCaseData(request));
-//        data.put("allocationDecision", allocationDecision);
+        //final Allocation allocationDecision = allocationService.createAllocationDecisionIfNull(getCaseData(request));
+        //data.put("allocationDecision", allocationDecision);
 
         return respond(data);
     }
@@ -237,9 +236,9 @@ public class AddUrgentDirectionsController extends CallbackController {
 
         Map<String, Object> updates = new HashMap<>();
         switch (sdoRouter) {
-//            case URGENT:
-//                updates.putAll(urgentOrderService.sealDocumentAfterEventSubmitted(caseData));
-//                break;
+            //case URGENT:
+            //    updates.putAll(urgentOrderService.sealDocumentAfterEventSubmitted(caseData));
+            //    break;
             case UPLOAD:
                 updates.put("standardDirectionOrder", orderService.sealDocumentAfterEventSubmitted(caseData));
                 break;
@@ -282,9 +281,9 @@ public class AddUrgentDirectionsController extends CallbackController {
         removeTemporaryFields(caseDetails, "gatekeepingOrderSealDecision");
 
         final GatekeepingOrderRoute sdoRouter = caseData.getGatekeepingOrderRouter();
-//        if (decision.isSealed() || sdoRouter == URGENT) {
-//            removeTemporaryFields(caseDetails, "gatekeepingOrderRouter");
-//        }
+        //if (decision.isSealed() || sdoRouter == URGENT) {
+        //    removeTemporaryFields(caseDetails, "gatekeepingOrderRouter");
+        //}
 
         return respond(caseDetails);
     }
