@@ -70,7 +70,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 
 @WebMvcTest(ApproveDraftOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest {
+class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallbackTest {
 
     @MockBean
     private DocumentSealingService documentSealingService;
@@ -81,8 +81,8 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest
     private final DocumentReference convertedDocument = DocumentReference.builder().filename("converted").build();
     private final DocumentReference sealedDocument = DocumentReference.builder().filename("sealed").build();
 
-    ApproveDraftOrdersControllerAboutToSubmitTest() {
-        super("approve-draft-orders");
+    ApproveDraftOrdersControllerPostAboutToSubmitTest() {
+        super("approve-draft-orders/post-submit-callback");
     }
 
     @Test
