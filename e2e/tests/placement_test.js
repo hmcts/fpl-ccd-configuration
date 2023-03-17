@@ -87,7 +87,7 @@ Scenario('Local authority creates a placement application', async ({I, placement
   await createPlacementApplication(I, placementEventPage, caseViewPage);
 });
 
-Scenario('Admin issues a notice of hearing for placement', async({I, placementEventPage, placementHearingEventPage, caseViewPage}) => {
+Scenario('Admin issues a notice of hearing for placement @nightlyOnly', async({I, placementEventPage, placementHearingEventPage, caseViewPage}) => {
   await setupScenario(I);
   await createPlacementApplication(I, placementEventPage, caseViewPage);
   await createPlacementNoticeOfHearing(I, placementHearingEventPage, caseViewPage);
