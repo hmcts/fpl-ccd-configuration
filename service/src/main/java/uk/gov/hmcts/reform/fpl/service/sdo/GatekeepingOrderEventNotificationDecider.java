@@ -26,32 +26,6 @@ public class GatekeepingOrderEventNotificationDecider {
         );
         UrgentHearingOrder urgentHearingOrder = caseData.getUrgentHearingOrder();
 
-        if (sdo.isDraft() && (null == urgentHearingOrder || !GATEKEEPING_LISTING.equals(previousState))) {
-            return Optional.empty();
-        }
-
-        if (null != sdo.getOrderDoc()) {
-            event.order(sdo.getOrderDoc());
-            event.languageTranslationRequirement(sdo.getTranslationRequirements());
-            // if we are in the gatekeeeping-listing state send the NoP related notifications
-            event.notificationGroup(GATEKEEPING_LISTING.equals(previousState) ? SDO_AND_NOP : SDO);
-            event.orderTitle(sdo.asLabel());
-        } else {
-            event.order(urgentHearingOrder.getOrder());
-            event.notificationGroup(URGENT_AND_NOP);
-            event.languageTranslationRequirement(urgentHearingOrder.getTranslationRequirements());
-            event.orderTitle(urgentHearingOrder.asLabel());
-        }
-
-        return Optional.of(event.build());
-    }
-
-    public Optional<GatekeepingOrderEvent> buildGatekeepingEventToPublish(CaseData caseData, State previousState) {
-        GatekeepingOrderEvent.GatekeepingOrderEventBuilder event = GatekeepingOrderEvent.builder().caseData(caseData);
-        StandardDirectionOrder sdo = defaultIfNull(
-            caseData.getStandardDirectionOrder(), StandardDirectionOrder.builder().build()
-        );
-        UrgentHearingOrder urgentHearingOrder = caseData.getUrgentHearingOrder();
         if (sdo.isDraft() && (null == urgentHearingOrder || !isInGatekeeping(previousState))) {
             return Optional.empty();
         }
@@ -59,8 +33,9 @@ public class GatekeepingOrderEventNotificationDecider {
         if (null != sdo.getOrderDoc()) {
             event.order(sdo.getOrderDoc());
             event.languageTranslationRequirement(sdo.getTranslationRequirements());
-            // if we are in the gatekeeping-listing state send the NoP related notifications
-            event.notificationGroup(SDO_AND_NOP);
+            // if we are in the gatekeeping or gatekeeeping-listing state send the NoP related notifications
+            event.notificationGroup((isInGatekeeping(previousState) || isInGatekeepingListing(previousState))
+                ? SDO_AND_NOP : SDO);
             event.orderTitle(sdo.asLabel());
         } else {
             event.order(urgentHearingOrder.getOrder());
