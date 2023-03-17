@@ -137,9 +137,6 @@ public class AddUrgentDirectionsController extends CallbackController {
                 break;
         }
 
-        final Allocation allocationDecision = allocationService.createAllocationDecisionIfNull(getCaseData(request));
-        data.put("allocationDecision", allocationDecision);
-
         return respond(data);
     }
 }
