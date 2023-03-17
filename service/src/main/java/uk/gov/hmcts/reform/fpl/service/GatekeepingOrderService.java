@@ -52,6 +52,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -78,8 +79,18 @@ public class GatekeepingOrderService {
 
         return GatekeepingOrderSealDecision.builder()
             .draftDocument(order)
-            .dateOfIssue(LocalDate.now())
+            .dateOfIssue(time.now().toLocalDate())
             .orderStatus(null)
+            .build();
+    }
+
+    public GatekeepingOrderSealDecision buildSealedDecision(CaseData caseData) {
+        DocumentReference order = getOrderDocument(caseData);
+
+        return GatekeepingOrderSealDecision.builder()
+            .draftDocument(order)
+            .dateOfIssue(time.now().toLocalDate())
+            .orderStatus(SEALED)
             .build();
     }
 
