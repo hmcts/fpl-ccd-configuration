@@ -438,12 +438,12 @@ public class MigrateCaseService {
             if (orderType.isPresent() && orderType.get().contains(invalidOrderType)) {
                 Map ordersMap = new HashMap<>(orders.get());
                 List<String> newOrderType = new ArrayList<>(((List<String>) ordersMap.get("orderType")));
-                newOrderType.replaceAll(target -> target.equals(invalidOrderType) ? validOrderType: target);
+                newOrderType.replaceAll(target -> target.equals(invalidOrderType) ? validOrderType : target);
                 ordersMap.put("orderType", newOrderType);
                 return Map.of("orders", ordersMap);
             } else {
-                throw new AssertionError(format("Migration {id = %s}, case does not have [orders.orderType] " +
-                        "or missing target invalid order type [%s]",
+                throw new AssertionError(format("Migration {id = %s}, case does not have [orders.orderType] "
+                        + "or missing target invalid order type [%s]",
                     migrationId, invalidOrderType));
             }
         } else {
