@@ -157,7 +157,7 @@ public class MigrateCaseController extends CallbackController {
 
     private void run1291(CaseDetails caseDetails) {
         var migrationId = "DFPL-1291";
-        var possibleCaseIds = List.of(1620403322799028L);
+        var possibleCaseIds = List.of(1620403322799028L, 1627403399420113L);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
         caseDetails.getData().putAll(migrateCaseService.addCourt("165")); // Carlisle
     }
