@@ -241,6 +241,9 @@ public class CaseData extends CaseDataParent {
     private final Allocation allocationDecision;
 
     private final StandardDirectionOrder standardDirectionOrder;
+    private final UrgentDirectionsOrder urgentDirectionsOrder;
+
+    @Deprecated
     private final UrgentHearingOrder urgentHearingOrder;
 
     private GatekeepingOrderRoute sdoRouter;
