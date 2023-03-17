@@ -12,7 +12,7 @@ async function setupScenario(I) {
   await I.navigateToCaseDetailsAs(config.hmctsSuperUser, caseId);
 }
 
-Scenario('HMCTS super user can add gatekeeping order', async ({I, caseViewPage}) => {
+Scenario('HMCTS super user can add gatekeeping order @nightlyOnly', async ({I, caseViewPage}) => {
   await setupScenario(I);
   await caseViewPage.checkActionsAreAvailable([config.administrationActions.addGatekeepingOrder]);
 });
@@ -29,7 +29,7 @@ Scenario('HMCTS super user updates case name', async ({I, caseViewPage, changeCa
   caseViewPage.seeInCaseTitle('e2e test case updated by superuser');
 });
 
-Scenario('HMCTS super user updates FamilyMan reference number', async ({I, caseViewPage, enterFamilyManCaseNumberEventPage}) => {
+Scenario('HMCTS super user updates FamilyMan reference number @nightlyOnly', async ({I, caseViewPage, enterFamilyManCaseNumberEventPage}) => {
   await setupScenario(I);
   I.seeFamilyManNumber('mockcaseID');
 
@@ -41,7 +41,7 @@ Scenario('HMCTS super user updates FamilyMan reference number', async ({I, caseV
   I.seeFamilyManNumber('newMockCaseID');
 });
 
-Scenario('HMCTS super user changes state from case management to final hearing', async ({I, caseViewPage, changeCaseStateEventPage}) => {
+Scenario('HMCTS super user changes state from case management to final hearing @nightlyOnly', async ({I, caseViewPage, changeCaseStateEventPage}) => {
   await setupScenario(I);
 
   await caseViewPage.goToNewActions(config.superUserActions.changeCaseState);
@@ -54,7 +54,7 @@ Scenario('HMCTS super user changes state from case management to final hearing',
   I.seeEndStateForEvent(config.superUserActions.changeCaseState, 'Final hearing');
 });
 
-Scenario('HMCTS super user changes state from closed to final hearing', async ({I, caseViewPage, changeCaseStateEventPage}) => {
+Scenario('HMCTS super user changes state from closed to final hearing @nightlyOnly', async ({I, caseViewPage, changeCaseStateEventPage}) => {
   const newCaseId = await I.submitNewCaseWithData(closedCaseData);
   await I.navigateToCaseDetailsAs(config.hmctsSuperUser, newCaseId);
 
