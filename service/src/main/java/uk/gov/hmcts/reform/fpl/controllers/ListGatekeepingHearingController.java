@@ -72,13 +72,11 @@ public class ListGatekeepingHearingController extends CallbackController {
     private static final String HEARING_ORDERS_BUNDLES_DRAFTS = "hearingOrdersBundlesDrafts";
     private static final String DRAFT_UPLOADED_CMOS = "draftUploadedCMOs";
     private static final String HAS_PREVIOUS_VENUE_HEARING = "hasPreviousHearingVenue";
-
     private final ManageHearingsService hearingsService;
     private final PastHearingDatesValidatorService pastHearingDatesValidatorService;
     private final ValidateEmailService validateEmailService;
     private final ManageHearingsOthersGenerator othersGenerator;
     private final GatekeepingOrderService orderService;
-    private final StandardDirectionsService standardDirectionsService;
     private final NoticeOfProceedingsService nopService;
     private final GatekeepingOrderEventNotificationDecider notificationDecider;
     private final CoreCaseDataService coreCaseDataService;
