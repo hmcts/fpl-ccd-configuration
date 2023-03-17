@@ -11,10 +11,11 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.UrgentDirectionsRoute;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.UrgentDirectionsOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtLevelAllocationService;
 import uk.gov.hmcts.reform.fpl.service.GatekeepingOrderService;
 import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderDataFixer;
@@ -28,7 +29,7 @@ import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.allNotNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.UrgentDirectionsRoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -48,9 +49,9 @@ public class AddUrgentDirectionsController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         final CaseData caseData = getCaseData(callbackRequest.getCaseDetails());
         final CaseDetailsMap data = dataFixer.addLanguageRequirement(caseDetailsMap(callbackRequest.getCaseDetails()));
-        final StandardDirectionOrder draftOrder = caseData.getStandardDirectionOrder();
+        final UrgentDirectionsOrder draftOrder = caseData.getUrgentDirectionsOrder();
 
-        final GatekeepingOrderRoute draftOrderRoute = caseData.getGatekeepingOrderRouter();
+        final var draftOrderRoute = caseData.getUrgentDirectionsRouter();
 
         final List<String> errors = routeValidator.allowAccessToEvent(caseData);
 
@@ -88,9 +89,9 @@ public class AddUrgentDirectionsController extends CallbackController {
         final CaseDetails caseDetails = request.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
 
-        if (caseData.getGatekeepingOrderRouter() != SERVICE) {
+        if (caseData.getUrgentDirectionsRouter() != SERVICE) {
             throw new UnsupportedOperationException(format(
-                "The direction-selection callback does not support %s route ", caseData.getGatekeepingOrderRouter()));
+                "The direction-selection callback does not support %s route ", caseData.getUrgentDirectionsRouter()));
         }
 
         orderService.populateStandardDirections(caseDetails);
@@ -115,7 +116,7 @@ public class AddUrgentDirectionsController extends CallbackController {
 
         data.put("gatekeepingOrderSealDecision", orderService.buildSealDecision(caseData));
 
-        if (caseData.getGatekeepingOrderRouter() == SERVICE) {
+        if (caseData.getUrgentDirectionsRouter() == SERVICE) {
             data.put("standardDirections", caseData.getGatekeepingOrderEventData().getStandardDirections());
         }
         return respond(data);
@@ -127,7 +128,7 @@ public class AddUrgentDirectionsController extends CallbackController {
         final CaseData caseData = orderService.updateStandardDirections(request.getCaseDetails());
         final CaseDetailsMap data = caseDetailsMap(request.getCaseDetails());
 
-        final GatekeepingOrderRoute sdoRouter = caseData.getGatekeepingOrderRouter();
+        final var sdoRouter = caseData.getUrgentDirectionsRouter();
 
         switch (sdoRouter) {
             case UPLOAD:
