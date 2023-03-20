@@ -1056,31 +1056,31 @@ class MigrateCaseServiceTest {
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class RemoveJudicialMessage {
-        final Element<JudicialMessage> MESSAGE_1 = element(JudicialMessage.builder().build());
-        final Element<JudicialMessage> MESSAGE_2 = element(JudicialMessage.builder().build());
-        final Element<JudicialMessage> MESSAGE_TO_BE_REMOVED = element(JudicialMessage.builder().build());
+        final Element<JudicialMessage> message1 = element(JudicialMessage.builder().build());
+        final Element<JudicialMessage> message2 = element(JudicialMessage.builder().build());
+        final Element<JudicialMessage> mesageToBeRemoved = element(JudicialMessage.builder().build());
 
         @Test
         void shouldRemoveJudicialMessage() {
             CaseData caseData = CaseData.builder()
                 .id(1L)
-                .judicialMessages(List.of(MESSAGE_1, MESSAGE_2, MESSAGE_TO_BE_REMOVED))
+                .judicialMessages(List.of(message1, message2, mesageToBeRemoved))
                 .build();
 
             Map<String, Object> updates =
-                underTest.removeJudicialMessage(caseData, MIGRATION_ID, MESSAGE_TO_BE_REMOVED.getId().toString());
-            assertThat(updates).extracting("judicialMessages").asList().containsExactly(MESSAGE_1, MESSAGE_2);
+                underTest.removeJudicialMessage(caseData, MIGRATION_ID, mesageToBeRemoved.getId().toString());
+            assertThat(updates).extracting("judicialMessages").asList().containsExactly(message1, message2);
         }
 
         @Test
         void shouldRemoveJudicialMessageIfOnlyOneMessageExist() {
             CaseData caseData = CaseData.builder()
                 .id(1L)
-                .judicialMessages(List.of(MESSAGE_TO_BE_REMOVED))
+                .judicialMessages(List.of(mesageToBeRemoved))
                 .build();
 
             Map<String, Object> updates =
-                underTest.removeJudicialMessage(caseData, MIGRATION_ID, MESSAGE_TO_BE_REMOVED.getId().toString());
+                underTest.removeJudicialMessage(caseData, MIGRATION_ID, mesageToBeRemoved.getId().toString());
             assertThat(updates).extracting("judicialMessages").asList().isEmpty();
         }
 
@@ -1089,7 +1089,7 @@ class MigrateCaseServiceTest {
             CaseData caseData = CaseData.builder().id(1L).build();
 
             assertThatThrownBy(() ->
-                underTest.removeJudicialMessage(caseData, MIGRATION_ID, MESSAGE_TO_BE_REMOVED.getId().toString()))
+                underTest.removeJudicialMessage(caseData, MIGRATION_ID, mesageToBeRemoved.getId().toString()))
                 .isInstanceOf(AssertionError.class);
         }
 
@@ -1098,10 +1098,10 @@ class MigrateCaseServiceTest {
             CaseData caseData = CaseData.builder().id(1L).build();
 
             assertThatThrownBy(() ->
-                underTest.removeJudicialMessage(caseData, MIGRATION_ID, MESSAGE_TO_BE_REMOVED.getId().toString()))
+                underTest.removeJudicialMessage(caseData, MIGRATION_ID, mesageToBeRemoved.getId().toString()))
                 .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration {id = " + MIGRATION_ID + ", case reference = 1}, judicial message " +
-                            MESSAGE_TO_BE_REMOVED.getId() + " not found");
+                .hasMessage("Migration {id = " + MIGRATION_ID + ", case reference = 1}, judicial message "
+                            + mesageToBeRemoved.getId() + " not found");
         }
     }
 }
