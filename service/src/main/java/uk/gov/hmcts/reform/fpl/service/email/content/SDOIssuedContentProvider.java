@@ -25,7 +25,6 @@ public class SDOIssuedContentProvider extends AbstractEmailContentProvider {
             .lastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .callout(buildCallout(caseData))
             .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
-            .reason(caseData.getGatekeepingOrderEventData().getSendToAdminReason())
             .build();
     }
 
