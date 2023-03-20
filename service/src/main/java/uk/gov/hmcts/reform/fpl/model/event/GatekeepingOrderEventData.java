@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -62,6 +63,9 @@ public class GatekeepingOrderEventData {
     YesNo useUploadRoute;
     YesNo useServiceRoute;
 
+    String gatekeepingOrderListOrSendToAdminReason;
+    String gatekeepingOrderListOrSendToAdmin;
+
     public JudgeAndLegalAdvisor getGatekeepingOrderIssuingJudge() {
         return defaultIfNull(gatekeepingOrderIssuingJudge, JudgeAndLegalAdvisor.builder().build());
     }
@@ -89,5 +93,15 @@ public class GatekeepingOrderEventData {
     public List<Element<StandardDirection>> resetStandardDirections() {
         this.standardDirections = new ArrayList<>();
         return standardDirections;
+    }
+
+    public boolean isSentToAdmin() {
+        return Optional.ofNullable(gatekeepingOrderListOrSendToAdmin)
+            .map(value -> value.equals("NO"))
+            .orElse(false);
+    }
+
+    public String getSendToAdminReason() {
+        return gatekeepingOrderListOrSendToAdminReason;
     }
 }

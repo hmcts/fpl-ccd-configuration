@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.CourtLevelAllocationService;
 import uk.gov.hmcts.reform.fpl.service.GatekeepingOrderService;
 import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderDataFixer;
 import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderRouteValidator;
+import uk.gov.hmcts.reform.fpl.service.sdo.ListAdminEventNotificationDecider;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
@@ -43,6 +44,7 @@ public class AddGatekeepingOrderController extends CallbackController {
 
     private final CourtLevelAllocationService allocationService;
     private final GatekeepingOrderRouteValidator routeValidator;
+    private final ListAdminEventNotificationDecider notificationDecider;
     private final GatekeepingOrderDataFixer dataFixer;
 
     @PostMapping("/about-to-start")
@@ -143,5 +145,12 @@ public class AddGatekeepingOrderController extends CallbackController {
         data.put("allocationDecision", allocationDecision);
 
         return respond(data);
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmittedEvent(@RequestBody CallbackRequest request) {
+        CaseData caseData = getCaseData(request);
+        notificationDecider.buildEventToPublish(caseData)
+            .ifPresent(this::publishEvent);
     }
 }

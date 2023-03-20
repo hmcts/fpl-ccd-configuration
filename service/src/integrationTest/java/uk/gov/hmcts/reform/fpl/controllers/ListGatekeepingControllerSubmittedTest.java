@@ -6,7 +6,6 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.calendar.client.BankHolidaysApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
@@ -167,9 +166,6 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
 
     @Captor
     private ArgumentCaptor<NoticeOfHearingCafcassData> noticeOfHearingCafcassDataCaptor;
-
-    @MockBean
-    private BankHolidaysApi bankHolidaysApi;
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
