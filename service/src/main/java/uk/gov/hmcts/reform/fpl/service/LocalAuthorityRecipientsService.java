@@ -66,7 +66,7 @@ public class LocalAuthorityRecipientsService {
         localAuthorityInboxes.getSharedInbox(caseData.getCaseLocalAuthority()).ifPresent(recipients::add);
 
         if (isNotEmpty(caseData.getLocalAuthorities())) {
-            final Optional<LocalAuthority> localAuthority = getDesignatedLocalAuthority(caseData);
+            Optional<LocalAuthority> localAuthority = getDesignatedLocalAuthority(caseData);
 
             localAuthority.map(LocalAuthority::getEmail)
                 .filter(StringUtils::isNotBlank)
@@ -115,9 +115,9 @@ public class LocalAuthorityRecipientsService {
     }
 
     private Optional<LocalAuthority> getDesignatedLocalAuthority(CaseData caseData) {
-        return unwrapElements(caseData.getLocalAuthorities()).stream()
+        return Optional.of(unwrapElements(caseData.getLocalAuthorities()).stream()
             .filter(la -> YesNo.YES.getValue().equals(la.getDesignated()))
-            .findFirst();
+            .findFirst().orElse(caseData.getLocalAuthorities().get(0).getValue()));
     }
 
     private Optional<LocalAuthority> getSecondaryLocalAuthority(CaseData caseData) {
