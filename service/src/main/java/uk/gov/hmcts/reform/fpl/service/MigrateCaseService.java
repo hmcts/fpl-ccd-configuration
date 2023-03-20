@@ -426,12 +426,14 @@ public class MigrateCaseService {
 
     private List<Element<JudicialMessage>> removeJudicialMessageFormList(List<Element<JudicialMessage>> messages,
                                                               String messageId, String migrationId, Long caseId) {
+        if (messages == null) {
+            throw new AssertionError(format("Migration {id = %s, case reference = %s}, judicial message is null",
+                    migrationId, caseId));
+        }
 
         UUID targetMessageId = UUID.fromString(messageId);
-        List<Element<JudicialMessage>> resultList = Optional.ofNullable(messages).orElseThrow(() ->
-                new AssertionError(format("Migration {id = %s, case reference = %s}, judicial message is null",
-                    migrationId, caseId)))
-            .stream().filter(message -> !message.getId().equals(targetMessageId))
+        List<Element<JudicialMessage>> resultList = messages.stream()
+            .filter(message -> !message.getId().equals(targetMessageId))
             .collect(toList());
 
         if (resultList.size() != messages.size() - 1) {
