@@ -3,9 +3,11 @@ package uk.gov.hmcts.reform.fpl.service.sdo;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.UrgentDirectionsOrder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -25,8 +27,13 @@ public class GatekeepingOrderRouteValidator {
         StandardDirectionOrder sdo = defaultIfNull(
             caseData.getStandardDirectionOrder(), StandardDirectionOrder.builder().build()
         );
+        UrgentDirectionsOrder udo = defaultIfNull(
+            caseData.getUrgentDirectionsOrder(), UrgentDirectionsOrder.builder().build()
+        );
+        final boolean sdoAlreadySealed = Objects.nonNull(caseData.getGatekeepingOrderRouter()) && sdo.isSealed();
+        final boolean udoAlreadySealed = Objects.nonNull(caseData.getUrgentDirectionsRouter()) && udo.isSealed();
 
-        return sdo.isSealed() ? List.of(EVENT_ACCESS_VALIDATION_MESSAGE) : List.of();
+        return sdoAlreadySealed || udoAlreadySealed ? List.of(EVENT_ACCESS_VALIDATION_MESSAGE) : List.of();
     }
 
     public List<String> allowAccessToUrgentHearingRoute(CaseData caseData) {
