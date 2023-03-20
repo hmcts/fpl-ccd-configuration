@@ -8,7 +8,7 @@ module.exports = {
       groupName: '#gatekeepingOrderRouter',
       service: '#gatekeepingOrderRouter-SERVICE',
     },
-    standardDirection: directionName => `//h2[text()='${directionName}']/..`,
+    standardDirection: directionName => `//h2[text()='${directionName}']/../../..`,
     customDirection: {
       fields(index) {
         return {
