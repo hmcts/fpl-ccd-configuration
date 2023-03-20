@@ -30,7 +30,6 @@ public class GatekeepingOrderEventNotificationDecider {
             return Optional.empty();
         }
 
-
         if (null != sdo.getOrderDoc()) {
             event.order(sdo.getOrderDoc());
             event.languageTranslationRequirement(sdo.getTranslationRequirements());
