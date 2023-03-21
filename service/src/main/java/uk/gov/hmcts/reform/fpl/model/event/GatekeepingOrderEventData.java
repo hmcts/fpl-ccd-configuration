@@ -23,13 +23,6 @@ import static java.util.stream.Collectors.toList;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GatekeepingOrderEventData extends OrderEventData {
-    @Temp
-    DocumentReference urgentHearingOrderDocument;
-    @Temp
-    Allocation urgentHearingAllocation;
-    @Temp
-    YesNo showUrgentHearingAllocation;
-
     List<DirectionType> directionsForAllParties;
     List<DirectionType> directionsForLocalAuthority;
     List<DirectionType> directionsForRespondents;
