@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.event;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
@@ -16,10 +15,10 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 
 @Data
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
 public class UrgentDirectionsOrderEventData extends OrderEventData {
 
     List<DirectionType> urgentDirectionsForAllParties;

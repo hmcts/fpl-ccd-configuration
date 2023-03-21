@@ -61,7 +61,6 @@ import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageLegalCounselEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
-import uk.gov.hmcts.reform.fpl.model.event.OrderEventData;
 import uk.gov.hmcts.reform.fpl.model.event.OtherToRespondentEventData;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.event.RecordChildrenFinalDecisionsEventData;
@@ -1118,7 +1117,8 @@ public class CaseData extends CaseDataParent {
 
     @JsonUnwrapped
     @Builder.Default
-    private final UrgentDirectionsOrderEventData urgentDirectionsOrderEventData = UrgentDirectionsOrderEventData.builder().build();
+    private final UrgentDirectionsOrderEventData urgentDirectionsOrderEventData =
+        UrgentDirectionsOrderEventData.builder().build();
 
     private final List<Element<ChangeOfRepresentation>> changeOfRepresentatives;
     private final ChangeOrganisationRequest changeOrganisationRequestField;
