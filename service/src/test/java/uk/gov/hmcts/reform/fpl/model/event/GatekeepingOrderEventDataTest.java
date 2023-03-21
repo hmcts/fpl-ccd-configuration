@@ -31,7 +31,7 @@ class GatekeepingOrderEventDataTest {
 
     @Test
     void shouldReturnRequestedStandardDirectionTypes() {
-        final GatekeepingOrderEventData underTest = GatekeepingOrderEventData.builder()
+        final OrderEventData underTest = GatekeepingOrderEventData.builder()
             .directionsForAllParties(List.of(REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE, ASK_FOR_DISCLOSURE))
             .directionsForLocalAuthority(List.of(SEND_DOCUMENTS_TO_ALL_PARTIES, SEND_MISSING_ANNEX))
             .directionsForCafcass(List.of(APPOINT_CHILDREN_GUARDIAN))
@@ -69,7 +69,7 @@ class GatekeepingOrderEventDataTest {
 
     @Test
     void shouldResetStandardDirections() {
-        final GatekeepingOrderEventData underTest = GatekeepingOrderEventData.builder()
+        final OrderEventData underTest = OrderEventData.builder()
             .standardDirections(wrapElements(
                 StandardDirection.builder().build(),
                 StandardDirection.builder().build()))
@@ -81,7 +81,7 @@ class GatekeepingOrderEventDataTest {
 
     @Test
     void shouldReturnLanguageRequirements() {
-        final GatekeepingOrderEventData underTest = GatekeepingOrderEventData.builder()
+        final OrderEventData underTest = OrderEventData.builder()
             .gatekeepingTranslationRequirements(ENGLISH_TO_WELSH)
             .build();
 

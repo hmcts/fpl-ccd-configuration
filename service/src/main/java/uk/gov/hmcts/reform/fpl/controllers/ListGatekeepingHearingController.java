@@ -112,7 +112,7 @@ public class ListGatekeepingHearingController extends CallbackController {
     public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
 
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData eventData = orderService.updateStandardDirections(callbackRequest.getCaseDetails());
+        CaseData eventData = orderService.updateGatekeepingDirections(callbackRequest.getCaseDetails());
         final CaseDetailsMap caseData = caseDetailsMap(caseDetails);
 
         hearingsService.findAndSetPreviousVenueId(eventData);
@@ -276,9 +276,9 @@ public class ListGatekeepingHearingController extends CallbackController {
         eventData = mergeEventAndCaseData(eventData, caseData);
 
         if (UPLOAD == sdoRouter) {
-            caseData.put("standardDirectionOrder", orderService.buildOrderFromUploadedFile(eventData));
+            caseData.put("standardDirectionOrder", orderService.buildGatekeepingOrderFromUploadedFile(eventData));
         } else if (SERVICE == sdoRouter) {
-            caseData.put("standardDirectionOrder", orderService.buildOrderFromGeneratedFile(eventData));
+            caseData.put("standardDirectionOrder", orderService.buildGatekeepingOrderFromGeneratedFile(eventData));
         }
 
         callbackRequest.getCaseDetails().setData(caseData);

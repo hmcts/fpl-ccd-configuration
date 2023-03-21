@@ -10,11 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.UrgentDirectionsOrder;
-import uk.gov.hmcts.reform.fpl.service.CourtLevelAllocationService;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.service.GatekeepingOrderService;
 import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderDataFixer;
 import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderRouteValidator;
@@ -38,8 +36,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AddUrgentDirectionsController extends CallbackController {
     private final GatekeepingOrderService orderService;
-
-    private final CourtLevelAllocationService allocationService;
     private final GatekeepingOrderRouteValidator routeValidator;
     private final GatekeepingOrderDataFixer dataFixer;
 
@@ -47,7 +43,7 @@ public class AddUrgentDirectionsController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         final CaseData caseData = getCaseData(callbackRequest.getCaseDetails());
         final CaseDetailsMap data = dataFixer.addLanguageRequirement(caseDetailsMap(callbackRequest.getCaseDetails()));
-        final UrgentDirectionsOrder draftOrder = caseData.getUrgentDirectionsOrder();
+        final StandardDirectionOrder draftOrder = caseData.getUrgentDirectionsOrder();
 
         final var draftOrderRoute = caseData.getUrgentDirectionsRouter();
 
@@ -73,11 +69,8 @@ public class AddUrgentDirectionsController extends CallbackController {
 
         if (nonNull(caseData.getAllocatedJudge())) {
             data.put("gatekeepingOrderIssuingJudge", orderService.setAllocatedJudgeLabel(caseData.getAllocatedJudge(),
-                caseData.getGatekeepingOrderEventData().getGatekeepingOrderIssuingJudge()));
+                caseData.getUrgentDirectionsOrderEventData().getGatekeepingOrderIssuingJudge()));
         }
-
-        final Allocation allocationDecision = allocationService.createDecision(caseData);
-        data.put("allocationDecision", allocationDecision);
 
         return respond(data);
     }
@@ -92,7 +85,7 @@ public class AddUrgentDirectionsController extends CallbackController {
                 "The direction-selection callback does not support %s route ", caseData.getUrgentDirectionsRouter()));
         }
 
-        orderService.populateStandardDirections(caseDetails);
+        orderService.populateUrgentDirections(caseDetails);
 
         orderService.getHearing(caseData)
             .map(HearingBooking::getStartDate)
@@ -109,13 +102,13 @@ public class AddUrgentDirectionsController extends CallbackController {
 
     @PostMapping("/prepare-decision/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleGenerateDraftMidEvent(@RequestBody CallbackRequest request) {
-        final CaseData caseData = orderService.updateStandardDirections(request.getCaseDetails());
+        final CaseData caseData = orderService.updateUrgentDirections(request.getCaseDetails());
         final CaseDetailsMap data = caseDetailsMap(request.getCaseDetails());
 
         data.put("gatekeepingOrderSealDecision", orderService.buildSealDecision(caseData));
 
         if (caseData.getUrgentDirectionsRouter() == SERVICE) {
-            data.put("standardDirections", caseData.getGatekeepingOrderEventData().getStandardDirections());
+            data.put("standardDirections", caseData.getUrgentDirectionsOrderEventData().getStandardDirections());
         }
         return respond(data);
     }
@@ -123,17 +116,17 @@ public class AddUrgentDirectionsController extends CallbackController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
 
-        final CaseData caseData = orderService.updateStandardDirections(request.getCaseDetails());
+        final CaseData caseData = orderService.updateUrgentDirections(request.getCaseDetails());
         final CaseDetailsMap data = caseDetailsMap(request.getCaseDetails());
 
         final var sdoRouter = caseData.getUrgentDirectionsRouter();
 
         switch (sdoRouter) {
             case UPLOAD:
-                data.put("standardDirectionOrder", orderService.buildOrderFromUploadedFile(caseData));
+                data.put("standardDirectionOrder", orderService.buildUrgentDirectionsOrderFromUploadedFile(caseData));
                 break;
             case SERVICE:
-                data.put("standardDirectionOrder", orderService.buildOrderFromGeneratedFile(caseData));
+                data.put("standardDirectionOrder", orderService.buildUrgentDirectionsOrderFromGeneratedFile(caseData));
                 break;
         }
 
