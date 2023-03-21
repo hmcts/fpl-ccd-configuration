@@ -1114,11 +1114,11 @@ public class CaseData extends CaseDataParent {
 
     @JsonUnwrapped
     @Builder.Default
-    private final OrderEventData gatekeepingOrderEventData = GatekeepingOrderEventData.builder().build();
+    private final GatekeepingOrderEventData gatekeepingOrderEventData = GatekeepingOrderEventData.builder().build();
 
     @JsonUnwrapped
     @Builder.Default
-    private final OrderEventData urgentDirectionsOrderEventData = UrgentDirectionsOrderEventData.builder().build();
+    private final UrgentDirectionsOrderEventData urgentDirectionsOrderEventData = UrgentDirectionsOrderEventData.builder().build();
 
     private final List<Element<ChangeOfRepresentation>> changeOfRepresentatives;
     private final ChangeOrganisationRequest changeOrganisationRequestField;

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.DirectionType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -19,9 +21,10 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 
 @Data
-@Builder(toBuilder = true)
+@SuperBuilder
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@EqualsAndHashCode(callSuper=false)
 public class GatekeepingOrderEventData extends OrderEventData {
     List<DirectionType> directionsForAllParties;
     List<DirectionType> directionsForLocalAuthority;
