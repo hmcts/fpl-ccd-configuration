@@ -93,7 +93,9 @@ class CaseSubmissionCheckerTest {
                 "• Children error",
                 "In the respondents' details section:",
                 "• Respondent error 1",
-                "• Respondent error 2"
+                "• Respondent error 2",
+                "In the allocation proposal section:",
+                "• Allocation proposal error"
             );
 
         }

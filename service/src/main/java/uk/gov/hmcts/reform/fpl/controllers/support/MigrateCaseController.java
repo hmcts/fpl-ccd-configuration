@@ -12,20 +12,17 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
+import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import static java.util.stream.Collectors.toList;
+import static java.lang.String.format;
 
 @Api
 @RestController
@@ -39,13 +36,17 @@ public class MigrateCaseController extends CallbackController {
     private static final String PLACEMENT_NON_CONFIDENTIAL_NOTICES = "placementsNonConfidentialNotices";
 
     private final MigrateCaseService migrateCaseService;
+    private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1204", this::run1204,
-        "DFPL-1202", this::run1202,
-        "DFPL-1195", this::run1195,
-        "DFPL-1218", this::run1218,
-        "DFPL-1210", this::run1210
+        "DFPL-1238", this::run1238,
+        "DFPL-1241", this::run1241,
+        "DFPL-1244", this::run1244,
+        "DFPL-1243", this::run1243,
+        "DFPL-1282", this::run1282,      
+        "DFPL-1270", this::run1270,
+        "DFPL-1297", this::run1297,
+        "DFPL-1263", this::run1263
     );
 
     @PostMapping("/about-to-submit")
@@ -68,9 +69,9 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private void run1202(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1202";
-        var possibleCaseIds = List.of(1649150882331141L);
+    private void run1238(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1238";
+        var possibleCaseIds = List.of(1635423187428763L);
 
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
@@ -79,9 +80,9 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL_NOTICES);
     }
 
-    private void run1195(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1195";
-        var possibleCaseIds = List.of(1655911528192218L);
+    private void run1241(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1241";
+        var possibleCaseIds = List.of(1652968793683878L);
 
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
@@ -90,49 +91,63 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL_NOTICES);
     }
 
-    private void run1204(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1204";
-        var possibleCaseIds = List.of(1638528543085011L);
-        final UUID placementToRemove = UUID.fromString("88125c8b-8466-4af4-967f-197c3b82773c");
+    private void run1244(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1244";
+        var possibleCaseIds = List.of(1644912253936021L);
+
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
-        removeSpecificPlacements(caseDetails, placementToRemove);
+        caseDetails.getData().remove(PLACEMENT);
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL);
+        caseDetails.getData().remove(PLACEMENT_NON_CONFIDENTIAL_NOTICES);
     }
 
-    private void run1218(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1218";
-        var possibleCaseIds = List.of(1651753104228873L);
-        final UUID placementToRemove = UUID.fromString("e32706b1-22e5-4bd9-ba05-355fe69028d0");
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+    private void run1282(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1282";
+        var expectedCaseId = 1670402369344671L;
 
-        removeSpecificPlacements(caseDetails, placementToRemove);
-    }
-
-    private void removeSpecificPlacements(CaseDetails caseDetails,UUID placementToRemove) {
         CaseData caseData = getCaseData(caseDetails);
 
-        List<Element<Placement>> placementsToKeep = caseData.getPlacementEventData().getPlacements().stream()
-            .filter(x -> !x.getId().equals(placementToRemove)).collect(toList());
-        caseData.getPlacementEventData().setPlacements(placementsToKeep);
-
-        List<Element<Placement>> nonConfidentialPlacementsToKeep = caseData.getPlacementEventData()
-            .getPlacementsNonConfidential(false);
-
-        List<Element<Placement>> nonConfidentialNoticesPlacementsToKeep = caseData.getPlacementEventData()
-            .getPlacementsNonConfidential(true);
-
-        caseDetails.getData().put(PLACEMENT, placementsToKeep);
-        caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL, nonConfidentialPlacementsToKeep);
-        caseDetails.getData().put(PLACEMENT_NON_CONFIDENTIAL_NOTICES, nonConfidentialNoticesPlacementsToKeep);
+        Long caseId = caseData.getId();
+        if (caseId != expectedCaseId) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId
+            ));
+        }
+        fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
     }
-    
-    private void run1210(CaseDetails caseDetails) {
-        String migrationId = "DFPL-1210";
-        Map<String, Object> caseDetailsData = caseDetails.getData();
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1615556003529811L, migrationId);
-        migrateCaseService.doHearingOptionCheck(caseDetails.getId(),
-            Optional.of((String) caseDetails.getData().get("hearingOption")).orElse(""),
-            "EDIT_HEARING", migrationId);
-        caseDetailsData.put("hearingOption", HearingOptions.EDIT_PAST_HEARING);
+
+    private void run1270(CaseDetails caseDetails) {
+        String migrationId = "DFPL-1270";
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1656581935993992L, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removeCaseSummaryByHearingId(getCaseData(caseDetails),
+            migrationId, UUID.fromString("9e6bc008-3577-4c6b-8a29-521c9027b17f")));
+    }
+
+    private void run1297(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1297";
+        var possibleCaseIds = List.of(1675337979577440L);
+        final UUID expectedPositionStatementId = UUID.fromString("ea2bd69a-bae9-4707-8bf1-fb6c254b2631");
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(getCaseData(caseDetails),
+            migrationId, expectedPositionStatementId));
+    }
+
+    private void run1243(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1243";
+        var possibleCaseIds = List.of(1675697653441050L);
+
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(getCaseData(caseDetails),
+            migrationId, UUID.fromString("ffab9b6e-436f-4c7f-afba-ee646b9fb307")));
+    }
+
+    private void run1263(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1263";
+        var possibleCaseIds = List.of(1661171715678642L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.renameApplicationDocuments(getCaseData(caseDetails)));
     }
 }

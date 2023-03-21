@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrdersEventNotificationBuilder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.emptyMap;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.reviewDecisionFields;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.transientFields;
@@ -35,6 +37,7 @@ public class ApproveDraftOrdersController extends CallbackController {
 
     private final ApproveDraftOrdersService approveDraftOrdersService;
     private final DraftOrdersEventNotificationBuilder draftOrdersEventNotificationBuilder;
+    private final CoreCaseDataService coreCaseDataService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -79,6 +82,25 @@ public class ApproveDraftOrdersController extends CallbackController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
+        // DFPL-1171 move all document processing step to post-about-to-submitted stage
+
+        return respond(caseDetails);
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        coreCaseDataService.triggerEvent(caseData.getId(), "internal-change-approve-order", emptyMap());
+        // DFPL-1171 move publishEvent to post-submitted stage
+    }
+
+    @PostMapping("/post-submit-callback/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse postHandleAboutToSubmitEvent(
+        @RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         Map<String, Object> data = caseDetails.getData();
 
@@ -108,9 +130,10 @@ public class ApproveDraftOrdersController extends CallbackController {
         return respond(caseDetails);
     }
 
-    @PostMapping("/submitted")
-    public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
-        CaseData caseData = getCaseData(callbackRequest);
+    @PostMapping("/post-submit-callback/submitted")
+    public void handlePostSubmitted(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
 
         publishEvent(new AfterSubmissionCaseDataUpdated(caseData, getCaseDataBefore(callbackRequest)));
 

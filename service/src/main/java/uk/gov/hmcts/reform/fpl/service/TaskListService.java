@@ -85,7 +85,8 @@ public class TaskListService {
             SUBMIT_APPLICATION,
             CASE_NAME,
             APPLICATION_DOCUMENTS,
-            HEARING_URGENCY
+            HEARING_URGENCY,
+            ALLOCATION_PROPOSAL
         ));
 
         if (YES.equals(caseData.getMultiCourts())) {
@@ -110,13 +111,6 @@ public class TaskListService {
         if (!caseData.isC1Application()) {
             events.add(INTERNATIONAL_ELEMENT);
             events.add(LANGUAGE_REQUIREMENTS);
-        }
-
-        if (!caseData.isC1Application()
-            || caseData.isSecureAccommodationOrderType()
-            || caseData.isRefuseContactWithChildApplication()
-            || caseData.isContactWithChildInCareApplication()) {
-            events.add(ALLOCATION_PROPOSAL);
         }
 
         return events;
