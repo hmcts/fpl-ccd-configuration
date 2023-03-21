@@ -175,6 +175,7 @@ public class CaseData extends CaseDataParent {
     private RepresentativeType representativeType;
     private YesNo isLocalAuthority;
     private Object outsourcingLAs;
+    private String relatingLA;
     private Court court;
     private List<Element<Court>> pastCourtList;
     @JsonIgnore

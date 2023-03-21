@@ -253,29 +253,39 @@ class CaseInitiationServiceTest {
         @Test
         void shouldUpdateCaseDataWhenRespondentSolicitorUserCreatesCase() {
             givenUserInOrganisation(RS1.orgId, RS1.name);
+            given(localAuthorityService.getLocalAuthorityName("SA"))
+                .willReturn("Swansea");
 
             CaseData caseData = CaseData.builder()
                 .representativeType(RepresentativeType.RESPONDENT_SOLICITOR)
+                .relatingLA("SA")
                 .build();
 
             CaseData updatedCaseData = underTest.updateOrganisationsDetails(caseData);
 
             assertThat(updatedCaseData.getOutsourcingPolicy())
                 .isEqualTo(organisationPolicy(RS1.orgId, RS1.name, SOLICITORA));
+            assertThat(updatedCaseData.getCaseLocalAuthority()).isEqualTo("SA");
+            assertThat(updatedCaseData.getCaseLocalAuthorityName()).isEqualTo("Swansea");
         }
 
         @Test
         void shouldUpdateCaseDataWhenChildSolicitorUserCreatesCase() {
             givenUserInOrganisation(CS1.orgId, CS1.name);
+            given(localAuthorityService.getLocalAuthorityName("SA"))
+                .willReturn("Swansea");
 
             CaseData caseData = CaseData.builder()
                 .representativeType(RepresentativeType.CHILD_SOLICITOR)
+                .relatingLA("SA")
                 .build();
 
             CaseData updatedCaseData = underTest.updateOrganisationsDetails(caseData);
 
             assertThat(updatedCaseData.getOutsourcingPolicy())
                 .isEqualTo(organisationPolicy(CS1.orgId, CS1.name, CHILDSOLICITORA));
+            assertThat(updatedCaseData.getCaseLocalAuthority()).isEqualTo("SA");
+            assertThat(updatedCaseData.getCaseLocalAuthorityName()).isEqualTo("Swansea");
         }
 
         @Test
