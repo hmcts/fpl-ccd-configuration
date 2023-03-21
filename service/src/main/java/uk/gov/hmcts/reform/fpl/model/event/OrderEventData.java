@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.model.event;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
 import uk.gov.hmcts.reform.fpl.enums.DirectionType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -17,13 +18,14 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.reflect.FieldUtils.getFieldsListWithAnnotation;
 
 @Data
-@Builder
+@SuperBuilder
 public abstract class OrderEventData {
     @Temp
     DocumentReference urgentHearingOrderDocument;
@@ -47,6 +49,9 @@ public abstract class OrderEventData {
     YesNo useUploadRoute;
     YesNo useServiceRoute;
 
+    String gatekeepingOrderListOrSendToAdminReason;
+    String gatekeepingOrderListOrSendToAdmin;
+
     public JudgeAndLegalAdvisor getGatekeepingOrderIssuingJudge() {
         return defaultIfNull(gatekeepingOrderIssuingJudge, JudgeAndLegalAdvisor.builder().build());
     }
@@ -67,5 +72,15 @@ public abstract class OrderEventData {
     public List<Element<StandardDirection>> resetStandardDirections() {
         this.standardDirections = new ArrayList<>();
         return standardDirections;
+    }
+
+    public boolean isSentToAdmin() {
+        return Optional.ofNullable(gatekeepingOrderListOrSendToAdmin)
+            .map(value -> value.equals("NO"))
+            .orElse(false);
+    }
+
+    public String getSendToAdminReason() {
+        return gatekeepingOrderListOrSendToAdminReason;
     }
 }
