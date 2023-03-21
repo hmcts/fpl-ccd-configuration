@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
+import uk.gov.hmcts.reform.fpl.model.event.OrderEventData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.DocumentService;
@@ -170,7 +171,7 @@ class GatekeepingOrderServiceTest {
 
         when(ordersLookupService.getDirectionConfiguration(type)).thenReturn(directionConfiguration);
 
-        underTest.populateStandardDirections(caseDetails);
+        underTest.populateGatekeepingDirections(caseDetails);
 
         final StandardDirection expectedDirection = StandardDirection.builder()
             .type(directionConfiguration.getType())
@@ -219,7 +220,7 @@ class GatekeepingOrderServiceTest {
         final boolean isImmediateStandardDirection =
             APPOINT_CHILDREN_GUARDIAN_IMMEDIATE.equals(type) || ARRANGE_INTERPRETERS_IMMEDIATE.equals(type);
 
-        underTest.populateStandardDirections(caseDetails);
+        underTest.populateGatekeepingDirections(caseDetails);
 
         final StandardDirection expectedDirection = StandardDirection.builder()
             .type(directionConfiguration.getType())
@@ -259,7 +260,7 @@ class GatekeepingOrderServiceTest {
         final boolean isImmediateStandardDirection =
             APPOINT_CHILDREN_GUARDIAN_IMMEDIATE.equals(type) || ARRANGE_INTERPRETERS_IMMEDIATE.equals(type);
 
-        underTest.populateStandardDirections(caseDetails);
+        underTest.populateGatekeepingDirections(caseDetails);
 
         final StandardDirection expectedDirection = StandardDirection.builder()
             .type(type)
@@ -297,7 +298,7 @@ class GatekeepingOrderServiceTest {
                 "directionsForAllParties", List.of(type))))
             .build();
 
-        underTest.populateStandardDirections(caseDetails);
+        underTest.populateGatekeepingDirections(caseDetails);
 
         assertThat(caseDetails.getData().get("direction-" + type)).isEqualTo(draftDirection);
 
@@ -336,7 +337,7 @@ class GatekeepingOrderServiceTest {
                 "directionsForAllParties", List.of(type))))
             .build();
 
-        underTest.populateStandardDirections(caseDetails);
+        underTest.populateGatekeepingDirections(caseDetails);
 
         assertThat(caseDetails.getData().get("direction-" + type)).isEqualTo(currentStandardDirection);
 
@@ -386,7 +387,7 @@ class GatekeepingOrderServiceTest {
 
         when(ordersLookupService.getDirectionConfiguration(type)).thenReturn(directionConfiguration);
 
-        final CaseData updatedCase = underTest.updateStandardDirections(caseDetails);
+        final CaseData updatedCase = underTest.updateGatekeepingDirections(caseDetails);
 
         assertThat(updatedCase.getGatekeepingOrderEventData().getStandardDirections())
             .extracting(Element::getValue)
@@ -496,7 +497,7 @@ class GatekeepingOrderServiceTest {
         void shouldPrepareSealDecisionWhenIssuingJudgeIsPresent() {
             final CaseData caseData = CaseData.builder()
                 .gatekeepingOrderRouter(serviceRoute)
-                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .gatekeepingOrderEventData(OrderEventData.builder().build().builder()
                     .gatekeepingOrderIssuingJudge(testJudgeAndLegalAdviser())
                     .build())
                 .build();
@@ -520,7 +521,7 @@ class GatekeepingOrderServiceTest {
                 .gatekeepingOrderRouter(serviceRoute)
                 .allocatedJudge(testJudge())
                 .hearingDetails(wrapElements(testHearing()))
-                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .gatekeepingOrderEventData(OrderEventData.builder()
                     .gatekeepingOrderIssuingJudge(testJudgeAndLegalAdviser())
                     .build())
                 .build();
@@ -558,7 +559,7 @@ class GatekeepingOrderServiceTest {
                 .gatekeepingOrderRouter(uploadRoute)
                 .replacementSDO(replacementSDO)
                 .preparedSDO(preparedSDO)
-                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .gatekeepingOrderEventData(OrderEventData.builder()
                     .currentSDO(currentSDO)
                     .build())
                 .build();
@@ -580,7 +581,7 @@ class GatekeepingOrderServiceTest {
                 .gatekeepingOrderRouter(uploadRoute)
                 .replacementSDO(null)
                 .preparedSDO(preparedSDO)
-                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .gatekeepingOrderEventData(OrderEventData.builder()
                     .currentSDO(null)
                     .build())
                 .build();
@@ -602,7 +603,7 @@ class GatekeepingOrderServiceTest {
                 .gatekeepingOrderRouter(uploadRoute)
                 .replacementSDO(null)
                 .preparedSDO(null)
-                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .gatekeepingOrderEventData(OrderEventData.builder()
                     .currentSDO(currentSDO)
                     .build())
                 .build();
@@ -679,7 +680,7 @@ class GatekeepingOrderServiceTest {
             final CaseData caseData = CaseData.builder()
                 .gatekeepingOrderRouter(uploadRoute)
                 .replacementSDO(replacementSDO)
-                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .gatekeepingOrderEventData(OrderEventData.builder()
                     .gatekeepingOrderIssuingJudge(testJudgeAndLegalAdviser())
                     .build())
                 .build();
@@ -702,7 +703,7 @@ class GatekeepingOrderServiceTest {
                 .replacementSDO(replacementSDO)
                 .allocatedJudge(testJudge())
                 .hearingDetails(wrapElements(testHearing(CASE_MANAGEMENT)))
-                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .gatekeepingOrderEventData(OrderEventData.builder()
                     .gatekeepingOrderIssuingJudge(testJudgeAndLegalAdviser())
                     .build())
                 .build();
@@ -743,12 +744,12 @@ class GatekeepingOrderServiceTest {
 
             final CaseData caseData = CaseData.builder()
                 .court(court)
-                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .gatekeepingOrderEventData(OrderEventData.builder()
                     .gatekeepingOrderSealDecision(sealDecision)
                     .build())
                 .build();
 
-            final StandardDirectionOrder actualOrder = underTest.buildOrderFromUploadedFile(caseData);
+            final StandardDirectionOrder actualOrder = underTest.buildGatekeepingOrderFromUploadedFile(caseData);
 
             final StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder()
                 .orderStatus(DRAFT)
@@ -779,12 +780,12 @@ class GatekeepingOrderServiceTest {
 
             final CaseData caseData = CaseData.builder()
                 .court(court)
-                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .gatekeepingOrderEventData(OrderEventData.builder()
                     .gatekeepingOrderSealDecision(sealDecision)
                     .build())
                 .build();
 
-            final StandardDirectionOrder actualOrder = underTest.buildOrderFromUploadedFile(caseData);
+            final StandardDirectionOrder actualOrder = underTest.buildGatekeepingOrderFromUploadedFile(caseData);
 
             final StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder()
                 .orderStatus(SEALED)
@@ -814,13 +815,13 @@ class GatekeepingOrderServiceTest {
 
             final CaseData caseData = CaseData.builder()
                 .court(court)
-                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .gatekeepingOrderEventData(OrderEventData.builder()
                     .gatekeepingOrderSealDecision(sealDecision)
                     .gatekeepingTranslationRequirements(ENGLISH_TO_WELSH)
                     .build())
                 .build();
 
-            final StandardDirectionOrder actualOrder = underTest.buildOrderFromUploadedFile(caseData);
+            final StandardDirectionOrder actualOrder = underTest.buildGatekeepingOrderFromUploadedFile(caseData);
 
             final StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder()
                 .orderStatus(SEALED)
@@ -875,12 +876,12 @@ class GatekeepingOrderServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
-                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .gatekeepingOrderEventData(OrderEventData.builder()
                     .gatekeepingOrderSealDecision(sealDecision)
                     .build())
                 .build();
 
-            final StandardDirectionOrder actualOrder = underTest.buildOrderFromGeneratedFile(caseData);
+            final StandardDirectionOrder actualOrder = underTest.buildGatekeepingOrderFromGeneratedFile(caseData);
 
             final StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder()
                 .orderStatus(DRAFT)
@@ -902,12 +903,12 @@ class GatekeepingOrderServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
-                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .gatekeepingOrderEventData(OrderEventData.builder()
                     .gatekeepingOrderSealDecision(sealDecision)
                     .build())
                 .build();
 
-            final StandardDirectionOrder actualOrder = underTest.buildOrderFromGeneratedFile(caseData);
+            final StandardDirectionOrder actualOrder = underTest.buildGatekeepingOrderFromGeneratedFile(caseData);
 
             final StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder()
                 .orderStatus(SEALED)
@@ -933,12 +934,12 @@ class GatekeepingOrderServiceTest {
 
             final CaseData caseData = CaseData.builder()
                 .languageRequirement(YesNo.YES.getValue())
-                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .gatekeepingOrderEventData(OrderEventData.builder()
                     .gatekeepingOrderSealDecision(sealDecision)
                     .build())
                 .build();
 
-            final StandardDirectionOrder actualOrder = underTest.buildOrderFromGeneratedFile(caseData);
+            final StandardDirectionOrder actualOrder = underTest.buildGatekeepingOrderFromGeneratedFile(caseData);
 
             final StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder()
                 .orderStatus(SEALED)
