@@ -69,7 +69,7 @@ class GatekeepingOrderEventDataTest {
 
     @Test
     void shouldResetStandardDirections() {
-        final OrderEventData underTest = OrderEventData.builder()
+        final OrderEventData underTest = GatekeepingOrderEventData.builder()
             .standardDirections(wrapElements(
                 StandardDirection.builder().build(),
                 StandardDirection.builder().build()))
@@ -81,7 +81,7 @@ class GatekeepingOrderEventDataTest {
 
     @Test
     void shouldReturnLanguageRequirements() {
-        final OrderEventData underTest = OrderEventData.builder()
+        final OrderEventData underTest = GatekeepingOrderEventData.builder()
             .gatekeepingTranslationRequirements(ENGLISH_TO_WELSH)
             .build();
 

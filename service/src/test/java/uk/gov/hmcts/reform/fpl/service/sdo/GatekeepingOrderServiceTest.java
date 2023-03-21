@@ -34,7 +34,6 @@ import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
-import uk.gov.hmcts.reform.fpl.model.event.OrderEventData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.DocumentService;
@@ -497,7 +496,7 @@ class GatekeepingOrderServiceTest {
         void shouldPrepareSealDecisionWhenIssuingJudgeIsPresent() {
             final CaseData caseData = CaseData.builder()
                 .gatekeepingOrderRouter(serviceRoute)
-                .gatekeepingOrderEventData(OrderEventData.builder()
+                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                     .gatekeepingOrderIssuingJudge(testJudgeAndLegalAdviser())
                     .build())
                 .build();
@@ -521,7 +520,7 @@ class GatekeepingOrderServiceTest {
                 .gatekeepingOrderRouter(serviceRoute)
                 .allocatedJudge(testJudge())
                 .hearingDetails(wrapElements(testHearing()))
-                .gatekeepingOrderEventData(OrderEventData.builder()
+                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                     .gatekeepingOrderIssuingJudge(testJudgeAndLegalAdviser())
                     .build())
                 .build();
@@ -559,7 +558,7 @@ class GatekeepingOrderServiceTest {
                 .gatekeepingOrderRouter(uploadRoute)
                 .replacementSDO(replacementSDO)
                 .preparedSDO(preparedSDO)
-                .gatekeepingOrderEventData(OrderEventData.builder()
+                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                     .currentSDO(currentSDO)
                     .build())
                 .build();
@@ -581,7 +580,7 @@ class GatekeepingOrderServiceTest {
                 .gatekeepingOrderRouter(uploadRoute)
                 .replacementSDO(null)
                 .preparedSDO(preparedSDO)
-                .gatekeepingOrderEventData(OrderEventData.builder()
+                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                     .currentSDO(null)
                     .build())
                 .build();
@@ -603,7 +602,7 @@ class GatekeepingOrderServiceTest {
                 .gatekeepingOrderRouter(uploadRoute)
                 .replacementSDO(null)
                 .preparedSDO(null)
-                .gatekeepingOrderEventData(OrderEventData.builder()
+                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                     .currentSDO(currentSDO)
                     .build())
                 .build();
@@ -680,7 +679,7 @@ class GatekeepingOrderServiceTest {
             final CaseData caseData = CaseData.builder()
                 .gatekeepingOrderRouter(uploadRoute)
                 .replacementSDO(replacementSDO)
-                .gatekeepingOrderEventData(OrderEventData.builder()
+                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                     .gatekeepingOrderIssuingJudge(testJudgeAndLegalAdviser())
                     .build())
                 .build();
@@ -703,7 +702,7 @@ class GatekeepingOrderServiceTest {
                 .replacementSDO(replacementSDO)
                 .allocatedJudge(testJudge())
                 .hearingDetails(wrapElements(testHearing(CASE_MANAGEMENT)))
-                .gatekeepingOrderEventData(OrderEventData.builder()
+                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                     .gatekeepingOrderIssuingJudge(testJudgeAndLegalAdviser())
                     .build())
                 .build();
@@ -744,7 +743,7 @@ class GatekeepingOrderServiceTest {
 
             final CaseData caseData = CaseData.builder()
                 .court(court)
-                .gatekeepingOrderEventData(OrderEventData.builder()
+                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                     .gatekeepingOrderSealDecision(sealDecision)
                     .build())
                 .build();
@@ -780,7 +779,7 @@ class GatekeepingOrderServiceTest {
 
             final CaseData caseData = CaseData.builder()
                 .court(court)
-                .gatekeepingOrderEventData(OrderEventData.builder()
+                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                     .gatekeepingOrderSealDecision(sealDecision)
                     .build())
                 .build();
@@ -815,7 +814,7 @@ class GatekeepingOrderServiceTest {
 
             final CaseData caseData = CaseData.builder()
                 .court(court)
-                .gatekeepingOrderEventData(OrderEventData.builder()
+                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                     .gatekeepingOrderSealDecision(sealDecision)
                     .gatekeepingTranslationRequirements(ENGLISH_TO_WELSH)
                     .build())
@@ -876,7 +875,7 @@ class GatekeepingOrderServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
-                .gatekeepingOrderEventData(OrderEventData.builder()
+                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                     .gatekeepingOrderSealDecision(sealDecision)
                     .build())
                 .build();
@@ -903,7 +902,7 @@ class GatekeepingOrderServiceTest {
                 .build();
 
             final CaseData caseData = CaseData.builder()
-                .gatekeepingOrderEventData(OrderEventData.builder()
+                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                     .gatekeepingOrderSealDecision(sealDecision)
                     .build())
                 .build();
@@ -934,7 +933,7 @@ class GatekeepingOrderServiceTest {
 
             final CaseData caseData = CaseData.builder()
                 .languageRequirement(YesNo.YES.getValue())
-                .gatekeepingOrderEventData(OrderEventData.builder()
+                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                     .gatekeepingOrderSealDecision(sealDecision)
                     .build())
                 .build();

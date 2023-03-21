@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model.event;
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import uk.gov.hmcts.reform.fpl.enums.DirectionType;
@@ -25,7 +24,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.reflect.FieldUtils.getFieldsListWithAnnotation;
 
 @Data
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 public abstract class OrderEventData {
     @Temp
     DocumentReference urgentHearingOrderDocument;
