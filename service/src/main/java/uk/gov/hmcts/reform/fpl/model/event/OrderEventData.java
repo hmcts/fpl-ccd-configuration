@@ -5,6 +5,7 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.DirectionType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CustomDirection;
 import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.StandardDirection;
@@ -24,7 +25,12 @@ import static org.apache.commons.lang3.reflect.FieldUtils.getFieldsListWithAnnot
 @Data
 @Builder
 public abstract class OrderEventData {
-
+    @Temp
+    DocumentReference urgentHearingOrderDocument;
+    @Temp
+    Allocation urgentHearingAllocation;
+    @Temp
+    YesNo showUrgentHearingAllocation;
     JudgeAndLegalAdvisor gatekeepingOrderIssuingJudge;
     GatekeepingOrderSealDecision gatekeepingOrderSealDecision;
     List<DirectionType> directionsForCafcass;

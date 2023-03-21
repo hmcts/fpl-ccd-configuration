@@ -497,7 +497,7 @@ class GatekeepingOrderServiceTest {
         void shouldPrepareSealDecisionWhenIssuingJudgeIsPresent() {
             final CaseData caseData = CaseData.builder()
                 .gatekeepingOrderRouter(serviceRoute)
-                .gatekeepingOrderEventData(OrderEventData.builder().build().builder()
+                .gatekeepingOrderEventData(OrderEventData.builder()
                     .gatekeepingOrderIssuingJudge(testJudgeAndLegalAdviser())
                     .build())
                 .build();
