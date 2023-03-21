@@ -150,7 +150,8 @@ public class GatekeepingOrderService {
         return YesNo.fromString(caseData.getLanguageRequirement()) == YesNo.YES ? ENGLISH_TO_WELSH : NO;
     }
 
-    public Optional<HearingBooking> getHearing(CaseData caseData) {
+    public Optional<HearingBooking> getHearing(CaseDetails caseDetails) {
+        final CaseData caseData = converter.convert(caseDetails);
         return caseData.getFirstHearingOfTypes(List.of(HearingType.CASE_MANAGEMENT,
             HearingType.INTERIM_CARE_ORDER, HearingType.ACCELERATED_DISCHARGE_OF_CARE));
     }
@@ -215,35 +216,29 @@ public class GatekeepingOrderService {
     public CaseData populateGatekeepingDirections(CaseDetails caseDetails) {
         final CaseData caseData = converter.convert(caseDetails);
         final OrderEventData eventData = caseData.getGatekeepingOrderEventData();
-
-        final List<StandardDirection> draftStandardDirections = ofNullable(caseData.getStandardDirectionOrder())
-            .map(StandardDirectionOrder::getStandardDirections)
-            .map(ElementUtils::unwrapElements)
-            .orElseGet(ArrayList::new);
-
-        return populateDirections(caseDetails, eventData, draftStandardDirections);
+        populateDirections(caseDetails, eventData, caseData.getStandardDirectionOrder());
+        return caseData;
     }
 
     public CaseData populateUrgentDirections(CaseDetails caseDetails) {
         final CaseData caseData = converter.convert(caseDetails);
         final OrderEventData eventData = caseData.getUrgentDirectionsOrderEventData();
+        populateDirections(caseDetails, eventData, caseData.getUrgentDirectionsOrder());
+        return caseData;
+    }
 
-        final List<StandardDirection> draftStandardDirections = ofNullable(caseData.getUrgentDirectionsOrder())
+    private void populateDirections(final CaseDetails caseDetails,
+                                    final OrderEventData eventData,
+                                    final StandardDirectionOrder draftOrder) {
+
+        final List<StandardDirection> draftStandardDirections = ofNullable(draftOrder)
             .map(StandardDirectionOrder::getStandardDirections)
             .map(ElementUtils::unwrapElements)
             .orElseGet(ArrayList::new);
 
-        return populateDirections(caseDetails, eventData, draftStandardDirections);
-    }
-
-    private CaseData populateDirections(final CaseDetails caseDetails,
-                                       final OrderEventData eventData,
-                                       final List<StandardDirection> draftStandardDirections) {
-        final CaseData caseData = converter.convert(caseDetails);
-
         final List<DirectionType> requestedDirections = eventData.getRequestedDirections();
 
-        final HearingBooking firstHearing = getHearing(caseData).orElse(null);
+        final HearingBooking firstHearing = getHearing(caseDetails).orElse(null);
 
         Stream.of(DirectionType.values())
             .filter(directionType -> !requestedDirections.contains(directionType))
@@ -257,25 +252,24 @@ public class GatekeepingOrderService {
             .forEach(direction -> {
                 caseDetails.getData().put(direction.getType().getFieldName(), direction);
             });
-
-        return caseData;
     }
 
     public CaseData updateGatekeepingDirections(CaseDetails caseDetails) {
         final CaseData caseData = converter.convert(caseDetails);
         final OrderEventData eventData = caseData.getGatekeepingOrderEventData();
-        return updateDirections(caseDetails, eventData);
+        updateDirections(caseDetails, eventData);
+        return caseData;
     }
 
     public CaseData updateUrgentDirections(CaseDetails caseDetails) {
         final CaseData caseData = converter.convert(caseDetails);
         final OrderEventData eventData = caseData.getUrgentDirectionsOrderEventData();
-        return updateDirections(caseDetails, eventData);
+        updateDirections(caseDetails, eventData);
+        return caseData;
     }
 
-    public CaseData updateDirections(CaseDetails caseDetails, OrderEventData eventData) {
-        final CaseData caseData = converter.convert(caseDetails);
-        final HearingBooking firstHearing = getHearing(caseData).orElse(null);
+    public void updateDirections(CaseDetails caseDetails, OrderEventData eventData) {
+        final HearingBooking firstHearing = getHearing(caseDetails).orElse(null);
 
         final List<StandardDirection> standardDirections = eventData.getRequestedDirections().stream()
             .map(requestedType -> {
@@ -295,8 +289,6 @@ public class GatekeepingOrderService {
             .collect(toList());
 
         eventData.setStandardDirections(wrapElements(standardDirections));
-
-        return caseData;
     }
 
     public StandardDirectionOrder sealDocumentAfterEventSubmitted(CaseData caseData) {

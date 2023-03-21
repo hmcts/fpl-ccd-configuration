@@ -24,7 +24,9 @@ public class GatekeepingOrderEventData extends OrderEventData {
     List<DirectionType> directionsForAllParties;
     List<DirectionType> directionsForLocalAuthority;
     List<DirectionType> directionsForRespondents;
+    List<DirectionType> directionsForCafcass;
     List<DirectionType> directionsForCafcassUpdated;
+    List<DirectionType> directionsForCourt;
     List<DirectionType> directionsForOthers;
 
     @JsonIgnore

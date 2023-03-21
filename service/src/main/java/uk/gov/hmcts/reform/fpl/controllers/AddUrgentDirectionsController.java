@@ -87,7 +87,7 @@ public class AddUrgentDirectionsController extends CallbackController {
 
         orderService.populateUrgentDirections(caseDetails);
 
-        orderService.getHearing(caseData)
+        orderService.getHearing(caseDetails)
             .map(HearingBooking::getStartDate)
             .map(hearingDate -> formatLocalDateTimeBaseUsingFormat(hearingDate, DATE_TIME))
             .ifPresent(hearingDate -> {

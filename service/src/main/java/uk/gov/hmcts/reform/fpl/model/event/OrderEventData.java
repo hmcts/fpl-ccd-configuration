@@ -34,8 +34,7 @@ public abstract class OrderEventData {
     YesNo showUrgentHearingAllocation;
     JudgeAndLegalAdvisor gatekeepingOrderIssuingJudge;
     GatekeepingOrderSealDecision gatekeepingOrderSealDecision;
-    List<DirectionType> directionsForCafcass;
-    List<DirectionType> directionsForCourt;
+
     List<DirectionType> directionsForCourtUpdated;
 
     List<Element<CustomDirection>> customDirections;

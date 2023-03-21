@@ -28,7 +28,7 @@ public class UrgentDirectionsOrderEventData extends OrderEventData {
 
     public List<DirectionType> getRequestedDirections() {
         return Stream.of(urgentDirectionsForAllParties, urgentDirectionsForLocalAuthority,
-                directionsForCafcass, urgentDirectionsForCafcass, directionsForCourt, directionsForCourtUpdated)
+                urgentDirectionsForCafcass, directionsForCourtUpdated)
             .filter(Objects::nonNull)
             .flatMap(Collection::stream)
             .collect(toList());
