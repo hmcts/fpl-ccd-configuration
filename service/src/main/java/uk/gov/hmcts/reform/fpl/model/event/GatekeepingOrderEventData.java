@@ -24,7 +24,7 @@ import static java.util.stream.Collectors.toList;
 @SuperBuilder
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper=true)
 public class GatekeepingOrderEventData extends OrderEventData {
     List<DirectionType> directionsForAllParties;
     List<DirectionType> directionsForLocalAuthority;
