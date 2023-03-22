@@ -170,7 +170,7 @@ class GatekeepingOrderServiceTest {
 
         when(ordersLookupService.getDirectionConfiguration(type)).thenReturn(directionConfiguration);
 
-        underTest.populateGatekeepingDirections(caseDetails);
+        underTest.populateStandardDirections(caseDetails);
 
         final StandardDirection expectedDirection = StandardDirection.builder()
             .type(directionConfiguration.getType())
@@ -219,7 +219,7 @@ class GatekeepingOrderServiceTest {
         final boolean isImmediateStandardDirection =
             APPOINT_CHILDREN_GUARDIAN_IMMEDIATE.equals(type) || ARRANGE_INTERPRETERS_IMMEDIATE.equals(type);
 
-        underTest.populateGatekeepingDirections(caseDetails);
+        underTest.populateStandardDirections(caseDetails);
 
         final StandardDirection expectedDirection = StandardDirection.builder()
             .type(directionConfiguration.getType())
@@ -259,7 +259,7 @@ class GatekeepingOrderServiceTest {
         final boolean isImmediateStandardDirection =
             APPOINT_CHILDREN_GUARDIAN_IMMEDIATE.equals(type) || ARRANGE_INTERPRETERS_IMMEDIATE.equals(type);
 
-        underTest.populateGatekeepingDirections(caseDetails);
+        underTest.populateStandardDirections(caseDetails);
 
         final StandardDirection expectedDirection = StandardDirection.builder()
             .type(type)
@@ -297,7 +297,7 @@ class GatekeepingOrderServiceTest {
                 "directionsForAllParties", List.of(type))))
             .build();
 
-        underTest.populateGatekeepingDirections(caseDetails);
+        underTest.populateStandardDirections(caseDetails);
 
         assertThat(caseDetails.getData().get("direction-" + type)).isEqualTo(draftDirection);
 
@@ -336,7 +336,7 @@ class GatekeepingOrderServiceTest {
                 "directionsForAllParties", List.of(type))))
             .build();
 
-        underTest.populateGatekeepingDirections(caseDetails);
+        underTest.populateStandardDirections(caseDetails);
 
         assertThat(caseDetails.getData().get("direction-" + type)).isEqualTo(currentStandardDirection);
 
@@ -386,7 +386,7 @@ class GatekeepingOrderServiceTest {
 
         when(ordersLookupService.getDirectionConfiguration(type)).thenReturn(directionConfiguration);
 
-        final CaseData updatedCase = underTest.updateGatekeepingDirections(caseDetails);
+        final CaseData updatedCase = underTest.updateStandardDirections(caseDetails);
 
         assertThat(updatedCase.getGatekeepingOrderEventData().getStandardDirections())
             .extracting(Element::getValue)
@@ -748,7 +748,7 @@ class GatekeepingOrderServiceTest {
                     .build())
                 .build();
 
-            final StandardDirectionOrder actualOrder = underTest.buildGatekeepingOrderFromUploadedFile(caseData);
+            final StandardDirectionOrder actualOrder = underTest.buildOrderFromUploadedFile(caseData);
 
             final StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder()
                 .orderStatus(DRAFT)
@@ -784,7 +784,7 @@ class GatekeepingOrderServiceTest {
                     .build())
                 .build();
 
-            final StandardDirectionOrder actualOrder = underTest.buildGatekeepingOrderFromUploadedFile(caseData);
+            final StandardDirectionOrder actualOrder = underTest.buildOrderFromUploadedFile(caseData);
 
             final StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder()
                 .orderStatus(SEALED)
@@ -820,7 +820,7 @@ class GatekeepingOrderServiceTest {
                     .build())
                 .build();
 
-            final StandardDirectionOrder actualOrder = underTest.buildGatekeepingOrderFromUploadedFile(caseData);
+            final StandardDirectionOrder actualOrder = underTest.buildOrderFromUploadedFile(caseData);
 
             final StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder()
                 .orderStatus(SEALED)
@@ -880,7 +880,7 @@ class GatekeepingOrderServiceTest {
                     .build())
                 .build();
 
-            final StandardDirectionOrder actualOrder = underTest.buildGatekeepingOrderFromGeneratedFile(caseData);
+            final StandardDirectionOrder actualOrder = underTest.buildOrderFromGeneratedFile(caseData);
 
             final StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder()
                 .orderStatus(DRAFT)
@@ -907,7 +907,7 @@ class GatekeepingOrderServiceTest {
                     .build())
                 .build();
 
-            final StandardDirectionOrder actualOrder = underTest.buildGatekeepingOrderFromGeneratedFile(caseData);
+            final StandardDirectionOrder actualOrder = underTest.buildOrderFromGeneratedFile(caseData);
 
             final StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder()
                 .orderStatus(SEALED)
@@ -938,7 +938,7 @@ class GatekeepingOrderServiceTest {
                     .build())
                 .build();
 
-            final StandardDirectionOrder actualOrder = underTest.buildGatekeepingOrderFromGeneratedFile(caseData);
+            final StandardDirectionOrder actualOrder = underTest.buildOrderFromGeneratedFile(caseData);
 
             final StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder()
                 .orderStatus(SEALED)
