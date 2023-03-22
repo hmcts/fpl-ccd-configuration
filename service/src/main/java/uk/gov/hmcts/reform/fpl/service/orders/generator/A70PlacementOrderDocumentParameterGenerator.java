@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
@@ -39,7 +40,8 @@ public class A70PlacementOrderDocumentParameterGenerator implements DocmosisPara
 
     @Override
     public A70PlacementOrderDocmosisParameters generate(CaseData caseData) {
-        LocalAuthority designatedLocalAuthority = caseData.getDesignatedLocalAuthority();
+        LocalAuthority designatedLocalAuthority = Optional.ofNullable(caseData.getDesignatedLocalAuthority())
+            .orElse(LocalAuthority.builder().address(Address.builder().build()).build());
 
         ManageOrdersEventData manageOrdersEventData = caseData.getManageOrdersEventData();
         UUID placementId = manageOrdersEventData.getManageOrdersChildPlacementApplication().getValueCodeAsUUID();
