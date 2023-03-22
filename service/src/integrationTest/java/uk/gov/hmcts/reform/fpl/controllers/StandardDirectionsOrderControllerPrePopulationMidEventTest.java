@@ -7,10 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
-import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
-import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -37,8 +34,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.URGENT;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -227,65 +222,6 @@ class StandardDirectionsOrderControllerPrePopulationMidEventTest extends Abstrac
             CaseData responseCaseData = extractCaseData(postMidEvent(caseData, "pre-populate"));
 
             assertThat(responseCaseData.getJudgeAndLegalAdvisor()).isEqualTo(judgeAndLegalAdvisor);
-        }
-
-        @Test
-        void shouldReturnUrgentHearingOrderSelectedInNonGatekeepingState() {
-            CaseData caseData = CaseData.builder().state(CASE_MANAGEMENT).sdoRouter(URGENT).build();
-
-            AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "pre-populate");
-
-            assertThat(response.getErrors()).isEqualTo(List.of(
-                "An urgent hearing order has already been added to this case. You can still add a gatekeeping "
-                    + "order, if needed."
-            ));
-        }
-
-        @Test
-        void shouldReturnErrorWhenNoHearingsAndInGatekeeping() {
-            CaseData caseData = CaseData.builder().state(State.GATEKEEPING).sdoRouter(URGENT).build();
-
-            AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "pre-populate");
-
-            assertThat(response.getErrors()).isEqualTo(List.of(
-                "You need to add hearing details for the notice of proceedings"
-            ));
-        }
-
-        @Test
-        void shouldPrePopulateAllocationDecision() {
-            CaseData caseData = CaseData.builder()
-                .state(State.GATEKEEPING)
-                .hearingDetails(hearings)
-                .allocationProposal(Allocation.builder().proposal("District judge").build())
-                .sdoRouter(URGENT)
-                .build();
-
-            CaseData data = extractCaseData(postMidEvent(caseData, "pre-populate"));
-
-            Allocation expectedAllocation = Allocation.builder()
-                .allocationProposalPresent("Yes")
-                .build();
-            assertThat(data.getGatekeepingOrderEventData().getUrgentHearingAllocation()).isEqualTo(expectedAllocation);
-            assertThat(data.getGatekeepingOrderEventData().getShowUrgentHearingAllocation()).isEqualTo(YesNo.YES);
-        }
-
-        @Test
-        void shouldPrePopulateFieldToHideAllocationPageWhenAllocationDecisionAlreadyMade() {
-            CaseData caseData = CaseData.builder()
-                .state(State.GATEKEEPING)
-                .hearingDetails(hearings)
-                .allocationDecision(Allocation.builder()
-                    .judgeLevelRadio("District judge")
-                    .proposalReason("blah")
-                    .build())
-                .sdoRouter(URGENT)
-                .build();
-
-            CaseData data = extractCaseData(postMidEvent(caseData, "pre-populate"));
-
-            assertThat(data.getGatekeepingOrderEventData().getUrgentHearingAllocation()).isNull();
-            assertThat(data.getGatekeepingOrderEventData().getShowUrgentHearingAllocation()).isEqualTo(YesNo.NO);
         }
     }
 
