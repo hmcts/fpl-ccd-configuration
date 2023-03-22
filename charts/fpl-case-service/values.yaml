@@ -77,6 +77,7 @@ java:
         - AppInsightsInstrumentationKey
         - scheduler-db-password
         - rcj-family-high-court-inbox
+        - court-to-court-admin-mapping
   applicationPort: 4000
 
 ccd-case-document-am-api:

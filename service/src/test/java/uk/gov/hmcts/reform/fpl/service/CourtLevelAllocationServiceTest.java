@@ -102,7 +102,7 @@ class CourtLevelAllocationServiceTest {
             .judgeLevelRadio(null)
             .build();
 
-        Allocation allocationDecision = courtAllocationService.setAllocationDecisionIfNull(caseData);
+        Allocation allocationDecision = courtAllocationService.createAllocationDecisionIfNull(caseData);
 
         assertThat(allocationDecision).isEqualTo(expectedDecision);
     }
