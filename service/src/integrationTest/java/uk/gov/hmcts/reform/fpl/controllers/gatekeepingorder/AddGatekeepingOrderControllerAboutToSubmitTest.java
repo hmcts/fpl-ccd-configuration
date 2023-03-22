@@ -296,6 +296,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
             .orders(Orders.builder().orderType(List.of(CARE_ORDER)).build())
             .gatekeepingOrderRouter(GatekeepingOrderRoute.UPLOAD)
             .state(GATEKEEPING)
+            .allocationDecision(allocation)
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .useAllocatedJudge("Yes")
                 .legalAdvisorName("Chris Newport")
