@@ -23,7 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.model.event.OrderEventData;
+import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.GatekeepingOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -94,15 +94,8 @@ public class GatekeepingOrderService {
             .build();
     }
 
-    public StandardDirectionOrder buildGatekeepingOrderFromUploadedFile(CaseData caseData) {
-        return buildOrderFromUploadedFile(caseData, caseData.getGatekeepingOrderEventData());
-    }
-
-    public StandardDirectionOrder buildUrgentDirectionsOrderFromUploadedFile(CaseData caseData) {
-        return buildOrderFromUploadedFile(caseData, caseData.getUrgentDirectionsOrderEventData());
-    }
-
-    private StandardDirectionOrder buildOrderFromUploadedFile(CaseData caseData, OrderEventData eventData) {
+    public StandardDirectionOrder buildOrderFromUploadedFile(CaseData caseData) {
+        var eventData = caseData.getGatekeepingOrderEventData();
         final GatekeepingOrderSealDecision decision = eventData.getGatekeepingOrderSealDecision();
 
         DocumentReference document = decision.getDraftDocument();
@@ -117,16 +110,10 @@ public class GatekeepingOrderService {
             .build();
     }
 
-    public StandardDirectionOrder buildGatekeepingOrderFromGeneratedFile(CaseData caseData) {
-        return buildOrderFromGeneratedFile(caseData, caseData.getGatekeepingOrderEventData());
-    }
+    public StandardDirectionOrder buildOrderFromGeneratedFile(CaseData caseData) {
 
-    public StandardDirectionOrder buildUrgentDirectionsOrderFromGeneratedFile(CaseData caseData) {
-        return buildOrderFromGeneratedFile(caseData, caseData.getUrgentDirectionsOrderEventData());
-    }
-
-    private StandardDirectionOrder buildOrderFromGeneratedFile(CaseData caseData, OrderEventData eventData) {
-        final GatekeepingOrderSealDecision decision = eventData.getGatekeepingOrderSealDecision();
+        final GatekeepingOrderSealDecision decision =
+            caseData.getGatekeepingOrderEventData().getGatekeepingOrderSealDecision();
 
         StandardDirectionOrder currentOrder = buildBaseGatekeepingOrder(caseData);
 
@@ -150,8 +137,7 @@ public class GatekeepingOrderService {
         return YesNo.fromString(caseData.getLanguageRequirement()) == YesNo.YES ? ENGLISH_TO_WELSH : NO;
     }
 
-    public Optional<HearingBooking> getHearing(CaseDetails caseDetails) {
-        final CaseData caseData = converter.convert(caseDetails);
+    public Optional<HearingBooking> getHearing(CaseData caseData) {
         return caseData.getFirstHearingOfTypes(List.of(HearingType.CASE_MANAGEMENT,
             HearingType.INTERIM_CARE_ORDER, HearingType.ACCELERATED_DISCHARGE_OF_CARE));
     }
@@ -171,7 +157,7 @@ public class GatekeepingOrderService {
     }
 
     private StandardDirectionOrder buildBaseGatekeepingOrder(CaseData caseData) {
-        OrderEventData eventData = caseData.getGatekeepingOrderEventData();
+        GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor =
             getJudgeForTabView(eventData.getGatekeepingOrderIssuingJudge(), caseData.getAllocatedJudge());
@@ -213,32 +199,18 @@ public class GatekeepingOrderService {
         return documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
     }
 
-    public CaseData populateGatekeepingDirections(CaseDetails caseDetails) {
+    public CaseData populateStandardDirections(CaseDetails caseDetails) {
         final CaseData caseData = converter.convert(caseDetails);
-        final OrderEventData eventData = caseData.getGatekeepingOrderEventData();
-        populateDirections(caseDetails, eventData, caseData.getStandardDirectionOrder());
-        return caseData;
-    }
+        final GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
 
-    public CaseData populateUrgentDirections(CaseDetails caseDetails) {
-        final CaseData caseData = converter.convert(caseDetails);
-        final OrderEventData eventData = caseData.getUrgentDirectionsOrderEventData();
-        populateDirections(caseDetails, eventData, caseData.getUrgentDirectionsOrder());
-        return caseData;
-    }
-
-    private void populateDirections(final CaseDetails caseDetails,
-                                    final OrderEventData eventData,
-                                    final StandardDirectionOrder draftOrder) {
-
-        final List<StandardDirection> draftStandardDirections = ofNullable(draftOrder)
+        final List<StandardDirection> draftStandardDirections = ofNullable(caseData.getStandardDirectionOrder())
             .map(StandardDirectionOrder::getStandardDirections)
             .map(ElementUtils::unwrapElements)
             .orElseGet(ArrayList::new);
 
         final List<DirectionType> requestedDirections = eventData.getRequestedDirections();
 
-        final HearingBooking firstHearing = getHearing(caseDetails).orElse(null);
+        final HearingBooking firstHearing = getHearing(caseData).orElse(null);
 
         Stream.of(DirectionType.values())
             .filter(directionType -> !requestedDirections.contains(directionType))
@@ -252,24 +224,15 @@ public class GatekeepingOrderService {
             .forEach(direction -> {
                 caseDetails.getData().put(direction.getType().getFieldName(), direction);
             });
-    }
 
-    public CaseData updateGatekeepingDirections(CaseDetails caseDetails) {
-        final CaseData caseData = converter.convert(caseDetails);
-        final OrderEventData eventData = caseData.getGatekeepingOrderEventData();
-        updateDirections(caseDetails, eventData);
         return caseData;
     }
 
-    public CaseData updateUrgentDirections(CaseDetails caseDetails) {
+    public CaseData updateStandardDirections(CaseDetails caseDetails) {
         final CaseData caseData = converter.convert(caseDetails);
-        final OrderEventData eventData = caseData.getUrgentDirectionsOrderEventData();
-        updateDirections(caseDetails, eventData);
-        return caseData;
-    }
+        final var eventData = caseData.getGatekeepingOrderEventData();
 
-    public void updateDirections(CaseDetails caseDetails, OrderEventData eventData) {
-        final HearingBooking firstHearing = getHearing(caseDetails).orElse(null);
+        final HearingBooking firstHearing = getHearing(caseData).orElse(null);
 
         final List<StandardDirection> standardDirections = eventData.getRequestedDirections().stream()
             .map(requestedType -> {
@@ -289,6 +252,8 @@ public class GatekeepingOrderService {
             .collect(toList());
 
         eventData.setStandardDirections(wrapElements(standardDirections));
+
+        return caseData;
     }
 
     public StandardDirectionOrder sealDocumentAfterEventSubmitted(CaseData caseData) {

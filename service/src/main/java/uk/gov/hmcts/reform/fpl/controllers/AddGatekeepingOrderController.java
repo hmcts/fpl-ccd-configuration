@@ -96,9 +96,9 @@ public class AddGatekeepingOrderController extends CallbackController {
                 "The direction-selection callback does not support %s route ", caseData.getGatekeepingOrderRouter()));
         }
 
-        orderService.populateGatekeepingDirections(caseDetails);
+        orderService.populateStandardDirections(caseDetails);
 
-        orderService.getHearing(caseDetails)
+        orderService.getHearing(caseData)
             .map(HearingBooking::getStartDate)
             .map(hearingDate -> formatLocalDateTimeBaseUsingFormat(hearingDate, DATE_TIME))
             .ifPresent(hearingDate -> {
@@ -113,7 +113,7 @@ public class AddGatekeepingOrderController extends CallbackController {
 
     @PostMapping("/prepare-decision/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleGenerateDraftMidEvent(@RequestBody CallbackRequest request) {
-        final CaseData caseData = orderService.updateGatekeepingDirections(request.getCaseDetails());
+        final CaseData caseData = orderService.updateStandardDirections(request.getCaseDetails());
         final CaseDetailsMap data = caseDetailsMap(request.getCaseDetails());
 
         data.put("gatekeepingOrderSealDecision", orderService.buildSealDecision(caseData));
@@ -127,17 +127,17 @@ public class AddGatekeepingOrderController extends CallbackController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
 
-        final CaseData caseData = orderService.updateGatekeepingDirections(request.getCaseDetails());
+        final CaseData caseData = orderService.updateStandardDirections(request.getCaseDetails());
         final CaseDetailsMap data = caseDetailsMap(request.getCaseDetails());
 
         final GatekeepingOrderRoute sdoRouter = caseData.getGatekeepingOrderRouter();
 
         switch (sdoRouter) {
             case UPLOAD:
-                data.put("standardDirectionOrder", orderService.buildGatekeepingOrderFromUploadedFile(caseData));
+                data.put("standardDirectionOrder", orderService.buildOrderFromUploadedFile(caseData));
                 break;
             case SERVICE:
-                data.put("standardDirectionOrder", orderService.buildGatekeepingOrderFromGeneratedFile(caseData));
+                data.put("standardDirectionOrder", orderService.buildOrderFromGeneratedFile(caseData));
                 break;
         }
 
