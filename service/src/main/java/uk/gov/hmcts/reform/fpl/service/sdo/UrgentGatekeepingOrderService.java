@@ -50,7 +50,7 @@ public class UrgentGatekeepingOrderService {
         String allocation = null;
 
         if (noPreExistingAllocationDecision(caseData)) {
-            Allocation allocationDecision = allocationService.setAllocationDecisionIfNull(
+            Allocation allocationDecision = allocationService.createAllocationDecisionIfNull(
                 caseData, eventData.getUrgentHearingAllocation()
             );
 
@@ -80,7 +80,7 @@ public class UrgentGatekeepingOrderService {
         String allocation = null;
 
         if (noPreExistingAllocationDecision(caseData)) {
-            Allocation allocationDecision = allocationService.setAllocationDecisionIfNull(
+            Allocation allocationDecision = allocationService.createAllocationDecisionIfNull(
                 caseData, eventData.getUrgentHearingAllocation()
             );
 

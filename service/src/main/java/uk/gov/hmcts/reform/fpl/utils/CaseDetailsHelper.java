@@ -96,18 +96,18 @@ public class CaseDetailsHelper {
     }
 
     public static boolean isInOpenState(CaseDetails caseDetails) {
-        return isInState(caseDetails, OPEN);
+        return isInState(OPEN, caseDetails);
     }
 
     public static boolean isInReturnedState(CaseDetails caseDetails) {
-        return isInState(caseDetails, RETURNED);
+        return isInState(RETURNED, caseDetails);
     }
 
     public static boolean isInGatekeepingState(CaseDetails caseDetails) {
-        return isInState(caseDetails, GATEKEEPING);
+        return isInState(GATEKEEPING, caseDetails);
     }
 
-    private static boolean isInState(CaseDetails caseDetails, State state) {
+    public static boolean isInState(State state, CaseDetails caseDetails) {
         return state.getValue().equals(caseDetails.getState());
     }
 }
