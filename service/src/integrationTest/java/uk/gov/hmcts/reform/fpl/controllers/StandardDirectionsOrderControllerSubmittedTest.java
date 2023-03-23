@@ -33,12 +33,12 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CAFCASS;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CTSC;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_ISSUED_CAFCASS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_ISSUED_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_ISSUED_LA;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_OR_UDO_AND_NOP_ISSUED_CAFCASS;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_OR_UDO_AND_NOP_ISSUED_CTSC;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_OR_UDO_AND_NOP_ISSUED_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_AND_NOP_ISSUED_CAFCASS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_AND_NOP_ISSUED_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_AND_NOP_ISSUED_LA;
@@ -115,7 +115,7 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
     void shouldTriggerEventWhenSDOSubmitted() {
         postSubmittedEvent(toCallBackRequest(buildCaseDataWithSDO(SEALED), GATEKEEPING_CASE_DATA));
 
-        verifyEmails(SDO_AND_NOP_ISSUED_CAFCASS, SDO_AND_NOP_ISSUED_CTSC, SDO_AND_NOP_ISSUED_LA);
+        verifyEmails(SDO_OR_UDO_AND_NOP_ISSUED_CAFCASS, SDO_OR_UDO_AND_NOP_ISSUED_CTSC, SDO_OR_UDO_AND_NOP_ISSUED_LA);
     }
 
     @Test

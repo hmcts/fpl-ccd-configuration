@@ -13,8 +13,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING_LISTING;
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO;
-import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO_AND_NOP;
-import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.URGENT_AND_NOP;
+import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO_OR_UDO_AND_NOP;
 
 @Component
 public class GatekeepingOrderEventNotificationDecider {
@@ -35,13 +34,8 @@ public class GatekeepingOrderEventNotificationDecider {
             event.languageTranslationRequirement(sdo.getTranslationRequirements());
             // if we are in the gatekeeping or gatekeeeping-listing state send the NoP related notifications
             event.notificationGroup((isInGatekeeping(previousState) || isInGatekeepingListing(previousState))
-                ? SDO_AND_NOP : SDO);
+                ? SDO_OR_UDO_AND_NOP : SDO);
             event.orderTitle(sdo.asLabel());
-        } else {
-            event.order(urgentHearingOrder.getOrder());
-            event.notificationGroup(URGENT_AND_NOP);
-            event.languageTranslationRequirement(urgentHearingOrder.getTranslationRequirements());
-            event.orderTitle(urgentHearingOrder.asLabel());
         }
 
         return Optional.of(event.build());

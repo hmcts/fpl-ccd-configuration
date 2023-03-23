@@ -31,7 +31,7 @@ import uk.gov.hmcts.reform.fpl.service.PastHearingDatesValidatorService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.hearing.ManageHearingsOthersGenerator;
-import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderEventNotificationDecider;
+import uk.gov.hmcts.reform.fpl.service.sdo.ListGatekeepingHearingDecider;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.HashMap;
@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -78,7 +79,7 @@ public class ListGatekeepingHearingController extends CallbackController {
     private final ManageHearingsOthersGenerator othersGenerator;
     private final GatekeepingOrderService orderService;
     private final NoticeOfProceedingsService nopService;
-    private final GatekeepingOrderEventNotificationDecider notificationDecider;
+    private final ListGatekeepingHearingDecider listGatekeepingHearingDecider;
     private final CoreCaseDataService coreCaseDataService;
 
     private final CaseConverter converter;
@@ -275,7 +276,7 @@ public class ListGatekeepingHearingController extends CallbackController {
 
         final GatekeepingOrderRoute sdoRouter;
         final String orderType;
-        if (Objects.nonNull(eventData.getGatekeepingOrderRouter())) {
+        if (nonNull(eventData.getGatekeepingOrderRouter())) {
             sdoRouter = eventData.getGatekeepingOrderRouter();
             orderType = "standardDirectionOrder";
         } else {
@@ -327,7 +328,7 @@ public class ListGatekeepingHearingController extends CallbackController {
 
         final GatekeepingOrderRoute sdoRouter;
         final String orderType;
-        if (Objects.nonNull(caseData.getGatekeepingOrderRouter())) {
+        if (nonNull(caseData.getGatekeepingOrderRouter())) {
             sdoRouter = caseData.getGatekeepingOrderRouter();
             orderType = "standardDirectionOrder";
         } else {
@@ -350,7 +351,7 @@ public class ListGatekeepingHearingController extends CallbackController {
         coreCaseDataService
             .triggerEvent(caseDataAfterSealing.getId(), "internal-change-add-gatekeeping", updates);
 
-        notificationDecider.buildEventToPublish(caseDataAfterSealing, getCaseDataBefore(request).getState())
+        listGatekeepingHearingDecider.buildEventToPublish(caseDataAfterSealing)
             .ifPresent(eventToPublish -> {
                 coreCaseDataService.triggerEvent(
                     JURISDICTION,
@@ -364,7 +365,7 @@ public class ListGatekeepingHearingController extends CallbackController {
     }
 
     private boolean needTemporaryHearingJudgeAllocated(CaseData caseData, HearingBooking hearingBooking) {
-        return Objects.nonNull(hearingBooking.getHearingJudgeLabel())
+        return nonNull(hearingBooking.getHearingJudgeLabel())
             && (Objects.isNull(caseData.getHearingOption())
             || NEW_HEARING.equals(caseData.getHearingOption())
             || RE_LIST_NOW.equals(caseData.getHearingReListOption()));

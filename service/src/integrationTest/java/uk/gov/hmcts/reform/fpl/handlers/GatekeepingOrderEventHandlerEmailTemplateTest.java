@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO;
-import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO_AND_NOP;
+import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO_OR_UDO_AND_NOP;
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.URGENT_AND_NOP;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
@@ -70,7 +70,7 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     @Test
     void cafcassSDOAndNoPEmailTemplate() {
-        underTest.notifyCafcass(EVENT_BUILDER.notificationGroup(SDO_AND_NOP).build());
+        underTest.notifyCafcass(EVENT_BUILDER.notificationGroup(SDO_OR_UDO_AND_NOP).build());
 
         assertThat(response())
             .hasSubject("SDO and notice of proceedings issued, " + CHILD_LAST_NAME)
@@ -139,7 +139,7 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     @Test
     void ctcsSDOAndNoPEmailTemplate() {
-        underTest.notifyCTSC(EVENT_BUILDER.notificationGroup(SDO_AND_NOP).build());
+        underTest.notifyCTSC(EVENT_BUILDER.notificationGroup(SDO_OR_UDO_AND_NOP).build());
 
         assertThat(response())
             .hasSubject("SDO and notice of proceedings issued, " + CHILD_LAST_NAME)
@@ -189,7 +189,7 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     @Test
     void laSDOAndNoPEmailTemplate() {
-        underTest.notifyLocalAuthority(EVENT_BUILDER.notificationGroup(SDO_AND_NOP).build());
+        underTest.notifyLocalAuthority(EVENT_BUILDER.notificationGroup(SDO_OR_UDO_AND_NOP).build());
 
         assertThat(response())
             .hasSubject("SDO and notice of proceedings issued, " + CHILD_LAST_NAME)

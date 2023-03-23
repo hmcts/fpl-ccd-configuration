@@ -29,11 +29,12 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CAFCASS;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_LA;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_OR_UDO_AND_NOP_ISSUED_CAFCASS;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_OR_UDO_AND_NOP_ISSUED_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_AND_NOP_ISSUED_CTSC;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionsOrderType.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
-import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO_AND_NOP;
+import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO_OR_UDO_AND_NOP;
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.URGENT_AND_NOP;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_NAME;
@@ -83,17 +84,17 @@ class GatekeepingOrderEventHandlerTest {
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .build();
 
-        final GatekeepingOrderEvent event = gatekeepingOrderEvent(SDO_AND_NOP, caseData);
+        final GatekeepingOrderEvent event = gatekeepingOrderEvent(SDO_OR_UDO_AND_NOP, caseData);
 
         given(cafcassLookup.getCafcass(LOCAL_AUTHORITY_CODE))
             .willReturn(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
 
-        given(cafcassContentProvider.getNotifyData(caseData, ORDER)).willReturn(NOTIFY_DATA);
+        given(cafcassContentProvider.getNotifyData(caseData, ORDER, SDO)).willReturn(NOTIFY_DATA);
 
         underTest.notifyCafcass(event);
 
         verify(notificationService).sendEmail(
-            SDO_AND_NOP_ISSUED_CAFCASS,
+            SDO_OR_UDO_AND_NOP_ISSUED_CAFCASS,
             CAFCASS_EMAIL_ADDRESS,
             NOTIFY_DATA,
             CASE_ID
@@ -104,9 +105,9 @@ class GatekeepingOrderEventHandlerTest {
     void shouldNotifyLocalAuthorityOfIssuedSDO() {
         final CaseData caseData = CaseData.builder().id(CASE_ID).build();
 
-        final GatekeepingOrderEvent event = gatekeepingOrderEvent(SDO_AND_NOP, caseData);
+        final GatekeepingOrderEvent event = gatekeepingOrderEvent(SDO_OR_UDO_AND_NOP, caseData);
 
-        given(standardContentProvider.buildNotificationParameters(caseData)).willReturn(NOTIFY_DATA);
+        given(standardContentProvider.buildNotificationParameters(caseData, SDO)).willReturn(NOTIFY_DATA);
 
         given(localAuthorityRecipients.getRecipients(
             RecipientsRequest.builder()
@@ -117,7 +118,7 @@ class GatekeepingOrderEventHandlerTest {
         underTest.notifyLocalAuthority(event);
 
         verify(notificationService).sendEmail(
-            SDO_AND_NOP_ISSUED_LA,
+            SDO_OR_UDO_AND_NOP_ISSUED_LA,
             Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             NOTIFY_DATA,
             CASE_ID);
@@ -129,7 +130,7 @@ class GatekeepingOrderEventHandlerTest {
 
         final GatekeepingOrderEvent event = gatekeepingOrderEvent(URGENT_AND_NOP, caseData);
 
-        given(standardContentProvider.buildNotificationParameters(caseData)).willReturn(NOTIFY_DATA);
+        given(standardContentProvider.buildNotificationParameters(caseData, SDO)).willReturn(NOTIFY_DATA);
 
         given(ctscLookup.getEmail()).willReturn(CTSC_INBOX);
 

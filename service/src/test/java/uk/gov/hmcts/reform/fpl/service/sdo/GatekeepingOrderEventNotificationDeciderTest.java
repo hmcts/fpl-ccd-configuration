@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING_LISTING;
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO;
-import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO_AND_NOP;
+import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO_OR_UDO_AND_NOP;
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.URGENT_AND_NOP;
 
 class GatekeepingOrderEventNotificationDeciderTest {
@@ -101,7 +101,7 @@ class GatekeepingOrderEventNotificationDeciderTest {
             .build();
 
         assertThat(underTest.buildEventToPublish(caseData, GATEKEEPING)).contains(GatekeepingOrderEvent.builder()
-            .notificationGroup(SDO_AND_NOP)
+            .notificationGroup(SDO_OR_UDO_AND_NOP)
             .order(ORDER)
             .orderTitle("Gatekeeping order - 6 August 2020")
             .languageTranslationRequirement(WELSH_TO_ENGLISH)
@@ -123,7 +123,7 @@ class GatekeepingOrderEventNotificationDeciderTest {
 
         assertThat(underTest.buildEventToPublish(caseData, GATEKEEPING_LISTING))
             .contains(GatekeepingOrderEvent.builder()
-            .notificationGroup(SDO_AND_NOP)
+            .notificationGroup(SDO_OR_UDO_AND_NOP)
             .order(ORDER)
             .orderTitle("Gatekeeping order - 6 August 2020")
             .languageTranslationRequirement(WELSH_TO_ENGLISH)

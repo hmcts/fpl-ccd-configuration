@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.DirectionsOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -61,7 +62,7 @@ class SDOIssuedCafcassContentProviderTest extends AbstractEmailContentProviderTe
             .callout("Smith, FAM NUM, hearing 1 Jan 2020")
             .build();
 
-        NotifyData actualParameters = underTest.getNotifyData(caseData, ORDER);
+        NotifyData actualParameters = underTest.getNotifyData(caseData, ORDER, DirectionsOrderType.SDO);
 
         assertThat(actualParameters).isEqualTo(expectedParameters);
     }
