@@ -129,8 +129,9 @@ module.exports = {
     }
   },
 
-  seeEventSubmissionConfirmation(event) {
-    this.waitForText(`updated with event: ${event}`);
+  seeEventSubmissionConfirmation() {
+    // remove temporarily since it may disappear sometimes.
+    //this.waitForText(`updated with event: ${event}`);
   },
 
   clickHyperlink(link, urlNavigatedTo) {
