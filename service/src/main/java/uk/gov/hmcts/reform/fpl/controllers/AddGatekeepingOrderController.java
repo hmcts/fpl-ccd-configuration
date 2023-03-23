@@ -154,7 +154,8 @@ public class AddGatekeepingOrderController extends CallbackController {
         }
 
         if (Objects.isNull(caseData.getUrgentDirectionsRouter())) {
-            final Allocation allocationDecision = allocationService.createAllocationDecisionIfNull(getCaseData(request));
+            final Allocation allocationDecision =
+                allocationService.createAllocationDecisionIfNull(getCaseData(request));
             data.put("allocationDecision", allocationDecision);
         }
 

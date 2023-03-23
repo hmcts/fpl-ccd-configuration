@@ -256,7 +256,7 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
             .build();
 
         assertThatThrownBy(() -> postMidEvent(caseData, CALLBACK_NAME))
-            .hasMessageContaining(String.format("The %s callback does not support %s route", CALLBACK_NAME, route));
+            .hasMessageContaining(String.format("The %s callback does not support the UPLOAD route", CALLBACK_NAME, route));
     }
 
     private StandardDirection getStandardDirection(AboutToStartOrSubmitCallbackResponse response, DirectionType type) {
