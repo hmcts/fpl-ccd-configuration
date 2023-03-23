@@ -92,7 +92,7 @@ async function amendOrder(I, caseViewPage, manageOrdersEventPage, order, orderOp
 }
 
 function assertAmendment(I, caseViewPage, order) {
-  // I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.seeInTab([order.tabObjectName, 'Amended'], dateFormat(new Date(), 'd mmm yyyy'));
   I.seeInTab([order.tabObjectName, order.tabOrderDocFieldName], `amended_${order.file}`);
