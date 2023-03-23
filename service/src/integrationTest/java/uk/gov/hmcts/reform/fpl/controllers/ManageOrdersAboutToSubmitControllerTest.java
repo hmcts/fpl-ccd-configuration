@@ -171,6 +171,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
             .manageOrdersFurtherDirections("test directions")
             .manageOrdersExclusionRequirement("Yes")
             .manageOrdersWhoIsExcluded("John")
+            .manageOrdersIsFinalOrder("No")
             .manageOrdersExclusionStartDate(dateNow().plusDays(2))
             .manageOrdersPowerOfArrest(UPLOADED_POWER_OF_ARREST)
             .build();
