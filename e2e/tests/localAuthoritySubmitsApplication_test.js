@@ -100,6 +100,10 @@ Scenario('Local authority request discharge of order @cross-browser', async ({I,
     'Add the respondents\' details in the Respondents\' details',
     'Add the allocation proposal in the Allocation proposal']);
 });
+Scenario('@ashley-test', async ({I}) => {
+  await setupScenario(I);
+});
+
 
 Scenario('local authority enters orders and directions @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, enterOrdersAndDirectionsNeededEventPage}) => {
   await setupScenario(I);
@@ -748,3 +752,4 @@ Scenario('HMCTS admin check the payment @nightlyOnly', async ({I, caseViewPage, 
   caseViewPage.selectTab(caseViewPage.tabs.paymentHistory);
   await paymentHistoryPage.checkPayment(feeToPay, applicant.pbaNumber);
 }).retry(1); // retry due to async nature of the payment and the payment could be still processing..
+
