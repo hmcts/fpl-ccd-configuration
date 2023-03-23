@@ -39,7 +39,7 @@ async function createPlacementApplication(I, placementEventPage, caseViewPage) {
   caseViewPage.selectTab(caseViewPage.tabs.placement);
 
   I.seeInTab(['Child 1', 'Name'], 'Timothy Jones');
-  I.seeInTab(['Child 1', 'Application document'], 'mockFile.pdf');
+  I.seeInTab(['Child 1', 'Application document'], 'mockFile.docx');
   I.seeInTab(['Child 1', 'Supporting document 1', 'Document type'], 'Birth/Adoption Certificate');
   I.seeInTab(['Child 1', 'Supporting document 1', 'Document'], 'mockFile.txt');
   I.seeInTab(['Child 1', 'Supporting document 2', 'Document type'], 'Statement of facts');
@@ -54,7 +54,7 @@ async function createPlacementApplication(I, placementEventPage, caseViewPage) {
   I.seeInTab(['Child 1', 'Confidential document 2', 'Document type'], 'Other confidential documents');
   I.seeInTab(['Child 1', 'Confidential document 2', 'Document'], 'mockFile5.txt');
   I.seeInTab(['Child 1', 'Confidential document 2', 'Description'], 'Description 2');
-  I.seeTagInTab(['Child 1', 'Confidential document 1', 'Confidential']);
+  I.seeTagInTab(['Child 1', 'Confidential document 2', 'Confidential']);
 }
 
 async function createPlacementNoticeOfHearing(I, placementHearingEventPage, caseViewPage) {
