@@ -29,10 +29,19 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "GATEKEEPING_LISTING",
+    "Name": "Gatekeeping Listing",
+    "Description": "Gatekeeping Listing case state - when Judicial gatekeeping event is triggered",
+    "DisplayOrder": 4,
+    "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "PREPARE_FOR_HEARING",
     "Name": "Case management",
     "Description": "State indicating that SDO is ready to send - triggered when SDO is issued",
-    "DisplayOrder": 4,
+    "DisplayOrder": 5,
     "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**",
     "Comment": "PREPARE_FOR_HEARING state name changed as part of FPLA-1920. CaseStateID naming remains to avoid break existing cases."
   },
@@ -42,7 +51,7 @@
     "ID": "FINAL_HEARING",
     "Name": "Final hearing",
     "Description": "Final hearing case state - Triggered via CMO event and hearing is of final type",
-    "DisplayOrder": 5,
+    "DisplayOrder": 6,
     "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**"
   },
   {
@@ -51,7 +60,7 @@
     "ID": "CLOSED",
     "Name": "Closed",
     "Description": "Final case state, no longer allowed to create orders apart from C21",
-    "DisplayOrder": 6,
+    "DisplayOrder": 7,
     "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**"
   },
   {
@@ -60,7 +69,7 @@
     "ID": "Deleted",
     "Name": "Deleted",
     "Description": "Deleted case state - all data is removed",
-    "DisplayOrder": 7,
+    "DisplayOrder": 8,
     "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**"
   },
   {
@@ -69,7 +78,7 @@
     "ID": "RETURNED",
     "Name": "Returned",
     "Description": "Returned case state - LA to make changes to previously submitted application",
-    "DisplayOrder": 8,
+    "DisplayOrder": 9,
     "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**"
   },
   {
