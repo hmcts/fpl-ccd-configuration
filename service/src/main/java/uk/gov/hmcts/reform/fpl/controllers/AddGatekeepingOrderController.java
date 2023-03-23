@@ -101,7 +101,7 @@ public class AddGatekeepingOrderController extends CallbackController {
 
         if (caseData.getGatekeepingOrderRouter() == UPLOAD || caseData.getUrgentDirectionsRouter() == UPLOAD) {
             throw new UnsupportedOperationException(
-                "The direction-selection callback does not support the UPLOAD route "
+                "The direction-selection callback does not support the UPLOAD route"
             );
         }
 

@@ -323,10 +323,20 @@ public class ListGatekeepingHearingController extends CallbackController {
         CaseData caseData = getCaseData(request);
         final CaseDetails caseDetails = request.getCaseDetails();
 
-        final GatekeepingOrderRoute sdoRoute = caseData.getGatekeepingOrderRouter();
         Map<String, Object> updates = new HashMap<>();
-        if (sdoRoute == UPLOAD) {
-            updates.put("standardDirectionOrder", orderService.sealDocumentAfterEventSubmitted(caseData));
+
+        final GatekeepingOrderRoute sdoRouter;
+        final String orderType;
+        if (Objects.nonNull(caseData.getGatekeepingOrderRouter())) {
+            sdoRouter = caseData.getGatekeepingOrderRouter();
+            orderType = "standardDirectionOrder";
+        } else {
+            sdoRouter = caseData.getUrgentDirectionsRouter();
+            orderType = "urgentDirectionsOrder";
+        }
+
+        if (sdoRouter == UPLOAD) {
+            updates.put(orderType, orderService.sealDocumentAfterEventSubmitted(caseData));
         }
 
         final CaseData caseDataAfterSealing;
