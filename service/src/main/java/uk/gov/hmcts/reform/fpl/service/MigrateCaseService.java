@@ -423,9 +423,9 @@ public class MigrateCaseService {
         Long caseId = caseData.getId();
         List<Element<SkeletonArgument>> skeletonArguments = caseData.getHearingDocuments().getSkeletonArgumentList();
 
-        if (skeletonArguments == null) {
+        if (skeletonArguments.isEmpty()) {
             throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, skeletonArgumentList is null",
+                "Migration {id = %s, case reference = %s}, skeletonArgumentList is empty",
                 migrationId, caseId, skeletonArgumentId
             ));
         }
