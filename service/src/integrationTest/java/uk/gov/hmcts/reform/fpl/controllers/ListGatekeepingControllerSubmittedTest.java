@@ -223,7 +223,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
         verifyNoInteractions(notificationClient);
 
         verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
-         verify(concurrencyHelper).submitEvent(any(), eq(CASE_ID), anyMap());
+        verify(concurrencyHelper).submitEvent(any(), eq(CASE_ID), anyMap());
         // start but don't finish
         verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
 
@@ -604,7 +604,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
         verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
         verify(concurrencyHelper).submitEvent(any(), eq(CASE_ID), anyMap());
 
-         // start don't finish
+        // start don't finish
         verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
         verifyNoMoreInteractions(concurrencyHelper);
     }
