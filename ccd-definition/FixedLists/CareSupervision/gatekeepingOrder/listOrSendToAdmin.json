@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GatekeepingListOrSendToAdmin",
+    "ListElementCode": "YES",
+    "ListElement": "I complete the listing and serve the order",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GatekeepingListOrSendToAdmin",
+    "ListElementCode": "NO",
+    "ListElement": "The local court admin completes the listing and serves the order",
+    "DisplayOrder": 2
+  }
+]

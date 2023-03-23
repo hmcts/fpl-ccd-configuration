@@ -93,4 +93,5 @@ public final class NotifyTemplates {
     public static final String APPLICATION_FORM_REMOVED_CTSC_LEAD_TEMPLATE = "6aafe553-a493-477a-8599-4321506bc217";
     public static final String DRAFT_ORDER_REMOVED_TEMPLATE_FOR_JUDGES = "a16c2c75-f353-48aa-aeb4-e484a8e59161";
     public static final String DRAFT_ORDER_REMOVED_TEMPLATE = "8b9912b6-e70e-43d1-82e7-224a8469b082";
+    public static final String COURT_ADMIN_LISTING_TEMPLATE = "0de3b451-b21a-43da-8faa-3371fe67ecd2";
 }
