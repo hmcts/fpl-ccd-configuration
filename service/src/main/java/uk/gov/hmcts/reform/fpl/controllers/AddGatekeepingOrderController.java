@@ -23,13 +23,14 @@ import uk.gov.hmcts.reform.fpl.service.sdo.ListAdminEventNotificationDecider;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
+import java.util.Objects;
 
-import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.allNotNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -50,20 +51,20 @@ public class AddGatekeepingOrderController extends CallbackController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         final CaseData caseData = getCaseData(callbackRequest.getCaseDetails());
-        final CaseDetailsMap data = dataFixer.addLanguageRequirement(caseDetailsMap(callbackRequest.getCaseDetails()));
-        final StandardDirectionOrder draftOrder = caseData.getStandardDirectionOrder();
-
-        final GatekeepingOrderRoute draftOrderRoute = caseData.getGatekeepingOrderRouter();
-
         final List<String> errors = routeValidator.allowAccessToEvent(caseData);
+        final CaseDetailsMap data = dataFixer.addLanguageRequirement(caseDetailsMap(callbackRequest.getCaseDetails()));
 
         if (isNotEmpty(errors)) {
             return respond(data, errors);
         }
 
-        boolean hasDraft = allNotNull(draftOrderRoute, draftOrder);
+        final GatekeepingOrderRoute draftOrderRoute = Objects.nonNull(caseData.getGatekeepingOrderRouter())
+            ? caseData.getGatekeepingOrderRouter() : caseData.getUrgentDirectionsRouter();
 
-        if (hasDraft) {
+        final StandardDirectionOrder draftOrder = Objects.nonNull(draftOrderRoute)
+            ? caseData.getStandardDirectionOrder() : caseData.getUrgentDirectionsOrder();
+
+        if (allNotNull(draftOrderRoute, draftOrder)) {
             switch (draftOrderRoute) {
                 case UPLOAD:
                     data.put("currentSDO", draftOrder.getOrderDoc());
@@ -80,8 +81,10 @@ public class AddGatekeepingOrderController extends CallbackController {
                 caseData.getGatekeepingOrderEventData().getGatekeepingOrderIssuingJudge()));
         }
 
-        final Allocation allocationDecision = allocationService.createDecision(caseData);
-        data.put("allocationDecision", allocationDecision);
+        if (Objects.isNull(caseData.getUrgentDirectionsRouter())) {
+            final Allocation allocationDecision = allocationService.createDecision(caseData);
+            data.put("allocationDecision", allocationDecision);
+        }
 
         return respond(data);
     }
@@ -91,9 +94,10 @@ public class AddGatekeepingOrderController extends CallbackController {
         final CaseDetails caseDetails = request.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
 
-        if (caseData.getGatekeepingOrderRouter() != SERVICE) {
-            throw new UnsupportedOperationException(format(
-                "The direction-selection callback does not support %s route ", caseData.getGatekeepingOrderRouter()));
+        if (caseData.getGatekeepingOrderRouter() == UPLOAD || caseData.getUrgentDirectionsRouter() == UPLOAD) {
+            throw new UnsupportedOperationException(
+                "The direction-selection callback does not support the UPLOAD route "
+            );
         }
 
         orderService.populateStandardDirections(caseDetails);
@@ -118,7 +122,7 @@ public class AddGatekeepingOrderController extends CallbackController {
 
         data.put("gatekeepingOrderSealDecision", orderService.buildSealDecision(caseData));
 
-        if (caseData.getGatekeepingOrderRouter() == SERVICE) {
+        if (caseData.getGatekeepingOrderRouter() == SERVICE || caseData.getUrgentDirectionsRouter() == SERVICE) {
             data.put("standardDirections", caseData.getGatekeepingOrderEventData().getStandardDirections());
         }
         return respond(data);
@@ -130,19 +134,30 @@ public class AddGatekeepingOrderController extends CallbackController {
         final CaseData caseData = orderService.updateStandardDirections(request.getCaseDetails());
         final CaseDetailsMap data = caseDetailsMap(request.getCaseDetails());
 
-        final GatekeepingOrderRoute sdoRouter = caseData.getGatekeepingOrderRouter();
+        final GatekeepingOrderRoute sdoRouter;
+        final String orderType;
+        if (Objects.nonNull(caseData.getGatekeepingOrderRouter())) {
+            sdoRouter = caseData.getGatekeepingOrderRouter();
+            orderType = "standardDirectionOrder";
+        } else {
+            sdoRouter = caseData.getUrgentDirectionsRouter();
+            orderType = "standardDirectionOrder";//TODO: update this to "urgentDirectionsOrder" once the field is added
+        }
 
         switch (sdoRouter) {
             case UPLOAD:
-                data.put("standardDirectionOrder", orderService.buildOrderFromUploadedFile(caseData));
+                data.put(orderType, orderService.buildOrderFromUploadedFile(caseData));
                 break;
             case SERVICE:
-                data.put("standardDirectionOrder", orderService.buildOrderFromGeneratedFile(caseData));
+                data.put(orderType, orderService.buildOrderFromGeneratedFile(caseData));
                 break;
         }
 
-        final Allocation allocationDecision = allocationService.createAllocationDecisionIfNull(getCaseData(request));
-        data.put("allocationDecision", allocationDecision);
+        if (Objects.isNull(caseData.getUrgentDirectionsRouter())) {
+            final Allocation allocationDecision =
+                allocationService.createAllocationDecisionIfNull(getCaseData(request));
+            data.put("allocationDecision", allocationDecision);
+        }
 
         return respond(data);
     }
