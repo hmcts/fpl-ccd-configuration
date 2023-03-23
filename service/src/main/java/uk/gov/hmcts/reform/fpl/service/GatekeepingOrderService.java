@@ -95,14 +95,13 @@ public class GatekeepingOrderService {
     }
 
     public StandardDirectionOrder buildOrderFromUploadedFile(CaseData caseData) {
-        GatekeepingOrderEventData gatekeepingOrderEventData = caseData.getGatekeepingOrderEventData();
-
-        final GatekeepingOrderSealDecision decision = gatekeepingOrderEventData.getGatekeepingOrderSealDecision();
+        var eventData = caseData.getGatekeepingOrderEventData();
+        final GatekeepingOrderSealDecision decision = eventData.getGatekeepingOrderSealDecision();
 
         DocumentReference document = decision.getDraftDocument();
 
         LanguageTranslationRequirement translationRequirements =
-            gatekeepingOrderEventData.getGatekeepingTranslationRequirements();
+            eventData.getGatekeepingTranslationRequirements();
         return buildBaseGatekeepingOrder(caseData).toBuilder()
             .dateOfUpload(time.now().toLocalDate())
             .uploader(userService.getUserName())
@@ -112,9 +111,9 @@ public class GatekeepingOrderService {
     }
 
     public StandardDirectionOrder buildOrderFromGeneratedFile(CaseData caseData) {
-        GatekeepingOrderEventData gatekeepingOrderEventData = caseData.getGatekeepingOrderEventData();
-        final GatekeepingOrderSealDecision decision = gatekeepingOrderEventData
-            .getGatekeepingOrderSealDecision();
+
+        final GatekeepingOrderSealDecision decision =
+            caseData.getGatekeepingOrderEventData().getGatekeepingOrderSealDecision();
 
         StandardDirectionOrder currentOrder = buildBaseGatekeepingOrder(caseData);
 
@@ -204,11 +203,12 @@ public class GatekeepingOrderService {
         final CaseData caseData = converter.convert(caseDetails);
         final GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
 
-        final List<DirectionType> requestedDirections = eventData.getRequestedDirections();
         final List<StandardDirection> draftStandardDirections = ofNullable(caseData.getStandardDirectionOrder())
             .map(StandardDirectionOrder::getStandardDirections)
             .map(ElementUtils::unwrapElements)
             .orElseGet(ArrayList::new);
+
+        final List<DirectionType> requestedDirections = eventData.getRequestedDirections();
 
         final HearingBooking firstHearing = getHearing(caseData).orElse(null);
 
@@ -230,7 +230,7 @@ public class GatekeepingOrderService {
 
     public CaseData updateStandardDirections(CaseDetails caseDetails) {
         final CaseData caseData = converter.convert(caseDetails);
-        final GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
+        final var eventData = caseData.getGatekeepingOrderEventData();
 
         final HearingBooking firstHearing = getHearing(caseData).orElse(null);
 
