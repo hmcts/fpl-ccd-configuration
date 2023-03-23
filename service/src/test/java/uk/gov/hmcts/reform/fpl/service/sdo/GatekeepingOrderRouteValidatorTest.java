@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.sdo;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
@@ -28,7 +29,10 @@ class GatekeepingOrderRouteValidatorTest {
     @Test
     void allowAccessToEventShouldReturnErrorWhenSDOIsSealed() {
         StandardDirectionOrder sdo = mock(StandardDirectionOrder.class);
-        CaseData caseData = CaseData.builder().standardDirectionOrder(sdo).build();
+        CaseData caseData = CaseData.builder()
+            .gatekeepingOrderRouter(GatekeepingOrderRoute.UPLOAD)
+            .standardDirectionOrder(sdo)
+            .build();
         when(sdo.isSealed()).thenReturn(true);
 
         assertThat(underTest.allowAccessToEvent(caseData)).isEqualTo(List.of(EVENT_ACCESS_VALIDATION_MESSAGE));
@@ -37,7 +41,10 @@ class GatekeepingOrderRouteValidatorTest {
     @Test
     void allowAccessToEventShouldReturnNoErrorWhenSDOIsNotSealed() {
         StandardDirectionOrder sdo = mock(StandardDirectionOrder.class);
-        CaseData caseData = CaseData.builder().standardDirectionOrder(sdo).build();
+        CaseData caseData = CaseData.builder()
+            .gatekeepingOrderRouter(GatekeepingOrderRoute.UPLOAD)
+            .standardDirectionOrder(sdo)
+            .build();
         when(sdo.isSealed()).thenReturn(false);
 
         assertThat(underTest.allowAccessToEvent(caseData)).isEmpty();
