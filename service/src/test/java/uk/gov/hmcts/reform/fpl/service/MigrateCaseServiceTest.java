@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
+import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
@@ -1049,6 +1050,62 @@ class MigrateCaseServiceTest {
             Map<String, Object> updates = underTest.renameApplicationDocuments(caseData);
 
             assertThat(updates).extracting("applicationDocuments").asList().containsExactly(expectedDoc1, expectedDoc2);
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveSkeletonArgument {
+        private final Element<SkeletonArgument> skeletonArgument1 = element(SkeletonArgument.builder().build());
+        private final Element<SkeletonArgument> skeletonArgument2 = element(SkeletonArgument.builder().build());
+        private final Element<SkeletonArgument> skeletonArgumentToBeRemoved =
+            element(SkeletonArgument.builder().build());
+
+        @Test
+        void shouldRemoveSkeletonArgument() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .skeletonArgumentList(List.of(skeletonArgument1, skeletonArgument2, skeletonArgumentToBeRemoved))
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeSkeletonArgument(caseData,
+                skeletonArgumentToBeRemoved.getId().toString(), MIGRATION_ID);
+
+            assertThat(updatedFields).extracting("skeletonArgumentList").asList()
+                .containsExactly(skeletonArgument1, skeletonArgument2);
+        }
+
+        @Test
+        void shouldRemoveSkeletonArgumentIfOnlyOneExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .skeletonArgumentList(List.of(skeletonArgumentToBeRemoved))
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeSkeletonArgument(caseData,
+                skeletonArgumentToBeRemoved.getId().toString(), MIGRATION_ID);
+
+            assertThat(updatedFields).extracting("skeletonArgumentList").asList().isEmpty();
+        }
+
+        @Test
+        void shouldThrowExceptionIfSkeletonArgumentNotExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .skeletonArgumentList(List.of(skeletonArgument1, skeletonArgument2))
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeSkeletonArgument(caseData,
+                    skeletonArgumentToBeRemoved.getId().toString(), MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, skeleton argument %s not found",
+                    MIGRATION_ID, 1, skeletonArgumentToBeRemoved.getId().toString()));
         }
     }
 }

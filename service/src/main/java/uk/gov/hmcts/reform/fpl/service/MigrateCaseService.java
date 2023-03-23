@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
+import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
@@ -415,6 +416,31 @@ public class MigrateCaseService {
             }).collect(toList());
 
         return Map.of("applicationDocuments", updatedList);
+    }
+
+    public Map<String, Object> removeSkeletonArgument(CaseData caseData, String skeletonArgumentId,
+                                                      String migrationId) {
+        Long caseId = caseData.getId();
+        List<Element<SkeletonArgument>> skeletonArguments = caseData.getHearingDocuments().getSkeletonArgumentList();
+
+        if (skeletonArguments == null) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, skeletonArgumentList is null",
+                migrationId, caseId, skeletonArgumentId
+            ));
+        }
+
+        List<Element<SkeletonArgument>> updatedSkeletonArguments =
+            ElementUtils.removeElementWithUUID(skeletonArguments, UUID.fromString(skeletonArgumentId));
+
+        if (updatedSkeletonArguments.size() != skeletonArguments.size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, skeleton argument %s not found",
+                migrationId, caseId, skeletonArgumentId
+            ));
+        }
+
+        return Map.of("skeletonArgumentList", updatedSkeletonArguments);
     }
 
     private String stripIllegalCharacters(String str) {
