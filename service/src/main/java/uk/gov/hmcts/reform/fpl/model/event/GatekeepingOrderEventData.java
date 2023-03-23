@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -47,8 +48,10 @@ public class GatekeepingOrderEventData {
     List<DirectionType> directionsForLocalAuthority;
     List<DirectionType> directionsForRespondents;
     List<DirectionType> directionsForCafcass;
+    List<DirectionType> directionsForCafcassUpdated;
     List<DirectionType> directionsForOthers;
     List<DirectionType> directionsForCourt;
+    List<DirectionType> directionsForCourtUpdated;
 
     List<Element<CustomDirection>> customDirections;
     List<Element<StandardDirection>> standardDirections;
@@ -60,6 +63,9 @@ public class GatekeepingOrderEventData {
     YesNo useUploadRoute;
     YesNo useServiceRoute;
 
+    String gatekeepingOrderListOrSendToAdminReason;
+    String gatekeepingOrderListOrSendToAdmin;
+
     public JudgeAndLegalAdvisor getGatekeepingOrderIssuingJudge() {
         return defaultIfNull(gatekeepingOrderIssuingJudge, JudgeAndLegalAdvisor.builder().build());
     }
@@ -70,8 +76,9 @@ public class GatekeepingOrderEventData {
 
     @JsonIgnore
     public List<DirectionType> getRequestedDirections() {
-        return Stream.of(directionsForAllParties, directionsForLocalAuthority, directionsForRespondents,
-            directionsForCafcass, directionsForOthers, directionsForCourt)
+        return Stream.of(directionsForAllParties, directionsForLocalAuthority,
+            directionsForRespondents, directionsForCafcass, directionsForCafcassUpdated,
+            directionsForOthers, directionsForCourt, directionsForCourtUpdated)
             .filter(Objects::nonNull)
             .flatMap(Collection::stream)
             .collect(toList());
@@ -86,5 +93,15 @@ public class GatekeepingOrderEventData {
     public List<Element<StandardDirection>> resetStandardDirections() {
         this.standardDirections = new ArrayList<>();
         return standardDirections;
+    }
+
+    public boolean isSentToAdmin() {
+        return Optional.ofNullable(gatekeepingOrderListOrSendToAdmin)
+            .map(value -> value.equals("NO"))
+            .orElse(false);
+    }
+
+    public String getSendToAdminReason() {
+        return gatekeepingOrderListOrSendToAdminReason;
     }
 }
