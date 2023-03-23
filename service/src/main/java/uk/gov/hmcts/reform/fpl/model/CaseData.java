@@ -162,108 +162,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
     maxDate = @TimeDifference(amount = 8, unit = DAYS))
 public class CaseData extends CaseDataParent {
     public static final int DEFAULT_CASE_COMPLETION = 26;
-    private final Long id;
-    private final State state;
-    @NotBlank(message = "Enter a case name")
-    private final String caseName;
-    private String caseLocalAuthority;
-    private String caseLocalAuthorityName;
-    private OrganisationPolicy localAuthorityPolicy;
-    private OrganisationPolicy outsourcingPolicy;
-    private OrganisationPolicy sharedLocalAuthorityPolicy;
-    private OutsourcingType outsourcingType;
-    private RepresentativeType representativeType;
-    private YesNo isLocalAuthority;
-    private Object outsourcingLAs;
-    private String relatingLA;
-    private Court court;
-    private List<Element<Court>> pastCourtList;
-
-    public List<Element<Court>> getPastCourtList() {
-        return defaultIfNull(pastCourtList, new ArrayList<>());
-    }
-
-    public void setPastCourtList(List<Element<Court>> pastCourtList) {
-        this.pastCourtList = pastCourtList;
-    }
-
-    private YesNo shouldShareWithOrganisationUsers;
-
-    private YesNo multiCourts;
-
-    private final Risks risks;
-    @NotNull(message = "Add the orders and directions sought")
-    @Valid
-    private final Orders orders;
-    private final Orders ordersSolicitor;
-    @NotNull(message = "Add the grounds for the application")
-    @Valid
-    private final Grounds grounds;
-    @NotNull(message = "Add the grounds for the application")
-    @Valid
-    private final GroundsForChildAssessmentOrder groundsForChildAssessmentOrder;
-    @NotNull(message = "Add the grounds for the application", groups = EPOGroup.class)
-    @Valid
-    private final GroundsForEPO groundsForEPO;
-    @NotEmpty(message = "Add applicant's details")
-    @Valid
-    @Deprecated
-    private final List<@NotNull(message = "Add applicant's details") Element<Applicant>> applicants;
-
-    // This holds all applicants, not just LA's
-    private List<@NotNull(message = "Add applicant's details") Element<LocalAuthority>> localAuthorities;
-
-    @Valid
-    @NotEmpty(message = "Add the respondents' details")
-    private final List<@NotNull(message = "Add the respondents' details") Element<Respondent>> respondents1;
-
-    public DynamicList buildRespondentDynamicList(UUID selected) {
-        return asDynamicList(getAllRespondents(), selected,
-            respondent -> respondent.getParty().getFullName());
-    }
-
-    public DynamicList buildRespondentDynamicList() {
-        return buildRespondentDynamicList(null);
-    }
-
-    private final Proceeding proceeding;
-
-    @Deprecated
-    @NotNull(message = "Add the applicant's solicitor's details")
-    @Valid
-    private final Solicitor solicitor;
-    private final FactorsParenting factorsParenting;
-
-    @NotNull(message = "Add the allocation proposal")
-    @Valid
-    private final Allocation allocationProposal;
-    private final Allocation allocationDecision;
-
-    private final StandardDirectionOrder standardDirectionOrder;
-    private final StandardDirectionOrder urgentDirectionsOrder;
-
-    @Deprecated
-    private final UrgentHearingOrder urgentHearingOrder;
-
-    private GatekeepingOrderRoute sdoRouter;
-    private GatekeepingOrderRoute gatekeepingOrderRouter;
-    private GatekeepingOrderRoute urgentDirectionsRouter;
-
-    private final DocumentReference preparedSDO;
-    private final DocumentReference replacementSDO;
-
-    @NotNull(message = "You need to enter the allocated judge.",
-        groups = {SealedSDOGroup.class, HearingBookingDetailsGroup.class})
-    private final Judge allocatedJudge;
-    @NotNull(message = "Add the hearing urgency details")
-    @Valid
-    private final Hearing hearing;
-    private final HearingPreferences hearingPreferences;
-    private final InternationalElement internationalElement;
-
-    @JsonProperty("documents_socialWorkOther")
-    private final List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments;
-
     @JsonProperty("documents_socialWorkCarePlan_document")
     @NotNull(message = "Add social work documents, or details of when you'll send them")
     @Valid
@@ -291,6 +189,57 @@ public class CaseData extends CaseDataParent {
     @JsonProperty("documents_socialWorkEvidenceTemplate_document")
     @Valid
     public final Document socialWorkEvidenceTemplateDocument;
+    private final Long id;
+    private final State state;
+    @NotBlank(message = "Enter a case name")
+    private final String caseName;
+    private final Risks risks;
+    @NotNull(message = "Add the orders and directions sought")
+    @Valid
+    private final Orders orders;
+    private final Orders ordersSolicitor;
+    @NotNull(message = "Add the grounds for the application")
+    @Valid
+    private final Grounds grounds;
+    @NotNull(message = "Add the grounds for the application")
+    @Valid
+    private final GroundsForChildAssessmentOrder groundsForChildAssessmentOrder;
+    @NotNull(message = "Add the grounds for the application", groups = EPOGroup.class)
+    @Valid
+    private final GroundsForEPO groundsForEPO;
+    @NotEmpty(message = "Add applicant's details")
+    @Valid
+    @Deprecated
+    private final List<@NotNull(message = "Add applicant's details") Element<Applicant>> applicants;
+    @Valid
+    @NotEmpty(message = "Add the respondents' details")
+    private final List<@NotNull(message = "Add the respondents' details") Element<Respondent>> respondents1;
+    private final Proceeding proceeding;
+    @Deprecated
+    @NotNull(message = "Add the applicant's solicitor's details")
+    @Valid
+    private final Solicitor solicitor;
+    private final FactorsParenting factorsParenting;
+    @NotNull(message = "Add the allocation proposal")
+    @Valid
+    private final Allocation allocationProposal;
+    private final Allocation allocationDecision;
+    private final StandardDirectionOrder standardDirectionOrder;
+    private final StandardDirectionOrder urgentDirectionsOrder;
+    @Deprecated
+    private final UrgentHearingOrder urgentHearingOrder;
+    private final DocumentReference preparedSDO;
+    private final DocumentReference replacementSDO;
+    @NotNull(message = "You need to enter the allocated judge.",
+        groups = {SealedSDOGroup.class, HearingBookingDetailsGroup.class})
+    private final Judge allocatedJudge;
+    @NotNull(message = "Add the hearing urgency details")
+    @Valid
+    private final Hearing hearing;
+    private final HearingPreferences hearingPreferences;
+    private final InternationalElement internationalElement;
+    @JsonProperty("documents_socialWorkOther")
+    private final List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments;
     @NotEmpty(message = "Add the child's details")
     @Valid
     private final List<@NotNull(message = "Add the child's details") Element<Child>> children1;
@@ -299,6 +248,303 @@ public class CaseData extends CaseDataParent {
     private final String familyManCaseNumber;
     private final NoticeOfProceedings noticeOfProceedings;
     private final List<Element<SentDocuments>> documentsSentToParties;
+    private final List<Element<UUID>> selectedHearingIds;
+    private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;
+    private final List<Element<Recipients>> statementOfService;
+    private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
+    private final C2DocumentBundle temporaryC2Document;
+    private final OtherApplicationsBundle temporaryOtherApplicationsBundle;
+    private final PBAPayment temporaryPbaPayment;
+    private final List<Element<C2DocumentBundle>> c2DocumentBundle;
+    private final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle;
+    private final DynamicList applicantsList;
+    private final String otherApplicant;
+    private final DocumentReference redDotAssessmentForm;
+    private final String caseFlagNotes;
+    private final String caseFlagAdded;
+    private final Map<String, C2ApplicationType> c2ApplicationType;
+    private final C2ApplicationType c2Type;
+    private final OrderTypeAndDocument orderTypeAndDocument;
+    private final List<AdditionalApplicationType> additionalApplicationType;
+    private final FurtherDirections orderFurtherDirections;
+    private final OrderExclusionClause orderExclusionClause;
+    private final GeneratedOrder order;
+    private final DocumentReference uploadedOrder;
+    private final Integer orderMonths;
+    private final InterimEndDate interimEndDate;
+    private final Selector childSelector;
+    private final Selector othersSelector;
+    private final Selector respondentsSelector;
+    private final Selector personSelector;
+    private final Selector careOrderSelector;
+    private final Selector newHearingSelector;
+    private final Selector appointedGuardianSelector;
+    private final Selector respondentsRefusedSelector;
+    private final String orderAppliesToAllChildren;
+    private final String sendOrderToAllOthers;
+    private final String sendPlacementNoticeToAllRespondents;
+    private final List<Element<Respondent>> placementRespondentsToNotify;
+    private final String notifyApplicationsToAllOthers;
+    @PastOrPresent(message = "Date of issue cannot be in the future", groups = DateOfIssueGroup.class)
+    private final LocalDate dateOfIssue;
+    private final List<Element<GeneratedOrder>> orderCollection;
+    @JsonUnwrapped
+    @Builder.Default
+    private final RemovalToolData removalToolData = RemovalToolData.builder().build();
+    private final Others others;
+    private final String languageRequirement;
+    private final String languageRequirementUrgent; // Replica field to work with Urgent Hearing
+    private final List<Element<Representative>> representatives;
+    private final List<Element<LegalRepresentative>> legalRepresentatives;
+    // EPO Order
+    @PastOrPresent(message = "Date of issue cannot be in the future", groups = DateOfIssueGroup.class)
+    private final LocalDateTime dateAndTimeOfIssue;
+    private final EPOChildren epoChildren;
+    @TimeNotMidnight(message = "Enter a valid end time", groups = EPOEndDateGroup.class)
+    @Future(message = "Enter an end date in the future", groups = EPOEndDateGroup.class)
+    private final LocalDateTime epoEndDate;
+    private final EPOPhrase epoPhrase;
+    private final EPOType epoType;
+    @Valid
+    private final Address epoRemovalAddress;
+    private final String epoWhoIsExcluded;
+    private final LocalDate epoExclusionStartDate;
+    private final EPOExclusionRequirementType epoExclusionRequirementType;
+    private final List<Element<Child>> confidentialChildren;
+    @JsonUnwrapped
+    @Builder.Default
+    private final ChildrenEventData childrenEventData = ChildrenEventData.builder().build();
+    private final List<Element<Respondent>> confidentialRespondents;
+    private final List<Element<Other>> confidentialOthers;
+    private final String caseNote;
+    private final List<Element<CaseNote>> caseNotes;
+    private final List<Element<EmailAddress>> gatekeeperEmails;
+    private final String amountToPay;
+    private final CaseExtensionTime caseExtensionTimeList;
+    private final CaseExtensionTime caseExtensionTimeConfirmationList;
+    private final CaseExtensionReasonList caseExtensionReasonList;
+    @JsonUnwrapped
+    @Builder.Default
+    private final ChildExtensionEventData childExtensionEventData = ChildExtensionEventData.builder().build();
+    private final CloseCase closeCase;
+    private final String deprivationOfLiberty;
+    private final CloseCase closeCaseTabField;
+    private final String closeCaseFromOrder;
+    @JsonUnwrapped
+    @Builder.Default
+    private final RecordChildrenFinalDecisionsEventData recordChildrenFinalDecisionsEventData =
+        RecordChildrenFinalDecisionsEventData.builder().build();
+    private final ManageDocument manageDocument;
+    private final ManageDocumentLA manageDocumentLA;
+    private final ManageDocumentSubtypeListLA manageDocumentSubtypeListLA;
+    private final ManageDocumentSubtypeList manageDocumentSubtypeList;
+    private final String manageDocumentsRelatedToHearing;
+    private final List<Element<SupportingEvidenceBundle>> supportingEvidenceDocumentsTemp;
+    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments; //general evidence
+    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA; //general evidence
+    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsSolicitor; //general evidence
+    private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
+    private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
+    private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA;
+    private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsSolicitor;
+    private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
+    private final List<Element<CourtAdminDocument>> otherCourtAdminDocuments;
+    private final List<Element<ScannedDocument>> scannedDocuments;
+    private final List<Element<RespondentStatement>> respondentStatements;
+    private final Object manageDocumentsHearingList;
+    private final Object manageDocumentsSupportingC2List;
+    private final Object hearingDocumentsHearingList;
+    private final Object respondentStatementList;
+    private final HearingDocumentType manageDocumentsHearingDocumentType;
+    private final List<Element<CourtBundle>> manageDocumentsCourtBundle;
+    private final CaseSummary manageDocumentsCaseSummary;
+    private final PositionStatementChild manageDocumentsPositionStatementChild;
+    private final PositionStatementRespondent manageDocumentsPositionStatementRespondent;
+    private final SkeletonArgument manageDocumentsSkeletonArgument;
+    private final DynamicList manageDocumentsChildrenList;
+    private final DynamicList hearingDocumentsRespondentList;
+    private final DynamicList hearingDocumentsPartyList;
+    @JsonUnwrapped
+    @Builder.Default
+    private final HearingDocuments hearingDocuments = HearingDocuments.builder().build();
+    private final ReturnApplication returnApplication;
+    @JsonUnwrapped
+    @Builder.Default
+    private final C110A c110A = C110A.builder().build();
+    private final DocumentReference draftApplicationDocument;
+    private final List<Element<HearingOrder>> draftUploadedCMOs;
+    private final UUID lastHearingOrderDraftsHearingId;
+    @JsonUnwrapped
+    @Builder.Default
+    private final UploadDraftOrdersData uploadDraftOrdersEventData = UploadDraftOrdersData.builder().build();
+    private final Object cmoToReviewList;
+    private final ReviewDecision reviewCMODecision;
+    private final String numDraftCMOs;
+    private final List<Element<HearingOrder>> sealedCMOs;
+    private final List<Element<HearingOrder>> ordersToBeSent;
+    @JsonUnwrapped
+    private final ReviewDraftOrdersData reviewDraftOrdersData;
+    private final String confirmChangeState;
+    private final HearingType hearingType;
+    private final String hearingTypeDetails;
+    private final String hearingTypeReason;
+    private final String hearingVenue;
+    private final Address hearingVenueCustom;
+    private final String firstHearingFlag; //also used for logic surrounding legacy hearings
+    private final String hasPreviousHearingVenue;
+    private final PreviousHearingVenue previousHearingVenue;
+    private final String noticeOfHearingNotes;
+    private final Object pastHearingDateList;
+    private final Object pastAndTodayHearingDateList;
+    private final Object futureHearingDateList;
+    private final Object vacateHearingDateList;
+    private final Object toReListHearingDateList;
+    private final String hasExistingHearings;
+    private final UUID selectedHearingId;
+    private final List<HearingAttendance> hearingAttendance;
+    private final String hearingAttendanceDetails;
+    private final String preHearingAttendanceDetails;
+    @TimeNotMidnight(message = "Enter a valid start time", groups = HearingDatesGroup.class)
+    @Future(message = "Enter a start date in the future", groups = HearingDatesGroup.class)
+    private final LocalDateTime hearingStartDate;
+    @HasTimeNotMidnight(message = "Enter a valid end time", groups = HearingDatesGroup.class)
+    @HasFutureEndDate(message = "Enter an end date in the future", groups = HearingDatesGroup.class)
+    private final LocalDateTime hearingEndDateTime;
+    private final LocalDateTime hearingEndDate;
+    private final Integer hearingDays;
+    private final Integer hearingMinutes;
+    private final Integer hearingHours;
+    private final String hearingDuration;
+    private final String sendNoticeOfHearing;
+    private final LanguageTranslationRequirement sendNoticeOfHearingTranslationRequirements;
+    private final HearingOptions hearingOption;
+    private final HearingReListOption hearingReListOption;
+    private final HearingCancellationReason adjournmentReason;
+    private final HearingCancellationReason vacatedReason;
+    private final LocalDate vacatedHearingDate;
+    private final List<ProceedingType> proceedingType;
+    private final State closedStateRadioList;
+    private final LocalDateTime hearingEndDateConfirmation;
+    private final LocalDateTime hearingStartDateConfirmation;
+    private final List<Element<ApplicationDocument>> applicationDocuments;
+    private final String applicationDocumentsToFollowReason;
+    @JsonUnwrapped
+    @Builder.Default
+    private final MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder().build();
+    private final List<Element<JudicialMessage>> judicialMessages;
+    private final List<Element<JudicialMessage>> closedJudicialMessages;
+    @JsonUnwrapped
+    @Builder.Default
+    private final SyntheticCaseSummary syntheticCaseSummary = SyntheticCaseSummary.builder().build();
+    @JsonUnwrapped
+    @Builder.Default
+    private final ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder().build();
+    @JsonUnwrapped
+    @Builder.Default
+    private final UploadTranslationsEventData uploadTranslationsEventData = UploadTranslationsEventData.builder()
+        .build();
+    @JsonUnwrapped
+    @Builder.Default
+    private final LocalAuthorityEventData localAuthorityEventData = LocalAuthorityEventData.builder().build();
+    @JsonUnwrapped
+    @Builder.Default
+    private final NoticeOfChangeAnswersData noticeOfChangeAnswersData = NoticeOfChangeAnswersData.builder().build();
+    @JsonUnwrapped
+    @Builder.Default
+    private final NoticeOfChangeChildAnswersData noticeOfChangeChildAnswersData =
+        NoticeOfChangeChildAnswersData.builder()
+            .build();
+    @JsonUnwrapped
+    @Builder.Default
+    private final RespondentPolicyData respondentPolicyData = RespondentPolicyData.builder().build();
+    @JsonUnwrapped
+    @Builder.Default
+    private final ChildPolicyData childPolicyData = ChildPolicyData.builder().build();
+    @JsonUnwrapped
+    @Builder.Default
+    private final GatekeepingOrderEventData gatekeepingOrderEventData = GatekeepingOrderEventData.builder().build();
+    private final List<Element<ChangeOfRepresentation>> changeOfRepresentatives;
+    private final ChangeOrganisationRequest changeOrganisationRequestField;
+    @JsonUnwrapped
+    @Builder.Default
+    private final ManageLegalCounselEventData manageLegalCounselEventData =
+        ManageLegalCounselEventData.builder().build();
+    private final DynamicList courtsList;
+    @JsonUnwrapped
+    @Builder.Default
+    private final LocalAuthoritiesEventData localAuthoritiesEventData = LocalAuthoritiesEventData.builder().build();
+    @JsonUnwrapped
+    private final CaseProgressionReportEventData caseProgressionReportEventData;
+    @JsonUnwrapped
+    @Builder.Default
+    private final PlacementEventData placementEventData = PlacementEventData.builder().build();
+    private final DynamicList placementList;
+    private final List<Element<PlacementNoticeDocument>> placementNoticeResponses;
+    @JsonUnwrapped
+    @Builder.Default
+    private final OtherToRespondentEventData otherToRespondentEventData = OtherToRespondentEventData.builder().build();
+    private String caseLocalAuthority;
+    private String caseLocalAuthorityName;
+    private OrganisationPolicy localAuthorityPolicy;
+    private OrganisationPolicy outsourcingPolicy;
+    private OrganisationPolicy sharedLocalAuthorityPolicy;
+    private OutsourcingType outsourcingType;
+    private RepresentativeType representativeType;
+    private YesNo isLocalAuthority;
+    private Object outsourcingLAs;
+    private String relatingLA;
+    private Court court;
+    private List<Element<Court>> pastCourtList;
+    private YesNo shouldShareWithOrganisationUsers;
+    private YesNo multiCourts;
+    // This holds all applicants, not just LA's
+    private List<@NotNull(message = "Add applicant's details") Element<LocalAuthority>> localAuthorities;
+    private GatekeepingOrderRoute sdoRouter;
+    private GatekeepingOrderRoute gatekeepingOrderRouter;
+    private GatekeepingOrderRoute urgentDirectionsRouter;
+    //TODO add null-checker getter for hearingDetails during refactor/removal of legacy code (FPLA-2280)
+    @NotNull(message = "Enter hearing details", groups = NoticeOfProceedingsGroup.class)
+    @NotEmpty(message = "You need to enter a hearing date.", groups = SealedSDOGroup.class)
+    @JsonProperty
+    private List<Element<HearingBooking>> hearingDetails;
+    @JsonProperty
+    private List<Element<HearingBooking>> cancelledHearingDetails;
+    private LocalDate dateSubmitted;
+    // Transient field
+    private YesNo caseFlagValueUpdated;
+    @JsonIgnore
+    private OrderStatus generatedOrderStatus;
+    private String remainingChildIndex;
+    private LocalDate caseCompletionDate;
+    @FutureOrPresent(message = "Enter an end date in the future", groups = CaseExtensionGroup.class)
+    private LocalDate extensionDateOther;
+    @FutureOrPresent(message = "Enter an end date in the future", groups = CaseExtensionGroup.class)
+    private LocalDate eightWeeksExtensionDateOther;
+    private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
+    private List<Element<HearingOrder>> refusedHearingOrders;
+    private String sendToCtsc;
+    private String displayAmountToPay;
+    private String previousVenueId;
+    private JudicialMessageRoleType latestRoleSent;
+    private List<Element<DocumentWithConfidentialAddress>> documentsWithConfidentialAddress;
+    private List<Element<Colleague>> colleaguesToNotify;
+
+    public List<Element<Court>> getPastCourtList() {
+        return defaultIfNull(pastCourtList, new ArrayList<>());
+    }
+
+    public void setPastCourtList(List<Element<Court>> pastCourtList) {
+        this.pastCourtList = pastCourtList;
+    }
+
+    public DynamicList buildRespondentDynamicList(UUID selected) {
+        return asDynamicList(getAllRespondents(), selected,
+            respondent -> respondent.getParty().getFullName());
+    }
+
+    public DynamicList buildRespondentDynamicList() {
+        return buildRespondentDynamicList(null);
+    }
 
     @JsonIgnore
     @Deprecated
@@ -324,15 +570,6 @@ public class CaseData extends CaseDataParent {
         return ordersSolicitor != null && ordersSolicitor.getOrderType() != null ? ordersSolicitor : orders;
     }
 
-    //TODO add null-checker getter for hearingDetails during refactor/removal of legacy code (FPLA-2280)
-    @NotNull(message = "Enter hearing details", groups = NoticeOfProceedingsGroup.class)
-    @NotEmpty(message = "You need to enter a hearing date.", groups = SealedSDOGroup.class)
-    @JsonProperty
-    private List<Element<HearingBooking>> hearingDetails;
-    @JsonProperty
-    private List<Element<HearingBooking>> cancelledHearingDetails;
-    private final List<Element<UUID>> selectedHearingIds;
-
     @JsonIgnore
     public Optional<Element<HearingBooking>> findHearingBookingElement(UUID elementId) {
         return findElement(elementId, hearingDetails);
@@ -345,26 +582,6 @@ public class CaseData extends CaseDataParent {
                 removedOrderId.equals(hearingBookingElement.getValue().getCaseManagementOrderId()))
             .findFirst();
     }
-
-    private LocalDate dateSubmitted;
-    private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;
-    private final List<Element<Recipients>> statementOfService;
-    private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
-    private final C2DocumentBundle temporaryC2Document;
-    private final OtherApplicationsBundle temporaryOtherApplicationsBundle;
-    private final PBAPayment temporaryPbaPayment;
-    private final List<Element<C2DocumentBundle>> c2DocumentBundle;
-    private final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle;
-    private final DynamicList applicantsList;
-    private final String otherApplicant;
-
-    private final DocumentReference redDotAssessmentForm;
-    private final String caseFlagNotes;
-    private final String caseFlagAdded;
-    // Transient field
-    private YesNo caseFlagValueUpdated;
-
-
 
     @JsonIgnore
     public boolean hasC2DocumentBundle() {
@@ -450,61 +667,17 @@ public class CaseData extends CaseDataParent {
             .orElse(null);
     }
 
-    private final Map<String, C2ApplicationType> c2ApplicationType;
-    private final C2ApplicationType c2Type;
-    private final OrderTypeAndDocument orderTypeAndDocument;
-    private final List<AdditionalApplicationType> additionalApplicationType;
-
     public List<AdditionalApplicationType> getAdditionalApplicationType() {
         return defaultIfNull(additionalApplicationType, emptyList());
     }
-
-    private final FurtherDirections orderFurtherDirections;
-    private final OrderExclusionClause orderExclusionClause;
-    private final GeneratedOrder order;
-    private final DocumentReference uploadedOrder;
-    @JsonIgnore
-    private OrderStatus generatedOrderStatus;
-    private final Integer orderMonths;
-    private final InterimEndDate interimEndDate;
-    private final Selector childSelector;
-    private final Selector othersSelector;
-    private final Selector respondentsSelector;
-    private final Selector personSelector;
-    private final Selector careOrderSelector;
-    private final Selector newHearingSelector;
-    private final Selector appointedGuardianSelector;
-    private final Selector respondentsRefusedSelector;
-
-    private final String orderAppliesToAllChildren;
-    private final String sendOrderToAllOthers;
-    private final String sendPlacementNoticeToAllRespondents;
-    private final List<Element<Respondent>> placementRespondentsToNotify;
-
-    private final String notifyApplicationsToAllOthers;
 
     public String getOrderAppliesToAllChildren() {
         return getAllChildren().size() == 1 ? YES.getValue() : orderAppliesToAllChildren;
     }
 
-    private String remainingChildIndex;
-
-    @PastOrPresent(message = "Date of issue cannot be in the future", groups = DateOfIssueGroup.class)
-    private final LocalDate dateOfIssue;
-    private final List<Element<GeneratedOrder>> orderCollection;
-
     public List<Element<GeneratedOrder>> getOrderCollection() {
         return orderCollection != null ? orderCollection : new ArrayList<>();
     }
-
-    @JsonUnwrapped
-    @Builder.Default
-    private final RemovalToolData removalToolData = RemovalToolData.builder().build();
-
-    private final Others others;
-
-    private final String languageRequirement;
-    private final String languageRequirementUrgent; // Replica field to work with Urgent Hearing
 
     @JsonIgnore
     public boolean isWelshLanguageRequested() {
@@ -525,8 +698,6 @@ public class CaseData extends CaseDataParent {
         return isWelshLanguageRequested() ? Language.WELSH : Language.ENGLISH;
     }
 
-    private final List<Element<Representative>> representatives;
-
     @JsonIgnore
     public List<Representative> getRepresentativesByServedPreference(RepresentativeServingPreferences preference) {
         return getRepresentativesElementsByServedPreference(preference).stream()
@@ -546,23 +717,6 @@ public class CaseData extends CaseDataParent {
         }
         return emptyList();
     }
-
-    private final List<Element<LegalRepresentative>> legalRepresentatives;
-
-    // EPO Order
-    @PastOrPresent(message = "Date of issue cannot be in the future", groups = DateOfIssueGroup.class)
-    private final LocalDateTime dateAndTimeOfIssue;
-    private final EPOChildren epoChildren;
-    @TimeNotMidnight(message = "Enter a valid end time", groups = EPOEndDateGroup.class)
-    @Future(message = "Enter an end date in the future", groups = EPOEndDateGroup.class)
-    private final LocalDateTime epoEndDate;
-    private final EPOPhrase epoPhrase;
-    private final EPOType epoType;
-    @Valid
-    private final Address epoRemovalAddress;
-    private final String epoWhoIsExcluded;
-    private final LocalDate epoExclusionStartDate;
-    private final EPOExclusionRequirementType epoExclusionRequirementType;
 
     @JsonIgnore
     public List<Element<Proceeding>> getAllProceedings() {
@@ -623,23 +777,13 @@ public class CaseData extends CaseDataParent {
         return Optional.ofNullable(orderExclusionClause).map(OrderExclusionClause::getExclusionClause).orElse("");
     }
 
-    private final List<Element<Child>> confidentialChildren;
-
     public List<Element<Child>> getConfidentialChildren() {
         return confidentialChildren != null ? confidentialChildren : new ArrayList<>();
     }
 
-    @JsonUnwrapped
-    @Builder.Default
-    private final ChildrenEventData childrenEventData = ChildrenEventData.builder().build();
-
-    private final List<Element<Respondent>> confidentialRespondents;
-
     public List<Element<Respondent>> getConfidentialRespondents() {
         return confidentialRespondents != null ? confidentialRespondents : new ArrayList<>();
     }
-
-    private final List<Element<Other>> confidentialOthers;
 
     public List<Element<Other>> getConfidentialOthers() {
         return Optional.ofNullable(confidentialOthers).orElse(new ArrayList<>());
@@ -647,12 +791,8 @@ public class CaseData extends CaseDataParent {
 
     public boolean hasConfidentialParty() {
         return isNotEmpty(getConfidentialChildren()) || isNotEmpty(getConfidentialRespondents())
-               || isNotEmpty(getConfidentialOthers());
+            || isNotEmpty(getConfidentialOthers());
     }
-
-    private final String caseNote;
-    private final List<Element<CaseNote>> caseNotes;
-    private final List<Element<EmailAddress>> gatekeeperEmails;
 
     @JsonIgnore
     public LocalDate getDefaultCompletionDate() {
@@ -663,67 +803,6 @@ public class CaseData extends CaseDataParent {
     public String getComplianceDeadline() {
         return formatLocalDateToString(getDefaultCompletionDate(), FormatStyle.LONG);
     }
-
-    private final String amountToPay;
-
-    private LocalDate caseCompletionDate;
-    @FutureOrPresent(message = "Enter an end date in the future", groups = CaseExtensionGroup.class)
-    private LocalDate extensionDateOther;
-    @FutureOrPresent(message = "Enter an end date in the future", groups = CaseExtensionGroup.class)
-    private LocalDate eightWeeksExtensionDateOther;
-    private final CaseExtensionTime caseExtensionTimeList;
-    private final CaseExtensionTime caseExtensionTimeConfirmationList;
-    private final CaseExtensionReasonList caseExtensionReasonList;
-    @JsonUnwrapped
-    @Builder.Default
-    private final ChildExtensionEventData childExtensionEventData = ChildExtensionEventData.builder().build();
-
-    private final CloseCase closeCase;
-    private final String deprivationOfLiberty;
-    private final CloseCase closeCaseTabField;
-    private final String closeCaseFromOrder;
-    @JsonUnwrapped
-    @Builder.Default
-    private final RecordChildrenFinalDecisionsEventData recordChildrenFinalDecisionsEventData =
-        RecordChildrenFinalDecisionsEventData.builder().build();
-
-    private final ManageDocument manageDocument;
-    private final ManageDocumentLA manageDocumentLA;
-    private final ManageDocumentSubtypeListLA manageDocumentSubtypeListLA;
-    private final ManageDocumentSubtypeList manageDocumentSubtypeList;
-    private final String manageDocumentsRelatedToHearing;
-    private final List<Element<SupportingEvidenceBundle>> supportingEvidenceDocumentsTemp;
-    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments; //general evidence
-    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA; //general evidence
-    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsSolicitor; //general evidence
-    private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
-    private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
-    private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA;
-    private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsSolicitor;
-    private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
-    private final List<Element<CourtAdminDocument>> otherCourtAdminDocuments;
-    private final List<Element<ScannedDocument>> scannedDocuments;
-
-    private final List<Element<RespondentStatement>> respondentStatements;
-    private final Object manageDocumentsHearingList;
-    private final Object manageDocumentsSupportingC2List;
-    private final Object hearingDocumentsHearingList;
-    private final Object respondentStatementList;
-
-    private final HearingDocumentType manageDocumentsHearingDocumentType;
-    private final List<Element<CourtBundle>> manageDocumentsCourtBundle;
-    private final CaseSummary manageDocumentsCaseSummary;
-    private final PositionStatementChild manageDocumentsPositionStatementChild;
-    private final PositionStatementRespondent manageDocumentsPositionStatementRespondent;
-    private final SkeletonArgument manageDocumentsSkeletonArgument;
-    private final DynamicList manageDocumentsChildrenList;
-    private final DynamicList hearingDocumentsRespondentList;
-    private final DynamicList hearingDocumentsPartyList;
-
-
-    @JsonUnwrapped
-    @Builder.Default
-    private final HearingDocuments hearingDocuments = HearingDocuments.builder().build();
 
     public DynamicList buildDynamicChildrenList() {
         return buildDynamicChildrenList(null);
@@ -776,8 +855,6 @@ public class CaseData extends CaseDataParent {
     public boolean isClosedFromOrder() {
         return YES.getValue().equals(closeCaseFromOrder);
     }
-
-    private final ReturnApplication returnApplication;
 
     public boolean allocatedJudgeExists() {
         return allocatedJudge != null;
@@ -855,26 +932,12 @@ public class CaseData extends CaseDataParent {
             .anyMatch(hearingBooking -> hearingBooking.getValue().startsAfterToday());
     }
 
-    @JsonUnwrapped
-    @Builder.Default
-    private final C110A c110A = C110A.builder().build();
-    private final DocumentReference draftApplicationDocument;
-
-    private final List<Element<HearingOrder>> draftUploadedCMOs;
-    private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
-    private List<Element<HearingOrder>> refusedHearingOrders;
-    private final UUID lastHearingOrderDraftsHearingId;
-
     @JsonIgnore
     public List<Element<HearingOrdersBundle>> getBundlesForApproval() {
         return defaultIfNull(getHearingOrdersBundlesDrafts(), new ArrayList<Element<HearingOrdersBundle>>())
             .stream().filter(bundle -> isNotEmpty(bundle.getValue().getOrders(SEND_TO_JUDGE)))
             .collect(toList());
     }
-
-    @JsonUnwrapped
-    @Builder.Default
-    private final UploadDraftOrdersData uploadDraftOrdersEventData = UploadDraftOrdersData.builder().build();
 
     public List<Element<HearingOrder>> getDraftUploadedCMOs() {
         return defaultIfNull(draftUploadedCMOs, new ArrayList<>());
@@ -910,7 +973,7 @@ public class CaseData extends CaseDataParent {
     @JsonIgnore
     public List<Element<HearingBooking>> getAllHearings() {
         return Stream.of(defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()),
-            defaultIfNull(cancelledHearingDetails, new ArrayList<Element<HearingBooking>>()))
+                defaultIfNull(cancelledHearingDetails, new ArrayList<Element<HearingBooking>>()))
             .flatMap(Collection::stream).collect(toList());
     }
 
@@ -955,15 +1018,6 @@ public class CaseData extends CaseDataParent {
             .collect(toList());
     }
 
-    private final Object cmoToReviewList;
-    private final ReviewDecision reviewCMODecision;
-    private final String numDraftCMOs;
-    private final List<Element<HearingOrder>> sealedCMOs;
-    private final List<Element<HearingOrder>> ordersToBeSent;
-
-    @JsonUnwrapped
-    private final ReviewDraftOrdersData reviewDraftOrdersData;
-
     public List<Element<HearingOrder>> getSealedCMOs() {
         return defaultIfNull(sealedCMOs, new ArrayList<>());
     }
@@ -981,11 +1035,6 @@ public class CaseData extends CaseDataParent {
             .min(comparing(HearingBooking::getStartDate));
     }
 
-
-    private String sendToCtsc;
-    private String displayAmountToPay;
-    private final String confirmChangeState;
-
     public DynamicList buildDynamicHearingList() {
         return buildDynamicHearingList(null);
     }
@@ -998,67 +1047,10 @@ public class CaseData extends CaseDataParent {
         return asDynamicList(hearingDetails, selected, HearingBooking::toLabel);
     }
 
-    private final HearingType hearingType;
-    private final String hearingTypeDetails;
-    private final String hearingTypeReason;
-    private final String hearingVenue;
-    private final Address hearingVenueCustom;
-    private final String firstHearingFlag; //also used for logic surrounding legacy hearings
-    private final String hasPreviousHearingVenue;
-    private final PreviousHearingVenue previousHearingVenue;
-    private String previousVenueId;
-    private final String noticeOfHearingNotes;
-    private final Object pastHearingDateList;
-    private final Object pastAndTodayHearingDateList;
-    private final Object futureHearingDateList;
-    private final Object vacateHearingDateList;
-    private final Object toReListHearingDateList;
-    private final String hasExistingHearings;
-    private final UUID selectedHearingId;
-    private final List<HearingAttendance> hearingAttendance;
-    private final String hearingAttendanceDetails;
-    private final String preHearingAttendanceDetails;
-
-    @TimeNotMidnight(message = "Enter a valid start time", groups = HearingDatesGroup.class)
-    @Future(message = "Enter a start date in the future", groups = HearingDatesGroup.class)
-    private final LocalDateTime hearingStartDate;
-
-    @HasTimeNotMidnight(message = "Enter a valid end time", groups = HearingDatesGroup.class)
-    @HasFutureEndDate(message = "Enter an end date in the future", groups = HearingDatesGroup.class)
-    private final LocalDateTime hearingEndDateTime;
-    private final LocalDateTime hearingEndDate;
-    private final Integer hearingDays;
-    private final Integer hearingMinutes;
-    private final Integer hearingHours;
-    private final String hearingDuration;
-    private final String sendNoticeOfHearing;
-    private final LanguageTranslationRequirement sendNoticeOfHearingTranslationRequirements;
-    private final HearingOptions hearingOption;
-    private final HearingReListOption hearingReListOption;
-    private final HearingCancellationReason adjournmentReason;
-    private final HearingCancellationReason vacatedReason;
-    private final LocalDate vacatedHearingDate;
-    private final List<ProceedingType> proceedingType;
-    private final State closedStateRadioList;
-
-    private final LocalDateTime hearingEndDateConfirmation;
-    private final LocalDateTime hearingStartDateConfirmation;
-
     @JsonIgnore
     public boolean isHearingDateInPast() {
         return hearingEndDate.isBefore(LocalDateTime.now()) || hearingStartDate.isBefore(LocalDateTime.now());
     }
-
-    private final List<Element<ApplicationDocument>> applicationDocuments;
-    private final String applicationDocumentsToFollowReason;
-
-    @JsonUnwrapped
-    @Builder.Default
-    private final MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder().build();
-    private final List<Element<JudicialMessage>> judicialMessages;
-    private final List<Element<JudicialMessage>> closedJudicialMessages;
-    private JudicialMessageRoleType latestRoleSent;
-
 
     public DynamicList buildJudicialMessageDynamicList(UUID selected) {
         return asDynamicList(judicialMessages, selected, JudicialMessage::toLabel);
@@ -1072,54 +1064,9 @@ public class CaseData extends CaseDataParent {
         return defaultIfNull(judicialMessages, new ArrayList<>());
     }
 
-    @JsonUnwrapped
-    @Builder.Default
-    private final SyntheticCaseSummary syntheticCaseSummary = SyntheticCaseSummary.builder().build();
-
-    @JsonUnwrapped
-    @Builder.Default
-    private final ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder().build();
-
-    @JsonUnwrapped
-    @Builder.Default
-    private final UploadTranslationsEventData uploadTranslationsEventData = UploadTranslationsEventData.builder()
-        .build();
-
-    @JsonUnwrapped
-    @Builder.Default
-    private final LocalAuthorityEventData localAuthorityEventData = LocalAuthorityEventData.builder().build();
-
     public boolean hasSelectedTemporaryJudge(JudgeAndLegalAdvisor judge) {
         return judge.getJudgeTitle() != null;
     }
-
-    @JsonUnwrapped
-    @Builder.Default
-    private final NoticeOfChangeAnswersData noticeOfChangeAnswersData = NoticeOfChangeAnswersData.builder().build();
-    @JsonUnwrapped
-    @Builder.Default
-    private final NoticeOfChangeChildAnswersData noticeOfChangeChildAnswersData =
-        NoticeOfChangeChildAnswersData.builder()
-            .build();
-
-    @JsonUnwrapped
-    @Builder.Default
-    private final RespondentPolicyData respondentPolicyData = RespondentPolicyData.builder().build();
-    @JsonUnwrapped
-    @Builder.Default
-    private final ChildPolicyData childPolicyData = ChildPolicyData.builder().build();
-
-    @JsonUnwrapped
-    @Builder.Default
-    private final GatekeepingOrderEventData gatekeepingOrderEventData = GatekeepingOrderEventData.builder().build();
-
-    private final List<Element<ChangeOfRepresentation>> changeOfRepresentatives;
-    private final ChangeOrganisationRequest changeOrganisationRequestField;
-
-    @JsonUnwrapped
-    @Builder.Default
-    private final ManageLegalCounselEventData manageLegalCounselEventData =
-        ManageLegalCounselEventData.builder().build();
 
     @JsonIgnore
     public boolean isOutsourced() {
@@ -1136,8 +1083,6 @@ public class CaseData extends CaseDataParent {
         }
         return localAuthorities;
     }
-
-    private final DynamicList courtsList;
 
     @JsonIgnore
     public LocalAuthority getDesignatedLocalAuthority() {
@@ -1165,21 +1110,6 @@ public class CaseData extends CaseDataParent {
             .filter(la -> !YesNo.YES.getValue().equals(la.getDesignated()))
             .findFirst();
     }
-
-    @JsonUnwrapped
-    @Builder.Default
-    private final LocalAuthoritiesEventData localAuthoritiesEventData = LocalAuthoritiesEventData.builder().build();
-
-    @JsonUnwrapped
-    private final CaseProgressionReportEventData caseProgressionReportEventData;
-
-    @JsonUnwrapped
-    @Builder.Default
-    private final PlacementEventData placementEventData = PlacementEventData.builder().build();
-
-    private final DynamicList placementList;
-
-    private final List<Element<PlacementNoticeDocument>> placementNoticeResponses;
 
     @JsonIgnore
     public boolean isDischargeOfCareApplication() {
@@ -1217,14 +1147,6 @@ public class CaseData extends CaseDataParent {
             .map(Orders::isChildRecoveryOrder)
             .orElse(false);
     }
-
-    private List<Element<DocumentWithConfidentialAddress>> documentsWithConfidentialAddress;
-
-    @JsonUnwrapped
-    @Builder.Default
-    private final OtherToRespondentEventData otherToRespondentEventData = OtherToRespondentEventData.builder().build();
-
-    private List<Element<Colleague>> colleaguesToNotify;
 
     public List<Element<Colleague>> getColleaguesToNotify() {
         return colleaguesToNotify != null ? colleaguesToNotify : new ArrayList<>();

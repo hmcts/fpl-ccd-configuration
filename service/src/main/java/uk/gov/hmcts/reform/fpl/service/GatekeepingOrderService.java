@@ -39,6 +39,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -118,7 +119,11 @@ public class GatekeepingOrderService {
         StandardDirectionOrder currentOrder = buildBaseGatekeepingOrder(caseData);
 
         if (decision.isSealed()) {
-            DocumentReference sealedDocument = buildFromDocument(generateOrder(caseData));
+
+            final DocmosisTemplates docmosisTemplate = nonNull(caseData.getGatekeepingOrderRouter())
+                ? SDO : SDO;  //TODO: Swap for UDO template
+
+            DocumentReference sealedDocument = buildFromDocument(generateOrder(caseData, docmosisTemplate));
 
             return currentOrder.toBuilder()
                 .dateOfIssue(formatLocalDateToString(decision.getDateOfIssue(), DATE))
@@ -182,21 +187,30 @@ public class GatekeepingOrderService {
     }
 
     private DocumentReference getOrderDocument(CaseData caseData) {
-        final GatekeepingOrderRoute route = caseData.getGatekeepingOrderRouter();
 
-        if (route == UPLOAD) {
+        final GatekeepingOrderRoute sdoRouter;
+        final DocmosisTemplates docmosisTemplate;
+        if (nonNull(caseData.getGatekeepingOrderRouter())) {
+            sdoRouter = caseData.getGatekeepingOrderRouter();
+            docmosisTemplate = SDO;
+        } else {
+            sdoRouter = caseData.getUrgentDirectionsRouter();
+            docmosisTemplate = SDO;  //TODO: Swap for UDO template
+        }
+
+        if (sdoRouter == UPLOAD) {
             return firstNonNull(
                 caseData.getReplacementSDO(),
                 caseData.getPreparedSDO(),
                 caseData.getGatekeepingOrderEventData().getCurrentSDO());
         }
 
-        return buildFromDocument(generateOrder(caseData));
+        return buildFromDocument(generateOrder(caseData, docmosisTemplate));
     }
 
-    private Document generateOrder(CaseData caseData) {
+    private Document generateOrder(CaseData caseData, DocmosisTemplates docmosisTemplate) {
         DocmosisStandardDirectionOrder templateData = gatekeepingOrderGenerationService.getTemplateData(caseData);
-        return documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
+        return documentService.getDocumentFromDocmosisOrderTemplate(templateData, docmosisTemplate);
     }
 
     public CaseData populateStandardDirections(CaseDetails caseDetails) {
@@ -329,9 +343,9 @@ public class GatekeepingOrderService {
         LocalTime deadlineTime =
             LocalTime.parse(
                 Optional.of(hearing)
-                .map(HearingBooking::getStartDate)
-                .map(startDate -> startDate.format(DateTimeFormatter.ofPattern("HH:mm:ss")))
-                .orElse("00:00:00")
+                    .map(HearingBooking::getStartDate)
+                    .map(startDate -> startDate.format(DateTimeFormatter.ofPattern("HH:mm:ss")))
+                    .orElse("00:00:00")
             );
 
         return LocalDateTime.of(deadline, deadlineTime);

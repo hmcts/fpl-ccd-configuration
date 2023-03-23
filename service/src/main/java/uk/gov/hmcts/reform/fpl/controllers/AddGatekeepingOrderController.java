@@ -58,11 +58,16 @@ public class AddGatekeepingOrderController extends CallbackController {
             return respond(data, errors);
         }
 
-        final GatekeepingOrderRoute draftOrderRoute = Objects.nonNull(caseData.getGatekeepingOrderRouter())
-            ? caseData.getGatekeepingOrderRouter() : caseData.getUrgentDirectionsRouter();
+        final GatekeepingOrderRoute draftOrderRoute;
+        final StandardDirectionOrder draftOrder;
 
-        final StandardDirectionOrder draftOrder = Objects.nonNull(draftOrderRoute)
-            ? caseData.getStandardDirectionOrder() : caseData.getUrgentDirectionsOrder();
+        if (Objects.nonNull(caseData.getGatekeepingOrderRouter())) {
+            draftOrderRoute = caseData.getGatekeepingOrderRouter();
+            draftOrder = caseData.getStandardDirectionOrder();
+        } else {
+            draftOrderRoute = caseData.getUrgentDirectionsRouter();
+            draftOrder = caseData.getUrgentDirectionsOrder();
+        }
 
         if (allNotNull(draftOrderRoute, draftOrder)) {
             switch (draftOrderRoute) {
@@ -141,7 +146,7 @@ public class AddGatekeepingOrderController extends CallbackController {
             orderType = "standardDirectionOrder";
         } else {
             sdoRouter = caseData.getUrgentDirectionsRouter();
-            orderType = "standardDirectionOrder";//TODO: update this to "urgentDirectionsOrder" once the field is added
+            orderType = "urgentDirectionsOrder";
         }
 
         switch (sdoRouter) {

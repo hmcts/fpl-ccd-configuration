@@ -269,16 +269,24 @@ public class ListGatekeepingHearingController extends CallbackController {
                                         CaseData eventData,
                                         final CaseDetailsMap caseData) {
 
-        final GatekeepingOrderRoute sdoRouter = eventData.getGatekeepingOrderRouter();
-
         eventData = mergeEventAndCaseData(eventData, caseData);
         caseData.put("gatekeepingOrderSealDecision", orderService.buildSealedDecision(eventData));
         eventData = mergeEventAndCaseData(eventData, caseData);
 
+        final GatekeepingOrderRoute sdoRouter;
+        final String orderType;
+        if (Objects.nonNull(eventData.getGatekeepingOrderRouter())) {
+            sdoRouter = eventData.getGatekeepingOrderRouter();
+            orderType = "standardDirectionOrder";
+        } else {
+            sdoRouter = eventData.getUrgentDirectionsRouter();
+            orderType = "urgentDirectionsOrder";
+        }
+
         if (UPLOAD == sdoRouter) {
-            caseData.put("standardDirectionOrder", orderService.buildOrderFromUploadedFile(eventData));
+            caseData.put(orderType, orderService.buildOrderFromUploadedFile(eventData));
         } else if (SERVICE == sdoRouter) {
-            caseData.put("standardDirectionOrder", orderService.buildOrderFromGeneratedFile(eventData));
+            caseData.put(orderType, orderService.buildOrderFromGeneratedFile(eventData));
         }
 
         callbackRequest.getCaseDetails().setData(caseData);
