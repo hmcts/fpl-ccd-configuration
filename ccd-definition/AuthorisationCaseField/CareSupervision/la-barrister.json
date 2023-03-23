@@ -1208,21 +1208,21 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placements",
     "UserRole": "[LABARRISTER]",
-    "CRUD": "RU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placementsNonConfidential",
     "UserRole": "[LABARRISTER]",
-    "CRUD": "RU"
+    "CRUD": "CUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placementsNonConfidentialNotices",
     "UserRole": "[LABARRISTER]",
-    "CRUD": "R"
+    "CRUD": "CUD"
   },
   {
     "LiveFrom": "01/01/2017",
