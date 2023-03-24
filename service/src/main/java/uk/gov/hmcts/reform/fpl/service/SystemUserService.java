@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
@@ -11,6 +12,7 @@ import java.time.temporal.ChronoUnit;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class SystemUserService {
@@ -26,6 +28,9 @@ public class SystemUserService {
             || timeLastCached.until(LocalDateTime.now(), ChronoUnit.HOURS) > 2) {
             cachedToken = idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
             timeLastCached = LocalDateTime.now();
+            log.info("Requested new IDAM system-user token");
+        } else {
+            log.info("Using cached IDAM system-user token");
         }
         return cachedToken;
     }
