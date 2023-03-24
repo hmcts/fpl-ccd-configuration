@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.utils.extension.TestLogsExtension;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -283,6 +284,64 @@ class SendDocumentServiceTest {
             final List<Recipient> actualRecipients = underTest.getStandardRecipients(caseData);
 
             assertThat(actualRecipients).isEmpty();
+        }
+
+        @Test
+        void shouldReturnNotRepresentedRespondentsWithConfidentialAddressByPost() {
+
+            final UUID confidentialAddressRespondentId = UUID.randomUUID();
+
+            final Element<Representative> representativeServedByPost = element(Representative.builder()
+                .fullName("Representative 1")
+                .servingPreferences(POST)
+                .build());
+
+            final Element<Respondent> representedRespondent = element(UUID.randomUUID(), Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Represented")
+                    .lastName("Respondent")
+                    .build())
+                .representedBy(wrapElements(representativeServedByPost.getId()))
+                .build());
+
+            final Element<Respondent> notRepresentedRespondent = element(confidentialAddressRespondentId,
+                Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .firstName("Not Represented")
+                        .lastName("Respondent")
+                        .contactDetailsHidden("YES")
+                    .build())
+                .build());
+
+            Address confidentialAddress = Address.builder()
+                .postcode("SL11GF")
+                .addressLine1("11 Test Lane")
+                .addressLine2("Testington")
+                .build();
+
+            final Element<Respondent> confidentialNotRepresentedRespondent = element(confidentialAddressRespondentId,
+                Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .firstName("Not Represented")
+                        .lastName("Respondent")
+                        .contactDetailsHidden("YES")
+                        .address(confidentialAddress)
+                    .build())
+                .build());
+
+            final CaseData caseData = CaseData.builder()
+                .representatives(List.of(
+                    representativeServedByPost))
+                .respondents1(List.of(notRepresentedRespondent, representedRespondent))
+                .confidentialRespondents(List.of(confidentialNotRepresentedRespondent))
+                .build();
+
+            final List<Recipient> actualRecipients = underTest.getStandardRecipients(caseData);
+
+            assertThat(actualRecipients)
+                .containsExactlyInAnyOrder(representativeServedByPost.getValue(),
+                    confidentialNotRepresentedRespondent.getValue().getParty());
+            assertThat(actualRecipients.get(1).getAddress()).isEqualTo(confidentialAddress);
         }
 
         @Test
