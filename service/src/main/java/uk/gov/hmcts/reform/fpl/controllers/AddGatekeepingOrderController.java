@@ -107,7 +107,7 @@ public class AddGatekeepingOrderController extends CallbackController {
 
         orderService.populateStandardDirections(caseDetails);
 
-        orderService.getHearing(caseDetails)
+        orderService.getHearing(caseData)
             .map(HearingBooking::getStartDate)
             .map(hearingDate -> formatLocalDateTimeBaseUsingFormat(hearingDate, DATE_TIME))
             .ifPresent(hearingDate -> {

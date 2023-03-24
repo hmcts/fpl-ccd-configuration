@@ -191,7 +191,7 @@ public class StandardDirectionsOrderController extends CallbackController {
         CaseData updated = caseData.toBuilder().standardDirectionOrder(order).build();
 
         DocmosisStandardDirectionOrder templateData = sdoGenerationService.getTemplateData(updated);
-        var docmosisTemplate = Objects.nonNull(caseData.getStandardDirectionOrder()) ? SDO : UDO;
+        var docmosisTemplate = Objects.nonNull(caseData.getGatekeepingOrderRouter()) ? SDO : UDO;
         Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, docmosisTemplate);
 
         order.setDirectionsToEmptyList();
@@ -269,7 +269,7 @@ public class StandardDirectionsOrderController extends CallbackController {
                 //generate sdo document
                 DocmosisStandardDirectionOrder templateData = sdoGenerationService.getTemplateData(updated);
                 var docmosisTemplate =
-                    Objects.nonNull(caseData.getStandardDirectionOrder()) ? SDO : UDO;
+                    Objects.nonNull(caseData.getGatekeepingOrderRouter()) ? SDO : UDO;
                 Document document =
                     documentService.getDocumentFromDocmosisOrderTemplate(templateData, docmosisTemplate);
 

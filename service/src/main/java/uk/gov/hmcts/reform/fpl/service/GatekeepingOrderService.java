@@ -121,7 +121,7 @@ public class GatekeepingOrderService {
 
         if (decision.isSealed()) {
 
-            var docmosisTemplate = Objects.nonNull(caseData.getStandardDirectionOrder()) ? SDO : UDO;
+            var docmosisTemplate = Objects.nonNull(caseData.getGatekeepingOrderRouter()) ? SDO : UDO;
             DocumentReference sealedDocument = buildFromDocument(generateOrder(caseData, docmosisTemplate));
             return currentOrder.toBuilder()
                 .dateOfIssue(formatLocalDateToString(decision.getDateOfIssue(), DATE))
@@ -187,10 +187,13 @@ public class GatekeepingOrderService {
     private DocumentReference getOrderDocument(CaseData caseData) {
 
         final GatekeepingOrderRoute sdoRouter;
+        final DocmosisTemplates docmosisTemplate;
         if (nonNull(caseData.getGatekeepingOrderRouter())) {
             sdoRouter = caseData.getGatekeepingOrderRouter();
+            docmosisTemplate = SDO;
         } else {
             sdoRouter = caseData.getUrgentDirectionsRouter();
+            docmosisTemplate = UDO;
         }
 
         if (sdoRouter == UPLOAD) {
@@ -199,7 +202,6 @@ public class GatekeepingOrderService {
                 caseData.getPreparedSDO(),
                 caseData.getGatekeepingOrderEventData().getCurrentSDO());
         }
-        var docmosisTemplate = Objects.nonNull(caseData.getStandardDirectionOrder()) ? SDO : UDO;
         return buildFromDocument(generateOrder(caseData, docmosisTemplate));
     }
 
