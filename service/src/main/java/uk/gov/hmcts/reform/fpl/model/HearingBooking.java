@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasEndDateAfterStartDate;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
 
+import javax.validation.constraints.Future;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,10 +27,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
-import javax.validation.constraints.Future;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
@@ -61,7 +59,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @Jacksonized
 @HasEndDateAfterStartDate(groups = HearingBookingDetailsGroup.class)
 public class HearingBooking implements TranslatableItem {
-    private final HearingType type;
+    private HearingType type;
     private HearingStatus status;
     private final String typeDetails;
     private final String typeReason;
@@ -153,7 +151,7 @@ public class HearingBooking implements TranslatableItem {
     }
 
     public String toLabel() {
-        HearingType hearingType = Optional.ofNullable(this.type)
+        HearingType hearingType = ofNullable(this.type)
             .orElseThrow(() -> new IllegalStateException("Unexpected null hearing type. " + this));
 
         String label =
@@ -233,7 +231,7 @@ public class HearingBooking implements TranslatableItem {
     @Override
     @JsonIgnore
     public boolean hasBeenTranslated() {
-        return Objects.nonNull(translatedNoticeOfHearing);
+        return nonNull(translatedNoticeOfHearing);
     }
 
     @Override
@@ -251,7 +249,7 @@ public class HearingBooking implements TranslatableItem {
     @Override
     @JsonIgnore
     public String asLabel() {
-        return String.format("Notice of hearing - %s", formatLocalDateTimeBaseUsingFormat(startDate, DATE));
+        return format("Notice of hearing - %s", formatLocalDateTimeBaseUsingFormat(startDate, DATE));
     }
 
     @Override
@@ -265,5 +263,4 @@ public class HearingBooking implements TranslatableItem {
     public List<Element<Other>> getSelectedOthers() {
         return defaultIfNull(this.getOthers(), new ArrayList<>());
     }
-
 }
