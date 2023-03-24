@@ -221,7 +221,7 @@ public class GatekeepingOrderService {
 
         final List<DirectionType> requestedDirections = eventData.getRequestedDirections();
 
-        final HearingBooking firstHearing = getHearing(caseData).orElse(null);
+        final HearingBooking firstHearing = getHearing(caseData).orElse(null);//TODO: look at the logic for setting the hearing on the order
 
         Stream.of(DirectionType.values())
             .filter(directionType -> !requestedDirections.contains(directionType))
