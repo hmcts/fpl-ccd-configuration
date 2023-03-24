@@ -1099,6 +1099,7 @@ class MigrateCaseServiceTest {
         }
     }
 
+    @Nested
     class RenameApplicationDocuments {
 
         @Test
