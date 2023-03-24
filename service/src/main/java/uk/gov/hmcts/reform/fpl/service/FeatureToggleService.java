@@ -28,7 +28,7 @@ public class FeatureToggleService {
 
     public boolean isCtscEnabled(String localAuthorityName) {
         return ldClient.boolVariation("CTSC",
-            createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
+            createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), true);
     }
 
     public boolean isCaseCreationForNotOnboardedUsersEnabled(String localAuthorityCode) {

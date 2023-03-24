@@ -131,8 +131,7 @@ public class CaseSubmissionController extends CallbackController {
             Map<String, Object> data = caseDetails.getData();
             data.put("dateAndTimeSubmitted", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(zonedDateTime));
             data.put("dateSubmitted", DateTimeFormatter.ISO_LOCAL_DATE.format(zonedDateTime));
-            data.put("sendToCtsc", setSendToCtsc(isNotEmpty(data.get("caseLocalAuthority"))
-                ? data.get("caseLocalAuthority").toString() : null).getValue());
+            data.put("sendToCtsc", YES); // On submission we are now always sending to the CTSC, no longer toggling
 
             if (caseData.isC1Application()) {
                 // C1
