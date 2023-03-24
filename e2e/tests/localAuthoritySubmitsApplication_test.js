@@ -100,10 +100,6 @@ Scenario('Local authority request discharge of order @cross-browser', async ({I,
     'Add the respondents\' details in the Respondents\' details',
     'Add the allocation proposal in the Allocation proposal']);
 });
-Scenario('@ashley-test', async ({I}) => {
-  await setupScenario(I);
-});
-
 
 Scenario('local authority enters orders and directions @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, enterOrdersAndDirectionsNeededEventPage}) => {
   await setupScenario(I);
