@@ -50,6 +50,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.APPOINT_CHILDREN_GUARDIAN_IMMEDIATE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.ARRANGE_INTERPRETERS_IMMEDIATE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.UDO;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
@@ -120,11 +121,8 @@ public class GatekeepingOrderService {
 
         if (decision.isSealed()) {
 
-            final DocmosisTemplates docmosisTemplate = nonNull(caseData.getGatekeepingOrderRouter())
-                ? SDO : SDO;  //TODO: Swap for UDO template
-
+            var docmosisTemplate = Objects.nonNull(caseData.getStandardDirectionOrder()) ? SDO : UDO;
             DocumentReference sealedDocument = buildFromDocument(generateOrder(caseData, docmosisTemplate));
-
             return currentOrder.toBuilder()
                 .dateOfIssue(formatLocalDateToString(decision.getDateOfIssue(), DATE))
                 .unsealedDocumentCopy(decision.getDraftDocument())
@@ -189,13 +187,10 @@ public class GatekeepingOrderService {
     private DocumentReference getOrderDocument(CaseData caseData) {
 
         final GatekeepingOrderRoute sdoRouter;
-        final DocmosisTemplates docmosisTemplate;
         if (nonNull(caseData.getGatekeepingOrderRouter())) {
             sdoRouter = caseData.getGatekeepingOrderRouter();
-            docmosisTemplate = SDO;
         } else {
             sdoRouter = caseData.getUrgentDirectionsRouter();
-            docmosisTemplate = SDO;  //TODO: Swap for UDO template
         }
 
         if (sdoRouter == UPLOAD) {
@@ -204,7 +199,7 @@ public class GatekeepingOrderService {
                 caseData.getPreparedSDO(),
                 caseData.getGatekeepingOrderEventData().getCurrentSDO());
         }
-
+        var docmosisTemplate = Objects.nonNull(caseData.getStandardDirectionOrder()) ? SDO : UDO;
         return buildFromDocument(generateOrder(caseData, docmosisTemplate));
     }
 
@@ -216,8 +211,10 @@ public class GatekeepingOrderService {
     public CaseData populateStandardDirections(CaseDetails caseDetails) {
         final CaseData caseData = converter.convert(caseDetails);
         final GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
+        var order = Objects.nonNull(caseData.getGatekeepingOrderRouter())
+            ? caseData.getStandardDirectionOrder() : caseData.getUrgentDirectionsOrder();
 
-        final List<StandardDirection> draftStandardDirections = ofNullable(caseData.getStandardDirectionOrder())
+        final List<StandardDirection> draftStandardDirections = ofNullable(order)
             .map(StandardDirectionOrder::getStandardDirections)
             .map(ElementUtils::unwrapElements)
             .orElseGet(ArrayList::new);

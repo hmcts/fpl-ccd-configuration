@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
@@ -43,6 +44,8 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelect
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GatekeepingOrderGenerationService extends
     DocmosisTemplateDataGeneration<DocmosisStandardDirectionOrder> {
+    private static final String STANDARD_DIRECTIONS_ORDER = "Standard directions order";
+    private static final String URGENT_DIRECTIONS_ORDER = "Urgent Directions Order";
     private final CaseDataExtractionService dataService;
     private final OrdersLookupService ordersConfig;
     private final CourtService courtService;
@@ -59,6 +62,9 @@ public class GatekeepingOrderGenerationService extends
             eventData.getGatekeepingOrderIssuingJudge(), caseData.getAllocatedJudge()
         );
 
+        String orderDocumentTitle = Objects.nonNull(caseData.getStandardDirectionOrder())
+            ? STANDARD_DIRECTIONS_ORDER : URGENT_DIRECTIONS_ORDER;
+
         DocmosisStandardDirectionOrder.DocmosisStandardDirectionOrderBuilder<?, ?> orderBuilder =
             DocmosisStandardDirectionOrder.builder()
                 .judgeAndLegalAdvisor(dataService.getJudgeAndLegalAdvisor((judgeAndLegalAdvisor)))
@@ -72,6 +78,8 @@ public class GatekeepingOrderGenerationService extends
                 .applicantName(dataService.getApplicantName(caseData))
                 .directions(buildDirections(caseData))
                 .hearingBooking(dataService.getHearingBookingData(firstHearing))
+                .orderDocumentTitle(orderDocumentTitle)
+                .isUrgentOrder(Objects.nonNull(caseData.getUrgentDirectionsOrder()))
                 .crest(getCrestData());
 
         if (SEALED.equals(gatekeepingOrderSealDecision.getOrderStatus())) {

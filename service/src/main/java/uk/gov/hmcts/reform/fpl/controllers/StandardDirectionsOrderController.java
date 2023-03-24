@@ -43,9 +43,12 @@ import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.UDO;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -188,7 +191,8 @@ public class StandardDirectionsOrderController extends CallbackController {
         CaseData updated = caseData.toBuilder().standardDirectionOrder(order).build();
 
         DocmosisStandardDirectionOrder templateData = sdoGenerationService.getTemplateData(updated);
-        Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
+        var docmosisTemplate = Objects.nonNull(caseData.getStandardDirectionOrder()) ? SDO : UDO;
+        Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, docmosisTemplate);
 
         order.setDirectionsToEmptyList();
         order.setOrderDocReferenceFromDocument(document);
@@ -264,7 +268,10 @@ public class StandardDirectionsOrderController extends CallbackController {
 
                 //generate sdo document
                 DocmosisStandardDirectionOrder templateData = sdoGenerationService.getTemplateData(updated);
-                Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
+                var docmosisTemplate =
+                    Objects.nonNull(caseData.getStandardDirectionOrder()) ? SDO : UDO;
+                Document document =
+                    documentService.getDocumentFromDocmosisOrderTemplate(templateData, docmosisTemplate);
 
                 //add document to order
                 order.setOrderDocReferenceFromDocument(document);
