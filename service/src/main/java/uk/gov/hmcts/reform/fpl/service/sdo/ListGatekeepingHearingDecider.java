@@ -33,7 +33,7 @@ public class ListGatekeepingHearingDecider {
             return Optional.of(GatekeepingOrderEvent
                 .builder()
                 .caseData(caseData)
-                .order(standardDirectionOrder.getOrderDoc()).order(standardDirectionOrder.getOrderDoc())
+                .order(standardDirectionOrder.getOrderDoc())
                 .languageTranslationRequirement(standardDirectionOrder.getTranslationRequirements())
                 .notificationGroup(SDO_OR_UDO_AND_NOP)
                 .orderTitle(standardDirectionOrder.asLabel())

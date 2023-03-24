@@ -203,7 +203,7 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .h1("Next steps")
                 .line("You should now:")
-                .list("serve all parties with the SDO", "check your directions and compliance dates")
+                .list("serve all parties with the UDO", "check your directions and compliance dates")
                 .line()
                 .line("To view the order, sign in to:")
                 .line(caseDetailsUrl(ID, ORDERS))
