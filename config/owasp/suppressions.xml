@@ -28,6 +28,13 @@
     <cve>CVE-2022-25857</cve>
   </suppress>
   <suppress>
+    <notes><![CDATA[
+   file name: commons-fileupload-1.4.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/commons\-fileupload/commons\-fileupload@.*$</packageUrl>
+    <cpe>cpe:/a:apache:commons_fileupload</cpe>
+  </suppress>
+  <suppress>
     <cve>CVE-2022-25857</cve>
   </suppress>
   <suppress>
@@ -122,13 +129,13 @@
     <vulnerabilityName>CVE-2022-31569</vulnerabilityName>
   </suppress>
   <suppress>
-   <vulnerabilityName>CVE-2022-31197</vulnerabilityName>
+    <vulnerabilityName>CVE-2022-31197</vulnerabilityName>
   </suppress>
   <suppress>
     <cpe>cpe:/a:snakeyaml_project:snakeyaml</cpe>
   </suppress>
   <suppress>
-   <cve>CVE-2022-42003</cve>
+    <cve>CVE-2022-42003</cve>
   </suppress>
   <suppress>
     <cve>CVE-2022-42004</cve>
@@ -143,13 +150,16 @@
     <cve>CVE-2021-37533</cve>
   </suppress>
   <suppress>
-   <cve>CVE-2021-4277</cve>
+    <cve>CVE-2021-4277</cve>
   </suppress>
   <suppress>
     <cve>CVE-2021-4235</cve>
   </suppress>
   <suppress>
     <cve>CVE-2022-3064</cve>
+  </suppress>
+  <suppress>
+    <cve>CVE-2023-24998</cve>
   </suppress>
   <suppress>
     <vulnerabilityName>1089130</vulnerabilityName>
@@ -204,5 +214,36 @@
   </suppress>
   <suppress>
     <vulnerabilityName>1089600</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <cve>CVE-2022-45688</cve>
+  </suppress>
+  <suppress>
+    <vulnerabilityName>1091168</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <vulnerabilityName>1091173</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <vulnerabilityName>1091174</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <vulnerabilityName>1091190</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <vulnerabilityName>1091188</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <vulnerabilityName>1091189</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <vulnerabilityName>1091238</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <vulnerabilityName>1091239</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <vulnerabilityName>1091238</vulnerabilityName>
+    <vulnerabilityName>1091239</vulnerabilityName>
   </suppress>
 </suppressions>
