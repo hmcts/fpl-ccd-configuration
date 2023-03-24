@@ -426,7 +426,7 @@ public class MigrateCaseService {
         if (skeletonArguments.isEmpty()) {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, skeletonArgumentList is empty",
-                migrationId, caseId, skeletonArgumentId
+                migrationId, caseId
             ));
         }
 
