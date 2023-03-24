@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.DirectionsOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -23,6 +22,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionsOrderType.SDO;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ContextConfiguration(classes = {SDOIssuedCafcassContentProvider.class})
@@ -60,9 +60,11 @@ class SDOIssuedCafcassContentProviderTest extends AbstractEmailContentProviderTe
             .lastName("Smith")
             .documentLink(Map.of("file", ENCODED_BINARY, "is_csv", false))
             .callout("Smith, FAM NUM, hearing 1 Jan 2020")
+            .directionsOrderTypeShort(SDO.getShortForm())
+            .directionsOrderTypeLong(SDO.getLongForm())
             .build();
 
-        NotifyData actualParameters = underTest.getNotifyData(caseData, ORDER, DirectionsOrderType.SDO);
+        NotifyData actualParameters = underTest.getNotifyData(caseData, ORDER, SDO);
 
         assertThat(actualParameters).isEqualTo(expectedParameters);
     }

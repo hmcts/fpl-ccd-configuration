@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
-import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -37,7 +36,6 @@ import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.StandardDirectionOrderGenerationService;
-import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderEventNotificationDecider;
 import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderRouteValidator;
 import uk.gov.hmcts.reform.fpl.service.sdo.StandardDirectionsOrderService;
 import uk.gov.hmcts.reform.fpl.service.sdo.UrgentGatekeepingOrderService;
@@ -45,11 +43,8 @@ import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
@@ -86,7 +81,6 @@ public class StandardDirectionsOrderController extends CallbackController {
     private final NoticeOfProceedingsService nopService;
     private final UrgentGatekeepingOrderService urgentOrderService;
     private final GatekeepingOrderRouteValidator routeValidator;
-    private final GatekeepingOrderEventNotificationDecider notificationDecider;
     private final ObjectMapper mapper;
 
     @PostMapping("/about-to-start")
@@ -278,8 +272,8 @@ public class StandardDirectionsOrderController extends CallbackController {
                 break;
             case UPLOAD:
                 order = sdoService.buildOrderFromUpload(caseData.getStandardDirectionOrder(),
-                        caseData.getCourt(),
-                        caseData.getSealType());
+                    caseData.getCourt(),
+                    caseData.getSealType());
                 caseDetails.getData().put(STANDARD_DIRECTION_ORDER_KEY, order);
                 break;
         }
@@ -312,24 +306,7 @@ public class StandardDirectionsOrderController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest request) {
-        CaseData caseData = getCaseData(request);
-        CaseData caseDataBefore = getCaseDataBefore(request);
-
-        Optional<GatekeepingOrderEvent> event = notificationDecider.buildEventToPublish(
-            caseData, caseDataBefore.getState()
-        );
-
-        event.ifPresent(eventToPublish -> {
-            coreCaseDataService.triggerEvent(
-                JURISDICTION,
-                CASE_TYPE,
-                caseData.getId(),
-                "internal-change-SEND_DOCUMENT",
-                Map.of("documentToBeSent", eventToPublish.getOrder())
-            );
-
-            publishEvent(eventToPublish);
-        });
+        //Do nothing event deprecated
     }
 
     private String getFirstHearingStartDate(CaseData caseData) {

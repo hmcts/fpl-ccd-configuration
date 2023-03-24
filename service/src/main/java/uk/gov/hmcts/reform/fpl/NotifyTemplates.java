@@ -54,14 +54,8 @@ public final class NotifyTemplates {
     public static final String NOTICE_OF_NEW_HEARING = "aa997c49-efe7-4443-a4ea-6198f62ce449";
     public static final String NOTICE_OF_NEW_HEARING_NO_OTHER_ADDRESS = "a51849ac-8fd9-4387-be37-0d80a9209b79";
     public static final String SDO_OR_UDO_AND_NOP_ISSUED_CTSC = "6372d7e6-e3cb-40d4-919e-cbe4383c5a98";
-    public static final String URGENT_AND_NOP_ISSUED_CTSC = "309c7e39-b1e9-4a30-9d50-fa00d8d87e1c";
-    public static final String SDO_ISSUED_CTSC = "ea694754-d05e-46e2-85e5-f36dd25008fd";
     public static final String SDO_OR_UDO_AND_NOP_ISSUED_LA = "bd89e020-98e8-49de-8975-1661b7d9eafc";
-    public static final String URGENT_AND_NOP_ISSUED_LA = "3314bb72-f4b2-4c59-b67e-83825c44a030";
-    public static final String SDO_ISSUED_LA = "66806269-561c-4ea4-bced-701f0c126e4d";
     public static final String SDO_OR_UDO_AND_NOP_ISSUED_CAFCASS = "76a71ecd-0633-40cc-bdd7-6f123cd47572";
-    public static final String URGENT_AND_NOP_ISSUED_CAFCASS = "96ac2b96-ea38-48b0-9deb-8083c54712f2";
-    public static final String SDO_ISSUED_CAFCASS = "4cfa3baf-d2cc-4822-a608-d290ba559fe1";
     public static final String TEMP_JUDGE_ALLOCATED_TO_HEARING_TEMPLATE = "eeb3a6f5-af49-48aa-a52a-a29a7be2bc38";
     public static final String CMO_REMOVAL_NOTIFICATION_TEMPLATE = "cd114602-4343-42ce-ab60-1be88b797cd2";
     public static final String SDO_REMOVAL_NOTIFICATION_TEMPLATE = "8f66e70f-e328-4a22-aa17-f52f44e69d45";

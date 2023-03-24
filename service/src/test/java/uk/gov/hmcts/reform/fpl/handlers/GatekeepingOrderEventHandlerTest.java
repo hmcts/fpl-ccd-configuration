@@ -30,12 +30,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_OR_UDO_AND_NOP_ISSUED_CAFCASS;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_OR_UDO_AND_NOP_ISSUED_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_OR_UDO_AND_NOP_ISSUED_LA;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_AND_NOP_ISSUED_CTSC;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionsOrderType.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO_OR_UDO_AND_NOP;
-import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.URGENT_AND_NOP;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_NAME;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
@@ -128,7 +127,7 @@ class GatekeepingOrderEventHandlerTest {
     void shouldNotifyCTSCOfIssuedSDO() {
         final CaseData caseData = CaseData.builder().id(CASE_ID).build();
 
-        final GatekeepingOrderEvent event = gatekeepingOrderEvent(URGENT_AND_NOP, caseData);
+        final GatekeepingOrderEvent event = gatekeepingOrderEvent(SDO_OR_UDO_AND_NOP, caseData);
 
         given(standardContentProvider.buildNotificationParameters(caseData, SDO)).willReturn(NOTIFY_DATA);
 
@@ -137,7 +136,7 @@ class GatekeepingOrderEventHandlerTest {
         underTest.notifyCTSC(event);
 
         verify(notificationService).sendEmail(
-            URGENT_AND_NOP_ISSUED_CTSC,
+            SDO_OR_UDO_AND_NOP_ISSUED_CTSC,
             CTSC_INBOX,
             NOTIFY_DATA,
             CASE_ID
@@ -147,7 +146,7 @@ class GatekeepingOrderEventHandlerTest {
     @Test
     void shouldNotifyTranslationTeam() {
         underTest.notifyTranslationTeam(
-            gatekeepingOrderEvent(URGENT_AND_NOP, CASE_DATA).toBuilder()
+            gatekeepingOrderEvent(SDO_OR_UDO_AND_NOP, CASE_DATA).toBuilder()
                 .languageTranslationRequirement(TRANSLATION_REQUIREMENT)
                 .build()
         );
@@ -160,7 +159,7 @@ class GatekeepingOrderEventHandlerTest {
     @Test
     void shouldNotifyNotifyTranslationTeamIfNoLanguageRequirementDefaultsToEmpty() {
         underTest.notifyTranslationTeam(
-            gatekeepingOrderEvent(URGENT_AND_NOP, CASE_DATA)
+            gatekeepingOrderEvent(SDO_OR_UDO_AND_NOP, CASE_DATA)
         );
 
         verify(translationRequestService).sendRequest(CASE_DATA,
@@ -179,7 +178,7 @@ class GatekeepingOrderEventHandlerTest {
             )).build();
 
         underTest.notifyTranslationTeam(
-            gatekeepingOrderEvent(URGENT_AND_NOP, caseData)
+            gatekeepingOrderEvent(SDO_OR_UDO_AND_NOP, caseData)
                 .toBuilder()
                 .languageTranslationRequirement(TRANSLATION_REQUIREMENT)
                 .build()
@@ -206,6 +205,7 @@ class GatekeepingOrderEventHandlerTest {
             .orderTitle(ORDER_TITLE)
             .notificationGroup(group)
             .caseData(caseData)
+            .directionsOrderType(SDO)
             .build();
     }
 }
