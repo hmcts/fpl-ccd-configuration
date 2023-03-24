@@ -200,6 +200,8 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
 
             DocmosisStandardDirectionOrder expectedDocumentCustomization = expectedDocumentCustomization().toBuilder()
                 .applicantName("Local authority name")
+                .isUrgentOrder(false)
+                .orderDocumentTitle("Standard Directions Order")
                 .build();
 
             CaseData responseData = extractCaseData(postMidEvent(caseData, CALLBACK_NAME));
