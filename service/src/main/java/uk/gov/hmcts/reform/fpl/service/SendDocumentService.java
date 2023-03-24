@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReferenceWithLanguage;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,12 +102,26 @@ public class SendDocumentService {
     }
 
     private List<Recipient> getNotRepresentedRespondents(CaseData caseData) {
-        return unwrapElements(caseData.getRespondents1()).stream()
-            .filter(respondent -> ObjectUtils.isEmpty(respondent.getRepresentedBy())
-                && hasNoLegalRepresentation(respondent))
-            .filter(respondent -> !respondent.isDeceasedOrNFA())
-            .map(Respondent::getParty)
-            .collect(toList());
+        if (isNotEmpty(caseData.getRespondents1())) {
+            return caseData.getRespondents1().stream()
+                .filter(respondent -> ObjectUtils.isEmpty(respondent.getValue().getRepresentedBy())
+                    && hasNoLegalRepresentation(respondent.getValue()))
+                .filter(respondent -> !respondent.getValue().isDeceasedOrNFA())
+                .map(respondent -> respondent.getValue().getParty().toBuilder()
+                        .address(getPartyAddress(respondent, caseData)).build())
+                .collect(toList());
+        }
+
+        return emptyList();
+    }
+
+    private Address getPartyAddress(Element<Respondent> respondent, CaseData caseData) {
+        if (respondent.getValue().containsConfidentialDetails()) {
+            return ElementUtils.getElement(respondent.getId(), caseData.getConfidentialRespondents())
+                 .getValue().getParty().getAddress();
+        }
+
+        return respondent.getValue().getParty().getAddress();
     }
 
     private boolean hasNoLegalRepresentation(Respondent respondent) {
