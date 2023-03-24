@@ -6,9 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -32,7 +30,6 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,7 +41,6 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO_V2;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER_V2;
-import static uk.gov.hmcts.reform.fpl.enums.EnglandOffices.BOURNEMOUTH;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
@@ -234,50 +230,6 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
                 .othersNotified("")
                 .others(Collections.emptyList())
                 .build())
-        );
-    }
-
-    @Test
-    void shouldRemoveTransientFields() {
-        CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(
-            ManageOrdersEventData.builder()
-                .manageOrdersType(C23_EMERGENCY_PROTECTION_ORDER)
-                .manageOrdersEpoType(EPOType.REMOVE_TO_ACCOMMODATION)
-                .manageOrdersApprovalDateTime(now())
-                .manageOrdersEndDateTime(now().plusDays(1))
-                .manageOrdersPowerOfArrest(UPLOADED_POWER_OF_ARREST)
-                .manageOrdersFurtherDirections("further directions")
-                .manageOrdersCafcassRegion("ENGLAND")
-                .manageOrdersCafcassOfficesEngland(BOURNEMOUTH).build())
-            .build();
-
-        CaseDetails caseDetails = asCaseDetails(caseData);
-
-        // dummy data set for the front end that is dirtying case data
-        caseDetails.getData().putAll(Map.of(
-            "manageOrdersOperation", "CREATE",
-            "manageOrdersOperationClosedState", "CREATE",
-            "orderTempQuestions", Map.of("holderObject", "forQuestionConditions"),
-            "hearingDetailsSectionSubHeader", "some heading",
-            "issuingDetailsSectionSubHeader", "some heading",
-            "childrenDetailsSectionSubHeader", "some heading",
-            "children_label", "some label about the children",
-            "orderDetailsSectionSubHeader", "some heading",
-            "orderPreview", DOCUMENT_PDF_REFERENCE
-        ));
-
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
-
-        assertThat(response.getData()).doesNotContainKeys(
-            "judgeAndLegalAdvisor", "manageOrdersApprovalDate", "orderAppliesToAllChildren", "children_label",
-            "childSelector", "manageOrdersFurtherDirections", "orderPreview", "manageOrdersType", "orderTempQuestions",
-            "issuingDetailsSectionSubHeader", "hearingDetailsSectionSubHeader",
-            "childrenDetailsSectionSubHeader", "orderDetailsSectionSubHeader",
-            "manageOrdersOperation", "manageOrdersApprovalDateTime", "manageOrdersIncludePhrase",
-            "manageOrdersChildrenDescription", "manageOrdersEndDateTime", "manageOrdersEpoType",
-            "manageOrdersEpoRemovalAddress", "manageOrdersExclusionRequirement", "manageOrdersWhoIsExcluded",
-            "manageOrdersExclusionStartDate", "manageOrdersPowerOfArrest", "manageOrdersTitle",
-            "manageOrdersDirections", "manageOrdersCafcassOfficesEngland", "manageOrdersCafcassRegion"
         );
     }
 

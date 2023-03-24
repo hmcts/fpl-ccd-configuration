@@ -7,7 +7,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.AddGatekeepingOrderController;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
@@ -37,7 +37,6 @@ import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -46,13 +45,13 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.APPOINT_CHILDREN_GUARDIAN;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionType.REDUCE_TIME_FOR_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.SEND_CASE_SUMMARY;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.UPLOAD;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.URGENT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
@@ -65,9 +64,6 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
     private static final String CALLBACK_NAME = "prepare-decision";
     private static final Document DOCUMENT = testDocument();
     private static final DocumentReference DOCUMENT_REFERENCE = DocumentReference.buildFromDocument(DOCUMENT);
-    private static final String NEXT_STEPS = "## Next steps\n\n"
-        + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-        + "You cannot seal and send the order until adding:\n\n";
 
     @MockBean
     private DocmosisDocumentGeneratorService documentGeneratorService;
@@ -96,11 +92,7 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
         }
 
         @Test
-        void shouldSetDraftDocumentStandardDirectionsAndNextStepsLabelWhenMandatoryInformationMissing() {
-            final String nextSteps = NEXT_STEPS
-                + "* the first hearing details\n\n"
-                + "* the allocated judge\n\n"
-                + "* the judge issuing the order";
+        void shouldSetDraftDocumentStandardDirectionsWhenMandatoryInformationMissing() {
 
             final StandardDirection localAuthorityStandardDirection = StandardDirection.builder()
                 .type(SEND_CASE_SUMMARY)
@@ -136,7 +128,6 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(DOCUMENT_REFERENCE)
                 .dateOfIssue(dateNow())
-                .nextSteps(nextSteps)
                 .build();
 
             final CaseData responseData = extractCaseData(postMidEvent(caseDetails, CALLBACK_NAME));
@@ -148,6 +139,45 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
             assertThat(eventData.getStandardDirections())
                 .extracting(Element::getValue)
                 .contains(localAuthorityStandardDirection, cafcassStandardDirection);
+        }
+
+        @Test
+        void shouldSetDraftDocumentStandardDirectionsForReduceTimeForService() {
+
+            final StandardDirection localAuthorityStandardDirection = StandardDirection.builder()
+                .type(REDUCE_TIME_FOR_SERVICE)
+                .title("Reduce time for service of notice of the proceedings")
+                .description("")
+                .assignee(LOCAL_AUTHORITY)
+                .dueDateType(DAYS)
+                .daysBeforeHearing(2)
+                .build();
+
+            final CaseDetails caseDetails = CaseDetails.builder()
+                .id(1234567890123456L)
+                .data(Map.of(
+                    "gatekeepingOrderRouter", SERVICE,
+                    "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
+                    "dateSubmitted", dateNow(),
+                    "applicants", getApplicant("Legacy applicant name"),
+                    "directionsForLocalAuthority", List.of(localAuthorityStandardDirection.getType()),
+                    "direction-REDUCE_TIME_FOR_SERVICE", localAuthorityStandardDirection))
+                .build();
+
+            final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
+                .draftDocument(DOCUMENT_REFERENCE)
+                .dateOfIssue(dateNow())
+                .build();
+
+            final CaseData responseData = extractCaseData(postMidEvent(caseDetails, CALLBACK_NAME));
+            final GatekeepingOrderEventData eventData = responseData.getGatekeepingOrderEventData();
+
+            assertThat(eventData.getGatekeepingOrderSealDecision())
+                .isEqualTo(expectedSealDecision);
+
+            assertThat(eventData.getStandardDirections())
+                .extracting(Element::getValue)
+                .contains(localAuthorityStandardDirection);
         }
 
         @Test
@@ -166,7 +196,6 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
             GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(DOCUMENT_REFERENCE)
                 .dateOfIssue(dateNow())
-                .nextSteps(null)
                 .build();
 
             DocmosisStandardDirectionOrder expectedDocumentCustomization = expectedDocumentCustomization().toBuilder()
@@ -197,7 +226,6 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
             GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(DOCUMENT_REFERENCE)
                 .dateOfIssue(dateNow())
-                .nextSteps(null)
                 .build();
 
             DocmosisStandardDirectionOrder expectedDocumentCustomization = expectedDocumentCustomization().toBuilder()
@@ -217,11 +245,7 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
     class UploadRoute {
 
         @Test
-        void shouldSetDraftDocumentStandardDirectionsAndNextStepsLabelWhenMandatoryInformationMissing() {
-            final String nextSteps = NEXT_STEPS
-                + "* the first hearing details\n\n"
-                + "* the allocated judge\n\n"
-                + "* the judge issuing the order";
+        void shouldSetDraftDocumentStandardDirectionsWhenMandatoryInformationMissing() {
 
             final CaseData caseDetails = CaseData.builder()
                 .gatekeepingOrderRouter(UPLOAD)
@@ -231,7 +255,6 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(DOCUMENT_REFERENCE)
                 .dateOfIssue(dateNow())
-                .nextSteps(nextSteps)
                 .build();
 
             final CaseData responseData = extractCaseData(postMidEvent(caseDetails, CALLBACK_NAME));
@@ -261,19 +284,6 @@ class AddGatekeepingOrderControllerPrepareDecisionMidEventTest extends AbstractC
             final GatekeepingOrderEventData eventData = responseData.getGatekeepingOrderEventData();
 
             assertThat(eventData.getGatekeepingOrderSealDecision()).isEqualTo(expectedSealDecision);
-        }
-    }
-
-    @Nested
-    class UrgentRoute {
-        @Test
-        void shouldThrowExceptionWhenInvokedForInvalidRoute() {
-            final CaseData caseData = CaseData.builder()
-                .gatekeepingOrderRouter(URGENT)
-                .build();
-
-            assertThatThrownBy(() -> postMidEvent(caseData, CALLBACK_NAME))
-                .hasMessageContaining("The prepare-decision callback does not support urgent route");
         }
     }
 

@@ -7,7 +7,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.gov.hmcts.reform.calendar.model.BankHolidays;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
 import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
@@ -118,7 +118,27 @@ public class TestDataHelper {
         links.binary = binaryLink;
         links.self = selfLink;
 
-        final Document document = new Document();
+        return Document.builder()
+            .links(links)
+            .originalDocumentName(randomAlphanumeric(10))
+            .build();
+    }
+
+    public static uk.gov.hmcts.reform.document.domain.Document testOldDocument() {
+        final uk.gov.hmcts.reform.document.domain.Document.Link binaryLink =
+            new uk.gov.hmcts.reform.document.domain.Document.Link();
+        binaryLink.href = randomAlphanumeric(10);
+        final uk.gov.hmcts.reform.document.domain.Document.Link selfLink =
+            new uk.gov.hmcts.reform.document.domain.Document.Link();
+        selfLink.href = randomAlphanumeric(10);
+
+        final uk.gov.hmcts.reform.document.domain.Document.Links links =
+            new uk.gov.hmcts.reform.document.domain.Document.Links();
+        links.binary = binaryLink;
+        links.self = selfLink;
+
+        final uk.gov.hmcts.reform.document.domain.Document document =
+            new uk.gov.hmcts.reform.document.domain.Document();
         document.links = links;
         document.originalDocumentName = randomAlphanumeric(10);
 

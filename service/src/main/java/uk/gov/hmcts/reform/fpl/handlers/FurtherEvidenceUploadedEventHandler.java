@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
@@ -36,6 +37,7 @@ import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
+import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
@@ -76,6 +78,7 @@ import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContent
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NEW_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.POSITION_STATEMENT_CHILD;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.POSITION_STATEMENT_RESPONDENT;
+import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.SKELETON_ARGUMENT;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasExtension;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -187,6 +190,9 @@ public class FurtherEvidenceUploadedEventHandler {
         newHearingDocuments.addAll(getNewHearingDocuments(
             caseData.getHearingDocuments().getPositionStatementRespondentListV2(),
             caseDataBefore.getHearingDocuments().getPositionStatementRespondentListV2()));
+        newHearingDocuments.addAll(getNewHearingDocuments(
+            caseData.getHearingDocuments().getSkeletonArgumentList(),
+            caseDataBefore.getHearingDocuments().getSkeletonArgumentList()));
 
         if (!newHearingDocuments.isEmpty()) {
             final Set<String> recipients = new LinkedHashSet<>();
@@ -196,10 +202,15 @@ public class FurtherEvidenceUploadedEventHandler {
             recipients.addAll(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData));
 
             if (isNotEmpty(recipients)) {
+                Optional<HearingBooking> hearingBookings = caseData.getHearingDetails().stream()
+                    .filter(element -> element.getValue().toLabel().equals(newHearingDocuments.get(0).getHearing()))
+                    .findFirst()
+                    .map(Element::getValue);
+
                 List<String> newDocumentNames = newHearingDocuments.stream()
                     .map(doc -> doc.getDocument().getFilename()).collect(toList());
-                furtherEvidenceNotificationService.sendNotification(caseData, recipients, uploader.getFullName(),
-                    newDocumentNames);
+                furtherEvidenceNotificationService.sendNotificationWithHearing(caseData, recipients,
+                    uploader.getFullName(), newDocumentNames, hearingBookings);
             }
         }
     }
@@ -209,25 +220,29 @@ public class FurtherEvidenceUploadedEventHandler {
         final CaseData caseData = event.getCaseData();
         final CaseData caseDataBefore = event.getCaseDataBefore();
 
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-            cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             List<HearingDocument> newCaseSummaries = getNewHearingDocuments(
                 caseData.getHearingDocuments().getCaseSummaryList(),
                 caseDataBefore.getHearingDocuments().getCaseSummaryList());
+            sendHearingDocumentsToCafcass(caseData, newCaseSummaries, CASE_SUMMARY);
+
             List<HearingDocument> newPositionStatementChildren =
                 getNewHearingDocuments(
                     caseData.getHearingDocuments().getPositionStatementChildListV2(),
                     caseDataBefore.getHearingDocuments().getPositionStatementChildListV2());
+            sendHearingDocumentsToCafcass(caseData, newPositionStatementChildren, POSITION_STATEMENT_CHILD);
+
             List<HearingDocument> newPositionStatementRespondents =
                 getNewHearingDocuments(
                     caseData.getHearingDocuments().getPositionStatementRespondentListV2(),
                     caseDataBefore.getHearingDocuments().getPositionStatementRespondentListV2());
-
-            sendHearingDocumentsToCafcass(caseData, newCaseSummaries, CASE_SUMMARY);
-            sendHearingDocumentsToCafcass(caseData, newPositionStatementChildren, POSITION_STATEMENT_CHILD);
             sendHearingDocumentsToCafcass(caseData, newPositionStatementRespondents, POSITION_STATEMENT_RESPONDENT);
+
+            List<HearingDocument> newSkeletonArgument =
+                getNewHearingDocuments(
+                    caseData.getHearingDocuments().getSkeletonArgumentList(),
+                    caseDataBefore.getHearingDocuments().getSkeletonArgumentList());
+            sendHearingDocumentsToCafcass(caseData, newSkeletonArgument, SKELETON_ARGUMENT);
         }
     }
 
@@ -251,10 +266,7 @@ public class FurtherEvidenceUploadedEventHandler {
     public void sendCourtBundlesToCafcass(final FurtherEvidenceUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
 
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             final CaseData caseDataBefore = event.getCaseDataBefore();
 
             Map<String, Set<DocumentReference>> newCourtBundles = getNewCourtBundles(caseData, caseDataBefore);
@@ -279,10 +291,7 @@ public class FurtherEvidenceUploadedEventHandler {
     public void sendDocumentsToCafcass(final FurtherEvidenceUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
 
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             final CaseData caseDataBefore = event.getCaseDataBefore();
             final DocumentUploaderType userType = event.getUserType();
             final Set<DocumentReference> documentReferences = new HashSet<>();
@@ -633,10 +642,16 @@ public class FurtherEvidenceUploadedEventHandler {
         // Further application documents - for example the SWET or care plan
         // - everyone except respondent/child solicitors have permission to see
         // So we shouldn’t send the notification to respondent/child solicitors
+        // DFPL-1087, respondent/child should receive notification if the docs are not confidential
         List<Element<ApplicationDocument>> newApplicationDocuments =
             getNewApplicationDocuments(caseData.getApplicationDocuments(), beforeCaseData.getApplicationDocuments());
         unwrapElements(newApplicationDocuments).forEach(applicationDocument -> {
             ret.get(ALL_LAS).add(applicationDocument);
+            if (!applicationDocument.isConfidentialDocument()) {
+                ret.get(CAFCASS).add(applicationDocument);
+                ret.get(CHILD_SOLICITOR).add(applicationDocument);
+                ret.get(RESPONDENT_SOLICITOR).add(applicationDocument);
+            }
         });
 
         // Respondent Statement

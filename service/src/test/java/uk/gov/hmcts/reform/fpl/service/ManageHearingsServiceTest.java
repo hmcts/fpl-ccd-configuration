@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
@@ -446,7 +446,9 @@ class ManageHearingsServiceTest {
             Map.entry("preHearingAttendanceDetails", "Test pre attendance details"),
             Map.entry("sendNoticeOfHearingTranslationRequirements", TRANSLATION_REQUIREMENTS),
             Map.entry("hearingDuration", "DATE_TIME"),
-            Map.entry("hearingEndDateTime", endDate)
+            Map.entry("hearingEndDateTime", endDate),
+            Map.entry("hearingVenue", "OTHER"),
+            Map.entry("hearingVenueCustom", VENUE_CUSTOM_ADDRESS)
         ));
     }
 
@@ -497,8 +499,8 @@ class ManageHearingsServiceTest {
     @Test
     void shouldSetHearingDayAndHearingDurationWhenHearingDaysIsSet() {
         int days = 9;
-        LocalDateTime startDate = time.now().plusDays(1);
-        LocalDateTime endDate = startDate.plusDays(days);
+        LocalDateTime startDate = LocalDateTime.of(2022, 12, 5, 0, 0, 0);
+        LocalDateTime endDate = LocalDateTime.of(2022, 12, 15, 0, 0, 0);
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = testJudgeAndLegalAdviser();
         Judge allocatedJudge = testJudge();
 
@@ -997,7 +999,7 @@ class ManageHearingsServiceTest {
                 "hearingStartDateLabel", "16 April 2011, 8:20pm",
                 "endDateFlag", "Yes",
                 "hearingDurationLabel", "3 days",
-                "hearingEndDate", LocalDateTime.parse("2011-04-18T20:20:00"));
+                "hearingEndDate", LocalDateTime.parse("2011-04-19T20:20:00"));
 
 
             assertThat(hearingDateFields).isEqualTo(extractedFields);

@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.PastOrPresentDate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -25,6 +26,7 @@ import java.util.Optional;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
@@ -48,6 +50,7 @@ public class SupportingEvidenceBundle implements TranslatableItem, FurtherDocume
     private final LanguageTranslationRequirement translationRequirements;
     private String hasConfidentialAddress;
     private ExpertReportType expertReportType;
+    private List<String> documentAcknowledge;
 
     public String getHasConfidentialAddress() {
         return ((!isBlank(name) || document != null) && (!YesNo.isYesOrNo(hasConfidentialAddress)))
@@ -121,6 +124,16 @@ public class SupportingEvidenceBundle implements TranslatableItem, FurtherDocume
             // otherwise, it's not an expert report - so don't fill in this field
             return null;
         }
+    }
+
+    public List<String> getDocumentAcknowledge() {
+        if (this.documentAcknowledge == null) {
+            this.documentAcknowledge = new ArrayList<>();
+        }
+        if (document != null && !this.documentAcknowledge.contains(DOCUMENT_ACKNOWLEDGEMENT_KEY)) {
+            this.documentAcknowledge.add(DOCUMENT_ACKNOWLEDGEMENT_KEY);
+        }
+        return this.documentAcknowledge;
     }
 
 }

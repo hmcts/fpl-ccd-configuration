@@ -14,6 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderSection;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -29,6 +30,7 @@ import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirec
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.SECURE_ACCOMMODATION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
 
 @ExtendWith(SpringExtension.class)
@@ -84,6 +86,20 @@ class OrdersSoughtCheckerTest {
             final List<String> errors = ordersSoughtChecker.validate(caseData);
 
             assertThat(errors).isEmpty();
+        }
+
+        @Test
+        void shouldReturnErrorWhenSectionNotSelectedForSAO() {
+            final Orders orders = Orders.builder()
+                .orderType(List.of(SECURE_ACCOMMODATION_ORDER))
+                .build();
+            final CaseData caseData = CaseData.builder()
+                .orders(orders)
+                .build();
+
+            final List<String> errors = ordersSoughtChecker.validate(caseData);
+
+            assertThat(errors).containsExactly("Select under which section are you applying");
         }
     }
 
@@ -178,6 +194,9 @@ class OrdersSoughtCheckerTest {
             completedOrder()
                 .orderType(List.of(OrderType.OTHER))
                 .otherOrder("")
+                .build(),
+            completedSAO()
+                .secureAccommodationOrderSection(null)
                 .build()
         ).map(Arguments::of);
     }
@@ -196,6 +215,8 @@ class OrdersSoughtCheckerTest {
             completedOrder()
                 .build(),
             completedEPO()
+                .build(),
+            completedSAO()
                 .build()
         ).map(Arguments::of);
     }
@@ -217,6 +238,14 @@ class OrdersSoughtCheckerTest {
             .excluded("Test")
             .emergencyProtectionOrderDetails("Test")
             .emergencyProtectionOrderDirectionDetails("Test")
+            .directions("Yes")
+            .directionDetails("Test");
+    }
+
+    private static Orders.OrdersBuilder completedSAO() {
+        return Orders.builder()
+            .orderType(List.of(SECURE_ACCOMMODATION_ORDER))
+            .secureAccommodationOrderSection(SecureAccommodationOrderSection.ENGLAND)
             .directions("Yes")
             .directionDetails("Test");
     }

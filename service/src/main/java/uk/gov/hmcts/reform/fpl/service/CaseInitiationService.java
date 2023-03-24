@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
@@ -15,18 +16,24 @@ import uk.gov.hmcts.reform.fpl.model.LocalAuthorityName;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.model.Organisation;
+import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CHILDSOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CREATOR;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LAMANAGING;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.EPS;
 import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.MLA;
 
@@ -92,27 +99,50 @@ public class CaseInitiationService {
         }
     }
 
+    public boolean isUserLocalAuthority() {
+        Optional<String> userLA = localAuthorities.getLocalAuthorityCode();
+
+        return userLA.isPresent();
+    }
+
+    public String getOrganisationUsers() {
+        Optional<Organisation> userOrg = organisationService.findOrganisation();
+
+        try {
+            if (userOrg.isPresent()) {
+                return "<ul>" + caseAccessService.getLocalAuthorityUsersAllInfo().stream()
+                    .map(OrganisationUser::getUserString)
+                    .collect(Collectors.joining("")) + "</ul>";
+            }
+        } catch (Exception e) {
+            return "No users found";
+        }
+        return "No users found";
+    }
+
     public List<String> checkUserAllowedToCreateCase(CaseData caseData) {
 
         Optional<Organisation> userOrg = organisationService.findOrganisation();
         Optional<String> outsourcingLA = dynamicLists.getSelectedValue(caseData.getOutsourcingLAs());
         Optional<String> userLA = localAuthorities.getLocalAuthorityCode();
         Optional<String> caseLA = outsourcingLA.isPresent() ? outsourcingLA : userLA;
+        RepresentativeType representativeType = nonNull(caseData.getRepresentativeType())
+            ? caseData.getRepresentativeType() : RepresentativeType.LOCAL_AUTHORITY;
 
         boolean userInMO = userOrg.isPresent();
         boolean userInLA = userLA.isPresent();
         boolean caseOutsourced = outsourcingLA.isPresent() && !outsourcingLA.equals(userLA);
+        boolean isLocalAuthority = representativeType.equals(RepresentativeType.LOCAL_AUTHORITY);
 
         log.info("userOrg: {}, userLA: {} and outsourcingLA: {}",
             userOrg.map(Organisation::getOrganisationIdentifier).orElse(NOT_PRESENT),
             userLA.orElse(NOT_PRESENT),
             outsourcingLA.orElse(NOT_PRESENT));
 
-        if (userInMO && !userInLA && !caseOutsourced) {
+        if (userInMO && !userInLA && !caseOutsourced && isLocalAuthority) {
             return List.of(
-                "Email not recognised.",
-                "Your email is not associated with a local authority or authorised legal firm.",
-                "Email MyHMCTSsupport@justice.gov.uk for further guidance.");
+                "You do not have permission to proceed as a local authority.",
+                "Email FamilyPublicLawServiceTeam@justice.gov.uk for further guidance.");
         }
 
         if (!userInMO) {
@@ -144,6 +174,14 @@ public class CaseInitiationService {
         return emptyList();
     }
 
+    public boolean isCaseOutsourced(CaseData caseData) {
+        final Optional<String> userLocalAuthority = localAuthorities.getLocalAuthorityCode();
+        final Optional<String> outsourcingLocalAuthority = dynamicLists.getSelectedValue(caseData.getOutsourcingLAs());
+
+        return outsourcingLocalAuthority.isPresent()
+            && !userLocalAuthority.equals(outsourcingLocalAuthority);
+    }
+
     public CaseData updateOrganisationsDetails(CaseData caseData) {
         Optional<Organisation> organisation = organisationService.findOrganisation();
         final String currentUserOrganisationId = organisation
@@ -171,6 +209,7 @@ public class CaseInitiationService {
                 .localAuthorityPolicy(organisationPolicy(outsourcingOrgId, outsourcingOrgName, LASOLICITOR))
                 .caseLocalAuthority(outsourcingLocalAuthority.get())
                 .caseLocalAuthorityName(localAuthorities.getLocalAuthorityName(outsourcingLocalAuthority.get()))
+                .representativeType(RepresentativeType.LOCAL_AUTHORITY)
                 .build();
 
             return addCourtDetails(updatedCaseData);
@@ -182,15 +221,43 @@ public class CaseInitiationService {
                     organisationPolicy(currentUserOrganisationId, currentUserOrganisationName, LASOLICITOR))
                 .caseLocalAuthority(userLocalAuthority.get())
                 .caseLocalAuthorityName(localAuthorities.getLocalAuthorityName(userLocalAuthority.get()))
+                .representativeType(RepresentativeType.LOCAL_AUTHORITY)
                 .build();
 
             return addCourtDetails(updatedCaseData);
         }
 
-        throw new IllegalStateException("Cannot determine local authority for a case");
+        if (nonNull(caseData.getRepresentativeType())) {
+            boolean isRespondentSolicitor = Objects.equals(caseData.getRepresentativeType().toString(),
+                "RESPONDENT_SOLICITOR");
+            boolean isChildSolicitor = Objects.equals(caseData.getRepresentativeType().toString(),
+                "CHILD_SOLICITOR");
+
+            if (isRespondentSolicitor || isChildSolicitor) {
+                CaseData updatedCaseData = caseData.toBuilder()
+                    .outsourcingPolicy(organisationPolicy(
+                        currentUserOrganisationId,
+                        currentUserOrganisationName,
+                        isRespondentSolicitor ? SOLICITORA : CHILDSOLICITORA))
+                    .caseLocalAuthority(caseData.getRelatingLA())
+                    .caseLocalAuthorityName(localAuthorities.getLocalAuthorityName(caseData.getRelatingLA()))
+                    .representativeType(caseData.getRepresentativeType())
+                    .build();
+
+                return addCourtDetails(updatedCaseData);
+            }
+        }
+
+        return caseData;
     }
 
     private CaseData addCourtDetails(CaseData caseData) {
+        if (isEmpty(caseData.getCaseLocalAuthorityName())) {
+            return caseData.toBuilder().court(
+                Court.builder().build()
+            ).build();
+        }
+
         final List<Court> courts = courtLookup.getCourts(caseData.getCaseLocalAuthority());
 
         if (isNotEmpty(courts)) {
@@ -213,9 +280,18 @@ public class CaseInitiationService {
 
         if (nonNull(caseData.getOutsourcingPolicy())) {
             final CaseRole caseRole = getCaseRole(caseData.getOutsourcingPolicy());
-            caseAccessService.grantCaseRoleToUser(caseId, creatorId, caseRole);
+            if (LAMANAGING.equals(caseRole)
+                && !isEmpty(caseData.getShouldShareWithOrganisationUsers())
+                && caseData.getShouldShareWithOrganisationUsers().equals(YesNo.YES)) {
+                // LAMANAGING + we want to share with everyone
+                caseAccessService.grantCaseRoleToLocalAuthority(caseId, creatorId, localAuthority, caseRole);
+            } else {
+                // EPSMANAGING do not share OR LAMANAGING doesn't want to share
+                caseAccessService.grantCaseRoleToUser(caseId, creatorId, caseRole);
+            }
         } else {
             final CaseRole caseRole = getCaseRole(caseData.getLocalAuthorityPolicy());
+            // LASOLICITOR share with all sols in org
             caseAccessService.grantCaseRoleToLocalAuthority(caseId, creatorId, localAuthority, caseRole);
         }
     }

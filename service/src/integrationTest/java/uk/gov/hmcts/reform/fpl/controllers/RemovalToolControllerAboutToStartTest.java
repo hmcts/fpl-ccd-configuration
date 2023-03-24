@@ -12,9 +12,12 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.SentDocument;
+import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -114,18 +117,26 @@ class RemovalToolControllerAboutToStartTest extends AbstractCallbackTest {
                 buildListElement(sealedCaseManagementOrders.get(0).getId(),
                     String.format("Sealed case management order issued on %s",
                         formatLocalDateToString(dateNow(), "d MMMM yyyy"))),
-                buildListElement(draftCMOOne.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"))),
-                buildListElement(draftOrderOne.getId(), format("Draft order sent on %s",
-                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"))),
-                buildListElement(draftCMOTwo.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"))),
-                buildListElement(agreedCMO.getId(), format("Agreed case management order sent on %s",
-                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"))),
-                buildListElement(draftOrderTwo.getId(), format("Draft order sent on %s",
-                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"))),
-                buildListElement(draftCMOThree.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy")))))
+                buildListElement(draftCMOOne.getId(), format("Draft case management order sent on %s, %s",
+                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"),
+                    draftCMOOne.getValue().getDocument().getFilename())),
+                buildListElement(draftOrderOne.getId(), format("Draft order sent on %s for %s, %s",
+                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"),
+                    draftOrderOne.getValue().getTitle(),
+                    draftOrderOne.getValue().getDocument().getFilename())),
+                buildListElement(draftCMOTwo.getId(), format("Draft case management order sent on %s, %s",
+                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"),
+                    draftCMOTwo.getValue().getDocument().getFilename())),
+                buildListElement(agreedCMO.getId(), format("Agreed case management order sent on %s, %s",
+                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"),
+                    agreedCMO.getValue().getDocument().getFilename())),
+                buildListElement(draftOrderTwo.getId(), format("Draft order sent on %s for %s, %s",
+                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"),
+                    draftOrderTwo.getValue().getTitle(),
+                    draftOrderTwo.getValue().getDocument().getFilename())),
+                buildListElement(draftCMOThree.getId(), format("Draft case management order sent on %s, %s",
+                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"),
+                    draftCMOThree.getValue().getDocument().getFilename()))))
             .build();
 
         assertThat(builtDynamicList).isEqualTo(expectedList);
@@ -195,6 +206,99 @@ class RemovalToolControllerAboutToStartTest extends AbstractCallbackTest {
         assertThat(builtDynamicList).isEqualTo(expectedList);
     }
 
+    @Test
+    void shouldBuildListOfSentDocumentsForOneParty() {
+        String partyOneName = "Person One";
+        List<Element<SentDocument>> partyOneDocs = List.of(element(SentDocument.builder()
+            .sentAt("11 Nov 2022 2pm")
+            .partyName(partyOneName)
+            .letterId("11111111-1111-1111-1111-111111111111")
+            .document(DocumentReference.builder().filename("Doc1.doc").build())
+            .coversheet(DocumentReference.builder().filename("CoverSheet.doc").build())
+            .build()));
+        CaseData caseData = CaseData.builder()
+            .documentsSentToParties(List.of(
+                // party 1
+                element(SentDocuments.builder()
+                    .partyName(partyOneName)
+                    .documentsSentToParty(partyOneDocs)
+                    .build())
+            ))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(asCaseDetails(caseData));
+        DynamicList builtDynamicList = mapper.convertValue(
+            response.getData().get("removableSentDocumentList"), DynamicList.class);
+        DynamicList expectedList = DynamicList.builder()
+            .value(DynamicListElement.EMPTY)
+            .listItems(
+                List.of(
+                    buildListElement(partyOneDocs.get(0).getId(), "Person One - Doc1.doc (11 Nov 2022 2pm)")
+                ))
+            .build();
+
+        assertThat(builtDynamicList).isEqualTo(expectedList);
+    }
+
+    @Test
+    void shouldBuildListOfSentDocumentsForTwoParties() {
+        String partyOneName = "Person One";
+        String partyTwoName = "Person Two";
+        List<Element<SentDocument>> partyOneDocs = List.of(
+            element(SentDocument.builder()
+                .sentAt("11 Nov 2022 2pm")
+                .partyName(partyOneName)
+                .letterId("11111111-1111-1111-1111-111111111111")
+                .document(DocumentReference.builder().filename("Doc1.doc").build())
+                .coversheet(DocumentReference.builder().filename("CoverSheet.doc").build())
+                .build()),
+            element(SentDocument.builder()
+                .sentAt("12 Nov 2022 2pm")
+                .partyName(partyOneName)
+                .letterId("11111111-1111-1111-1111-111111111112")
+                .document(DocumentReference.builder().filename("Doc2.doc").build())
+                .coversheet(DocumentReference.builder().filename("CoverSheet.doc").build())
+                .build()));
+        List<Element<SentDocument>> partyTwoDocs = List.of(
+            element(SentDocument.builder()
+                .sentAt("11 Nov 2022 2pm")
+                .partyName(partyTwoName)
+                .letterId("11111111-1111-1111-1111-111111111113")
+                .document(DocumentReference.builder().filename("2Doc1.doc").build())
+                .coversheet(DocumentReference.builder().filename("CoverSheet.doc").build())
+                .build()));
+
+        CaseData caseData = CaseData.builder()
+            .documentsSentToParties(List.of(
+                // party 1
+                element(SentDocuments.builder()
+                    .partyName(partyOneName)
+                    .documentsSentToParty(partyOneDocs)
+                    .build()),
+                // party 2
+                element(SentDocuments.builder()
+                    .partyName(partyTwoName)
+                    .documentsSentToParty(partyTwoDocs)
+                    .build())
+            ))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(asCaseDetails(caseData));
+        DynamicList builtDynamicList = mapper.convertValue(
+            response.getData().get("removableSentDocumentList"), DynamicList.class);
+        DynamicList expectedList = DynamicList.builder()
+            .value(DynamicListElement.EMPTY)
+            .listItems(
+                List.of(
+                    buildListElement(partyOneDocs.get(0).getId(), "Person One - Doc1.doc (11 Nov 2022 2pm)"),
+                    buildListElement(partyOneDocs.get(1).getId(), "Person One - Doc2.doc (12 Nov 2022 2pm)"),
+                    buildListElement(partyTwoDocs.get(0).getId(), "Person Two - 2Doc1.doc (11 Nov 2022 2pm)")
+                ))
+            .build();
+
+        assertThat(builtDynamicList).isEqualTo(expectedList);
+    }
+
     private DynamicListElement buildListElement(UUID id, String label) {
         return DynamicListElement.builder()
             .code(id)
@@ -213,6 +317,8 @@ class RemovalToolControllerAboutToStartTest extends AbstractCallbackTest {
     private HearingOrder buildPastHearingOrder(HearingOrderType type) {
         return HearingOrder.builder()
             .type(type)
+            .title("test order")
+            .order(DocumentReference.builder().filename("order.doc").build())
             .status((type == AGREED_CMO || type == C21) ? SEND_TO_JUDGE : DRAFT)
             .dateSent(dateNow().minusDays(1))
             .dateIssued(dateNow())

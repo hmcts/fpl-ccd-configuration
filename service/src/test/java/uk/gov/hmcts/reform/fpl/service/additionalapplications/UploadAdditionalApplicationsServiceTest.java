@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -13,7 +14,7 @@ import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -36,6 +37,7 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -46,12 +48,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_ID;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.OTHER_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.CHANGE_SURNAME_OR_REMOVE_JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_PARENTAL_RESPONSIBILITY;
@@ -61,6 +64,7 @@ import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C13A_SPECIAL_GUARDIAN
 import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C20_SECURE_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithRandomUUID;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 class UploadAdditionalApplicationsServiceTest {
@@ -102,8 +106,7 @@ class UploadAdditionalApplicationsServiceTest {
         given(conversionService.convertToPdf(DOCUMENT)).willReturn(CONVERTED_DOCUMENT);
         given(conversionService.convertToPdf(SUPPLEMENT_DOCUMENT)).willReturn(CONVERTED_SUPPLEMENT_DOCUMENT);
         underTest = new UploadAdditionalApplicationsService(
-            time, user, uploadHelper, conversionService, peopleInCaseService
-        );
+            time, user, uploadHelper, conversionService);
         given(user.isHmctsUser()).willReturn(true);
         given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(HMCTS);
     }
@@ -135,12 +138,13 @@ class UploadAdditionalApplicationsServiceTest {
 
         assertC2DocumentBundle(actual.getC2DocumentBundle(), supplement, supportingEvidenceBundle);
 
-        verify(conversionService).convertToPdf(DOCUMENT);
+        // No longer called in this method
+        // verify(conversionService).convertToPdf(DOCUMENT);
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldConvertApplications(boolean isHmctsUser) {
+    void shouldNotConvertApplications(boolean isHmctsUser) {
         given(user.isHmctsUser()).willReturn(isHmctsUser);
         given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(USER_EMAIL);
         given(conversionService.convertToPdf(SUPPLEMENT_DOCUMENT)).willReturn(CONVERTED_SUPPLEMENT_DOCUMENT);
@@ -166,11 +170,11 @@ class UploadAdditionalApplicationsServiceTest {
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
         assertThat(actual.getAuthor()).isEqualTo(USER_EMAIL);
-        assertThat(actual.getC2DocumentBundle().getDocument()).isEqualTo(CONVERTED_DOCUMENT);
+        assertThat(actual.getC2DocumentBundle().getDocument()).isEqualTo(DOCUMENT);
         assertThat(actual.getC2DocumentBundle().getSupplementsBundle()).hasSize(1)
             .first()
             .extracting(actualSupplement -> actualSupplement.getValue().getDocument())
-            .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
+            .isEqualTo(SUPPLEMENT_DOCUMENT);
     }
 
     @Test
@@ -193,7 +197,6 @@ class UploadAdditionalApplicationsServiceTest {
             .otherApplicant("some other name")
             .build();
 
-        given(peopleInCaseService.getSelectedOthers(any())).willReturn(List.of());
         given(peopleInCaseService.getSelectedRespondents(any())).willReturn(List.of());
         given(peopleInCaseService.getPeopleNotified(any(), eq(List.of()), eq(List.of()))).willReturn("");
 
@@ -202,8 +205,6 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(actual.getAuthor()).isEqualTo(HMCTS);
         assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
         assertThat(actual.getOtherApplicationsBundle().getApplicantName()).isEqualTo("some other name");
-        assertThat(actual.getOtherApplicationsBundle().getOthersNotified()).isEmpty();
-        assertThat(actual.getOtherApplicationsBundle().getOthers()).isEmpty();
         assertThat(actual.getOtherApplicationsBundle().getRespondents()).isEmpty();
 
         assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), supplement, supportingDocument);
@@ -240,6 +241,11 @@ class UploadAdditionalApplicationsServiceTest {
             .value(DYNAMIC_LIST_ELEMENTS.get(0))
             .listItems(DYNAMIC_LIST_ELEMENTS).build();
 
+        List<Element<Respondent>> respondentsInCase = wrapElements(
+            Respondent.builder().party(
+                RespondentParty.builder().firstName("First").lastName("Respondent")
+                    .address(Address.builder().postcode("SE1").build()).build()).build());
+
         CaseData caseData = CaseData.builder().temporaryPbaPayment(pbaPayment)
             .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
             .c2Type(WITH_NOTICE)
@@ -247,23 +253,10 @@ class UploadAdditionalApplicationsServiceTest {
             .temporaryOtherApplicationsBundle(createOtherApplicationsBundle(otherSupplement, otherSupportingDocument))
             .temporaryPbaPayment(pbaPayment)
             .applicantsList(applicantsList)
+            .respondents1(respondentsInCase)
             .build();
 
-        List<Element<Other>> selectedOthers = wrapElements(
-            Other.builder().name("Other1").address(Address.builder().postcode("SE1").build()).build(),
-            Other.builder().name("Other2").address(Address.builder().postcode("SE2").build()).build()
-        );
-
-        List<Element<Respondent>> selectedRespondents = wrapElements(
-            Respondent.builder().party(
-                RespondentParty.builder().firstName("First").lastName("Respondent")
-                    .address(Address.builder().postcode("SE1").build()).build()).build());
-
-        String othersNotified = "First Respondent, Other1, Other2";
-        given(peopleInCaseService.getSelectedOthers(any())).willReturn(selectedOthers);
-        given(peopleInCaseService.getSelectedRespondents(any())).willReturn(selectedRespondents);
-        given(peopleInCaseService.getPeopleNotified(any(), eq(selectedRespondents), eq(selectedOthers)))
-            .willReturn(othersNotified);
+        assertThat(caseData.getAllRespondents()).isEqualTo(respondentsInCase);
 
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
@@ -271,11 +264,6 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
         assertThat(actual.getC2DocumentBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
         assertThat(actual.getOtherApplicationsBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
-
-        assertThat(actual.getC2DocumentBundle().getOthers()).isEqualTo(selectedOthers);
-        assertThat(actual.getC2DocumentBundle().getOthersNotified()).isEqualTo(othersNotified);
-        assertThat(actual.getOtherApplicationsBundle().getOthers()).isEqualTo(selectedOthers);
-        assertThat(actual.getOtherApplicationsBundle().getOthersNotified()).isEqualTo(othersNotified);
 
         assertC2DocumentBundle(actual.getC2DocumentBundle(), c2Supplement, c2SupportingDocument);
         assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), otherSupplement, otherSupportingDocument);
@@ -359,10 +347,160 @@ class UploadAdditionalApplicationsServiceTest {
         );
     }
 
+    @Nested
+    class SkipPayments {
+
+        @Test
+        void shouldSkipPaymentsWhenAllConditionsValid() {
+            HearingBooking booking = HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(15))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationType(List.of(C2_ORDER))
+                .temporaryC2Document(C2DocumentBundle.builder()
+                    .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                    .build())
+                .build();
+
+            boolean result = underTest.shouldSkipPayments(caseData, booking, caseData.getTemporaryC2Document());
+            assertThat(result).isTrue();
+        }
+
+        @Test
+        void shouldNotSkipPaymentsWhenLessThan14DaysBeforeHearing() {
+            HearingBooking booking = HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(13))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationType(List.of(C2_ORDER))
+                .temporaryC2Document(C2DocumentBundle.builder()
+                    .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                    .build())
+                .build();
+
+            boolean result = underTest.shouldSkipPayments(caseData, booking, caseData.getTemporaryC2Document());
+            assertThat(result).isFalse();
+        }
+
+        @Test
+        void shouldNotSkipPaymentsWhenOtherOrderAppliedFor() {
+            HearingBooking booking = HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(15))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
+                .temporaryC2Document(C2DocumentBundle.builder()
+                    .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                    .build())
+                .build();
+
+            boolean result = underTest.shouldSkipPayments(caseData, booking, caseData.getTemporaryC2Document());
+            assertThat(result).isFalse();
+        }
+
+        @Test
+        void shouldNotSkipPaymentsWhenAnotherC2AdditionalOrderRequested() {
+            HearingBooking booking = HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(15))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationType(List.of(C2_ORDER))
+                .temporaryC2Document(C2DocumentBundle.builder()
+                    .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT, CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
+                    .build())
+                .build();
+
+            boolean result = underTest.shouldSkipPayments(caseData, booking, caseData.getTemporaryC2Document());
+            assertThat(result).isFalse();
+        }
+
+        @Test
+        void shouldNotSkipPaymentsWhenNotRequestingAdjournment() {
+            HearingBooking booking = HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(15))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationType(List.of(C2_ORDER))
+                .temporaryC2Document(C2DocumentBundle.builder()
+                    .c2AdditionalOrdersRequested(List.of(CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
+                    .build())
+                .build();
+
+            boolean result = underTest.shouldSkipPayments(caseData, booking, caseData.getTemporaryC2Document());
+            assertThat(result).isFalse();
+        }
+
+        @Test
+        void shouldNotSkipPaymentsWhenApplyingForAnOtherOrder() {
+            HearingBooking booking = HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(15))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationType(List.of(OTHER_ORDER))
+                .temporaryC2Document(C2DocumentBundle.builder()
+                    .c2AdditionalOrdersRequested(List.of(CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
+                    .build())
+                .build();
+
+            boolean result = underTest.shouldSkipPayments(caseData, booking, caseData.getTemporaryC2Document());
+            assertThat(result).isFalse();
+        }
+    }
+
+    @Nested
+    class PostSubmitProcessing {
+
+        @Test
+        void shouldSetSupplementsToEmptyListIfNonePresent() {
+            C2DocumentBundle bundle = C2DocumentBundle.builder()
+                .document(DOCUMENT)
+                .supplementsBundle(List.of())
+                .build();
+            C2DocumentBundle converted = underTest.convertC2Bundle(bundle);
+
+            assertThat(converted.getSupplementsBundle()).isEmpty();
+            assertThat(converted.getSupplementsBundle()).isNotNull();
+        }
+
+        @Test
+        void shouldConvertC2SupplementToPdf() {
+            C2DocumentBundle bundle = C2DocumentBundle.builder()
+                .document(DOCUMENT)
+                .supplementsBundle(wrapElementsWithRandomUUID(Supplement.builder()
+                    .document(SUPPLEMENT_DOCUMENT)
+                    .build()))
+                .build();
+            C2DocumentBundle converted = underTest.convertC2Bundle(bundle);
+
+            assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
+                .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
+        }
+
+        @Test
+        void shouldConvertOtherSupplementToPdf() {
+            OtherApplicationsBundle bundle = OtherApplicationsBundle.builder()
+                .document(DOCUMENT)
+                .supplementsBundle(wrapElementsWithRandomUUID(Supplement.builder()
+                    .document(SUPPLEMENT_DOCUMENT)
+                    .build()))
+                .build();
+            OtherApplicationsBundle converted = underTest.convertOtherBundle(bundle);
+
+            assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
+                .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
+        }
+    }
+
     private void assertC2DocumentBundle(C2DocumentBundle actualC2Bundle, Supplement expectedSupplement,
                                         SupportingEvidenceBundle expectedSupportingEvidence) {
         assertThat(actualC2Bundle.getId()).isNotNull();
-        assertThat(actualC2Bundle.getDocument().getFilename()).isEqualTo(CONVERTED_DOCUMENT.getFilename());
+        assertThat(actualC2Bundle.getDocument().getFilename()).isEqualTo(DOCUMENT.getFilename());
         assertThat(actualC2Bundle.getType()).isEqualTo(WITH_NOTICE);
         assertThat(actualC2Bundle.getSupportingEvidenceBundle()).hasSize(1);
         assertThat(actualC2Bundle.getSupplementsBundle()).hasSize(1);
@@ -376,7 +514,7 @@ class UploadAdditionalApplicationsServiceTest {
     private void assertOtherDocumentBundle(OtherApplicationsBundle actual, Supplement expectedSupplement,
                                            SupportingEvidenceBundle expectedSupportingDocument) {
         assertThat(actual.getId()).isNotNull();
-        assertThat(actual.getDocument().getFilename()).isEqualTo(CONVERTED_DOCUMENT.getFilename());
+        assertThat(actual.getDocument().getFilename()).isEqualTo(DOCUMENT.getFilename());
         assertThat(actual.getApplicationType()).isEqualTo(C1_PARENTAL_RESPONSIBILITY);
         assertThat(actual.getParentalResponsibilityType()).isEqualTo(PR_BY_FATHER);
         assertThat(actual.getAuthor()).isEqualTo(HMCTS);
@@ -393,7 +531,7 @@ class UploadAdditionalApplicationsServiceTest {
         Supplement expectedSupplement = exampleOfExpectedSupplement.toBuilder()
             .dateTimeUploaded(time.now())
             .uploadedBy(HMCTS)
-            .document(CONVERTED_SUPPLEMENT_DOCUMENT)
+            .document(SUPPLEMENT_DOCUMENT)
             .build();
 
         assertThat(actual).isEqualTo(expectedSupplement);

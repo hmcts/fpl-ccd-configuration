@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.fpl.controllers.documents;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -9,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
+import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -23,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -50,6 +55,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.HEARING_DOC
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.PLACEMENT_NOTICE_RESPONSE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
@@ -276,6 +282,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData responseData = extractCaseData(callbackResponse);
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(c2EvidenceDocuments);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp()).hasSizeGreaterThan(0);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp().get(0).getValue().getDocumentAcknowledge())
+            .isEqualTo(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
     }
 
     @Test
@@ -308,6 +317,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData responseData = extractCaseData(callbackResponse);
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(supportingEvidenceBundle);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp()).hasSizeGreaterThan(0);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp().get(0).getValue().getDocumentAcknowledge())
+            .isEqualTo(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
     }
 
     @Test
@@ -353,6 +365,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .isEqualTo(selectedHearingBooking.toLabel());
 
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(furtherEvidenceBundle);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp()).hasSizeGreaterThan(0);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp().get(0).getValue().getDocumentAcknowledge())
+            .isEqualTo(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
     }
 
     @Test
@@ -394,6 +409,9 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         assertThat(respondentDynamicList).isEqualTo(expectedRespondentStatementList);
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(supportingEvidenceBundle);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp()).hasSizeGreaterThan(0);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp().get(0).getValue().getDocumentAcknowledge())
+            .isEqualTo(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
     }
 
     @Test
@@ -432,6 +450,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .name("test")
             .uploadedBy("kurt.swansea@gov.uk")
             .type(GUARDIAN_REPORTS)
+            .document(DocumentReference.builder().build())
             .build());
     }
 
@@ -456,5 +475,88 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
         return buildC2DocumentBundle(now()).toBuilder()
             .supportingEvidenceBundle(supportingEvidenceBundle)
             .build();
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "<a href",
+        "<a href=\"https://www.google.com\">Google</a>",
+        "</a>",
+        "Google<a>",
+        "Google</a>",
+        "Google<a",
+        "THIS IS LINE1\n<aTHIS IS LINE2",
+        "THIS IS LINE1\n</aTHIS IS LINE2",
+        "THIS IS LINE1<a>\nTHIS IS LINE2",
+        "THIS IS LINE1<a\nTHIS IS LINE2",
+        "THIS IS LINE1\r<aTHIS IS LINE2",
+        "THIS IS LINE1\r</aTHIS IS LINE2",
+        "THIS IS LINE1<a>\rTHIS IS LINE2",
+        "THIS IS LINE1<a\r\nTHIS IS LINE2",
+        "THIS IS LINE1\r\n<aTHIS IS LINE2",
+        "THIS IS LINE1\r\n</aTHIS IS LINE2",
+        "THIS IS LINE1<a>\r\nTHIS IS LINE2",
+        "THIS IS LINE1<a\r\nTHIS IS LINE2"
+    })
+    void shouldBlockHtmlInjectionInSWET(String includeInSWET) {
+        CaseData caseData = CaseData.builder()
+            .manageDocumentLA(ManageDocumentLA.builder().type(FURTHER_EVIDENCE_DOCUMENTS).build())
+            .applicationDocuments(List.of(element(ApplicationDocument.builder()
+                .includedInSWET(includeInSWET)
+                .build())))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+            "final-check", USER_ROLES);
+        assertThat(callbackResponse.getErrors())
+            .isEqualTo(List.of("The data entered is not valid for your input in SWET\n"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "THIS IS LINE1",
+        "THIS IS LINE1\nTHIS IS LINE2",
+        "THIS IS LINE1\rTHIS IS LINE2",
+        "THIS IS LINE1\r\nTHIS IS LINE2",
+        "<1",
+        "<1ABC",
+        "<1\nABC",
+        "<1\rABC",
+        "<1\r\nABC",
+        "ABC <1",
+        "ABC\n<1",
+        "ABC\r<1",
+        "ABC\r\n<1"
+    })
+    void shouldPassHtmlInjectionValidationInSWET(String includeInSWET) {
+        CaseData caseData = CaseData.builder()
+            .manageDocumentLA(ManageDocumentLA.builder().type(FURTHER_EVIDENCE_DOCUMENTS).build())
+            .applicationDocuments(List.of(element(ApplicationDocument.builder()
+                .includedInSWET(includeInSWET)
+                .build())))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+            "final-check", USER_ROLES);
+        assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = ManageDocumentTypeListLA.class, names = {
+        "CORRESPONDENCE",
+        "ADDITIONAL_APPLICATIONS_DOCUMENTS",
+        "HEARING_DOCUMENTS",
+        "PLACEMENT_NOTICE_RESPONSE"
+    })
+    void shouldPassFinalCheckMidEvent(ManageDocumentTypeListLA type) {
+        CaseData caseData = CaseData.builder()
+            .manageDocumentLA(ManageDocumentLA.builder().type(type).build())
+            .applicationDocuments(List.of(element(ApplicationDocument.builder()
+                .build())))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+            "final-check", USER_ROLES);
+        assertThat(callbackResponse.getErrors()).isEmpty();
     }
 }

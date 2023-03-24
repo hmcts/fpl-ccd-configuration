@@ -12,8 +12,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
+import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
@@ -23,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -31,7 +31,10 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.additionalapplications.UploadAdditionalApplicationsService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
@@ -50,13 +53,13 @@ import java.util.Map;
 import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -75,6 +78,8 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIF
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.OTHER_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
@@ -86,8 +91,7 @@ import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.CO
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.documentSent;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.printRequest;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinary;
@@ -125,13 +129,17 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     @MockBean
     private DocmosisCoverDocumentsService documentService;
     @Captor
-    private ArgumentCaptor<LetterWithPdfsRequest> printRequest;
-    @Captor
     private ArgumentCaptor<Map<String, Object>> caseDetails;
     @MockBean
     private SendLetterApi sendLetterApi;
     @MockBean
     private CoreCaseDataService coreCaseDataService;
+    @MockBean
+    private UploadAdditionalApplicationsService uploadAdditionalApplicationsService;
+    @MockBean
+    private CafcassNotificationService cafcassNotificationService;
+    @MockBean
+    private SendDocumentService sendDocumentService;
 
     private static final Element<Representative> REPRESENTATIVE_WITH_DIGITAL_PREFERENCE = element(
         Representative.builder()
@@ -193,7 +201,15 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             .willAnswer(returnsFirstArg());
         given(sendLetterApi.sendLetter(any(), any(LetterWithPdfsRequest.class)))
             .willReturn(new SendLetterResponse(LETTER_1_ID));
+        given(uploadAdditionalApplicationsService.convertC2Bundle(any()))
+            .willAnswer(returnsFirstArg());
+        given(uploadAdditionalApplicationsService.convertOtherBundle(any()))
+            .willAnswer(returnsFirstArg());
+
+        doNothing().when(sendDocumentService).sendDocuments(any());
+        doNothing().when(cafcassNotificationService).sendEmail(any(), any(), any());
     }
+
 
     @Test
     void submittedEventShouldNotifyHmctsAdminAndRepresentativesWhenCtscToggleIsDisabled() {
@@ -205,17 +221,16 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             .familyManCaseNumber(String.valueOf(CASE_ID))
             .respondents1(respondents)
             .representatives(List.of(REPRESENTATIVE_WITH_DIGITAL_PREFERENCE, REPRESENTATIVE_WITH_EMAIL_PREFERENCE,
-                REPRESENTATIVE_WITH_POST_PREFERENCE, OTHER_REP_BY_POST))
+                REPRESENTATIVE_WITH_POST_PREFERENCE))
             .others(Others.builder().firstOther(other).build())
             .additionalApplicationType(List.of(C2_ORDER))
             .sendToCtsc("No")
-            .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
+            .additionalApplicationsBundle(wrapElementsWithUUIDs(AdditionalApplicationsBundle.builder()
                 .pbaPayment(PBAPayment.builder().usePbaPayment("Yes").build())
                 .c2DocumentBundle(C2DocumentBundle.builder()
                     .type(WITH_NOTICE)
                     .document(ORDER)
                     .supplementsBundle(new ArrayList<>())
-                    .others(List.of(element(other)))
                     .respondents(List.of(
                         RESPONDENT_WITH_DIGITAL_REP, RESPONDENT_WITH_EMAIL_REP, UNREPRESENTED_RESPONDENT))
                     .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant").build())
@@ -253,23 +268,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             anyMap(),
             eq(notificationReference(CASE_ID))));
 
-        checkUntil(() -> verify(sendLetterApi).sendLetter(eq(SERVICE_AUTH_TOKEN), printRequest.capture()));
-        checkUntil(() -> verify(coreCaseDataService).updateCase(eq(CASE_ID), caseDetails.capture()));
-
-        LetterWithPdfsRequest expectedPrintRequest2 = printRequest(
-            CASE_ID, ORDER, COVERSHEET_OTHER_REPRESENTATIVE_BINARY, ORDER_BINARY);
-
-        assertThat(printRequest.getAllValues()).usingRecursiveComparison()
-            .isEqualTo(List.of(expectedPrintRequest2));
-
-        final CaseData caseUpdate = getCase(this.caseDetails);
-        SentDocument expectedDocumentSentToRespondent = documentSent(OTHER_REP_BY_POST.getValue(),
-            COVERSHEET_OTHER_REPRESENTATIVE, ORDER_DOCUMENT, LETTER_1_ID, now());
-
-        assertThat(caseUpdate.getDocumentsSentToParties()).hasSize(1);
-        assertThat(caseUpdate.getDocumentsSentToParties().get(0).getValue().getDocumentsSentToParty())
-            .extracting(Element::getValue)
-            .containsExactly(expectedDocumentSentToRespondent);
+        verify(sendLetterApi, never()).sendLetter(any(), any(LetterWithPdfsRequest.class));
     }
 
     @Test
@@ -303,7 +302,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             "additionalApplicationType",
             List.of(OTHER_ORDER),
             "additionalApplicationsBundle",
-            wrapElements(
+            wrapElementsWithUUIDs(
                 AdditionalApplicationsBundle.builder()
                     .otherApplicationsBundle(OtherApplicationsBundle.builder()
                         .applicationType(C1_APPOINTMENT_OF_A_GUARDIAN)
@@ -381,6 +380,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     @Test
     void submittedEventShouldNotNotifyAdminWhenPbaPaymentIsNull() throws Exception {
         CaseData caseData = CaseData.builder().caseLocalAuthorityName(LOCAL_AUTHORITY_1_NAME)
+            .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .familyManCaseNumber(String.valueOf(CASE_ID))
             .respondents1(List.of(element(Respondent.builder()
@@ -390,7 +390,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                     .build())
                 .build())))
             .additionalApplicationType(List.of(C2_ORDER))
-            .additionalApplicationsBundle(wrapElements(
+            .additionalApplicationsBundle(wrapElementsWithUUIDs(
                 AdditionalApplicationsBundle.builder()
                     .pbaPayment(null)
                     .c2DocumentBundle(C2DocumentBundle.builder()
@@ -455,6 +455,9 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
     @Test
     void shouldSendFailedPaymentNotificationOnPaymentsApiException() throws NotificationClientException {
+        given(uploadAdditionalApplicationsService.getApplicationTypes(any()))
+            .willReturn(List.of(ApplicationType.C2_APPLICATION, ApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN));
+
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
             .putAll(buildAdditionalApplicationsBundleWithC2AndOtherOrder(YES))
@@ -484,6 +487,9 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
     @Test
     void shouldSendFailedPaymentNotificationOnHiddenDisplayAmountToPay() throws NotificationClientException {
+        given(uploadAdditionalApplicationsService.getApplicationTypes(any()))
+            .willReturn(List.of(C2_APPLICATION));
+
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
             .putAll(buildAdditionalApplicationsBundle(YES))
@@ -527,6 +533,59 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             anyString());
     }
 
+    @Test
+    void shouldNotSendPaymentNotificationsWhenApplyingForAdjournment() throws NotificationClientException {
+
+        Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
+            .putAll(buildCommonNotificationParameters())
+            .putAll(buildAdditionalApplicationsAdjournmentBundle(NO))
+            .build();
+
+        postSubmittedEvent(createCase(caseData));
+
+        verify(notificationClient, never()).sendEmail(
+            eq(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA),
+            anyString(),
+            anyMap(),
+            anyString());
+
+        verify(notificationClient, never()).sendEmail(
+            eq(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC),
+            anyString(),
+            anyMap(),
+            anyString());
+    }
+
+    @Test
+    void shouldSendNotificationsWhenTriggerEventFails() {
+        given(uploadAdditionalApplicationsService.getApplicationTypes(any()))
+            .willReturn(List.of(ApplicationType.C2_APPLICATION));
+
+        CaseDetails caseDetails = buildCaseDetails(YES, YES);
+        Map<String, Object> updates = Map.of(
+            "additionalApplicationsBundle", caseDetails.getData().get("additionalApplicationsBundle")
+        );
+
+        doNothing().when(coreCaseDataService).triggerEvent(
+            caseDetails.getId(),
+            "internal-change-upload-add-apps",
+            updates);
+
+        postSubmittedEvent(caseDetails);
+
+        checkUntil(() -> verify(notificationClient).sendEmail(
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS),
+            any(),
+            any(),
+            any()));
+
+        checkUntil(() -> verify(notificationClient).sendEmail(
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
+            any(),
+            any(),
+            any()));
+    }
+
     private CaseDetails buildCaseDetails(YesNo enableCtsc, YesNo usePbaPayment) {
         return createCase(ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
@@ -558,7 +617,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private Map<String, Object> buildAdditionalApplicationsBundle(YesNo usePbaPayment) {
         return ImmutableMap.of(
             "additionalApplicationType", List.of(C2_ORDER),
-            "additionalApplicationsBundle", wrapElements(
+            "additionalApplicationsBundle", wrapElementsWithUUIDs(
                 AdditionalApplicationsBundle.builder()
                     .pbaPayment(PBAPayment.builder().usePbaPayment(usePbaPayment.getValue()).build())
                     .c2DocumentBundle(C2DocumentBundle.builder()
@@ -568,10 +627,24 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                     .build()));
     }
 
+    private Map<String, Object> buildAdditionalApplicationsAdjournmentBundle(YesNo usePbaPayment) {
+        return ImmutableMap.of(
+            "additionalApplicationType", List.of(C2_ORDER),
+            "additionalApplicationsBundle", wrapElementsWithUUIDs(
+                AdditionalApplicationsBundle.builder()
+                    .pbaPayment(PBAPayment.builder().usePbaPayment(usePbaPayment.getValue()).build())
+                    .c2DocumentBundle(C2DocumentBundle.builder()
+                        .type(WITH_NOTICE)
+                        .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                        .requestedHearingToAdjourn("Case management hearing, 15th September 2022")
+                        .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant").build())
+                    .build()));
+    }
+
     private Map<String, Object> buildAdditionalApplicationsBundleWithC2AndOtherOrder(YesNo usePbaPayment) {
         return ImmutableMap.of(
             "additionalApplicationType", List.of(C2_ORDER, OTHER_ORDER),
-            "additionalApplicationsBundle", wrapElements(
+            "additionalApplicationsBundle", wrapElementsWithUUIDs(
                 AdditionalApplicationsBundle.builder()
                     .pbaPayment(PBAPayment.builder().usePbaPayment(usePbaPayment.getValue()).build())
                     .c2DocumentBundle(C2DocumentBundle.builder()

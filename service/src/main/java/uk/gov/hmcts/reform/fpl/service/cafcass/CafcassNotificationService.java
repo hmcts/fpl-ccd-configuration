@@ -58,7 +58,7 @@ public class CafcassNotificationService {
     private static final long  MEGABYTE = 1024L * 1024L;
     private static final String SUBJECT_DELIMITER = "|";
     private static final String VALUE_TO_REPLACE = String.join("",SUBJECT_DELIMITER,"null");
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @Autowired
@@ -108,6 +108,10 @@ public class CafcassNotificationService {
                 .sum();
 
         if (totalDocSize / MEGABYTE  <= maxAttachmentSize) {
+            log.info("For case id {}, sum of file size is {} mb. Number of files: {}",
+                caseData.getId(),
+                totalDocSize / MEGABYTE,
+                documentMetaData.values().size());
             if (featureToggleService.isCafcassSubjectCategorised()) {
                 sendAsAttachment(caseData, Set.copyOf(documentMetaData.values()), provider, cafcassData,
                         provider.getContent());
@@ -182,7 +186,8 @@ public class CafcassNotificationService {
         Set<EmailAttachment> emailAttachments = getEmailAttachment(documentReference)
                 .map(Set::of).orElse(emptySet());
 
-        log.info("data in the document {}",emailAttachments);
+        log.info("data in the document {} with total size: {} mb", emailAttachments,
+            documentReference.stream().mapToLong(DocumentReference::getSize).sum() / MEGABYTE);
 
         emailService.sendEmail(configuration.getSender(),
                 EmailData.builder()

@@ -1,5 +1,9 @@
 terraform {
   required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "3.32.0"
+    }
     azuread = {
       source  = "hashicorp/azuread"
       version = "1.6.0"
@@ -8,8 +12,6 @@ terraform {
 }
 
 provider "azurerm" {
-  version = "~>2.49.0"
-
   features {}
 }
 
@@ -78,5 +80,27 @@ resource "azurerm_key_vault_secret" "scheduler-db-password" {
 
 data "azurerm_key_vault_secret" "use-shuttered-case-def" {
   name      = "use-shuttered-case-def"
+  key_vault_id = module.key-vault.key_vault_id
+}
+
+data "azurerm_key_vault_secret" "system-update-user-username" {
+  name         = "system-update-user-username"
+  key_vault_id = module.key-vault.key_vault_id
+}
+
+resource "azurerm_key_vault_secret" "idam-owner-username" {
+  name         = "idam-owner-username"
+  value        = data.azurerm_key_vault_secret.system-update-user-username.value
+  key_vault_id = module.key-vault.key_vault_id
+}
+
+data "azurerm_key_vault_secret" "system-update-user-password" {
+  name         = "system-update-user-password"
+  key_vault_id = module.key-vault.key_vault_id
+}
+
+resource "azurerm_key_vault_secret" "idam-owner-password" {
+  name         = "idam-owner-password"
+  value        = data.azurerm_key_vault_secret.system-update-user-password.value
   key_vault_id = module.key-vault.key_vault_id
 }

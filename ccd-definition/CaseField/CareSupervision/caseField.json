@@ -18,6 +18,51 @@
     "Searchable": "N"
   },
   {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "isOutsourcedCase",
+    "Label": "Is this case outsourced?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "shouldShareWithOrganisationUsers",
+    "Label": "Would you like to share the case with all members of your organisation?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "sharingWithUsers",
+    "Label": "-",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "shareCaseWarningMessage",
+    "Label": "These users will gain access to the case when it is created: <br/> ${sharingWithUsers} <br/> If this does not look right, select No and share the case manually when created.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "shareCaseWarningMessageNotShared",
+    "Label": "This case will NOT be shared with anyone else. You can still share the case manually with others when it has been created.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseHistory",
@@ -31,10 +76,11 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseName",
     "Label": "Case name",
-    "HintText": "Include the local authority name and respondent's last name. For example, Endley Council v Smith/Tate/Jones",
+    "HintText": "Include the applicant's name and respondent's last name. For example, Endley Council v Smith/Tate/Jones",
     "FieldType": "Text",
     "SecurityClassification": "Public",
-    "Searchable": "Y"
+    "Searchable": "Y",
+    "RegularExpression": "^(?!.*<[^>\\d]+>*).*"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -108,6 +154,24 @@
     "ID": "grounds",
     "Label": "How does this case meet the threshold criteria?",
     "FieldType": "Grounds",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "groundsForContactWithChild",
+    "Label": "How are there grounds for a contact with a child in care application?",
+    "FieldType": "GroundsForContactWithChild",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "groundsForEducationSupervisionOrder",
+    "Label": "How are there grounds for an education supervision order?",
+    "FieldType": "GroundsForEducationSupervisionOrder",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -251,17 +315,18 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "localAuthorities",
-    "Label": "Local authority",
+    "Label": "Applicant",
     "FieldType": "Collection",
     "FieldTypeParameter": "LocalAuthority",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "This holds all applicants, not just LAs"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "localAuthority",
-    "Label": "Applicant local authority",
+    "Label": "Applicant details",
     "FieldType": "LocalAuthority",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -446,6 +511,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "ordersSolicitor",
+    "Label": "Orders and directions needed",
+    "FieldType": "OrdersSolicitor",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "submittedForm",
     "Label": "Application Form",
     "FieldType": "Document",
@@ -514,7 +588,8 @@
     "Label": "FamilyMan case number",
     "FieldType": "Text",
     "SecurityClassification": "Public",
-    "Searchable": "Y"
+    "Searchable": "Y",
+    "RegularExpression": "^[a-zA-Z0-9]*$"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -850,6 +925,16 @@
     "FieldType": "C2DocumentBundle",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "skipPaymentPage",
+    "Label": "Skip payment page",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Hidden field used to control whether we skip the payment page (i.e. for adjourning hearings additional app)"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1226,7 +1311,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "shouldBeCompletedByDate",
-    "Label": "Date case should be completed by",
+    "Label": "--",
     "FieldType": "Text",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -1236,7 +1321,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "shouldBeCompletedByLabel",
     "FieldType": "Label",
-    "Label": "This case should be completed by ${shouldBeCompletedByDate}.",
+    "Label": "## This case should be completed by ${shouldBeCompletedByDate}.",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -1262,20 +1347,20 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "caseExtensionTimeList",
+    "ID": "caseExtensionReasonList",
     "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "CaseExtensionTimeList",
-    "Label": "You can extend this date again, but you will not be able to revert back to the original date.",
+    "FieldTypeParameter": "CaseExtensionReasonList",
+    "Label": "Why is this case being extended?",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "caseExtensionReasonList",
+    "ID": "caseExtensionTimeList",
     "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "CaseExtensionReasonList",
-    "Label": "Why is this case being extended?",
+    "FieldTypeParameter": "CaseExtensionTimeList",
+    "Label": "You can extend this date again, but you will not be able to revert back to the original date.",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -1711,6 +1796,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "relatingLA",
+    "Label": "Select the local authority which relates to the case",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "AuthorityFixedList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "outsourcingLAs",
     "Label": "Select the local authority you're representing",
     "FieldType": "DynamicList",
@@ -1724,6 +1819,25 @@
     "Label": "Outsourcing type",
     "FieldType": "FixedList",
     "FieldTypeParameter": "CaseOutsourcingType",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "isLocalAuthority",
+    "Label": "Is local authority?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representativeType",
+    "Label": "Select who you are representing",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "RepresentativeType",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -2033,6 +2147,24 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "groundsForChildRecoveryOrder",
+    "Label": "How are there grounds for a child recovery order?",
+    "FieldType": "GroundsForChildRecoveryOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "contactWithChildInCareOrderType",
+    "Label": " ",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "placementRespondentsSectionHeader",
     "FieldType": "Label",
     "Label": "## Confirm recipients",
@@ -2070,6 +2202,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "placementIdToBeSealed",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Temporary field. The ID of the application document to be sealed in submitted stage"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "transformedRespondent",
     "Label": "Respondent's detail",
     "FieldType": "RespondentNew",
@@ -2082,6 +2224,16 @@
     "ID": "othersList",
     "Label": "Select one of the others to be given notice",
     "FieldType": "DynamicList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "latestRoleSent",
+    "Label": " ",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "JudicialMessageRoleTypes",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }

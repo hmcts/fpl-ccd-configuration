@@ -41,6 +41,14 @@ public class ElementUtils {
             .collect(toList());
     }
 
+    @SafeVarargs
+    public static <T> List<Element<T>> wrapElementsWithUUIDs(T... elements) {
+        return Stream.of(elements)
+            .filter(Objects::nonNull)
+            .map(element -> Element.<T>builder().id(UUID.randomUUID()).value(element).build())
+            .collect(toList());
+    }
+
     public static <T> List<T> unwrapElements(List<Element<T>> elements) {
         return nullSafeCollection(elements)
             .stream()
@@ -157,6 +165,12 @@ public class ElementUtils {
         return nullSafeCollection(elements).stream()
             .filter(Objects::nonNull)
             .map(ElementUtils::element)
+            .collect(toList());
+    }
+
+    public static <T> List<Element<T>> removeElementWithUUID(List<Element<T>> elements, UUID id) {
+        return nullSafeCollection(elements).stream()
+            .filter(element -> !element.getId().equals(id))
             .collect(toList());
     }
 }

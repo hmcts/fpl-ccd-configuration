@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
@@ -56,7 +55,6 @@ import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.URGENT;
 import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -137,31 +135,20 @@ public class StandardDirectionsOrderController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         GatekeepingOrderRoute route = caseData.getSdoRouter();
-        if (URGENT != route) {
-            if (SERVICE == route) {
-                caseDetails.getData().put(
-                    DATE_OF_ISSUE_KEY, sdoService.generateDateOfIssue(caseData.getStandardDirectionOrder())
-                );
-            }
-
-            // see RDM-9147
-            DocumentReference preparedSDO = caseData.getPreparedSDO();
-            if (null != preparedSDO && preparedSDO.isEmpty()) {
-                caseDetails.getData().remove("preparedSDO");
-            }
-
-            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getJudgeAndLegalAdvisorFromSDO(caseData));
-        } else {
-            List<String> errors = routeValidator.allowAccessToUrgentHearingRoute(caseData);
-            if (!errors.isEmpty()) {
-                return respond(caseDetails, errors);
-            }
-
-            caseDetails.getData().putAll(
-                mapper.convertValue(urgentOrderService.prePopulate(caseData), new TypeReference<>() {
-                })
+        if (SERVICE == route) {
+            caseDetails.getData().put(
+                DATE_OF_ISSUE_KEY, sdoService.generateDateOfIssue(caseData.getStandardDirectionOrder())
             );
         }
+
+        // see RDM-9147
+        DocumentReference preparedSDO = caseData.getPreparedSDO();
+        if (null != preparedSDO && preparedSDO.isEmpty()) {
+            caseDetails.getData().remove("preparedSDO");
+        }
+
+        caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getJudgeAndLegalAdvisorFromSDO(caseData));
+
         return respond(caseDetails);
     }
 
@@ -244,20 +231,15 @@ public class StandardDirectionsOrderController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         GatekeepingOrderRoute sdoRouter = caseData.getSdoRouter();
 
-        if (URGENT != sdoRouter) {
-            List<String> errors = orderValidationService.validate(caseData);
-            if (!errors.isEmpty()) {
-                return respond(caseDetails, errors);
-            }
+        List<String> errors = orderValidationService.validate(caseData);
+        if (!errors.isEmpty()) {
+            return respond(caseDetails, errors);
         }
 
         // assigning default value to make sonar happy
         // its code analysis can't seem to pick up on the fact that the npe can't occur in the upcoming if
         StandardDirectionOrder order = StandardDirectionOrder.builder().build();
         switch (sdoRouter) {
-            case URGENT:
-                caseDetails.getData().putAll(urgentOrderService.finalise(caseData));
-                break;
             case SERVICE:
                 JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
                     caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()
@@ -307,14 +289,13 @@ public class StandardDirectionsOrderController extends CallbackController {
             "replacementSDO", "useServiceRoute", "useUploadRoute", "noticeOfProceedings", "showNoticeOfProceedings"
         ));
 
-        if (URGENT == sdoRouter || order.isSealed()) {
+        if (order.isSealed()) {
             caseDetails.getData().put("state", CASE_MANAGEMENT);
             tempFields.add("sdoRouter");
 
             if (GATEKEEPING == caseData.getState()) {
-                List<DocmosisTemplates> docmosisTemplateTypes = URGENT == sdoRouter
-                    ? urgentOrderService.getNoticeOfProceedingsTemplates(caseData)
-                    : caseData.getNoticeOfProceedings().mapProceedingTypesToDocmosisTemplate();
+                List<DocmosisTemplates> docmosisTemplateTypes =
+                    caseData.getNoticeOfProceedings().mapProceedingTypesToDocmosisTemplate();
 
                 List<Element<DocumentBundle>> newNoP = nopService.uploadNoticesOfProceedings(
                     caseData, docmosisTemplateTypes

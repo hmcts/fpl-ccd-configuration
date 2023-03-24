@@ -19,5 +19,19 @@
     "ListElementCode": "APPLICATION",
     "ListElement": "Main Application Form",
     "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RemovableType",
+    "ListElementCode": "SENT_DOCUMENT",
+    "ListElement": "Document sent to parties",
+    "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RemovableType",
+    "ListElementCode": "PLACEMENT_APPLICATION",
+    "ListElement": "Remove Placement Applications only",
+    "DisplayOrder": 5
   }
 ]

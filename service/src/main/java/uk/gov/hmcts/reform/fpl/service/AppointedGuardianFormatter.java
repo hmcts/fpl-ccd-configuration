@@ -18,7 +18,8 @@ public class AppointedGuardianFormatter {
     public String getGuardiansNamesForDocument(CaseData caseData) {
         StringBuilder builder = new StringBuilder();
         List<String> selected = RespondentsCommonFormatHelper
-            .getSelectedARespondents(caseData, caseData.getAppointedGuardianSelector());
+            .getSelectedARespondents(caseData, caseData.getAppointedGuardianSelector(),
+                caseData.getManageOrdersEventData().getAdditionalAppointedSpecialGuardians());
 
         selected.forEach(builder::append);
         appendChildGrammarVerb(builder, selected.size() > 1);
@@ -35,9 +36,9 @@ public class AppointedGuardianFormatter {
             return;
         }
         if (hasMultipleGuardiansGrammar) {
-            builder.append(" are");
+            builder.append(" are appointed as special guardians");
         } else {
-            builder.append(" is");
+            builder.append(" is appointed as special guardian");
         }
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseInitiationService;
@@ -29,6 +30,12 @@ public class CaseInitiationController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         final CaseDetailsMap caseData = caseDetailsMap(callbackrequest.getCaseDetails());
 
+        if (caseInitiationService.isUserLocalAuthority()) {
+            caseData.put("isLocalAuthority", YesNo.YES);
+        } else {
+            caseData.put("isLocalAuthority", YesNo.NO);
+        }
+
         caseInitiationService.getUserOrganisationId().ifPresent(organisationId ->
             caseInitiationService.getOutsourcingType(organisationId).ifPresent(outsourcingType -> {
                 caseData.putIfNotEmpty("outsourcingType", outsourcingType);
@@ -43,6 +50,13 @@ public class CaseInitiationController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         final CaseDetails caseDetails = callbackrequest.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
+
+        boolean isOutsourcedCase = caseInitiationService.isCaseOutsourced(caseData);
+
+        if (isOutsourcedCase) {
+            caseDetails.getData().put("isOutsourcedCase", YesNo.from(isOutsourcedCase).getValue());
+            caseDetails.getData().put("sharingWithUsers", caseInitiationService.getOrganisationUsers());
+        }
 
         return respond(caseDetails, caseInitiationService.checkUserAllowedToCreateCase(caseData));
     }
@@ -60,8 +74,9 @@ public class CaseInitiationController extends CallbackController {
         caseDetails.putIfNotEmpty("outsourcingPolicy", updatedCaseData.getOutsourcingPolicy());
         caseDetails.putIfNotEmpty("court", updatedCaseData.getCourt());
         caseDetails.putIfNotEmpty("multiCourts", updatedCaseData.getMultiCourts());
+        caseDetails.putIfNotEmpty("representativeType", updatedCaseData.getRepresentativeType());
 
-        caseDetails.removeAll("outsourcingType", "outsourcingLAs");
+        caseDetails.removeAll("outsourcingType", "outsourcingLAs", "sharingWithUsers", "isOutsourcedCase");
 
         return respond(caseDetails);
     }

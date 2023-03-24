@@ -7,9 +7,12 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ApplicantType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.payment.FailedPBANotificationData;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
@@ -21,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
@@ -40,7 +44,7 @@ public class FailedPBAPaymentEventHandler {
     public void notifyApplicant(FailedPBAPaymentEvent event) {
         CaseData caseData = event.getCaseData();
         if (event.getApplicationTypes().contains(ApplicationType.C110A_APPLICATION)) {
-            notifyDesignatedLocalAuthority(event, APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA);
+            notifyApplicants(caseData, event, APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA);
         } else {
             OrderApplicant applicant = event.getApplicant();
             if (applicant.getType() == ApplicantType.LOCAL_AUTHORITY) {
@@ -53,6 +57,14 @@ public class FailedPBAPaymentEventHandler {
                     notifyRespondent(event, emails.get(applicant.getName()));
                 }
             }
+        }
+    }
+
+    private void notifyApplicants(CaseData caseData, FailedPBAPaymentEvent event, String template) {
+        if (caseData.getRepresentativeType().equals(RepresentativeType.LOCAL_AUTHORITY)) {
+            notifyDesignatedLocalAuthority(event, template);
+        } else {
+            notifySolicitor(caseData, event, template);
         }
     }
 
@@ -95,6 +107,19 @@ public class FailedPBAPaymentEventHandler {
             email, parameters, event.getCaseData().getId().toString());
     }
 
+    private void notifySolicitor(CaseData caseData, FailedPBAPaymentEvent event, String template) {
+        String email = nonNull(getApplicant(caseData)) ? getApplicant(caseData).getEmail() : null;
+
+        if (isNull(email)) {
+            return;
+        }
+
+        FailedPBANotificationData parameters = notificationContent
+            .getApplicantNotifyData(event.getApplicationTypes(), event.getCaseData());
+
+        notificationService.sendEmail(template, email, parameters, caseData.getId().toString());
+    }
+
     private Map<String, String> getRespondentsEmails(CaseData caseData) {
         Map<String, String> respondentEmails = new HashMap<>();
 
@@ -103,6 +128,13 @@ public class FailedPBAPaymentEventHandler {
             isNull(respondent.getValue().getSolicitor()) ? EMPTY : respondent.getValue().getSolicitor().getEmail()));
 
         return respondentEmails;
+    }
+
+    public LocalAuthority getApplicant(CaseData caseData) {
+        return caseData.getLocalAuthorities().stream()
+            .map(Element::getValue)
+            .findFirst()
+            .orElse(null);
     }
 
     @EventListener

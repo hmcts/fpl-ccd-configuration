@@ -12,11 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -54,10 +50,10 @@ import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDo
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.SecureDocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ActiveProfiles("integration-test")
@@ -115,16 +111,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                 .party(RespondentParty.builder().firstName("Margaret").lastName("Jones").build())
                 .build()
             ))
-            .others(Others.builder()
-                .firstOther(
-                    Other.builder().name("Tim Jones").address(Address.builder().postcode("SE1").build()).build()
-                )
-                .additionalOthers(wrapElements(
-                    Other.builder().name("Stephen Jones").address(Address.builder().postcode("SW2").build()).build()
-                ))
-                .build())
-            .personSelector(Selector.newSelector(3))
-            .notifyApplicationsToAllOthers(YesNo.YES.getValue()).build();
+            .build();
 
         CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, ADMIN_ROLE));
 
@@ -136,12 +123,6 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertC2DocumentBundle(uploadedC2DocumentBundle);
         assertThat(uploadedC2DocumentBundle.getApplicantName()).isEqualTo(LOCAL_AUTHORITY_NAME);
         assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(temporaryPbaPayment);
-
-        assertThat(uploadedC2DocumentBundle.getOthersNotified()).contains("Margaret Jones, Tim Jones, Stephen Jones");
-        assertThat(unwrapElements(uploadedC2DocumentBundle.getOthers())).contains(
-            updatedCaseData.getOthers().getFirstOther(),
-            updatedCaseData.getOthers().getAdditionalOthers().get(0).getValue()
-        );
 
         assertTemporaryFieldsAreRemoved(updatedCaseData);
     }
@@ -170,16 +151,6 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .otherApplicant(OTHER_APPLICANT_NAME)
             .representatives(List.of(representative))
             .respondents1(List.of(respondentElement))
-            .others(Others.builder()
-                .firstOther(
-                    Other.builder().name("Stephen Miller").address(Address.builder().postcode("SE1").build()).build()
-                )
-                .additionalOthers(wrapElements(
-                    Other.builder().name("Alex Smith").address(Address.builder().postcode("SE2").build()).build()
-                ))
-                .build())
-            .personSelector(personSelector)
-            .notifyApplicationsToAllOthers("No")
             .build();
 
         CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, ADMIN_ROLE));
@@ -191,10 +162,6 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getApplicantName())
             .isEqualTo(OTHER_APPLICANT_NAME);
 
-        assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthersNotified())
-            .isEqualTo("Margaret Jones, Alex Smith");
-        assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthers())
-            .isEqualTo(List.of(updatedCaseData.getOthers().getAdditionalOthers().get(0)));
         assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getRespondents())
             .hasSize(1)
             .containsExactly(respondentElement);
@@ -214,14 +181,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .temporaryOtherApplicationsBundle(createTemporaryOtherApplicationDocument())
             .temporaryPbaPayment(temporaryPbaPayment)
             .applicantsList(createApplicantsDynamicList(APPLICANT))
-            .others(Others.builder()
-                .firstOther(
-                    Other.builder().name("Stephen Miller").address(Address.builder().postcode("SE1").build()).build()
-                )
-                .build()
-            )
-            .personSelector(Selector.newSelector(1))
-            .notifyApplicationsToAllOthers("No").build();
+            .build();
 
         CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, ADMIN_ROLE));
 
@@ -231,9 +191,6 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertC2DocumentBundle(additionalApplicationsBundle.getC2DocumentBundle());
         assertOtherApplicationsBundle(additionalApplicationsBundle.getOtherApplicationsBundle());
         assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(temporaryPbaPayment);
-
-        assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getOthersNotified()).isEmpty();
-        assertThat(additionalApplicationsBundle.getC2DocumentBundle().getOthersNotified()).isEmpty();
 
         assertThat(additionalApplicationsBundle.getC2DocumentBundle().getApplicantName())
             .isEqualTo(LOCAL_AUTHORITY_NAME);
@@ -262,7 +219,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         String expectedDateTime = formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME);
         assertThat(appendedC2Document.getUploadedDateTime()).isEqualTo(expectedDateTime);
         assertDocument(existingC2Document.getDocument(), buildFromDocument(document()));
-        assertDocument(appendedC2Document.getDocument(), PDF_DOCUMENT);
+        // This is no longer true - PDF conversion has been moved to post submit
+        // assertDocument(appendedC2Document.getDocument(), PDF_DOCUMENT);
 
         assertThat(returnedCaseData.getTemporaryC2Document()).isNull();
         assertThat(appendedC2Document.getAuthor()).isEqualTo(USER_NAME);
@@ -277,15 +235,12 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                 "additionalApplicationType", List.of("C2_ORDER"),
                 "temporaryPbaPayment", createPbaPayment(),
                 "amountToPay", "Yes",
-                "temporaryOtherApplicationsBundle", createTemporaryOtherApplicationDocument(),
-                "hasRespondentsOrOthers", "Yes",
-                "people_label", "Other 1: Alex",
-                "notifyApplicationsToAllOthers", "Yes"))
+                "temporaryOtherApplicationsBundle", createTemporaryOtherApplicationDocument()))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails, ADMIN_ROLE);
 
-        assertThat(callbackResponse.getData()).doesNotContainKeys("c2Type", "people_label", "hasRespondentsOrOthers");
+        assertThat(callbackResponse.getData()).doesNotContainKey("c2Type");
 
         CaseData caseData = extractCaseData(callbackResponse);
         assertTemporaryFieldsAreRemoved(caseData);
@@ -361,7 +316,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(uploadedC2DocumentBundle.getUploadedDateTime()).isEqualTo(expectedDateTime);
 
         assertThat(uploadedC2DocumentBundle.getAuthor()).isEqualTo(USER_NAME);
-        assertDocument(uploadedC2DocumentBundle.getDocument(), PDF_DOCUMENT);
+        // This is no longer true - PDF conversion has been moved to post submit
+        // assertDocument(uploadedC2DocumentBundle.getDocument(), PDF_DOCUMENT);
         assertSupportingEvidenceBundle(uploadedC2DocumentBundle.getSupportingEvidenceBundle());
         assertSupplementsBundle(uploadedC2DocumentBundle.getSupplementsBundle());
     }
@@ -378,7 +334,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertSupportingEvidenceBundle(uploadedOtherApplicationsBundle.getSupportingEvidenceBundle());
         assertSupplementsBundle(uploadedOtherApplicationsBundle.getSupplementsBundle());
 
-        assertThat(uploadedOtherApplicationsBundle.getDocument()).isEqualTo(PDF_DOCUMENT);
+        // This is no longer true - PDF conversion has been moved to post submit
+        // assertThat(uploadedOtherApplicationsBundle.getDocument()).isEqualTo(PDF_DOCUMENT);
     }
 
     private void assertTemporaryFieldsAreRemoved(CaseData caseData) {
@@ -424,13 +381,13 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             Supplement::getName,
             Supplement::getNotes,
             Supplement::getDateTimeUploaded,
-            Supplement::getDocument,
+            // Supplement::getDocument,        // This is no longer true - PDF conversion has been moved to post submit
             Supplement::getUploadedBy
         ).containsExactly(
             SupplementType.C13A_SPECIAL_GUARDIANSHIP,
             "Supplement notes",
             time.now(),
-            PDF_DOCUMENT,
+            // PDF_DOCUMENT,
             USER_NAME
         );
     }

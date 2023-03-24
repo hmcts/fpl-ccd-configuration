@@ -1,68 +1,11 @@
 # fpl-service
 
-NOTE: All commands have to be executed from project root directory.
-
-## Building and deploying the application
-
-### Building the application
-
-The project uses [Gradle](https://gradle.org) as a build tool. It already contains `./gradlew` wrapper script, so there's no need to install Gradle.
-
-To build the project execute the following command:
-
-```bash
-  ./gradlew build
-```
-
-### Running the application (as a Docker container)
-
-Create the image of the application by executing the following command:
-
-```bash
-  ./gradlew assemble
-```
-
-Create docker image:
-
-```bash
-  docker-compose build
-```
-
-Run the distribution (created in `build/install/service` directory) by executing the following command:
-
-```bash
-  docker-compose up
-```
-
-This will start the API container exposing the application's port (set to `4000` in this app).
-
-In order to test if the application is up, you can call its health endpoint:
-
-```bash
-  curl http://localhost:4000/health
-```
-
-You should get a response similar to this:
-
-```
-  {"status":"UP","diskSpace":{"status":"UP","total":249644974080,"free":137188298752,"threshold":10485760}}
-```
-
-Change the variable for CCD_DEF_CASE_SERVICE_BASE_URL in bin/configurer/utils/fpl-process-definition.sh
- to http://fpl-service:4000 - this ensures the CCD use the docker networking to reach
-the service.
-
-### Run the application (from IntelliiJ)
-
-Ensure that the Spring Boot application is started with local, user-mappings and the feature-toggle profiles
-(add environment variable spring.profiles.active=feature-toggle,local,user-mappings when starting the main class).
-
-Configure the notify.api_key if necessary (you can pass them as environment variables when IntelliJ
-starts the application).
-
-Ensure the variable CCD_DEF_CASE_SERVICE_BASE_URL bin/configurer/utils/fpl-process-definition.sh is set to
-http://docker.for.mac.localhost:4000 - this will use the host machine for CCD, reaching
-the locally running application.
+## Contents:
+- [Config](#config)
+- [Application Mappings](#application-mappings)
+- [Feature Toggle](#feature-toggle)
+- [Scheduler](#scheduler)
+- [Emails](#emails)
 
 ## Config
 
@@ -72,7 +15,7 @@ The FPL Service (as any other HMCTS Reform services) uses three sources of confi
 * The following [library](https://github.com/hmcts/properties-volume-spring-boot-starter) provides secrets as configuration placeholders.
   [This file](src/main/resources/bootstrap.yaml) configures mapping from a secret name to Spring's configuration property.
 
-Custom configuration parameters:
+### Custom configuration parameters:
 
 |Property name|Configuration place|Description|
 |---|---|---|
@@ -131,7 +74,7 @@ Custom configuration parameters:
 |translation.notification.recipient|SECRET|Translation recipient team mail inbox|
 |robotics.notification.sender|SECRET|FROM field when sending emails to robotics|
 |robotics.notification.recipient|SECRET|Robotics mailbox address|
-|feature.toggle.robotics.case-number.notification.enabled|ENV|Determines if JSON file should be send to robotics when Family Man case number is added to the case'
+|feature.toggle.robotics.case-number.notification.enabled|ENV|Determines if JSON file should be send to robotics when Family Man case number is added to the case'|
 |feature.toggle.robotics.support.api.enabled|ENV|Enables API to retrigger robotics notification for particular case|
 |appinsights.instrumentationkey|SECRET|Key used to connect to Azure AppInsights|
 
@@ -220,18 +163,8 @@ ORGLA3=>LA1,LA2;ORGLA2=>LA1,LA3
 For local development feature toggle will use default flag values defined in `FeatureToggleService.java`.
 
 ### Use Test flag values
-In order to use `Test` environment values locally, `sdk_key` needs to be specified. To do that,
-create `application-feature-toggle.yaml` file with following data:
-
-```
-spring:
-  profiles: feature-toggle
-
-ld:
-  sdk_key: (get from key vault)
-```
-
-`feature-toggle` value needs to be added to your run profiles in `spring.profiles.active` variable.
+In order to use `Test` environment values locally, `sdk_key` needs to be specified,
+and `feature-toggle` value needs to be added to your run profiles in `spring.profiles.active` variable.
 
 ### Custom flag values
 
@@ -239,7 +172,9 @@ In order to test your feature with custom flag values `user_key` needs to be add
 
 ```
 spring:
-  profiles: feature-toggle
+  config:
+    activate:
+      on-profile: feature-toggle
 
 ld:
   sdk_key: (get from key vault)
@@ -249,21 +184,19 @@ ld:
 Your key will be added on first `FeatureToggleService` call and will be available on LaunchDarkly panel in Users tab.
 You will be able to set your own flag values there without affecting other environments.
 
-### Scheduler
+## Scheduler
 
 In order to enable quartz scheduler
-- run ./bin/utils/create-scheduler-db.sh
-- set scheduler.enabled:true in application.yml local profile
+- set `scheduler.enabled:true` in application-local.yaml
 
 Upcoming hearing jobs can be configured with environment variables
 UPCOMING_HEARINGS_CRON[default 0 0 2 ? * MON-FRI] - quartz expression, e.g 0/30 * * ? * MON-FRI
 UPCOMING_HEARINGS_DAYS[default 2] - number of working days notification is sent before hearing
-Elastic search must be enable in ccd-docker for Upcoming hearings job to work
+Elastic search must be enabled in ccd-docker for Upcoming hearings job to work
 
-### Emails
+## Emails
 
 Emails to Robotics and to Welsh translation team are sent using SMTP protocol via MTA (Mail Transfer Agent) or SendGrid depending on feature toggle *send-grid*.
-On local environment test mailhog server is available. Sent emails can be checked at http://localhost:8025/
-
+On local environment test MailHog server is available. Sent emails can be checked at http://localhost:8025/
 
 Emails to users are sent via gov.notify
