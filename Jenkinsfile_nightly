@@ -20,12 +20,13 @@ properties([
   ])
 ])
 
-@Library("Infrastructure@fpl-long-ft-timeout")
+@Library("Infrastructure")
 import uk.gov.hmcts.contino.AppPipelineConfig
 
 def type = 'java'
 def product = 'fpl'
 def component = 'case-service'
+def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 AppPipelineConfig pipelineConf;
 
 def integrationTestSecrets = [
@@ -97,6 +98,8 @@ withNightlyPipeline(type, product, component) {
   //}
 
   before('fullFunctionalTest') {
+    yarnBuilder.yarn('yarn-update')
+    yarnBuilder.yarn('install-dependencies')
     env.PARALLEL_CHUNKS = params.FUNCTIONAL_TESTS_WORKERS
     env.MOCKED_PAYMENTS = false
     env.TEST_RETRIES = 5
@@ -105,27 +108,25 @@ withNightlyPipeline(type, product, component) {
   }
 
   before('crossBrowserTest') {
-    env.TEST_RETRIES = 2
+    yarnBuilder.yarn('yarn-update')
+    yarnBuilder.yarn('install-dependencies')
+    env.TEST_RETRIES = 5
     env.TESTS_FOR_ACCESSIBILITY = false
     env.ENV = 'aat'
   }
 
-  after('fullFunctionalTest') {
+  afterAlways('fullFunctionalTest') {
     archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     env.TESTS_FOR_ACCESSIBILITY = false
   }
 
-  before('crossBrowserTest') {
-    env.TEST_RETRIES = 5
-  }
-
-  after('crossBrowserTest') {
+  afterAlways('crossBrowserTest') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 
-  after('fortify-scan') {
+  afterAlways('fortify-scan') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
   }
 }
