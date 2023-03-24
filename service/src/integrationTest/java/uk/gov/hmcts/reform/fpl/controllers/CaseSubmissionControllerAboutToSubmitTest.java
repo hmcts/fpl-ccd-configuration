@@ -97,14 +97,14 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldSetCtscPropertyToYesWhenCtscLaunchDarklyVariableIsEnabled() {
+    void shouldSetCtscPropertyToYesRegardlessOfLDVariable() {
         given(featureToggleService.isCtscEnabled(anyString())).willReturn(false);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent("fixtures/case.json");
 
         assertThat(callbackResponse.getData())
             .containsEntry("caseLocalAuthority", LOCAL_AUTHORITY_1_CODE)
-            .containsEntry("sendToCtsc", "No")
+            .containsEntry("sendToCtsc", "YES")
             .containsEntry("submittedForm", ImmutableMap.<String, String>builder()
                 .put("document_url", document.links.self.href)
                 .put("document_binary_url", document.links.binary.href)
@@ -114,16 +114,13 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldSetCtscPropertyToNoWhenCtscLaunchDarklyVariableIsDisabled() {
-        given(featureToggleService.isCtscEnabled(anyString())).willReturn(true);
-
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent("fixtures/case.json");
 
-        assertThat(callbackResponse.getData()).containsEntry("sendToCtsc", "Yes");
-        verify(featureToggleService).isCtscEnabled(LOCAL_AUTHORITY_1_NAME);
+        assertThat(callbackResponse.getData()).containsEntry("sendToCtsc", "YES");
     }
 
     @Test
-    void shouldSetCtscPropertyToNoWhenCaseLocalAuthorityIsNotSet() {
+    void shouldSetCtscPropertyToYesRegardlessOfIfCaseLocalAuthorityIsNotSet() {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(CaseDetails.builder()
             .id(2313L)
@@ -138,7 +135,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             .build());
 
         assertThat(callbackResponse.getData())
-            .containsEntry("sendToCtsc", "No");
+            .containsEntry("sendToCtsc", "YES");
     }
 
     @Test
