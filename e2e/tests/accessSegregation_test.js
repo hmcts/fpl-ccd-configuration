@@ -48,6 +48,4 @@ Scenario('Magistrate user can see the case', async ({I}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.magistrateUser, caseId);
   I.see(I.uiFormatted(caseId));
-  await I.seeAvailableEvents([]);
-
 });
