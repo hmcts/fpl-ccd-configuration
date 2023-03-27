@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.utils.extension.TestLogs;
 import uk.gov.hmcts.reform.fpl.utils.extension.TestLogsExtension;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static java.util.Collections.emptyList;
