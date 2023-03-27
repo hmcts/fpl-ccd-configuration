@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl;
 
+import org.junit.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -35,21 +38,27 @@ public class AdminManagesOrdersApiTests extends AbstractApiTest {
     private final LocalDateTime currentDateTime = LocalDateTime.now();
     private CaseData startingCaseData;
 
+    public final List<String> orderNumber = List.of(
+        "c32a,C32A_CARE_ORDER",
+        "c32b,C32B_DISCHARGE_OF_CARE_ORDER",
+        "c23,C23_EMERGENCY_PROTECTION_ORDER",
+        "c33,C33_INTERIM_CARE_ORDER",
+        "c35a,C35A_SUPERVISION_ORDER",
+        "c35b,C35B_INTERIM_SUPERVISION_ORDER",
+        "c43a,C43A_SPECIAL_GUARDIANSHIP_ORDER",
+        "c29,C29_RECOVERY_OF_A_CHILD",
+        "c47a,C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN");
+
     @Autowired
     private DocumentService documentService;
 
-    @CsvSource({
-        "c32a, C32A_CARE_ORDER",
-        "c32b, C32B_DISCHARGE_OF_CARE_ORDER",
-        "c23, C23_EMERGENCY_PROTECTION_ORDER",
-        "c33, C33_INTERIM_CARE_ORDER",
-        "c35a, C35A_SUPERVISION_ORDER",
-        "c35b, C35B_INTERIM_SUPERVISION_ORDER",
-        "c43a, C43A_SPECIAL_GUARDIANSHIP_ORDER",
-        "c29, C29_RECOVERY_OF_A_CHILD",
-        "c47a, C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN",
-    })
-    @ParameterizedTest
+    @Test
+    public void adminManagesOrderTest(){
+        orderNumber.forEach(order -> {
+            parametrizedTests(order.split(",")[0], order.split(",")[1]);
+        });
+    }
+
     public void parametrizedTests(String inputFileDirectory, String orderType) {
         startingCaseData = createCase(format(INPUT_FILE, inputFileDirectory), LA_SWANSEA_USER_1);
         CaseData caseData = callAboutToSubmit(startingCaseData, orderType, format(EXPECTED_FILE, inputFileDirectory));
