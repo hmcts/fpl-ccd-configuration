@@ -99,7 +99,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         assertThat(callbackResponse.getData())
             .containsEntry("caseLocalAuthority", LOCAL_AUTHORITY_1_CODE)
-            .containsEntry("sendToCtsc", "YES")
+            .containsEntry("sendToCtsc", "Yes")
             .containsEntry("submittedForm", ImmutableMap.<String, String>builder()
                 .put("document_url", document.links.self.href)
                 .put("document_binary_url", document.links.binary.href)
@@ -111,7 +111,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
     void shouldSetCtscPropertyToNoWhenCtscLaunchDarklyVariableIsDisabled() {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent("fixtures/case.json");
 
-        assertThat(callbackResponse.getData()).containsEntry("sendToCtsc", "YES");
+        assertThat(callbackResponse.getData()).containsEntry("sendToCtsc", "Yes");
     }
 
     @Test
@@ -130,7 +130,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             .build());
 
         assertThat(callbackResponse.getData())
-            .containsEntry("sendToCtsc", "YES");
+            .containsEntry("sendToCtsc", "Yes");
     }
 
     @Test
