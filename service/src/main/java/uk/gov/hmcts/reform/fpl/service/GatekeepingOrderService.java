@@ -121,7 +121,7 @@ public class GatekeepingOrderService {
 
         if (decision.isSealed()) {
 
-            var docmosisTemplate = Objects.nonNull(caseData.getGatekeepingOrderRouter()) ? SDO : UDO;
+            var docmosisTemplate = nonNull(caseData.getGatekeepingOrderRouter()) ? SDO : UDO;
             DocumentReference sealedDocument = buildFromDocument(generateOrder(caseData, docmosisTemplate));
             return currentOrder.toBuilder()
                 .dateOfIssue(formatLocalDateToString(decision.getDateOfIssue(), DATE))
@@ -213,7 +213,7 @@ public class GatekeepingOrderService {
     public CaseData populateStandardDirections(CaseDetails caseDetails) {
         final CaseData caseData = converter.convert(caseDetails);
         final GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
-        var order = Objects.nonNull(caseData.getGatekeepingOrderRouter())
+        var order = nonNull(caseData.getGatekeepingOrderRouter())
             ? caseData.getStandardDirectionOrder() : caseData.getUrgentDirectionsOrder();
 
         final List<StandardDirection> draftStandardDirections = ofNullable(order)
