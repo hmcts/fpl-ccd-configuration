@@ -15,12 +15,11 @@ const removalAddress = { buildingAndStreet: { lineOne: 'Flat 2 Caversham', town:
 const applicationToLink = 'C2, 16 June 2021, 11:49am';
 
 let approvalDate = moment().year(2021).month(3).day(9).hours(10).minutes(30).seconds(15).milliseconds(0).toDate();
-let caseId;
 
 Feature('HMCTS Admin manages orders');
 
 async function setupScenario(I, caseViewPage) {
-  if (!caseId) { caseId = await I.submitNewCaseWithData(caseData); }
+  let caseId = await I.submitNewCaseWithData(caseData);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
   approvalDate = moment(approvalDate).add(1, 'days').toDate();

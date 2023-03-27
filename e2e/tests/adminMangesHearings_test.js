@@ -9,7 +9,6 @@ const api = require('../helpers/api_helper');
 const {formatHearingDate, formatHearingTime} = require('../helpers/manage_documents_for_LA_helper');
 const defaultPreHearing = '1 hour before the hearing';
 
-let caseId;
 let submittedAt;
 let hearingStartDate;
 let hearingEndDate;
@@ -20,15 +19,14 @@ let correctedHearingEndDate;
 Feature('Hearing administration');
 
 async function setupScenario(I) {
-  if (!caseId) {
-    caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
-    submittedAt = new Date();
-  }
+  let caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
+  submittedAt = new Date();
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  return caseId;
 }
 
 Scenario('HMCTS admin creates first hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
-  await setupScenario(I);
+  let caseId = await setupScenario(I);
   hearingStartDate = moment().add(5,'m').toDate();
   hearingEndDate = moment(hearingStartDate).add(5,'m').toDate();
 
@@ -96,7 +94,7 @@ Scenario('HMCTS admin creates subsequent hearings @nightlyOnly', async ({I, case
 });
 
 Scenario('HMCTS admin edits a future hearing  @nightlyOnly', async ({I, caseViewPage, manageHearingsEventPage}) => {
-  await setupScenario(I);
+  let caseId = await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectEditFutureHearing('Case management hearing, 1 January 2060');
   await I.goToNextPage();
@@ -343,7 +341,7 @@ Scenario('HMCTS admin adds past hearing @nightlyOnly', async ({I, caseViewPage, 
 });
 
 Scenario('HMCTS admin updates past hearing @nightlyOnly', async ({I, caseViewPage, manageHearingsEventPage}) => {
-  await setupScenario(I);
+  let caseId = await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectEditPastHearing(`Case management hearing, ${formatHearingDate(correctedHearingStartDate)}`);
   await I.goToNextPage();
