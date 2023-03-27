@@ -1404,8 +1404,7 @@
           "[CHILDSOLICITORN]",
           "[CHILDSOLICITORO]",
           "[CAFCASSSOLICITOR]",
-          "[BARRISTER]",
-          "[LABARRISTER]"
+          "[BARRISTER]"
         ],
         "CRUD": "CR"
       }
