@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasEndDateAfterStartDate;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
 
+import javax.validation.constraints.Future;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,7 +28,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import javax.validation.constraints.Future;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
@@ -151,11 +151,11 @@ public class HearingBooking implements TranslatableItem {
     }
 
     public String toLabel() {
-        HearingType hearingType = ofNullable(this.type)
-            .orElseThrow(() -> new IllegalStateException("Unexpected null hearing type. " + this));
-
+        String hearingLabel = ofNullable(this.type)
+            .map(HearingType::getLabel)
+            .orElse("Other");
         String label =
-            format("%s hearing, %s", hearingType.getLabel(), formatLocalDateTimeBaseUsingFormat(startDate, DATE));
+            format("%s hearing, %s", hearingLabel, formatLocalDateTimeBaseUsingFormat(startDate, DATE));
         String status = isAdjourned() ? "adjourned" : isVacated() ? "vacated" : null;
 
         return ofNullable(status).map(suffix -> label + " - " + suffix).orElse(label);
