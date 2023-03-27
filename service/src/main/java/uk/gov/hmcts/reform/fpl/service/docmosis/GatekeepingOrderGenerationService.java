@@ -31,7 +31,6 @@ import static java.lang.String.format;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -115,7 +114,7 @@ public class GatekeepingOrderGenerationService extends
         final DirectionDueDateType dueDateType = direction.getDueDateType();
         final Display display = directionConf.getDisplay();
 
-        if (DAYS == dueDateType) {
+        if (DirectionDueDateType.DAYS.equals(dueDateType)) {
 
             if (direction.getDaysBeforeHearing() == 0) {
                 return format("%d. %s by the day of the hearing", index, direction.getTitle());
@@ -128,13 +127,15 @@ public class GatekeepingOrderGenerationService extends
             return format("%d. %s %d working days before the hearing", index, direction.getTitle(),
                 direction.getDaysBeforeHearing());
 
-        } else {
+        } else if (DirectionDueDateType.DATE.equals(dueDateType)) {
             LocalDateTime dueDate = direction.getDateToBeCompletedBy();
 
             String formattedDate = formatLocalDateTimeBaseUsingFormat(dueDate, display.getTemplateDateFormat());
 
             return format("%d. %s %s %s", index, direction.getTitle(), display.getDue().toString().toLowerCase(),
                 formattedDate);
+        } else {
+            return format("%d. %s immediately", index, direction.getTitle());
         }
     }
 }

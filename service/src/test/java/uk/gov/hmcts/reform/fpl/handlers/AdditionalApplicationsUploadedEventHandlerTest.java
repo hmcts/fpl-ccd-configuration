@@ -483,6 +483,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                                                         List<DocumentReference> documents) {
         CaseData caseData = CaseData.builder()
                 .id(RandomUtils.nextLong())
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .sendToCtsc("Yes")
                 .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle))
                 .build();
@@ -497,6 +498,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             List<DocumentReference> documents) {
         CaseData caseData = CaseData.builder()
                 .id(RandomUtils.nextLong())
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .sendToCtsc("Yes")
                 .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle))
                 .build();

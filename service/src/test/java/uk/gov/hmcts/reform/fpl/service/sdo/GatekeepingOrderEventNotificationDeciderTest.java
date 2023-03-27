@@ -16,6 +16,7 @@ import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.WELSH_TO_ENGLISH;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
+import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING_LISTING;
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO_AND_NOP;
 import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.URGENT_AND_NOP;
@@ -34,6 +35,15 @@ class GatekeepingOrderEventNotificationDeciderTest {
             .build();
 
         assertThat(underTest.buildEventToPublish(caseData, GATEKEEPING)).isEmpty();
+    }
+
+    @Test
+    void buildEventToPublishForUnsealedSDOAndNoHearingOrderInGatekeepingListingState() {
+        CaseData caseData = CaseData.builder()
+            .standardDirectionOrder(StandardDirectionOrder.builder().orderStatus(OrderStatus.DRAFT).build())
+            .build();
+
+        assertThat(underTest.buildEventToPublish(caseData, GATEKEEPING_LISTING)).isEmpty();
     }
 
     @Test
@@ -98,6 +108,27 @@ class GatekeepingOrderEventNotificationDeciderTest {
             .caseData(caseData)
             .build()
         );
+    }
+
+    @Test
+    void buildEventToPublishForSDOAndNoPWhenInGateKeepingListing() {
+        CaseData caseData = CaseData.builder()
+            .standardDirectionOrder(StandardDirectionOrder.builder()
+                .orderStatus(OrderStatus.SEALED)
+                .orderDoc(ORDER)
+                .dateOfIssue("6 August 2020")
+                .translationRequirements(WELSH_TO_ENGLISH)
+                .build())
+            .build();
+
+        assertThat(underTest.buildEventToPublish(caseData, GATEKEEPING_LISTING))
+            .contains(GatekeepingOrderEvent.builder()
+            .notificationGroup(SDO_AND_NOP)
+            .order(ORDER)
+            .orderTitle("Gatekeeping order - 6 August 2020")
+            .languageTranslationRequirement(WELSH_TO_ENGLISH)
+            .caseData(caseData)
+            .build());
     }
 
     @Test

@@ -22,12 +22,14 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
+import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
@@ -56,6 +58,17 @@ class MigrateCaseServiceTest {
 
     @InjectMocks
     private MigrateCaseService underTest;
+
+    @Test
+    void shouldDoHearingOptionCheck() {
+        assertDoesNotThrow(() -> underTest.doHearingOptionCheck(1L, "EDIT_HEARING", "EDIT_HEARING", MIGRATION_ID));
+    }
+
+    @Test
+    void shouldThrowExceptionIfHearingOptionCheckFails() {
+        assertThrows(AssertionError.class, () -> underTest.doHearingOptionCheck(1L, "EDIT_PAST_HEARING",
+            "EDIT_HEARING", MIGRATION_ID));
+    }
 
     @Test
     void shouldDoCaseIdCheck() {
@@ -911,6 +924,131 @@ class MigrateCaseServiceTest {
                 .hasMessage(format(
                     "Migration {id = %s, case reference = %s} doesn't have children",
                     MIGRATION_ID, 1L));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemovePlacementApplication {
+        private final UUID placementToRemove = UUID.randomUUID();
+        private final UUID placementToRemain = UUID.randomUUID();
+
+        @Test
+        void shouldOnlyRemoveSelectPlacement() {
+            List<Element<Placement>> placements = List.of(
+                element(placementToRemove, Placement.builder()
+                    .build()),
+                element(placementToRemain, Placement.builder()
+                    .build())
+            );
+
+            List<Element<Placement>> placementsRemaining = List.of(
+                element(placementToRemain, Placement.builder()
+                    .build())
+            );
+
+            CaseData caseData = CaseData.builder()
+                .placementEventData(PlacementEventData.builder()
+                    .placements(placements)
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeSpecificPlacements(caseData, placementToRemove);
+
+            assertThat(updatedFields).extracting("placements").asList().hasSize(1)
+                    .isEqualTo(placementsRemaining);
+            assertThat(updatedFields).extracting("placementsNonConfidential").asList()
+                .hasSize(1).isEqualTo(placementsRemaining);
+            assertThat(updatedFields).extracting("placementsNonConfidentialNotices").asList()
+                .hasSize(1).isEqualTo(placementsRemaining);
+        }
+
+        @Test
+        void shouldRemovePlacementWhenSelectedPlacementIsTheLastOne() {
+            List<Element<Placement>> placements = List.of(
+                element(placementToRemove, Placement.builder()
+                    .build())
+            );
+
+            CaseData caseData = CaseData.builder()
+                .placementEventData(PlacementEventData.builder()
+                    .placements(placements)
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeSpecificPlacements(caseData, placementToRemove);
+
+            assertThat(updatedFields).extracting("placements").isNull();
+            assertThat(updatedFields).extracting("placementsNonConfidential").isNull();
+            assertThat(updatedFields).extracting("placementsNonConfidentialNotices").isNull();
+        }
+
+    }
+
+    @Nested
+    class RenameApplicationDocuments {
+
+        @Test
+        void shouldRemoveAngularBracketsFromDocumentNames() {
+            UUID docId = UUID.randomUUID();
+            Element<ApplicationDocument> appDoc = element(docId, ApplicationDocument.builder()
+                .documentName("PA>S")
+                .build());
+
+            Element<ApplicationDocument> expectedDoc = element(docId, ApplicationDocument.builder()
+                .documentName("PAS")
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .applicationDocuments(List.of(appDoc))
+                .build();
+
+            Map<String, Object> updates = underTest.renameApplicationDocuments(caseData);
+
+            assertThat(updates).extracting("applicationDocuments").asList().containsExactly(expectedDoc);
+        }
+
+        @Test
+        void shouldDoNothingIfNoAngularBrackets() {
+            Element<ApplicationDocument> appDoc = element(ApplicationDocument.builder()
+                .documentName("PAS")
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .applicationDocuments(List.of(appDoc))
+                .build();
+
+            Map<String, Object> updates = underTest.renameApplicationDocuments(caseData);
+
+            assertThat(updates).extracting("applicationDocuments").asList().containsExactly(appDoc);
+        }
+
+        @Test
+        void shouldRenameMultipleDocsIfAngularBrackets() {
+            UUID docId1 = UUID.randomUUID();
+            UUID docId2 = UUID.randomUUID();
+            Element<ApplicationDocument> appDoc1 = element(docId1, ApplicationDocument.builder()
+                .documentName("PA>S")
+                .build());
+            Element<ApplicationDocument> appDoc2 = element(docId2, ApplicationDocument.builder()
+                .documentName("PA<S")
+                .build());
+
+            Element<ApplicationDocument> expectedDoc1 = element(docId1, ApplicationDocument.builder()
+                .documentName("PAS")
+                .build());
+
+            Element<ApplicationDocument> expectedDoc2 = element(docId2, ApplicationDocument.builder()
+                .documentName("PAS")
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .applicationDocuments(List.of(appDoc1, appDoc2))
+                .build();
+
+            Map<String, Object> updates = underTest.renameApplicationDocuments(caseData);
+
+            assertThat(updates).extracting("applicationDocuments").asList().containsExactly(expectedDoc1, expectedDoc2);
         }
     }
 }

@@ -147,6 +147,35 @@ class LocalAuthorityRecipientsServiceTest {
         }
 
         @Test
+        void shouldReturnFirstLocalAuthorityWhenDesignatedIsNotSet() {
+            final CaseData caseData = CaseData.builder()
+                .caseLocalAuthority(LA_1_CODE)
+                .localAuthorities(wrapElements(
+                    LocalAuthority.builder()
+                        .id(LA_1_ID)
+                        .email(LA_1_INBOX)
+                        .designated("No")
+                        .colleagues(wrapElements(designatedLAColleague1))
+                        .build(),
+                    LocalAuthority.builder()
+                        .id(LA_2_ID)
+                        .email(LA_2_INBOX)
+                        .designated("No")
+                        .colleagues(wrapElements(secondaryLAColleague1, secondaryLAColleague2, secondaryLAColleague3))
+                        .build()))
+                .build();
+
+            final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
+                .caseData(caseData)
+                .designatedLocalAuthorityExcluded(false)
+                .build();
+
+            given(featureToggles.emailsToSolicitorEnabled(LA_1_CODE)).willReturn(true);
+
+            assertThat(underTest.getRecipients(recipientsRequest)).containsExactly(LA_1_INBOX);
+        }
+
+        @Test
         void shouldNotReturnLocalAuthorityEmailsWhenNoGroupEmailOrSharedInboxOrColleagues() {
             final CaseData caseData = CaseData.builder()
                 .caseLocalAuthority(LA_1_CODE)
@@ -476,7 +505,6 @@ class LocalAuthorityRecipientsServiceTest {
                 secondaryLAColleague2.getEmail(),
                 secondaryLAColleague3.getEmail());
         }
-
     }
 
     @Nested
