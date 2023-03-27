@@ -8,7 +8,7 @@ module.exports = {
       interimCareOrder: locate('input').withAttr({id: 'orders_orderType-INTERIM_CARE_ORDER'}),
       supervisionOrder: locate('input').withAttr({id: 'orders_orderType-SUPERVISION_ORDER'}),
       interimSupervisionOrder: locate('input').withAttr({id: 'orders_orderType-INTERIM_SUPERVISION_ORDER'}),
-      educationSupervisionOrder: locate('input').withAttr({id: 'orders_orderType-EDUCATION_SUPERVISION__ORDER'}),
+      educationSupervisionOrder: locate('input').withAttr({id: 'orders_orderType-EDUCATION_SUPERVISION_ORDER'}),
       emergencyProtectionOrder: locate('input').withAttr({id: 'orders_orderType-EMERGENCY_PROTECTION_ORDER'}),
       other: locate('input').withAttr({id: 'orders_orderType-OTHER'}),
       otherDetails: '#orders_otherOrder',
