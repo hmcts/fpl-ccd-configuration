@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
 import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
@@ -20,6 +21,7 @@ import java.util.UUID;
 
 import static java.lang.String.format;
 import static org.springframework.util.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -78,12 +80,24 @@ public class DraftCMORemovalAction implements OrderRemovalAction {
 
             Element<HearingOrdersBundle> selectedHearingOrderBundle = optionalHearingOrderBundle.get();
             Element<HearingOrder> cmoElement = element(removedOrderId, caseManagementOrder);
+            HearingOrderType orderType = cmoElement.getValue().getType();
 
             selectedHearingOrderBundle.getValue().getOrders().remove(cmoElement);
             caseData.getDraftUploadedCMOs().remove(cmoElement);
 
             updateHearingOrderBundlesDrafts.update(
-                data, caseData.getHearingOrdersBundlesDrafts(), selectedHearingOrderBundle);
+                selectedHearingOrderBundle,
+                () -> orderType.equals(DRAFT_CMO) ? caseData.getHearingOrdersBundlesDraftReview()
+                            : caseData.getHearingOrdersBundlesDrafts(),
+                updatedHearingOrderBundle -> {
+                    if (orderType.equals(DRAFT_CMO)) {
+                        data.putIfNotEmpty("hearingOrdersBundlesDraftReview", updatedHearingOrderBundle);
+                    } else {
+                        data.putIfNotEmpty("hearingOrdersBundlesDrafts", updatedHearingOrderBundle);
+                    }
+                }
+            );
+
 
             updateHearingDetailsWhenCMORemoved(caseData, data, cmoElement);
             data.putIfNotEmpty(DRAFT_UPLOADED_CMOS, caseData.getDraftUploadedCMOs());
@@ -103,8 +117,10 @@ public class DraftCMORemovalAction implements OrderRemovalAction {
         } else {
             data.put(DRAFT_UPLOADED_CMOS, draftUploadedCMOs);
         }
+        HearingOrdersBundles hearingOrdersBundles = draftOrderService.migrateCmoDraftToOrdersBundles(caseData);
 
-        data.put("hearingOrdersBundlesDrafts", draftOrderService.migrateCmoDraftToOrdersBundles(caseData));
+        data.put("hearingOrdersBundlesDrafts", hearingOrdersBundles.getAgreedCmos());
+        data.put("hearingOrdersBundlesDraftReview", hearingOrdersBundles.getDraftCmos());
         updateHearingDetailsWhenCMORemoved(caseData, data, cmoElement);
     }
 
