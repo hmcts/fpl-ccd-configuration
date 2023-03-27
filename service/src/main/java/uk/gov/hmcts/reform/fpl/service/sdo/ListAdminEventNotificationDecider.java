@@ -13,22 +13,27 @@ import java.util.Optional;
 public class ListAdminEventNotificationDecider {
 
     public Optional<ListAdminEvent> buildEventToPublish(CaseData caseData) {
-        ListAdminEvent event = null;
 
-        GatekeepingOrderEventData gatekeepingOrderEventData = caseData.getGatekeepingOrderEventData();
+        final GatekeepingOrderEventData gatekeepingOrderEventData = caseData.getGatekeepingOrderEventData();
         if (Objects.nonNull(gatekeepingOrderEventData) && gatekeepingOrderEventData.isSentToAdmin()) {
-            ListAdminEvent.ListAdminEventBuilder listAdminEventBuilder = ListAdminEvent.builder()
+            final ListAdminEvent.ListAdminEventBuilder listAdminEventBuilder = ListAdminEvent.builder()
                 .caseData(caseData)
                 .isSentToAdmin(gatekeepingOrderEventData.isSentToAdmin())
                 .sendToAdminReason(gatekeepingOrderEventData.getSendToAdminReason());
 
-            StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
+            final StandardDirectionOrder standardDirectionOrder;
+            if (Objects.nonNull(caseData.getGatekeepingOrderRouter())) {
+                standardDirectionOrder = caseData.getStandardDirectionOrder();
+            } else {
+                standardDirectionOrder = caseData.getUrgentDirectionsOrder();
+            }
+
             if (Objects.nonNull(standardDirectionOrder) && Objects.nonNull(standardDirectionOrder.getOrderDoc())) {
                 listAdminEventBuilder.order(standardDirectionOrder.getOrderDoc());
             }
-            event = listAdminEventBuilder.build();
+            return Optional.of(listAdminEventBuilder.build());
         }
 
-        return Optional.ofNullable(event);
+        return Optional.empty();
     }
 }
