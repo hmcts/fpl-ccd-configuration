@@ -32,7 +32,7 @@ async function setupScenario(I) {
 
 Scenario('HMCTS Admin and LA upload confidential and non confidential further evidence documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
   await setupScenario(I);
-  await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
+  await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
 
   manageDocumentsEventPage.selectFurtherEvidence();
   await I.goToNextPage();
