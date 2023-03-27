@@ -22,7 +22,6 @@ public class LocalAuthorityEmailLookupConfiguration {
     }
 
     public Optional<String> getSharedInbox(String localAuthorityCode) {
-        checkNotNull(localAuthorityCode, "Local authority code cannot be null");
         return Optional.ofNullable(mapping.get(localAuthorityCode));
     }
 

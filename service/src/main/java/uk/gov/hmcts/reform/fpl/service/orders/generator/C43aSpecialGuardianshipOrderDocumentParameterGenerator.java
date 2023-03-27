@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -28,10 +29,14 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
     private final ChildrenService childrenService;
     private final AppointedGuardianFormatter appointedGuardianFormatter;
     private final OrderMessageGenerator orderMessageGenerator;
+    @Value("${contacts.passport_office.email}")
+    private String passportOfficeEmail;
+    @Value("${contacts.passport_office.address}")
+    private String passportOfficeAddress;
 
     private static String paragraphBreak = "\n \n";
     private static String ORDER_HEADER = "Warning \n";
-    private static String ORDER_MESSAGE = "Where a Special Guardianship Order is in force no person may "
+    protected static final String ORDER_MESSAGE = "Where a Special Guardianship Order is in force no person may "
         + "cause the child to be known by a new surname or remove the "
         + "child from the United Kingdom without either the written consent"
         + " of every person who has parental responsibility for the child or "
@@ -44,9 +49,9 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
         + "to remove the child from the United Kingdom without leave of the Court.\n"
         + "";
     private static String NOTICE_HEADER = "Notice \n";
-    private static String NOTICE_MESSAGE = "Any person with parental responsibility for a child may "
-        + "obtain advice on what can be done to prevent the issue of a passport to the child. They should write "
-        + "to The United Kingdom Passport Agency, Globe House, 89 Eccleston Square, LONDON, SW1V 1PN.";
+    protected static final String NOTICE_MESSAGE = "Any person with "
+        + "parental responsibility for a child may obtain advice on what can be done to prevent "
+        + "the issue of a passport to the child. They should write to %s or email %s.";
 
     @Override
     public Order accept() {
@@ -73,7 +78,7 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
             .orderHeader(ORDER_HEADER)
             .orderMessage(ORDER_MESSAGE)
             .noticeHeader(NOTICE_HEADER)
-            .noticeMessage(NOTICE_MESSAGE)
+            .noticeMessage(String.format(NOTICE_MESSAGE, passportOfficeAddress, passportOfficeEmail))
             .build();
     }
 
@@ -81,7 +86,10 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
         String childOrChildren = (numOfChildren == 1 ? "child" : "children");
         String applicant = appointedGuardianFormatter.getGuardiansNamesForDocument(caseData);
 
-        return format("The Court orders that %s appointed as special guardian for the %s.", applicant, childOrChildren);
+        StringBuilder sb = new StringBuilder();
+        sb.append(format("The Court orders that %s for the %s.", applicant,
+            childOrChildren));
+        return sb.toString();
     }
 
 

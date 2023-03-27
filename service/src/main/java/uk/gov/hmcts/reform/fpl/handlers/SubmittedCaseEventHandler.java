@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ApplicantType;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
@@ -32,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OutsourcedCaseContentProvider;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
+import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.util.Collection;
 import java.util.List;
@@ -81,13 +83,19 @@ public class SubmittedCaseEventHandler {
     public void notifyCafcass(final SubmittedCaseEvent event) {
         CaseData caseData = event.getCaseData();
 
-        Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
-            .map(CafcassLookupConfiguration.Cafcass::getEmail);
+        if (!caseData.getRepresentativeType().equals(RepresentativeType.LOCAL_AUTHORITY)) {
+            log.info("Application has been made as a non-LA, skipping Cafcass notification.");
+            return;
+        }
 
-        if (recipientIsWelsh.isPresent()) {
-            NotifyData notifyData = cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData);
-            notificationService.sendEmail(CAFCASS_SUBMISSION_TEMPLATE, recipientIsWelsh.get(),
+        if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
+            Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData
+                .getCaseLocalAuthority()).map(CafcassLookupConfiguration.Cafcass::getEmail);
+            if (recipientIsWelsh.isPresent()) {
+                NotifyData notifyData = cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData);
+                notificationService.sendEmail(CAFCASS_SUBMISSION_TEMPLATE, recipientIsWelsh.get(),
                     notifyData, caseData.getId());
+            }
         }
     }
 
@@ -95,10 +103,13 @@ public class SubmittedCaseEventHandler {
     @EventListener
     public void notifyCafcassSendGrid(final SubmittedCaseEvent event) {
         CaseData caseData = event.getCaseData();
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
 
-        if (recipientIsEngland.isPresent()) {
+        if (!caseData.getRepresentativeType().equals(RepresentativeType.LOCAL_AUTHORITY)) {
+            log.info("Application has been made as a non-LA, skipping Cafcass notification.");
+            return;
+        }
+
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             Set<DocumentReference> documentReferences = Optional.ofNullable(caseData.getC110A().getSubmittedForm())
                     .map(documentReference ->
                         documentReference.toBuilder()
@@ -120,6 +131,11 @@ public class SubmittedCaseEventHandler {
     @EventListener
     public void notifyManagedLA(SubmittedCaseEvent event) {
         CaseData caseData = event.getCaseData();
+
+        if (!caseData.getRepresentativeType().equals(RepresentativeType.LOCAL_AUTHORITY)) {
+            log.info("Application has been made as a non-LA, skipping managed LA notification.");
+            return;
+        }
 
         if (!caseData.isOutsourced()) {
             return;

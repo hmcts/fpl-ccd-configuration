@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GroundsForChildRecoveryOrder",
+    "CaseEventID": "enterGrounds",
+    "CaseFieldID": "groundsForChildRecoveryOrder",
+    "ListElementCode": "grounds",
+    "EventElementLabel": "The grounds are that the child[ren]",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GroundsForChildRecoveryOrder",
+    "CaseEventID": "enterGrounds",
+    "CaseFieldID": "groundsForChildRecoveryOrder",
+    "ListElementCode": "reason",
+    "EventElementLabel": "The reason(s) for the application",
+    "EventHintText": "Include your ground(s) for believing that the child(ren) (is) (are) on the premises (if applicable) (Section 50(6) Children Act 1989). If you are relying on a report or other documentary evidence, state the date(s) and author(s) and enclose a copy in document upload section.",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY"
+  }
+]

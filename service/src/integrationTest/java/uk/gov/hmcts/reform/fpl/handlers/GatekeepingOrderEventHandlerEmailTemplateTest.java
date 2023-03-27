@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtToCourtAdminLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -34,7 +35,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 
 @ContextConfiguration(classes = {
     GatekeepingOrderEventHandler.class, SDOIssuedCafcassContentProvider.class, CaseUrlService.class,
-    SDOIssuedContentProvider.class, CtscEmailLookupConfiguration.class, EmailNotificationHelper.class
+    SDOIssuedContentProvider.class, CtscEmailLookupConfiguration.class, EmailNotificationHelper.class,
+    HmctsCourtToCourtAdminLookupConfiguration.class
 })
 @MockBean(TranslationRequestService.class)
 class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
@@ -205,6 +207,10 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .line()
+                .line("For local authority guidance navigate to this link:")
+                .line("https://www.gov.uk/government/publications/"
+                    + "myhmcts-how-to-apply-for-a-family-public-law-order")
+                .line()
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                     + "contactfpl@justice.gov.uk")
             );
@@ -252,6 +258,14 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line("You can review it by signing in to: " + caseDetailsUrl(ID, ORDERS))
                 .line()
                 .line("HM Courts & Tribunals Service")
+                .line()
+                .line("For local authority guidance navigate to this link:")
+                .line("https://www.gov.uk/government/publications/"
+                    + "myhmcts-how-to-apply-for-a-family-public-law-order")
+                .line()
+                .line("For legal representation guidance navigate to this link:")
+                .line("https://www.gov.uk/government/publications/"
+                    + "myhmcts-how-to-respond-to-a-family-public-law-order-application")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                     + "contactfpl@justice.gov.uk")

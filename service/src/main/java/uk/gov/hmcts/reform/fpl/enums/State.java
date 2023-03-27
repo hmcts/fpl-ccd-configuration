@@ -20,6 +20,9 @@ public enum State {
     @JsonProperty("Gatekeeping")
     GATEKEEPING("Gatekeeping"),
 
+    @JsonProperty("GATEKEEPING_LISTING")
+    GATEKEEPING_LISTING("GATEKEEPING_LISTING"),
+
     // State label renamed to 'Case management' as of FPLA-1920.
     // State ID remains 'PREPARE_FOR_HEARING' to avoid breaking existing cases.
     @JsonProperty("PREPARE_FOR_HEARING")

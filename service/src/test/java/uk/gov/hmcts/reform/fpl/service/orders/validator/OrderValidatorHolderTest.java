@@ -14,10 +14,12 @@ import java.util.Map;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPOINTED_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DISCHARGE_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_DATE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.FAMILY_ASSISTANCE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_PLACED_CHILD_IN_CUSTODY;
@@ -46,6 +48,10 @@ class OrderValidatorHolderTest {
     private ManageOrderEndDateWithEndOfProceedingsValidator manageOrderEndDateWithEndOfProceedingsValidator;
     @Mock
     private OrderMadeDateValidator orderMadeDateValidator;
+    @Mock
+    private FamilyAssistanceBefriendValidator familyAssistanceBefriendValidator;
+    @Mock
+    private AppointedGuardianValidator appointedGuardianValidator;
 
     @InjectMocks
     private OrderValidatorHolder underTest;
@@ -60,7 +66,9 @@ class OrderValidatorHolderTest {
             epoEndDateValidator,
             manageOrderEndDateValidator,
             manageOrderEndDateWithEndOfProceedingsValidator,
-            orderMadeDateValidator
+            orderMadeDateValidator,
+            familyAssistanceBefriendValidator,
+            appointedGuardianValidator
         );
 
         orderQuestionBlockValidators = Map.of(
@@ -71,7 +79,9 @@ class OrderValidatorHolderTest {
             EPO_EXPIRY_DATE, epoEndDateValidator,
             MANAGE_ORDER_END_DATE_WITH_MONTH, manageOrderEndDateValidator,
             MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS, manageOrderEndDateWithEndOfProceedingsValidator,
-            ORDER_PLACED_CHILD_IN_CUSTODY, orderMadeDateValidator
+            ORDER_PLACED_CHILD_IN_CUSTODY, orderMadeDateValidator,
+            FAMILY_ASSISTANCE_ORDER, familyAssistanceBefriendValidator,
+            APPOINTED_GUARDIAN, appointedGuardianValidator
         );
 
         validators.forEach(validator -> when(validator.accept()).thenCallRealMethod());

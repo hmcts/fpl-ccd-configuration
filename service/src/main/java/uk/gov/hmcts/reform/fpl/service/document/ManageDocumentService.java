@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
+import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -104,8 +105,11 @@ public class ManageDocumentService {
     public static final String POSITION_STATEMENT_CHILD_LIST_KEY_DEPRECATED = "positionStatementChildList";
     public static final String POSITION_STATEMENT_RESPONDENT_LIST_KEY = "positionStatementRespondentListV2";
     public static final String POSITION_STATEMENT_RESPONDENT_LIST_KEY_DEPRECATED = "positionStatementRespondentList";
+    public static final String SKELETON_ARGUMENT_KEY = "manageDocumentsSkeletonArgument";
+    public static final String SKELETON_ARGUMENT_LIST_KEY = "skeletonArgumentList";
     public static final String DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY = "documentsWithConfidentialAddress";
     public static final String PLACEMENT_LIST_KEY = "manageDocumentsPlacementList";
+    public static final String DOCUMENT_ACKNOWLEDGEMENT_KEY = "ACK_RELATED_TO_CASE";
 
     private static final Predicate<Element<SupportingEvidenceBundle>> HMCTS_FILTER =
         bundle -> bundle.getValue().isUploadedByHMCTS();
@@ -373,6 +377,10 @@ public class ManageDocumentService {
             case POSITION_STATEMENT_RESPONDENT :
                 map.put(POSITION_STATEMENT_RESPONDENT_KEY,
                     getPositionStatementRespondentForHearing(caseData, selectedHearingId));
+                break;
+            case SKELETON_ARGUMENT:
+                map.put(SKELETON_ARGUMENT_KEY,
+                    getSkeletonArgumentForHearing(caseData, selectedHearingId));
         }
         return map;
     }
@@ -385,15 +393,15 @@ public class ManageDocumentService {
             case COURT_BUNDLE :
                 List<Element<HearingCourtBundle>> courtBundles = buildCourtBundleList(caseData, selectedHearingId);
                 map.put(COURT_BUNDLE_LIST_KEY, courtBundles);
-                map.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
+                addConfidentialDocumentIfNotEmpty(map,
                     getDocumentsWithConfidentialAddressFromCourtBundles(caseData,
                         caseData.getHearingDocuments().getCourtBundleListV2(), courtBundles));
                 break;
             case CASE_SUMMARY :
-                List<Element<CaseSummary>> caseSummaries = buildHearingDocumentList(caseData, selectedHearingId,
+                List<Element<CaseSummary>> caseSummaries = buildHearingDocumentsList(caseData, selectedHearingId,
                     caseData.getHearingDocuments().getCaseSummaryList(), caseData.getManageDocumentsCaseSummary());
                 map.put(CASE_SUMMARY_LIST_KEY, caseSummaries);
-                map.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
+                addConfidentialDocumentIfNotEmpty(map,
                     getDocumentsWithConfidentialAddressFromHearingDocuments(caseData,
                         caseData.getHearingDocuments().getCaseSummaryList(), caseSummaries));
                 break;
@@ -407,7 +415,7 @@ public class ManageDocumentService {
                             .build());
                 map.put(POSITION_STATEMENT_CHILD_LIST_KEY, positionStatementChildList);
                 map.put(POSITION_STATEMENT_CHILD_LIST_KEY_DEPRECATED, null);
-                map.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
+                addConfidentialDocumentIfNotEmpty(map,
                     getDocumentsWithConfidentialAddressFromHearingDocuments(caseData,
                         caseData.getHearingDocuments().getPositionStatementChildListV2(),
                         positionStatementChildList));
@@ -422,22 +430,49 @@ public class ManageDocumentService {
                             .build());
                 map.put(POSITION_STATEMENT_RESPONDENT_LIST_KEY, positionStatementRespondentList);
                 map.put(POSITION_STATEMENT_RESPONDENT_LIST_KEY_DEPRECATED, null);
-                map.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,
+                addConfidentialDocumentIfNotEmpty(map,
                     getDocumentsWithConfidentialAddressFromHearingDocuments(caseData,
                         caseData.getHearingDocuments().getPositionStatementRespondentListV2(),
                         positionStatementRespondentList));
+                break;
+            case SKELETON_ARGUMENT :
+                List<Element<SkeletonArgument>> skeletonArgumentList =
+                    buildSkeletonArgumentList(caseData,
+                        caseData.getHearingDocuments().getSkeletonArgumentList(),
+                        caseData.getManageDocumentsSkeletonArgument().toBuilder()
+                            .partyId(caseData.getHearingDocumentsPartyList().getValueCodeAsUUID())
+                            .partyName(caseData.getHearingDocumentsPartyList().getValueLabel())
+                            .uploadedBy(documentUploadHelper.getUploadedDocumentUserDetails())
+                            .dateTimeUploaded(time.now())
+                            .build());
+                map.put(SKELETON_ARGUMENT_LIST_KEY, skeletonArgumentList);
+                addConfidentialDocumentIfNotEmpty(map,
+                    getDocumentsWithConfidentialAddressFromHearingDocuments(caseData,
+                        caseData.getHearingDocuments().getSkeletonArgumentList(),
+                        skeletonArgumentList));
         }
 
         return map;
     }
 
-    private <T> List<Element<T>> buildHearingDocumentList(CaseData caseData, UUID selectedHearingId,
-                                                          List<Element<T>> hearingDocumentList, T hearingDocument) {
+    private <T> List<Element<T>> buildCourtBundlesList(CaseData caseData, UUID selectedHearingId,
+                                                      List<Element<T>> hearingDocumentList, T hearingDocument) {
         if (isNotEmpty(caseData.getHearingDetails())) {
             return List.of(element(selectedHearingId, hearingDocument));
         }
 
         return hearingDocumentList;
+    }
+
+    private <T extends HearingDocument> List<Element<T>> buildHearingDocumentsList(CaseData caseData,
+           UUID selectedHearingId, List<Element<T>> hearingDocumentList, T hearingDocument) {
+        List<Element<T>> list = hearingDocumentList.stream().filter(el -> !el.getId().equals(selectedHearingId))
+            .collect(Collectors.toList());
+        if (isNotEmpty(caseData.getHearingDetails())) {
+            list.add(element(selectedHearingId, hearingDocument));
+        }
+
+        return list;
     }
 
     private List<Element<PositionStatementRespondent>> buildRespondentPositionStatementList(CaseData caseData,
@@ -447,8 +482,8 @@ public class ManageDocumentService {
         // and replace the existing uploaded statement of the selected respondent with the new statement.
         if (isNotEmpty(caseData.getHearingDetails())) {
             List<Element<PositionStatementRespondent>> resultList = hearingDocumentList.stream()
-                .filter(doc -> doc.getValue().getHearingId().equals(selectedHearingId)
-                               && !doc.getValue().getRespondentId().equals(respondentStatement.getRespondentId()))
+                .filter(doc -> !(doc.getValue().getHearingId().equals(selectedHearingId)
+                               && doc.getValue().getRespondentId().equals(respondentStatement.getRespondentId())))
                 .collect(Collectors.toList());
             resultList.add(element(respondentStatement));
             return resultList;
@@ -464,12 +499,21 @@ public class ManageDocumentService {
         // and replace the existing uploaded statement of the selected child with the new statement.
         if (isNotEmpty(caseData.getHearingDetails())) {
             List<Element<PositionStatementChild>> resultList = hearingDocumentList.stream()
-                .filter(doc -> doc.getValue().getHearingId().equals(selectedHearingId)
-                               && !doc.getValue().getChildId().equals(respondentStatement.getChildId()))
+                .filter(doc -> !(doc.getValue().getHearingId().equals(selectedHearingId)
+                               && doc.getValue().getChildId().equals(respondentStatement.getChildId())))
                 .collect(Collectors.toList());
 
             resultList.add(element(respondentStatement));
             return resultList;
+        }
+
+        return hearingDocumentList;
+    }
+
+    private List<Element<SkeletonArgument>> buildSkeletonArgumentList(CaseData caseData,
+                List<Element<SkeletonArgument>> hearingDocumentList, SkeletonArgument skeletonArgument) {
+        if (isNotEmpty(caseData.getHearingDetails())) {
+            hearingDocumentList.add(element(skeletonArgument));
         }
 
         return hearingDocumentList;
@@ -481,7 +525,7 @@ public class ManageDocumentService {
             .filter(doc -> !doc.getValue().isConfidentialDocument())
             .collect(Collectors.toList());
 
-        return buildHearingDocumentList(caseData, selectedHearingId,
+        return buildCourtBundlesList(caseData, selectedHearingId,
             caseData.getHearingDocuments().getCourtBundleListV2(),
             HearingCourtBundle.builder()
                 .hearing(hearingBooking.toLabel())
@@ -549,6 +593,13 @@ public class ManageDocumentService {
     private PositionStatementRespondent getPositionStatementRespondentForHearing(CaseData caseData,
                                                                                  UUID selectedHearingId) {
         return PositionStatementRespondent.builder()
+            .hearing(getHearingBooking(caseData, selectedHearingId).toLabel())
+            .hearingId(selectedHearingId).build();
+    }
+
+    private SkeletonArgument getSkeletonArgumentForHearing(CaseData caseData,
+                                                           UUID selectedHearingId) {
+        return SkeletonArgument.builder()
             .hearing(getHearingBooking(caseData, selectedHearingId).toLabel())
             .hearingId(selectedHearingId).build();
     }
@@ -751,6 +802,14 @@ public class ManageDocumentService {
                     .name(getHearingDocumentName(hearingDocument.getValue()))
                     .document(hearingDocument.getValue().getDocument()).build()))
             .collect(Collectors.toList());
+    }
+
+    public void addConfidentialDocumentIfNotEmpty(
+                    Map<String, Object> hashMap,
+                    List<Element<DocumentWithConfidentialAddress>> confidentialDocuments) {
+        if (!isEmpty(confidentialDocuments)) {
+            hashMap.put(DOCUMENT_WITH_CONFIDENTIAL_ADDRESS_KEY,confidentialDocuments);
+        }
     }
 
     private String getHearingDocumentName(HearingDocument doc) {

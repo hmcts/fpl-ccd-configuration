@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.RemovalToolData;
+import uk.gov.hmcts.reform.fpl.model.SentDocument;
+import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -32,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +60,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_WITH_SUPPLEM
 import static uk.gov.hmcts.reform.fpl.enums.RemovableType.ADDITIONAL_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.RemovableType.APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.RemovableType.ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.RemovableType.SENT_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -119,6 +123,11 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
         fields.put("showRemoveSDOWarningFlag", DUMMY_DATA);
         fields.put("showReasonFieldFlag", DUMMY_DATA);
         fields.put("reasonToRemoveApplicationForm", DUMMY_DATA);
+        fields.put("partyNameToBeRemoved", DUMMY_DATA);
+        fields.put("sentAtToBeRemoved", DUMMY_DATA);
+        fields.put("letterIdToBeRemoved", DUMMY_DATA);
+        fields.put("sentDocumentToBeRemoved", DUMMY_DATA);
+        fields.put("reasonToRemoveSentDocument", DUMMY_DATA);
 
         CaseDetails caseDetails = asCaseDetails(buildCaseData(selectedOrder));
 
@@ -144,7 +153,12 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
             "showRemoveCMOFieldsFlag",
             "showRemoveSDOWarningFlag",
             "showReasonFieldFlag",
-            "reasonToRemoveApplicationForm"
+            "reasonToRemoveApplicationForm",
+            "partyNameToBeRemoved",
+            "sentAtToBeRemoved",
+            "letterIdToBeRemoved",
+            "sentDocumentToBeRemoved",
+            "reasonToRemoveSentDocument"
         );
     }
 
@@ -351,14 +365,22 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
         UUID additionalOrderId = UUID.randomUUID();
         UUID hearingOrderBundleId = UUID.randomUUID();
 
-        Element<HearingOrder> orderToBeRemoved = element(removedOrderId, HearingOrder.builder()
-            .status(DRAFT)
-            .type(HearingOrderType.DRAFT_CMO)
-            .build());
+        HearingOrder draftOrder = HearingOrder.builder()
+                .status(DRAFT)
+                .type(DRAFT_CMO)
+                .build();
+
+        HearingOrder additionalOrder = HearingOrder.builder()
+                .status(SEND_TO_JUDGE)
+                .type(AGREED_CMO)
+                .build();
+
+        List<Element<HearingOrder>> caseManagementOrdersDraft = newArrayList(
+            element(removedOrderId, draftOrder)
+        );
 
         List<Element<HearingOrder>> caseManagementOrders = newArrayList(
-            orderToBeRemoved,
-            element(additionalOrderId, HearingOrder.builder().type(HearingOrderType.DRAFT_CMO).build()));
+                element(additionalOrderId, additionalOrder));
 
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(HearingBooking.builder()
@@ -366,6 +388,9 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
                 .build()));
 
         CaseData caseData = CaseData.builder()
+            .hearingOrdersBundlesDraftReview(newArrayList(
+                element(hearingOrderBundleId, HearingOrdersBundle.builder().orders(caseManagementOrdersDraft).build())
+            ))
             .hearingOrdersBundlesDrafts(newArrayList(
                 element(hearingOrderBundleId, HearingOrdersBundle.builder().orders(caseManagementOrders).build())
             ))
@@ -376,6 +401,10 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
                     .value(buildListElement(removedOrderId, "Draft case management order - 15 June 2020"))
                     .build())
                 .build())
+                .draftUploadedCMOs(newArrayList(
+                    element(removedOrderId, draftOrder),
+                    element(additionalOrderId, additionalOrder))
+                )
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
@@ -385,10 +414,13 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         assertThat(responseData.getHearingOrdersBundlesDrafts()).isEqualTo(newArrayList(
             element(hearingOrderBundleId, HearingOrdersBundle.builder().orders(newArrayList(
-                element(additionalOrderId, HearingOrder.builder().type(HearingOrderType.DRAFT_CMO).build())
+                element(additionalOrderId, HearingOrder.builder()
+                    .type(HearingOrderType.AGREED_CMO)
+                    .status(SEND_TO_JUDGE)
+                    .build())
             )).build())
         ));
-
+        assertThat(responseData.getHearingOrdersBundlesDraftReview()).isNull();
         assertNull(unlinkedHearing.getCaseManagementOrderId());
     }
 
@@ -525,6 +557,70 @@ class RemovalToolControllerAboutToSubmitTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
 
         assertThat(response.getErrors()).containsExactly(APPLICATION_FORM_ALREADY_REMOVED_ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldRemoveSentDocument() {
+        final String PARTY_NAME_1 = "Peter Pan";
+        final String PARTY_NAME_2 = "Mickey Donald";
+
+        DocumentReference file = DocumentReference.builder()
+            .filename("file.pdf")
+            .build();
+        DocumentReference randomFile = DocumentReference.builder()
+            .filename("randomFile.pdf")
+            .build();
+
+        final UUID id = UUID.fromString("11111111-1111-1111-1111-111111111111");
+
+        final Element<SentDocument> removedTarget = element(id, SentDocument.builder()
+            .partyName(PARTY_NAME_2)
+            .document(file)
+            .sentAt("04 JUNE 2020")
+            .letterId("LETTER11-1111-1111-1111-111111111111")
+            .build());
+
+        List<Element<SentDocument>> sentDocumentsForPartyOne = new ArrayList<>();
+        sentDocumentsForPartyOne.add(element(SentDocument.builder()
+            .partyName(PARTY_NAME_1)
+            .document(randomFile)
+            .sentAt("12 June 2020")
+            .build()));
+
+        List<Element<SentDocument>> sentDocumentsForPartyTwo = new ArrayList<>();
+        sentDocumentsForPartyTwo.add(removedTarget);
+
+        List<Element<SentDocuments>> documentsSentToParties = List.of(
+            element(SentDocuments.builder()
+                .partyName(PARTY_NAME_1)
+                .documentsSentToParty(sentDocumentsForPartyOne)
+                .build()),
+            element(SentDocuments.builder()
+                .partyName(PARTY_NAME_2)
+                .documentsSentToParty(sentDocumentsForPartyTwo)
+                .build())
+        );
+
+        DynamicList dynamicList = DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code("11111111-1111-1111-1111-111111111111")
+                .label(PARTY_NAME_2 + " - file.pdf (04 JUNE 1989)")
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .documentsSentToParties(documentsSentToParties)
+            .removalToolData(RemovalToolData.builder()
+                .removableType(SENT_DOCUMENT)
+                .removableSentDocumentList(dynamicList)
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
+        CaseData responseData = extractCaseData(response);
+        assertThat(responseData.getDocumentsSentToParties()).hasSize(1);
+        assertThat(responseData.getDocumentsSentToParties().get(0).getValue().getDocumentsSentToParty())
+            .hasSize(1);
     }
 
     private CaseData buildCaseData(Element<GeneratedOrder> order) {

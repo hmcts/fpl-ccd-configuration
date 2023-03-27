@@ -1,4 +1,4 @@
-buildscript {
+ buildscript {
   repositories {
     mavenCentral()
   }
@@ -23,6 +23,7 @@ plugins {
   id 'project-report'
   id "idea"
   id "info.solidsoft.pitest" version '1.5.2'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.371'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -33,7 +34,7 @@ apply plugin: 'au.com.dius.pact'
 group = 'uk.gov.hmcts.reform'
 version = '1.0.0'
 
-def mirrorHost = System.env.NONPROD_SUBSCRIPTION_NAME == "sandbox" ? "artifactory.sandbox" : "artifactory";
+def mirrorHost = System.env.NONPROD_SUBSCRIPTION_NAME == "sandbox" ? "artifactory.sandbox" : "artifactory"
 def mirrorUrl = "https://${mirrorHost}.platform.hmcts.net/artifactory/maven-remotes"
 
 sourceSets {
@@ -87,27 +88,12 @@ task integration(type: Test, description: 'Runs the integration tests.', group: 
 }
 check.dependsOn integration
 
-task installDependencies(type: Exec, description: 'Installs Yarn dependencies.') {
-  commandLine '/usr/bin/yarn', '--mutex', 'network', '--frozen-lockfile', '--silent', 'install'
-}
-
-task checkDependenciesIntegrity(type: Exec, description: 'Checks integrity of Yarn dependencies.') {
-  commandLine '/usr/bin/yarn', '--mutex', 'network', '--frozen-lockfile', '--silent', 'check', '--integrity'
-}
-
 task lintUserInterfaceTests(type: Exec, description: 'Runs linting of E2E tests.') {
-  commandLine '/usr/bin/yarn', '--silent', 'lint'
+  commandLine '/usr/bin/yarn', 'lint'
 }
 
 task runSmokeTests(type: Exec, description: 'Runs smoke tests.') {
-  commandLine '/usr/bin/yarn', '--silent', 'test:smoke'
-}
-
-task runBrowserTests(type: Exec, description: 'Runs brower tests.') {
-  onlyIf {
-    return System.env.SKIP_BROWSER_TESTS == null || System.env.SKIP_BROWSER_TESTS == 'false'
-  }
-  commandLine '/usr/bin/yarn', '--silent', 'test:functional'
+  commandLine '/usr/bin/yarn', 'test:smoke'
 }
 
 task runApiTests(type: Test, description: 'Runs api tests.', group: 'Verification') {
@@ -135,7 +121,6 @@ task runContractTests(type: Test, description: 'Runs contract tests.', group: 'V
     classpath = sourceSets.contractTest.runtimeClasspath
     systemProperty 'pact.rootDir', "pacts"
     testLogging.showStandardStreams = true
-
 }
 
 task runAndPublishConsumerPactTests(type: Test, description: 'Publish pact test to broker.', group: 'Verification') {
@@ -171,27 +156,35 @@ def static inStrictOrder(Task... tasks) {
   return tasks
 }
 
-task smoke(description: 'Runs the smoke tests.') {
-  dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runSmokeTests))
+task smoke(type: Test, description: 'Runs smoke test.', group: 'Verification') {
+  testLogging.showStandardStreams = true
+  testClassesDirs = sourceSets.functionalTest.output.classesDirs
+  classpath = sourceSets.functionalTest.runtimeClasspath
+  include "uk/gov/hmcts/reform/fpl/smoke/**"
+  finalizedBy aggregate
+}
+
+task runCodeceptSmokeTest(type: Test, description: 'Runs the old codecept smoke test.', group: 'Verification') {
+  dependsOn(inStrictOrder(runSmokeTests))
 }
 
 task functional(description: 'Runs the functional tests.') {
-  dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runApiTests, runBrowserTests))
+  dependsOn(inStrictOrder(runApiTests))
 }
 
 task contract(description: 'Runs the contract tests.') {
-    dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, runContractTests))
+    dependsOn(inStrictOrder(runContractTests))
 }
 
 task runCrossBrowserTests(type: Exec, description: 'Runs ExpertUI cross brower tests.') {
   onlyIf {
     return System.env.SKIP_BROWSER_TESTS == null || System.env.SKIP_BROWSER_TESTS == 'false'
   }
-  commandLine '/usr/bin/yarn', '--silent', 'test:crossbrowser'
+  commandLine '/usr/bin/yarn', 'test:crossbrowser'
 }
 
 task crossbrowser(description: 'Runs crossbrowser tests.') {
-  dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runCrossBrowserTests))
+  dependsOn(inStrictOrder(lintUserInterfaceTests, runCrossBrowserTests))
 }
 
 task fortifyScan(type: JavaExec)  {
@@ -302,6 +295,7 @@ dependencies {
   implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
 
   implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
+  implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.9.0'
 
   compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.6.2'
 
@@ -322,8 +316,10 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0'
   compile group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
-  compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '3.0.3'
+  compile group: 'com.github.hmcts', name: 'send-letter-client', version: '3.0.16'
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.3-RELEASE'
+
+  compile group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'
 
   implementation group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
   implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
@@ -391,6 +387,9 @@ dependencies {
   contractTestCompile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
   contractTestImplementation group: 'com.google.guava', name: 'guava', version: '30.1-jre'
 
+
+  cftlibImplementation group: 'com.github.tomakehurst', name: 'wiremock-jre8', version: '2.32.0'
+  cftlibImplementation 'com.github.masonm:wiremock-jwt-extension:0.9'
 }
 
 mainClassName = 'uk.gov.hmcts.reform.fpl.Application'
@@ -404,10 +403,12 @@ bootJar {
 }
 
 test {
+  maxHeapSize = "1024m"
   useJUnitPlatform()
 }
 
 integration {
+  maxHeapSize = "1024m"
   useJUnitPlatform()
 }
 
@@ -440,4 +441,57 @@ dependencyManagement {
   imports {
     mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.2'
   }
+}
+
+task generateXls(type: Exec) {
+  doFirst {
+    environment 'CCD_DEF_CASE_SERVICE_BASE_URL', 'http://localhost:4013'
+    environment 'CCD_DEF_AAC_URL', 'http://localhost:4454'
+  }
+  def definitionDir = rootProject.file('ccd-definition')
+  def xls = layout.buildDirectory.file('fpl.xlsx').get().asFile
+  commandLine rootProject.file('fpla-docker/bin/utils/fpl-process-definition.sh')
+  args definitionDir, xls, '-e *-prod.json,*-shuttered.json'
+  inputs.dir definitionDir
+  outputs.file xls
+}
+
+task loadEnvSecrets() {
+  doLast {
+    if (!project.file('../build/cftlib/.aat-env').exists()) {
+      new ByteArrayOutputStream().withStream { os ->
+        exec {
+          commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'fpl-aat', '-o', 'tsv', '--query', 'value', '--name', 'fpl-cftlib-aat-env'
+          standardOutput = os
+        }
+        project.file('../build/cftlib/.aat-env').write(new String(os.toString().replace('\n', '').decodeBase64(), java.nio.charset.StandardCharsets.UTF_8))
+      }
+    }
+  }
+}
+
+bootWithCCD {
+  group = 'ccd tasks'
+  dependsOn(tasks.loadEnvSecrets, tasks.generateXls)
+
+  doFirst() {
+    project.file('../build/cftlib/.aat-env').readLines().each() {
+      if (it.contains("=")){
+        def index = it.indexOf("=")
+        def key = it.substring(0, index)
+        def value = it.substring(index + 1)
+        environment key, value
+      }
+    }
+    environment "spring.profiles.active", "feature-toggle,local,user-mappings"
+    environment 'rse.lib.stub.s2s', 'true'
+    environment 'DOCUMENT_MANAGEMENT_URL', 'http://dm-store-aat.service.core-compute-aat.internal'
+    environment 'SEND_LETTER_URL', 'http://dm-store-aat.service.core-compute-aat.internal'
+    environment 'PRD_HOST', 'http://rd-professional-api-aat.service.core-compute-aat.internal'
+    environment 'MANAGE_CASE_S2S_AUTHORISED_SERVICES', 'ccd_gw,xui_webapp,ccd_data,fpl_case_service'
+  }
+}
+
+processCftlibResources {
+  from rootProject.fileTree('fpla-docker/mocks')
 }

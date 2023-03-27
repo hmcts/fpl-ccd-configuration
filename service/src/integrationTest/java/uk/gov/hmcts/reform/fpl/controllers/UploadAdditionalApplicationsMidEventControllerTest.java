@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -9,12 +11,14 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -25,7 +29,6 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
-import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 
 import java.math.BigDecimal;
@@ -39,11 +42,14 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.OTHER_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.APPOINTMENT_OF_GUARDIAN;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C13A_SPECIAL_GUARDIANSHIP;
 import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C20_SECURE_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -106,11 +112,6 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             .containsKeys("temporaryC2Document", "personSelector")
             .containsEntry("amountToPay", "1000")
             .containsEntry("displayAmountToPay", YES.getValue());
-
-        assertThat(String.valueOf(response.getData().get("hasRespondentsOrOthers"))).isEqualTo("Yes");
-        assertThat(String.valueOf(response.getData().get("people_label"))).contains(
-            "Person 1: Respondent 1 - John Smith\nPerson 2: Other 1 - test1\nPerson 3: Other 2 - test2\n");
-        assertThat(extractCaseData(response).getPersonSelector()).isEqualTo(Selector.newSelector(3));
     }
 
     @Test
@@ -183,4 +184,158 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
         assertThat(response.getErrors()).isEmpty();
     }
+
+    @Nested
+    class C2RequestAdjournment {
+
+        @BeforeEach
+        void beforeEach() {
+            given(feeService.getFeesDataForAdditionalApplications(any()))
+                .willReturn(FeesData.builder().totalAmount(BigDecimal.ONE).build());
+        }
+
+        @Test
+        void shouldPopulateHearingLabelIfRequestingAdjournment() {
+            List<Element<HearingBooking>> hearings = wrapElements(HearingBooking.builder()
+                .startDate(now().plusDays(15))
+                .type(HearingType.CASE_MANAGEMENT)
+                .build());
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(hearings)
+                .additionalApplicationType(List.of(C2_ORDER))
+                .c2Type(WITH_NOTICE)
+                .temporaryC2Document(C2DocumentBundle.builder()
+                    .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                    .hearingList(asDynamicList(hearings, hearings.get(0).getId(), HearingBooking::toLabel))
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData), "populate-data");
+
+            assertThat(response.getData().get("temporaryC2Document")).extracting("requestedHearingToAdjourn")
+                .isEqualTo(hearings.get(0).getValue().toLabel());
+            assertThat(response.getData().get("skipPaymentPage")).isEqualTo(YES.getValue());
+        }
+
+        @Test
+        void shouldPopulateHearingLabelButNotSkipIfRequestingAdjournmentWithOtherOrder() {
+            List<Element<HearingBooking>> hearings = wrapElements(HearingBooking.builder()
+                .startDate(now().plusDays(15))
+                .type(HearingType.CASE_MANAGEMENT)
+                .build());
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(hearings)
+                .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
+                .c2Type(WITH_NOTICE)
+                .temporaryC2Document(C2DocumentBundle.builder()
+                    .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                    .hearingList(asDynamicList(hearings, hearings.get(0).getId(), HearingBooking::toLabel))
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData), "populate-data");
+
+            assertThat(response.getData().get("temporaryC2Document")).extracting("requestedHearingToAdjourn")
+                .isEqualTo(hearings.get(0).getValue().toLabel());
+            assertThat(response.getData().get("skipPaymentPage")).isEqualTo(NO.getValue());
+        }
+
+        @Test
+        void shouldPopulateHearingLabelButNotSkipIfRequestingAdjournmentWithAnotherC2Order() {
+            List<Element<HearingBooking>> hearings = wrapElements(HearingBooking.builder()
+                .startDate(now().plusDays(15))
+                .type(HearingType.CASE_MANAGEMENT)
+                .build());
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(hearings)
+                .additionalApplicationType(List.of(C2_ORDER))
+                .c2Type(WITH_NOTICE)
+                .temporaryC2Document(C2DocumentBundle.builder()
+                    .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT, APPOINTMENT_OF_GUARDIAN))
+                    .hearingList(asDynamicList(hearings, hearings.get(0).getId(), HearingBooking::toLabel))
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData), "populate-data");
+
+            assertThat(response.getData().get("temporaryC2Document")).extracting("requestedHearingToAdjourn")
+                .isEqualTo(hearings.get(0).getValue().toLabel());
+            assertThat(response.getData().get("skipPaymentPage")).isEqualTo(NO.getValue());
+        }
+
+
+        @Test
+        void shouldNotPopulateHearingLabelIfNotRequestingAdjournment() {
+            List<Element<HearingBooking>> hearings = wrapElements(HearingBooking.builder()
+                .startDate(now().plusDays(15))
+                .type(HearingType.CASE_MANAGEMENT)
+                .build());
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(hearings)
+                .additionalApplicationType(List.of(C2_ORDER))
+                .c2Type(WITH_NOTICE)
+                .temporaryC2Document(C2DocumentBundle.builder()
+                    .c2AdditionalOrdersRequested(List.of(APPOINTMENT_OF_GUARDIAN))
+                    .hearingList(asDynamicList(hearings, hearings.get(0).getId(), HearingBooking::toLabel))
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData), "populate-data");
+
+            assertThat(response.getData().get("temporaryC2Document")).extracting("requestedHearingToAdjourn").isNull();
+            assertThat(response.getData().get("skipPaymentPage")).isEqualTo(NO.getValue());
+        }
+
+        @Test
+        void shouldNotSkipPaymentIfOtherOrderSelected() {
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationType(List.of(OTHER_ORDER))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData), "get-fee");
+            assertThat(response.getData().get("skipPaymentPage")).isEqualTo(NO.getValue());
+        }
+
+    }
+
+    @Nested
+    class InitialChoice {
+
+        @Test
+        void shouldInitialiseC2DocumentBundleHearingListIfC2Chosen() {
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationType(List.of(C2_ORDER))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData),"initial-choice");
+
+            assertThat(response.getData().get("temporaryC2Document")).isNotNull();
+            assertThat(response.getData().get("temporaryC2Document")).extracting("hearingList").isNotNull();
+        }
+
+        @Test
+        void shouldInitialiseC2DocumentBundleHearingListIfC2AndOtherChosen() {
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData),"initial-choice");
+
+            assertThat(response.getData().get("temporaryC2Document")).isNotNull();
+            assertThat(response.getData().get("temporaryC2Document")).extracting("hearingList").isNotNull();
+        }
+
+        @Test
+        void shouldNotInitialiseC2DocumentBundleHearingListIfOnlyOtherOrderChosen() {
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationType(List.of(OTHER_ORDER))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData),"initial-choice");
+
+            assertThat(response.getData().get("temporaryC2Document")).isNull();
+        }
+
+    }
+
 }

@@ -20,6 +20,7 @@ class DraftOrderPreviewSectionPrePopulatorTest {
 
     private static final Order ORDER = mock(Order.class);
     private static final DocumentReference DOCUMENT_REFERENCE = mock(DocumentReference.class);
+    private static final DocumentReference UPLOAD_DOCUMENT = mock(DocumentReference.class);
 
     private final OrderCreationService creationService = mock(OrderCreationService.class);
 
@@ -44,5 +45,21 @@ class DraftOrderPreviewSectionPrePopulatorTest {
         Map<String, Object> actual = underTest.prePopulate(caseData);
 
         assertThat(actual).isEqualTo(Map.of("orderPreview", DOCUMENT_REFERENCE));
+    }
+
+    @Test
+    void shouldNotCreateOrderIfOrderIsUploaded() {
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersType(Order.OTHER_ORDER)
+                .manageOrdersUploadOrderFile(UPLOAD_DOCUMENT).build())
+            .build();
+
+        when(creationService.createOrderDocument(caseData, OrderStatus.DRAFT, RenderFormat.PDF))
+            .thenReturn(DOCUMENT_REFERENCE);
+
+        Map<String, Object> actual = underTest.prePopulate(caseData);
+
+        assertThat(actual).isEqualTo(Map.of("orderPreview", UPLOAD_DOCUMENT));
     }
 }

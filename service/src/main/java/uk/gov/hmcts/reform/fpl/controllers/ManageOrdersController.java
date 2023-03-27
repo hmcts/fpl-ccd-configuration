@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderOperationPostPopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrdersEventBuilder;
@@ -25,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.modifier.ManageOrders
 import uk.gov.hmcts.reform.fpl.service.orders.validator.OrderValidator;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +37,7 @@ import static org.apache.commons.io.FilenameUtils.getExtension;
 @RestController
 @RequestMapping("/callback/manage-orders")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
+@Slf4j
 public class ManageOrdersController extends CallbackController {
     private final OrderValidator orderValidator;
     private final OrderShowHideQuestionsCalculator showHideQuestionsCalculator;
@@ -43,6 +47,7 @@ public class ManageOrdersController extends CallbackController {
     private final ManageOrderOperationPostPopulator operationPostPopulator;
     private final ManageOrdersCaseDataFixer manageOrdersCaseDataFixer;
     private final AmendableOrderListBuilder amendableOrderListBuilder;
+    private final CoreCaseDataService coreCaseDataService;
     private final ManageOrdersEventBuilder eventBuilder;
     private static final String PDF = "pdf";
 
@@ -129,17 +134,50 @@ public class ManageOrdersController extends CallbackController {
 
         data.putAll(orderProcessing.process(caseData));
 
-        fieldsCalculator.calculate().forEach(data::remove);
-
         return respond(caseDetails);
     }
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseData caseData = getCaseData(callbackRequest);
-        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
+        CaseDetails updatedDetails = manageOrdersCaseDataFixer.fixAndRetriveCaseDetails(caseDetails);
+        Map<String, Object> data = updatedDetails.getData();
+        CaseData fixedCaseData = manageOrdersCaseDataFixer.fix(getCaseData(updatedDetails));
+
+        CaseData caseData;
+        Map<String, Object> updates = new HashMap<>();
+        try {
+            updates = orderProcessing.postProcessDocument(fixedCaseData);
+        } catch (Exception exception) {
+            log.error("Error while processing manage orders document for case id {}.",
+                caseDetails.getId(), exception);
+        }
+
+        if (updates.isEmpty()) {
+            caseData = getCaseData(callbackRequest);
+        } else {
+            data.putAll(updates);
+            caseData = getCaseData(updatedDetails);
+        }
+        coreCaseDataService.triggerEvent(caseData.getId(),
+            "internal-change-manage-order",
+            updates);
+
+        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
         publishEvent(eventBuilder.build(caseData, caseDataBefore));
+    }
+
+    @PostMapping("/post-submit-callback/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse postHandleAboutToSubmitEvent(
+        @RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseDetails updatedDetails = manageOrdersCaseDataFixer.fixAndRetriveCaseDetails(caseDetails);
+        Map<String, Object> data = updatedDetails.getData();
+
+        fieldsCalculator.calculate().forEach(data::remove);
+
+        return respond(caseDetails);
     }
 
     private CaseData fixAndRetrieveCaseData(CaseDetails caseDetails) {

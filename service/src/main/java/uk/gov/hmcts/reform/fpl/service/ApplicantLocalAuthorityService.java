@@ -297,14 +297,18 @@ public class ApplicantLocalAuthorityService {
             && outsourcingOrganisationId.get().equals(userOrganisation.getOrganisationIdentifier());
 
         if (isUserFromOutsourcingOrganisation) {
-            final String designatedLocalAuthorityId = caseData.getLocalAuthorityPolicy()
-                .getOrganisation()
-                .getOrganisationID();
+            if (nonNull(caseData.getLocalAuthorityPolicy())) {
+                final String designatedLocalAuthorityId = caseData.getLocalAuthorityPolicy()
+                    .getOrganisation()
+                    .getOrganisationID();
 
-            return organisationService.findOrganisation(designatedLocalAuthorityId)
-                .orElse(Organisation.builder()
-                    .organisationIdentifier(designatedLocalAuthorityId)
-                    .build());
+                return organisationService.findOrganisation(designatedLocalAuthorityId)
+                    .orElse(Organisation.builder()
+                        .organisationIdentifier(designatedLocalAuthorityId)
+                        .build());
+            } else {
+                return userOrganisation;
+            }
         }
 
         return userOrganisation;

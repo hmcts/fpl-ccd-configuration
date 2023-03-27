@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.ApplicantType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -79,6 +80,7 @@ public class ApplicantsListGenerator {
             .ifPresent(applicantsFullNames::add);
 
         applicantsFullNames.addAll(buildRespondentNameElements(caseData.getAllRespondents()));
+        applicantsFullNames.addAll(buildChildNameElements(caseData.getAllChildren()));
         applicantsFullNames.addAll(buildOthersElements(caseData.getAllOthers())); // Others to give notice
 
         applicantsFullNames.add(
@@ -111,6 +113,19 @@ public class ApplicantsListGenerator {
         respondents.forEach(respondent -> applicants.add(
             InterlocutoryApplicant.builder().code(respondent.getId().toString())
                 .name(respondent.getValue().getParty().getFullName() + ", Respondent " + i.getAndIncrement())
+                .build())
+        );
+
+        return applicants;
+    }
+
+    private List<InterlocutoryApplicant> buildChildNameElements(List<Element<Child>> chilren) {
+        IncrementalInteger i = new IncrementalInteger(1);
+        List<InterlocutoryApplicant> applicants = new ArrayList<>();
+
+        chilren.forEach(child -> applicants.add(
+            InterlocutoryApplicant.builder().code(child.getId().toString())
+                .name(child.getValue().getParty().getFullName() + ", Child " + i.getAndIncrement())
                 .build())
         );
 

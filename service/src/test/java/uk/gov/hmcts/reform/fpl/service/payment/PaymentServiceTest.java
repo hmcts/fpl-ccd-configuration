@@ -390,6 +390,49 @@ class PaymentServiceTest {
         }
 
         @Test
+        void shouldTakePaymentContextDetailsFromLocalAuthorityDetailsWhenCaseLocalAuthorityIsNull() {
+            when(feeService.getFeesDataForOrders(orders)).thenReturn(FeesData.builder()
+                .totalAmount(BigDecimal.TEN)
+                .fees(List.of(careOrderFee, supervisionOrderFee))
+                .build());
+
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .name("Example Local Authority")
+                .designated("No")
+                .pbaNumber("PBA1234567")
+                .customerReference("localAuthorityReference")
+                .clientCode("localAuthorityCode")
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .caseLocalAuthority(null)
+                .localAuthorities(wrapElements(localAuthority))
+                .applicants(List.of(element(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .pbaNumber(PBA_NUMBER)
+                        .clientCode(CLIENT_CODE)
+                        .customerReference(CUSTOMER_REFERENCE)
+                        .build())
+                    .build())))
+                .orders(orders)
+                .build();
+
+            final CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .customerReference("localAuthorityReference")
+                .caseReference("localAuthorityCode")
+                .accountNumber("PBA1234567")
+                .amount(BigDecimal.TEN)
+                .fees(List.of(careOrderFee, supervisionOrderFee))
+                .build();
+
+            paymentService.makePaymentForCaseOrders(caseData);
+
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
+            verify(feeService).getFeesDataForOrders(orders);
+        }
+
+        @Test
         void shouldTakePaymentContextDetailsFromLegacyApplicantDetailsWhenNoLocalAuthority() {
             when(feeService.getFeesDataForOrders(orders)).thenReturn(FeesData.builder()
                 .totalAmount(BigDecimal.TEN)

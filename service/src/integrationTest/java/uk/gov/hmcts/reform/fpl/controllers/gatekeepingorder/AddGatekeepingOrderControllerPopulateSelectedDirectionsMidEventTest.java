@@ -28,8 +28,11 @@ import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.APPOINT_CHILDREN_GUARDIAN;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionType.APPOINT_CHILDREN_GUARDIAN_IMMEDIATE;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionType.ARRANGE_INTERPRETERS_IMMEDIATE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.ATTEND_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
@@ -74,7 +77,7 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
                     + "Practice Direction 25C. Give other parties a list of names of suitable experts.")
                 .assignee(ALL_PARTIES)
                 .dueDateType(DAYS)
-                .daysBeforeHearing(3)
+                .daysBeforeHearing(2)
                 .build());
 
         assertThat(getStandardDirection(callbackResponse, ATTEND_HEARING)).isEqualTo(
@@ -84,7 +87,7 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
                 .description("Parties and their legal representatives must attend the pre-hearing and hearing")
                 .assignee(ALL_PARTIES)
                 .dueDateType(DAYS)
-                .daysBeforeHearing(0)
+                .daysBeforeHearing(2)
                 .build());
 
         assertThat(getStandardDirection(callbackResponse, APPOINT_CHILDREN_GUARDIAN)).isEqualTo(
@@ -95,6 +98,54 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
                 .assignee(CAFCASS)
                 .dueDateType(DAYS)
                 .daysBeforeHearing(2)
+                .build());
+    }
+
+
+    @Test
+    void shouldPrepareSelectedImmediateStandardDirection() {
+        HearingBooking firstHearing = HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(LocalDateTime.of(2030, 2, 10, 15, 0, 0))
+            .build();
+
+        HearingBooking secondHearing = HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(LocalDateTime.of(2030, 5, 10, 15, 0, 0))
+            .build();
+
+        List<DirectionType> selectedDirectionsForCourt = List.of(ARRANGE_INTERPRETERS_IMMEDIATE);
+        List<DirectionType> selectedDirectionsForCafcass = List.of(APPOINT_CHILDREN_GUARDIAN_IMMEDIATE);
+
+        CaseData caseData = CaseData.builder()
+            .gatekeepingOrderRouter(SERVICE)
+            .hearingDetails(wrapElements(firstHearing, secondHearing))
+            .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .directionsForCourt(selectedDirectionsForCourt)
+                .directionsForCafcass(selectedDirectionsForCafcass)
+                .build())
+            .build();
+
+        given(bankHolidaysApi.retrieveAll()).willReturn(bankHolidays(LocalDate.of(2030, 2, 9)));
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, CALLBACK_NAME);
+
+        assertThat(getStandardDirection(response, ARRANGE_INTERPRETERS_IMMEDIATE)).isEqualTo(
+            StandardDirection.builder()
+                .type(ARRANGE_INTERPRETERS_IMMEDIATE)
+                .title("Arrange interpreters")
+                .description(
+                    "At all hearings, the court must arrange an interpreter for [Respondent’s Name] in [Language]."
+                )
+                .assignee(COURT)
+                .build());
+
+        assertThat(getStandardDirection(response, APPOINT_CHILDREN_GUARDIAN_IMMEDIATE)).isEqualTo(
+            StandardDirection.builder()
+                .type(APPOINT_CHILDREN_GUARDIAN_IMMEDIATE)
+                .title("Appoint a children's guardian")
+                .description("")
+                .assignee(CAFCASS)
                 .build());
     }
 
@@ -135,8 +186,8 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
                     + "and Practice Direction 25C. Give other parties a list of names of suitable experts.")
                 .assignee(ALL_PARTIES)
                 .dueDateType(DAYS)
-                .daysBeforeHearing(3)
-                .dateToBeCompletedBy(LocalDateTime.of(2030, 2, 6, 12, 0, 0))
+                .daysBeforeHearing(2)
+                .dateToBeCompletedBy(LocalDateTime.of(2030, 2, 6, 15, 0, 0))
                 .build());
 
         assertThat(getStandardDirection(response, ATTEND_HEARING)).isEqualTo(
@@ -146,8 +197,8 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
                 .description("Parties and their legal representatives must attend the pre-hearing and hearing")
                 .assignee(ALL_PARTIES)
                 .dueDateType(DAYS)
-                .daysBeforeHearing(0)
-                .dateToBeCompletedBy(LocalDateTime.of(2030, 2, 10, 0, 0, 0))
+                .daysBeforeHearing(2)
+                .dateToBeCompletedBy(LocalDateTime.of(2030, 2, 10, 15, 0, 0))
                 .build());
 
         assertThat(getStandardDirection(response, APPOINT_CHILDREN_GUARDIAN)).isEqualTo(
@@ -158,7 +209,7 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
                 .assignee(CAFCASS)
                 .dueDateType(DAYS)
                 .daysBeforeHearing(2)
-                .dateToBeCompletedBy(LocalDateTime.of(2030, 2, 7, 16, 0, 0))
+                .dateToBeCompletedBy(LocalDateTime.of(2030, 2, 7, 15, 0, 0))
                 .build());
     }
 

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.cmo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
@@ -20,18 +21,24 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -44,14 +51,17 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement.DEFAULT_CODE;
 import static uk.gov.hmcts.reform.fpl.model.order.HearingOrder.from;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DraftOrderService {
 
@@ -111,8 +121,10 @@ public class DraftOrderService {
                 HearingOrder cmo = findElement(hearing.getCaseManagementOrderId(), caseData.getDraftUploadedCMOs())
                     .map(Element::getValue)
                     .orElseThrow(() -> new CMONotFoundException("CMO for related hearing could not be found"));
-
                 newEventDataBuilder.previousCMO(cmo.getOrder());
+                newEventDataBuilder.uploadCMOMessageAcknowledge(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY));
+            } else {
+                newEventDataBuilder.uploadCMOMessageAcknowledge(List.of());
             }
 
             newEventDataBuilder
@@ -134,7 +146,7 @@ public class DraftOrderService {
 
     public UUID updateCase(UploadDraftOrdersData eventData, List<Element<HearingBooking>> hearings,
                            List<Element<HearingOrder>> cmoDrafts,
-                           List<Element<HearingOrdersBundle>> bundles) {
+                           Map<HearingOrderType, List<Element<HearingOrdersBundle>>> combinedBundles) {
 
         final UUID selectedHearingId = getSelectedHearingId(eventData);
         final List<HearingOrderKind> hearingOrderKinds = getHearingOrderKinds(eventData);
@@ -159,14 +171,29 @@ public class DraftOrderService {
             Optional<UUID> previousCmoId = updateHearingWithCmoId(hearing.getValue(), order);
 
             insertOrder(cmoDrafts, order, previousCmoId.orElse(null));
+            HearingOrderType hearingOrderType = eventData.isCmoAgreed() ? AGREED_CMO : DRAFT_CMO;
 
-            addOrdersToBundle(bundles, List.of(order), hearing, eventData.isCmoAgreed() ? AGREED_CMO : DRAFT_CMO);
+            addOrdersToBundle(combinedBundles.get(hearingOrderType),
+                List.of(order),
+                hearing,
+                hearingOrderType,
+                hearingId ->  {
+                    if (AGREED_CMO.equals(hearingOrderType)) {
+                        nullSafeList(combinedBundles.get(DRAFT_CMO)).stream()
+                            .filter(bundle -> Objects.equals(bundle.getValue().getHearingId(), hearingId))
+                            .forEach(hearingOrdersBundleElement ->
+                                hearingOrdersBundleElement.getValue().getOrders()
+                                    .removeIf(order1 -> Objects.equals(order1.getValue().getType(), DRAFT_CMO)));
+                    }
+                }
+            );
         }
 
         if (hearingOrderKinds.contains(HearingOrderKind.C21)) {
+            List<Element<HearingOrdersBundle>>  bundles = combinedBundles.get(C21);
             final Element<HearingBooking> hearing = ofNullable(selectedHearingId)
                 .flatMap(id -> findElement(id, hearings))
-                .orElse(null);
+                 .orElse(null);
 
             for (int i = 0; i < eventData.getCurrentHearingOrderDrafts().size(); i++) {
                 Element<HearingOrder> hearingOrder = eventData.getCurrentHearingOrderDrafts().get(i);
@@ -174,43 +201,57 @@ public class DraftOrderService {
                 hearingOrder.getValue().setStatus(SEND_TO_JUDGE);
                 hearingOrder.getValue().setTranslationRequirements(eventData.getOrderToSendTranslationRequirements(i));
             }
-            addOrdersToBundle(bundles, eventData.getCurrentHearingOrderDrafts(), hearing, C21);
+            addOrdersToBundle(bundles,
+                eventData.getCurrentHearingOrderDrafts(),
+                hearing,
+                C21,
+                hearingId -> { }
+            );
         }
 
-        bundles.removeIf(bundle -> isEmpty(bundle.getValue().getOrders()));
+        nullSafeList(combinedBundles.get(AGREED_CMO)).removeIf(bundle -> isEmpty(bundle.getValue().getOrders()));
+        nullSafeList(combinedBundles.get(DRAFT_CMO)).removeIf(bundle -> isEmpty(bundle.getValue().getOrders()));
 
         return selectedHearingId;
     }
 
+
     public void additionalApplicationUpdateCase(List<Element<HearingOrder>> draftOrders,
                                                  List<Element<HearingOrdersBundle>> bundles) {
 
-        for (int i = 0; i < draftOrders.size(); i++) {
-            Element<HearingOrder> hearingOrder = draftOrders.get(i);
+        for (Element<HearingOrder> hearingOrder : draftOrders) {
             hearingOrder.getValue().setDateSent(time.now().toLocalDate());
             hearingOrder.getValue().setStatus(SEND_TO_JUDGE);
             hearingOrder.getValue().setTranslationRequirements(LanguageTranslationRequirement.NO);
         }
 
-        addOrdersToBundle(bundles, draftOrders, null, C21);
+        addOrdersToBundle(bundles,
+            draftOrders,
+            null,
+            C21,
+            hearingId -> { }
+        );
     }
 
     private boolean isInCmoDrafts(Element<HearingOrder> draft, List<Element<HearingOrder>> cmoDrafts) {
         return cmoDrafts.stream()
             .map(Element::getId)
-            .collect(Collectors.toList())
+            .collect(toList())
             .contains(draft.getId());
     }
 
-    public List<Element<HearingOrdersBundle>> migrateCmoDraftToOrdersBundles(CaseData caseData) {
+    public HearingOrdersBundles migrateCmoDraftToOrdersBundles(CaseData caseData) {
 
         List<Element<HearingOrder>> cmoDrafts = caseData.getDraftUploadedCMOs();
         List<Element<HearingBooking>> hearings = defaultIfNull(caseData.getHearingDetails(), new ArrayList<>());
         List<Element<HearingOrdersBundle>> bundles = defaultIfNull(caseData.getHearingOrdersBundlesDrafts(),
             new ArrayList<>());
+        List<Element<HearingOrdersBundle>> bundlesForReview =
+            defaultIfNull(caseData.getHearingOrdersBundlesDraftReview(), new ArrayList<>());
 
-        bundles.forEach(bundle -> bundle.getValue().getOrders().removeIf(draft -> draft.getValue().getType().isCmo()
-            || isInCmoDrafts(draft, cmoDrafts)));
+        Stream.concat(bundles.stream(), bundlesForReview.stream())
+            .forEach(bundle -> bundle.getValue().getOrders().removeIf(draft -> draft.getValue().getType().isCmo()
+                || isInCmoDrafts(draft, cmoDrafts)));
 
         unwrapElements(cmoDrafts).forEach(draft -> {
             HearingOrderType type = draft.getStatus() == DRAFT ? DRAFT_CMO : AGREED_CMO;
@@ -242,19 +283,60 @@ public class DraftOrderService {
             }
         }
 
-        bundles.removeIf(b -> isEmpty(b.getValue().getOrders()));
+        bundlesForReview.addAll(bundles.stream().filter(this::containsHearingDraftCmo)
+                .map(element -> element(cloneHearingOrdersBundle(element.getValue())))
+                .collect(toList()));
 
-        return bundles;
+        filterOrders(bundlesForReview, not(DRAFT_CMO::equals));
+        filterOrders(bundles, DRAFT_CMO::equals);
+
+        bundles.removeIf(b -> isEmpty(b.getValue().getOrders()));
+        bundlesForReview.removeIf(b -> isEmpty(b.getValue().getOrders()));
+
+        return HearingOrdersBundles.builder()
+                .draftCmos(bundlesForReview)
+                .agreedCmos(bundles)
+                .build();
+    }
+
+    private HearingOrdersBundle cloneHearingOrdersBundle(HearingOrdersBundle hearingOrdersBundle) {
+        List<Element<HearingOrder>> orders = hearingOrdersBundle.getOrders().stream()
+                .map(hearingOrderElement -> element(
+                    hearingOrderElement.getId(),
+                    hearingOrderElement.getValue().toBuilder().build())
+                )
+                .collect(toList());
+        HearingOrdersBundle clonedHearingOrdersBundle = hearingOrdersBundle.toBuilder()
+                .orders(new ArrayList<>())
+                .build();
+
+        clonedHearingOrdersBundle.getOrders().addAll(orders);
+
+        return clonedHearingOrdersBundle;
+    }
+
+    private void filterOrders(List<Element<HearingOrdersBundle>> bundlesForReview, Predicate<HearingOrderType> filter) {
+        bundlesForReview.forEach(
+            hearingOrdersBundleElement -> hearingOrdersBundleElement.getValue().getOrders()
+                .removeIf(hearingOrderElement -> filter.test(hearingOrderElement.getValue().getType()))
+        );
+    }
+
+    private boolean containsHearingDraftCmo(Element<HearingOrdersBundle> bundle) {
+        return bundle.getValue().getOrders().stream()
+                .map(Element::getValue)
+                .anyMatch(hearingOrder -> hearingOrder.getType().equals(DRAFT_CMO));
     }
 
     private void addOrdersToBundle(List<Element<HearingOrdersBundle>> bundles,
                                    List<Element<HearingOrder>> orders,
                                    Element<HearingBooking> hearing,
-                                   HearingOrderType type) {
+                                   HearingOrderType type,
+                                   Consumer<UUID> update) {
         UUID hearingId = Optional.ofNullable(hearing).map(Element::getId).orElse(null);
         HearingBooking hearingBooking = Optional.ofNullable(hearing).map(Element::getValue).orElse(null);
 
-        HearingOrdersBundle hearingOrdersBundle = bundles.stream()
+        HearingOrdersBundle hearingOrdersBundle = nullSafeList(bundles).stream()
             .filter(bundle -> Objects.equals(bundle.getValue().getHearingId(), hearingId))
             .map(Element::getValue)
             .findFirst()
@@ -264,9 +346,7 @@ public class DraftOrderService {
             .updateHearing(hearingId, hearingBooking)
             .updateOrders(orders, type);
 
-        if (AGREED_CMO.equals(type)) {
-            hearingOrdersBundle.getOrders().removeIf(order -> Objects.equals(order.getValue().getType(), DRAFT_CMO));
-        }
+        update.accept(hearingId);
     }
 
     private HearingOrdersBundle addNewDraftBundle(List<Element<HearingOrdersBundle>> bundles) {

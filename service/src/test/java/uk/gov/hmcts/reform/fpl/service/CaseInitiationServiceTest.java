@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthorityName;
@@ -24,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.model.Organisation;
+import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,12 +39,15 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CHILDSOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CREATOR;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.EPSMANAGING;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LAMANAGING;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.EPS;
 import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.MLA;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -57,6 +63,8 @@ class CaseInitiationServiceTest {
     private static final String EXTERNAL_ORG_NAME = "Private solicitor";
     private static final TestLocalAuthority LA1 = new TestLocalAuthority("SA", "Swansea City Council", "SA002");
     private static final TestLocalAuthority LA2 = new TestLocalAuthority("SN", "Swindon Borough Council", "SN002");
+    private static final TestLocalAuthority RS1 = new TestLocalAuthority("RS", "Respondent Solicitor Org", "RS001");
+    private static final TestLocalAuthority CS1 = new TestLocalAuthority("CS", "Child Solicitor Org", "CS001");
 
     @Mock
     private RequestData requestData;
@@ -240,6 +248,44 @@ class CaseInitiationServiceTest {
         }
 
         @Test
+        void shouldUpdateCaseDataWhenRespondentSolicitorUserCreatesCase() {
+            givenUserInOrganisation(RS1.orgId, RS1.name);
+            given(localAuthorityService.getLocalAuthorityName("SA"))
+                .willReturn("Swansea");
+
+            CaseData caseData = CaseData.builder()
+                .representativeType(RepresentativeType.RESPONDENT_SOLICITOR)
+                .relatingLA("SA")
+                .build();
+
+            CaseData updatedCaseData = underTest.updateOrganisationsDetails(caseData);
+
+            assertThat(updatedCaseData.getOutsourcingPolicy())
+                .isEqualTo(organisationPolicy(RS1.orgId, RS1.name, SOLICITORA));
+            assertThat(updatedCaseData.getCaseLocalAuthority()).isEqualTo("SA");
+            assertThat(updatedCaseData.getCaseLocalAuthorityName()).isEqualTo("Swansea");
+        }
+
+        @Test
+        void shouldUpdateCaseDataWhenChildSolicitorUserCreatesCase() {
+            givenUserInOrganisation(CS1.orgId, CS1.name);
+            given(localAuthorityService.getLocalAuthorityName("SA"))
+                .willReturn("Swansea");
+
+            CaseData caseData = CaseData.builder()
+                .representativeType(RepresentativeType.CHILD_SOLICITOR)
+                .relatingLA("SA")
+                .build();
+
+            CaseData updatedCaseData = underTest.updateOrganisationsDetails(caseData);
+
+            assertThat(updatedCaseData.getOutsourcingPolicy())
+                .isEqualTo(organisationPolicy(CS1.orgId, CS1.name, CHILDSOLICITORA));
+            assertThat(updatedCaseData.getCaseLocalAuthority()).isEqualTo("SA");
+            assertThat(updatedCaseData.getCaseLocalAuthorityName()).isEqualTo("Swansea");
+        }
+
+        @Test
         void shouldUpdateCaseDataWhenLocalAuthorityUserSelectHisLocalAuthorityAsOutsourcingLocalAuthority() {
             final TestLocalAuthority userLocalAuthority = LA1;
 
@@ -414,6 +460,38 @@ class CaseInitiationServiceTest {
             verifyNoMoreInteractions(caseRoleService);
         }
 
+        @Test
+        void shouldGrantCaseAccessToChildSolicitorWhenCaseCreatedByChildSolicitorUser() {
+            final CaseRole caseRole = CHILDSOLICITORA;
+
+            CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .outsourcingPolicy(organisationPolicy(CS1.orgId, CS1.name, caseRole))
+                .build();
+
+            underTest.grantCaseAccess(caseData);
+
+            verify(caseRoleService).revokeCaseRoleFromUser(CASE_ID, USER_ID, CREATOR);
+            verify(caseRoleService).grantCaseRoleToUser(CASE_ID, USER_ID, caseRole);
+            verifyNoMoreInteractions(caseRoleService);
+        }
+
+        @Test
+        void shouldGrantCaseAccessToRespondentSolicitorWhenCaseCreatedByRespondentSolicitorUser() {
+            final CaseRole caseRole = SOLICITORA;
+
+            CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .outsourcingPolicy(organisationPolicy(RS1.orgId, RS1.name, caseRole))
+                .build();
+
+            underTest.grantCaseAccess(caseData);
+
+            verify(caseRoleService).revokeCaseRoleFromUser(CASE_ID, USER_ID, CREATOR);
+            verify(caseRoleService).grantCaseRoleToUser(CASE_ID, USER_ID, caseRole);
+            verifyNoMoreInteractions(caseRoleService);
+        }
+
         @ParameterizedTest
         @EnumSource(OutsourcingType.class)
         void shouldGrantCaseAccessToCreatorOnlyWhenCaseIsOutsourced(OutsourcingType outsourcingType) {
@@ -434,26 +512,10 @@ class CaseInitiationServiceTest {
             verify(caseRoleService).grantCaseRoleToUser(CASE_ID, USER_ID, caseRole);
             verifyNoMoreInteractions(caseRoleService);
         }
-
     }
 
     @Nested
     class UserValidation {
-
-        @Test
-        void shouldReturnErrorWhenUserInOrganisationButNotInLocalAuthorityAndNotOutsourcingCase() {
-            givenUserInOrganisation(EXTERNAL_ORG_ID);
-            givenUserNotInLocalAuthority();
-
-            CaseData caseData = givenCaseNotOutsourced();
-
-            List<String> errors = underTest.checkUserAllowedToCreateCase(caseData);
-
-            assertThat(errors).containsExactly(
-                "Email not recognised.",
-                "Your email is not associated with a local authority or authorised legal firm.",
-                "Email MyHMCTSsupport@justice.gov.uk for further guidance.");
-        }
 
         @Test
         void shouldReturnErrorsWhenToggleIsDisabledAndUserIsInLocalAuthorityButNotInOrganisation() {
@@ -559,6 +621,42 @@ class CaseInitiationServiceTest {
         }
     }
 
+    @Nested
+    class OrganisationUserListHtml {
+
+        @Test
+        void shouldGetOrganisationUserListHtml() {
+            given(organisationService.findOrganisation()).willReturn(
+                Optional.of(Organisation.builder().organisationIdentifier("abcde").build()));
+            given(caseRoleService.getLocalAuthorityUsersAllInfo()).willReturn(List.of(OrganisationUser.builder()
+                .userIdentifier("1")
+                .firstName("John")
+                .lastName("Smith")
+                .email("john.smith@test.com")
+                .build()
+            ));
+
+            assertThat(underTest.getOrganisationUsers())
+                .isEqualTo("<ul><li>John Smith (john.smith@test.com)</li></ul>");
+        }
+
+        @Test
+        void shouldReturnNoUserFoundMessageIfNoOrg() {
+            given(organisationService.findOrganisation()).willReturn(Optional.empty());
+
+            assertThat(underTest.getOrganisationUsers()).isEqualTo("No users found");
+        }
+
+        @Test
+        void shouldReturnNoUserFoundMessageIfExceptionWhenGettingUsers() {
+            given(organisationService.findOrganisation()).willReturn(
+                Optional.of(Organisation.builder().organisationIdentifier("abcde").build()));
+            given(caseRoleService.getLocalAuthorityUsersAllInfo()).willThrow(mock(FeignException.BadRequest.class));
+
+            assertThat(underTest.getOrganisationUsers()).isEqualTo("No users found");
+        }
+    }
+
     private void givenLocalAuthorityCourts(Court... courts) {
         given(courtLookup.getCourts(any())).willReturn(Arrays.asList(courts));
     }
@@ -566,6 +664,15 @@ class CaseInitiationServiceTest {
     private void givenUserInOrganisation(String organisationId) {
         Optional<Organisation> organisation = Optional.ofNullable(organisationId)
             .map(orgId -> Organisation.builder().organisationIdentifier(orgId).build());
+        given(organisationService.findOrganisation()).willReturn(organisation);
+    }
+
+    private void givenUserInOrganisation(String organisationId, String organisationName) {
+        Optional<Organisation> organisation = Optional.ofNullable(organisationId)
+            .map(orgId -> Organisation.builder()
+                .organisationIdentifier(orgId)
+                .name(organisationName)
+                .build());
         given(organisationService.findOrganisation()).willReturn(organisation);
     }
 
@@ -599,12 +706,14 @@ class CaseInitiationServiceTest {
         return CaseData.builder()
             .outsourcingLAs(localAuthority.code)
             .outsourcingType(outsourcingType)
+            .representativeType(RepresentativeType.LOCAL_AUTHORITY)
             .build();
     }
 
     private CaseData givenCaseNotOutsourced() {
         return CaseData.builder()
             .outsourcingLAs(null)
+            .representativeType(RepresentativeType.LOCAL_AUTHORITY)
             .build();
     }
 

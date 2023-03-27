@@ -6,7 +6,9 @@ import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
+import uk.gov.hmcts.reform.fpl.validation.groups.SecureAccommodationGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -22,7 +24,13 @@ public class OrdersSoughtChecker extends PropertiesChecker {
 
     @Override
     public List<String> validate(CaseData caseData) {
-        return super.validate(caseData, List.of("orders"));
+        List<String> errors = new ArrayList<>();
+        if (caseData.isSecureAccommodationOrderType()) {
+            errors.addAll(super.validate(caseData, List.of("orders"), SecureAccommodationGroup.class));
+        }
+        errors.addAll(super.validate(caseData, List.of("orders")));
+
+        return errors;
     }
 
     @Override
@@ -59,6 +67,10 @@ public class OrdersSoughtChecker extends PropertiesChecker {
             }
         }
 
+        if (orders.isSecureAccommodationOrder() && isSecureAccomodationOrderNotCompleted(orders)) {
+            return false;
+        }
+
         if (orders.getOrderType().contains(OrderType.OTHER)
             && isEmpty(orders.getOtherOrder())) {
             return false;
@@ -84,6 +96,10 @@ public class OrdersSoughtChecker extends PropertiesChecker {
         return orders.getEmergencyProtectionOrders() != null
             && orders.getEmergencyProtectionOrders().contains(EmergencyProtectionOrdersType.OTHER)
             && isEmpty(orders.getEmergencyProtectionOrderDetails());
+    }
+
+    private boolean isSecureAccomodationOrderNotCompleted(Orders orders) {
+        return isEmpty(orders.getSecureAccommodationOrderSection());
     }
 
     @Override

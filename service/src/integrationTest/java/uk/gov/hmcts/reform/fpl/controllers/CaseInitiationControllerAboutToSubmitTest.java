@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
@@ -145,6 +146,54 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         assertThat(updatedCaseData.getMultiCourts()).isEqualTo(YES);
         assertThat(updatedCaseData.getCourt()).isNull();
+    }
+
+    @Test
+    void shouldNotSetCourtWhenRespondentSolicitorIsApplicant() {
+        givenCurrentUserWithEmail(LOCAL_AUTHORITY_3_USER_EMAIL);
+
+        given(organisationApi.findUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN)).willReturn(testOrganisation());
+
+        CaseData caseData = CaseData.builder()
+            .caseName("name")
+            .representativeType(RepresentativeType.RESPONDENT_SOLICITOR)
+            .build();
+
+        CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        assertThat(updatedCaseData.getCourt()).isNull();
+    }
+
+    @Test
+    void shouldNotSetCourtWhenChildSolicitorIsApplicant() {
+        givenCurrentUserWithEmail(LOCAL_AUTHORITY_3_USER_EMAIL);
+
+        given(organisationApi.findUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN)).willReturn(testOrganisation());
+
+        CaseData caseData = CaseData.builder()
+            .caseName("name")
+            .representativeType(RepresentativeType.CHILD_SOLICITOR)
+            .build();
+
+        CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        assertThat(updatedCaseData.getCourt()).isNull();
+    }
+
+    @Test
+    void shouldRemoveTemporaryFields() {
+        final Organisation organisation = testOrganisation();
+
+        given(organisationApi.findUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN)).willReturn(organisation);
+
+        CaseData caseData = CaseData.builder()
+            .caseName("name")
+            .build();
+
+        Map<String, Object> caseDetails = postAboutToSubmitEvent(caseData).getData();
+
+        assertThat(caseDetails).extracting("outsourcingType", "outsourcingLAs", "sharingWithUsers",
+            "isOutsourcedCase").containsOnlyNulls();
     }
 
     private Map<String, Object> orgPolicy(String id, String role) {

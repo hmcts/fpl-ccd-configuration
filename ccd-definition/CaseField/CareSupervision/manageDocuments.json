@@ -178,6 +178,24 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentsSkeletonArgument",
+    "FieldType": "SkeletonArgument",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingDocumentsPartyList",
+    "FieldType": "DynamicList",
+    "Label": "Which party?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsChildrenList",
     "FieldType": "DynamicList",
     "Label": "Which child?",

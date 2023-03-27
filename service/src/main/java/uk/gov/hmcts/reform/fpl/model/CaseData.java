@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA;
@@ -28,11 +30,11 @@ import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
-import uk.gov.hmcts.reform.fpl.exceptions.LocalAuthorityNotFound;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -49,6 +51,8 @@ import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
+import uk.gov.hmcts.reform.fpl.model.event.CaseProgressionReportEventData;
+import uk.gov.hmcts.reform.fpl.model.event.ChildExtensionEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthoritiesEventData;
@@ -157,6 +161,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @EPOTimeRange(message = "Date must be within 8 days of the order date", groups = EPOEndDateGroup.class,
     maxDate = @TimeDifference(amount = 8, unit = DAYS))
 public class CaseData extends CaseDataParent {
+    public static final int DEFAULT_CASE_COMPLETION = 26;
     private final Long id;
     private final State state;
     @NotBlank(message = "Enter a case name")
@@ -167,7 +172,10 @@ public class CaseData extends CaseDataParent {
     private OrganisationPolicy outsourcingPolicy;
     private OrganisationPolicy sharedLocalAuthorityPolicy;
     private OutsourcingType outsourcingType;
+    private RepresentativeType representativeType;
+    private YesNo isLocalAuthority;
     private Object outsourcingLAs;
+    private String relatingLA;
     private Court court;
     private List<Element<Court>> pastCourtList;
 
@@ -179,12 +187,15 @@ public class CaseData extends CaseDataParent {
         this.pastCourtList = pastCourtList;
     }
 
+    private YesNo shouldShareWithOrganisationUsers;
+
     private YesNo multiCourts;
 
     private final Risks risks;
     @NotNull(message = "Add the orders and directions sought")
     @Valid
     private final Orders orders;
+    private final Orders ordersSolicitor;
     @NotNull(message = "Add the grounds for the application")
     @Valid
     private final Grounds grounds;
@@ -199,7 +210,8 @@ public class CaseData extends CaseDataParent {
     @Deprecated
     private final List<@NotNull(message = "Add applicant's details") Element<Applicant>> applicants;
 
-    private List<@NotNull(message = "Add local authority's details") Element<LocalAuthority>> localAuthorities;
+    // This holds all applicants, not just LA's
+    private List<@NotNull(message = "Add applicant's details") Element<LocalAuthority>> localAuthorities;
 
     @Valid
     @NotEmpty(message = "Add the respondents' details")
@@ -295,9 +307,17 @@ public class CaseData extends CaseDataParent {
         return respondents1 != null ? respondents1 : new ArrayList<>();
     }
 
+    public RepresentativeType getRepresentativeType() {
+        return representativeType != null ? representativeType : RepresentativeType.LOCAL_AUTHORITY;
+    }
+
     @JsonIgnore
     public List<Element<Child>> getAllChildren() {
         return children1 != null ? children1 : new ArrayList<>();
+    }
+
+    public Orders getOrders() {
+        return ordersSolicitor != null && ordersSolicitor.getOrderType() != null ? ordersSolicitor : orders;
     }
 
     //TODO add null-checker getter for hearingDetails during refactor/removal of legacy code (FPLA-2280)
@@ -316,7 +336,7 @@ public class CaseData extends CaseDataParent {
 
     @JsonIgnore
     public Optional<Element<HearingBooking>> getHearingLinkedToCMO(UUID removedOrderId) {
-        return hearingDetails.stream()
+        return getAllHearings().stream()
             .filter(hearingBookingElement ->
                 removedOrderId.equals(hearingBookingElement.getValue().getCaseManagementOrderId()))
             .findFirst();
@@ -631,8 +651,13 @@ public class CaseData extends CaseDataParent {
     private final List<Element<EmailAddress>> gatekeeperEmails;
 
     @JsonIgnore
+    public LocalDate getDefaultCompletionDate() {
+        return dateSubmitted.plusWeeks(DEFAULT_CASE_COMPLETION);
+    }
+
+    @JsonIgnore
     public String getComplianceDeadline() {
-        return formatLocalDateToString(dateSubmitted.plusWeeks(26), FormatStyle.LONG);
+        return formatLocalDateToString(getDefaultCompletionDate(), FormatStyle.LONG);
     }
 
     private final String amountToPay;
@@ -644,6 +669,10 @@ public class CaseData extends CaseDataParent {
     private LocalDate eightWeeksExtensionDateOther;
     private final CaseExtensionTime caseExtensionTimeList;
     private final CaseExtensionTime caseExtensionTimeConfirmationList;
+    private final CaseExtensionReasonList caseExtensionReasonList;
+    @JsonUnwrapped
+    @Builder.Default
+    private final ChildExtensionEventData childExtensionEventData = ChildExtensionEventData.builder().build();
 
     private final CloseCase closeCase;
     private final String deprivationOfLiberty;
@@ -682,8 +711,11 @@ public class CaseData extends CaseDataParent {
     private final CaseSummary manageDocumentsCaseSummary;
     private final PositionStatementChild manageDocumentsPositionStatementChild;
     private final PositionStatementRespondent manageDocumentsPositionStatementRespondent;
+    private final SkeletonArgument manageDocumentsSkeletonArgument;
     private final DynamicList manageDocumentsChildrenList;
     private final DynamicList hearingDocumentsRespondentList;
+    private final DynamicList hearingDocumentsPartyList;
+
 
     @JsonUnwrapped
     @Builder.Default
@@ -826,6 +858,7 @@ public class CaseData extends CaseDataParent {
 
     private final List<Element<HearingOrder>> draftUploadedCMOs;
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
+    private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDraftReview;
     private List<Element<HearingOrder>> refusedHearingOrders;
     private final UUID lastHearingOrderDraftsHearingId;
 
@@ -852,19 +885,17 @@ public class CaseData extends CaseDataParent {
 
     @JsonIgnore
     public List<Element<HearingOrder>> getOrdersFromHearingOrderDraftsBundles() {
-        if (hearingOrdersBundlesDrafts != null) {
-            return hearingOrdersBundlesDrafts.stream()
-                .map(Element::getValue)
-                .flatMap((HearingOrdersBundle hearingOrdersBundle)
-                    -> hearingOrdersBundle.getOrders().stream())
-                .collect(toList());
-        }
-
-        return new ArrayList<>();
+        return Stream.concat(nullSafeList(hearingOrdersBundlesDrafts).stream(),
+                nullSafeList(hearingOrdersBundlesDraftReview).stream())
+            .map(Element::getValue)
+            .flatMap((HearingOrdersBundle hearingOrdersBundle)
+                -> hearingOrdersBundle.getOrders().stream())
+            .collect(toList());
     }
 
     public Optional<Element<HearingOrdersBundle>> getHearingOrderBundleThatContainsOrder(UUID orderId) {
-        return nullSafeList(hearingOrdersBundlesDrafts).stream()
+        return Stream.concat(nullSafeList(hearingOrdersBundlesDrafts).stream(),
+                    nullSafeList(hearingOrdersBundlesDraftReview).stream())
             .filter(hearingOrdersBundleElement
                 -> hearingOrdersBundleElement.getValue().getOrders().stream()
                 .anyMatch(orderElement -> orderElement.getId().equals(orderId)))
@@ -1021,6 +1052,8 @@ public class CaseData extends CaseDataParent {
     private final MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder().build();
     private final List<Element<JudicialMessage>> judicialMessages;
     private final List<Element<JudicialMessage>> closedJudicialMessages;
+    private JudicialMessageRoleType latestRoleSent;
+
 
     public DynamicList buildJudicialMessageDynamicList(UUID selected) {
         return asDynamicList(judicialMessages, selected, JudicialMessage::toLabel);
@@ -1112,7 +1145,7 @@ public class CaseData extends CaseDataParent {
             .map(Element::getValue)
             .filter(la -> YesNo.YES.getValue().equals(la.getDesignated()))
             .findFirst()
-            .orElseThrow(() -> new LocalAuthorityNotFound("Designated local authority not found for case " + id));
+            .orElse(null);
     }
 
     @JsonIgnore
@@ -1133,6 +1166,9 @@ public class CaseData extends CaseDataParent {
     private final LocalAuthoritiesEventData localAuthoritiesEventData = LocalAuthoritiesEventData.builder().build();
 
     @JsonUnwrapped
+    private final CaseProgressionReportEventData caseProgressionReportEventData;
+
+    @JsonUnwrapped
     @Builder.Default
     private final PlacementEventData placementEventData = PlacementEventData.builder().build();
 
@@ -1145,6 +1181,14 @@ public class CaseData extends CaseDataParent {
 
         return ofNullable(getOrders())
             .map(Orders::isDischargeOfCareOrder)
+            .orElse(false);
+    }
+
+    @JsonIgnore
+    public boolean isContactWithChildInCareApplication() {
+
+        return ofNullable(getOrders())
+            .map(Orders::isContactWithChildInCareOrder)
             .orElse(false);
     }
 
@@ -1162,6 +1206,13 @@ public class CaseData extends CaseDataParent {
             .orElse(false);
     }
 
+    @JsonIgnore
+    public boolean isChildRecoveryOrder() {
+        return ofNullable(getOrders())
+            .map(Orders::isChildRecoveryOrder)
+            .orElse(false);
+    }
+
     private List<Element<DocumentWithConfidentialAddress>> documentsWithConfidentialAddress;
 
     @JsonUnwrapped
@@ -1173,11 +1224,18 @@ public class CaseData extends CaseDataParent {
     public List<Element<Colleague>> getColleaguesToNotify() {
         return colleaguesToNotify != null ? colleaguesToNotify : new ArrayList<>();
     }
-    
+
     @JsonIgnore
     public boolean isRefuseContactWithChildApplication() {
         return ofNullable(getOrders())
             .map(Orders::isRefuseContactWithChildApplication)
+            .orElse(false);
+    }
+
+    @JsonIgnore
+    public boolean isEducationSupervisionApplication() {
+        return ofNullable(getOrders())
+            .map(Orders::isEducationSupervisionOrder)
             .orElse(false);
     }
 }

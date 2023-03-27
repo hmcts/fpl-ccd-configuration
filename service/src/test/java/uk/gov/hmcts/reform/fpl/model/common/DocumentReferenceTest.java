@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.model.common;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
+import static uk.gov.hmcts.reform.fpl.utils.SecureDocumentManagementStoreLoader.document;
 
 class DocumentReferenceTest {
 

@@ -10,12 +10,11 @@ import uk.gov.hmcts.reform.calendar.model.BankHolidays;
 import uk.gov.hmcts.reform.calendar.model.BankHolidays.Division;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
-import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -35,8 +34,6 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
-import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
-import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
@@ -70,7 +67,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -213,56 +209,6 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
             .containsExactly(DocumentBundle.builder().document(C6_REFERENCE).build());
         assertThat(responseCaseData.getState()).isEqualTo(State.CASE_MANAGEMENT);
         assertThat(responseCaseData.getSdoRouter()).isNull();
-    }
-
-    @Test
-    void shouldBuildUrgentHearingOrderAndAddAllocationDecision() {
-        final DocumentReference urgentReference = testDocumentReference();
-        final DocumentReference sealedUrgentReference = testDocumentReference();
-        final Allocation allocation = Allocation.builder()
-            .judgeLevelRadio("No")
-            .proposal("Section 9 circuit judge")
-            .proposalReason("some reason")
-            .allocationProposalPresent("Yes")
-            .build();
-        Court court = Court.builder().build();
-        CaseData caseData = CaseData.builder()
-            .court(court)
-            .hearingDetails(wrapElements(HearingBooking.builder()
-                .startDate(now())
-                .endDate(now().plusDays(1))
-                .venue("EXAMPLE")
-                .build()))
-            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
-            .familyManCaseNumber("1234")
-            .orders(Orders.builder().orderType(List.of(CARE_ORDER)).build())
-            .sdoRouter(GatekeepingOrderRoute.URGENT)
-            .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
-                .urgentHearingAllocation(allocation)
-                .urgentHearingOrderDocument(urgentReference)
-                .build())
-            .state(GATEKEEPING)
-            .id(1234123412341234L)
-            .build();
-
-        given(sealingService.sealDocument(urgentReference, court, SealType.ENGLISH)).willReturn(sealedUrgentReference);
-
-        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
-
-        Allocation expectedAllocation = allocation.toBuilder().judgeLevelRadio(null).build();
-
-        assertThat(responseData.getAllocationDecision()).isEqualTo(expectedAllocation);
-        assertThat(responseData.getNoticeOfProceedingsBundle()).extracting(Element::getValue).containsExactly(
-            DocumentBundle.builder().document(C6_REFERENCE).build()
-        );
-        assertThat(responseData.getUrgentHearingOrder()).isEqualTo(
-            UrgentHearingOrder.builder()
-                .allocation("Section 9 circuit judge")
-                .order(sealedUrgentReference)
-                .unsealedOrder(urgentReference)
-                .dateAdded(dateNow())
-                .build()
-        );
     }
 
     @Test

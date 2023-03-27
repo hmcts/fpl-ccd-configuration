@@ -18,6 +18,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
@@ -72,6 +73,7 @@ class HearingFurtherEvidenceBundleSerializationTest {
                 Map.entry("confidentialTabLabel", "Confidential"),
                 Map.entry("dateTimeReceived", "2012-10-10T03:04:00"),
                 Map.entry("dateTimeUploaded", "2013-09-10T03:04:00"),
+                Map.entry("documentAcknowledge", List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY)),
                 Map.entry("document", Map.of(
                     "document_binary_url", "binaryUrl",
                     "document_filename", "filename",
@@ -109,7 +111,10 @@ class HearingFurtherEvidenceBundleSerializationTest {
 
         List<Map<String, Object>> expectedBundles = List.of(Map.of(
             "id", "dc6b2154-9e5d-480d-adca-d70b4e1f6384",
-            "value", Map.ofEntries(Map.entry("needTranslation", "NO"))
+            "value", Map.ofEntries(
+                Map.entry("needTranslation", "NO"),
+                Map.entry("documentAcknowledge", List.of())
+            )
         ));
 
         Map<String, Object> expectedBundle = Map.of(

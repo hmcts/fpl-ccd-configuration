@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ParticularsOfChildren",
+    "ListElementCode": "IN_CARE",
+    "ListElement": "in care",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ParticularsOfChildren",
+    "ListElementCode": "SUBJECT_OF_EPO",
+    "ListElement": "the subject of an emergency protection order",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ParticularsOfChildren",
+    "ListElementCode": "IN_POLICE_PROTECTION",
+    "ListElement": "in police protection",
+    "DisplayOrder": 3
+  }
+]

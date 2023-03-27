@@ -93,7 +93,9 @@ class CaseSubmissionCheckerTest {
                 "• Children error",
                 "In the respondents' details section:",
                 "• Respondent error 1",
-                "• Respondent error 2"
+                "• Respondent error 2",
+                "In the allocation proposal section:",
+                "• Allocation proposal error"
             );
 
         }
@@ -102,6 +104,47 @@ class CaseSubmissionCheckerTest {
         void shouldOnlyShowValidEventsIfRefuseContactApplication() {
             when(caseData.isC1Application()).thenReturn(true);
             when(caseData.isRefuseContactWithChildApplication()).thenReturn(true);
+
+            when(eventsChecker.validate(any(), any())).thenReturn(List.of("Error not included"));
+            when(eventsChecker.validate(CASE_NAME, caseData)).thenReturn(caseNameErrors);
+            when(eventsChecker.validate(ORDERS_SOUGHT, caseData)).thenReturn(ordersNeededErrors);
+            when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
+            when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
+            when(eventsChecker.validate(ORGANISATION_DETAILS, caseData)).thenReturn(applicantErrors);
+            when(eventsChecker.validate(LOCAL_AUTHORITY_DETAILS, caseData)).thenReturn(localAuthorityErrors);
+            when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
+            when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
+            when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
+            final List<String> errors = caseSubmissionValidator.validate(caseData);
+
+            assertThat(errors).containsExactly(
+                "In the change case name section:",
+                "• Case name error",
+                "In the orders and directions sought section:",
+                "• Orders needed error 1",
+                "• Orders needed error 2",
+                "In the hearing urgency section:",
+                "• Hearing needed error",
+                "In the grounds for the application section:",
+                "• Grounds for application error",
+                "In the applicant's details section:",
+                "• Applicant error 1",
+                "• Applicant error 2",
+                "In the child's details section:",
+                "• Children error",
+                "In the respondents' details section:",
+                "• Respondent error 1",
+                "• Respondent error 2",
+                "In the allocation proposal section:",
+                "• Allocation proposal error"
+            );
+
+        }
+
+        @Test
+        void shouldOnlyShowValidEventsIfContactWithChildInCareApplication() {
+            when(caseData.isC1Application()).thenReturn(true);
+            when(caseData.isContactWithChildInCareApplication()).thenReturn(true);
 
             when(eventsChecker.validate(any(), any())).thenReturn(List.of("Error not included"));
             when(eventsChecker.validate(CASE_NAME, caseData)).thenReturn(caseNameErrors);
@@ -260,7 +303,7 @@ class CaseSubmissionCheckerTest {
                 "• Hearing needed error",
                 "In the grounds for the application section:",
                 "• Grounds for application error",
-                "In the local authority's details section:",
+                "In the applicant's details section:",
                 "• Local authority error 1",
                 "• Local authority error 2",
                 "In the child's details section:",
@@ -305,7 +348,7 @@ class CaseSubmissionCheckerTest {
                 "• Orders needed error 2",
                 "In the hearing urgency section:",
                 "• Hearing needed error",
-                "In the local authority's details section:",
+                "In the applicant's details section:",
                 "• Local authority error 1",
                 "• Local authority error 2",
                 "In the child's details section:",

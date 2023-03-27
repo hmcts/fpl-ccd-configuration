@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
@@ -21,6 +23,10 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class C43ChildArrangementOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
     private final OrderMessageGenerator orderMessageGenerator;
+    @Value("${contacts.passport_office.email}")
+    private String passportOfficeEmail;
+    @Value("${contacts.passport_office.address}")
+    private String passportOfficeAddress;
 
     public static final String WARNING_MESSAGE = "Where a Child Arrangements Order is in force and the arrangements "
         + "regulated by it consist of, or include, arrangements which relate to either or both (a) with whom the child "
@@ -48,9 +54,9 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
         + "to consider that risk assessment and give such directions as the Court thinks "
         + "necessary.";
 
-    public static final String NOTICE_MESSAGE = "Any person with parental responsibility for the child may obtain "
-        + "advice on what can be done to prevent the issue of a passport to the child. They should write to London "
-        + "Passport Office, Globe House, 89 Eccleston Square, LONDON SW1V 1PN.";
+    protected static final String NOTICE_MESSAGE = "Any person with "
+        + "parental responsibility for a child may obtain advice on what can be done to prevent "
+        + "the issue of a passport to the child. They should write to %s or email %s.";
 
     private final LocalAuthorityNameLookupConfiguration laNameLookup;
     private final C43ChildArrangementOrderTitleGenerator c43TitleGenerator;
@@ -71,12 +77,13 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
             c43DocmosisParameters = C43ChildArrangementOrderDocmosisParameters
             .builder()
             .orderTitle(c43TitleGenerator.getOrderTitle(eventData))
+            .recitalsOrPreamble(getOrderRecitalsAndPreambles(eventData))
             .orderByConsent(orderMessageGenerator.getOrderByConsentMessage(eventData))
             .orderDetails(buildOrderDetails(eventData))
             .furtherDirections(getOrderDirections(eventData))
             .localAuthorityName(localAuthorityName)
             .noticeHeader("Notice")
-            .noticeMessage(NOTICE_MESSAGE);
+            .noticeMessage(String.format(NOTICE_MESSAGE, passportOfficeAddress, passportOfficeEmail));
 
         if (isChildArrangementOrderSelected(eventData)) {
             addChildArrangementOrderWarningMessage(c43DocmosisParameters);
@@ -93,28 +100,29 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
     private String buildOrderDetails(ManageOrdersEventData eventData) {
         StringBuilder stringBuilder = new StringBuilder();
 
+        stringBuilder.append("The Court orders");
+
         if (isChildArrangementOrderSelected(eventData)) {
-            switch (eventData.getManageOrdersChildArrangementsOrderType()) {
-                case CHILD_LIVE:
-                    stringBuilder
-                        .append("The Child Arrangement Order is for the child to live with")
-                        .append(".\n\n");
-                    break;
-                case CHILD_CONTACT:
-                    stringBuilder
-                        .append("The Child Arrangement Order is for the child to have contact with")
-                        .append(".\n\n");
-                    break;
-            }
+            stringBuilder.append("\n\nThe Child Arrangement Order is for the child to ");
+            stringBuilder.append(eventData.getManageOrdersChildArrangementsOrderTypes().stream()
+                .map(type -> {
+                    switch (type) {
+                        case CHILD_LIVE:
+                            return "live with";
+                        case CHILD_CONTACT:
+                            return "have contact with";
+                        default: return type.toString();
+                    }
+                })
+                .collect(Collectors.joining(" and ")));
+            stringBuilder.append(".");
         }
 
-        return stringBuilder.toString() + getOrderRecitalsAndPreambles(eventData);
+        return stringBuilder.toString();
     }
 
     private String getOrderRecitalsAndPreambles(ManageOrdersEventData eventData) {
-        String recitals = eventData.getManageOrdersRecitalsAndPreambles();
-
-        return "The Court orders" + "\n\n" + recitals;
+        return eventData.getManageOrdersRecitalsAndPreambles();
     }
 
     private String getOrderDirections(ManageOrdersEventData eventData) {

@@ -18,6 +18,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.WELSH_TO_ENGLISH;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
@@ -81,6 +82,7 @@ class RespondentStatementTest {
                     "document_filename", "filename",
                     "document_url", "url"
                 )),
+                Map.entry("documentAcknowledge", List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY)),
                 Map.entry("hasConfidentialAddress", YesNo.NO.getValue())
             )
         ));
@@ -120,7 +122,8 @@ class RespondentStatementTest {
         List<Map<String, Object>> expectedBundles = List.of(Map.of(
             "id", "dc6b2154-9e5d-480d-adca-d70b4e1f6384",
             "value", Map.ofEntries(
-                Map.entry("needTranslation", "NO")
+                Map.entry("needTranslation", "NO"),
+                Map.entry("documentAcknowledge", List.of())
             )
         ));
 

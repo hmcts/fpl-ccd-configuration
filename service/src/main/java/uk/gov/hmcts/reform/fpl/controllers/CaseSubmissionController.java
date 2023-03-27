@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -38,6 +38,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing.CHILD;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.Representing.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
@@ -129,7 +131,8 @@ public class CaseSubmissionController extends CallbackController {
             Map<String, Object> data = caseDetails.getData();
             data.put("dateAndTimeSubmitted", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(zonedDateTime));
             data.put("dateSubmitted", DateTimeFormatter.ISO_LOCAL_DATE.format(zonedDateTime));
-            data.put("sendToCtsc", setSendToCtsc(data.get("caseLocalAuthority").toString()).getValue());
+            data.put("sendToCtsc", setSendToCtsc(isNotEmpty(data.get("caseLocalAuthority"))
+                ? data.get("caseLocalAuthority").toString() : null).getValue());
 
             if (caseData.isC1Application()) {
                 // C1
@@ -179,6 +182,10 @@ public class CaseSubmissionController extends CallbackController {
     }
 
     private YesNo setSendToCtsc(String caseLocalAuthority) {
+        if (isEmpty(caseLocalAuthority)) {
+            return NO;
+        }
+
         String localAuthorityName = localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseLocalAuthority);
 
         return YesNo.from(featureToggleService.isCtscEnabled(localAuthorityName));
@@ -189,7 +196,7 @@ public class CaseSubmissionController extends CallbackController {
 
         if (featureToggleService.isRestrictedFromCaseSubmission(caseData.getCaseLocalAuthority())) {
             errors.add("You cannot submit this application online yet."
-                + " Ask your FPL administrator for your local authority’s enrolment date");
+                + " Ask your FPL administrator for your local authority's enrolment date");
         }
 
         return errors;

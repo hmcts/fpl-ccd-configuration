@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SOCIAL_WORK_STATEMENT;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @WebMvcTest(UploadDocumentsController.class)
@@ -82,7 +83,8 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
                                 "document_filename", FILE_NAME,
                                 "document_binary_url", FILE_BINARY_URL
                             ),
-                            "documentType", "SOCIAL_WORK_STATEMENT"
+                            "documentType", "SOCIAL_WORK_STATEMENT",
+                            "documentAcknowledge", List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY)
                         )
                     )
                 )
@@ -106,6 +108,7 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
                     .filename(FILE_NAME)
                     .url(ANOTHER_FILE_URL)
                     .build())
+                .documentAcknowledge(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY))
                 .uploadedBy(ANOTHER_USER)
                 .dateTimeUploaded(now())
                 .build()))

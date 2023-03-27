@@ -14,6 +14,7 @@ java:
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI: https://idam-api.aat.platform.hmcts.net/o/jwks
     CCD_UI_BASE_URL: https://case-management-web-${SERVICE_FQDN}
     MANAGE_CASE_UI_BASE_URL: https://xui-${SERVICE_FQDN}
+    CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-cdam
     LD_USER_KEY: FPLA_PREVIEW
     SCHEDULER_ENABLED: false
     TESTING_SUPPORT_ENABLED: true
@@ -64,6 +65,7 @@ java:
         - ctsc-inbox
         - ctsc-team-lead-inbox
         - rcj-family-high-court-inbox
+        - court-to-court-admin-mapping
 
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-xui-idam-pr
@@ -83,6 +85,10 @@ xui-webapp:
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
     image: hmctspublic.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
+    devcpuRequests: 500m
+    devmemoryRequests: 512Mi
+    devcpuLimits: 1
+    devmemoryLimits: 1Gi
     readinessPeriod: 5
     livenessPeriod: 3
     livenessDelay: 10
@@ -144,6 +150,7 @@ ccd:
 
   ccd-api-gateway-web:
     nodejs:
+      disableKeyVaults: true
       releaseNameOverride: ${SERVICE_NAME}-ccd-api-gw
       imagePullPolicy: Always
       environment:
@@ -153,9 +160,10 @@ ccd:
         PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
       ingressHost: gateway-${SERVICE_FQDN}
       ingressIP: ${INGRESS_IP}
-      keyVaults: []
+
   ccd-data-store-api:
     java:
+      disableKeyVaults: true
       imagePullPolicy: Always
       devmemoryRequests: '1524Mi'
       devmemoryLimits: '2048Mi'
@@ -180,12 +188,15 @@ ccd:
         DATA_STORE_DB_OPTIONS: "?stringtype=unspecified&ssl=disable&gssEncMode=disable"
         CCD_DOCUMENT_URL_PATTERN: ^https?://(((?:dm-store-aat\.service\.core-compute-aat\.internal(?::\d+)?)\/documents\/[A-Za-z0-9-]+(?:\/binary)?))
         CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-cdam
-      keyVaults: []
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
       autoscaling:
         enabled: false
   ccd-definition-store-api:
     java:
+      disableKeyVaults: true
+      devmemoryRequests: '1024Mi'
+      devmemoryLimits: '2048Mi'
+      devcpuRequests: '900m'
       autoscaling:
         enabled: false
       imagePullPolicy: Always
@@ -198,14 +209,14 @@ ccd:
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOST: ${SERVICE_NAME}-es-master
         WELSH_TRANSLATION_ENABLED: false
-      keyVaults: []
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
+
   ccd-user-profile-api:
     java:
+      disableKeyVaults: true
       imagePullPolicy: Always
       enviroment:
         USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
-      keyVaults: []
       ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
 
   postgresql:
@@ -217,7 +228,6 @@ ccd:
   elasticsearch:
     nameOverride: ${SERVICE_NAME}-es
     clusterName: "es"
-    imageTag: "7.17.0"
     replicas: 1
     minimumMasterNodes: 1
     antiAffinity: "soft"
@@ -229,13 +239,6 @@ ccd:
         value: ""
     persistence:
       enabled: false
-    ingress:
-      enabled: true
-      annotations:
-        kubernetes.io/ingress.class: traefik
-      path: /
-      hosts:
-        - es-${SERVICE_FQDN}
 
   logstash:
     image:
@@ -302,6 +305,7 @@ aac-manage-case-assignment:
 ccd-case-document-am-api:
   enabled: true
   java:
+    disableKeyVaults: true
     releaseNameOverride: ${SERVICE_NAME}-cdam
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ccd/case-document-am-api:latest
@@ -314,4 +318,3 @@ ccd-case-document-am-api:
       DM_STORE_BASE_URL: http://dm-store-aat.service.core-compute-aat.internal
       CCD_DATA_STORE_API_BASE_URL: http://${SERVICE_NAME}-ccd-data-store-api
       CASE_DOCUMENT_AM_API_S2S_SECRET: ${CCD_CASE_DOCUMENT_AM_API_SECRET}
-    keyVaults: []

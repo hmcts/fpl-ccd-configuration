@@ -15,6 +15,7 @@
     "timeFrame": "Same day"
   },
   "caseName": "Api test",
+  "representativeType": "LOCAL_AUTHORITY",
   "children1": [
     {
       "id": "51a09959-b76d-4b62-ab12-87f9d547179d",

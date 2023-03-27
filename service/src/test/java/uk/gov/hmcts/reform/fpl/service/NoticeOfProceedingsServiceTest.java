@@ -10,8 +10,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
+import uk.gov.hmcts.reform.fpl.config.HighCourtAdminEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -51,15 +52,15 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.SecureDocumentManagementStoreLoader.document;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {JacksonAutoConfiguration.class, RestTemplate.class, CaseDataExtractionService.class,
     HearingVenueLookUpService.class, FixedTimeConfiguration.class, NoticeOfHearingGenerationService.class,
     NoticeOfProceedingsLanguageFactory.class,
     LookupTestConfig.class, DocmosisConfiguration.class, NoticeOfProceedingsService.class, CaseDetailsHelper.class,
-    CourtService.class})
+    CourtService.class, HighCourtAdminEmailLookupConfiguration.class})
 class NoticeOfProceedingsServiceTest {
     private static final String JUDGE_SURNAME = "Davidson";
     private static final byte[] PDF = {1, 2, 3, 4, 5};
