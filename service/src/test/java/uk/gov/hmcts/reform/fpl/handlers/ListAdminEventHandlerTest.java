@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtToCourtAdminLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.DirectionsOrderType;
 import uk.gov.hmcts.reform.fpl.events.ListAdminEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
@@ -18,10 +19,12 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.COURT_ADMIN_LISTING_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.COURT_ADMIN_UDO_LISTING_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(MockitoExtension.class)
 class ListAdminEventHandlerTest {
+    private static final DocumentReference ORDER = testDocumentReference();
     @Mock
     private HmctsCourtToCourtAdminLookupConfiguration hmctsCourtToCourtAdminLookupConfiguration;
     @Mock
@@ -30,13 +33,11 @@ class ListAdminEventHandlerTest {
     private SDOIssuedContentProvider standardContentProvider;
     @Mock
     private NotificationService notificationService;
-    private static final DocumentReference ORDER = testDocumentReference();
-
     @InjectMocks
     private ListAdminEventHandler underTest;
 
     @Test
-    void shouldNotifyCourtAdminWhenJudgeRequestListing() {
+    void shouldNotifyCourtAdminWhenJudgeRequestListingForSDO() {
         CaseData caseData = CaseData.builder()
             .id(1123L)
             .court(Court.builder()
@@ -52,6 +53,7 @@ class ListAdminEventHandlerTest {
             .order(ORDER)
             .isSentToAdmin(true)
             .sendToAdminReason("Please complete")
+            .directionsOrderType(DirectionsOrderType.SDO)
             .build();
 
         given(hmctsCourtToCourtAdminLookupConfiguration.getEmail("344"))
@@ -64,6 +66,42 @@ class ListAdminEventHandlerTest {
         underTest.notifyCourtAdmin(event);
 
         verify(notificationService).sendEmail(COURT_ADMIN_LISTING_TEMPLATE,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            notifyData,
+            1123L
+        );
+    }
+
+    @Test
+    void shouldNotifyCourtAdminWhenJudgeRequestListingForUDO() {
+        CaseData caseData = CaseData.builder()
+            .id(1123L)
+            .court(Court.builder()
+                .code("344")
+                .name("Family Court")
+                .build()
+            )
+            .familyManCaseNumber("FamilyMan1234")
+            .build();
+
+        ListAdminEvent event = ListAdminEvent.builder()
+            .caseData(caseData)
+            .order(ORDER)
+            .isSentToAdmin(true)
+            .sendToAdminReason("Please complete")
+            .directionsOrderType(DirectionsOrderType.UDO)
+            .build();
+
+        given(hmctsCourtToCourtAdminLookupConfiguration.getEmail("344"))
+            .willReturn("FamilyPublicLaw+ctsc@gmail.com");
+
+        given(standardContentProvider.buildNotificationParameters(caseData,
+            ORDER,
+            event.getSendToAdminReason())).willReturn(notifyData);
+
+        underTest.notifyCourtAdmin(event);
+
+        verify(notificationService).sendEmail(COURT_ADMIN_UDO_LISTING_TEMPLATE,
             "FamilyPublicLaw+ctsc@gmail.com",
             notifyData,
             1123L
@@ -86,6 +124,7 @@ class ListAdminEventHandlerTest {
             .caseData(caseData)
             .order(ORDER)
             .isSentToAdmin(false)
+            .directionsOrderType(DirectionsOrderType.SDO)
             .build();
 
         underTest.notifyCourtAdmin(event);

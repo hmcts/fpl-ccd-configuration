@@ -9,6 +9,9 @@ import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import java.util.Objects;
 import java.util.Optional;
 
+import static uk.gov.hmcts.reform.fpl.enums.DirectionsOrderType.SDO;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionsOrderType.UDO;
+
 @Component
 public class ListAdminEventNotificationDecider {
 
@@ -21,15 +24,17 @@ public class ListAdminEventNotificationDecider {
                 .isSentToAdmin(gatekeepingOrderEventData.isSentToAdmin())
                 .sendToAdminReason(gatekeepingOrderEventData.getSendToAdminReason());
 
-            final StandardDirectionOrder standardDirectionOrder;
+            final StandardDirectionOrder directionOrder;
             if (Objects.nonNull(caseData.getGatekeepingOrderRouter())) {
-                standardDirectionOrder = caseData.getStandardDirectionOrder();
+                directionOrder = caseData.getStandardDirectionOrder();
+                listAdminEventBuilder.directionsOrderType(SDO);
             } else {
-                standardDirectionOrder = caseData.getUrgentDirectionsOrder();
+                directionOrder = caseData.getUrgentDirectionsOrder();
+                listAdminEventBuilder.directionsOrderType(UDO);
             }
 
-            if (Objects.nonNull(standardDirectionOrder) && Objects.nonNull(standardDirectionOrder.getOrderDoc())) {
-                listAdminEventBuilder.order(standardDirectionOrder.getOrderDoc());
+            if (Objects.nonNull(directionOrder) && Objects.nonNull(directionOrder.getOrderDoc())) {
+                listAdminEventBuilder.order(directionOrder.getOrderDoc());
             }
             return Optional.of(listAdminEventBuilder.build());
         }
