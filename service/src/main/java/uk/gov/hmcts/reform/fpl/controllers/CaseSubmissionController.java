@@ -128,7 +128,7 @@ public class CaseSubmissionController extends CallbackController {
             Map<String, Object> data = caseDetails.getData();
             data.put("dateAndTimeSubmitted", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(zonedDateTime));
             data.put("dateSubmitted", DateTimeFormatter.ISO_LOCAL_DATE.format(zonedDateTime));
-            data.put("sendToCtsc", YES.getValue()); // On submission we are now always sending to the CTSC, no longer toggling
+            data.put("sendToCtsc", YES.getValue()); // On submission we are now always sending to the CTSC, no toggles
 
             if (caseData.isC1Application()) {
                 // C1
