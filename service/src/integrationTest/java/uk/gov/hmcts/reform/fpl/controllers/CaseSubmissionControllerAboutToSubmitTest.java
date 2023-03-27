@@ -40,7 +40,6 @@ import static java.util.Map.of;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
@@ -96,8 +95,6 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldSetCtscPropertyToYesRegardlessOfLDVariable() {
-        given(featureToggleService.isCtscEnabled(anyString())).willReturn(false);
-
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent("fixtures/case.json");
 
         assertThat(callbackResponse.getData())
@@ -138,8 +135,6 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldRetainPaymentInformationInCase() {
-        given(featureToggleService.isCtscEnabled(anyString())).willReturn(true);
-
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(CaseDetails.builder()
             .id(2313L)
             .data(Map.of(
