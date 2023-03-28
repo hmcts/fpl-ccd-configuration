@@ -40,7 +40,7 @@ variable "managed_identity_object_id" {
 
 variable "appinsights_location" {
   type        = string
-  default     = "West Europe"
+  default     = "UK South"
   description = "Location for Application Insights"
 }
 
