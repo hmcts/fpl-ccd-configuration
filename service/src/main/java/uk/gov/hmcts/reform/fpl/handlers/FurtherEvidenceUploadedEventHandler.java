@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.FurtherDocument;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithDocument;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
@@ -38,6 +39,7 @@ import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvide
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
@@ -462,6 +464,19 @@ public class FurtherEvidenceUploadedEventHandler {
                 );
     }
 
+    private <T extends WithDocument> boolean hasNewDocumentUploaded(List<Element<T>> existingElements,
+                                                                    Element<T> test) {
+        Optional<Element<T>> hitElement = ElementUtils.findElement(test.getId(), defaultIfNull(existingElements,
+            List.of()));
+        if (!hitElement.isPresent()) {
+            return true;
+        } else {
+            return !Optional.ofNullable(test.getValue().getDocument()).orElse(DocumentReference.builder().build())
+                .equals(Optional.ofNullable(hitElement.get().getValue().getDocument())
+                    .orElse(DocumentReference.builder().build()));
+        }
+    }
+
     private DocumentInfo getNewApplicationDocuments(CaseData caseData, CaseData caseDataBefore) {
         List<ApplicationDocument> newApplicationDocuments = unwrapElements(caseData.getApplicationDocuments());
         List<ApplicationDocument> oldApplicationDocuments = unwrapElements(caseDataBefore.getApplicationDocuments());
@@ -495,7 +510,7 @@ public class FurtherEvidenceUploadedEventHandler {
         List<Element<ApplicationDocument>> beforeApplicationDocuments) {
         List<Element<ApplicationDocument>> newApplicationDocuments = new ArrayList<>();
         defaultIfNull(applicationDocuments, new ArrayList<Element<ApplicationDocument>>()).forEach(newDoc -> {
-            if (!defaultIfNull(beforeApplicationDocuments, List.of()).contains(newDoc)) {
+            if (hasNewDocumentUploaded(beforeApplicationDocuments, newDoc)) {
                 newApplicationDocuments.add(newDoc);
             }
         });
@@ -507,7 +522,7 @@ public class FurtherEvidenceUploadedEventHandler {
         List<Element<SupportingEvidenceBundle>> beforeSupportingEvidenceBundle) {
         List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle = new ArrayList<>();
         defaultIfNull(supportingEvidenceBundle, new ArrayList<Element<SupportingEvidenceBundle>>()).forEach(newDoc -> {
-            if (!defaultIfNull(beforeSupportingEvidenceBundle, List.of()).contains(newDoc)) {
+            if (hasNewDocumentUploaded(beforeSupportingEvidenceBundle, newDoc)) {
                 newSupportingEvidenceBundle.add(newDoc);
             }
         });
