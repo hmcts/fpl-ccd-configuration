@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
@@ -37,9 +38,9 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -47,6 +48,8 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_NOW;
+import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
@@ -141,7 +144,10 @@ public class ListGatekeepingHearingController extends CallbackController {
 
         caseData.keySet().removeAll(hearingsService.caseFieldsToBeRemoved());
 
-        return respond(caseData);
+        State endState = isNull(eventData.getGatekeepingOrderRouter())
+            && eventData.isCareOrderCombinedWithUrgentDirections()  ? GATEKEEPING : CASE_MANAGEMENT;
+
+        return respond(caseData, endState);
     }
 
     @PostMapping("/allocated-judge/mid-event")
@@ -225,7 +231,9 @@ public class ListGatekeepingHearingController extends CallbackController {
     @PostMapping("/post-submit-callback/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handlePostSubmittedEvent(@RequestBody CallbackRequest request) {
         final CaseDetails caseDetails = request.getCaseDetails();
-        removeTemporaryFields(caseDetails, "gatekeepingOrderSealDecision");
+        removeTemporaryFields(caseDetails,
+            "gatekeepingOrderSealDecision",
+            "urgentDirectionsRouter");
 
         return respond(caseDetails);
     }
@@ -366,7 +374,7 @@ public class ListGatekeepingHearingController extends CallbackController {
 
     private boolean needTemporaryHearingJudgeAllocated(CaseData caseData, HearingBooking hearingBooking) {
         return nonNull(hearingBooking.getHearingJudgeLabel())
-            && (Objects.isNull(caseData.getHearingOption())
+            && (isNull(caseData.getHearingOption())
             || NEW_HEARING.equals(caseData.getHearingOption())
             || RE_LIST_NOW.equals(caseData.getHearingReListOption()));
     }
