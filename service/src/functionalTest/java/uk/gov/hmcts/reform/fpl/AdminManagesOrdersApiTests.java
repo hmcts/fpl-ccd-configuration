@@ -11,12 +11,12 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,7 +25,15 @@ import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.END_O
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.valueOf;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.*;
+
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 
@@ -52,40 +60,47 @@ public class AdminManagesOrdersApiTests extends AbstractApiTest {
     private DocumentService documentService;
 
     @Test
-    public void adminManagesOrderTest32a(){
+    public void adminManagesOrderTest32a() {
         parametrizedTests(orderNumber.get(0).split(",")[0], orderNumber.get(0).split(",")[1]);
     }
 
     @Test
-    public void adminManagesOrderTest32b(){
+    public void adminManagesOrderTest32b() {
         parametrizedTests(orderNumber.get(1).split(",")[0], orderNumber.get(1).split(",")[1]);
     }
+
     @Test
-    public void adminManagesOrderTest23(){
+    public void adminManagesOrderTest23() {
         parametrizedTests(orderNumber.get(2).split(",")[0], orderNumber.get(2).split(",")[1]);
     }
+
     @Test
-    public void adminManagesOrderTest33(){
+    public void adminManagesOrderTest33() {
         parametrizedTests(orderNumber.get(3).split(",")[0], orderNumber.get(3).split(",")[1]);
     }
+
     @Test
-    public void adminManagesOrderTest35a(){
+    public void adminManagesOrderTest35a() {
         parametrizedTests(orderNumber.get(4).split(",")[0], orderNumber.get(4).split(",")[1]);
     }
+
     @Test
-    public void adminManagesOrderTest35b(){
+    public void adminManagesOrderTest35b() {
         parametrizedTests(orderNumber.get(5).split(",")[0], orderNumber.get(5).split(",")[1]);
     }
+
     @Test
-    public void adminManagesOrderTest43a(){
+    public void adminManagesOrderTest43a() {
         parametrizedTests(orderNumber.get(6).split(",")[0], orderNumber.get(6).split(",")[1]);
     }
+
     @Test
-    public void adminManagesOrderTest29(){
+    public void adminManagesOrderTest29() {
         parametrizedTests(orderNumber.get(7).split(",")[0], orderNumber.get(7).split(",")[1]);
     }
+
     @Test
-    public void adminManagesOrderTest47a(){
+    public void adminManagesOrderTest47a() {
         parametrizedTests(orderNumber.get(8).split(",")[0], orderNumber.get(8).split(",")[1]);
     }
 
@@ -130,7 +145,8 @@ public class AdminManagesOrdersApiTests extends AbstractApiTest {
             Map.of(
                 "id", formatCCDCaseNumber(caseData.getId()),
                 "issueDate", formatLocalDateToString(todaysDate, DATE),
-                "dateSuffix", formatLocalDateBaseUsingFormat(todaysDate, format(DATE_WITH_ORDINAL_SUFFIX, ordinalSuffix)),
+                "dateSuffix", formatLocalDateBaseUsingFormat(todaysDate,
+                    format(DATE_WITH_ORDINAL_SUFFIX, ordinalSuffix)),
                 "oneYearLaterTodaySuffix", formatLocalDateBaseUsingFormat(todaysDate.plusYears(1),
                     format(DATE_WITH_ORDINAL_SUFFIX, ordinalSuffix)),
                 "dateTimeAt", formatLocalDateTimeBaseUsingFormat(currentDateTime, DATE_TIME_AT),
@@ -142,7 +158,8 @@ public class AdminManagesOrdersApiTests extends AbstractApiTest {
         return response.getCaseData();
     }
 
-    @NotNull @Valid
+    @NotNull
+    @Valid
     private String getGeneratedOrderType(CaseData caseData) {
         return caseData.getOrderCollection().get(0).getValue().getOrderType();
     }
