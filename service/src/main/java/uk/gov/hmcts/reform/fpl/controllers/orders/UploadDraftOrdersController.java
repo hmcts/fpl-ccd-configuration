@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersUploaded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
@@ -28,10 +30,14 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
 @Api
@@ -82,7 +88,13 @@ public class UploadDraftOrdersController extends CallbackController {
         List<Element<HearingOrder>> unsealedCMOs = caseData.getDraftUploadedCMOs();
         List<Element<HearingBooking>> hearings = defaultIfNull(caseData.getHearingDetails(), new ArrayList<>());
         List<Element<HearingFurtherEvidenceBundle>> evidenceDocuments = caseData.getHearingFurtherEvidenceDocuments();
-        List<Element<HearingOrdersBundle>> bundles = service.migrateCmoDraftToOrdersBundles(caseData);
+        HearingOrdersBundles hearingOrdersBundles = service.migrateCmoDraftToOrdersBundles(caseData);
+
+        Map<HearingOrderType, List<Element<HearingOrdersBundle>>> bundles = Map.of(
+            DRAFT_CMO, hearingOrdersBundles.getDraftCmos(),
+            AGREED_CMO, hearingOrdersBundles.getAgreedCmos(),
+            C21, hearingOrdersBundles.getAgreedCmos()
+        );
 
         UUID hearingId = service.updateCase(eventData, hearings, unsealedCMOs, bundles);
 
@@ -90,7 +102,8 @@ public class UploadDraftOrdersController extends CallbackController {
         caseDetails.getData().put("draftUploadedCMOs", unsealedCMOs);
         caseDetails.getData().put("hearingDetails", hearings);
         caseDetails.getData().put("hearingFurtherEvidenceDocuments", evidenceDocuments);
-        caseDetails.getData().put("hearingOrdersBundlesDrafts", bundles);
+        caseDetails.getData().put("hearingOrdersBundlesDrafts", bundles.get(AGREED_CMO));
+        caseDetails.getData().put("hearingOrdersBundlesDraftReview", bundles.get(DRAFT_CMO));
         caseDetails.getData().put("lastHearingOrderDraftsHearingId", hearingId);
 
         caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
