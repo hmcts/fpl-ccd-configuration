@@ -3,6 +3,7 @@
     "agree"
   ],
   "sendToCtsc": "Yes",
+  "sentToAdmin": "Yes",
   "judgeAndLegalAdvisor": {
     "useAllocatedJudge": "Yes",
     "allocatedJudgeLabel": "Case assigned to: Her Honour Judge Moley"
