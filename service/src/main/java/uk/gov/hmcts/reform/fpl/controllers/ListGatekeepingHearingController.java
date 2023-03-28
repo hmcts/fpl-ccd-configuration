@@ -31,7 +31,7 @@ import uk.gov.hmcts.reform.fpl.service.PastHearingDatesValidatorService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.hearing.ManageHearingsOthersGenerator;
-import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderEventNotificationDecider;
+import uk.gov.hmcts.reform.fpl.service.sdo.ListGatekeepingHearingDecider;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.HashMap;
@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -78,7 +79,7 @@ public class ListGatekeepingHearingController extends CallbackController {
     private final ManageHearingsOthersGenerator othersGenerator;
     private final GatekeepingOrderService orderService;
     private final NoticeOfProceedingsService nopService;
-    private final GatekeepingOrderEventNotificationDecider notificationDecider;
+    private final ListGatekeepingHearingDecider listGatekeepingHearingDecider;
     private final CoreCaseDataService coreCaseDataService;
 
     private final CaseConverter converter;
@@ -269,16 +270,24 @@ public class ListGatekeepingHearingController extends CallbackController {
                                         CaseData eventData,
                                         final CaseDetailsMap caseData) {
 
-        final GatekeepingOrderRoute sdoRouter = eventData.getGatekeepingOrderRouter();
-
         eventData = mergeEventAndCaseData(eventData, caseData);
         caseData.put("gatekeepingOrderSealDecision", orderService.buildSealedDecision(eventData));
         eventData = mergeEventAndCaseData(eventData, caseData);
 
+        final GatekeepingOrderRoute sdoRouter;
+        final String orderType;
+        if (nonNull(eventData.getGatekeepingOrderRouter())) {
+            sdoRouter = eventData.getGatekeepingOrderRouter();
+            orderType = "standardDirectionOrder";
+        } else {
+            sdoRouter = eventData.getUrgentDirectionsRouter();
+            orderType = "urgentDirectionsOrder";
+        }
+
         if (UPLOAD == sdoRouter) {
-            caseData.put("standardDirectionOrder", orderService.buildOrderFromUploadedFile(eventData));
+            caseData.put(orderType, orderService.buildOrderFromUploadedFile(eventData));
         } else if (SERVICE == sdoRouter) {
-            caseData.put("standardDirectionOrder", orderService.buildOrderFromGeneratedFile(eventData));
+            caseData.put(orderType, orderService.buildOrderFromGeneratedFile(eventData));
         }
 
         callbackRequest.getCaseDetails().setData(caseData);
@@ -315,10 +324,20 @@ public class ListGatekeepingHearingController extends CallbackController {
         CaseData caseData = getCaseData(request);
         final CaseDetails caseDetails = request.getCaseDetails();
 
-        final GatekeepingOrderRoute sdoRoute = caseData.getGatekeepingOrderRouter();
         Map<String, Object> updates = new HashMap<>();
-        if (sdoRoute == UPLOAD) {
-            updates.put("standardDirectionOrder", orderService.sealDocumentAfterEventSubmitted(caseData));
+
+        final GatekeepingOrderRoute sdoRouter;
+        final String orderType;
+        if (nonNull(caseData.getGatekeepingOrderRouter())) {
+            sdoRouter = caseData.getGatekeepingOrderRouter();
+            orderType = "standardDirectionOrder";
+        } else {
+            sdoRouter = caseData.getUrgentDirectionsRouter();
+            orderType = "urgentDirectionsOrder";
+        }
+
+        if (sdoRouter == UPLOAD) {
+            updates.put(orderType, orderService.sealDocumentAfterEventSubmitted(caseData));
         }
 
         final CaseData caseDataAfterSealing;
@@ -332,7 +351,7 @@ public class ListGatekeepingHearingController extends CallbackController {
         coreCaseDataService
             .triggerEvent(caseDataAfterSealing.getId(), "internal-change-add-gatekeeping", updates);
 
-        notificationDecider.buildEventToPublish(caseDataAfterSealing, getCaseDataBefore(request).getState())
+        listGatekeepingHearingDecider.buildEventToPublish(caseDataAfterSealing)
             .ifPresent(eventToPublish -> {
                 coreCaseDataService.triggerEvent(
                     JURISDICTION,
@@ -346,7 +365,7 @@ public class ListGatekeepingHearingController extends CallbackController {
     }
 
     private boolean needTemporaryHearingJudgeAllocated(CaseData caseData, HearingBooking hearingBooking) {
-        return Objects.nonNull(hearingBooking.getHearingJudgeLabel())
+        return nonNull(hearingBooking.getHearingJudgeLabel())
             && (Objects.isNull(caseData.getHearingOption())
             || NEW_HEARING.equals(caseData.getHearingOption())
             || RE_LIST_NOW.equals(caseData.getHearingReListOption()));

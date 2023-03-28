@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.enums.DirectionsOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.sdo.SDONotifyData;
@@ -17,11 +18,15 @@ public class SDOIssuedCafcassContentProvider extends AbstractEmailContentProvide
 
     private final EmailNotificationHelper helper;
 
-    public SDONotifyData getNotifyData(CaseData caseData, DocumentReference order) {
+    public SDONotifyData getNotifyData(CaseData caseData,
+                                       DocumentReference order,
+                                       DirectionsOrderType directionsOrderType) {
         return SDONotifyData.builder()
             .documentLink(linkToAttachedDocument(order))
             .lastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .callout(buildCallout(caseData))
+            .directionsOrderTypeShort(directionsOrderType.getShortForm())
+            .directionsOrderTypeLong(directionsOrderType.getLongForm())
             .build();
     }
 }

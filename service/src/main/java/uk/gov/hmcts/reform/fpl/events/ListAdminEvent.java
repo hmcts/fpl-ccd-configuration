@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.events;
 
 import lombok.Builder;
 import lombok.Value;
+import uk.gov.hmcts.reform.fpl.enums.DirectionsOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
@@ -13,5 +14,6 @@ public class ListAdminEvent {
     DocumentReference order;
     String sendToAdminReason;
     boolean isSentToAdmin;
+    DirectionsOrderType directionsOrderType;
 
 }
