@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 
@@ -198,10 +199,12 @@ public class ApproveDraftOrdersService {
 
                 caseData.getDraftUploadedCMOs().remove(cmo);
                 updateHearingCMO(caseData, cmo.getId());
+                HearingOrdersBundles hearingOrdersBundles = draftOrderService.migrateCmoDraftToOrdersBundles(caseData);
 
                 data.put("hearingDetails", caseData.getHearingDetails());
                 data.put("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
-                data.put("hearingOrdersBundlesDrafts", draftOrderService.migrateCmoDraftToOrdersBundles(caseData));
+                data.put("hearingOrdersBundlesDrafts", hearingOrdersBundles.getAgreedCmos());
+                data.put("hearingOrdersBundlesDraftReview", hearingOrdersBundles.getDraftCmos());
 
                 data.put(ORDERS_TO_BE_SENT, newArrayList(reviewedOrder));
             }

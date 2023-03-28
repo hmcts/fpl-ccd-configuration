@@ -59,7 +59,7 @@ public class Respondent implements Representable, WithSolicitor, ConfidentialPar
     public boolean containsConfidentialDetails() {
         String hiddenValue = defaultIfNull(party.getContactDetailsHidden(), "");
 
-        return hiddenValue.equals("Yes");
+        return hiddenValue.equalsIgnoreCase("Yes");
     }
 
     @Override
