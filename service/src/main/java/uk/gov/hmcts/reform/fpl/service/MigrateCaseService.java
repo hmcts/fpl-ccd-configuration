@@ -522,8 +522,9 @@ public class MigrateCaseService {
             List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
             for (Element<HearingBooking> hearings: hearingDetails) {
                 HearingBooking hearingBooking = hearings.getValue();
-                if (Objects.isNull(hearingBooking.getType())
-                    || MIGRATED_HEARING_TYPES.contains(hearingBooking.getType())) {
+                if ((Objects.isNull(hearingBooking.getType())
+                    || MIGRATED_HEARING_TYPES.contains(hearingBooking.getType()))
+                    && org.apache.commons.lang3.ObjectUtils.isNotEmpty(hearingBooking.getTypeDetails())) {
                     hearingBooking.setType(OTHER);
                 }
             }
