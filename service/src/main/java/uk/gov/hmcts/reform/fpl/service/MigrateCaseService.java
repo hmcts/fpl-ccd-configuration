@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -521,7 +522,8 @@ public class MigrateCaseService {
             List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
             for (Element<HearingBooking> hearings: hearingDetails) {
                 HearingBooking hearingBooking = hearings.getValue();
-                if (MIGRATED_HEARING_TYPES.contains(hearingBooking.getType())) {
+                if (Objects.isNull(hearingBooking.getType())
+                    || MIGRATED_HEARING_TYPES.contains(hearingBooking.getType())) {
                     hearingBooking.setType(OTHER);
                 }
             }

@@ -1174,5 +1174,28 @@ class MigrateCaseServiceTest {
             Map<String, Object> updates = underTest.rollbackHearingType(caseData);
             assertThat(updates).isEmpty();
         }
+
+        @Test
+        void shouldSetTypeToOtherWhenTypeIsNull() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(null)
+                .typeDetails("directions Judgment")
+                .build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(bookings)
+                .build();
+
+            Map<String, Object> updates = underTest.rollbackHearingType(caseData);
+
+            List<Element<HearingBooking>> expected = new ArrayList<>();
+            expected.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(OTHER)
+                .typeDetails("directions Judgment")
+                .build()));
+
+            assertThat(updates).containsEntry("hearingDetails", expected);
+        }
     }
 }
