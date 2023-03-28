@@ -9,26 +9,36 @@ import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import java.util.Objects;
 import java.util.Optional;
 
+import static uk.gov.hmcts.reform.fpl.enums.DirectionsOrderType.SDO;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionsOrderType.UDO;
+
 @Component
 public class ListAdminEventNotificationDecider {
 
     public Optional<ListAdminEvent> buildEventToPublish(CaseData caseData) {
-        ListAdminEvent event = null;
 
-        GatekeepingOrderEventData gatekeepingOrderEventData = caseData.getGatekeepingOrderEventData();
+        final GatekeepingOrderEventData gatekeepingOrderEventData = caseData.getGatekeepingOrderEventData();
         if (Objects.nonNull(gatekeepingOrderEventData) && gatekeepingOrderEventData.isSentToAdmin()) {
-            ListAdminEvent.ListAdminEventBuilder listAdminEventBuilder = ListAdminEvent.builder()
+            final ListAdminEvent.ListAdminEventBuilder listAdminEventBuilder = ListAdminEvent.builder()
                 .caseData(caseData)
                 .isSentToAdmin(gatekeepingOrderEventData.isSentToAdmin())
                 .sendToAdminReason(gatekeepingOrderEventData.getSendToAdminReason());
 
-            StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
-            if (Objects.nonNull(standardDirectionOrder) && Objects.nonNull(standardDirectionOrder.getOrderDoc())) {
-                listAdminEventBuilder.order(standardDirectionOrder.getOrderDoc());
+            final StandardDirectionOrder directionOrder;
+            if (Objects.nonNull(caseData.getGatekeepingOrderRouter())) {
+                directionOrder = caseData.getStandardDirectionOrder();
+                listAdminEventBuilder.directionsOrderType(SDO);
+            } else {
+                directionOrder = caseData.getUrgentDirectionsOrder();
+                listAdminEventBuilder.directionsOrderType(UDO);
             }
-            event = listAdminEventBuilder.build();
+
+            if (Objects.nonNull(directionOrder) && Objects.nonNull(directionOrder.getOrderDoc())) {
+                listAdminEventBuilder.order(directionOrder.getOrderDoc());
+            }
+            return Optional.of(listAdminEventBuilder.build());
         }
 
-        return Optional.ofNullable(event);
+        return Optional.empty();
     }
 }

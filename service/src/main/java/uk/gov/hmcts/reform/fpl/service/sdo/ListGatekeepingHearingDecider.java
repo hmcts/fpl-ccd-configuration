@@ -19,24 +19,24 @@ public class ListGatekeepingHearingDecider {
     public Optional<GatekeepingOrderEvent> buildEventToPublish(final CaseData caseData) {
 
         final DirectionsOrderType directionsOrderType;
-        final StandardDirectionOrder standardDirectionOrder;
+        final StandardDirectionOrder directionOrder;
 
         if (nonNull(caseData.getGatekeepingOrderRouter())) {
-            standardDirectionOrder = caseData.getStandardDirectionOrder();
+            directionOrder = caseData.getStandardDirectionOrder();
             directionsOrderType = SDO;
         } else {
-            standardDirectionOrder = caseData.getUrgentDirectionsOrder();
+            directionOrder = caseData.getUrgentDirectionsOrder();
             directionsOrderType = UDO;
         }
 
-        if (nonNull(standardDirectionOrder) && nonNull(standardDirectionOrder.getOrderDoc())) {
+        if (nonNull(directionOrder) && nonNull(directionOrder.getOrderDoc())) {
             return Optional.of(GatekeepingOrderEvent
                 .builder()
                 .caseData(caseData)
-                .order(standardDirectionOrder.getOrderDoc())
-                .languageTranslationRequirement(standardDirectionOrder.getTranslationRequirements())
+                .order(directionOrder.getOrderDoc())
+                .languageTranslationRequirement(directionOrder.getTranslationRequirements())
                 .notificationGroup(SDO_OR_UDO_AND_NOP)
-                .orderTitle(standardDirectionOrder.asLabel())
+                .orderTitle(directionOrder.asLabel())
                 .directionsOrderType(directionsOrderType)
                 .build());
         }

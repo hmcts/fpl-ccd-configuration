@@ -13,6 +13,8 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.SDOIssuedContentProvider;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.COURT_ADMIN_LISTING_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.COURT_ADMIN_UDO_LISTING_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionsOrderType.SDO;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -30,9 +32,11 @@ public class ListAdminEventHandler {
                 event.getOrder(),
                 event.getSendToAdminReason());
 
+            String template = SDO.equals(event.getDirectionsOrderType())
+                ? COURT_ADMIN_LISTING_TEMPLATE : COURT_ADMIN_UDO_LISTING_TEMPLATE;
+
             String recipient = hmctsCourtToCourtAdminLookupConfiguration.getEmail(caseData.getCourt().getCode());
-            notificationService
-                .sendEmail(COURT_ADMIN_LISTING_TEMPLATE, recipient, notifyData, caseData.getId());
+            notificationService.sendEmail(template, recipient, notifyData, caseData.getId());
         }
     }
 }
