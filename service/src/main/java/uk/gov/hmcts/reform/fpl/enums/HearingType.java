@@ -18,6 +18,7 @@ public enum HearingType {
     ACCELERATED_DISCHARGE_OF_CARE("Discharge of care"),
     FAMILY_DRUG_ALCOHOL_COURT("Family drug & alcohol court"),
     PLACEMENT_HEARING("Placement hearing");
+    OTHER("Other");
 
     final String label;
 }
