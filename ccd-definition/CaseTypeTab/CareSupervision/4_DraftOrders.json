@@ -8,7 +8,7 @@
     "TabDisplayOrder": 4,
     "CaseFieldID": "draftSDOLabel",
     "TabFieldDisplayOrder": 1,
-    "FieldShowCondition": "standardDirectionOrder.orderStatus=\"DRAFT\""
+    "FieldShowCondition": "standardDirectionOrder.orderStatus=\"DRAFT\" OR urgentDirectionsOrder.orderStatus=\"DRAFT\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -31,6 +31,17 @@
     "CaseFieldID": "standardDirectionOrder",
     "TabFieldDisplayOrder": 2,
     "FieldShowCondition": "standardDirectionOrder.orderStatus=\"DRAFT\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftOrdersTab",
+    "TabLabel": "Draft orders",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "urgentDirectionsOrder",
+    "TabFieldDisplayOrder": 2,
+    "FieldShowCondition": "urgentDirectionsOrder.orderStatus=\"DRAFT\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -83,7 +94,7 @@
     "CaseFieldID": "draftUploadedCMOs",
     "TabFieldDisplayOrder": 3,
     "FieldShowCondition": "hearingOrdersBundlesDrafts!=\"*\"",
-    "TabShowCondition": "hearingOrdersBundlesDrafts!=\"\" OR standardDirectionOrder.orderStatus=\"DRAFT\" OR caseManagementOrder!=\"\" OR sharedDraftCMODocument!=\"\" OR cmoToAction!=\"\" OR draftUploadedCMOs!=\"\""
+    "TabShowCondition": "hearingOrdersBundlesDrafts!=\"\" OR standardDirectionOrder.orderStatus=\"DRAFT\" OR urgentDirectionsOrder.orderStatus=\"DRAFT\" OR caseManagementOrder!=\"\" OR sharedDraftCMODocument!=\"\" OR cmoToAction!=\"\" OR draftUploadedCMOs!=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
