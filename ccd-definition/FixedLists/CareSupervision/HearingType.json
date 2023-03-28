@@ -75,5 +75,12 @@
     "ListElementCode": "PLACEMENT_HEARING",
     "ListElement": "Placement hearing",
     "DisplayOrder": 11
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingType",
+    "ListElementCode": "OTHER",
+    "ListElement": "Other",
+    "DisplayOrder": 12
   }
 ]
