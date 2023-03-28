@@ -39,8 +39,6 @@ public class MigrateCaseController extends CallbackController {
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1233", this::run1233,
-        "DFPL-1233Rollback", this::run1233Rollback,
         "DFPL-1238", this::run1238,
         "DFPL-1241", this::run1241,
         "DFPL-1244", this::run1244,
@@ -71,13 +69,6 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private void run1233Rollback(CaseDetails caseDetails) {
-        caseDetails.getData().putAll(migrateCaseService.rollbackHearingType(getCaseData(caseDetails)));
-    }
-
-    private void run1233(CaseDetails caseDetails) {
-        caseDetails.getData().putAll(migrateCaseService.migrateHearingType(getCaseData(caseDetails)));
-    }
 
     private void run1238(CaseDetails caseDetails) {
         var migrationId = "DFPL-1238";
