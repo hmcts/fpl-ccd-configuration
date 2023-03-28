@@ -1,9 +1,6 @@
 package uk.gov.hmcts.reform.fpl;
 
 import org.junit.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.fpl.enums.EnglandOffices;
 import uk.gov.hmcts.reform.fpl.model.CallbackResponse;
@@ -53,10 +50,41 @@ public class AdminManagesOrdersApiTests extends AbstractApiTest {
     private DocumentService documentService;
 
     @Test
-    public void adminManagesOrderTest(){
-        orderNumber.forEach(order -> {
-            parametrizedTests(order.split(",")[0], order.split(",")[1]);
-        });
+    public void adminManagesOrderTest32a(){
+        parametrizedTests(orderNumber.get(0).split(",")[0], orderNumber.get(0).split(",")[1]);
+    }
+
+    @Test
+    public void adminManagesOrderTest32b(){
+        parametrizedTests(orderNumber.get(1).split(",")[0], orderNumber.get(1).split(",")[1]);
+    }
+    @Test
+    public void adminManagesOrderTest23(){
+        parametrizedTests(orderNumber.get(2).split(",")[0], orderNumber.get(2).split(",")[1]);
+    }
+    @Test
+    public void adminManagesOrderTest33(){
+        parametrizedTests(orderNumber.get(3).split(",")[0], orderNumber.get(3).split(",")[1]);
+    }
+    @Test
+    public void adminManagesOrderTest35a(){
+        parametrizedTests(orderNumber.get(4).split(",")[0], orderNumber.get(4).split(",")[1]);
+    }
+    @Test
+    public void adminManagesOrderTest35b(){
+        parametrizedTests(orderNumber.get(5).split(",")[0], orderNumber.get(5).split(",")[1]);
+    }
+    @Test
+    public void adminManagesOrderTest43a(){
+        parametrizedTests(orderNumber.get(6).split(",")[0], orderNumber.get(6).split(",")[1]);
+    }
+    @Test
+    public void adminManagesOrderTest29(){
+        parametrizedTests(orderNumber.get(7).split(",")[0], orderNumber.get(7).split(",")[1]);
+    }
+    @Test
+    public void adminManagesOrderTest47a(){
+        parametrizedTests(orderNumber.get(8).split(",")[0], orderNumber.get(8).split(",")[1]);
     }
 
     public void parametrizedTests(String inputFileDirectory, String orderType) {
