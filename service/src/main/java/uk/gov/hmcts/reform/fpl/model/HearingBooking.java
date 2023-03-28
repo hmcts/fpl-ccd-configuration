@@ -153,11 +153,11 @@ public class HearingBooking implements TranslatableItem {
     }
 
     public String toLabel() {
-        HearingType hearingType = Optional.ofNullable(this.type)
-            .orElseThrow(() -> new IllegalStateException("Unexpected null hearing type. " + this));
-
+        String hearingLabel = ofNullable(this.type)
+            .map(HearingType::getLabel)
+            .orElse("Other");
         String label =
-            format("%s hearing, %s", hearingType.getLabel(), formatLocalDateTimeBaseUsingFormat(startDate, DATE));
+            format("%s hearing, %s", hearingLabel, formatLocalDateTimeBaseUsingFormat(startDate, DATE));
         String status = isAdjourned() ? "adjourned" : isVacated() ? "vacated" : null;
 
         return ofNullable(status).map(suffix -> label + " - " + suffix).orElse(label);
