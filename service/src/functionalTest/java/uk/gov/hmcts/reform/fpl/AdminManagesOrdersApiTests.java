@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.fpl;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import uk.gov.hmcts.reform.fpl.enums.C29ActionsPermitted;
 import uk.gov.hmcts.reform.fpl.enums.EnglandOffices;
+import uk.gov.hmcts.reform.fpl.enums.PlacedUnderOrder;
 import uk.gov.hmcts.reform.fpl.model.CallbackResponse;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
@@ -110,6 +112,9 @@ public class AdminManagesOrdersApiTests extends AbstractApiTest {
                 .manageOrdersEndDateTypeWithMonth(NUMBER_OF_MONTHS) //c35a
                 .manageOrdersSetMonthsEndDate(12)  //c35a
                 .manageOrdersCafcassOfficesEngland(EnglandOffices.BOURNEMOUTH)  //c47a
+                .manageOrdersCafcassRegion("ENGLAND")
+                .manageOrdersPlacedUnderOrder(PlacedUnderOrder.CARE_ORDER)
+                .manageOrdersActionsPermitted(List.of(C29ActionsPermitted.ENTRY))
                 .build())
             .build();
 
