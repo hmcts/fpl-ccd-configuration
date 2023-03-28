@@ -32,8 +32,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseService {
-    private final String previewFpl = "https://fpl-case-service-pr-3784.service.core-compute-preview.internal";
-    private final String aatFpl = "http://fpl-case-service-aat.service.core-compute-aat.internal";
+
     private final ObjectMapper objectMapper;
     private final CaseConverter caseConverter;
     private final AuthenticationService authenticationService;
@@ -63,9 +62,7 @@ public class CaseService {
         CaseDetailsMap data = caseDetailsMap(caseConverter.toMap(caseData));
 
         CaseDetails caseDetails = SerenityRest
-            .given().log().all()
-            .relaxedHTTPSValidation()
-            .baseUri(previewFpl)
+            .given()
             .headers(authenticationService.getAuthorizationHeaders(user))
             .contentType(APPLICATION_JSON)
             .body(Map.of())
@@ -84,9 +81,6 @@ public class CaseService {
         if (populateData) {
             SerenityRest
                 .given()
-                .baseUri(previewFpl)
-                .log().all()
-                .relaxedHTTPSValidation()
                 .contentType(APPLICATION_JSON)
                 .headers(authenticationService.getAuthorizationHeaders(user))
                 .body(Map.of("state", Optional.ofNullable(caseData.getState())
@@ -105,9 +99,6 @@ public class CaseService {
     public CallbackResponse callback(CaseData caseData, User user, String callback) {
         AboutToStartOrSubmitCallbackResponse response = SerenityRest
             .given()
-            .log().all()
-            .relaxedHTTPSValidation()
-            .baseUri(previewFpl)
             .headers(authenticationService.getAuthorizationHeaders(user))
             .contentType(APPLICATION_JSON)
             .body(toCallbackRequest(caseData))
@@ -130,8 +121,6 @@ public class CaseService {
     public void submittedCallback(CaseData caseData, CaseData caseDataBefore, User user, String callback) {
         SerenityRest
             .given()
-            .relaxedHTTPSValidation()
-            .baseUri(previewFpl)
             .headers(authenticationService.getAuthorizationHeaders(user))
             .contentType(APPLICATION_JSON)
             .body(toCallbackRequest(caseData, caseDataBefore))
