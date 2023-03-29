@@ -1242,4 +1242,18 @@ public class CaseData extends CaseDataParent {
             .map(Orders::isEducationSupervisionOrder)
             .orElse(false);
     }
+
+    @JsonIgnore
+    public boolean isCareOrderCombinedWithUrgentDirections() {
+        return ofNullable(getOrders())
+            .map(Orders::isCareOrderCombinedWithEPOorICO)
+            .orElse(false);
+    }
+
+    @JsonIgnore
+    public boolean isStandaloneEPOApplication() {
+        return ofNullable(getOrders())
+            .map(Orders::isEmergencyProtectionOrderOnly)
+            .orElse(false);
+    }
 }

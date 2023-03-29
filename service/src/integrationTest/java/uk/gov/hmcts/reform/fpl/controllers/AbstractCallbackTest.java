@@ -310,6 +310,7 @@ public abstract class AbstractCallbackTest extends AbstractTest {
     private CallbackRequest toCallbackRequest(CaseDetails caseDetails) {
         return CallbackRequest.builder()
             .caseDetails(caseDetails)
+            .eventId(eventName)
             .caseDetailsBefore(CaseDetails.builder().data(Map.of()).build())
             .build();
     }

@@ -51,7 +51,8 @@ public class AddGatekeepingOrderController extends CallbackController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         final CaseData caseData = getCaseData(callbackRequest.getCaseDetails());
-        final List<String> errors = routeValidator.allowAccessToEvent(caseData);
+        final String eventName = callbackRequest.getEventId();
+        final List<String> errors = routeValidator.allowAccessToEvent(caseData, eventName);
         final CaseDetailsMap data = dataFixer.addLanguageRequirement(caseDetailsMap(callbackRequest.getCaseDetails()));
 
         if (isNotEmpty(errors)) {

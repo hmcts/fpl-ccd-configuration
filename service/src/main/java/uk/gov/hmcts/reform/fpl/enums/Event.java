@@ -27,7 +27,8 @@ public enum Event {
     SUBMIT_APPLICATION("submitApplication", "Submit application"),
     CASE_NAME("changeCaseName", "Change case name"),
     APPLICATION_DOCUMENTS("uploadDocuments", "Upload documents"),
-    SELECT_COURT("selectCourt", "Select court to issue");
+    SELECT_COURT("selectCourt", "Select court to issue"),
+    ADD_URGENT_DIRECTIONS("addUrgentDirections", "Add urgent directions");
 
     private final String id;
     private final String name;
