@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
@@ -36,14 +37,6 @@ public class MigrateCaseController extends CallbackController {
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1238", this::run1238,
-        "DFPL-1241", this::run1241,
-        "DFPL-1244", this::run1244,
-        "DFPL-1243", this::run1243,
-        "DFPL-1282", this::run1282,
-        "DFPL-1270", this::run1270,
-        "DFPL-1297", this::run1297,
-        "DFPL-1263", this::run1263,
         "DFPL-1352", this::run1352,
         "DFPL-1261", this::run1261,
         "DFPL-1226", this::run1226
@@ -68,7 +61,7 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
-    
+
     private void run1261(CaseDetails caseDetails) {
         var migrationId = "DFPL-1261";
         var possibleCaseIds = List.of(1661855469987973L);
