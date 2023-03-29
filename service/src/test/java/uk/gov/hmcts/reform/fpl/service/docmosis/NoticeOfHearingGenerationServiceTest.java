@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.FACT_FINDING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
@@ -107,8 +107,9 @@ class NoticeOfHearingGenerationServiceTest {
     }
 
     @Test
-    void shouldBuildExpectedTemplateDataWithHearingType() {
-        when(HEARING.getType()).thenReturn(FACT_FINDING);
+    void shouldBuildExpectedTemplateDataWithOtherHearingType() {
+        when(HEARING.getType()).thenReturn(OTHER);
+        when(HEARING.getTypeDetails()).thenReturn("some different type of hearing");
 
         CaseData caseData = getCaseData();
 
@@ -118,7 +119,7 @@ class NoticeOfHearingGenerationServiceTest {
         DocmosisNoticeOfHearing templateData = underTest.getTemplateData(caseData, HEARING);
 
         DocmosisNoticeOfHearing expectedTemplateData = getExpectedNoticeOfHearingTemplate(
-            FACT_FINDING.getLabel().toLowerCase(), DOCMOSIS_JUDGE_AND_LA
+            "some different type of hearing", DOCMOSIS_JUDGE_AND_LA
         );
 
         assertThat(templateData).isEqualTo(expectedTemplateData);

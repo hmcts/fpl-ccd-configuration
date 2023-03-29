@@ -61,7 +61,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTE
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.PLACEMENT_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C100_CHILD_ARRANGEMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C17A_EXTENSION_OF_ESO;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C19_WARRANT_TO_ASSISTANCE;
@@ -1497,12 +1497,12 @@ class CaseDataTest {
 
         @Test
         void shouldReturnFirstHearingOfGivenType() {
-            HearingBooking placementHearing = hearingBooking(PLACEMENT_HEARING, now().plusDays(1));
+            HearingBooking otherHearing = hearingBooking(OTHER, now().plusDays(1));
             HearingBooking caseManagementHearing = hearingBooking(CASE_MANAGEMENT, now());
             HearingBooking laterCaseManagementHearing = hearingBooking(CASE_MANAGEMENT, now().plusDays(3));
 
             CaseData caseData = CaseData.builder()
-                .hearingDetails(wrapElements(placementHearing, laterCaseManagementHearing, caseManagementHearing))
+                .hearingDetails(wrapElements(otherHearing, laterCaseManagementHearing, caseManagementHearing))
                 .build();
 
             Optional<HearingBooking> foundHearing = caseData.getFirstHearingOfType(CASE_MANAGEMENT);
@@ -1518,7 +1518,7 @@ class CaseDataTest {
                 .hearingDetails(wrapElements(caseManagementHearing))
                 .build();
 
-            Optional<HearingBooking> foundHearing = caseData.getFirstHearingOfType(PLACEMENT_HEARING);
+            Optional<HearingBooking> foundHearing = caseData.getFirstHearingOfType(OTHER);
 
             assertThat(foundHearing).isNotPresent();
         }
