@@ -27,7 +27,6 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService.UPDATE_CASE_EVENT;
 
 @Slf4j
 @Service
@@ -37,7 +36,6 @@ public class SendDocumentService {
     private final SendLetterService sendLetters;
     private final CoreCaseDataService caseService;
     private final SentDocumentHistoryService sentDocuments;
-    private final CaseConverter caseConverter;
 
     public void sendDocuments(CaseData caseData, List<DocumentReference> documentToBeSent, List<Recipient> parties) {
         sendDocuments(new SendDocumentRequest(caseData,
@@ -66,7 +64,7 @@ public class SendDocumentService {
         }
 
         if (isNotEmpty(deliverableRecipients) && isNotEmpty(documentToBeSent)) {
-            // Perform sendLetter calls
+
             List<SentDocument> docs = documentToBeSent.stream()
                 .flatMap(document -> sendLetters.send(document.getDocumentReference(),
                     deliverableRecipients,
@@ -75,15 +73,10 @@ public class SendDocumentService {
                     document.getLanguage()).stream())
                 .collect(toList());
 
-            // Pop the audit trail on the case data if successful
-            caseService.performPostSubmitCallback(caseData.getId(), UPDATE_CASE_EVENT,
-                caseDetails -> {
-                    CaseData currentCaseData = caseConverter.convert(caseDetails);
-                    List<Element<SentDocuments>> documentsSent = sentDocuments.addToHistory(
-                        currentCaseData.getDocumentsSentToParties(), docs);
+            List<Element<SentDocuments>> documentsSent = sentDocuments.addToHistory(
+                caseData.getDocumentsSentToParties(), docs);
 
-                    return Map.of("documentsSentToParties", documentsSent);
-                });
+            caseService.updateCase(caseData.getId(), Map.of("documentsSentToParties", documentsSent));
         }
     }
 

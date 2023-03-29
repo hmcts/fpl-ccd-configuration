@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.utils.extension.TestLogs;
 import uk.gov.hmcts.reform.fpl.utils.extension.TestLogsExtension;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static java.util.Collections.emptyList;
@@ -41,7 +42,6 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Language.ENGLISH;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Language.WELSH;
-import static uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService.UPDATE_CASE_EVENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
@@ -144,13 +144,17 @@ class SendDocumentServiceTest {
             when(sendLetters.send(any(), any(), any(), any(), eq(ENGLISH)))
                 .thenReturn(sentDocuments);
 
+            when(sentDocumentsService.addToHistory(caseData.getDocumentsSentToParties(), sentDocuments))
+                .thenReturn(sentDocumentsHistory);
+
             underTest.sendDocuments(caseData, List.of(document), List.of(recipient1, recipient2, recipient3));
 
             verify(sendLetters)
                 .send(document, List.of(recipient3), caseData.getId(), caseData.getFamilyManCaseNumber(),
                     ENGLISH);
 
-            verify(caseService).performPostSubmitCallback(eq(caseData.getId()), eq(UPDATE_CASE_EVENT), any());
+            verify(caseService)
+                .updateCase(caseData.getId(), Map.of("documentsSentToParties", sentDocumentsHistory));
 
             assertThat(logs.getErrors())
                 .containsExactly("Case 100 has 2 recipients with incomplete postal information");
@@ -183,6 +187,14 @@ class SendDocumentServiceTest {
             when(sendLetters.send(eq(document2), any(), any(), any(), eq(ENGLISH)))
                 .thenReturn(List.of(sentDocument2ForRecipient1, sentDocument2ForRecipient2));
 
+            when(sentDocumentsService.addToHistory(caseData.getDocumentsSentToParties(),
+                List.of(
+                    sentDocument1ForRecipient1,
+                    sentDocument1ForRecipient2,
+                    sentDocument2ForRecipient1,
+                    sentDocument2ForRecipient2)))
+                .thenReturn(sentDocumentsHistory);
+
             underTest.sendDocuments(caseData, List.of(document1, document2), List.of(recipient1, recipient2));
 
             verify(sendLetters)
@@ -193,7 +205,8 @@ class SendDocumentServiceTest {
                 .send(document2, List.of(recipient1, recipient2), caseData.getId(), caseData.getFamilyManCaseNumber(),
                     ENGLISH);
 
-            verify(caseService).performPostSubmitCallback(eq(caseData.getId()), eq(UPDATE_CASE_EVENT), any());
+            verify(caseService)
+                .updateCase(caseData.getId(), Map.of("documentsSentToParties", sentDocumentsHistory));
 
             assertThat(logs.getErrors()).isEmpty();
         }
@@ -225,6 +238,14 @@ class SendDocumentServiceTest {
             when(sendLetters.send(eq(document2), any(), any(), any(), eq(ENGLISH)))
                 .thenReturn(List.of(sentDocument2ForRecipient1, sentDocument2ForRecipient2));
 
+            when(sentDocumentsService.addToHistory(caseData.getDocumentsSentToParties(),
+                List.of(
+                    sentDocument1ForRecipient1,
+                    sentDocument1ForRecipient2,
+                    sentDocument2ForRecipient1,
+                    sentDocument2ForRecipient2)))
+                .thenReturn(sentDocumentsHistory);
+
             underTest.sendDocuments(
                 new SendDocumentRequest(
                     caseData, List.of(
@@ -246,7 +267,8 @@ class SendDocumentServiceTest {
                 .send(document2, List.of(recipient1, recipient2), caseData.getId(), caseData.getFamilyManCaseNumber(),
                     ENGLISH);
 
-            verify(caseService).performPostSubmitCallback(eq(caseData.getId()), eq(UPDATE_CASE_EVENT), any());
+            verify(caseService)
+                .updateCase(caseData.getId(), Map.of("documentsSentToParties", sentDocumentsHistory));
 
             assertThat(logs.getErrors()).isEmpty();
         }

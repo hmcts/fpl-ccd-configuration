@@ -10,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.fpl.config.CtscTeamLeadLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -32,7 +31,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.ApplicationRemovedNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.orderremoval.OrderRemovalTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -92,7 +91,7 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
     private NotificationClient notificationClient;
 
     @MockBean
-    private CCDConcurrencyHelper helper;
+    private CoreCaseDataService coreCaseDataService;
 
     @MockBean
     private CtscTeamLeadLookupConfiguration ctscTeamLeadLookupConfiguration;
@@ -112,11 +111,9 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
     @Test
     void shouldPublishPopulateSDOAndSDORemovedEventsIfNewSDOHasBeenRemoved() throws NotificationClientException {
         StandardDirectionOrder previousSDO = StandardDirectionOrder.builder().removalReason(REMOVAL_REASON).build();
+
         CaseDetails caseDetails = caseDetailsWithRemovableOrders(emptyList(), wrapElements(previousSDO), emptyList(),
             emptyList());
-        when(helper.startEvent(eq(CASE_ID), eq("populateSDO")))
-            .thenReturn(StartEventResponse.builder().caseDetails(caseDetails).build());
-
         CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), emptyList(), emptyList(),
             emptyList());
 
@@ -127,13 +124,11 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
 
         postSubmittedEvent(callbackRequest);
 
-        verify(helper, timeout(ASYNC_MAX_TIMEOUT)).startEvent(
+        verify(coreCaseDataService, timeout(ASYNC_MAX_TIMEOUT)).triggerEvent(
+            eq(JURISDICTION),
+            eq(CASE_TYPE),
             eq(CASE_ID),
-            eq("populateSDO"));
-
-        verify(helper, timeout(ASYNC_MAX_TIMEOUT)).submitEvent(
-            any(),
-            eq(CASE_ID),
+            eq("populateSDO"),
             anyMap());
 
         verify(notificationClient).sendEmail(
@@ -155,9 +150,6 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
         List<Element<StandardDirectionOrder>> hiddenSDOs = List.of(previousSDO, newSDO);
 
         CaseDetails caseDetails = caseDetailsWithRemovableOrders(emptyList(), hiddenSDOs, emptyList(), emptyList());
-        when(helper.startEvent(eq(CASE_ID), eq("populateSDO")))
-            .thenReturn(StartEventResponse.builder().caseDetails(caseDetails).build());
-
         CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), previousHiddenSDOs, emptyList(),
             emptyList());
 
@@ -168,13 +160,11 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
 
         postSubmittedEvent(callbackRequest);
 
-        verify(helper, timeout(ASYNC_MAX_TIMEOUT)).startEvent(
-            eq(CASE_ID),
-            eq("populateSDO"));
-
-        verify(helper, timeout(ASYNC_MAX_TIMEOUT)).submitEvent(
-            any(),
-            eq(CASE_ID),
+        verify(coreCaseDataService, timeout(ASYNC_MAX_TIMEOUT)).triggerEvent(
+            eq(JURISDICTION),
+            eq(CASE_TYPE),
+            eq(12345L),
+            eq("populateSDO"),
             anyMap());
 
         verify(notificationClient).sendEmail(
@@ -203,7 +193,7 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
 
         postSubmittedEvent(callbackRequest);
 
-        verifyNoMoreInteractions(helper);
+        verifyNoMoreInteractions(coreCaseDataService);
         checkThat(() -> verify(notificationClient, never())
             .sendEmail(eq(SDO_REMOVAL_NOTIFICATION_TEMPLATE), any(), any(), any()));
     }
@@ -291,7 +281,7 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
             notificationReference(CASE_ID)
         );
 
-        verifyNoMoreInteractions(helper);
+        verifyNoMoreInteractions(coreCaseDataService);
     }
 
     @Test

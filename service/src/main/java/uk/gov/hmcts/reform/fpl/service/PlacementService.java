@@ -319,7 +319,7 @@ public class PlacementService {
             .courtName(caseData.getCourt().getName())
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .hearingDate(String.format(formatLocalDateTimeBaseUsingFormat(
-                    placementEventData.getPlacementNoticeDateTime(), DATE_TIME_WITH_ORDINAL_SUFFIX),
+                placementEventData.getPlacementNoticeDateTime(), DATE_TIME_WITH_ORDINAL_SUFFIX),
                 getDayOfMonthSuffix(placementEventData.getPlacementNoticeDateTime().getDayOfMonth())))
             .hearingDuration(placementEventData.getPlacementNoticeDuration())
             .hearingVenue(hearingVenueLookUpService.getHearingVenue(
@@ -460,38 +460,32 @@ public class PlacementService {
 
     public PlacementEventData sealPlacementApplicationAfterEventSubmitted(CaseData caseData) {
         final PlacementEventData placementData = caseData.getPlacementEventData();
-        if (placementData != null && isNotEmpty(placementData.getPlacementIdToBeSealed())) {
-            return sealPlacementApplicationAfterEventSubmitted(caseData, placementData.getPlacementIdToBeSealed());
-        }
-        return placementData;
-    }
 
-    public PlacementEventData sealPlacementApplicationAfterEventSubmitted(CaseData caseData, UUID toSeal) {
-        final PlacementEventData placementData = caseData.getPlacementEventData();
+        if (placementData != null) {
+            if (isNotEmpty(placementData.getPlacementIdToBeSealed())) {
+                // seal the placement in placement list with the given ID
+                Placement placementToBeSealed = getPlacementById(caseData, placementData.getPlacementIdToBeSealed());
+                DocumentReference applicationToBeSealed = placementToBeSealed.getApplication();
 
-        if (placementData != null && isNotEmpty(toSeal)) {
-            // seal the placement in placement list with the given ID
-            Placement placementToBeSealed = getPlacementById(caseData, toSeal);
-            DocumentReference applicationToBeSealed = placementToBeSealed.getApplication();
+                DocumentReference sealedApplication = sealingService.sealDocument(applicationToBeSealed,
+                    caseData.getCourt(), SealType.ENGLISH);
 
-            DocumentReference sealedApplication = sealingService.sealDocument(applicationToBeSealed,
-                caseData.getCourt(), SealType.ENGLISH);
+                placementToBeSealed.setApplication(sealedApplication);
 
-            placementToBeSealed.setApplication(sealedApplication);
+                // seal the current placement if it is the same placement
+                if (placementData.getPlacement() != null && placementData.getPlacement().getApplication() != null
+                    && placementData.getPlacement().getApplication().getBinaryUrl()
+                        .equals(applicationToBeSealed.getBinaryUrl())) {
+                    placementData.getPlacement().setApplication(sealedApplication);
+                }
 
-            // seal the current placement if it is the same placement
-            if (placementData.getPlacement() != null && placementData.getPlacement().getApplication() != null
-                && placementData.getPlacement().getApplication().getBinaryUrl()
-                .equals(applicationToBeSealed.getBinaryUrl())) {
-                placementData.getPlacement().setApplication(sealedApplication);
+                return PlacementEventData.builder()
+                    .placements(placementData.getPlacements())
+                    .placement(placementData.getPlacement())
+                    .build();
             }
-
-            return PlacementEventData.builder()
-                .placements(placementData.getPlacements())
-                .placement(placementData.getPlacement())
-                .build();
         }
 
-        return placementData;
+        return null;
     }
 }

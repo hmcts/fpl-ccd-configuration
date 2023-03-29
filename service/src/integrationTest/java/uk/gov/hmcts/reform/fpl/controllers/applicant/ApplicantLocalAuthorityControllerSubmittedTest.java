@@ -13,9 +13,11 @@ import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import static org.apache.commons.lang3.RandomUtils.nextLong;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
@@ -55,10 +57,12 @@ class ApplicantLocalAuthorityControllerSubmittedTest extends AbstractCallbackTes
 
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 
-        verify(coreCaseDataService).performPostSubmitCallback(
+        verify(coreCaseDataService).triggerEvent(
+            eq(JURISDICTION),
+            eq(CASE_TYPE),
             eq(caseData.getId()),
             eq("internal-update-task-list"),
-            any());
+            anyMap());
     }
 
     @Test
@@ -78,10 +82,12 @@ class ApplicantLocalAuthorityControllerSubmittedTest extends AbstractCallbackTes
 
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 
-        verify(coreCaseDataService).performPostSubmitCallback(
+        verify(coreCaseDataService).triggerEvent(
+            eq(JURISDICTION),
+            eq(CASE_TYPE),
             eq(caseData.getId()),
             eq("internal-update-case-summary"),
-            any());
+            anyMap());
     }
 
     private static Colleague solicitor() {

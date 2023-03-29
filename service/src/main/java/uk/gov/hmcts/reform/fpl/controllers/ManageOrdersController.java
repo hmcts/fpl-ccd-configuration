@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderOperationPostPopulator;
-import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderPostSubmitHelper;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrdersEventBuilder;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderProcessingService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderShowHideQuestionsCalculator;
@@ -28,11 +27,11 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.modifier.ManageOrders
 import uk.gov.hmcts.reform.fpl.service.orders.validator.OrderValidator;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.io.FilenameUtils.getExtension;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Api
 @RestController
@@ -50,7 +49,6 @@ public class ManageOrdersController extends CallbackController {
     private final AmendableOrderListBuilder amendableOrderListBuilder;
     private final CoreCaseDataService coreCaseDataService;
     private final ManageOrdersEventBuilder eventBuilder;
-    private final ManageOrderPostSubmitHelper postSubmitHelper;
     private static final String PDF = "pdf";
 
     @PostMapping("/about-to-start")
@@ -141,18 +139,31 @@ public class ManageOrdersController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails oldCaseDetails = callbackRequest.getCaseDetails();
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        // Start event with concurrency controls
-        CaseDetails caseDetails = coreCaseDataService.performPostSubmitCallback(oldCaseDetails.getId(),
-            "internal-change-manage-order", postSubmitHelper::getPostSubmitUpdates, true);
+        CaseDetails updatedDetails = manageOrdersCaseDataFixer.fixAndRetriveCaseDetails(caseDetails);
+        Map<String, Object> data = updatedDetails.getData();
+        CaseData fixedCaseData = manageOrdersCaseDataFixer.fix(getCaseData(updatedDetails));
 
-        if (isEmpty(caseDetails)) {
-            // if our callback has failed 3 times, all we have is the prior caseData to send notifications based on
-            caseDetails = oldCaseDetails;
+        CaseData caseData;
+        Map<String, Object> updates = new HashMap<>();
+        try {
+            updates = orderProcessing.postProcessDocument(fixedCaseData);
+        } catch (Exception exception) {
+            log.error("Error while processing manage orders document for case id {}.",
+                caseDetails.getId(), exception);
         }
 
-        CaseData caseData = getCaseData(caseDetails);
+        if (updates.isEmpty()) {
+            caseData = getCaseData(callbackRequest);
+        } else {
+            data.putAll(updates);
+            caseData = getCaseData(updatedDetails);
+        }
+        coreCaseDataService.triggerEvent(caseData.getId(),
+            "internal-change-manage-order",
+            updates);
+
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
         publishEvent(eventBuilder.build(caseData, caseDataBefore));
     }
