@@ -4,10 +4,9 @@ import uk.gov.hmcts.reform.fpl.exceptions.AboutToStartOrSubmitCallbackException;
 
 import java.util.UUID;
 
-public class UnexpectedNumberOfCMOsRemovedException extends AboutToStartOrSubmitCallbackException {
+import static uk.gov.hmcts.reform.fpl.controllers.RemovalToolController.CMO_ERROR_MESSAGE;
 
-    private static final String CMO_ERROR_MESSAGE = "Email the help desk at dcd-familypubliclawservicedesk@hmcts.net to"
-        + " remove this order. Quoting CMO %s, and the hearing it was added for.";
+public class UnexpectedNumberOfCMOsRemovedException extends AboutToStartOrSubmitCallbackException {
 
     public UnexpectedNumberOfCMOsRemovedException(UUID removedOrderID, String message) {
         super(String.format(CMO_ERROR_MESSAGE, removedOrderID), message);
