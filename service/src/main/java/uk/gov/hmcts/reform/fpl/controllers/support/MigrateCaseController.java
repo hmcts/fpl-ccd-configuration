@@ -33,7 +33,8 @@ public class MigrateCaseController extends CallbackController {
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1261", this::run1261
+        "DFPL-1261", this::run1261,
+        "DFPL-1226", this::run1226
     );
 
     @PostMapping("/about-to-submit")
@@ -66,5 +67,10 @@ public class MigrateCaseController extends CallbackController {
             migrationId, expectedOrderId));
         caseDetails.getData().putAll(migrateCaseService.removeHearingOrdersBundlesDrafts(getCaseData(caseDetails),
             migrationId, expectedHearingOrderBundleId));
+    }
+
+    private void run1226(CaseDetails caseDetails) {
+        migrateCaseService.doDocumentViewNCCheck(caseDetails.getId(), "DFPL-1226", caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(getCaseData(caseDetails)));
     }
 }
