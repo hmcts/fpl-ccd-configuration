@@ -858,6 +858,7 @@ public class CaseData extends CaseDataParent {
 
     private final List<Element<HearingOrder>> draftUploadedCMOs;
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
+    private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDraftReview;
     private List<Element<HearingOrder>> refusedHearingOrders;
     private final UUID lastHearingOrderDraftsHearingId;
 
@@ -884,19 +885,17 @@ public class CaseData extends CaseDataParent {
 
     @JsonIgnore
     public List<Element<HearingOrder>> getOrdersFromHearingOrderDraftsBundles() {
-        if (hearingOrdersBundlesDrafts != null) {
-            return hearingOrdersBundlesDrafts.stream()
-                .map(Element::getValue)
-                .flatMap((HearingOrdersBundle hearingOrdersBundle)
-                    -> hearingOrdersBundle.getOrders().stream())
-                .collect(toList());
-        }
-
-        return new ArrayList<>();
+        return Stream.concat(nullSafeList(hearingOrdersBundlesDrafts).stream(),
+                nullSafeList(hearingOrdersBundlesDraftReview).stream())
+            .map(Element::getValue)
+            .flatMap((HearingOrdersBundle hearingOrdersBundle)
+                -> hearingOrdersBundle.getOrders().stream())
+            .collect(toList());
     }
 
     public Optional<Element<HearingOrdersBundle>> getHearingOrderBundleThatContainsOrder(UUID orderId) {
-        return nullSafeList(hearingOrdersBundlesDrafts).stream()
+        return Stream.concat(nullSafeList(hearingOrdersBundlesDrafts).stream(),
+                    nullSafeList(hearingOrdersBundlesDraftReview).stream())
             .filter(hearingOrdersBundleElement
                 -> hearingOrdersBundleElement.getValue().getOrders().stream()
                 .anyMatch(orderElement -> orderElement.getId().equals(orderId)))
