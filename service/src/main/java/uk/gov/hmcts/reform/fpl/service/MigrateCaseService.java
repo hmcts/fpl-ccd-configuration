@@ -406,6 +406,36 @@ public class MigrateCaseService {
         return ret;
     }
 
+    public Map<String, Object> removeDraftUploadedCMOs(CaseData caseData,
+                                                       String migrationId,
+                                                       UUID expectedOrderId) {
+        Long caseId = caseData.getId();
+        List<Element<HearingOrder>> draftUploadedCMOs = caseData.getDraftUploadedCMOs()
+            .stream().filter(el -> !el.getId().equals(expectedOrderId)).collect(toList());
+
+        if (draftUploadedCMOs.size() != caseData.getDraftUploadedCMOs().size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, invalid draft uploaded CMO",
+                migrationId, caseId));
+        }
+        return Map.of("draftUploadedCMOs", draftUploadedCMOs);
+    }
+
+    public Map<String, Object> removeHearingOrdersBundlesDrafts(CaseData caseData,
+                                                                String migrationId,
+                                                                UUID expectedHearingOrderBundleId) {
+        Long caseId = caseData.getId();
+        List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts = caseData.getHearingOrdersBundlesDrafts()
+            .stream().filter(el -> !el.getId().equals(expectedHearingOrderBundleId)).collect(toList());
+
+        if (hearingOrdersBundlesDrafts.size() != caseData.getHearingOrdersBundlesDrafts().size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, invalid hearing order bundle draft",
+                migrationId, caseId));
+        }
+        return Map.of("hearingOrdersBundlesDrafts", hearingOrdersBundlesDrafts);
+    }
+
     public Map<String, Object> renameApplicationDocuments(CaseData caseData) {
         List<Element<ApplicationDocument>> updatedList = caseData.getApplicationDocuments().stream()
             .map(el -> {
