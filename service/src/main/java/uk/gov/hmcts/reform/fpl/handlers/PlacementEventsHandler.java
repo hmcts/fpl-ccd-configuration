@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
@@ -54,6 +55,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.PLACEMENT_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.PLACEMENT_NOTICE;
+import static uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService.UPDATE_CASE_EVENT;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.nullifyTemporaryFields;
 
 @Slf4j
@@ -277,9 +279,12 @@ public class PlacementEventsHandler {
     }
 
     private void updateCase(CaseData caseData) {
-        final Map<String, Object> updates = Map.of("placementLastPaymentTime", time.now());
+        coreCaseDataService.performPostSubmitCallback(caseData.getId(), UPDATE_CASE_EVENT, this::getUpdates);
+    }
 
-        coreCaseDataService.updateCase(caseData.getId(), nullifyTemporaryFields(updates, PlacementEventData.class));
+    public Map<String, Object> getUpdates(CaseDetails caseDetails) {
+        final Map<String, Object> updates = Map.of("placementLastPaymentTime", time.now());
+        return nullifyTemporaryFields(updates, PlacementEventData.class);
     }
 
     private void handlePaymentNotTaken(CaseData caseData, OrderApplicant applicant) {
