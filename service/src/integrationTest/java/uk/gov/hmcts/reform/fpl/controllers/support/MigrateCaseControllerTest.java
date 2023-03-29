@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
@@ -22,6 +23,9 @@ import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_NAME;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_REGION;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
@@ -160,5 +164,58 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThat(response.getData()).extracting("placementsNonConfidential", "placementsNonConfidentialNotices")
                 .containsExactly(null, null);
         }
+    }
+
+    @Nested
+    class Dfpl1352 {
+
+        private final String migrationId = "DFPL-1352";
+
+        @Test
+        void shouldThrowExceptionWhenInHighCourt() {
+            CaseData caseData = CaseData.builder()
+                .id(12345L)
+                .court(new Court(RCJ_HIGH_COURT_NAME, "highcourt@email.com", RCJ_HIGH_COURT_CODE,
+                    RCJ_HIGH_COURT_REGION, null))
+                .sendToCtsc("No")
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-1352, case reference = 12345}, "
+                    + "Skipping migration as case is in the High Court");
+        }
+
+        @Test
+        void shouldThrowExceptionWhenAlreadySendingToCtsc() {
+            CaseData caseData = CaseData.builder()
+                .id(12345L)
+                .court(new Court("Name", "court@email.com", "001", "Region", null))
+                .sendToCtsc("Yes")
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-1352, case reference = 12345}, "
+                    + "Skipping migration as case is already sending to the CTSC");
+        }
+
+        @Test
+        void shouldMigrateCaseIfInNormalCourtAndNotSendingToCtsc() {
+            CaseData caseData = CaseData.builder()
+                .id(12345L)
+                .court(new Court("Name", "court@email.com", "001", "Region", null))
+                .sendToCtsc("No")
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getSendToCtsc()).isEqualTo("Yes");
+        }
+
     }
 }

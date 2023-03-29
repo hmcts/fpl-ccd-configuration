@@ -23,6 +23,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
 
 @Api
 @RestController
@@ -43,10 +44,11 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1241", this::run1241,
         "DFPL-1244", this::run1244,
         "DFPL-1243", this::run1243,
-        "DFPL-1282", this::run1282,      
+        "DFPL-1282", this::run1282,
         "DFPL-1270", this::run1270,
         "DFPL-1297", this::run1297,
-        "DFPL-1263", this::run1263
+        "DFPL-1263", this::run1263,
+        "DFPL-1352", this::run1352
     );
 
     @PostMapping("/about-to-submit")
@@ -150,4 +152,25 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
         caseDetails.getData().putAll(migrateCaseService.renameApplicationDocuments(getCaseData(caseDetails)));
     }
+
+    private void run1352(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1352";
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (caseData.getCourt().getCode().equals(RCJ_HIGH_COURT_CODE)) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, Skipping migration as case is in the High Court",
+                migrationId, caseData.getId()
+            ));
+        }
+        if (caseData.getSendToCtsc().equals("Yes")) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, Skipping migration as case is already sending to the CTSC",
+                migrationId, caseData.getId()
+            ));
+        }
+        caseDetails.getData().put("sendToCtsc", "Yes");
+    }
+
 }
