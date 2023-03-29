@@ -44,20 +44,6 @@ public class AssertionHelper {
 
     /**
      * Supports verification of asynchronous execution
-     * Polls until verification function runs without exceptions for max 1[s].
-     * example usage: checkUntil(() -> verify(mock).method())
-     */
-    public static void checkUntilSecs(ThrowableRunnable verification, int secs) {
-        await().pollInterval(POLL_INTERVAL).atMost(ASYNC_MAX_DELAY)
-            .ignoreExceptions()
-            .until(() -> {
-                verification.run();
-                return true;
-            });
-    }
-
-    /**
-     * Supports verification of asynchronous execution
      * Polls until verification function throws exceptions or for 1[s].
      * Checks that verification is met all the time within 1[s] period and fails fast as soon as condition is not met
      * Useful for negative scenarios like:

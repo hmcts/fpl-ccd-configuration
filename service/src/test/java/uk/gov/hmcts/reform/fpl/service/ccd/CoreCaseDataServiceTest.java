@@ -48,8 +48,6 @@ class CoreCaseDataServiceTest {
     @Mock
     private CoreCaseDataApi coreCaseDataApi;
     @Mock
-    private CCDConcurrencyHelper concurrencyHelper;
-    @Mock
     private RequestData requestData;
 
     @Spy

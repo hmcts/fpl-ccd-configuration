@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.lang3.RandomUtils.nextLong;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -45,9 +44,9 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.service.CaseConverter.MAP_TYPE;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.feignException;
 
 @ExtendWith(SpringExtension.class)
@@ -106,7 +105,6 @@ class UpdateSummaryCaseDetailsTest {
     private CoreCaseDataService ccdService;
     @Mock
     private JobExecutionContext executionContext;
-    private CaseConverter caseConverter;
 
     // autowire required due to the model classes not having been set up properly with jackson in the past,
     // springs construction of the object mapper works but a default construction of it doesn't :(
@@ -117,16 +115,15 @@ class UpdateSummaryCaseDetailsTest {
 
     @BeforeEach
     void initMocks() {
-        caseConverter = new CaseConverter(mapper);
-        underTest = new UpdateSummaryCaseDetails(caseConverter,
+        CaseConverter converter = new CaseConverter(mapper);
+        underTest = new UpdateSummaryCaseDetails(converter,
             mapper,
             searchService,
             ccdService,
             toggleService,
             summaryService);
 
-        caseSummaryData = mapper.convertValue(SUMMARY, new TypeReference<>() {
-        });
+        caseSummaryData = mapper.convertValue(SUMMARY, new TypeReference<>() {});
 
         JobDetail jobDetail = mock(JobDetail.class);
         JobKey jobKey = mock(JobKey.class);
@@ -137,45 +134,6 @@ class UpdateSummaryCaseDetailsTest {
     }
 
     @Test
-    void shouldPerformUpdateFunction() {
-        CaseData caseData = CaseData.builder()
-            .syntheticCaseSummary(SyntheticCaseSummary.builder()
-                .caseSummaryHasNextHearing("No")
-                .build())
-            .build();
-
-        CaseData expectedCaseData1 = caseData.toBuilder().id(CASE_ID)
-            .uploadDraftOrdersEventData(UploadDraftOrdersData.builder().build())
-            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
-            .caseProgressionReportEventData(CaseProgressionReportEventData
-                .builder()
-                .build())
-            .build();
-
-        CaseDetails caseDetails = CaseDetails.builder()
-            .id(expectedCaseData1.getId())
-            .data(mapper.convertValue(expectedCaseData1, MAP_TYPE))
-            .build();
-        underTest.getUpdates(caseDetails);
-
-        verify(summaryService).generateSummaryFields(expectedCaseData1);
-    }
-
-    @Test
-    void shouldNotCallCCDWhenNothingToUpdate() {
-        CaseDetails caseDetails = CaseDetails.builder().data(Map.of()).build();
-
-        when(summaryService.generateSummaryFields(CaseData.builder()
-            .caseProgressionReportEventData(CaseProgressionReportEventData
-                .builder()
-                .build()).build()))
-            .thenReturn(Map.of());
-
-        Map<String, Object> updates = underTest.getUpdates(caseDetails);
-        assertThat(updates).isEmpty();
-    }
-
-    @Test
     void shouldUseNonStandardQueryWhenFirstRunIsEnabled() {
         when(toggleService.isSummaryTabFirstCronRunEnabled()).thenReturn(true);
 
@@ -183,10 +141,10 @@ class UpdateSummaryCaseDetailsTest {
 
         when(searchService.search(FIRST_RUN_ES_QUERY, SEARCH_SIZE, 0)).thenReturn(caseDetails);
         when(summaryService.generateSummaryFields(CaseData.builder()
-            .caseProgressionReportEventData(CaseProgressionReportEventData
-                .builder()
-                .build())
-            .build())).thenReturn(Map.of());
+                .caseProgressionReportEventData(CaseProgressionReportEventData
+                        .builder()
+                        .build())
+                .build())).thenReturn(Map.of());
 
         underTest.execute(executionContext);
 
@@ -201,14 +159,32 @@ class UpdateSummaryCaseDetailsTest {
 
         when(searchService.search(ES_QUERY, SEARCH_SIZE, 0)).thenReturn(caseDetails);
         when(summaryService.generateSummaryFields(CaseData.builder()
-            .caseProgressionReportEventData(CaseProgressionReportEventData
-                .builder()
-                .build())
-            .build())).thenReturn(Map.of());
+                .caseProgressionReportEventData(CaseProgressionReportEventData
+                        .builder()
+                        .build())
+                .build())).thenReturn(Map.of());
 
         underTest.execute(executionContext);
 
         verify(searchService).search(ES_QUERY, SEARCH_SIZE, 0);
+    }
+
+    @Test
+    void shouldNotCallCCDWhenNothingToUpdate() {
+        when(toggleService.isSummaryTabFirstCronRunEnabled()).thenReturn(false);
+
+        List<CaseDetails> caseDetails = List.of(CaseDetails.builder().data(Map.of()).build());
+
+        when(searchService.search(ES_QUERY, SEARCH_SIZE, 0)).thenReturn(caseDetails);
+        when(summaryService.generateSummaryFields(CaseData.builder()
+                .caseProgressionReportEventData(CaseProgressionReportEventData
+                    .builder()
+                    .build()).build()))
+                .thenReturn(Map.of());
+
+        underTest.execute(executionContext);
+
+        verifyNoInteractions(ccdService);
     }
 
     @Test
@@ -228,17 +204,18 @@ class UpdateSummaryCaseDetailsTest {
 
         List<CaseDetails> caseDetails = List.of(CaseDetails.builder()
             .id(CASE_ID)
-            .data(mapper.convertValue(caseData, new TypeReference<>() {
-            }))
+            .data(mapper.convertValue(caseData, new TypeReference<>() {}))
             .build());
 
         caseData = caseData.toBuilder().id(CASE_ID).build();
 
         when(searchService.search(ES_QUERY, SEARCH_SIZE, 0)).thenReturn(caseDetails);
+        when(summaryService.generateSummaryFields(caseData)).thenReturn(caseSummaryData);
 
         underTest.execute(executionContext);
 
-        verify(ccdService).performPostSubmitCallback(eq(CASE_ID), eq(EVENT_NAME), any());
+        verify(summaryService).generateSummaryFields(caseData);
+        verify(ccdService).triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, EVENT_NAME, caseSummaryData);
     }
 
     @Test
@@ -254,14 +231,12 @@ class UpdateSummaryCaseDetailsTest {
 
         CaseDetails caseDetails = CaseDetails.builder()
             .id(CASE_ID)
-            .data(mapper.convertValue(caseData, new TypeReference<>() {
-            }))
+            .data(mapper.convertValue(caseData, new TypeReference<>() {}))
             .build();
 
         CaseDetails caseDetails2 = CaseDetails.builder()
             .id(54321L)
-            .data(mapper.convertValue(caseData, new TypeReference<>() {
-            }))
+            .data(mapper.convertValue(caseData, new TypeReference<>() {}))
             .build();
 
         List<CaseDetails> allCaseDetails = List.of(caseDetails, caseDetails2);
@@ -269,13 +244,29 @@ class UpdateSummaryCaseDetailsTest {
         when(searchService.search(ES_QUERY, SEARCH_SIZE, 0)).thenReturn(allCaseDetails);
         when(summaryService.generateSummaryFields(any())).thenReturn(caseSummaryData);
         doThrow(feignException(500))
-            .when(ccdService).performPostSubmitCallback(eq(CASE_ID), eq(EVENT_NAME), any());
+            .when(ccdService).triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, EVENT_NAME, caseSummaryData);
 
         underTest.execute(executionContext);
 
+        CaseData expectedCaseData1 = caseData.toBuilder().id(CASE_ID)
+            .uploadDraftOrdersEventData(UploadDraftOrdersData.builder().build())
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
+            .caseProgressionReportEventData(CaseProgressionReportEventData
+                .builder()
+                .build())
+            .build();
+        CaseData expectedCaseData2 = caseData.toBuilder().id(54321L)
+            .uploadDraftOrdersEventData(UploadDraftOrdersData.builder().build())
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
+            .caseProgressionReportEventData(CaseProgressionReportEventData
+                .builder()
+                .build())
+            .build();
 
-        verify(ccdService).performPostSubmitCallback(eq(CASE_ID), eq(EVENT_NAME), any());
-        verify(ccdService).performPostSubmitCallback(eq(54321L), eq(EVENT_NAME), any());
+        verify(summaryService).generateSummaryFields(expectedCaseData1);
+        verify(summaryService).generateSummaryFields(expectedCaseData2);
+        verify(ccdService).triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, EVENT_NAME, caseSummaryData);
+        verify(ccdService).triggerEvent(JURISDICTION, CASE_TYPE, 54321L, EVENT_NAME, caseSummaryData);
     }
 
     @Test
@@ -293,14 +284,12 @@ class UpdateSummaryCaseDetailsTest {
 
         CaseDetails caseDetails = CaseDetails.builder()
             .id(CASE_ID)
-            .data(mapper.convertValue(caseData, new TypeReference<>() {
-            }))
+            .data(mapper.convertValue(caseData, new TypeReference<>() {}))
             .build();
 
         CaseDetails caseDetails2 = CaseDetails.builder()
             .id(54321L)
-            .data(mapper.convertValue(caseData, new TypeReference<>() {
-            }))
+            .data(mapper.convertValue(caseData, new TypeReference<>() {}))
             .build();
 
         List<CaseDetails> allCaseDetails = List.of(caseDetails, caseDetails2);
@@ -312,7 +301,21 @@ class UpdateSummaryCaseDetailsTest {
 
         underTest.execute(executionContext);
 
-        verify(ccdService, times(2)).performPostSubmitCallback(any(), eq(EVENT_NAME), any());
+        CaseData expectedCaseData1 = caseData.toBuilder()
+                .caseProgressionReportEventData(CaseProgressionReportEventData
+                    .builder()
+                    .build())
+                .id(CASE_ID)
+                .build();
+        CaseData expectedCaseData2 = caseData.toBuilder()
+                .caseProgressionReportEventData(CaseProgressionReportEventData
+                    .builder()
+                    .build())
+                .id(54321L).build();
+
+        verify(summaryService).generateSummaryFields(expectedCaseData1);
+        verify(summaryService).generateSummaryFields(expectedCaseData2);
+        verify(ccdService).triggerEvent(JURISDICTION, CASE_TYPE, 54321L, EVENT_NAME, caseSummaryData);
         verifyNoMoreInteractions(ccdService);
     }
 
@@ -335,8 +338,7 @@ class UpdateSummaryCaseDetailsTest {
 
         CaseDetails caseDetails2 = CaseDetails.builder()
             .id(54321L)
-            .data(mapper.convertValue(caseData, new TypeReference<>() {
-            }))
+            .data(mapper.convertValue(caseData, new TypeReference<>() {}))
             .build();
 
         List<CaseDetails> allCaseDetails = List.of(caseDetails, caseDetails2);
@@ -346,7 +348,15 @@ class UpdateSummaryCaseDetailsTest {
 
         underTest.execute(executionContext);
 
-        verify(ccdService, times(2)).performPostSubmitCallback(any(), eq(EVENT_NAME), any());
+        CaseData expectedCaseData2 = caseData.toBuilder()
+                .caseProgressionReportEventData(CaseProgressionReportEventData
+                .builder()
+                .build())
+                .id(54321L)
+                .build();
+
+        verify(summaryService).generateSummaryFields(expectedCaseData2);
+        verify(ccdService).triggerEvent(JURISDICTION, CASE_TYPE, 54321L, EVENT_NAME, caseSummaryData);
         verifyNoMoreInteractions(summaryService, ccdService);
     }
 
@@ -362,8 +372,7 @@ class UpdateSummaryCaseDetailsTest {
             .build();
 
         List<CaseDetails> caseDetails = new ArrayList<>();
-        Map<String, Object> data = mapper.convertValue(caseData, new TypeReference<>() {
-        });
+        Map<String, Object> data = mapper.convertValue(caseData, new TypeReference<>() {});
 
         for (int i = 0; i < 75; i++) {
             caseDetails.add(CaseDetails.builder()
@@ -377,11 +386,13 @@ class UpdateSummaryCaseDetailsTest {
 
         when(searchService.search(ES_QUERY, SEARCH_SIZE, 0)).thenReturn(firstSearchList);
         when(searchService.search(ES_QUERY, SEARCH_SIZE, 50)).thenReturn(secondSearchList);
+        when(summaryService.generateSummaryFields(any())).thenReturn(caseSummaryData);
 
         underTest.execute(executionContext);
 
+        verify(summaryService, times(75)).generateSummaryFields(any());
         verify(ccdService, times(75))
-            .performPostSubmitCallback(anyLong(), eq(EVENT_NAME), any());
+            .triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), anyLong(), eq(EVENT_NAME), eq(caseSummaryData));
     }
 
     @Test

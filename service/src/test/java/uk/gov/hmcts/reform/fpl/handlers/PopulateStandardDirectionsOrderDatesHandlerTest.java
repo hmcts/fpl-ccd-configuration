@@ -25,7 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -87,14 +89,28 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
     @Test
     void shouldTriggerEventWithCaseDataFilledWithDates() {
         handler.populateDates(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
-        verify(coreCaseDataService).performPostSubmitCallback(any(), any(), any());
+        verify(coreCaseDataService).triggerEvent(
+            eq(JURISDICTION),
+            eq(CASE_TYPE),
+            eq(CASE_ID),
+            eq(CASE_EVENT),
+            data.capture());
+
+        assertThat(data.getValue()).isEqualTo(getExpectedData());
     }
 
     @Test
     void shouldFillCaseDataWithMissingDatesOnly() {
         callbackRequest.getCaseDetails().setData(getDataWithSomeDatesFilled());
         handler.populateDates(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
-        verify(coreCaseDataService).performPostSubmitCallback(any(), any(), any());
+        verify(coreCaseDataService).triggerEvent(
+            eq(JURISDICTION),
+            eq(CASE_TYPE),
+            eq(CASE_ID),
+            eq(CASE_EVENT),
+            data.capture());
+
+        assertThat(data.getValue()).isEqualTo(getExpectedDataWithUnchangedPreexistingDates());
     }
 
     @Test

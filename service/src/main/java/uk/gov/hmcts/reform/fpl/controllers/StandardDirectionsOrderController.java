@@ -48,6 +48,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
@@ -318,10 +320,12 @@ public class StandardDirectionsOrderController extends CallbackController {
         );
 
         event.ifPresent(eventToPublish -> {
-            coreCaseDataService.performPostSubmitCallback(
+            coreCaseDataService.triggerEvent(
+                JURISDICTION,
+                CASE_TYPE,
                 caseData.getId(),
                 "internal-change-SEND_DOCUMENT",
-                caseDetails -> Map.of("documentToBeSent", eventToPublish.getOrder())
+                Map.of("documentToBeSent", eventToPublish.getOrder())
             );
 
             publishEvent(eventToPublish);

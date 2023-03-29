@@ -10,7 +10,6 @@ import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -30,7 +29,7 @@ import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
@@ -63,7 +62,6 @@ import static uk.gov.hmcts.reform.fpl.model.configuration.Language.ENGLISH;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.A70_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.COVERSHEET_PDF;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
-import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntilSecs;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.documentSent;
@@ -121,7 +119,7 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
     private ArgumentCaptor<LetterWithPdfsRequest> letterCaptor;
 
     @MockBean
-    private CCDConcurrencyHelper concurrencyHelper;
+    private CoreCaseDataService coreCaseDataService;
 
     @MockBean
     private CafcassNotificationService cafcassNotificationService;
@@ -177,12 +175,6 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
             .build());
         CaseData placementOrderCaseData = buildCaseData(child, father, mother);
 
-        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
-            .caseDetails(asCaseDetails(placementOrderCaseData))
-            .eventId(i.getArgument(1))
-            .token("token")
-            .build());
-
         postSubmittedEvent(toCallBackRequest(placementOrderCaseData, CaseData.builder().build()));
 
         //Order
@@ -195,9 +187,6 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
             eq(Set.of(ORDER_DOCUMENT_REFERENCE, ORDER_NOTIFICATION_DOCUMENT_REFERENCE)),
             eq(CafcassRequestEmailContentProvider.ORDER),
             eq(OrderCafcassData.builder().documentName(ORDER_DOCUMENT_REFERENCE.getFilename()).build()));
-
-        verify(concurrencyHelper, times(2)).startEvent(any(), any());
-        verify(concurrencyHelper, times(2)).submitEvent(any(), any(), any());
     }
 
     @Test
@@ -227,14 +216,7 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
             .party(ChildParty.builder().firstName("Theodore").lastName("Bailey").build())
             .solicitor(RespondentSolicitor.builder().email(PRIVATE_SOLICITOR_USER_EMAIL).build())
             .build());
-
         CaseData placementOrderCaseData = buildCaseData(child, father, mother);
-        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
-            .caseDetails(asCaseDetails(placementOrderCaseData))
-            .eventId(i.getArgument(1))
-            .token("token")
-            .build());
-
         postSubmittedEvent(toCallBackRequest(placementOrderCaseData, CaseData.builder().build()));
 
         //Order
@@ -247,10 +229,6 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
             eq(Set.of(ORDER_DOCUMENT_REFERENCE, ORDER_NOTIFICATION_DOCUMENT_REFERENCE)),
             eq(CafcassRequestEmailContentProvider.ORDER),
             eq(OrderCafcassData.builder().documentName(ORDER_DOCUMENT_REFERENCE.getFilename()).build()));
-
-        verify(concurrencyHelper, times(1)).startEvent(any(), any());
-        verify(concurrencyHelper, times(1)).submitEvent(any(), any(), any());
-
     }
 
     private CaseData buildCaseData(Element<Child> child,
@@ -324,8 +302,7 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
                                                         UUID secondLetterId,
                                                         Element<Respondent> firstParent,
                                                         Element<Respondent> secondParent) {
-        checkUntilSecs(() -> verify(concurrencyHelper, times(2))
-            .submitEvent(any(), eq(TEST_CASE_ID), caseDataDelta.capture()), 2);
+        checkUntil(() -> verify(coreCaseDataService).updateCase(eq(TEST_CASE_ID), caseDataDelta.capture()));
         List<Element<SentDocuments>> documentsSent = mapper.convertValue(
             caseDataDelta.getValue().get("documentsSentToParties"), new TypeReference<>() {
             }
@@ -361,7 +338,8 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
 
     @AfterEach
     void tearDown() {
-        verifyNoMoreInteractions(notificationClient, concurrencyHelper, sendLetterApi);
+        verify(coreCaseDataService).triggerEvent(any(), eq("internal-change-manage-order"), any());
+        verifyNoMoreInteractions(notificationClient, coreCaseDataService, sendLetterApi);
     }
 
 }
