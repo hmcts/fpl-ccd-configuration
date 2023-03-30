@@ -16,16 +16,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ADD_URGENT_DIRECTIONS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.JUDICIAL_GATEKEEPNIG;
 import static uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderRouteValidator.URGENT_DIRECTIONS_VALIDATION_MESSAGE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class GatekeepingOrderRouteValidatorTest {
     private static final String URGENT_ROUTE_VALIDATION_MESSAGE = "An urgent hearing order has already been added to"
-                                                                  + " this case. You can still add a gatekeeping "
-                                                                  + "order, if needed.";
+        + " this case. You can still add a gatekeeping "
+        + "order, if needed.";
     private static final String EVENT_ACCESS_VALIDATION_MESSAGE = "There is already a gatekeeping order for this case";
     private static final String HEARING_DETAILS_REQUIRED = "You need to add hearing details for the notice of "
-                                                           + "proceedings";
+        + "proceedings";
     private static final List<Element<HearingBooking>> HEARINGS = List.of(element(mock(HearingBooking.class)));
 
     private final GatekeepingOrderRouteValidator underTest = new GatekeepingOrderRouteValidator();
@@ -39,7 +40,8 @@ class GatekeepingOrderRouteValidatorTest {
             .build();
         when(sdo.isSealed()).thenReturn(true);
 
-        assertThat(underTest.allowAccessToEvent(caseData)).isEqualTo(List.of(EVENT_ACCESS_VALIDATION_MESSAGE));
+        assertThat(underTest.allowAccessToEvent(caseData, JUDICIAL_GATEKEEPNIG.getId()))
+            .isEqualTo(List.of(EVENT_ACCESS_VALIDATION_MESSAGE));
     }
 
     @Test
@@ -51,7 +53,7 @@ class GatekeepingOrderRouteValidatorTest {
             .build();
         when(sdo.isSealed()).thenReturn(false);
 
-        assertThat(underTest.allowAccessToEvent(caseData)).isEmpty();
+        assertThat(underTest.allowAccessToEvent(caseData, JUDICIAL_GATEKEEPNIG.getId())).isEmpty();
     }
 
     @Test
@@ -86,6 +88,47 @@ class GatekeepingOrderRouteValidatorTest {
         when(udo.isSealed()).thenReturn(false);
 
         assertThat(underTest.allowAccessToEvent(caseData, ADD_URGENT_DIRECTIONS.getId())).isEmpty();
+    }
+
+    @Test
+    void allowAccessToEventShouldReturnErrorWhenNotCombinedOrEPO() {
+        StandardDirectionOrder udo = mock(StandardDirectionOrder.class);
+        CaseData caseData = CaseData.builder()
+            .urgentDirectionsRouter(GatekeepingOrderRoute.UPLOAD)
+            .urgentDirectionsOrder(udo)
+            .orders(Orders.builder().orderType(List.of(OrderType.CARE_ORDER)).build())
+            .build();
+
+        assertThat(underTest.allowAccessToEvent(caseData, ADD_URGENT_DIRECTIONS.getId()))
+            .isEqualTo(List.of("An urgent directions order is not required for this case."));
+    }
+
+    @Test
+    void allowAccessToEventShouldReturnErrorWhenUDOIsNotSealedAndCombinedOrderRequested() {
+        StandardDirectionOrder udo = mock(StandardDirectionOrder.class);
+        CaseData caseData = CaseData.builder()
+            .urgentDirectionsRouter(GatekeepingOrderRoute.UPLOAD)
+            .urgentDirectionsOrder(udo)
+            .orders(Orders.builder().orderType(List.of(OrderType.CARE_ORDER, OrderType.INTERIM_CARE_ORDER)).build())
+            .build();
+        when(udo.isSealed()).thenReturn(false);
+
+        assertThat(underTest.allowAccessToEvent(caseData, JUDICIAL_GATEKEEPNIG.getId()))
+            .isEqualTo(List.of("An urgent directions order is required before "
+                + "you can add a gatekeeping order."));
+    }
+
+    @Test
+    void allowAccessToEventShouldReturnNoErrorWhenUDOIsSealedAndCombinedOrderRequested() {
+        StandardDirectionOrder udo = mock(StandardDirectionOrder.class);
+        CaseData caseData = CaseData.builder()
+            .urgentDirectionsRouter(GatekeepingOrderRoute.UPLOAD)
+            .urgentDirectionsOrder(udo)
+            .orders(Orders.builder().orderType(List.of(OrderType.CARE_ORDER, OrderType.INTERIM_CARE_ORDER)).build())
+            .build();
+        when(udo.isSealed()).thenReturn(true);
+
+        assertThat(underTest.allowAccessToEvent(caseData, JUDICIAL_GATEKEEPNIG.getId())).isEmpty();
     }
 
     @Test
