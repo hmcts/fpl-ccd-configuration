@@ -45,63 +45,52 @@ public class AdminManagesOrdersApiTests extends AbstractApiTest {
     private final LocalDateTime currentDateTime = LocalDateTime.now();
     private CaseData startingCaseData;
 
-    public final List<String> orderNumber = List.of(
-        "c32a,C32A_CARE_ORDER",
-        "c32b,C32B_DISCHARGE_OF_CARE_ORDER",
-        "c23,C23_EMERGENCY_PROTECTION_ORDER",
-        "c33,C33_INTERIM_CARE_ORDER",
-        "c35a,C35A_SUPERVISION_ORDER",
-        "c35b,C35B_INTERIM_SUPERVISION_ORDER",
-        "c43a,C43A_SPECIAL_GUARDIANSHIP_ORDER",
-        "c29,C29_RECOVERY_OF_A_CHILD",
-        "c47a,C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN");
-
     @Autowired
     private DocumentService documentService;
 
     @Test
     public void adminManagesOrderTest32a() {
-        parametrizedTests(orderNumber.get(0).split(",")[0], orderNumber.get(0).split(",")[1]);
+        parametrizedTests("c32a", "C32A_CARE_ORDER");
     }
 
     @Test
     public void adminManagesOrderTest32b() {
-        parametrizedTests(orderNumber.get(1).split(",")[0], orderNumber.get(1).split(",")[1]);
+        parametrizedTests("c32b", "C32B_DISCHARGE_OF_CARE_ORDER");
     }
 
     @Test
     public void adminManagesOrderTest23() {
-        parametrizedTests(orderNumber.get(2).split(",")[0], orderNumber.get(2).split(",")[1]);
+        parametrizedTests("c23", "C23_EMERGENCY_PROTECTION_ORDER");
     }
 
     @Test
     public void adminManagesOrderTest33() {
-        parametrizedTests(orderNumber.get(3).split(",")[0], orderNumber.get(3).split(",")[1]);
+        parametrizedTests("c33", "C33_INTERIM_CARE_ORDER");
     }
 
     @Test
     public void adminManagesOrderTest35a() {
-        parametrizedTests(orderNumber.get(4).split(",")[0], orderNumber.get(4).split(",")[1]);
+        parametrizedTests("c35a", "C35A_SUPERVISION_ORDER");
     }
 
     @Test
     public void adminManagesOrderTest35b() {
-        parametrizedTests(orderNumber.get(5).split(",")[0], orderNumber.get(5).split(",")[1]);
+        parametrizedTests("c35b", "C35B_INTERIM_SUPERVISION_ORDER");
     }
 
     @Test
     public void adminManagesOrderTest43a() {
-        parametrizedTests(orderNumber.get(6).split(",")[0], orderNumber.get(6).split(",")[1]);
+        parametrizedTests("c43a", "C43A_SPECIAL_GUARDIANSHIP_ORDER");
     }
 
     @Test
     public void adminManagesOrderTest29() {
-        parametrizedTests(orderNumber.get(7).split(",")[0], orderNumber.get(7).split(",")[1]);
+        parametrizedTests("c29","C29_RECOVERY_OF_A_CHILD");
     }
 
     @Test
     public void adminManagesOrderTest47a() {
-        parametrizedTests(orderNumber.get(8).split(",")[0], orderNumber.get(8).split(",")[1]);
+        parametrizedTests("c47a", "C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN");
     }
 
     public void parametrizedTests(String inputFileDirectory, String orderType) {
