@@ -162,6 +162,9 @@
     <cve>CVE-2023-24998</cve>
   </suppress>
   <suppress>
+    <cve>CVE-2023-20861</cve>
+  </suppress>
+  <suppress>
     <vulnerabilityName>1089130</vulnerabilityName>
   </suppress>
   <suppress>
