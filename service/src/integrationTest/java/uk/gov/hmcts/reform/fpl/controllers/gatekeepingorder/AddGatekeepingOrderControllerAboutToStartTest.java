@@ -33,7 +33,7 @@ class AddGatekeepingOrderControllerAboutToStartTest extends AbstractCallbackTest
         .build();
 
     AddGatekeepingOrderControllerAboutToStartTest() {
-        super("add-gatekeeping-order");
+        super("add-gatekeeping-order", "addGatekeepingOrder");
     }
 
     @Test
