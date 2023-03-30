@@ -28,6 +28,7 @@ import java.util.Objects;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.allNotNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.Event.JUDICIAL_GATEKEEPNIG;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.UPLOAD;
@@ -62,7 +63,7 @@ public class AddGatekeepingOrderController extends CallbackController {
         final GatekeepingOrderRoute draftOrderRoute;
         final StandardDirectionOrder draftOrder;
 
-        if (Objects.nonNull(caseData.getGatekeepingOrderRouter())) {
+        if (JUDICIAL_GATEKEEPNIG.getId().equals(eventName)) {
             draftOrderRoute = caseData.getGatekeepingOrderRouter();
             draftOrder = caseData.getStandardDirectionOrder();
         } else {

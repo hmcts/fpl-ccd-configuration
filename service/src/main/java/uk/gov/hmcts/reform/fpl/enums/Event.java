@@ -28,7 +28,8 @@ public enum Event {
     CASE_NAME("changeCaseName", "Change case name"),
     APPLICATION_DOCUMENTS("uploadDocuments", "Upload documents"),
     SELECT_COURT("selectCourt", "Select court to issue"),
-    ADD_URGENT_DIRECTIONS("addUrgentDirections", "Add urgent directions");
+    ADD_URGENT_DIRECTIONS("addUrgentDirections", "Add urgent directions"),
+    JUDICIAL_GATEKEEPNIG("addGatekeepingOrder", "Judicial Gatekeeping");
 
     private final String id;
     private final String name;

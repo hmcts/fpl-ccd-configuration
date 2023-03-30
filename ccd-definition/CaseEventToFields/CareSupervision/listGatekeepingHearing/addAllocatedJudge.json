@@ -19,7 +19,7 @@
     "CaseEventID": "listGatekeepingHearing",
     "CaseFieldID": "gatekeepingOrderRouter",
     "PageFieldDisplayOrder": 2,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "READONLY",
     "PageID": "ListGatekeepingHearingAllocatedJudge",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
