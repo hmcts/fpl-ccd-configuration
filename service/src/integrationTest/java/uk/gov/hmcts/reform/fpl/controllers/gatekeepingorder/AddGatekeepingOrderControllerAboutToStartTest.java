@@ -67,8 +67,6 @@ class AddGatekeepingOrderControllerAboutToStartTest extends AbstractCallbackTest
             .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder()
                 .allocatedJudgeLabel("Case assigned to: His Honour Judge Hastings")
                 .build())
-            .useUploadRoute(YES)
-            .currentSDO(order)
             .build();
 
         assertThat(actualEventData).isEqualTo(expectedEventData);
@@ -94,7 +92,6 @@ class AddGatekeepingOrderControllerAboutToStartTest extends AbstractCallbackTest
             .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder()
                 .allocatedJudgeLabel("Case assigned to: His Honour Judge Hastings")
                 .build())
-            .useServiceRoute(YES)
             .build();
 
         assertThat(actualEventData).isEqualTo(expectedEventData);
