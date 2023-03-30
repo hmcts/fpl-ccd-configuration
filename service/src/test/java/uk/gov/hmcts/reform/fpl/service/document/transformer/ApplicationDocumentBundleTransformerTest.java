@@ -140,11 +140,11 @@ class ApplicationDocumentBundleTransformerTest {
             List.of(ADMIN_NON_CONFIDENTIAL_APPLICANT_STATEMENT_DOCUMENT,
                 SOLICITOR_NON_CONFIDENTIAL_DOCUMENT,
                 LA_NON_CONFIDENTIAL_APPLICANT_STATEMENT_DOCUMENT), true))
-            .willReturn(getExpectedHApplicantStatementsForLAView());
+            .willReturn(getExpectedHApplicantStatementsForNCView());
 
         DocumentFolderView expectedBundle = DocumentFolderView.builder()
             .name("Applicant's statements and application documents")
-            .documentBundleViews(getExpectedApplicationDocumentsLA())
+            .documentBundleViews(getExpectedApplicationDocumentsNC())
             .build();
 
         assertThat(underTest.getApplicationStatementAndDocumentBundle(caseData, NONCONFIDENTIAL))
@@ -180,6 +180,20 @@ class ApplicationDocumentBundleTransformerTest {
         return documentBundleViews;
     }
 
+    private List<DocumentBundleView> getExpectedApplicationDocumentsNC() {
+        List<DocumentBundleView> documentBundleViews = new ArrayList<>(expectedApplicationDocumentViewNC());
+
+        List<DocumentView> applicationStatements = List.of(
+            expectedDocumentView("Application statement document1", "HMCTS", false),
+            expectedDocumentView("Application statement document2", "Kurt LA", false),
+            expectedDocumentView("Application statement document4", "Kurt LA", true));
+
+        documentBundleViews.add(DocumentBundleView.builder().name(APPLICANT_STATEMENT.getLabel())
+            .documents(applicationStatements).build());
+
+        return documentBundleViews;
+    }
+
     private List<DocumentBundleView> expectedApplicationDocumentView() {
         return List.of(DocumentBundleView.builder().name("Threshold").documents(List.of(DocumentView.builder()
                 .document(THRESHOLD_DOCUMENT)
@@ -201,6 +215,33 @@ class ApplicationDocumentBundleTransformerTest {
                 .documentName(null)
                 .title(SWET_DOCUMENT.getFilename())
                 .includeSWETField(true)
+                .includeDocumentName(false)
+                .confidential(true)
+                .build())).build(),
+            DocumentBundleView.builder().name("Other").documents(List.of(DocumentView.builder()
+                .document(OTHER_DOCUMENT)
+                .uploadedDateTime(LocalDateTime.of(2021, 6, 15, 20, 18, 0))
+                .uploadedAt("8:18pm, 15 June 2021")
+                .includedInSWET(null)
+                .uploadedBy("kurt@swansea.gov.uk")
+                .documentName("")
+                .title("Document name")
+                .includeSWETField(false)
+                .includeDocumentName(true)
+                .build())).build()
+        );
+    }
+
+    private List<DocumentBundleView> expectedApplicationDocumentViewNC() {
+        return List.of(DocumentBundleView.builder().name("Threshold").documents(List.of(DocumentView.builder()
+                .document(THRESHOLD_DOCUMENT)
+                .uploadedAt("8:20pm, 15 June 2021")
+                .uploadedDateTime(LocalDateTime.of(2021, 6, 15, 20, 20, 0))
+                .includedInSWET(null)
+                .uploadedBy("kurt@swansea.gov.uk")
+                .documentName(null)
+                .title(THRESHOLD_DOCUMENT.getFilename())
+                .includeSWETField(false)
                 .includeDocumentName(false)
                 .build())).build(),
             DocumentBundleView.builder().name("Other").documents(List.of(DocumentView.builder()
@@ -226,6 +267,14 @@ class ApplicationDocumentBundleTransformerTest {
     }
 
     private List<DocumentView> getExpectedHApplicantStatementsForLAView() {
+        List<DocumentView> documents = new ArrayList<>();
+        documents.addAll(expectedDocumentViewHmctsNonConfidential());
+        documents.addAll(expectedDocumentViewLA());
+
+        return documents;
+    }
+
+    private List<DocumentView> getExpectedHApplicantStatementsForNCView() {
         List<DocumentView> documents = new ArrayList<>();
         documents.addAll(expectedDocumentViewHmctsNonConfidential());
         documents.addAll(expectedDocumentViewLA());
@@ -299,15 +348,16 @@ class ApplicationDocumentBundleTransformerTest {
 
     private List<Element<ApplicationDocument>> buildApplicationDocuments() {
         return List.of(
-            buildApplicationDocument(SWET, SWET_DOCUMENT, LocalDateTime.of(2021, 6, 15, 20, 19, 0)),
-            buildApplicationDocument(OTHER, OTHER_DOCUMENT, LocalDateTime.of(2021, 6, 15, 20, 18, 0)),
-            buildApplicationDocument(THRESHOLD, THRESHOLD_DOCUMENT, LocalDateTime.of(2021, 6, 15, 20, 20, 0)));
+            buildApplicationDocument(SWET, SWET_DOCUMENT, LocalDateTime.of(2021, 6, 15, 20, 19, 0), true),
+            buildApplicationDocument(OTHER, OTHER_DOCUMENT, LocalDateTime.of(2021, 6, 15, 20, 18, 0), false),
+            buildApplicationDocument(THRESHOLD, THRESHOLD_DOCUMENT, LocalDateTime.of(2021, 6, 15, 20, 20, 0), false));
     }
 
     private Element<ApplicationDocument> buildApplicationDocument(
         ApplicationDocumentType type,
         DocumentReference document,
-        LocalDateTime uploadedAt) {
+        LocalDateTime uploadedAt,
+        boolean isConfidential) {
         return element(ApplicationDocument.builder()
             .documentType(type)
             .documentName(type == OTHER ? "Document name" : null)
@@ -315,6 +365,7 @@ class ApplicationDocumentBundleTransformerTest {
             .includedInSWET(type == SWET ? "This is included in SWET" : null)
             .document(document)
             .dateTimeUploaded(uploadedAt)
+            .confidential(isConfidential ? List.of("CONFIDENTIAL") : List.of())
             .build());
     }
 

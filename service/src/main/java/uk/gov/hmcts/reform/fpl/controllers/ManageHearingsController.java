@@ -456,7 +456,6 @@ public class ManageHearingsController extends CallbackController {
                     }
                 });
         }
-
     }
 
     private static JudgeAndLegalAdvisor setAllocatedJudgeLabel(Judge allocatedJudge) {
