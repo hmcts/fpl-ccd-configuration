@@ -65,8 +65,6 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
         caseDetails.getData().putAll(migrateCaseService.removeDraftUploadedCMOs(getCaseData(caseDetails),
             migrationId, expectedOrderId));
-        caseDetails.getData().putAll(migrateCaseService.removeHearingOrdersBundlesDrafts(getCaseData(caseDetails),
-            migrationId, expectedHearingOrderBundleId));
     }
 
     private void run1226(CaseDetails caseDetails) {

@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -87,14 +88,26 @@ class PopulateStandardDirectionsHandlerTest {
     void shouldTriggerEventWithCorrectData() {
         handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackWithHearing()));
 
-        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID), eq(CASE_EVENT), any());
+        verify(coreCaseDataService).triggerEvent(
+            eq(JURISDICTION),
+            eq(CASE_TYPE),
+            eq(CASE_ID),
+            eq(CASE_EVENT),
+            data.capture());
+        assertThat(data.getValue()).isEqualTo(expectedDataWithHearing());
     }
 
     @Test
     void shouldCallStandardDirectionsServiceWithNullIfNoFirstHearing() {
         handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackWithoutHearing()));
 
-        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID), eq(CASE_EVENT), any());
+        verify(coreCaseDataService).triggerEvent(
+            eq(JURISDICTION),
+            eq(CASE_TYPE),
+            eq(CASE_ID),
+            eq(CASE_EVENT),
+            data.capture());
+        assertThat(data.getValue()).isEqualTo(expectedDataWithoutHearing());
     }
 
     private CallbackRequest callbackWithHearing() {
@@ -127,6 +140,14 @@ class PopulateStandardDirectionsHandlerTest {
             CAFCASS.getValue(), emptyList(),
             COURT.getValue(), emptyList(),
             OTHERS.getValue(), emptyList());
+    }
+
+    private Map<String, Object> expectedDataWithHearing() {
+        Map<String, Object> expectedData = new HashMap<>();
+        expectedData.put("hearingDetails", HEARING_DETAILS);
+        expectedData.putAll(getExpectedDirections());
+
+        return expectedData;
     }
 
     private Map<String, Object> expectedDataWithoutHearing() {

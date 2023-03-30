@@ -43,6 +43,8 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_NOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -313,33 +315,34 @@ public class ListGatekeepingHearingController extends CallbackController {
     }
 
     private void triggerPostSealingEvents(final CallbackRequest request) {
-        final CaseDetails oldCaseDetails = request.getCaseDetails();
+        CaseData caseData = getCaseData(request);
+        final CaseDetails caseDetails = request.getCaseDetails();
 
-        CaseDetails caseDetails = coreCaseDataService.performPostSubmitCallback(oldCaseDetails.getId(),
-            "internal-change-add-gatekeeping",
-            details -> {
-                CaseData caseData = getCaseData(details);
-                final GatekeepingOrderRoute sdoRoute = caseData.getGatekeepingOrderRouter();
-                Map<String, Object> updates = new HashMap<>();
-                if (sdoRoute == UPLOAD) {
-                    updates.put("standardDirectionOrder", orderService.sealDocumentAfterEventSubmitted(caseData));
-                }
-                return updates;
-            });
-
-        if (isEmpty(caseDetails)) {
-            // if our callback has failed 3 times, all we have is the prior caseData to send notifications based on
-            caseDetails = oldCaseDetails;
+        final GatekeepingOrderRoute sdoRoute = caseData.getGatekeepingOrderRouter();
+        Map<String, Object> updates = new HashMap<>();
+        if (sdoRoute == UPLOAD) {
+            updates.put("standardDirectionOrder", orderService.sealDocumentAfterEventSubmitted(caseData));
         }
 
-        final CaseData caseData = getCaseData(caseDetails);
+        final CaseData caseDataAfterSealing;
+        if (updates.isEmpty()) {
+            caseDataAfterSealing = caseData;
+        } else {
+            caseDetails.getData().putAll(updates);
+            caseDataAfterSealing = getCaseData(caseDetails);
+        }
 
-        notificationDecider.buildEventToPublish(caseData, getCaseDataBefore(request).getState())
+        coreCaseDataService
+            .triggerEvent(caseDataAfterSealing.getId(), "internal-change-add-gatekeeping", updates);
+
+        notificationDecider.buildEventToPublish(caseDataAfterSealing, getCaseDataBefore(request).getState())
             .ifPresent(eventToPublish -> {
-                coreCaseDataService.performPostSubmitCallback(
-                    caseData.getId(),
+                coreCaseDataService.triggerEvent(
+                    JURISDICTION,
+                    CASE_TYPE,
+                    caseDataAfterSealing.getId(),
                     "internal-change-SEND_DOCUMENT",
-                    caseDetails1 -> Map.of("documentToBeSent", eventToPublish.getOrder())
+                    Map.of("documentToBeSent", eventToPublish.getOrder())
                 );
                 publishEvent(eventToPublish);
             });
