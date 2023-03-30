@@ -28,10 +28,12 @@ import java.util.Objects;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.allNotNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ADD_URGENT_DIRECTIONS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.JUDICIAL_GATEKEEPNIG;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.UPLOAD;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -51,6 +53,8 @@ public class AddGatekeepingOrderController extends CallbackController {
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
+        removeTemporaryFields(callbackRequest.getCaseDetails(),
+            "gatekeepingOrderRouter", "urgentDirectionsRouter");
         final CaseData caseData = getCaseData(callbackRequest.getCaseDetails());
         final String eventName = callbackRequest.getEventId();
         final List<String> errors = routeValidator.allowAccessToEvent(caseData, eventName);
@@ -88,7 +92,7 @@ public class AddGatekeepingOrderController extends CallbackController {
                 caseData.getGatekeepingOrderEventData().getGatekeepingOrderIssuingJudge()));
         }
 
-        if (Objects.isNull(caseData.getUrgentDirectionsRouter())) {
+        if (!ADD_URGENT_DIRECTIONS.getId().equals(eventName)) {
             final Allocation allocationDecision = allocationService.createDecision(caseData);
             data.put("allocationDecision", allocationDecision);
         }
