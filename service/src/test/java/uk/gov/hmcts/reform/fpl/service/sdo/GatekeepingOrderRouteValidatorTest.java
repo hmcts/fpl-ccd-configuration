@@ -104,6 +104,19 @@ class GatekeepingOrderRouteValidatorTest {
     }
 
     @Test
+    void allowAccessToEventShouldReturnErrorWhenStandaloneEPOForJudicialGatekeeping() {
+        StandardDirectionOrder udo = mock(StandardDirectionOrder.class);
+        CaseData caseData = CaseData.builder()
+            .urgentDirectionsRouter(GatekeepingOrderRoute.UPLOAD)
+            .urgentDirectionsOrder(udo)
+            .orders(Orders.builder().orderType(List.of(OrderType.EMERGENCY_PROTECTION_ORDER)).build())
+            .build();
+
+        assertThat(underTest.allowAccessToEvent(caseData, JUDICIAL_GATEKEEPNIG.getId()))
+            .isEqualTo(List.of("An urgent directions order is required."));
+    }
+
+    @Test
     void allowAccessToEventShouldReturnErrorWhenUDOIsNotSealedAndCombinedOrderRequested() {
         StandardDirectionOrder udo = mock(StandardDirectionOrder.class);
         CaseData caseData = CaseData.builder()
