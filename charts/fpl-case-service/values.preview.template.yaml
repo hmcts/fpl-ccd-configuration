@@ -259,6 +259,15 @@ ccd:
       db.user: hmcts
       db.pwd: hmcts
       es.data.nodes.url: http://${SERVICE_NAME}-es-master:9200
+    extraEnvs:
+      - name: DB_URL
+        value: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
+      - name: DB_USER
+        value: hmcts
+      - name: DB_PWD
+        value: hmcts
+      - name: ES_DATA_NODES_URL
+        value: http://${SERVICE_NAME}-es-master:9200
     livenessProbe:
       initialDelaySeconds: 90
   am-role-assignment-service:
