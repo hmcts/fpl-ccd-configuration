@@ -39,6 +39,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -49,6 +50,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.APPOINT_CHILDREN_GUARDIAN_IMMEDIATE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.ARRANGE_INTERPRETERS_IMMEDIATE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.UDO;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
@@ -95,14 +97,13 @@ public class GatekeepingOrderService {
     }
 
     public StandardDirectionOrder buildOrderFromUploadedFile(CaseData caseData) {
-        GatekeepingOrderEventData gatekeepingOrderEventData = caseData.getGatekeepingOrderEventData();
-
-        final GatekeepingOrderSealDecision decision = gatekeepingOrderEventData.getGatekeepingOrderSealDecision();
+        var eventData = caseData.getGatekeepingOrderEventData();
+        final GatekeepingOrderSealDecision decision = eventData.getGatekeepingOrderSealDecision();
 
         DocumentReference document = decision.getDraftDocument();
 
         LanguageTranslationRequirement translationRequirements =
-            gatekeepingOrderEventData.getGatekeepingTranslationRequirements();
+            eventData.getGatekeepingTranslationRequirements();
         return buildBaseGatekeepingOrder(caseData).toBuilder()
             .dateOfUpload(time.now().toLocalDate())
             .uploader(userService.getUserName())
@@ -112,15 +113,16 @@ public class GatekeepingOrderService {
     }
 
     public StandardDirectionOrder buildOrderFromGeneratedFile(CaseData caseData) {
-        GatekeepingOrderEventData gatekeepingOrderEventData = caseData.getGatekeepingOrderEventData();
-        final GatekeepingOrderSealDecision decision = gatekeepingOrderEventData
-            .getGatekeepingOrderSealDecision();
+
+        final GatekeepingOrderSealDecision decision =
+            caseData.getGatekeepingOrderEventData().getGatekeepingOrderSealDecision();
 
         StandardDirectionOrder currentOrder = buildBaseGatekeepingOrder(caseData);
 
         if (decision.isSealed()) {
-            DocumentReference sealedDocument = buildFromDocument(generateOrder(caseData));
 
+            var docmosisTemplate = nonNull(caseData.getGatekeepingOrderRouter()) ? SDO : UDO;
+            DocumentReference sealedDocument = buildFromDocument(generateOrder(caseData, docmosisTemplate));
             return currentOrder.toBuilder()
                 .dateOfIssue(formatLocalDateToString(decision.getDateOfIssue(), DATE))
                 .unsealedDocumentCopy(decision.getDraftDocument())
@@ -183,32 +185,43 @@ public class GatekeepingOrderService {
     }
 
     private DocumentReference getOrderDocument(CaseData caseData) {
-        final GatekeepingOrderRoute route = caseData.getGatekeepingOrderRouter();
 
-        if (route == UPLOAD) {
+        final GatekeepingOrderRoute sdoRouter;
+        final DocmosisTemplates docmosisTemplate;
+        if (nonNull(caseData.getGatekeepingOrderRouter())) {
+            sdoRouter = caseData.getGatekeepingOrderRouter();
+            docmosisTemplate = SDO;
+        } else {
+            sdoRouter = caseData.getUrgentDirectionsRouter();
+            docmosisTemplate = UDO;
+        }
+
+        if (sdoRouter == UPLOAD) {
             return firstNonNull(
                 caseData.getReplacementSDO(),
                 caseData.getPreparedSDO(),
                 caseData.getGatekeepingOrderEventData().getCurrentSDO());
         }
-
-        return buildFromDocument(generateOrder(caseData));
+        return buildFromDocument(generateOrder(caseData, docmosisTemplate));
     }
 
-    private Document generateOrder(CaseData caseData) {
+    private Document generateOrder(CaseData caseData, DocmosisTemplates docmosisTemplate) {
         DocmosisStandardDirectionOrder templateData = gatekeepingOrderGenerationService.getTemplateData(caseData);
-        return documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
+        return documentService.getDocumentFromDocmosisOrderTemplate(templateData, docmosisTemplate);
     }
 
     public CaseData populateStandardDirections(CaseDetails caseDetails) {
         final CaseData caseData = converter.convert(caseDetails);
         final GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
+        var order = nonNull(caseData.getGatekeepingOrderRouter())
+            ? caseData.getStandardDirectionOrder() : caseData.getUrgentDirectionsOrder();
 
-        final List<DirectionType> requestedDirections = eventData.getRequestedDirections();
-        final List<StandardDirection> draftStandardDirections = ofNullable(caseData.getStandardDirectionOrder())
+        final List<StandardDirection> draftStandardDirections = ofNullable(order)
             .map(StandardDirectionOrder::getStandardDirections)
             .map(ElementUtils::unwrapElements)
             .orElseGet(ArrayList::new);
+
+        final List<DirectionType> requestedDirections = eventData.getRequestedDirections();
 
         final HearingBooking firstHearing = getHearing(caseData).orElse(null);
 
@@ -230,7 +243,7 @@ public class GatekeepingOrderService {
 
     public CaseData updateStandardDirections(CaseDetails caseDetails) {
         final CaseData caseData = converter.convert(caseDetails);
-        final GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
+        final var eventData = caseData.getGatekeepingOrderEventData();
 
         final HearingBooking firstHearing = getHearing(caseData).orElse(null);
 
@@ -329,9 +342,9 @@ public class GatekeepingOrderService {
         LocalTime deadlineTime =
             LocalTime.parse(
                 Optional.of(hearing)
-                .map(HearingBooking::getStartDate)
-                .map(startDate -> startDate.format(DateTimeFormatter.ofPattern("HH:mm:ss")))
-                .orElse("00:00:00")
+                    .map(HearingBooking::getStartDate)
+                    .map(startDate -> startDate.format(DateTimeFormatter.ofPattern("HH:mm:ss")))
+                    .orElse("00:00:00")
             );
 
         return LocalDateTime.of(deadline, deadlineTime);
