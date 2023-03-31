@@ -27,12 +27,14 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_ID;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
@@ -256,8 +258,8 @@ class ManageLocalAuthoritiesControllerSubmittedTest extends AbstractCallbackTest
                 notificationReference(CASE_ID));
         });
 
-        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID),
-            eq("internal-update-case-summary"), any());
+        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
+            eq("internal-update-case-summary"), anyMap());
 
         verifyNoMoreInteractions(notificationClient, coreCaseDataService);
     }
@@ -358,8 +360,8 @@ class ManageLocalAuthoritiesControllerSubmittedTest extends AbstractCallbackTest
 
         });
 
-        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID),
-            eq("internal-update-case-summary"), any());
+        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
+            eq("internal-update-case-summary"), anyMap());
         verifyNoMoreInteractions(notificationClient);
     }
 

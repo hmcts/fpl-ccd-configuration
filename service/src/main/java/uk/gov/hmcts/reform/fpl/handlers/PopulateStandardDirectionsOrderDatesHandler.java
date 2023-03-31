@@ -41,10 +41,13 @@ public class PopulateStandardDirectionsOrderDatesHandler {
 
         // only want to update dates if there is a case management hearing
         if (hearing.isPresent()) {
-            coreCaseDataService.performPostSubmitCallback(caseDetails.getId(),
+            Map<String, Object> updatedCaseData = getDataWithDates(hearing.get(), caseDetails.getData());
+
+            coreCaseDataService.triggerEvent(caseDetails.getJurisdiction(),
+                caseDetails.getCaseTypeId(),
+                caseDetails.getId(),
                 "populateSDO",
-                caseDetails1 -> getDataWithDates(hearing.get(), caseDetails1.getData())
-            );
+                updatedCaseData);
         }
     }
 
@@ -62,8 +65,7 @@ public class PopulateStandardDirectionsOrderDatesHandler {
     private void populateEmptyDates(Map<String, Object> data, DirectionAssignee assignee,
                                     List<Element<Direction>> configDirectionsForAssignee) {
         List<Element<Direction>> directionsForAssignee = mapper.convertValue(
-            data.get(assignee.getValue()), new TypeReference<>() {
-            }
+            data.get(assignee.getValue()), new TypeReference<>() {}
         );
 
         for (int i = 0; i < directionsForAssignee.size(); i++) {

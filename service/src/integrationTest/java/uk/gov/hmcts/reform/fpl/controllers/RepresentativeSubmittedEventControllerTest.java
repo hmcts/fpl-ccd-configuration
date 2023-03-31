@@ -24,10 +24,10 @@ import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
@@ -78,7 +78,9 @@ class RepresentativeSubmittedEventControllerTest extends AbstractCallbackTest {
             expectedTemplateParametersEmail(), NOTIFICATION_REFERENCE
         );
 
-        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID), any(), any());
+        verify(coreCaseDataService).triggerEvent(
+            JURISDICTION, CASE_TYPE, CASE_ID, "internal-update-case-summary", caseSummary()
+        );
     }
 
 
@@ -93,7 +95,9 @@ class RepresentativeSubmittedEventControllerTest extends AbstractCallbackTest {
             PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE, "test@test.com",
             expectedTemplateParametersDigitalService(), NOTIFICATION_REFERENCE
         );
-        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID), any(), any());
+        verify(coreCaseDataService).triggerEvent(
+            JURISDICTION, CASE_TYPE, CASE_ID, "internal-update-case-summary", caseSummary()
+        );
     }
 
     @Test
@@ -104,8 +108,7 @@ class RepresentativeSubmittedEventControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(toCallBackRequest(caseDetails, caseDetailsBefore));
 
-        verifyNoInteractions(notificationClient);
-        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID), any(), any());
+        verifyNoInteractions(notificationClient, coreCaseDataService);
     }
 
     private Representative buildRepresentative(RepresentativeServingPreferences servingPreference) {
