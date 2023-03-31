@@ -25,9 +25,6 @@ public class GatekeepingOrderRouteValidator {
     private static final String EVENT_ACCESS_VALIDATION_MESSAGE = "There is already a gatekeeping order for this case";
     private static final String HEARING_DETAILS_REQUIRED = "You need to add hearing details for the notice of "
         + "proceedings";
-    private static final String URGENT_DIRECTIONS_REQUIRED_FIRST_MESSAGE = "An urgent directions order is required "
-        + "before you can add a gatekeeping order.";
-    private static final String URGENT_DIRECTIONS_REQUIRED_MESSAGE = "An urgent directions order is required.";
 
     public List<String> allowAccessToEvent(CaseData caseData) {
         StandardDirectionOrder sdo = defaultIfNull(
@@ -47,16 +44,6 @@ public class GatekeepingOrderRouteValidator {
                 return List.of(NO_URGENT_DIRECTIONS_REQUIRED_MESSAGE);
             }
         } else {
-            if (caseData.isCareOrderCombinedWithUrgentDirections()) {
-                StandardDirectionOrder udo = defaultIfNull(caseData.getUrgentDirectionsOrder(),
-                    StandardDirectionOrder.builder().build());
-
-                return !udo.isSealed() ? List.of(URGENT_DIRECTIONS_REQUIRED_FIRST_MESSAGE) : List.of();
-            }
-            if (caseData.isStandaloneEPOApplication()) {
-                return List.of(URGENT_DIRECTIONS_REQUIRED_MESSAGE);
-            }
-
             return allowAccessToEvent(caseData);
         }
     }
