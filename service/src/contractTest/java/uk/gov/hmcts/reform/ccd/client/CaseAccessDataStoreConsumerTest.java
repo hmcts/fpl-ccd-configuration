@@ -63,7 +63,6 @@ public class CaseAccessDataStoreConsumerTest {
             .body(createJsonObject(buildCaseAssignedUserRolesRequest()))
             .willRespondWith()
             .status(HttpStatus.SC_OK)
-            .body("{test: '123'}")
             .toPact();
     }
 
@@ -80,7 +79,6 @@ public class CaseAccessDataStoreConsumerTest {
                 "organisationId", CaseRole.EPSMANAGING)))
             .willRespondWith()
             .status(HttpStatus.SC_CREATED)
-            .body("{test: '123'}")
             .toPact();
     }
 
