@@ -19,4 +19,6 @@ public class SDONotifyData implements NotifyData {
     String courtName;
     String caseNumber;
     String isReasonPresent;
+    String directionsOrderTypeShort;
+    String directionsOrderTypeLong;
 }
