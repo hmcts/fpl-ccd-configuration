@@ -62,7 +62,7 @@ public class CaseAccessDataStoreConsumerTest {
             .path("/case-users")
             .body(createJsonObject(buildCaseAssignedUserRolesRequest()))
             .willRespondWith()
-            .status(HttpStatus.SC_OK)
+            .status(HttpStatus.SC_BAD_GATEWAY)
             .toPact();
     }
 
@@ -78,7 +78,7 @@ public class CaseAccessDataStoreConsumerTest {
             .body(createJsonObject(buildAssignmentRequest(CASE_ID, Set.of(USER_ID),
                 "organisationId", CaseRole.EPSMANAGING)))
             .willRespondWith()
-            .status(HttpStatus.SC_CREATED)
+            .status(HttpStatus.SC_GATEWAY_TIMEOUT)
             .toPact();
     }
 
