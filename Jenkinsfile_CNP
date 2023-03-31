@@ -276,12 +276,12 @@ withPipeline(type, product, component) {
   }
 
   afterSuccess('functionalTest:preview') {
-    env.PARALLEL_CHUNKS = 12
-    yarnBuilder.yarn('test:functional')
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
+    // env.PARALLEL_CHUNKS = 12
+    // yarnBuilder.yarn('test:functional')
+    // steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+    // steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
+    // steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
+    // steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
   }
 
   afterAlways('highleveldatasetup') {
