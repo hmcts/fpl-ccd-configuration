@@ -129,7 +129,7 @@ task runAndPublishConsumerPactTests(type: Test, description: 'Publish pact test 
     classpath = sourceSets.contractTest.runtimeClasspath
 }
 
-runAndPublishConsumerPactTests.finalizedBy runContractTests
+runAndPublishConsumerPactTests.dependsOn runContractTests
 
 runAndPublishConsumerPactTests.finalizedBy pactPublish
 
