@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
@@ -20,6 +21,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.function.Consumer;
+
+import static java.lang.String.format;
 
 @Api
 @RestController
@@ -34,7 +37,8 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-1261", this::run1261,
-        "DFPL-1226", this::run1226
+        "DFPL-1226", this::run1226,
+        "DFPL-1361", this::run1361
     );
 
     @PostMapping("/about-to-submit")
@@ -70,5 +74,12 @@ public class MigrateCaseController extends CallbackController {
     private void run1226(CaseDetails caseDetails) {
         migrateCaseService.doDocumentViewNCCheck(caseDetails.getId(), "DFPL-1226", caseDetails);
         caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(getCaseData(caseDetails)));
+    }
+
+    private void run1361(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1361";
+        var possibleCaseIds = List.of(1680179801927341L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
     }
 }
