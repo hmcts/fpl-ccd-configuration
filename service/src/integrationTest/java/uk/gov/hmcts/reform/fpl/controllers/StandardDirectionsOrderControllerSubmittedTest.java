@@ -22,7 +22,6 @@ import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -32,17 +31,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CAFCASS;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CTSC;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_LA;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_ISSUED_CAFCASS;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_ISSUED_CTSC;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_ISSUED_LA;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_AND_NOP_ISSUED_CAFCASS;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_AND_NOP_ISSUED_CTSC;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_AND_NOP_ISSUED_LA;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
-import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.CAFCASS_EMAIL;
@@ -101,82 +90,6 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
 
         verify(eventService, never()).publishEvent(any());
         verify(concurrencyHelper, never()).submitEvent(any(), any(), any());
-    }
-
-    @Test
-    void shouldTriggerEventWhenUrgentHearingSubmitted() {
-        final CaseData caseData = buildCaseDataWithUrgentHearingOrder();
-        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
-            .caseDetails(asCaseDetails(caseData))
-            .eventId(i.getArgument(1))
-            .token("token")
-            .build());
-
-        postSubmittedEvent(toCallBackRequest(caseData, GATEKEEPING_CASE_DATA));
-
-        verifyEmails(URGENT_AND_NOP_ISSUED_CAFCASS, URGENT_AND_NOP_ISSUED_CTSC, URGENT_AND_NOP_ISSUED_LA);
-    }
-
-    @Test
-    void shouldTriggerEventWhenSDOSubmitted() {
-        final CaseData caseData = buildCaseDataWithSDO(SEALED);
-        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
-            .caseDetails(asCaseDetails(caseData))
-            .eventId(i.getArgument(1))
-            .token("token")
-            .build());
-
-        postSubmittedEvent(toCallBackRequest(caseData, GATEKEEPING_CASE_DATA));
-
-        verifyEmails(SDO_AND_NOP_ISSUED_CAFCASS, SDO_AND_NOP_ISSUED_CTSC, SDO_AND_NOP_ISSUED_LA);
-    }
-
-    @Test
-    void shouldTriggerEventWhenSDOSubmittedAfterUrgentHearingOrder() {
-        final CaseData caseData = buildCaseDataWithUrgentHearingOrderAndSDO(SEALED);
-        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
-            .caseDetails(asCaseDetails(caseData))
-            .eventId(i.getArgument(1))
-            .token("token")
-            .build());
-
-        postSubmittedEvent(toCallBackRequest(caseData, CASE_MANAGEMENT_CASE_DATA));
-
-        verifyEmails(SDO_ISSUED_CAFCASS, SDO_ISSUED_CTSC, SDO_ISSUED_LA);
-    }
-
-    @Test
-    void shouldTriggerSendDocumentEventWhenSubmitted() {
-        final CaseData caseData = buildCaseDataWithSDO(SEALED);
-        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
-            .caseDetails(asCaseDetails(caseData))
-            .eventId(i.getArgument(1))
-            .token("token")
-            .build());
-
-        postSubmittedEvent(toCallBackRequest(caseData, GATEKEEPING_CASE_DATA));
-
-        verify(concurrencyHelper).submitEvent(any(),
-            eq(CASE_ID),
-            eq(Map.of("documentToBeSent", SDO_DOCUMENT))
-        );
-    }
-
-    @Test
-    void shouldTriggerSendDocumentEventForUrgentHearingOrder() {
-        final CaseData caseData = buildCaseDataWithUrgentHearingOrder();
-        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
-            .caseDetails(asCaseDetails(caseData))
-            .eventId(i.getArgument(1))
-            .token("token")
-            .build());
-
-        postSubmittedEvent(toCallBackRequest(caseData, GATEKEEPING_CASE_DATA));
-
-        verify(concurrencyHelper).submitEvent(any(),
-            eq(CASE_ID),
-            eq(Map.of("documentToBeSent", URGENT_HEARING_ORDER_DOCUMENT))
-        );
     }
 
     private void verifyEmails(String cafcassTemplate, String ctcsTemplate, String laTemplate) {

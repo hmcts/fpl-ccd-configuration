@@ -36,6 +36,7 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractCallback
     @Test
     void shouldReturnErrorWhenSDOSealedAndUrgentHearingOrderPopulated() {
         CaseData caseData = CaseData.builder()
+            .gatekeepingOrderRouter(SERVICE)
             .standardDirectionOrder(StandardDirectionOrder.builder().orderStatus(OrderStatus.SEALED).build())
             .urgentHearingOrder(UrgentHearingOrder.builder().build())
             .build();

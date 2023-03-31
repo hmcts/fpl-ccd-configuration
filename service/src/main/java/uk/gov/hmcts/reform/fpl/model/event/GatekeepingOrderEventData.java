@@ -34,6 +34,7 @@ import static org.apache.commons.lang3.reflect.FieldUtils.getFieldsListWithAnnot
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GatekeepingOrderEventData {
+
     @Temp
     DocumentReference urgentHearingOrderDocument;
     @Temp
@@ -45,16 +46,24 @@ public class GatekeepingOrderEventData {
     GatekeepingOrderSealDecision gatekeepingOrderSealDecision;
 
     List<DirectionType> directionsForAllParties;
-    List<DirectionType> directionsForLocalAuthority;
-    List<DirectionType> directionsForRespondents;
-    List<DirectionType> directionsForCafcass;
-    List<DirectionType> directionsForCafcassUpdated;
-    List<DirectionType> directionsForOthers;
     List<DirectionType> directionsForCourt;
     List<DirectionType> directionsForCourtUpdated;
+    List<DirectionType> directionsForLocalAuthority;
+    List<DirectionType> directionsForCafcass;
+    List<DirectionType> directionsForCafcassUpdated;
+    List<DirectionType> directionsForRespondents;
+    List<DirectionType> directionsForOthers;
+
+    List<DirectionType> urgentDirectionsForAllParties;
+    List<DirectionType> urgentDirectionsForLocalAuthority;
+    List<DirectionType> urgentDirectionsForCafcass;
+
 
     List<Element<CustomDirection>> customDirections;
     List<Element<StandardDirection>> standardDirections;
+
+    String gatekeepingOrderListOrSendToAdminReason;
+    String gatekeepingOrderListOrSendToAdmin;
 
     LanguageTranslationRequirement gatekeepingTranslationRequirements;
     LanguageTranslationRequirement urgentGatekeepingTranslationRequirements;
@@ -63,8 +72,15 @@ public class GatekeepingOrderEventData {
     YesNo useUploadRoute;
     YesNo useServiceRoute;
 
-    String gatekeepingOrderListOrSendToAdminReason;
-    String gatekeepingOrderListOrSendToAdmin;
+    @JsonIgnore
+    public List<DirectionType> getRequestedDirections() {
+        return Stream.of(urgentDirectionsForAllParties, urgentDirectionsForLocalAuthority, urgentDirectionsForCafcass,
+                directionsForAllParties, directionsForLocalAuthority, directionsForCafcass, directionsForCourt,
+                directionsForCafcassUpdated, directionsForCourtUpdated, directionsForRespondents, directionsForOthers)
+            .filter(Objects::nonNull)
+            .flatMap(Collection::stream)
+            .collect(toList());
+    }
 
     public JudgeAndLegalAdvisor getGatekeepingOrderIssuingJudge() {
         return defaultIfNull(gatekeepingOrderIssuingJudge, JudgeAndLegalAdvisor.builder().build());
@@ -72,16 +88,6 @@ public class GatekeepingOrderEventData {
 
     public GatekeepingOrderSealDecision getGatekeepingOrderSealDecision() {
         return defaultIfNull(gatekeepingOrderSealDecision, GatekeepingOrderSealDecision.builder().build());
-    }
-
-    @JsonIgnore
-    public List<DirectionType> getRequestedDirections() {
-        return Stream.of(directionsForAllParties, directionsForLocalAuthority,
-            directionsForRespondents, directionsForCafcass, directionsForCafcassUpdated,
-            directionsForOthers, directionsForCourt, directionsForCourtUpdated)
-            .filter(Objects::nonNull)
-            .flatMap(Collection::stream)
-            .collect(toList());
     }
 
     public static List<String> temporaryFields() {
