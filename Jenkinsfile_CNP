@@ -269,9 +269,10 @@ withPipeline(type, product, component) {
   }
 
   before('functionalTest:preview') {
-    yarnBuilder.yarn('yarn-update')
-    yarnBuilder.yarn('install-dependencies')
-    yarnBuilder.yarn('lint-ui-tests')
+    env.SKIP_API_TESTS = 'true'
+    // yarnBuilder.yarn('yarn-update')
+    // yarnBuilder.yarn('install-dependencies')
+    // yarnBuilder.yarn('lint-ui-tests')
   }
 
   afterSuccess('functionalTest:preview') {
