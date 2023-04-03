@@ -26,17 +26,17 @@ public class ReferenceDataProfessionalExternalUsersConsumerTest extends Referenc
     private static final String ORGANISATION_EMAIL = "someemailaddress@organisation.com";
 
     @Pact(provider = "referenceData_professionalExternalUsers", consumer = "fpl_ccdConfiguration")
-    public RequestResponsePact generatePactFragmentForGetOrganisationUserByEmail(PactDslWithProvider builder) {
+    public RequestResponsePact generatePactFragmentForGetOrganisationUsers(PactDslWithProvider builder) {
         // @formatter:off
         return builder
             .given("Professional users exist for an Active organisation")
-            .uponReceiving("A Request to get user by email")
+            .uponReceiving("A Request to get users for an active organisation")
             .method("GET")
             .headers(SERVICE_AUTHORIZATION_HEADER, SERVICE_AUTH_TOKEN, AUTHORIZATION_HEADER,
-                AUTHORIZATION_TOKEN, USER_EMAIL, ORGANISATION_EMAIL)
-            .path("/refdata/external/v1/organisations/users/accountId")
+                AUTHORIZATION_TOKEN)
+            .path("/refdata/external/v1/organisations/users")
             .willRespondWith()
-            .body(buildOrganisationUserResponsePactDsl())
+            .body(buildOrganisationsResponsePactDsl())
             .status(HttpStatus.SC_OK)
             .toPact();
     }
@@ -50,16 +50,6 @@ public class ReferenceDataProfessionalExternalUsersConsumerTest extends Referenc
         assertThat(usersInOrganisation.getUsers(), is(not(empty())));
         assertThat(usersInOrganisation.getUsers().get(0).getUserIdentifier(), is("userId"));
 
-    }
-
-    @Test
-    @PactTestFor(pactMethod = "generatePactFragmentForGetOrganisationUserByEmail")
-    public void verifyGetOrganisationalUserByEmail() {
-        OrganisationUser organisationUser =
-            organisationApi.findUserByEmail(AUTHORIZATION_TOKEN,
-                SERVICE_AUTH_TOKEN, ORGANISATION_EMAIL);
-        assertThat(organisationUser, is(notNullValue()));
-        assertThat(organisationUser.getUserIdentifier(), is("userId"));
     }
 
 }
