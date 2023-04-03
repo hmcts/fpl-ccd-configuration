@@ -2,33 +2,49 @@
   "name": "fpl-ccd-configuration",
   "version": "1.0.0",
   "description": "FPL CCD e2e tests",
+  "engines": {
+    "node": ">=16.13"
+  },
   "devDependencies": {
-    "babel-eslint": "^10.1.0",
-    "codeceptjs": "^3.0.7",
-    "dateformat": "^4.5.1",
+    "@babel/core": "^7.11.0",
+    "@babel/eslint-parser": "^7.17.0",
+    "codeceptjs": "3.4.1",
+    "dateformat": "^4.6.3",
+    "debug": "4.3.4",
     "eslint": "7.32.0",
     "eslint-plugin-codeceptjs": "^1.3.0",
-    "glob": "^7.1.7",
+    "glob": "^7.2.3",
     "html_codesniffer": "^2.5.1",
-    "husky": "^7.0.2",
+    "husky": "^7.0.4",
     "lodash": "^4.17.21",
-    "mocha-junit-reporter": "^2.0.0",
-    "mocha-multi": "^1.1.3",
-    "mochawesome": "^6.2.2",
+    "mocha": "^10.2.0",
+    "mocha-junit-reporter": "^2.2.0",
+    "mocha-multi": "^1.1.7",
+    "mochawesome": "^6.3.1",
     "moment": "2.29.1",
-    "node-fetch": "^2.6.1",
-    "puppeteer": "12.0.1",
-    "webdriverio": "^7.12.5"
+    "node-fetch": "^2.6.9",
+    "puppeteer": "19.7.2",
+    "webdriverio": "8.3.10"
   },
   "scripts": {
     "lint": "eslint e2e",
     "typings": "codeceptjs def && mv steps.d.ts typings/codeceptjs.d.ts",
     "test": "codeceptjs run-multiple parallel",
-    "test:functional": "NODE_TLS_REJECT_UNAUTHORIZED=0 MOCHAWESOME_REPORTFILENAME=functional codeceptjs run-multiple parallel --grep \"${TESTS_SELECTOR:=(?=.*)^(?!.*@smoke-tests)}\" --reporter mocha-multi --verbose",
-    "test:smoke": "MOCHAWESOME_REPORTFILENAME=smoke REPORT_DIR=test-results/smokeTest REPORT_FILE=test-results/smokeTest/results.xml codeceptjs run --grep \"${SMOKE_TESTS_SELECTOR:=@smoke-tests}\" --reporter mocha-multi --verbose",
-    "test:crossbrowser-e2e": "NODE_TLS_REJECT_UNAUTHORIZED=0 MOCHAWESOME_REPORTFILENAME=crossbrowser codeceptjs run-multiple --grep \"@cross-browser\" ${BROWSER_GROUP:-'--all'} -c saucelabs.conf.js --reporter mocha-multi --verbose",
+    "test:functional": "NODE_TLS_REJECT_UNAUTHORIZED=0 MOCHAWESOME_REPORTFILENAME=functional codeceptjs run-multiple parallel --grep '(?=.*)^(?!.*(@smoke-tests|@flaky))' --reporter mocha-multi --verbose",
+    "test:smoke": "MOCHAWESOME_REPORTFILENAME=smoke REPORT_DIR=test-results/smokeTest REPORT_FILE=test-results/smokeTest/results.xml codeceptjs run --grep '@smoke-tests' --reporter mocha-multi --verbose",
+    "test:crossbrowser-e2e": "NODE_TLS_REJECT_UNAUTHORIZED=0 MOCHAWESOME_REPORTFILENAME=crossbrowser codeceptjs run-multiple --grep '@cross-browser' ${BROWSER_GROUP:-'--all'} -c saucelabs.conf.js --reporter mocha-multi --verbose",
     "test:crossbrowser": "./bin/run-crossbrowser-tests.sh",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "yarn-update": "yarn set version 3.x",
+    "install-dependencies": "/usr/bin/yarn install --immutable --silent",
+    "lint-ui-tests": "/usr/bin/yarn lint"
   },
+  "peerDependencies": {
+    "debug": "4.3.4",
+    "mocha-junit-reporter": "^2.2.0",
+    "mocha-multi": "^1.1.7",
+    "mochawesome": "^6.3.1"
+  },
+  "packageManager": "yarn@3.3.0",
   "license": "MIT"
 }

@@ -17,4 +17,6 @@ public class DocmosisStandardDirectionOrder extends DocmosisOrder {
     private final boolean respondentsProvided;
     private final String applicantName;
     private final DocmosisHearingBooking hearingBooking;
+    private final String orderDocumentTitle;
+    private final boolean isUrgentOrder;
 }

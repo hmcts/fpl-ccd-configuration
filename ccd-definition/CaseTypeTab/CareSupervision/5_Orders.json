@@ -69,8 +69,19 @@
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
     "TabDisplayOrder": 5,
-    "CaseFieldID": "standardDirectionOrder",
+    "CaseFieldID": "urgentDirectionsOrder",
     "TabFieldDisplayOrder": 4,
+    "FieldShowCondition": "urgentDirectionsOrder.orderStatus=\"SEALED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OrdersTab",
+    "TabLabel": "Orders",
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "standardDirectionOrder",
+    "TabFieldDisplayOrder": 5,
     "FieldShowCondition": "standardDirectionOrder.orderStatus=\"SEALED\""
   },
   {
@@ -81,7 +92,7 @@
     "TabLabel": "Orders",
     "TabDisplayOrder": 5,
     "CaseFieldID": "urgentHearingOrder",
-    "TabFieldDisplayOrder": 5
+    "TabFieldDisplayOrder": 6
   },
   {
     "LiveFrom": "01/01/2017",
@@ -91,7 +102,7 @@
     "TabLabel": "Orders",
     "TabDisplayOrder": 5,
     "CaseFieldID": "orders",
-    "TabFieldDisplayOrder": 6,
+    "TabFieldDisplayOrder": 7,
     "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\""
   },
   {
@@ -102,16 +113,6 @@
     "TabLabel": "Orders",
     "TabDisplayOrder": 5,
     "CaseFieldID": "orderCollection",
-    "TabFieldDisplayOrder": 7
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "OrdersTab",
-    "TabLabel": "Orders",
-    "TabDisplayOrder": 5,
-    "CaseFieldID": "hiddenCaseManagementOrders",
     "TabFieldDisplayOrder": 8
   },
   {
@@ -121,7 +122,7 @@
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
     "TabDisplayOrder": 5,
-    "CaseFieldID": "hiddenStandardDirectionOrders",
+    "CaseFieldID": "hiddenCaseManagementOrders",
     "TabFieldDisplayOrder": 9
   },
   {
@@ -131,7 +132,17 @@
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
     "TabDisplayOrder": 5,
-    "CaseFieldID": "hiddenOrders",
+    "CaseFieldID": "hiddenStandardDirectionOrders",
     "TabFieldDisplayOrder": 10
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OrdersTab",
+    "TabLabel": "Orders",
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "hiddenOrders",
+    "TabFieldDisplayOrder": 11
   }
 ]
