@@ -9,10 +9,13 @@ import org.springframework.context.annotation.Configuration;
 public class SystemUpdateUserConfiguration {
     private final String userName;
     private final String password;
+    private final boolean cacheTokenEnabled;
 
     public SystemUpdateUserConfiguration(@Value("${fpl.system_update.username}") String userName,
-                                         @Value("${fpl.system_update.password}") String password) {
+                                         @Value("${fpl.system_update.password}") String password,
+                                         @Value("${system_user_service.cache}") boolean cacheTokenEnabled) {
         this.userName = userName;
         this.password = password;
+        this.cacheTokenEnabled = cacheTokenEnabled;
     }
 }

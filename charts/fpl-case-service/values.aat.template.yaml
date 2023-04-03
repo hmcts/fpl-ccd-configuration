@@ -5,4 +5,5 @@ java:
     IDAM_CLIENT_REDIRECT_URI: https://fpl-case-service-*.service.core-compute-aat.internal/oauth2/callback
     SPRING_SECURITY_ENABLED: false
     TESTING_SUPPORT_ENABLED: true
+    CACHE_SYSTEM_USER_TOKEN: true
   aadIdentityName: family-public-law

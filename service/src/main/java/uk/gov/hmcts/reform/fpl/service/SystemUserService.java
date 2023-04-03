@@ -24,8 +24,8 @@ public class SystemUserService {
 
     public String getSysUserToken() {
         // no cached token? no cached time? token > 2 hours old? -> Generate new token
-        if (isEmpty(cachedToken) || isEmpty(timeLastCached)
-            || timeLastCached.until(LocalDateTime.now(), ChronoUnit.MINUTES) > 5) {
+        if (!userConfig.isCacheTokenEnabled() || isEmpty(cachedToken) || isEmpty(timeLastCached)
+            || timeLastCached.until(LocalDateTime.now(), ChronoUnit.HOURS) > 2) {
             cachedToken = idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
             timeLastCached = LocalDateTime.now();
             log.info("Requested new IDAM system-user token");

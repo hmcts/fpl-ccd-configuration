@@ -28,6 +28,7 @@ java:
     PARENTAL_RESPONSIBILITY_FATHER_KEYWORD: ParentalResponsibChg
     PARENTAL_RESPONSIBILITY_FEMALE_KEYWORD: ParentalResponsibility
     DECLARATION_OF_PARENTAGE: Private
+    CACHE_SYSTEM_USER_TOKEN: true
   keyVaults:
     fpl:
       secrets:

@@ -330,3 +330,6 @@ contacts:
   passport_office:
     address: 'Glasgow CPST, HMPO Glasgow, 96 Milton Street, Glasgow, G4 0BT'
     email: 'Glasgowcaveats@hmpo.gov.uk'
+
+system_user_service:
+  cache: ${CACHE_SYSTEM_USER_TOKEN:false}
