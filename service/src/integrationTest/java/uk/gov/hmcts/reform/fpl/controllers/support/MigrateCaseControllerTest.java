@@ -12,9 +12,6 @@ import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
-import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
-import uk.gov.hmcts.reform.fpl.service.TaskListService;
-import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 
 import java.util.NoSuchElementException;
 
@@ -31,15 +28,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     private static final String INVALID_MIGRATION_ID = "invalid id";
 
-    @MockBean
-    private TaskListService taskListService;
-
-    @MockBean
-    private TaskListRenderer taskListRenderer;
-
-    @MockBean
-    private CaseSubmissionChecker caseSubmissionChecker;
-
     @Test
     void shouldThrowExceptionWhenMigrationNotMappedForMigrationID() {
         CaseData caseData = CaseData.builder().build();
@@ -55,44 +43,44 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         caseDetails.getData().put("migrationId", migrationId);
         return caseDetails;
     }
-}
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Nested
-class Dfpl1124Rollback {
-    final String migrationId = "DFPL-1124Rollback";
-    final Long caseId = 1660300177298257L;
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl1124Rollback {
+        final String migrationId = "DFPL-1124Rollback";
+        final Long caseId = 1660300177298257L;
 
-    @Test
-    void shouldAddDfjAreaAndCourtFiledWhenCourtPresent() {
-        CaseData caseData = CaseData.builder()
-            .id(caseId)
-            .state(State.CASE_MANAGEMENT)
-            .court(Court.builder().code("11").build())
-            .dfjArea("SWANSEA")
-            .build();
+        @Test
+        void shouldAddDfjAreaAndCourtFiledWhenCourtPresent() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .state(State.CASE_MANAGEMENT)
+                .court(Court.builder().code("11").build())
+                .dfjArea("SWANSEA")
+                .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-            buildCaseDetails(caseData, migrationId)
-        );
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
 
-        CaseData updatedCaseData = extractCaseData(response);
-        assertThat(updatedCaseData.getDfjArea()).isNull();
-        assertThat(response.getData().get("swanseaDFJCourt")).isNull();
-    }
+            CaseData updatedCaseData = extractCaseData(response);
+            assertThat(updatedCaseData.getDfjArea()).isNull();
+            assertThat(response.getData().get("swanseaDFJCourt")).isNull();
+        }
 
-    @Test
-    void shouldNotFailRollbackWhenDfjAreaNotPresent() {
-        CaseData caseData = CaseData.builder()
-            .id(caseId)
-            .state(State.CASE_MANAGEMENT)
-            .build();
+        @Test
+        void shouldNotFailRollbackWhenDfjAreaNotPresent() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .state(State.CASE_MANAGEMENT)
+                .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-            buildCaseDetails(caseData, migrationId)
-        );
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
 
-        CaseData updatedCaseData = extractCaseData(response);
-        assertThat(updatedCaseData.getDfjArea()).isNull();
+            CaseData updatedCaseData = extractCaseData(response);
+            assertThat(updatedCaseData.getDfjArea()).isNull();
+        }
     }
 }
