@@ -35,7 +35,7 @@ public class ReferenceDataProfessionalExternalUsersConsumerTest extends Referenc
             .headers(SERVICE_AUTHORIZATION_HEADER, SERVICE_AUTH_TOKEN, AUTHORIZATION_HEADER,
                 AUTHORIZATION_TOKEN)
             .path("/refdata/external/v1/organisations/users")
-            .query("status=ACTIVE&returnRoles=false")
+//            .query("status=ACTIVE&returnRoles=false")
             .willRespondWith()
             .body(buildOrganisationsResponsePactDsl())
             .status(HttpStatus.SC_OK)
