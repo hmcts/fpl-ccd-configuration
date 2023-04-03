@@ -166,3 +166,6 @@ contacts:
   passport_office:
     address: 'passport office, some address, somewhere'
     email: 'passport-office@example.com'
+
+system_user_service:
+  cache: false
