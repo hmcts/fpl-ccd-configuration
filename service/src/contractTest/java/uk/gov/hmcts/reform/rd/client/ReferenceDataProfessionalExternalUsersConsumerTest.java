@@ -17,9 +17,9 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@PactTestFor(providerName = "referenceData_professionalExternalUsers", port = "8892")
+@PactTestFor(providerName = "referenceData_professionalExternalUsers", port = "8991")
 @TestPropertySource(
-    properties = "rd_professional.api.url=localhost:8892")
+    properties = "rd_professional.api.url=localhost:8991")
 public class ReferenceDataProfessionalExternalUsersConsumerTest extends ReferenceDataConsumerTestBase {
 
     private static final String USER_EMAIL = "UserEmail";
