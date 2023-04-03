@@ -37,7 +37,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 
 public class FurtherEvidenceUploadedEventTestData {
     public static final Long CASE_ID = 12345L;
@@ -60,6 +60,8 @@ public class FurtherEvidenceUploadedEventTestData {
     public static final String CONFIDENTIAL_2 = "confidential-doc-2";
     public static final DocumentReference PDF_DOCUMENT_1 = getPDFDocument();
     public static final DocumentReference PDF_DOCUMENT_2 = getPDFDocument();
+    public static final DocumentReference PDF_DOCUMENT_3 = getPDFDocument();
+    public static final DocumentReference PDF_DOCUMENT_4 = getPDFDocument();
     public static final DocumentReference NON_PDF_DOCUMENT_1 = getNonPDFDocument();
     private static final FurtherEvidenceType DEFAULT_FURTHER_EVIDENCE_TYPE = GUARDIAN_REPORTS;
 
@@ -190,7 +192,7 @@ public class FurtherEvidenceUploadedEventTestData {
                 .build();
         return commonCaseBuilder()
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .hearingFurtherEvidenceDocuments(wrapElements(bundle))
+                .hearingFurtherEvidenceDocuments(wrapElementsWithUUIDs(bundle))
                 .build();
     }
 
@@ -200,7 +202,7 @@ public class FurtherEvidenceUploadedEventTestData {
             .supportingEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER, type))
             .build();
         return commonCaseBuilder()
-            .hearingFurtherEvidenceDocuments(wrapElements(bundle))
+            .hearingFurtherEvidenceDocuments(wrapElementsWithUUIDs(bundle))
             .build();
     }
 
@@ -220,7 +222,7 @@ public class FurtherEvidenceUploadedEventTestData {
 
         return commonCaseBuilder()
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle))
+                .additionalApplicationsBundle(wrapElementsWithUUIDs(additionalApplicationsBundle))
                 .build();
     }
 
@@ -240,7 +242,7 @@ public class FurtherEvidenceUploadedEventTestData {
 
         return commonCaseBuilder()
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle))
+                .additionalApplicationsBundle(wrapElementsWithUUIDs(additionalApplicationsBundle))
                 .build();
     }
 
@@ -262,7 +264,7 @@ public class FurtherEvidenceUploadedEventTestData {
         return commonCaseBuilder()
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .applicationDocuments(
-                    wrapElements(
+                    wrapElementsWithUUIDs(
                             createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER, PDF_DOCUMENT_1),
                             createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER, PDF_DOCUMENT_1)
                     )
@@ -271,16 +273,28 @@ public class FurtherEvidenceUploadedEventTestData {
     }
 
     public static List<Element<SupportingEvidenceBundle>> buildConfidentialDocumentList(final String uploadedBy) {
-        return wrapElements(
+        return wrapElementsWithUUIDs(
             createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, true, PDF_DOCUMENT_1),
             createDummyEvidenceBundle(CONFIDENTIAL_2, uploadedBy, true, PDF_DOCUMENT_2));
     }
 
     public static List<Element<SupportingEvidenceBundle>> buildConfidentialDocumentList(final String uploadedBy,
                                                                                         FurtherEvidenceType type) {
-        return wrapElements(
+        return wrapElementsWithUUIDs(
             createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, true, PDF_DOCUMENT_1, type),
             createDummyEvidenceBundle(CONFIDENTIAL_2, uploadedBy, true, PDF_DOCUMENT_2, type));
+    }
+
+    public static List<Element<SupportingEvidenceBundle>> buildNonConfidentialDocumentList(final String uploadedBy) {
+        return wrapElementsWithUUIDs(
+            createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, false, PDF_DOCUMENT_1),
+            createDummyEvidenceBundle(CONFIDENTIAL_2, uploadedBy, false, PDF_DOCUMENT_2));
+    }
+
+    public static List<Element<SupportingEvidenceBundle>> buildConfidentialDocumentList2(final String uploadedBy) {
+        return wrapElementsWithUUIDs(
+            createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, true, PDF_DOCUMENT_3),
+            createDummyEvidenceBundle(CONFIDENTIAL_2, uploadedBy, true, PDF_DOCUMENT_4));
     }
 
     public static List<Element<SupportingEvidenceBundle>> buildNonConfidentialPdfDocumentList(final String uploadedBy) {
@@ -289,7 +303,7 @@ public class FurtherEvidenceUploadedEventTestData {
 
     public static List<Element<SupportingEvidenceBundle>>
         buildNonConfidentialPdfDocumentList(final String uploadedBy, FurtherEvidenceType type) {
-        return wrapElements(
+        return wrapElementsWithUUIDs(
             createDummyEvidenceBundle(NON_CONFIDENTIAL_1, uploadedBy, false, PDF_DOCUMENT_1, type),
             createDummyEvidenceBundle(NON_CONFIDENTIAL_2, uploadedBy, false, PDF_DOCUMENT_2, type));
     }
@@ -297,7 +311,7 @@ public class FurtherEvidenceUploadedEventTestData {
 
     public static List<Element<SupportingEvidenceBundle>> buildNonConfidentialNonPDFDocumentList(
         final String uploadedBy) {
-        return wrapElements(
+        return wrapElementsWithUUIDs(
             createDummyEvidenceBundle(NON_CONFIDENTIAL_1, uploadedBy, false, NON_PDF_DOCUMENT_1));
     }
 
@@ -324,14 +338,20 @@ public class FurtherEvidenceUploadedEventTestData {
         return document.build();
     }
 
-    public static ApplicationDocument createDummyApplicationDocument(final String name, final String uploadedBy,
+    public static ApplicationDocument createDummyApplicationDocument(String name, String uploadedBy,
                                                                      DocumentReference docRef) {
+        return createDummyApplicationDocument(name,uploadedBy, docRef, false);
+    }
+
+    public static ApplicationDocument createDummyApplicationDocument(final String name, final String uploadedBy,
+                                                                     DocumentReference docRef, boolean confidential) {
         return ApplicationDocument.builder()
                 .documentName(name)
                 .documentType(BIRTH_CERTIFICATE)
                 .uploadedBy(uploadedBy)
                 .document(docRef)
                 .dateTimeUploaded(LocalDateTime.now())
+                .confidential(confidential ? List.of("CONFIDENTIAL") : List.of())
                 .build();
     }
 
@@ -372,7 +392,7 @@ public class FurtherEvidenceUploadedEventTestData {
     public static List<Element<HearingFurtherEvidenceBundle>> buildHearingFurtherEvidenceBundle(
         List<Element<SupportingEvidenceBundle>> bundle
     ) {
-        return wrapElements(HearingFurtherEvidenceBundle.builder()
+        return wrapElementsWithUUIDs(HearingFurtherEvidenceBundle.builder()
             .hearingName(UUID.randomUUID().toString())
             .supportingEvidenceBundle(bundle)
             .build());
@@ -381,7 +401,7 @@ public class FurtherEvidenceUploadedEventTestData {
     public static List<Element<RespondentStatement>> buildRespondentStatementsList(
         List<Element<SupportingEvidenceBundle>> bundle
     ) {
-        return wrapElements(RespondentStatement.builder()
+        return wrapElementsWithUUIDs(RespondentStatement.builder()
             .respondentId(UUID.randomUUID())
             .respondentName("name")
             .supportingEvidenceBundle(bundle)
@@ -392,7 +412,7 @@ public class FurtherEvidenceUploadedEventTestData {
         return CaseData.builder()
             .id(CASE_ID)
             .familyManCaseNumber(CASE_ID.toString())
-            .hearingDetails(wrapElements(HearingBooking.builder().startDate((HEARING_DATE)).build()));
+            .hearingDetails(wrapElementsWithUUIDs(HearingBooking.builder().startDate((HEARING_DATE)).build()));
     }
 
     public static UserDetails userDetailsLA() {

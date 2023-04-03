@@ -40,7 +40,11 @@ public class GatekeepingOrderEventHandler {
     public void notifyCafcass(GatekeepingOrderEvent event) {
         CaseData caseData = event.getCaseData();
 
-        NotifyData parameters = cafcassContentProvider.getNotifyData(caseData, event.getOrder());
+        NotifyData parameters = cafcassContentProvider.getNotifyData(
+            caseData,
+            event.getOrder(),
+            event.getDirectionsOrderType());
+
         String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 
         notificationService
@@ -52,7 +56,9 @@ public class GatekeepingOrderEventHandler {
     public void notifyLocalAuthority(GatekeepingOrderEvent event) {
         CaseData caseData = event.getCaseData();
 
-        NotifyData notifyData = standardContentProvider.buildNotificationParameters(caseData);
+        NotifyData notifyData = standardContentProvider.buildNotificationParameters(
+            caseData,
+            event.getDirectionsOrderType());
 
         final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
             .caseData(caseData)
@@ -69,7 +75,9 @@ public class GatekeepingOrderEventHandler {
     public void notifyCTSC(GatekeepingOrderEvent event) {
         CaseData caseData = event.getCaseData();
 
-        NotifyData notifyData = standardContentProvider.buildNotificationParameters(caseData);
+        NotifyData notifyData = standardContentProvider.buildNotificationParameters(
+            caseData,
+            event.getDirectionsOrderType());
         String recipient = ctscEmailLookupConfiguration.getEmail();
 
         notificationService
@@ -84,7 +92,7 @@ public class GatekeepingOrderEventHandler {
             event.getOrder(), event.getOrderTitle());
 
         ObjectUtils.<List<Element<DocumentBundle>>>defaultIfNull(event.getCaseData()
-            .getNoticeOfProceedingsBundle(), Collections.emptyList())
+                .getNoticeOfProceedingsBundle(), Collections.emptyList())
             .forEach(nop -> translationRequestService.sendRequest(event.getCaseData(),
                 event.getLanguageTranslationRequirement(),
                 nop.getValue().getDocument(), nop.getValue().asLabel())

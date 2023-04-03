@@ -53,6 +53,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionType.REQUEST_PERMISSION_FOR
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedApplicants;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
@@ -121,12 +122,16 @@ class GatekeepingOrderGenerationServiceTest {
         return baseDocmosisOrder().toBuilder()
             .courtseal("[userImage:familycourtseal.png]")
             .dateOfIssue("29 November 2019")
+            .isUrgentOrder(false)
+            .orderDocumentTitle("Standard Directions Order")
             .build();
     }
 
     private DocmosisStandardDirectionOrder fullDraftOrder() {
         return fullDraftOrderFromLegacyApplicant().toBuilder()
             .applicantName("Local authority name")
+            .orderDocumentTitle("Urgent Directions Order")
+            .isUrgentOrder(true)
             .build();
     }
 
@@ -134,6 +139,7 @@ class GatekeepingOrderGenerationServiceTest {
         return baseDocmosisOrder().toBuilder()
             .draftbackground("[userImage:draft-watermark.png]")
             .dateOfIssue("<date will be added on issue>")
+            .orderDocumentTitle("Urgent Directions Order")
             .build();
     }
 
@@ -154,6 +160,7 @@ class GatekeepingOrderGenerationServiceTest {
                     .orderStatus(SEALED)
                     .build())
                 .build())
+            .gatekeepingOrderRouter(SERVICE)
             .build();
     }
 
@@ -163,6 +170,7 @@ class GatekeepingOrderGenerationServiceTest {
                 .designated("Yes")
                 .name("Local authority name")
                 .build()))
+            .urgentDirectionsRouter(SERVICE)
             .build();
     }
 
