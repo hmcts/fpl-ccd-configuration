@@ -11,6 +11,6 @@ public class SystemUpdateTestConfig {
     @ConditionalOnMissingBean
     @Bean
     public SystemUpdateUserConfiguration systemUpdateUserConfiguration() {
-        return new SystemUpdateUserConfiguration("user", "password");
+        return new SystemUpdateUserConfiguration("user", "password", false);
     }
 }
