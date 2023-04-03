@@ -2,22 +2,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "BristolDFJCourts",
-    "ListElementCode": "123",
-    "ListElement": "Bath",
-    "DisplayOrder": 1
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "BristolDFJCourts",
     "ListElementCode": "151",
     "ListElement": "Bristol",
-    "DisplayOrder": 2
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "BristolDFJCourts",
-    "ListElementCode": "203",
-    "ListElement": "Gloucester",
-    "DisplayOrder": 3
+    "DisplayOrder": 1
   }
 ]

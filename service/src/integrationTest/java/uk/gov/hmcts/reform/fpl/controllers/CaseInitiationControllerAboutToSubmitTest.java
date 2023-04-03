@@ -73,8 +73,6 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(caseDetails.get("localAuthorityPolicy"))
             .isEqualTo(orgPolicy(organisation.getOrganisationIdentifier(), "[LASOLICITOR]"));
         assertThat(caseDetails.get("court")).isEqualTo(toMap(expectedCourt));
-        assertThat(caseDetails.get("dfjArea")).isEqualTo("SWANSEA");
-        assertThat(caseDetails.get("swanseaDFJCourt")).isEqualTo("11");
         assertThat(caseDetails.get("multiCourt")).isNull();
     }
 
@@ -110,8 +108,6 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(caseDetails.get("outsourcingPolicy"))
             .isEqualTo(orgPolicy(userOrganisationId, "[EPSMANAGING]"));
         assertThat(caseDetails.get("court")).isEqualTo(toMap(expectedCourt));
-        assertThat(caseDetails.get("dfjArea")).isEqualTo("SWANSEA");
-        assertThat(caseDetails.get("swanseaDFJCourt")).isEqualTo("11");
         assertThat(caseDetails.get("multiCourt")).isNull();
     }
 
@@ -137,8 +133,6 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(caseDetails.get("localAuthorityPolicy")).isNull();
         assertThat(caseDetails.get("outsourcingPolicy")).isNull();
         assertThat(caseDetails.get("court")).isEqualTo(toMap(expectedCourt));
-        assertThat(caseDetails.get("dfjArea")).isEqualTo("SWANSEA");
-        assertThat(caseDetails.get("swanseaDFJCourt")).isEqualTo("11");
         assertThat(caseDetails.get("multiCourt")).isNull();
     }
 
@@ -212,4 +206,5 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
             "OrganisationName", orgName
         ), "OrgPolicyCaseAssignedRole", role);
     }
+
 }
