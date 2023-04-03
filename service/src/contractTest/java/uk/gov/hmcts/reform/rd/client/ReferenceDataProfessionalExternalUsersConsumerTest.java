@@ -17,30 +17,13 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@PactTestFor(providerName = "referenceData_professionalExternalUsers", port = "8991")
+@PactTestFor(providerName = "referenceData_professionalExternalUsers", port = "8892")
 @TestPropertySource(
-    properties = "rd_professional.api.url=localhost:8991")
+    properties = "rd_professional.api.url=localhost:8892")
 public class ReferenceDataProfessionalExternalUsersConsumerTest extends ReferenceDataConsumerTestBase {
 
     private static final String USER_EMAIL = "UserEmail";
     private static final String ORGANISATION_EMAIL = "someemailaddress@organisation.com";
-
-    @Pact(provider = "referenceData_professionalExternalUsers", consumer = "fpl_ccdConfiguration")
-    public RequestResponsePact generatePactFragmentForGetOrganisationUsers(PactDslWithProvider builder) {
-        // @formatter:off
-        return builder
-            .given("Professional users exist for an Active organisation")
-            .uponReceiving("A Request to get users for an active organisation")
-            .method("GET")
-            .headers(SERVICE_AUTHORIZATION_HEADER, SERVICE_AUTH_TOKEN, AUTHORIZATION_HEADER,
-                AUTHORIZATION_TOKEN)
-            .path("/refdata/external/v1/organisations/users")
-            .query("status=ACTIVE&returnRoles=false")
-            .willRespondWith()
-            .body(buildOrganisationsResponsePactDsl())
-            .status(HttpStatus.SC_OK)
-            .toPact();
-    }
 
     @Pact(provider = "referenceData_professionalExternalUsers", consumer = "fpl_ccdConfiguration")
     public RequestResponsePact generatePactFragmentForGetOrganisationUserByEmail(PactDslWithProvider builder) {
