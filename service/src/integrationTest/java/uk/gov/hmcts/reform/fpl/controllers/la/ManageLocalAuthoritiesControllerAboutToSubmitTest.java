@@ -24,12 +24,10 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.Court;
-import uk.gov.hmcts.reform.fpl.model.DfjAreaCourtMapping;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthoritiesEventData;
-import uk.gov.hmcts.reform.fpl.service.DfjAreaLookUpService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.ContactInformation;
@@ -88,9 +86,6 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
     @MockBean
     private CaseAssignmentApi caseAssignmentApi;
 
-    @MockBean
-    private DfjAreaLookUpService dfjAreaLookUpService;
-
     @Captor
     private ArgumentCaptor<DecisionRequest> assignment;
 
@@ -105,11 +100,6 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
             .addressLine1("Line 1")
             .postCode("AB 100")
             .build()))
-        .build();
-
-    private final DfjAreaCourtMapping dfjAreaCourtMapping = DfjAreaCourtMapping.builder()
-        .dfjArea("updatedDFJArea")
-        .courtField("dfjCourt")
         .build();
 
     @BeforeEach
@@ -282,9 +272,6 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
         @Test
         void shouldTransferCaseToSecondaryLocalAuthorityAndCourt() {
 
-            when(dfjAreaLookUpService.getDfjArea(COURT_2.getCode()))
-                .thenReturn(dfjAreaCourtMapping);
-
             final Colleague existingSocialWorker = Colleague.builder()
                 .role(SOCIAL_WORKER)
                 .fullName("Alex White")
@@ -363,8 +350,6 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
 
         @Test
         void shouldTransferCaseToNewLocalAuthorityAndCourt2() {
-            when(dfjAreaLookUpService.getDfjArea(COURT_1.getCode()))
-                .thenReturn(dfjAreaCourtMapping);
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
                 .localAuthorityAction(TRANSFER)
@@ -378,7 +363,6 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
                 .localAuthorityPolicy(organisationPolicy(LOCAL_AUTHORITY_1_ID, LOCAL_AUTHORITY_1_NAME, LASOLICITOR))
                 .localAuthoritiesEventData(eventData)
                 .localAuthorities(wrapElements(designatedLocalAuthority))
-                .court(COURT_1)
                 .build();
 
             final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
@@ -405,8 +389,6 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
                         .mainContact("Yes")
                         .build()))
                     .build());
-            assertThat(updatedCaseData.getDfjArea()).isEqualTo(dfjAreaCourtMapping.getDfjArea());
-            assertThat(updatedCaseData.getCourtField()).isNull();
         }
     }
 
@@ -415,9 +397,6 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
 
         @Test
         void shouldTransferToOrdinaryCourt() {
-            when(dfjAreaLookUpService.getDfjArea("384"))
-                .thenReturn(dfjAreaCourtMapping);
-
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
                 .localAuthorityAction(TRANSFER_COURT)
                 .courtsToTransferWithoutTransferLA(dynamicLists.from(1,
@@ -426,7 +405,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
                 .build();
 
             final CaseData initialCaseData = CaseData.builder()
-                .court(COURT_1)
+                .court(Court.builder().name("Family Court sitting at Swansea").code("344").build())
                 .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
                 .caseLocalAuthorityName(LOCAL_AUTHORITY_1_NAME)
                 .localAuthoritiesEventData(eventData)
@@ -445,16 +424,11 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
                 .sorted(Comparator.comparing(Court::getDateTransferred).reversed())
                 .findFirst().orElse(null);
             assertThat(lastCourt).isNotNull();
-            assertThat(lastCourt.getCode()).isEqualTo(COURT_1.getCode());
-            assertThat(updatedCaseData.getDfjArea()).isEqualTo(dfjAreaCourtMapping.getDfjArea());
-            assertThat(updatedCaseData.getCourtField()).isNull();
+            assertThat(lastCourt.getCode()).isEqualTo("344");
         }
 
         @Test
         void shouldTransferToOrdinaryCourtAgain() {
-            when(dfjAreaLookUpService.getDfjArea("384"))
-                .thenReturn(dfjAreaCourtMapping);
-
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
                 .localAuthorityAction(TRANSFER_COURT)
                 .courtsToTransferWithoutTransferLA(dynamicLists.from(1,
@@ -496,14 +470,10 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
                 .findFirst().orElse(null);
             assertThat(lastCourt).isNotNull();
             assertThat(lastCourt.getCode()).isEqualTo("344");
-            assertThat(updatedCaseData.getDfjArea()).isEqualTo(dfjAreaCourtMapping.getDfjArea());
-            assertThat(updatedCaseData.getCourtField()).isNull();
         }
 
         @Test
         void shouldTransferToRcjHighCourt() {
-            when(dfjAreaLookUpService.getDfjArea(RCJ_HIGH_COURT_CODE))
-                .thenReturn(dfjAreaCourtMapping);
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
                 .localAuthorityAction(TRANSFER_COURT)
                 .courtsToTransferWithoutTransferLA(dynamicLists.from(1,
@@ -531,18 +501,12 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
                 .stream()
                 .sorted(Comparator.comparing(Court::getDateTransferred).reversed())
                 .findFirst().orElse(null);
-
             assertThat(lastCourt).isNotNull();
             assertThat(lastCourt.getCode()).isEqualTo("344");
-            assertThat(updatedCaseData.getDfjArea()).isEqualTo(dfjAreaCourtMapping.getDfjArea());
-            assertThat(updatedCaseData.getCourtField()).isNull();
         }
 
         @Test
         void shouldTransferOutOfTheHighCourt() {
-            when(dfjAreaLookUpService.getDfjArea("380"))
-                .thenReturn(dfjAreaCourtMapping);
-
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
                 .localAuthorityAction(TRANSFER_COURT)
                 .courtsToTransferWithoutTransferLA(dynamicLists.from(0,
@@ -572,8 +536,6 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
                 .findFirst().orElse(null);
             assertThat(lastCourt).isNotNull();
             assertThat(lastCourt.getCode()).isEqualTo(RCJ_HIGH_COURT_CODE);
-            assertThat(updatedCaseData.getDfjArea()).isEqualTo(dfjAreaCourtMapping.getDfjArea());
-            assertThat(updatedCaseData.getCourtField()).isNull();
         }
 
     }
