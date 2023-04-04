@@ -27,11 +27,17 @@ public interface OrganisationApi {
         @RequestParam(value = "returnRoles") Boolean returnRoles
     );
 
+    @GetMapping("/refdata/external/v1/organisations/users")
+    OrganisationUsers findUsersInCurrentUserOrganisation(
+        @RequestHeader(AUTHORIZATION) String authorisation,
+        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization
+    );
+
     @GetMapping("/refdata/external/v1/organisations/users/accountId")
     OrganisationUser findUserByEmail(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
-        @RequestHeader("UserEmail") @RequestParam("email") final String email
+        @RequestHeader("UserEmail") final String email
     );
 
     @GetMapping("/refdata/external/v1/organisations")
