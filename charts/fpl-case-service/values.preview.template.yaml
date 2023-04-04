@@ -73,6 +73,8 @@ idam-pr:
   redirect_uris:
     XUI:
       - https://xui-${SERVICE_FQDN}/oauth2/callback
+    XUIMO:
+      - https://xui-mo-${SERVICE_FQDN}/oauth2/callback
 
 xui-webapp:
   enabled: true
