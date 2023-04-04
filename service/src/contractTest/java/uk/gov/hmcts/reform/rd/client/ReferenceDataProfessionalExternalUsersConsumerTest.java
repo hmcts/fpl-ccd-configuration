@@ -50,7 +50,7 @@ public class ReferenceDataProfessionalExternalUsersConsumerTest extends Referenc
             .uponReceiving("A Request to get user by email")
             .method("GET")
             .headers(SERVICE_AUTHORIZATION_HEADER, SERVICE_AUTH_TOKEN, AUTHORIZATION_HEADER,
-                AUTHORIZATION_TOKEN)
+                AUTHORIZATION_TOKEN, USER_EMAIL, ORGANISATION_EMAIL)
             .path("/refdata/external/v1/organisations/users/accountId")
             .query("email="+ORGANISATION_EMAIL)
             .willRespondWith()
