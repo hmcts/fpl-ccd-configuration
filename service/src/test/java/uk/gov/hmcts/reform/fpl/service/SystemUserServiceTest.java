@@ -8,13 +8,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
+import uk.gov.hmcts.reform.fpl.CallbackRequestLogger;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
+import uk.gov.hmcts.reform.fpl.utils.extension.TestLogger;
+import uk.gov.hmcts.reform.fpl.utils.extension.TestLogs;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
 
@@ -30,6 +34,9 @@ class SystemUserServiceTest {
 
     @Mock
     private SystemUpdateUserConfiguration userConfig;
+
+    @TestLogs
+    private final TestLogger logs = new TestLogger(SystemUserService.class);
 
     @InjectMocks
     private SystemUserService underTest;
@@ -66,4 +73,31 @@ class SystemUserServiceTest {
 
         assertThat(actualId).isEqualTo(userInfo.getUid());
     }
+
+    @Test
+    void shouldRequestNewTokenEveryTimeIfCacheDisabled() {
+        String token = RandomStringUtils.randomAlphanumeric(10);
+        when(idamClient.getAccessToken(SYS_USER_NAME, SYS_USER_PASS)).thenReturn(token);
+        when(userConfig.isCacheTokenEnabled()).thenReturn(false);
+
+        underTest.getSysUserToken();
+        underTest.getSysUserToken();
+
+        assertThat(logs.getInfos()).containsExactly("Requested new IDAM system-user token",
+            "Requested new IDAM system-user token");
+    }
+
+    @Test
+    void shouldUsedCachedTokenEveryTimeIfCacheEnabled() {
+        String token = RandomStringUtils.randomAlphanumeric(10);
+        when(idamClient.getAccessToken(SYS_USER_NAME, SYS_USER_PASS)).thenReturn(token);
+        when(userConfig.isCacheTokenEnabled()).thenReturn(true);
+
+        underTest.getSysUserToken();
+        underTest.getSysUserToken();
+
+        assertThat(logs.getInfos()).containsExactly("Requested new IDAM system-user token",
+            "Using cached IDAM system-user token");
+    }
+
 }
