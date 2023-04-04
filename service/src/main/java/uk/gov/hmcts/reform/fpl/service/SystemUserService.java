@@ -7,11 +7,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
