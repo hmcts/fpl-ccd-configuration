@@ -19,6 +19,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
 
@@ -35,28 +36,19 @@ class SystemUserServiceTest {
     @Mock
     private SystemUpdateUserConfiguration userConfig;
 
+    @Mock
+    private SystemUserCacheService cacheService;
+
     @TestLogs
     private final TestLogger logs = new TestLogger(SystemUserService.class);
 
     @InjectMocks
     private SystemUserService underTest;
 
-
     @BeforeEach
     void init() {
         when(userConfig.getUserName()).thenReturn(SYS_USER_NAME);
         when(userConfig.getPassword()).thenReturn(SYS_USER_PASS);
-    }
-
-    @Test
-    void shouldReturnSystemUserToken() {
-        String expectedToken = RandomStringUtils.randomAlphanumeric(10);
-
-        when(idamClient.getAccessToken(SYS_USER_NAME, SYS_USER_PASS)).thenReturn(expectedToken);
-
-        String actualToken = underTest.getSysUserToken();
-
-        assertThat(actualToken).isEqualTo(expectedToken);
     }
 
     @Test
@@ -75,29 +67,42 @@ class SystemUserServiceTest {
     }
 
     @Test
-    void shouldRequestNewTokenEveryTimeIfCacheDisabled() {
+    void shouldRequestNewTokenIfCacheDisabled() {
         String token = RandomStringUtils.randomAlphanumeric(10);
         when(idamClient.getAccessToken(SYS_USER_NAME, SYS_USER_PASS)).thenReturn(token);
         when(userConfig.isCacheTokenEnabled()).thenReturn(false);
 
         underTest.getSysUserToken();
-        underTest.getSysUserToken();
 
-        assertThat(logs.getInfos()).containsExactly("Requested new IDAM system-user token",
-            "Requested new IDAM system-user token");
+        verifyNoInteractions(cacheService);
     }
 
     @Test
-    void shouldUsedCachedTokenEveryTimeIfCacheEnabled() {
+    void shouldUpdateNewTokenInCacheIfInvalid() {
         String token = RandomStringUtils.randomAlphanumeric(10);
         when(idamClient.getAccessToken(SYS_USER_NAME, SYS_USER_PASS)).thenReturn(token);
+
         when(userConfig.isCacheTokenEnabled()).thenReturn(true);
+        when(cacheService.isCacheValid()).thenReturn(false);
 
         underTest.getSysUserToken();
-        underTest.getSysUserToken();
 
-        assertThat(logs.getInfos()).containsExactly("Requested new IDAM system-user token",
-            "Using cached IDAM system-user token");
+        assertThat(logs.getInfos()).containsExactly("Cache invalid/missing, requesting new token");
+        verify(cacheService).updateCache(token);
+    }
+
+    @Test
+    void shouldGetCachedTokenIfValid() {
+        String token = RandomStringUtils.randomAlphanumeric(10);
+
+        when(userConfig.isCacheTokenEnabled()).thenReturn(true);
+        when(cacheService.isCacheValid()).thenReturn(true);
+        when(cacheService.getCachedToken()).thenReturn(token);
+
+        String retrieved = underTest.getSysUserToken();
+
+        assertThat(logs.getInfos()).containsExactly("Cache valid, using token");
+        assertThat(retrieved).isEqualTo(token);
     }
 
 }

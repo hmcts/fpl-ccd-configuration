@@ -18,21 +18,19 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 public class SystemUserService {
 
     private final SystemUpdateUserConfiguration userConfig;
+    private final SystemUserCacheService cacheService;
     private final IdamClient idamClient;
-    private String cachedToken;
-    private LocalDateTime timeLastCached;
 
     public String getSysUserToken() {
-        // no cached token? no cached time? token > 2 hours old? -> Generate new token
-        if (!userConfig.isCacheTokenEnabled() || isEmpty(cachedToken) || isEmpty(timeLastCached)
-            || timeLastCached.until(LocalDateTime.now(), ChronoUnit.HOURS) > 2) {
-            cachedToken = idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
-            timeLastCached = LocalDateTime.now();
-            log.info("Requested new IDAM system-user token");
+        if (!userConfig.isCacheTokenEnabled()) {
+            return idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
+        } else if (!cacheService.isCacheValid()) {
+            log.info("Cache invalid/missing, requesting new token");
+            cacheService.updateCache(idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword()));
         } else {
-            log.info("Using cached IDAM system-user token");
+            log.info("Cache valid, using token");
         }
-        return cachedToken;
+        return cacheService.getCachedToken();
     }
 
     public String getUserId(String userToken) {
