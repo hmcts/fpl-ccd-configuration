@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static io.pactfoundation.consumer.dsl.LambdaDsl.newJsonBody;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CREATOR;
 
 @ExtendWith(PactConsumerTestExt.class)
@@ -62,6 +63,9 @@ public class CaseAccessDataStoreConsumerTest {
             .path("/case-users")
             .body(createJsonObject(buildCaseAssignedUserRolesRequest()))
             .willRespondWith()
+            .body(newJsonBody(ob -> ob
+                .stringType("status"))
+                .build())
             .status(HttpStatus.SC_OK)
             .toPact();
     }
