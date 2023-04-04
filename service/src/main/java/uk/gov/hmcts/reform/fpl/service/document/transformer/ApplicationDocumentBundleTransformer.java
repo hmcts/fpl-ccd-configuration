@@ -45,7 +45,7 @@ public class ApplicationDocumentBundleTransformer {
     public DocumentContainerView getApplicationStatementAndDocumentBundle(CaseData caseData,
                                                                           DocumentViewType view) {
 
-        List<Element<ApplicationDocument>> applicationDocuments = caseData.getApplicationDocuments();
+        List<Element<ApplicationDocument>> applicationDocuments = getApplicationDocument(caseData, view);
         List<Element<SupportingEvidenceBundle>> applicantStatementDocuments = getApplicantStatements(caseData, view);
 
         if (isEmpty(applicationDocuments) && isEmpty(applicantStatementDocuments)) {
@@ -85,6 +85,18 @@ public class ApplicationDocumentBundleTransformer {
             });
 
         return documentBundles;
+    }
+
+    private List<Element<ApplicationDocument>> getApplicationDocument(CaseData caseData,
+                                                                      DocumentViewType view) {
+        List<Element<ApplicationDocument>> applicationDocuments = caseData.getApplicationDocuments();
+
+        boolean includeConfidential = view.isIncludeConfidentialHMCTS() || view.isIncludeConfidentialLA();
+        List<Element<ApplicationDocument>> applicantStatementDocuments
+            = getApplicationDocumentsForView(applicationDocuments, includeConfidential);
+        return applicantStatementDocuments.stream()
+            .sorted(comparing(doc -> doc.getValue().getDateTimeUploaded(), nullsLast(reverseOrder())))
+            .collect(Collectors.toList());
     }
 
     private List<Element<SupportingEvidenceBundle>> getApplicantStatements(CaseData caseData,
@@ -135,6 +147,15 @@ public class ApplicationDocumentBundleTransformer {
             .collect(Collectors.toList());
     }
 
+    private List<Element<ApplicationDocument>> getApplicationDocumentsForView(
+        List<Element<ApplicationDocument>> applicationDocuments,
+        boolean includeConfidential) {
+
+        return nullSafeList(applicationDocuments).stream()
+            .filter(doc -> includeConfidential || !doc.getValue().isConfidentialDocument())
+            .collect(Collectors.toList());
+    }
+
     private List<DocumentView> getApplicationDocumentsView(List<ApplicationDocument> applicationDocuments) {
         List<DocumentView> applicationDocs = new ArrayList<>();
 
@@ -151,6 +172,7 @@ public class ApplicationDocumentBundleTransformer {
                     .title(OTHER == doc.getDocumentType() ? doc.getDocumentName() : getFilename(doc.getDocument()))
                     .includeSWETField(SWET == doc.getDocumentType())
                     .includeDocumentName(Arrays.asList(APPLICANT_STATEMENT, OTHER).contains(doc.getDocumentType()))
+                    .confidential(doc.isConfidentialDocument())
                     .build())
                 .sorted(comparing(DocumentView::getUploadedAt, nullsLast(reverseOrder())))
                 .collect(Collectors.toList());

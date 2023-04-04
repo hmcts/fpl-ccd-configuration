@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA;
@@ -174,6 +175,7 @@ public class CaseData extends CaseDataParent {
     private RepresentativeType representativeType;
     private YesNo isLocalAuthority;
     private Object outsourcingLAs;
+    private String relatingLA;
     private Court court;
     private List<Element<Court>> pastCourtList;
 
@@ -238,10 +240,14 @@ public class CaseData extends CaseDataParent {
     private final Allocation allocationDecision;
 
     private final StandardDirectionOrder standardDirectionOrder;
+    private final StandardDirectionOrder urgentDirectionsOrder;
+
+    @Deprecated
     private final UrgentHearingOrder urgentHearingOrder;
 
     private GatekeepingOrderRoute sdoRouter;
     private GatekeepingOrderRoute gatekeepingOrderRouter;
+    private GatekeepingOrderRoute urgentDirectionsRouter;
 
     private final DocumentReference preparedSDO;
     private final DocumentReference replacementSDO;
@@ -856,6 +862,7 @@ public class CaseData extends CaseDataParent {
 
     private final List<Element<HearingOrder>> draftUploadedCMOs;
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
+    private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDraftReview;
     private List<Element<HearingOrder>> refusedHearingOrders;
     private final UUID lastHearingOrderDraftsHearingId;
 
@@ -882,19 +889,17 @@ public class CaseData extends CaseDataParent {
 
     @JsonIgnore
     public List<Element<HearingOrder>> getOrdersFromHearingOrderDraftsBundles() {
-        if (hearingOrdersBundlesDrafts != null) {
-            return hearingOrdersBundlesDrafts.stream()
-                .map(Element::getValue)
-                .flatMap((HearingOrdersBundle hearingOrdersBundle)
-                    -> hearingOrdersBundle.getOrders().stream())
-                .collect(toList());
-        }
-
-        return new ArrayList<>();
+        return Stream.concat(nullSafeList(hearingOrdersBundlesDrafts).stream(),
+                nullSafeList(hearingOrdersBundlesDraftReview).stream())
+            .map(Element::getValue)
+            .flatMap((HearingOrdersBundle hearingOrdersBundle)
+                -> hearingOrdersBundle.getOrders().stream())
+            .collect(toList());
     }
 
     public Optional<Element<HearingOrdersBundle>> getHearingOrderBundleThatContainsOrder(UUID orderId) {
-        return nullSafeList(hearingOrdersBundlesDrafts).stream()
+        return Stream.concat(nullSafeList(hearingOrdersBundlesDrafts).stream(),
+                    nullSafeList(hearingOrdersBundlesDraftReview).stream())
             .filter(hearingOrdersBundleElement
                 -> hearingOrdersBundleElement.getValue().getOrders().stream()
                 .anyMatch(orderElement -> orderElement.getId().equals(orderId)))
@@ -1051,6 +1056,8 @@ public class CaseData extends CaseDataParent {
     private final MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder().build();
     private final List<Element<JudicialMessage>> judicialMessages;
     private final List<Element<JudicialMessage>> closedJudicialMessages;
+    private JudicialMessageRoleType latestRoleSent;
+
 
     public DynamicList buildJudicialMessageDynamicList(UUID selected) {
         return asDynamicList(judicialMessages, selected, JudicialMessage::toLabel);
@@ -1226,6 +1233,27 @@ public class CaseData extends CaseDataParent {
     public boolean isRefuseContactWithChildApplication() {
         return ofNullable(getOrders())
             .map(Orders::isRefuseContactWithChildApplication)
+            .orElse(false);
+    }
+
+    @JsonIgnore
+    public boolean isEducationSupervisionApplication() {
+        return ofNullable(getOrders())
+            .map(Orders::isEducationSupervisionOrder)
+            .orElse(false);
+    }
+
+    @JsonIgnore
+    public boolean isCareOrderCombinedWithUrgentDirections() {
+        return ofNullable(getOrders())
+            .map(Orders::isCareOrderCombinedWithEPOorICO)
+            .orElse(false);
+    }
+
+    @JsonIgnore
+    public boolean isStandaloneEPOApplication() {
+        return ofNullable(getOrders())
+            .map(Orders::isEmergencyProtectionOrderOnly)
             .orElse(false);
     }
 }

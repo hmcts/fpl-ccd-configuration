@@ -79,7 +79,8 @@
     "HintText": "Include the applicant's name and respondent's last name. For example, Endley Council v Smith/Tate/Jones",
     "FieldType": "Text",
     "SecurityClassification": "Public",
-    "Searchable": "Y"
+    "Searchable": "Y",
+    "RegularExpression": "^(?!.*<[^>\\d]+>*).*"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -162,6 +163,15 @@
     "ID": "groundsForContactWithChild",
     "Label": "How are there grounds for a contact with a child in care application?",
     "FieldType": "GroundsForContactWithChild",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "groundsForEducationSupervisionOrder",
+    "Label": "How are there grounds for an education supervision order?",
+    "FieldType": "GroundsForEducationSupervisionOrder",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -578,7 +588,8 @@
     "Label": "FamilyMan case number",
     "FieldType": "Text",
     "SecurityClassification": "Public",
-    "Searchable": "Y"
+    "Searchable": "Y",
+    "RegularExpression": "^[a-zA-Z0-9]*$"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1785,6 +1796,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "relatingLA",
+    "Label": "Select the local authority which relates to the case",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "AuthorityFixedList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "outsourcingLAs",
     "Label": "Select the local authority you're representing",
     "FieldType": "DynamicList",
@@ -2203,6 +2224,16 @@
     "ID": "othersList",
     "Label": "Select one of the others to be given notice",
     "FieldType": "DynamicList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "latestRoleSent",
+    "Label": " ",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "JudicialMessageRoleTypes",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }

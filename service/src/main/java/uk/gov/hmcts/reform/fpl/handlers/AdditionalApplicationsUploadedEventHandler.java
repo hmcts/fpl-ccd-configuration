@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -31,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.AdditionalApplicationsUploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
+import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,6 +60,7 @@ import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContent
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AdditionalApplicationsUploadedEventHandler {
     private final RequestData requestData;
@@ -88,10 +91,7 @@ public class AdditionalApplicationsUploadedEventHandler {
     @Async
     public void sendDocumentsToCafcass(final AdditionalApplicationsUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
 
             final CaseData caseDataBefore = event.getCaseDataBefore();
@@ -257,7 +257,7 @@ public class AdditionalApplicationsUploadedEventHandler {
         List<DocumentReference> documents = new ArrayList<>();
 
         if (bundle.getC2DocumentBundle() != null) {
-            documents.add(Optional.of(bundle.getC2DocumentBundle().getDocument())
+            documents.add(Optional.ofNullable(bundle.getC2DocumentBundle().getDocument())
                     .map(addDocumentType)
                     .orElse(DocumentReference.builder().build()));
             documents.addAll(
@@ -276,7 +276,7 @@ public class AdditionalApplicationsUploadedEventHandler {
         }
 
         if (bundle.getOtherApplicationsBundle() != null) {
-            documents.add(Optional.of(bundle.getOtherApplicationsBundle().getDocument())
+            documents.add(Optional.ofNullable(bundle.getOtherApplicationsBundle().getDocument())
                     .map(addDocumentType)
                     .orElse(DocumentReference.builder().build()));
             documents.addAll(

@@ -7,6 +7,7 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.interfaces.FurtherDocument;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithDocument;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOC
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
-public class ApplicationDocument implements FurtherDocument {
+public class ApplicationDocument implements FurtherDocument, WithDocument {
     private final DocumentReference document;
     private final ApplicationDocumentType documentType;
     protected LocalDateTime dateTimeUploaded;
@@ -25,6 +26,7 @@ public class ApplicationDocument implements FurtherDocument {
     private String documentName;
     private String includedInSWET;
     private List<String> documentAcknowledge;
+    private List<String> confidential;
 
     @JsonIgnore
     public boolean hasDocument() {
@@ -33,7 +35,7 @@ public class ApplicationDocument implements FurtherDocument {
 
     @JsonIgnore
     public boolean isConfidentialDocument() {
-        return true;
+        return confidential != null && confidential.contains("CONFIDENTIAL");
     }
 
     @JsonIgnore

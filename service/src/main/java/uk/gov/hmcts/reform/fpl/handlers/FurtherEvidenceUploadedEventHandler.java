@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
@@ -30,12 +31,15 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.FurtherDocument;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithDocument;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
+import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
@@ -200,10 +204,15 @@ public class FurtherEvidenceUploadedEventHandler {
             recipients.addAll(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData));
 
             if (isNotEmpty(recipients)) {
+                Optional<HearingBooking> hearingBookings = caseData.getHearingDetails().stream()
+                    .filter(element -> element.getValue().toLabel().equals(newHearingDocuments.get(0).getHearing()))
+                    .findFirst()
+                    .map(Element::getValue);
+
                 List<String> newDocumentNames = newHearingDocuments.stream()
                     .map(doc -> doc.getDocument().getFilename()).collect(toList());
-                furtherEvidenceNotificationService.sendNotification(caseData, recipients, uploader.getFullName(),
-                    newDocumentNames);
+                furtherEvidenceNotificationService.sendNotificationWithHearing(caseData, recipients,
+                    uploader.getFullName(), newDocumentNames, hearingBookings);
             }
         }
     }
@@ -213,10 +222,7 @@ public class FurtherEvidenceUploadedEventHandler {
         final CaseData caseData = event.getCaseData();
         final CaseData caseDataBefore = event.getCaseDataBefore();
 
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-            cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             List<HearingDocument> newCaseSummaries = getNewHearingDocuments(
                 caseData.getHearingDocuments().getCaseSummaryList(),
                 caseDataBefore.getHearingDocuments().getCaseSummaryList());
@@ -262,10 +268,7 @@ public class FurtherEvidenceUploadedEventHandler {
     public void sendCourtBundlesToCafcass(final FurtherEvidenceUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
 
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             final CaseData caseDataBefore = event.getCaseDataBefore();
 
             Map<String, Set<DocumentReference>> newCourtBundles = getNewCourtBundles(caseData, caseDataBefore);
@@ -290,10 +293,7 @@ public class FurtherEvidenceUploadedEventHandler {
     public void sendDocumentsToCafcass(final FurtherEvidenceUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
 
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-                cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             final CaseData caseDataBefore = event.getCaseDataBefore();
             final DocumentUploaderType userType = event.getUserType();
             final Set<DocumentReference> documentReferences = new HashSet<>();
@@ -464,6 +464,19 @@ public class FurtherEvidenceUploadedEventHandler {
                 );
     }
 
+    private <T extends WithDocument> boolean hasNewDocumentUploaded(List<Element<T>> existingElements,
+                                                                    Element<T> test) {
+        Optional<Element<T>> hitElement = ElementUtils.findElement(test.getId(), defaultIfNull(existingElements,
+            List.of()));
+        if (!hitElement.isPresent()) {
+            return true;
+        } else {
+            return !Optional.ofNullable(test.getValue().getDocument()).orElse(DocumentReference.builder().build())
+                .equals(Optional.ofNullable(hitElement.get().getValue().getDocument())
+                    .orElse(DocumentReference.builder().build()));
+        }
+    }
+
     private DocumentInfo getNewApplicationDocuments(CaseData caseData, CaseData caseDataBefore) {
         List<ApplicationDocument> newApplicationDocuments = unwrapElements(caseData.getApplicationDocuments());
         List<ApplicationDocument> oldApplicationDocuments = unwrapElements(caseDataBefore.getApplicationDocuments());
@@ -497,7 +510,7 @@ public class FurtherEvidenceUploadedEventHandler {
         List<Element<ApplicationDocument>> beforeApplicationDocuments) {
         List<Element<ApplicationDocument>> newApplicationDocuments = new ArrayList<>();
         defaultIfNull(applicationDocuments, new ArrayList<Element<ApplicationDocument>>()).forEach(newDoc -> {
-            if (!defaultIfNull(beforeApplicationDocuments, List.of()).contains(newDoc)) {
+            if (hasNewDocumentUploaded(beforeApplicationDocuments, newDoc)) {
                 newApplicationDocuments.add(newDoc);
             }
         });
@@ -509,7 +522,7 @@ public class FurtherEvidenceUploadedEventHandler {
         List<Element<SupportingEvidenceBundle>> beforeSupportingEvidenceBundle) {
         List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle = new ArrayList<>();
         defaultIfNull(supportingEvidenceBundle, new ArrayList<Element<SupportingEvidenceBundle>>()).forEach(newDoc -> {
-            if (!defaultIfNull(beforeSupportingEvidenceBundle, List.of()).contains(newDoc)) {
+            if (hasNewDocumentUploaded(beforeSupportingEvidenceBundle, newDoc)) {
                 newSupportingEvidenceBundle.add(newDoc);
             }
         });
@@ -644,10 +657,16 @@ public class FurtherEvidenceUploadedEventHandler {
         // Further application documents - for example the SWET or care plan
         // - everyone except respondent/child solicitors have permission to see
         // So we shouldn’t send the notification to respondent/child solicitors
+        // DFPL-1087, respondent/child should receive notification if the docs are not confidential
         List<Element<ApplicationDocument>> newApplicationDocuments =
             getNewApplicationDocuments(caseData.getApplicationDocuments(), beforeCaseData.getApplicationDocuments());
         unwrapElements(newApplicationDocuments).forEach(applicationDocument -> {
             ret.get(ALL_LAS).add(applicationDocument);
+            if (!applicationDocument.isConfidentialDocument()) {
+                ret.get(CAFCASS).add(applicationDocument);
+                ret.get(CHILD_SOLICITOR).add(applicationDocument);
+                ret.get(RESPONDENT_SOLICITOR).add(applicationDocument);
+            }
         });
 
         // Respondent Statement

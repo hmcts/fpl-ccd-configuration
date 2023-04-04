@@ -56,7 +56,7 @@ import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static org.skyscreamer.jsonassert.JSONAssert.assertNotEquals;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CHILD_ASSESSMENT_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION__ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.INTERIM_SUPERVISION_ORDER;
@@ -726,7 +726,7 @@ class RoboticsDataServiceTest {
 
         @Test
         void shouldReturnEducationSupervisionOrderLabelAsApplicationTypeWhenOrderTypeEducationSupervisionOrder() {
-            CaseData caseData = prepareCaseDataWithOrderType(EDUCATION_SUPERVISION_ORDER);
+            CaseData caseData = prepareCaseDataWithOrderType(EDUCATION_SUPERVISION__ORDER);
 
             RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
 
@@ -753,7 +753,7 @@ class RoboticsDataServiceTest {
 
         @Test
         void shouldReturnCommaSeparatedApplicationTypeWhenMoreThanOneOrderTypeSelected() {
-            CaseData caseData = prepareCaseDataWithOrderType(CARE_ORDER, EDUCATION_SUPERVISION_ORDER,
+            CaseData caseData = prepareCaseDataWithOrderType(CARE_ORDER, EDUCATION_SUPERVISION__ORDER,
                 EMERGENCY_PROTECTION_ORDER, OTHER);
 
             RoboticsData preparedRoboticsData = roboticsDataService.prepareRoboticsData(caseData);
@@ -766,7 +766,7 @@ class RoboticsDataServiceTest {
         @Test
         void shouldReturnNonDuplicatedCommaSeparatedApplicationTypeWhenMoreThanOneOrderTypeSelected() {
             CaseData caseData = prepareCaseDataWithOrderType(CARE_ORDER, INTERIM_CARE_ORDER,
-                INTERIM_SUPERVISION_ORDER, EDUCATION_SUPERVISION_ORDER, EMERGENCY_PROTECTION_ORDER, OTHER,
+                INTERIM_SUPERVISION_ORDER, EDUCATION_SUPERVISION__ORDER, EMERGENCY_PROTECTION_ORDER, OTHER,
                 CHILD_ASSESSMENT_ORDER, SECURE_ACCOMMODATION_ORDER);
 
             RoboticsData preparedRoboticsData = roboticsDataService.prepareRoboticsData(caseData);

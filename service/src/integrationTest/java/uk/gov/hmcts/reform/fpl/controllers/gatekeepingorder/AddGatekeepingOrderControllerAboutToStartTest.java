@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.controllers.gatekeepingorder;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.AddGatekeepingOrderController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -12,9 +14,10 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
@@ -29,7 +32,18 @@ class AddGatekeepingOrderControllerAboutToStartTest extends AbstractCallbackTest
         .build();
 
     AddGatekeepingOrderControllerAboutToStartTest() {
-        super("add-gatekeeping-order");
+        super("add-gatekeeping-order", "addGatekeepingOrder");
+    }
+
+    @Test
+    void shouldPopulateAllocationDecision() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("data", "some data"))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+
+        assertThat(callbackResponse.getData()).containsKey("allocationDecision");
     }
 
     @Test
@@ -52,8 +66,6 @@ class AddGatekeepingOrderControllerAboutToStartTest extends AbstractCallbackTest
             .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder()
                 .allocatedJudgeLabel("Case assigned to: His Honour Judge Hastings")
                 .build())
-            .useUploadRoute(YES)
-            .currentSDO(order)
             .build();
 
         assertThat(actualEventData).isEqualTo(expectedEventData);
@@ -79,7 +91,6 @@ class AddGatekeepingOrderControllerAboutToStartTest extends AbstractCallbackTest
             .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder()
                 .allocatedJudgeLabel("Case assigned to: His Honour Judge Hastings")
                 .build())
-            .useServiceRoute(YES)
             .build();
 
         assertThat(actualEventData).isEqualTo(expectedEventData);

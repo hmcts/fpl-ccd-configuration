@@ -13,6 +13,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -518,6 +519,48 @@ class ElementUtilsTest {
 
             assertThat(actualElement.getValue()).isEqualTo("Test");
             assertThat(actualElement.getId()).isEqualTo(id);
+        }
+    }
+
+    @Nested
+    class RemoveElement {
+
+        @Test
+        void shouldRemoveElement() {
+            UUID id = UUID.randomUUID();
+
+            Element<String> element1 = element("test");
+            Element<String> element2 = element("string");
+            Element<String> element3 = element("element");
+            Element<String> elementToBeRemoved = element(id, "element to be removed");
+
+            List<Element<String>> elements = List.of(element1, element2, element3, elementToBeRemoved);
+
+            assertThat(ElementUtils.removeElementWithUUID(elements, id))
+                .containsOnly(element1, element2, element3);
+        }
+
+        @Test
+        void shouldNotRemoveElementIfIdNotFound() {
+            Element<String> element1 = element("test");
+            Element<String> element2 = element("string");
+            Element<String> element3 = element("element");
+
+            List<Element<String>> elements = List.of(element1, element2, element3);
+
+            assertThat(ElementUtils.removeElementWithUUID(elements, UUID.randomUUID()))
+                .containsOnly(element1, element2, element3);
+        }
+
+        @Test
+        void shouldRemoveElementIfOnlyOneElementExist() {
+            UUID id = UUID.randomUUID();
+
+            Element<String> elementToBeRemoved = element(id, "element to be removed");
+
+            List<Element<String>> elements = List.of(elementToBeRemoved);
+
+            assertThat(ElementUtils.removeElementWithUUID(elements, id)).isEmpty();
         }
     }
 }
