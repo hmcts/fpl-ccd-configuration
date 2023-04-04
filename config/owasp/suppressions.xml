@@ -250,6 +250,6 @@
     <vulnerabilityName>1091239</vulnerabilityName>
   </suppress>
   <suppress>
-    <cve>CVE-2023-20860</cve>
+    <vulnerabilityName>CVE-2023-20860</vulnerabilityName>
   </suppress>
 </suppressions>
