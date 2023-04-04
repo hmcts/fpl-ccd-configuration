@@ -249,4 +249,7 @@
     <vulnerabilityName>1091238</vulnerabilityName>
     <vulnerabilityName>1091239</vulnerabilityName>
   </suppress>
+  <suppress>
+    <cve>CVE-2023-20860</cve>
+  </suppress>
 </suppressions>
