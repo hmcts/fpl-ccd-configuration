@@ -87,7 +87,7 @@
       "caseworker-publiclaw-magistrate",
       "caseworker-caa",
       "caseworker-approver",
-      "caseworker-ras-validation"
+      "caseworker-ras-validation",
       "caseworker-publiclaw-cafcass"
     ],
     "CRUD": "CRU"
@@ -102,7 +102,7 @@
       "caseworker-publiclaw-systemupdate",
       "caseworker-caa",
       "caseworker-approver",
-      "caseworker-ras-validation"
+      "caseworker-ras-validation",
       "caseworker-publiclaw-cafcass"
     ],
     "CRUD": "CRU"
@@ -142,7 +142,7 @@
       "caseworker-publiclaw-bulkscan",
       "caseworker-publiclaw-bulkscansystemupdate",
       "caseworker-caa",
-      "caseworker-approver",
+      "caseworker-approver"
     ],
     "CRUD": "CRU"
   },
