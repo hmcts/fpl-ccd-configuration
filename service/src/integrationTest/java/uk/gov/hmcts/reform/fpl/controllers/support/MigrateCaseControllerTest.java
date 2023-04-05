@@ -1,30 +1,19 @@
 package uk.gov.hmcts.reform.fpl.controllers.support;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -60,113 +49,4 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         caseDetails.getData().put("migrationId", migrationId);
         return caseDetails;
     }
-
-    @BeforeEach
-    void setup() {
-        givenSystemUser();
-        givenFplService();
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class Dfpl1238 {
-
-        private final String migrationId = "DFPL-1238";
-        private final long validCaseId = 1635423187428763L;
-
-        @Test
-        void shouldRemoveAllPlacementCollections() {
-            List<Element<Placement>> placements = List.of(
-                element(Placement.builder()
-                    .application(testDocumentReference())
-                    .build()),
-                element(Placement.builder()
-                    .application(testDocumentReference())
-                    .build())
-            );
-            CaseData caseData = CaseData.builder()
-                .id(validCaseId)
-                .placementEventData(PlacementEventData.builder()
-                    .placements(placements)
-                    .build())
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId));
-            CaseData responseData = extractCaseData(response);
-
-            assertThat(responseData.getPlacementEventData().getPlacements()).isEmpty();
-            assertThat(response.getData()).extracting("placementsNonConfidential", "placementsNonConfidentialNotices")
-                .containsExactly(null, null);
-        }
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class Dfpl1241 {
-
-        private final String migrationId = "DFPL-1241";
-        private final long validCaseId = 1652968793683878L;
-
-        @Test
-        void shouldRemoveAllPlacementCollections() {
-            List<Element<Placement>> placements = List.of(
-                element(Placement.builder()
-                    .application(testDocumentReference())
-                    .build()),
-                element(Placement.builder()
-                    .application(testDocumentReference())
-                    .build())
-            );
-            CaseData caseData = CaseData.builder()
-                .id(validCaseId)
-                .placementEventData(PlacementEventData.builder()
-                    .placements(placements)
-                    .build())
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId));
-            CaseData responseData = extractCaseData(response);
-
-            assertThat(responseData.getPlacementEventData().getPlacements()).isEmpty();
-            assertThat(response.getData()).extracting("placementsNonConfidential", "placementsNonConfidentialNotices")
-                .containsExactly(null, null);
-        }
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class Dfpl1244 {
-
-        private final String migrationId = "DFPL-1244";
-        private final long validCaseId = 1644912253936021L;
-
-        @Test
-        void shouldRemoveAllPlacementCollections() {
-            List<Element<Placement>> placements = List.of(
-                element(Placement.builder()
-                    .application(testDocumentReference())
-                    .build()),
-                element(Placement.builder()
-                    .application(testDocumentReference())
-                    .build())
-            );
-            CaseData caseData = CaseData.builder()
-                .id(validCaseId)
-                .placementEventData(PlacementEventData.builder()
-                    .placements(placements)
-                    .build())
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId));
-            CaseData responseData = extractCaseData(response);
-
-            assertThat(responseData.getPlacementEventData().getPlacements()).isEmpty();
-            assertThat(response.getData()).extracting("placementsNonConfidential", "placementsNonConfidentialNotices")
-                .containsExactly(null, null);
-        }
-    }
 }
-
