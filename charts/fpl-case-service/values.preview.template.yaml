@@ -275,6 +275,7 @@ ccd:
 aac-manage-case-assignment:
   enabled: true
   java:
+    disableKeyVaults: true
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-aac
     image: hmctspublic.azurecr.io/aac/manage-case-assignment:latest
@@ -292,16 +293,6 @@ aac-manage-case-assignment:
       PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
     autoscaling:
       enabled: false
-    keyVaults:
-      aac:
-        secrets:
-          - aac-manage-case-s2s-secret
-          - idam-mca-client-secret
-          - idam-mca-system-user-username
-          - idam-mca-system-user-password
-          - idam-noc-approver-username
-          - idam-noc-approver-password
-          - notify-mca-api-key-secret
 
 ccd-case-document-am-api:
   enabled: true
