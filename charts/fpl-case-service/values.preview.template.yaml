@@ -339,4 +339,4 @@ xui-mo-webapp:
       MANAGE_ORG_LINK: https://xui-mo-${SERVICE_FQDN}
       SERVICES_CCD_DATA_STORE_API: http://${SERVICE_NAME}-ccd-data-store-api
       SERVICES_MCA_PROXY_API: http://${SERVICE_NAME}-aac
-      CASE_TYPES: PUBLICLAW
+      CASE_TYPES: CARE_SUPERVISION_EPO
