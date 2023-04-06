@@ -295,13 +295,20 @@ aac-manage-case-assignment:
     keyVaults:
       aac:
         secrets:
-          - aac-manage-case-s2s-secret
-          - idam-mca-client-secret
-          - idam-mca-system-user-username
-          - idam-mca-system-user-password
-          - idam-noc-approver-username
-          - idam-noc-approver-password
-          - notify-mca-api-key-secret
+          - name: aac-manage-case-s2s-secret
+            alias: MANAGE_CASE_S2S_KEY
+          - name: idam-mca-client-secret
+            alias: IDAM_CLIENT_SECRET
+          - name: idam-mca-system-user-username
+            alias: IDAM_CAA_USERNAME
+          - name: idam-mca-system-user-password
+            alias: IDAM_CAA_PASSWORD
+          - name: idam-noc-approver-username
+            alias: IDAM_NOC_APPROVER_USERNAME
+          - name: idam-noc-approver-password
+            alias: IDAM_NOC_APPROVER_PASSWORD
+          - name: notify-mca-api-key-secret
+            alias: NOTIFY_MCA_API_KEY
 
 ccd-case-document-am-api:
   enabled: true
