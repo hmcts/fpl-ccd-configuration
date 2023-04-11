@@ -33,6 +33,7 @@ public class MigrateCaseController extends CallbackController {
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
+        "DFPL-1320", this::run1320,
         "DFPL-1335", this::run1335,
         "DFPL-1261", this::run1261,
         "DFPL-1226", this::run1226
@@ -71,6 +72,14 @@ public class MigrateCaseController extends CallbackController {
     private void run1226(CaseDetails caseDetails) {
         migrateCaseService.doDocumentViewNCCheck(caseDetails.getId(), "DFPL-1226", caseDetails);
         caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(getCaseData(caseDetails)));
+    }
+
+    private void run1320(CaseDetails caseDetails) {
+        String migrationId = "DFPL-1320";
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), List.of(1667466628958196L), migrationId);
+        caseDetails.getData().putAll(
+            migrateCaseService.removeJudicialMessage(getCaseData(caseDetails), migrationId,
+                "afb1a77d-08c9-4ad1-a03f-e7b47c8eb8c3"));
     }
 
     private void run1335(CaseDetails caseDetails) {

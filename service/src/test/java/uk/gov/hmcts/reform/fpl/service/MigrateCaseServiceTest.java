@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
@@ -978,7 +979,7 @@ class MigrateCaseServiceTest {
                 "Migration {id = %s, case reference = %s}, expected documentViewNC contains confidential doc.",
                 MIGRATION_ID, 1L));
     }
-    
+
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class RemovePlacementApplication {
@@ -1214,6 +1215,58 @@ class MigrateCaseServiceTest {
             Map<String, Object> updates = underTest.renameApplicationDocuments(caseData);
 
             assertThat(updates).extracting("applicationDocuments").asList().containsExactly(expectedDoc1, expectedDoc2);
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveJudicialMessage {
+        final Element<JudicialMessage> message1 = element(JudicialMessage.builder().build());
+        final Element<JudicialMessage> message2 = element(JudicialMessage.builder().build());
+        final Element<JudicialMessage> mesageToBeRemoved = element(JudicialMessage.builder().build());
+
+        @Test
+        void shouldRemoveJudicialMessage() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .judicialMessages(List.of(message1, message2, mesageToBeRemoved))
+                .build();
+
+            Map<String, Object> updates =
+                underTest.removeJudicialMessage(caseData, MIGRATION_ID, mesageToBeRemoved.getId().toString());
+            assertThat(updates).extracting("judicialMessages").asList().containsExactly(message1, message2);
+        }
+
+        @Test
+        void shouldRemoveJudicialMessageIfOnlyOneMessageExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .judicialMessages(List.of(mesageToBeRemoved))
+                .build();
+
+            Map<String, Object> updates =
+                underTest.removeJudicialMessage(caseData, MIGRATION_ID, mesageToBeRemoved.getId().toString());
+            assertThat(updates).extracting("judicialMessages").asList().isEmpty();
+        }
+
+        @Test
+        void shouldThrowExceptionWhenNull() {
+            CaseData caseData = CaseData.builder().id(1L).build();
+
+            assertThatThrownBy(() ->
+                underTest.removeJudicialMessage(caseData, MIGRATION_ID, mesageToBeRemoved.getId().toString()))
+                .isInstanceOf(AssertionError.class);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenMessageNotFound() {
+            CaseData caseData = CaseData.builder().id(1L).build();
+
+            assertThatThrownBy(() ->
+                underTest.removeJudicialMessage(caseData, MIGRATION_ID, mesageToBeRemoved.getId().toString()))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = " + MIGRATION_ID + ", case reference = 1}, judicial message "
+                            + mesageToBeRemoved.getId() + " not found");
         }
     }
 
