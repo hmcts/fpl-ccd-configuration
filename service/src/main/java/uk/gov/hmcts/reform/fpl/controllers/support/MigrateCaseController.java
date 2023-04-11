@@ -33,6 +33,7 @@ public class MigrateCaseController extends CallbackController {
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
+        "DFPL-1335", this::run1335,
         "DFPL-1261", this::run1261,
         "DFPL-1226", this::run1226
     );
@@ -56,7 +57,7 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
-    
+
     private void run1261(CaseDetails caseDetails) {
         var migrationId = "DFPL-1261";
         var possibleCaseIds = List.of(1661855469987973L);
@@ -70,5 +71,13 @@ public class MigrateCaseController extends CallbackController {
     private void run1226(CaseDetails caseDetails) {
         migrateCaseService.doDocumentViewNCCheck(caseDetails.getId(), "DFPL-1226", caseDetails);
         caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(getCaseData(caseDetails)));
+    }
+
+    private void run1335(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1335";
+        var possibleCaseIds = List.of(1677078973744903L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removeSkeletonArgument(getCaseData(caseDetails),
+            "e4e70bf5-4905-4c13-9d59-d20a202b6c9a", migrationId));
     }
 }
