@@ -34,6 +34,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-1320", this::run1320,
+        "DFPL-1335", this::run1335,
         "DFPL-1261", this::run1261,
         "DFPL-1226", this::run1226
     );
@@ -57,7 +58,7 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
-    
+
     private void run1261(CaseDetails caseDetails) {
         var migrationId = "DFPL-1261";
         var possibleCaseIds = List.of(1661855469987973L);
@@ -79,5 +80,13 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(
             migrateCaseService.removeJudicialMessage(getCaseData(caseDetails), migrationId,
                 "afb1a77d-08c9-4ad1-a03f-e7b47c8eb8c3"));
+    }
+
+    private void run1335(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1335";
+        var possibleCaseIds = List.of(1677078973744903L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removeSkeletonArgument(getCaseData(caseDetails),
+            "e4e70bf5-4905-4c13-9d59-d20a202b6c9a", migrationId));
     }
 }
