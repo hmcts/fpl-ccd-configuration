@@ -104,7 +104,7 @@ class GatekeepingOrderRouteValidatorTest {
     }
 
     @Test
-    void allowAccessToEventShouldReturnErrorWhenStandaloneEPOForJudicialGatekeeping() {
+    void allowAccessToEventShouldNotReturnErrorWhenStandaloneEPOForJudicialGatekeeping() {
         StandardDirectionOrder udo = mock(StandardDirectionOrder.class);
         CaseData caseData = CaseData.builder()
             .urgentDirectionsRouter(GatekeepingOrderRoute.UPLOAD)
@@ -112,12 +112,11 @@ class GatekeepingOrderRouteValidatorTest {
             .orders(Orders.builder().orderType(List.of(OrderType.EMERGENCY_PROTECTION_ORDER)).build())
             .build();
 
-        assertThat(underTest.allowAccessToEvent(caseData, JUDICIAL_GATEKEEPNIG.getId()))
-            .isEqualTo(List.of("An urgent directions order is required."));
+        assertThat(underTest.allowAccessToEvent(caseData, JUDICIAL_GATEKEEPNIG.getId())).isEmpty();
     }
 
     @Test
-    void allowAccessToEventShouldReturnErrorWhenUDOIsNotSealedAndCombinedOrderRequested() {
+    void allowAccessToEventShouldNoReturnErrorWhenUDOIsNotSealedAndCombinedOrderRequested() {
         StandardDirectionOrder udo = mock(StandardDirectionOrder.class);
         CaseData caseData = CaseData.builder()
             .urgentDirectionsRouter(GatekeepingOrderRoute.UPLOAD)
@@ -126,9 +125,7 @@ class GatekeepingOrderRouteValidatorTest {
             .build();
         when(udo.isSealed()).thenReturn(false);
 
-        assertThat(underTest.allowAccessToEvent(caseData, JUDICIAL_GATEKEEPNIG.getId()))
-            .isEqualTo(List.of("An urgent directions order is required before "
-                + "you can add a gatekeeping order."));
+        assertThat(underTest.allowAccessToEvent(caseData, JUDICIAL_GATEKEEPNIG.getId())).isEmpty();
     }
 
     @Test
