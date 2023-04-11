@@ -18,7 +18,6 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
@@ -33,7 +32,7 @@ class AddGatekeepingOrderControllerAboutToStartTest extends AbstractCallbackTest
         .build();
 
     AddGatekeepingOrderControllerAboutToStartTest() {
-        super("add-gatekeeping-order");
+        super("add-gatekeeping-order", "addGatekeepingOrder");
     }
 
     @Test
@@ -67,8 +66,6 @@ class AddGatekeepingOrderControllerAboutToStartTest extends AbstractCallbackTest
             .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder()
                 .allocatedJudgeLabel("Case assigned to: His Honour Judge Hastings")
                 .build())
-            .useUploadRoute(YES)
-            .currentSDO(order)
             .build();
 
         assertThat(actualEventData).isEqualTo(expectedEventData);
@@ -94,7 +91,6 @@ class AddGatekeepingOrderControllerAboutToStartTest extends AbstractCallbackTest
             .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder()
                 .allocatedJudgeLabel("Case assigned to: His Honour Judge Hastings")
                 .build())
-            .useServiceRoute(YES)
             .build();
 
         assertThat(actualEventData).isEqualTo(expectedEventData);

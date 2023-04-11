@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
@@ -34,6 +35,7 @@ import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
+import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -46,6 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith({MockitoExtension.class})
@@ -56,6 +59,8 @@ class MigrateCaseServiceTest {
 
     @Mock
     private CaseNoteService caseNoteService;
+    @Mock
+    private DocumentListService documentListService;
 
     @InjectMocks
     private MigrateCaseService underTest;
@@ -930,6 +935,52 @@ class MigrateCaseServiceTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
+    class RefreshDocumentView {
+        @Test
+        void shouldInvokeDocumentListServiceForRefreshingDocumentViews() {
+            CaseData data  = CaseData.builder().build();
+            underTest.refreshDocumentViews(data);
+            verify(documentListService).getDocumentView(data);
+        }
+    }
+
+    @Test
+    void shouldNotThrowWhenNoConfidentialDocumentInDocumentViewNC() {
+        assertDoesNotThrow(() -> underTest.doDocumentViewNCCheck(1L, MIGRATION_ID,
+            CaseDetails.builder().data(Map.of("documentViewNC", "\"<p><div class='width-50'>\\n"
+                + "\\n<details class=\\\"govuk-details\\\"><summary class=\\\"govuk-details__summary\\\">"
+                + "Applicant's statements and application documents</summary>"
+                + "<div class=\\\"govuk-details__text\\\"><details class=\\\"govuk-details\\\">"
+                + "<summary class=\\\"govuk-details__summary\\\">Genogram</summary>"
+                + "<div class=\\\"govuk-details__text\\\"><details class=\\\"govuk-details\\\">"
+                + "<dt class=\\\"govuk-summary-list__key\\\">"
+                + "<img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/"
+                + "master/resources/confidential.png' title='Confidential'/></dt>"
+                + "<summary class=\\\"govuk-details__summary\\\">complete guide to fpla-ccd-configuration.pdf</summary>"
+                + "<div class=\\\"govuk-details__text\\\"><dl class=\\\"govuk-summary-list\\\">"
+                + "<div class=\\\"govuk-summary-list__row\\\">")).build()));
+    }
+
+    @Test
+    void shouldThrowWhenNoConfidentialDocumentInDocumentViewNC() {
+        assertThatThrownBy(() -> underTest.doDocumentViewNCCheck(1L, MIGRATION_ID,
+            CaseDetails.builder().data(Map.of("documentViewNC", "\"<p><div class='width-50'>\\n"
+                + "\\n<details class=\\\"govuk-details\\\"><summary class=\\\"govuk-details__summary\\\">"
+                + "Applicant's statements and application documents</summary>"
+                + "<div class=\\\"govuk-details__text\\\"><details class=\\\"govuk-details\\\">"
+                + "<summary class=\\\"govuk-details__summary\\\">Genogram</summary>"
+                + "<div class=\\\"govuk-details__text\\\"><details class=\\\"govuk-details\\\">"
+                + "<summary class=\\\"govuk-details__summary\\\">complete guide to fpla-ccd-configuration.pdf</summary>"
+                + "<div class=\\\"govuk-details__text\\\"><dl class=\\\"govuk-summary-list\\\">"
+                + "<div class=\\\"govuk-summary-list__row\\\">")).build()))
+            .isInstanceOf(AssertionError.class)
+            .hasMessage(format(
+                "Migration {id = %s, case reference = %s}, expected documentViewNC contains confidential doc.",
+                MIGRATION_ID, 1L));
+    }
+    
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
     class RemovePlacementApplication {
         private final UUID placementToRemove = UUID.randomUUID();
         private final UUID placementToRemain = UUID.randomUUID();
@@ -983,7 +1034,120 @@ class MigrateCaseServiceTest {
             assertThat(updatedFields).extracting("placementsNonConfidential").isNull();
             assertThat(updatedFields).extracting("placementsNonConfidentialNotices").isNull();
         }
+    }
 
+    @Nested
+    class RemoveDraftUploadedCMO {
+
+        private final UUID orderIdToRemove = UUID.randomUUID();
+        private final UUID orderIdToKeep = UUID.randomUUID();
+
+        private final Element<HearingOrder> orderToRemove = element(orderIdToRemove, HearingOrder.builder().build());
+
+        private final Element<HearingOrder> orderToKeep = element(orderIdToKeep, HearingOrder.builder().build());
+
+        @Test
+        void shouldClearDraftUploadedCMOsWithNoOrderPostMigration() {
+            List<Element<HearingOrder>> hearingOrders = new ArrayList<>();
+            hearingOrders.add(orderToRemove);
+            CaseData caseData = CaseData.builder()
+                .draftUploadedCMOs(List.of(orderToRemove))
+                .build();
+
+            Map<String, Object> fields = underTest.removeDraftUploadedCMOs(caseData, MIGRATION_ID,
+                orderIdToRemove);
+
+            assertThat(fields.get("draftUploadedCMOs")).isEqualTo(List.of());
+        }
+
+        @Test
+        @SuppressWarnings("unchecked")
+        void shouldLeaveOtherOrdersIntact() {
+            List<Element<HearingOrder>> draftUploadedCMOs = new ArrayList<>();
+            draftUploadedCMOs.add(orderToKeep);
+            draftUploadedCMOs.add(orderToRemove);
+
+            CaseData caseData = CaseData.builder()
+                .draftUploadedCMOs(draftUploadedCMOs)
+                .build();
+
+            Map<String, Object> fields = underTest.removeDraftUploadedCMOs(caseData, MIGRATION_ID,
+                orderIdToRemove);
+
+            List<Element<HearingOrder>> result =
+                (List<Element<HearingOrder>>) fields.get("draftUploadedCMOs");
+
+            assertThat(result).hasSize(1);
+            assertThat(result).containsExactly(orderToKeep);
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoOrderFound() {
+            CaseData caseData = CaseData.builder()
+                .draftUploadedCMOs(List.of())
+                .build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.removeDraftUploadedCMOs(caseData, MIGRATION_ID,
+                    orderIdToRemove));
+        }
+    }
+
+    @Nested
+    class RemoveHearingOrdersBundlesDraft {
+
+        private final UUID orderIdToRemove = UUID.randomUUID();
+        private final UUID orderIdToKeep = UUID.randomUUID();
+
+        private final Element<HearingOrdersBundle> bundleToRemove = element(orderIdToRemove,
+            HearingOrdersBundle.builder().build());
+
+        private final Element<HearingOrdersBundle> bundleToKeep = element(orderIdToKeep,
+            HearingOrdersBundle.builder().build());
+
+        @Test
+        void shouldClearHearingOrderBundleWithNoOrderPostMigration() {
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(List.of(bundleToRemove))
+                .build();
+
+            Map<String, Object> fields = underTest.removeHearingOrdersBundlesDrafts(caseData, MIGRATION_ID,
+                orderIdToRemove);
+
+            assertThat(fields.get("hearingOrdersBundlesDrafts")).isEqualTo(List.of());
+        }
+
+        @Test
+        @SuppressWarnings("unchecked")
+        void shouldLeaveOtherOrdersIntact() {
+            List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts = new ArrayList<>();
+            hearingOrdersBundlesDrafts.add(bundleToKeep);
+            hearingOrdersBundlesDrafts.add(bundleToRemove);
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(hearingOrdersBundlesDrafts)
+                .build();
+
+            Map<String, Object> fields = underTest.removeHearingOrdersBundlesDrafts(caseData, MIGRATION_ID,
+                orderIdToRemove);
+
+            List<Element<HearingOrdersBundle>> result =
+                (List<Element<HearingOrdersBundle>>) fields.get("hearingOrdersBundlesDrafts");
+
+            assertThat(result).hasSize(1);
+            assertThat(result).containsExactly(bundleToKeep);
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoOrderFound() {
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(List.of())
+                .build();
+
+            assertThrows(AssertionError.class, () ->
+                underTest.removeHearingOrdersBundlesDrafts(caseData, MIGRATION_ID,
+                    orderIdToRemove));
+        }
     }
 
     @Nested

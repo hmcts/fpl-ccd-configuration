@@ -19,6 +19,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionsOrderType.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
@@ -53,12 +54,14 @@ class SDOIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest
 
         when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("Smith");
 
-        SDONotifyData actualData = underTest.buildNotificationParameters(caseData);
+        SDONotifyData actualData = underTest.buildNotificationParameters(caseData, SDO);
 
         SDONotifyData expectedData = SDONotifyData.builder()
             .callout("Smith, FAM NUM, hearing 1 Jan 2020")
             .lastName("Smith")
             .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
+            .directionsOrderTypeShort(SDO.getShortForm())
+            .directionsOrderTypeLong(SDO.getLongForm())
             .build();
 
         assertThat(actualData).isEqualTo(expectedData);
@@ -93,7 +96,7 @@ class SDOIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest
         SDONotifyData expectedData = SDONotifyData.builder()
             .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
             .documentLink(Map.of(
-                "file","AQIDBAU=",
+                "file", "AQIDBAU=",
                 "is_csv", false
             ))
             .courtName("Family Court")
@@ -134,7 +137,7 @@ class SDOIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest
         SDONotifyData expectedData = SDONotifyData.builder()
             .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
             .documentLink(Map.of(
-                "file","AQIDBAU=",
+                "file", "AQIDBAU=",
                 "is_csv", false
             ))
             .courtName("Family Court")
