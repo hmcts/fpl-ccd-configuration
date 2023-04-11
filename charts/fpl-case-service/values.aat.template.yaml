@@ -1,6 +1,11 @@
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  memoryLimits: 2Gi
+  devmemoryRequests: 1Gi
+  devcpuRequests: "1000m"
+  devmemoryLimits: 2Gi
+  devcpuLimits: "3500m"
   environment:
     IDAM_CLIENT_REDIRECT_URI: https://fpl-case-service-*.service.core-compute-aat.internal/oauth2/callback
     SPRING_SECURITY_ENABLED: false
