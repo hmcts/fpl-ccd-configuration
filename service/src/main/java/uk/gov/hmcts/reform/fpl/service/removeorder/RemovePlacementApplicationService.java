@@ -38,7 +38,7 @@ public class RemovePlacementApplicationService {
             caseData.getPlacementEventData().getPlacements(), new ArrayList<>());
 
         placements.sort(Comparator
-            .comparing((Element<Placement> placement) -> placement.getValue().getUploadedDateTime()));
+            .comparing((Element<Placement> placement) -> placement.getValue().getPlacementUploadDateTime()));
 
         return asDynamicList(placements, selected, Placement::toLabel);
     }
