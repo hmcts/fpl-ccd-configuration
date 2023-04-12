@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
 import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDate;
@@ -59,7 +59,7 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
     private NotificationClient notificationClient;
 
     @MockBean
-    private CoreCaseDataService coreCaseDataService;
+    private CCDConcurrencyHelper concurrencyHelper;
 
     @MockBean
     private DocumentDownloadService documentDownloadService;
@@ -78,7 +78,7 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
         postSubmittedEvent(toCallBackRequest(buildCaseDataWithSDO(DRAFT), GATEKEEPING_CASE_DATA));
 
         verify(eventService, never()).publishEvent(any());
-        verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any());
+        verify(concurrencyHelper, never()).submitEvent(any(), any(), any());
     }
 
     @Test
@@ -88,7 +88,7 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
         ));
 
         verify(eventService, never()).publishEvent(any());
-        verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any());
+        verify(concurrencyHelper, never()).submitEvent(any(), any(), any());
     }
 
     private void verifyEmails(String cafcassTemplate, String ctcsTemplate, String laTemplate) {
