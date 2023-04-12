@@ -249,5 +249,14 @@
     "Label": "[Add or remove case flag](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/addCaseFlag)",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "listGatekeepingHearingLink",
+    "FieldType": "Label",
+    "Label": "[List Gatekeeping Hearing](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/listGatekeepingHearing)",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
