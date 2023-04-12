@@ -97,6 +97,6 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
         caseDetails.getData().putAll(migrateCaseService.removeApplicationDocument(getCaseData(caseDetails),
             migrationId,
-            UUID.fromString("7b381f49-d6f9-4a17-a72a-5e39fb48a67")));
+            UUID.fromString("7b381f49-d6f9-4a17-a72a-5e39fb48a671")));
     }
 }
