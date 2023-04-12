@@ -96,7 +96,7 @@ public class MigrateCaseController extends CallbackController {
 
     private void run1361(CaseDetails caseDetails) {
         var migrationId = "DFPL-1361";
-        var possibleCaseIds = List.of(1680179801927341L);
+        var possibleCaseIds = List.of(1680179801927341L, 1651064219316144L);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
         fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
     }
