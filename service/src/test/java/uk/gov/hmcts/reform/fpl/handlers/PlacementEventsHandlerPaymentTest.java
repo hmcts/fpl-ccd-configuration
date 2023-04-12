@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -7,6 +8,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
@@ -34,6 +36,7 @@ import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -44,6 +47,8 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.A50_PLACEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.CaseConverter.MAP_TYPE;
+import static uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService.UPDATE_CASE_EVENT;
 
 @ExtendWith({MockitoExtension.class, TestLogsExtension.class})
 class PlacementEventsHandlerPaymentTest {
@@ -119,7 +124,6 @@ class PlacementEventsHandlerPaymentTest {
 
         final PlacementApplicationSubmitted event = new PlacementApplicationSubmitted(caseData, placement);
 
-        when(time.now()).thenReturn(now);
         when(userService.isHmctsAdminUser()).thenReturn(true);
 
         underTest.takeApplicationPayment(event);
@@ -131,16 +135,13 @@ class PlacementEventsHandlerPaymentTest {
         expectedCaseUpdates.put("placement", null);
 
         verify(paymentService).makePaymentForPlacement(caseData, "HMCTS");
-        verify(coreCaseDataService).updateCase(CASE_ID, expectedCaseUpdates);
+        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID), eq(UPDATE_CASE_EVENT), any());
 
         verifyNoInteractions(eventService);
     }
 
     @Test
     void shouldTakeLocalAuthorityPaymentWhenRequiredAndUpdatePaymentTimestamp() {
-
-        final LocalDateTime now = LocalDateTime.now();
-
         final Placement placement = Placement.builder()
             .childId(randomUUID())
             .build();
@@ -158,21 +159,44 @@ class PlacementEventsHandlerPaymentTest {
 
         final PlacementApplicationSubmitted event = new PlacementApplicationSubmitted(caseData, placement);
 
-        when(time.now()).thenReturn(now);
         when(userService.isHmctsAdminUser()).thenReturn(false);
 
         underTest.takeApplicationPayment(event);
+
+        verify(paymentService).makePaymentForPlacement(caseData, "Test local authority");
+        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID), eq(UPDATE_CASE_EVENT), any());
+
+        verifyNoInteractions(eventService);
+    }
+
+    @Test
+    void doesExpectedCaseUpdates() {
+        final Placement placement = Placement.builder()
+            .childId(randomUUID())
+            .build();
+
+        final PlacementEventData placementEventData = PlacementEventData.builder()
+            .placementPaymentRequired(YES)
+            .placement(placement)
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .caseLocalAuthorityName("Test local authority")
+            .placementEventData(placementEventData)
+            .build();
+
+        final LocalDateTime now = LocalDateTime.now();
+        when(time.now()).thenReturn(now);
+        ObjectMapper mapper = new ObjectMapper();
+
+        underTest.getUpdates(CaseDetails.builder().data(mapper.convertValue(caseData, MAP_TYPE)).build());
 
         final Map<String, Object> expectedCaseUpdates = new HashMap<>();
         expectedCaseUpdates.put("placementLastPaymentTime", now);
         expectedCaseUpdates.put("placementPaymentRequired", null);
         expectedCaseUpdates.put("placementPayment", null);
         expectedCaseUpdates.put("placement", null);
-
-        verify(paymentService).makePaymentForPlacement(caseData, "Test local authority");
-        verify(coreCaseDataService).updateCase(CASE_ID, expectedCaseUpdates);
-
-        verifyNoInteractions(eventService);
     }
 
     @ParameterizedTest
@@ -198,7 +222,6 @@ class PlacementEventsHandlerPaymentTest {
 
         final PlacementApplicationSubmitted event = new PlacementApplicationSubmitted(caseData, placement);
 
-        when(time.now()).thenReturn(now);
         when(userService.isHmctsAdminUser()).thenReturn(true);
         doThrow(paymentException).when(paymentService).makePaymentForPlacement(any(), any());
 
@@ -212,7 +235,7 @@ class PlacementEventsHandlerPaymentTest {
 
 
         verify(paymentService).makePaymentForPlacement(caseData, "HMCTS");
-        verify(coreCaseDataService).updateCase(CASE_ID, expectedCaseUpdates);
+        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID), eq(UPDATE_CASE_EVENT), any());
         verify(eventService).publishEvent(FailedPBAPaymentEvent.builder()
             .caseData(caseData)
             .applicant(OrderApplicant.builder()
@@ -247,7 +270,6 @@ class PlacementEventsHandlerPaymentTest {
 
         final PlacementApplicationSubmitted event = new PlacementApplicationSubmitted(caseData, placement);
 
-        when(time.now()).thenReturn(now);
         when(userService.isHmctsAdminUser()).thenReturn(false);
         doThrow(paymentException).when(paymentService).makePaymentForPlacement(any(), any());
 
@@ -260,7 +282,7 @@ class PlacementEventsHandlerPaymentTest {
         expectedCaseUpdates.put("placement", null);
 
         verify(paymentService).makePaymentForPlacement(caseData, "Test local authority");
-        verify(coreCaseDataService).updateCase(CASE_ID, expectedCaseUpdates);
+        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID), eq(UPDATE_CASE_EVENT), any());
         verify(eventService).publishEvent(FailedPBAPaymentEvent.builder()
             .caseData(caseData)
             .applicant(OrderApplicant.builder()
