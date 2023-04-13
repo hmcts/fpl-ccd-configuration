@@ -15,7 +15,9 @@ import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
+import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
@@ -402,7 +404,7 @@ public class MigrateCaseService {
             ));
         }
     }
-    
+
     public Map<String, Object> removeSpecificPlacements(CaseData caseData, UUID placementToRemove) {
         List<Element<Placement>> placementsToKeep = caseData.getPlacementEventData().getPlacements().stream()
             .filter(x -> !x.getId().equals(placementToRemove)).collect(toList());
@@ -462,6 +464,57 @@ public class MigrateCaseService {
             }).collect(toList());
 
         return Map.of("applicationDocuments", updatedList);
+    }
+
+    public Map<String, Object> removeJudicialMessage(CaseData caseData, String migrationId, String messageId) {
+        return Map.of("judicialMessages",
+                removeJudicialMessageFormList(caseData.getJudicialMessages(), messageId, migrationId,
+                    caseData.getId()));
+    }
+
+    private List<Element<JudicialMessage>> removeJudicialMessageFormList(List<Element<JudicialMessage>> messages,
+                                                              String messageId, String migrationId, Long caseId) {
+        if (messages == null) {
+            throw new AssertionError(format("Migration {id = %s, case reference = %s}, judicial message is null",
+                migrationId, caseId));
+        }
+
+        UUID targetMessageId = UUID.fromString(messageId);
+        List<Element<JudicialMessage>> resultList = messages.stream()
+            .filter(message -> !message.getId().equals(targetMessageId))
+            .collect(toList());
+
+        if (resultList.size() != messages.size() - 1) {
+            throw new AssertionError(format("Migration {id = %s, case reference = %s}, judicial message %s not found",
+                migrationId, caseId, messageId));
+        }
+
+        return resultList;
+    }
+
+    public Map<String, Object> removeSkeletonArgument(CaseData caseData, String skeletonArgumentId,
+                                                      String migrationId) {
+        Long caseId = caseData.getId();
+        List<Element<SkeletonArgument>> skeletonArguments = caseData.getHearingDocuments().getSkeletonArgumentList();
+
+        if (skeletonArguments.isEmpty()) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, skeletonArgumentList is empty",
+                migrationId, caseId
+            ));
+        }
+
+        List<Element<SkeletonArgument>> updatedSkeletonArguments =
+            ElementUtils.removeElementWithUUID(skeletonArguments, UUID.fromString(skeletonArgumentId));
+
+        if (updatedSkeletonArguments.size() != skeletonArguments.size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, skeleton argument %s not found",
+                migrationId, caseId, skeletonArgumentId
+            ));
+        }
+
+        return Map.of("skeletonArgumentList", updatedSkeletonArguments);
     }
 
     private String stripIllegalCharacters(String str) {
