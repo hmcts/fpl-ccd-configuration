@@ -30,8 +30,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import static java.math.RoundingMode.UP;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.service.search.SearchService.ES_DEFAULT_SIZE;
 
 @Slf4j
@@ -49,6 +47,15 @@ public class UpdateSummaryCaseDetails implements Job {
     private final FeatureToggleService toggleService;
     private final CaseSummaryService summaryService;
 
+    public Map<String, Object> getUpdates(CaseDetails caseDetails) {
+        CaseData caseData = converter.convert(caseDetails);
+        Map<String, Object> updatedData = summaryService.generateSummaryFields(caseData);
+        if (shouldUpdate(updatedData, caseData)) {
+            return updatedData;
+        }
+        return Map.of();
+    }
+
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
         final String jobName = jobExecutionContext.getJobDetail().getKey().getName();
@@ -59,9 +66,6 @@ public class UpdateSummaryCaseDetails implements Job {
         final ESQuery query = buildQuery(toggleService.isSummaryTabFirstCronRunEnabled());
 
         int total;
-        int skipped = 0;
-        int updated = 0;
-        int failed = 0;
 
         try {
             total = searchService.searchResultsSize(query);
@@ -74,6 +78,9 @@ public class UpdateSummaryCaseDetails implements Job {
             return;
         }
 
+        int updated = 0;
+        int failed = 0;
+
         int pages = paginate(total);
         log.debug("Job '{}' split the search query over {} pages", jobName, pages);
         for (int i = 0; i < pages; i++) {
@@ -82,17 +89,12 @@ public class UpdateSummaryCaseDetails implements Job {
                 for (CaseDetails caseDetails : cases) {
                     final Long caseId = caseDetails.getId();
                     try {
-                        CaseData caseData = converter.convert(caseDetails);
-                        Map<String, Object> updatedData = summaryService.generateSummaryFields(caseData);
-                        if (shouldUpdate(updatedData, caseData)) {
-                            log.debug("Job '{}' updating case {}", jobName, caseId);
-                            ccdService.triggerEvent(JURISDICTION, CASE_TYPE, caseId, EVENT_NAME, updatedData);
-                            log.info("Job '{}' updated case {}", jobName, caseId);
-                            updated++;
-                        } else {
-                            log.debug("Job '{}' skipped case {}", jobName, caseId);
-                            skipped++;
-                        }
+                        log.debug("Job '{}' updating case {}", jobName, caseId);
+                        ccdService.performPostSubmitCallback(
+                            caseId,
+                            EVENT_NAME,
+                            this::getUpdates
+                        );
                     } catch (Exception e) {
                         log.error("Job '{}' could not update case {} due to {}", jobName, caseId, e.getMessage(), e);
                         failed++;
@@ -105,7 +107,7 @@ public class UpdateSummaryCaseDetails implements Job {
             }
         }
 
-        log.info("Job '{}' finished. {}", jobName, buildStats(total, skipped, updated, failed));
+        log.info("Job '{}' finished. {}", jobName, buildStats(total, updated, failed));
     }
 
     private boolean shouldUpdate(Map<String, Object> updatedData, CaseData oldData) {
@@ -148,16 +150,14 @@ public class UpdateSummaryCaseDetails implements Job {
     }
 
 
-    private String buildStats(int total, int skipped, int updated, int failed) {
+    private String buildStats(int total, int updated, int failed) {
         double percentUpdated = updated * 100.0 / total;
-        double percentSkipped = skipped * 100.0 / total;
         double percentFailed = failed * 100.0 / total;
 
         return String.format("total cases: %1$d, "
-                + "updated cases: %2$d/%1$d (%5$.0f%%), "
-                + "skipped cases: %3$d/%1$d (%6$.0f%%), "
-                + "failed cases: %4$d/%1$d (%7$.0f%%)",
-            total, updated, skipped, failed, percentUpdated, percentSkipped, percentFailed
+                + "updated cases: %2$d/%1$d (%4$.0f%%), "
+                + "failed cases: %3$d/%1$d (%5$.0f%%)",
+            total, updated, failed, percentUpdated, percentFailed
         );
     }
 }
