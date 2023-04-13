@@ -202,10 +202,10 @@ class NoticeOfChangeServiceTest {
 
             underTest.updateRepresentativesAccess(caseData, caseDataBefore, SolicitorRole.Representing.RESPONDENT);
 
-            verify(coreCaseDataService).triggerEvent(CASE_ID, "updateRepresentation",
+            verify(coreCaseDataService).updateCase(CASE_ID,
                 Map.of("changeOrganisationRequestField", changeOrganisationRequest1));
 
-            verify(coreCaseDataService).triggerEvent(CASE_ID, "updateRepresentation",
+            verify(coreCaseDataService).updateCase(CASE_ID,
                 Map.of("changeOrganisationRequestField", changeOrganisationRequest2));
 
         }
