@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
@@ -21,8 +20,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.function.Consumer;
-
-import static java.lang.String.format;
 
 @Api
 @RestController
