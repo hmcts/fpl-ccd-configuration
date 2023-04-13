@@ -53,8 +53,13 @@ public class NoticeOfChangeService {
         for (ChangeOrganisationRequest changeRequest : changeRequests) {
             log.info("About to apply representation change {}", changeRequest);
 
-            coreCaseDataService.triggerEvent(caseData.getId(), "updateRepresentation",
-                Map.of("changeOrganisationRequestField", changeRequest));
+            // Save the change request on the case
+            coreCaseDataService.updateCase(caseData.getId(),
+                Map.of("changeOrganisationRequestField", changeRequest)
+            );
+
+            // Apply a NoC through about-to-start
+            coreCaseDataService.triggerEvent(caseData.getId(), "updateRepresentation", Map.of());
 
             log.info("Representation change applied {}", changeRequest);
         }
