@@ -169,7 +169,8 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
                 .build()
         );
 
-        verify(ccdService).triggerEvent(CASE_ID, "updateRepresentation", changeRequest);
+        verify(ccdService).updateCase(CASE_ID, changeRequest);
+        verify(ccdService).triggerEvent(CASE_ID, "updateRepresentation", Map.of());
     }
 
     @Test

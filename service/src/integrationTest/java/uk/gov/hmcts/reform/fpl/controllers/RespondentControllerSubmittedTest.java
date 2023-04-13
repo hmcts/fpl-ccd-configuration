@@ -321,14 +321,14 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
 
         final ArgumentCaptor<CaseDataContent> captor = ArgumentCaptor.forClass(CaseDataContent.class);
 
-        verify(coreCaseDataApi, times(2)).submitEventForCaseWorker(
+        verify(coreCaseDataApi, times(4)).submitEventForCaseWorker(
             eq(USER_AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(SYS_USER_ID), eq(JURISDICTION),
             eq(CASE_TYPE), eq(caseData.getId().toString()), eq(true), captor.capture()
         );
 
         assertThat(captor.getAllValues())
             .extracting(CaseDataContent::getData)
-            .containsExactlyInAnyOrderElementsOf(update);
+            .containsOnlyOnceElementsOf(update);
     }
 
     @Test
