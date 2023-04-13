@@ -97,4 +97,20 @@ public class Orders {
     public boolean isEducationSupervisionOrder() {
         return isNotEmpty(orderType) && orderType.contains(EDUCATION_SUPERVISION_ORDER);
     }
+
+    public boolean containsInterimCareOrder() {
+        return isNotEmpty(orderType) && orderType.contains(OrderType.INTERIM_CARE_ORDER);
+    }
+
+    public boolean containsCareOrder() {
+        return isNotEmpty(orderType) && orderType.contains(OrderType.CARE_ORDER);
+    }
+
+    public boolean isCareOrderCombinedWithEPOorICO() {
+        return isNotEmpty(orderType) && (containsCareOrder() && (containsInterimCareOrder() || orderContainsEPO()));
+    }
+
+    public boolean isEmergencyProtectionOrderOnly() {
+        return isNotEmpty(orderType) && orderType.size() == 1 && orderType.contains(EMERGENCY_PROTECTION_ORDER);
+    }
 }

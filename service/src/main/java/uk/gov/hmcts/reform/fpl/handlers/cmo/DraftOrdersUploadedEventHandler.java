@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toSet;
@@ -121,7 +122,8 @@ public class DraftOrdersUploadedEventHandler {
     }
 
     private List<HearingOrder> getOrders(CaseData caseData) {
-        return nullSafeList(caseData.getHearingOrdersBundlesDrafts()).stream()
+        return Stream.concat(nullSafeList(caseData.getHearingOrdersBundlesDrafts()).stream(),
+                nullSafeList(caseData.getHearingOrdersBundlesDraftReview()).stream())
             .map(Element::getValue)
             .filter(b -> Objects.equals(b.getHearingId(), caseData.getLastHearingOrderDraftsHearingId()))
             .findFirst()
