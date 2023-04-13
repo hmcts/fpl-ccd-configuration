@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.EventService;
@@ -40,6 +41,13 @@ public abstract class CallbackController {
     protected AboutToStartOrSubmitCallbackResponse respond(Map<String, Object> caseDetailsMap) {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetailsMap)
+            .build();
+    }
+
+    protected AboutToStartOrSubmitCallbackResponse respond(Map<String, Object> caseDetailsMap, State state) {
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetailsMap)
+            .state(state.getValue())
             .build();
     }
 

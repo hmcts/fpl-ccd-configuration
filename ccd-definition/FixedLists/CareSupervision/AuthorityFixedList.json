@@ -206,7 +206,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "CMB",
-    "ListElement": "Cumbria County Council",
+    "ListElement": "Cumberland Council",
     "DisplayOrder": 75
   },
   {
@@ -1164,9 +1164,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "WMF",
+    "ListElement": "Westmorland and Furness Council",
+    "DisplayOrder": 430
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "WIC",
     "ListElement": "Wigan Council",
-    "DisplayOrder": 430
+    "DisplayOrder": 431
   },
   {
     "LiveFrom": "01/01/2017",
