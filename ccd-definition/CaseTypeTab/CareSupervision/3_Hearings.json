@@ -16,8 +16,20 @@
     "TabID": "HearingTab",
     "TabLabel": "Hearings",
     "TabDisplayOrder": 3,
+    "CaseFieldID": "listGatekeepingHearingLink",
+    "TabFieldDisplayOrder": 1,
+    "FieldShowCondition":  "[STATE]=\"GATEKEEPING_LISTING\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "HearingTab",
+    "TabLabel": "Hearings",
+    "TabDisplayOrder": 3,
     "CaseFieldID": "manageHearingsLink",
-    "TabFieldDisplayOrder": 1
+    "TabFieldDisplayOrder": 1,
+    "FieldShowCondition":  "[STATE]=\"PREPARE_FOR_HEARING\" OR [STATE]=\"FINAL_HEARING\""
   },
   {
     "LiveFrom": "01/01/2017",

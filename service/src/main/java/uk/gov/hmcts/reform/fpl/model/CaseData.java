@@ -240,10 +240,14 @@ public class CaseData extends CaseDataParent {
     private final Allocation allocationDecision;
 
     private final StandardDirectionOrder standardDirectionOrder;
+    private final StandardDirectionOrder urgentDirectionsOrder;
+
+    @Deprecated
     private final UrgentHearingOrder urgentHearingOrder;
 
     private GatekeepingOrderRoute sdoRouter;
     private GatekeepingOrderRoute gatekeepingOrderRouter;
+    private GatekeepingOrderRoute urgentDirectionsRouter;
 
     private final DocumentReference preparedSDO;
     private final DocumentReference replacementSDO;
@@ -1236,6 +1240,20 @@ public class CaseData extends CaseDataParent {
     public boolean isEducationSupervisionApplication() {
         return ofNullable(getOrders())
             .map(Orders::isEducationSupervisionOrder)
+            .orElse(false);
+    }
+
+    @JsonIgnore
+    public boolean isCareOrderCombinedWithUrgentDirections() {
+        return ofNullable(getOrders())
+            .map(Orders::isCareOrderCombinedWithEPOorICO)
+            .orElse(false);
+    }
+
+    @JsonIgnore
+    public boolean isStandaloneEPOApplication() {
+        return ofNullable(getOrders())
+            .map(Orders::isEmergencyProtectionOrderOnly)
             .orElse(false);
     }
 }
