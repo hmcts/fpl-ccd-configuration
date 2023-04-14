@@ -118,4 +118,8 @@ public class Orders {
     public boolean isInterimCareOrderOnly() {
         return isNotEmpty(orderType) && orderType.size() == 1 && orderType.contains(INTERIM_CARE_ORDER);
     }
+
+    public boolean isSecureAccommodationOrderOnly() {
+        return isNotEmpty(orderType) && orderType.size() == 1 && orderType.contains(SECURE_ACCOMMODATION_ORDER);
+    }
 }

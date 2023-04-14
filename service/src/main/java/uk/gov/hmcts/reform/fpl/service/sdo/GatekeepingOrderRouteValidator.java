@@ -36,7 +36,7 @@ public class GatekeepingOrderRouteValidator {
 
     private boolean allowAddUrgentDirections(CaseData caseData) {
         return caseData.isCareOrderCombinedWithUrgentDirections() || caseData.isStandaloneEPOApplication()
-            || caseData.isStandaloneInterimCareOrder();
+            || caseData.isStandaloneInterimCareOrder() || caseData.isStandaloneSecureAccommodationOrder();
     }
 
     public List<String> allowAccessToEvent(CaseData caseData, String eventName) {

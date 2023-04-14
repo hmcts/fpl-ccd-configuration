@@ -104,12 +104,25 @@ class GatekeepingOrderRouteValidatorTest {
     }
 
     @Test
-    void allowAccessToEventShouldNotReturnErrorWhenStandaloneInterimCareOrderOnly() {
+    void allowAccessToEventShouldNotReturnErrorWhenStandaloneInterimCareOrder() {
         StandardDirectionOrder udo = mock(StandardDirectionOrder.class);
         CaseData caseData = CaseData.builder()
             .urgentDirectionsRouter(GatekeepingOrderRoute.UPLOAD)
             .urgentDirectionsOrder(udo)
             .orders(Orders.builder().orderType(List.of(OrderType.INTERIM_CARE_ORDER)).build())
+            .build();
+
+        assertThat(underTest.allowAccessToEvent(caseData, ADD_URGENT_DIRECTIONS.getId()))
+            .isEqualTo(List.of());
+    }
+
+    @Test
+    void allowAccessToEventShouldNotReturnErrorWhenStandaloneSecureAccommodationOrder() {
+        StandardDirectionOrder udo = mock(StandardDirectionOrder.class);
+        CaseData caseData = CaseData.builder()
+            .urgentDirectionsRouter(GatekeepingOrderRoute.UPLOAD)
+            .urgentDirectionsOrder(udo)
+            .orders(Orders.builder().orderType(List.of(OrderType.SECURE_ACCOMMODATION_ORDER)).build())
             .build();
 
         assertThat(underTest.allowAccessToEvent(caseData, ADD_URGENT_DIRECTIONS.getId()))
