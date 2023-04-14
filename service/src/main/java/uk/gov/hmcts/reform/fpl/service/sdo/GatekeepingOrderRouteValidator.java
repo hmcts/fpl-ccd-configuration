@@ -34,11 +34,6 @@ public class GatekeepingOrderRouteValidator {
         return sdo.isSealed() ? List.of(EVENT_ACCESS_VALIDATION_MESSAGE) : List.of();
     }
 
-    private boolean allowAddUrgentDirections(CaseData caseData) {
-        return caseData.isCareOrderCombinedWithUrgentDirections() || caseData.isStandaloneEPOApplication()
-            || caseData.isStandaloneInterimCareOrder() || caseData.isStandaloneSecureAccommodationOrder();
-    }
-
     public List<String> allowAccessToEvent(CaseData caseData, String eventName) {
         if (eventName.equals(ADD_URGENT_DIRECTIONS.getId())) {
             if (allowAddUrgentDirections(caseData)) {
@@ -62,5 +57,10 @@ public class GatekeepingOrderRouteValidator {
             errors.add(HEARING_DETAILS_REQUIRED);
         }
         return errors;
+    }
+
+    private boolean allowAddUrgentDirections(CaseData caseData) {
+        return caseData.isCareOrderCombinedWithUrgentDirections() || caseData.isStandaloneEPOApplication()
+            || caseData.isStandaloneInterimCareOrder() || caseData.isStandaloneSecureAccommodationOrder();
     }
 }
