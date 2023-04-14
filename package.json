@@ -37,7 +37,8 @@
     "prepare": "husky install",
     "yarn-update": "yarn set version 3.x",
     "install-dependencies": "/usr/bin/yarn install --immutable --silent",
-    "lint-ui-tests": "/usr/bin/yarn lint"
+    "lint-ui-tests": "/usr/bin/yarn lint",
+    "check-permission-dupes": "node utils/checkDupes.js"
   },
   "peerDependencies": {
     "debug": "4.3.4",
