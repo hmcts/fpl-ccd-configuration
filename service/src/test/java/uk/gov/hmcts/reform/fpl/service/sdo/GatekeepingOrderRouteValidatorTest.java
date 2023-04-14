@@ -104,7 +104,7 @@ class GatekeepingOrderRouteValidatorTest {
     }
 
     @Test
-    void allowAccessToEventShouldNotReturnErrorWhenStandaloneInterimCaseOnly() {
+    void allowAccessToEventShouldNotReturnErrorWhenStandaloneInterimCareOrderOnly() {
         StandardDirectionOrder udo = mock(StandardDirectionOrder.class);
         CaseData caseData = CaseData.builder()
             .urgentDirectionsRouter(GatekeepingOrderRoute.UPLOAD)
