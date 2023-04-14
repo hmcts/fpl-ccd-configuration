@@ -89,7 +89,7 @@ public class NoticeOfChangeController extends CallbackController {
             );
     }
 
-    @PostMapping("/update-respondents")
+    @PostMapping("/update-respondents/about-to-start")
     public CallbackResponse handleRespondentUpdate(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
