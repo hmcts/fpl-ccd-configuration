@@ -34,9 +34,14 @@ public class GatekeepingOrderRouteValidator {
         return sdo.isSealed() ? List.of(EVENT_ACCESS_VALIDATION_MESSAGE) : List.of();
     }
 
+    private boolean allowAddUrgentDirections(CaseData caseData) {
+        return caseData.isCareOrderCombinedWithUrgentDirections() || caseData.isStandaloneEPOApplication()
+            || caseData.isStandaloneInterimCareOrder();
+    }
+
     public List<String> allowAccessToEvent(CaseData caseData, String eventName) {
         if (eventName.equals(ADD_URGENT_DIRECTIONS.getId())) {
-            if (caseData.isCareOrderCombinedWithUrgentDirections() || caseData.isStandaloneEPOApplication()) {
+            if (allowAddUrgentDirections(caseData)) {
                 StandardDirectionOrder udo = defaultIfNull(caseData.getUrgentDirectionsOrder(),
                     StandardDirectionOrder.builder().build());
                 return udo.isSealed() ? List.of(URGENT_DIRECTIONS_VALIDATION_MESSAGE) : List.of();

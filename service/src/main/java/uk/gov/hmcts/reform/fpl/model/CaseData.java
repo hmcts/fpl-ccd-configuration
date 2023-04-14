@@ -1256,4 +1256,11 @@ public class CaseData extends CaseDataParent {
             .map(Orders::isEmergencyProtectionOrderOnly)
             .orElse(false);
     }
+
+    @JsonIgnore
+    public boolean isStandaloneInterimCareOrder() {
+        return ofNullable(getOrders())
+            .map(Orders::isInterimCareOrderOnly)
+            .orElse(false);
+    }
 }
