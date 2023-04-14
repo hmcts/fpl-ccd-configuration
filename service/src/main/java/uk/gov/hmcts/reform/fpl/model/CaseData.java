@@ -1270,4 +1270,11 @@ public class CaseData extends CaseDataParent {
             .map(Orders::isSecureAccommodationOrderOnly)
             .orElse(false);
     }
+
+    @JsonIgnore
+    public boolean isStandaloneChildRecoveryOrder() {
+        return ofNullable(getOrders())
+            .map(Orders::isChildRecoveryOrderOnly)
+            .orElse(false);
+    }
 }

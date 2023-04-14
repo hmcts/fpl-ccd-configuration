@@ -122,4 +122,8 @@ public class Orders {
     public boolean isSecureAccommodationOrderOnly() {
         return isNotEmpty(orderType) && orderType.size() == 1 && orderType.contains(SECURE_ACCOMMODATION_ORDER);
     }
+
+    public boolean isChildRecoveryOrderOnly() {
+        return isNotEmpty(orderType) && orderType.size() == 1 && orderType.contains(CHILD_RECOVERY_ORDER);
+    }
 }
