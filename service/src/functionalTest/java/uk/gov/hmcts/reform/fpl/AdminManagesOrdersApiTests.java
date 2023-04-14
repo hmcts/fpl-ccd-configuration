@@ -68,6 +68,7 @@ public class AdminManagesOrdersApiTests extends AbstractApiTest {
         parametrizedTests("c33", "C33_INTERIM_CARE_ORDER");
     }
 
+    @Test
     public void adminManagesOrderTest35a() {
         parametrizedTests("c35a", "C35A_SUPERVISION_ORDER");
     }
