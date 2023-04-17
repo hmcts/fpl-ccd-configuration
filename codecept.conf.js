@@ -138,6 +138,7 @@ exports.config = {
     manageLocalAuthoritiesEventPage: './e2e/pages/events/manageLocalAuthorities.page.js',
   },
   plugins: {
+    pauseOnFail: {},
     retryFailedStep: {
       enabled: true,
     },

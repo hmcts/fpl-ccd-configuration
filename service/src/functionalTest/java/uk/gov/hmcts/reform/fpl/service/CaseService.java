@@ -62,7 +62,7 @@ public class CaseService {
         CaseDetailsMap data = caseDetailsMap(caseConverter.toMap(caseData));
 
         CaseDetails caseDetails = SerenityRest
-            .given().log().all()
+            .given()
             .headers(authenticationService.getAuthorizationHeaders(user))
             .contentType(APPLICATION_JSON)
             .body(Map.of())

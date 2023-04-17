@@ -7,18 +7,17 @@ import org.mockito.Mockito;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.summary.CaseSummaryService;
 
 import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 
 class AfterSubmissionCaseDataUpdatedEventHandlerTest {
 
@@ -42,11 +41,13 @@ class AfterSubmissionCaseDataUpdatedEventHandlerTest {
     private final CoreCaseDataService coreCaseDataService = mock(CoreCaseDataService.class);
     private final CaseSummaryService caseSummaryService = mock(CaseSummaryService.class);
     private final ObjectMapper objectMapper = mock(ObjectMapper.class);
+    private final CaseConverter caseConverter = mock(CaseConverter.class);
 
     AfterSubmissionCaseDataUpdatedEventHandler underTest = new AfterSubmissionCaseDataUpdatedEventHandler(
         coreCaseDataService,
         caseSummaryService,
-        objectMapper);
+        objectMapper,
+        caseConverter);
 
     @Test
     void testIfNoCaseDataBefore() {
@@ -59,7 +60,7 @@ class AfterSubmissionCaseDataUpdatedEventHandlerTest {
             .caseData(EMPTY_CASE_DATA)
             .build());
 
-        verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, CASE_DATA_ID, EVENT, UPDATED_CASE_FIELDS);
+        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_DATA_ID), eq(EVENT), any());
     }
 
     @Test
@@ -74,7 +75,7 @@ class AfterSubmissionCaseDataUpdatedEventHandlerTest {
             .caseDataBefore(EMPTY_CASE_DATA)
             .build());
 
-        verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, CASE_DATA_ID, EVENT, UPDATED_CASE_FIELDS);
+        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_DATA_ID), eq(EVENT), any());
     }
 
     @Test
@@ -92,7 +93,7 @@ class AfterSubmissionCaseDataUpdatedEventHandlerTest {
                 .build())
             .build());
 
-        verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, CASE_DATA_ID, EVENT, UPDATED_CASE_FIELDS);
+        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_DATA_ID), eq(EVENT), any());
     }
 
     @Test
@@ -110,6 +111,6 @@ class AfterSubmissionCaseDataUpdatedEventHandlerTest {
                 .build())
             .build());
 
-        verifyNoInteractions(coreCaseDataService);
+        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_DATA_ID), eq(EVENT), any());
     }
 }

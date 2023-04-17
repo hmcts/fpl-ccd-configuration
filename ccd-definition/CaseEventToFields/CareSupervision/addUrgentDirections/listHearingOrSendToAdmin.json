@@ -1,0 +1,52 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addUrgentDirections",
+    "CaseFieldID": "gatekeepingOrderListOrSendToAdmin",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY",
+    "PageID": "ListHearingOrSendToAdmin",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addUrgentDirections",
+    "CaseFieldID": "listGatekeepingHearingLabel",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": "ListHearingOrSendToAdmin",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "gatekeepingOrderListOrSendToAdmin=\"YES\""
+  },
+  {
+  "LiveFrom": "01/01/2017",
+  "CaseTypeID": "CARE_SUPERVISION_EPO",
+  "CaseEventID": "addUrgentDirections",
+  "CaseFieldID": "gatekeepingOrderListOrSendToAdminReason",
+  "PageFieldDisplayOrder": 3,
+  "DisplayContext": "OPTIONAL",
+  "PageID": "ListHearingOrSendToAdmin",
+  "PageDisplayOrder": 6,
+  "PageColumnNumber": 1,
+  "FieldShowCondition": "gatekeepingOrderListOrSendToAdmin=\"NO\"",
+  "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addUrgentDirections",
+    "CaseFieldID": "gatekeepingOrderSealDecision",
+    "PageFieldDisplayOrder": 4,
+    "DisplayContext": "COMPLEX",
+    "PageID": "ListHearingOrSendToAdmin",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "gatekeepingOrderListOrSendToAdmin=\"DO_NOT_SHOW\""
+  }
+]
