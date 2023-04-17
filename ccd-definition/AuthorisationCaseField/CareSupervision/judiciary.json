@@ -1969,6 +1969,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "listGatekeepingHearingLink",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "messageJudgeLegalAdviserLink",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "R"

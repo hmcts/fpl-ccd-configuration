@@ -10,7 +10,7 @@ async function setupScenario(I) {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 }
 
-Scenario('HMCTS admin uploads documents to be scanned', async ({I, caseViewPage, handleSupplementaryEvidenceEventPage, attachScannedDocsEventPage}) => {
+Scenario('HMCTS admin uploads documents to be scanned @nightlyOnly', async ({I, caseViewPage, handleSupplementaryEvidenceEventPage, attachScannedDocsEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.bulkScan);
   await attachScannedDocsEventPage.enterScannedDocument(scannedDocument, config.testFile);
@@ -19,7 +19,7 @@ Scenario('HMCTS admin uploads documents to be scanned', async ({I, caseViewPage,
   await I.completeEvent('Submit');
 });
 
-Scenario('HMCTS admin can see documents scanned in with Bulk Scan', async ({I, caseViewPage}) => {
+Scenario('HMCTS admin can see documents scanned in with Bulk Scan @nightlyOnly', async ({I, caseViewPage}) => {
   await setupScenario(I);
   caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
   I.expandDocumentSection('Any other documents', 'Example file name');

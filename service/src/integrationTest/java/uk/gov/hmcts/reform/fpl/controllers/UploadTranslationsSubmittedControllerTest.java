@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -23,7 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
@@ -141,7 +142,7 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
     private NotificationClient notificationClient;
 
     @MockBean
-    private CoreCaseDataService coreCaseDataService;
+    private CCDConcurrencyHelper concurrencyHelper;
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
@@ -203,6 +204,12 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
     @Test
     void shouldSendTranslatedNotificationToLocalAuthorityWhenTranslatedOrder() {
         CaseData caseData = caseData();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(asCaseDetails(caseData))
             .build();
@@ -219,13 +226,19 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
     @Test
     void shouldSendOrdersByPostWhenOrderTranslated() {
+        final CaseData caseData = caseData();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
 
-        postSubmittedEvent(caseData());
+        postSubmittedEvent(caseData);
 
         checkUntil(() -> {
             verify(sendLetterApi, times(4)).sendLetter(eq(SERVICE_AUTH_TOKEN),
                 printRequest.capture());
-            verify(coreCaseDataService).updateCase(eq(CASE_ID), caseDataDelta.capture());
+            verify(concurrencyHelper).submitEvent(any(), eq(CASE_ID), caseDataDelta.capture());
         });
 
         assertThat(printRequest.getAllValues()).usingRecursiveComparison()
@@ -270,8 +283,14 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
     @Test
     void shouldNotifyRepresentativesServedDigitallyWhenOrderTranslated() {
+        final CaseData caseData = caseData();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
 
-        postSubmittedEvent(caseData());
+        postSubmittedEvent(caseData);
 
         checkUntil(() ->
             verify(notificationClient).sendEmail(
@@ -285,8 +304,14 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
     @Test
     void shouldNotifyRepresentativesServedByEmailWhenOrderTranslated() {
+        final CaseData caseData = caseData();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
 
-        postSubmittedEvent(caseData());
+        postSubmittedEvent(caseData);
 
         checkUntil(() ->
             verify(notificationClient).sendEmail(

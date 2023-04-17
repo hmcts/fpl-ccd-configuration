@@ -54,7 +54,7 @@ async function createPlacementApplication(I, placementEventPage, caseViewPage) {
   I.seeInTab(['Child 1', 'Confidential document 2', 'Document type'], 'Other confidential documents');
   I.seeInTab(['Child 1', 'Confidential document 2', 'Document'], 'mockFile5.txt');
   I.seeInTab(['Child 1', 'Confidential document 2', 'Description'], 'Description 2');
-  I.seeTagInTab(['Child 1', 'Confidential document 1', 'Confidential']);
+  I.seeTagInTab(['Child 1', 'Confidential document 2', 'Confidential']);
 }
 
 async function createPlacementNoticeOfHearing(I, placementHearingEventPage, caseViewPage) {
@@ -87,7 +87,7 @@ Scenario('Local authority creates a placement application', async ({I, placement
   await createPlacementApplication(I, placementEventPage, caseViewPage);
 });
 
-Scenario('Admin issues a notice of hearing for placement', async({I, placementEventPage, placementHearingEventPage, caseViewPage}) => {
+Scenario('Admin issues a notice of hearing for placement @nightlyOnly', async({I, placementEventPage, placementHearingEventPage, caseViewPage}) => {
   await setupScenario(I);
   await createPlacementApplication(I, placementEventPage, caseViewPage);
   await createPlacementNoticeOfHearing(I, placementHearingEventPage, caseViewPage);

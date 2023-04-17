@@ -34,15 +34,12 @@ import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CREATOR;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
@@ -166,12 +163,10 @@ class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
     }
 
     private void verifyTaskListUpdated(CaseData caseData) {
-        verify(coreCaseDataService).triggerEvent(
-            eq(JURISDICTION),
-            eq(CASE_TYPE),
+        verify(coreCaseDataService).performPostSubmitCallback(
             eq(caseData.getId()),
             eq("internal-update-task-list"),
-            anyMap());
+            any());
     }
 
     private AddCaseAssignedUserRolesRequest assignment(CaseData caseData, Organisation organisation,

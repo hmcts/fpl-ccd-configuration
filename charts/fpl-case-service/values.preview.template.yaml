@@ -241,9 +241,8 @@ ccd:
       enabled: false
 
   logstash:
-    image: hmctspublic.azurecr.io/imported/logstash/logstash
-    imageTag: 8.5.1
-    imagePullPolicy: "IfNotPresent"
+    image: hmctspublic.azurecr.io/ccd/logstash
+    imageTag: "latest"
     logstashJavaOpts: -Xmx1g -Xms512M
     persistence:
       enabled: false
@@ -259,6 +258,23 @@ ccd:
       db.user: hmcts
       db.pwd: hmcts
       es.data.nodes.url: http://${SERVICE_NAME}-es-master:9200
+    extraEnvs:
+      - name: DATA_STORE_URL
+        value: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
+      - name: DB_URL
+        value: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
+      - name: DB_USER
+        value: hmcts
+      - name: DB_PWD
+        value: hmcts
+      - name: ES_HOSTS
+        value: http://${SERVICE_NAME}-es-master:9200
+      - name: ES_DATA_NODES_URL
+        value: http://${SERVICE_NAME}-es-master:9200
+      - name: ELASTIC_SEARCH_DATA_NODES_HOSTS
+        value: http://${SERVICE_NAME}-es-master:9200
+      - name: ES_URL
+        value: http://${SERVICE_NAME}-es-master:9200
     livenessProbe:
       initialDelaySeconds: 90
   am-role-assignment-service:

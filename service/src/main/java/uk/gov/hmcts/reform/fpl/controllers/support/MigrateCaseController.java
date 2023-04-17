@@ -33,8 +33,12 @@ public class MigrateCaseController extends CallbackController {
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
+        "DFPL-1303", this::run1303,
+        "DFPL-1320", this::run1320,
+        "DFPL-1335", this::run1335,
         "DFPL-1261", this::run1261,
-        "DFPL-1226", this::run1226
+        "DFPL-1226", this::run1226,
+        "DFPL-1361", this::run1361
     );
 
     @PostMapping("/about-to-submit")
@@ -70,5 +74,37 @@ public class MigrateCaseController extends CallbackController {
     private void run1226(CaseDetails caseDetails) {
         migrateCaseService.doDocumentViewNCCheck(caseDetails.getId(), "DFPL-1226", caseDetails);
         caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(getCaseData(caseDetails)));
+    }
+
+    private void run1320(CaseDetails caseDetails) {
+        String migrationId = "DFPL-1320";
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), List.of(1667466628958196L), migrationId);
+        caseDetails.getData().putAll(
+            migrateCaseService.removeJudicialMessage(getCaseData(caseDetails), migrationId,
+                "afb1a77d-08c9-4ad1-a03f-e7b47c8eb8c3"));
+    }
+
+    private void run1335(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1335";
+        var possibleCaseIds = List.of(1677078973744903L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removeSkeletonArgument(getCaseData(caseDetails),
+            "e4e70bf5-4905-4c13-9d59-d20a202b6c9a", migrationId));
+    }
+
+    private void run1303(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1303";
+        var possibleCaseIds = List.of(1652697388556674L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removeApplicationDocument(getCaseData(caseDetails),
+            migrationId,
+            UUID.fromString("7b381f49-d6f9-4a17-a72a-5e39fb48a671")));
+    }
+
+    private void run1361(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1361";
+        var possibleCaseIds = List.of(1680179801927341L, 1651064219316144L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
     }
 }
