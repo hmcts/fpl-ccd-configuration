@@ -11,7 +11,7 @@ async function setupScenario(I) {
   await I.navigateToCaseDetailsAs(config.hillingdonLocalAuthorityUserOne, caseId);
 }
 
-Scenario('Local authority select court to issue', async ({I, caseViewPage, selectCourtEventPage}) => {
+Scenario('Local authority select court to issue @nightlyOnly', async ({I, caseViewPage, selectCourtEventPage}) => {
   await setupScenario(I);
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
