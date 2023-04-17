@@ -1277,4 +1277,11 @@ public class CaseData extends CaseDataParent {
             .map(Orders::isChildRecoveryOrderOnly)
             .orElse(false);
     }
+
+    @JsonIgnore
+    public boolean isEPOCombinedWithICO() {
+        return ofNullable(getOrders())
+            .map(Orders::isEPOCombinedWithICO)
+            .orElse(false);
+    }
 }

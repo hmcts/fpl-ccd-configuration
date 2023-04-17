@@ -126,4 +126,8 @@ public class Orders {
     public boolean isChildRecoveryOrderOnly() {
         return isNotEmpty(orderType) && orderType.size() == 1 && orderType.contains(CHILD_RECOVERY_ORDER);
     }
+
+    public boolean isEPOCombinedWithICO() {
+        return isNotEmpty(orderType) && containsInterimCareOrder() && orderContainsEPO();
+    }
 }

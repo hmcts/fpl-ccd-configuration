@@ -62,6 +62,6 @@ public class GatekeepingOrderRouteValidator {
     private boolean allowAddUrgentDirections(CaseData caseData) {
         return caseData.isCareOrderCombinedWithUrgentDirections() || caseData.isStandaloneEPOApplication()
             || caseData.isStandaloneInterimCareOrder() || caseData.isStandaloneSecureAccommodationOrder()
-            || caseData.isStandaloneChildRecoveryOrder();
+            || caseData.isStandaloneChildRecoveryOrder() || caseData.isEPOCombinedWithICO();
     }
 }
