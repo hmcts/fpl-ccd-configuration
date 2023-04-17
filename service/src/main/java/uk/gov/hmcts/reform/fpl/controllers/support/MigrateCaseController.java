@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
@@ -38,7 +39,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1335", this::run1335,
         "DFPL-1261", this::run1261,
         "DFPL-1226", this::run1226,
-        "DFPL-1361", this::run1361
+        "DFPL-1361", this::run1361,
+        "DFPL-1380", this::run1380
     );
 
     @PostMapping("/about-to-submit")
@@ -106,5 +108,12 @@ public class MigrateCaseController extends CallbackController {
         var possibleCaseIds = List.of(1680179801927341L, 1651064219316144L);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
         fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
+    }
+
+    private void run1380(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1380";
+        var possibleCaseIds = List.of(1662460879255241L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().put("state", State.FINAL_HEARING);
     }
 }
