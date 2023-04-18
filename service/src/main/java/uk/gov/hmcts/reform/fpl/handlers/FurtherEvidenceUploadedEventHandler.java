@@ -254,6 +254,7 @@ public class FurtherEvidenceUploadedEventHandler {
             .collect(groupingBy(HearingDocument::getHearing,
                 mapping(HearingDocument::getDocument, toSet())));
 
+        log.info("DFPL-1386 sendHearingDocumentsToCafcass " + "[" + provider.getLabel() + "]" + newHearingDocs.size());
         newHearingDocs.forEach((hearing, doc) ->
             cafcassNotificationService.sendEmail(
                     caseData,
@@ -273,6 +274,7 @@ public class FurtherEvidenceUploadedEventHandler {
 
             Map<String, Set<DocumentReference>> newCourtBundles = getNewCourtBundles(caseData, caseDataBefore);
 
+            log.info("DFPL-1386 newCourtBundles " + newCourtBundles.size());
             newCourtBundles
                     .forEach((key, value) -> {
                         if (value != null && !value.isEmpty()) {
@@ -331,7 +333,7 @@ public class FurtherEvidenceUploadedEventHandler {
                     caseDataBefore));
 
             if (!documentReferences.isEmpty()) {
-                log.info("!documentReferences.isEmpty(): NEW_DOCUMENT found!: " + documentReferences.size());
+                log.info("DFPL-1386 sendDocumentsToCafcass: " + documentReferences.size());
                 String documentTypes = documentInfos.stream()
                         .filter(documentInfo ->
                                 !documentInfo.getDocumentReferences().isEmpty())
