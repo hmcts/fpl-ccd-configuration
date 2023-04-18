@@ -33,10 +33,12 @@ public class MigrateCaseController extends CallbackController {
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
+        "DFPL-1303", this::run1303,
         "DFPL-1320", this::run1320,
         "DFPL-1335", this::run1335,
         "DFPL-1261", this::run1261,
         "DFPL-1226", this::run1226,
+        "DFPL-1361", this::run1361,
         "DFPL-1242", this::run1242
     );
 
@@ -99,5 +101,21 @@ public class MigrateCaseController extends CallbackController {
         var validOrderType = "EDUCATION_SUPERVISION_ORDER";
 
         caseDetails.getData().putAll(migrateCaseService.fixOrderTypeTypo(migrationId, caseDetails));
+    }
+    
+    private void run1303(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1303";
+        var possibleCaseIds = List.of(1652697388556674L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removeApplicationDocument(getCaseData(caseDetails),
+            migrationId,
+            UUID.fromString("7b381f49-d6f9-4a17-a72a-5e39fb48a671")));
+    }
+
+    private void run1361(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1361";
+        var possibleCaseIds = List.of(1680179801927341L, 1651064219316144L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
     }
 }
