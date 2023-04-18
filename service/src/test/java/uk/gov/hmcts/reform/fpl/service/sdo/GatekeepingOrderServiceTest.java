@@ -15,6 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionType;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -31,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
@@ -57,7 +59,6 @@ import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -71,15 +72,15 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionType.ARRANGE_INTERPRETERS_I
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6A;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.UDO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
-import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testHearing;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
@@ -89,9 +90,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudgeAndLegalAdvi
 @SpringBootTest(classes = {JacksonAutoConfiguration.class, CaseConverter.class, GatekeepingOrderService.class,
     FixedTimeConfiguration.class})
 class GatekeepingOrderServiceTest {
-
-    private static final Document DOCUMENT = testDocument();
-    private static final DocumentReference REFERENCE = buildFromDocument(DOCUMENT);
 
     @Autowired
     Time time;
@@ -119,11 +117,6 @@ class GatekeepingOrderServiceTest {
 
     @Autowired
     private GatekeepingOrderService underTest;
-
-    @BeforeEach
-    void setUp() {
-        given(documentService.getDocumentFromDocmosisOrderTemplate(any(), eq(SDO))).willReturn(DOCUMENT);
-    }
 
     @Test
     void shouldSetAllocatedJudgeLabel() {
@@ -278,7 +271,7 @@ class GatekeepingOrderServiceTest {
 
     @ParameterizedTest
     @EnumSource(value = DirectionType.class)
-    void shouldGetStandardDirectionsFromDraft(DirectionType type) {
+    void shouldGetStandardDirectionsFromDraftSDO(DirectionType type) {
         final StandardDirection draftDirection = StandardDirection.builder()
             .type(type)
             .title("title")
@@ -294,6 +287,36 @@ class GatekeepingOrderServiceTest {
                 "standardDirectionOrder", StandardDirectionOrder.builder()
                     .standardDirections(wrapElements(draftDirection))
                     .build(),
+                "gatekeepingOrderRouter", SERVICE,
+                "directionsForAllParties", List.of(type))))
+            .build();
+
+        underTest.populateStandardDirections(caseDetails);
+
+        assertThat(caseDetails.getData().get("direction-" + type)).isEqualTo(draftDirection);
+
+        verifyNoInteractions(ordersLookupService, calendarService);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = DirectionType.class)
+    void shouldGetStandardDirectionsFromDraftUDO(DirectionType type) {
+        final StandardDirection draftDirection = StandardDirection.builder()
+            .type(type)
+            .title("title")
+            .description("Text")
+            .assignee(COURT)
+            .daysBeforeHearing(0)
+            .dateToBeCompletedBy(LocalDateTime.now())
+            .dueDateType(DATE)
+            .build();
+
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .data(newHashMap(Map.of(
+                "urgentDirectionsOrder", StandardDirectionOrder.builder()
+                    .standardDirections(wrapElements(draftDirection))
+                    .build(),
+                "urgentDirectionsOrderRouter", SERVICE,
                 "directionsForAllParties", List.of(type))))
             .build();
 
@@ -412,7 +435,7 @@ class GatekeepingOrderServiceTest {
     @Nested
     class SealDecisionForServiceRoute {
 
-        final GatekeepingOrderRoute serviceRoute = GatekeepingOrderRoute.SERVICE;
+        final GatekeepingOrderRoute serviceRoute = SERVICE;
         final Document generatedDocument = TestDataHelper.testDocument();
 
         final DocumentReference generatedOrder = DocumentReference.builder()
@@ -855,20 +878,20 @@ class GatekeepingOrderServiceTest {
             .filename(generatedDocument.originalDocumentName)
             .build();
 
-        @BeforeEach
-        void init() {
+        private void setupMocks(DocmosisTemplates docmosisTemplate) {
             final DocmosisStandardDirectionOrder docmosisOrder = DocmosisStandardDirectionOrder.builder()
                 .ccdCaseNumber("1")
                 .build();
 
             when(gatekeepingOrderGenerationService.getTemplateData(any()))
                 .thenReturn(docmosisOrder);
-            when(documentService.getDocumentFromDocmosisOrderTemplate(docmosisOrder, SDO))
+            when(documentService.getDocumentFromDocmosisOrderTemplate(docmosisOrder, docmosisTemplate))
                 .thenReturn(generatedDocument);
         }
 
         @Test
         void shouldBuildGatekeepingOrderWhenDecisionIsToKeepOrderAsDraft() {
+            setupMocks(SDO);
             final GatekeepingOrderSealDecision sealDecision = GatekeepingOrderSealDecision.builder()
                 .orderStatus(DRAFT)
                 .draftDocument(draftOrder)
@@ -895,6 +918,7 @@ class GatekeepingOrderServiceTest {
 
         @Test
         void shouldBuildGatekeepingOrderWhenDecisionIsToSealOrder() {
+            setupMocks(SDO);
             final GatekeepingOrderSealDecision sealDecision = GatekeepingOrderSealDecision.builder()
                 .orderStatus(SEALED)
                 .draftDocument(draftOrder)
@@ -905,6 +929,7 @@ class GatekeepingOrderServiceTest {
                 .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                     .gatekeepingOrderSealDecision(sealDecision)
                     .build())
+                .gatekeepingOrderRouter(SERVICE)
                 .build();
 
             final StandardDirectionOrder actualOrder = underTest.buildOrderFromGeneratedFile(caseData);
@@ -918,13 +943,14 @@ class GatekeepingOrderServiceTest {
                 .build();
 
             assertThat(actualOrder).isEqualTo(expectedOrder);
-
             verifyNoInteractions(sealingService);
+            verify(documentService).getDocumentFromDocmosisOrderTemplate(any(DocmosisOrder.class), eq(SDO));
             verify(gatekeepingOrderGenerationService).getTemplateData(caseData);
         }
 
         @Test
         void shouldBuildGatekeepingOrderWhenDecisionIsToSealOrderWithTranslation() {
+            setupMocks(UDO);
             final GatekeepingOrderSealDecision sealDecision = GatekeepingOrderSealDecision.builder()
                 .orderStatus(SEALED)
                 .draftDocument(draftOrder)
@@ -936,6 +962,7 @@ class GatekeepingOrderServiceTest {
                 .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                     .gatekeepingOrderSealDecision(sealDecision)
                     .build())
+                .urgentDirectionsRouter(SERVICE)
                 .build();
 
             final StandardDirectionOrder actualOrder = underTest.buildOrderFromGeneratedFile(caseData);
@@ -952,6 +979,7 @@ class GatekeepingOrderServiceTest {
             assertThat(actualOrder).isEqualTo(expectedOrder);
 
             verifyNoInteractions(sealingService);
+            verify(documentService).getDocumentFromDocmosisOrderTemplate(any(DocmosisOrder.class), eq(UDO));
             verify(gatekeepingOrderGenerationService).getTemplateData(caseData);
         }
 

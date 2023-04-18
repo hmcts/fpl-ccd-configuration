@@ -1271,29 +1271,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "addGatekeepingOrder",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-superuser",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-courtadmin"
-        ],
-        "CRUD": "CR"
-      },
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-solicitor",
-          "caseworker-publiclaw-magistrate"
-        ],
-        "CRUD": "R"
-      }
-    ]
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageOrders",
     "AccessControl": [
       {
@@ -1404,8 +1381,7 @@
           "[CHILDSOLICITORN]",
           "[CHILDSOLICITORO]",
           "[CAFCASSSOLICITOR]",
-          "[BARRISTER]",
-          "[LABARRISTER]"
+          "[BARRISTER]"
         ],
         "CRUD": "CR"
       }
@@ -1665,6 +1641,7 @@
           "[EPSMANAGING]",
           "[LAMANAGING]",
           "[LASHARED]",
+          "[LABARRISTER]",
           "caseworker-publiclaw-courtadmin"
         ],
         "CRUD": "CR"
@@ -1697,6 +1674,7 @@
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
+          "[LABARRISTER]",
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate",
           "caseworker-publiclaw-gatekeeper",
@@ -1722,29 +1700,6 @@
           "[CHILDSOLICITORM]", "[CHILDSOLICITORN]", "[CHILDSOLICITORO]", "caseworker-publiclaw-solicitor"
         ],
         "CRUD": "CR"
-      }
-    ]
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "listGatekeepingHearing",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary"
-        ],
-        "CRUD": "CR"
-      },
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-solicitor",
-          "caseworker-publiclaw-magistrate",
-          "caseworker-publiclaw-cafcass"
-        ],
-        "CRUD": "R"
       }
     ]
   }

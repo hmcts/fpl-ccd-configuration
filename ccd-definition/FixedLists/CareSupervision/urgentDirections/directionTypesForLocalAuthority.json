@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UrgentDirectionTypesForLocalAuthority",
+    "ListElementCode": "LODGE_BUNDLE",
+    "ListElement": "Lodge a bundle",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UrgentDirectionTypesForLocalAuthority",
+    "ListElementCode": "REDUCE_TIME_FOR_SERVICE",
+    "ListElement": "Reduce time for service of notice of the proceedings",
+    "DisplayOrder": 2
+  }
+]
