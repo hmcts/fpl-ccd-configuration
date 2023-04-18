@@ -39,6 +39,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "removablePlacementApplicationList",
+    "Label": "Choose the placement application you want to remove",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "reasonToRemoveOrder",
     "Label": "Why is the order being removed?",
     "FieldType": "TextArea",
@@ -327,6 +336,43 @@
     "ID": "hiddenApplicationForm",
     "Label": "Removed Application Form",
     "FieldType": "RemovedApplicationForm",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "removePlacementApplicationWarning",
+    "Label": "<div class='panel panel-border-wide'><h2>Check you're removing the right placement application</h2><p>You will not be able to reinstate it after it’s removed</p></div>",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "placementApplicationToBeRemoved",
+    "Label": " ",
+    "FieldType": "Placement",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "reasonToRemovePlacementApplication",
+    "Label": "Why is the placement application being removed?",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "removedPlacements",
+    "Label": "Removed placement application",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "RemovedPlacement",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }

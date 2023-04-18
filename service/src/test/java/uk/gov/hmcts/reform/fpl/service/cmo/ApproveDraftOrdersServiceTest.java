@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -417,11 +418,17 @@ class ApproveDraftOrdersServiceTest {
             "ordersToBeSent", List.of(element(agreedCMO.getId(), expectedCmo)),
             "state", expectedState,
             "draftUploadedCMOs", emptyList(),
-            "hearingOrdersBundlesDrafts", emptyList()
+            "hearingOrdersBundlesDrafts", emptyList(),
+            "hearingOrdersBundlesDraftReview", emptyList()
         );
 
         given(othersService.getSelectedOthers(any(), any(), any())).willReturn(others);
-        given(draftOrderService.migrateCmoDraftToOrdersBundles(any(CaseData.class))).willReturn(emptyList());
+        given(draftOrderService.migrateCmoDraftToOrdersBundles(any(CaseData.class))).willReturn(
+            HearingOrdersBundles.builder()
+                .agreedCmos(emptyList())
+                .draftCmos(emptyList())
+                .build()
+        );
         given(hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, agreedCMO, others, othersNotified,
             SealType.ENGLISH, caseData.getCourt()))
             .willReturn(element(agreedCMO.getId(), expectedCmo));
@@ -454,10 +461,17 @@ class ApproveDraftOrdersServiceTest {
 
         when(hearingOrderGenerator.buildRejectedHearingOrder(agreedCMO, reviewDecision.getChangesRequestedByJudge()))
             .thenReturn(element(agreedCMO.getId(), expectedOrder));
+        when(draftOrderService.migrateCmoDraftToOrdersBundles(any(CaseData.class)))
+            .thenReturn(HearingOrdersBundles.builder()
+                .agreedCmos(emptyList())
+                .draftCmos(emptyList())
+                .build()
+            );
 
         Map<String, Object> expectedData = Map.of(
             "draftUploadedCMOs", emptyList(),
             "hearingOrdersBundlesDrafts", emptyList(),
+            "hearingOrdersBundlesDraftReview", emptyList(),
             "ordersToBeSent", List.of(element(agreedCMO.getId(), expectedOrder))
         );
 
