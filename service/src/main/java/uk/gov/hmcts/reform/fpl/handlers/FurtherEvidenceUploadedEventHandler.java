@@ -331,6 +331,7 @@ public class FurtherEvidenceUploadedEventHandler {
                     caseDataBefore));
 
             if (!documentReferences.isEmpty()) {
+                log.info("!documentReferences.isEmpty(): NEW_DOCUMENT found!: " + documentReferences.size());
                 String documentTypes = documentInfos.stream()
                         .filter(documentInfo ->
                                 !documentInfo.getDocumentReferences().isEmpty())
