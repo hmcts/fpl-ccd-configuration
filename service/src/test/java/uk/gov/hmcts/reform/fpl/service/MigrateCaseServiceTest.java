@@ -1331,7 +1331,7 @@ class MigrateCaseServiceTest {
         }
     }
 
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @TestInstance(TestInstance.Lifecycle.PER_METHOD)
     @Nested
     class AddCourt {
 
@@ -1343,6 +1343,15 @@ class MigrateCaseServiceTest {
             Map<String, Object> updatedFields = underTest.addCourt("165");
 
             assertThat(updatedFields).extracting("court").isEqualTo(court);
+        }
+
+        @Test
+        void shouldThrowExceptionIfCourtNotFound() {
+            when(courtService.getCourt("NOTCOURT")).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> underTest.addCourt("NOTCOURT"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Court not found with ID NOTCOURT");
         }
     }
 
