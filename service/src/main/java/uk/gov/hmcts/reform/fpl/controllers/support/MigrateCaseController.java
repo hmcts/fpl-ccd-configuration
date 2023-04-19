@@ -44,7 +44,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1226", this::run1226,
         "DFPL-1361", this::run1361,
         "DFPL-1291", this::run1291,
-        "DFPL-1310", this::run1310
+        "DFPL-1310", this::run1310,
+        "DFPL-1371", this::run1371
     );
 
     @PostMapping("/about-to-submit")
@@ -134,4 +135,11 @@ public class MigrateCaseController extends CallbackController {
         }
     }
 
+    private void run1371(CaseDetails caseDetails) {
+        String migrationId = "DFPL-1371";
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), List.of(1667466628958196L), migrationId);
+        caseDetails.getData().putAll(
+            migrateCaseService.removeJudicialMessage(getCaseData(caseDetails), migrationId,
+                "c6d4ed7b-ca76-47ea-87b7-9538762bab00"));
+    }
 }
