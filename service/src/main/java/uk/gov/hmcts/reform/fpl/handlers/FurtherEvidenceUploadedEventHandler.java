@@ -52,7 +52,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -143,7 +142,7 @@ public class FurtherEvidenceUploadedEventHandler {
             var newNonConfidentialDocuments = getNewDocuments(caseData,
                 caseDataBefore,
                 userType,
-                null);
+                newDoc -> !newDoc.isConfidentialDocument());
 
             Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
             List<DocumentReference> documents = getDocumentReferences(newNonConfidentialDocuments);
@@ -227,24 +226,28 @@ public class FurtherEvidenceUploadedEventHandler {
             List<HearingDocument> newCaseSummaries = getNewHearingDocuments(
                 caseData.getHearingDocuments().getCaseSummaryList(),
                 caseDataBefore.getHearingDocuments().getCaseSummaryList());
+            log.info("DFPL-1386 hearingDocument->newCaseSummaries: " + newCaseSummaries.size());
             sendHearingDocumentsToCafcass(caseData, newCaseSummaries, CASE_SUMMARY);
 
             List<HearingDocument> newPositionStatementChildren =
                 getNewHearingDocuments(
                     caseData.getHearingDocuments().getPositionStatementChildListV2(),
                     caseDataBefore.getHearingDocuments().getPositionStatementChildListV2());
+            log.info("DFPL-1386 hearingDocument->newPositionStatementChildren: " + newCaseSummaries.size());
             sendHearingDocumentsToCafcass(caseData, newPositionStatementChildren, POSITION_STATEMENT_CHILD);
 
             List<HearingDocument> newPositionStatementRespondents =
                 getNewHearingDocuments(
                     caseData.getHearingDocuments().getPositionStatementRespondentListV2(),
                     caseDataBefore.getHearingDocuments().getPositionStatementRespondentListV2());
+            log.info("DFPL-1386 hearingDocument->newPositionStatementRespondents: " + newCaseSummaries.size());
             sendHearingDocumentsToCafcass(caseData, newPositionStatementRespondents, POSITION_STATEMENT_RESPONDENT);
 
             List<HearingDocument> newSkeletonArgument =
                 getNewHearingDocuments(
                     caseData.getHearingDocuments().getSkeletonArgumentList(),
                     caseDataBefore.getHearingDocuments().getSkeletonArgumentList());
+            log.info("DFPL-1386 hearingDocument->newSkeletonArgument: " + newCaseSummaries.size());
             sendHearingDocumentsToCafcass(caseData, newSkeletonArgument, SKELETON_ARGUMENT);
         }
     }
@@ -255,7 +258,6 @@ public class FurtherEvidenceUploadedEventHandler {
             .collect(groupingBy(HearingDocument::getHearing,
                 mapping(HearingDocument::getDocument, toSet())));
 
-        log.info("DFPL-1386 sendHearingDocumentsToCafcass " + "[" + provider.getLabel() + "]" + newHearingDocs.size());
         newHearingDocs.forEach((hearing, doc) ->
             cafcassNotificationService.sendEmail(
                     caseData,
@@ -307,7 +309,7 @@ public class FurtherEvidenceUploadedEventHandler {
                 documentInfos.add(documentInfo);
             };
 
-            documentInfoConsumer.accept(getGeneralEvidence(caseData, caseDataBefore, userType));
+            documentInfoConsumer.accept(getNewGeneralEvidence(caseData, caseDataBefore, userType));
             log.info("DFPL-1386 getGeneralEvidence: " + documentReferences.size());
 
             documentInfoConsumer.accept(getNewRespondentDocumentsUploaded(caseData,
@@ -343,7 +345,7 @@ public class FurtherEvidenceUploadedEventHandler {
             log.info("DFPL-1386 getC2DocumentBundle: " + documentReferences.size());
 
             if (!documentReferences.isEmpty()) {
-                log.info("DFPL-1386 sendDocumentsToCafcass: " + documentReferences.size());
+                log.info(">>> DFPL-1386 sendDocumentsToCafcass: " + documentReferences.size());
                 String documentTypes = documentInfos.stream()
                         .filter(documentInfo ->
                                 !documentInfo.getDocumentReferences().isEmpty())
@@ -549,7 +551,8 @@ public class FurtherEvidenceUploadedEventHandler {
         return newSupportingEvidenceBundle;
     }
 
-    private DocumentInfo getGeneralEvidence(CaseData caseData, CaseData caseDataBefore, DocumentUploaderType userType) {
+    private DocumentInfo getNewGeneralEvidence(CaseData caseData, CaseData caseDataBefore,
+                                               DocumentUploaderType userType) {
         var supportingEvidenceBundles = getNewDocuments(caseData,
             caseDataBefore,
             userType,
