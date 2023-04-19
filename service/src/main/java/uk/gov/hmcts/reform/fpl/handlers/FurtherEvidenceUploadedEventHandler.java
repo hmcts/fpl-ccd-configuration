@@ -482,8 +482,8 @@ public class FurtherEvidenceUploadedEventHandler {
 
     private DocumentInfo getNewApplicationDocuments(CaseData caseData, CaseData caseDataBefore) {
         Set<ApplicationDocument> newlyAddedApplicationDocs =
-            unwrapElements(getNewApplicationDocuments(caseData.getApplicationDocuments(), caseDataBefore.getApplicationDocuments()))
-                .stream()
+            unwrapElements(getNewApplicationDocuments(caseData.getApplicationDocuments(),
+                caseDataBefore.getApplicationDocuments())).stream()
                 .collect(toSet());
 
         return newlyAddedApplicationDocs.stream()
