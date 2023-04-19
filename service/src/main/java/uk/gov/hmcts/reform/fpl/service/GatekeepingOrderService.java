@@ -253,7 +253,8 @@ public class GatekeepingOrderService {
                     .convert(caseDetails.getData().get(requestedType.getFieldName()), StandardDirection.class);
 
                 if (standardDirection != null) {
-                    DirectionConfiguration directionConfig = ordersLookupService.getDirectionConfiguration(requestedType);
+                    DirectionConfiguration directionConfig = ordersLookupService
+                        .getDirectionConfiguration(requestedType);
 
                     if (standardDirection.getDueDateType() == DirectionDueDateType.DAYS) {
                         standardDirection.setDateToBeCompletedBy(
