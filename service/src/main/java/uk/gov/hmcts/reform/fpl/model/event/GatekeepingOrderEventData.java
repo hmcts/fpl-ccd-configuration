@@ -79,7 +79,6 @@ public class GatekeepingOrderEventData {
                 directionsForCafcassUpdated, directionsForCourtUpdated, directionsForRespondents, directionsForOthers)
             .filter(Objects::nonNull)
             .flatMap(Collection::stream)
-            .filter(Objects::nonNull)
             .collect(toList());
     }
 

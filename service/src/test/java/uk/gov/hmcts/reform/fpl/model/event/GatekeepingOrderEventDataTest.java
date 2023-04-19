@@ -53,29 +53,6 @@ class GatekeepingOrderEventDataTest {
                 ARRANGE_INTERPRETERS);
     }
 
-    @Test
-    void shouldReturnRequestedStandardDirectionTypesWhenNullElementExist() {
-        final GatekeepingOrderEventData underTest = GatekeepingOrderEventData.builder()
-            .directionsForAllParties(Arrays.asList(REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE, ASK_FOR_DISCLOSURE, null))
-            .directionsForLocalAuthority(List.of(SEND_DOCUMENTS_TO_ALL_PARTIES, SEND_MISSING_ANNEX))
-            .directionsForCafcass(List.of(APPOINT_CHILDREN_GUARDIAN))
-            .directionsForOthers(List.of(OBJECT_TO_REQUEST_FOR_DISCLOSURE))
-            .directionsForRespondents(List.of(SEND_RESPONSE_TO_THRESHOLD_STATEMENT))
-            .directionsForCourt(List.of(ARRANGE_INTERPRETERS))
-            .build();
-
-        assertThat(underTest.getRequestedDirections())
-            .containsExactlyInAnyOrder(
-                REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE,
-                ASK_FOR_DISCLOSURE,
-                SEND_DOCUMENTS_TO_ALL_PARTIES,
-                SEND_MISSING_ANNEX,
-                APPOINT_CHILDREN_GUARDIAN,
-                OBJECT_TO_REQUEST_FOR_DISCLOSURE,
-                SEND_RESPONSE_TO_THRESHOLD_STATEMENT,
-                ARRANGE_INTERPRETERS);
-    }
-
     @ParameterizedTest
     @NullAndEmptySource
     void shouldReturnEmptyRequestedStandardDirectionsTypes(List<DirectionType> requestedDirections) {
