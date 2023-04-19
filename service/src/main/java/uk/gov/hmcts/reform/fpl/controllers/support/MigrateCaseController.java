@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
@@ -20,6 +21,9 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.function.Consumer;
+
+import static java.lang.String.format;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Api
 @RestController
@@ -33,10 +37,14 @@ public class MigrateCaseController extends CallbackController {
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
+        "DFPL-1303", this::run1303,
         "DFPL-1320", this::run1320,
         "DFPL-1335", this::run1335,
         "DFPL-1261", this::run1261,
-        "DFPL-1226", this::run1226
+        "DFPL-1226", this::run1226,
+        "DFPL-1361", this::run1361,
+        "DFPL-1291", this::run1291,
+        "DFPL-1310", this::run1310
     );
 
     @PostMapping("/about-to-submit")
@@ -89,4 +97,41 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.removeSkeletonArgument(getCaseData(caseDetails),
             "e4e70bf5-4905-4c13-9d59-d20a202b6c9a", migrationId));
     }
+
+    private void run1303(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1303";
+        var possibleCaseIds = List.of(1652697388556674L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removeApplicationDocument(getCaseData(caseDetails),
+            migrationId,
+            UUID.fromString("7b381f49-d6f9-4a17-a72a-5e39fb48a671")));
+    }
+
+    private void run1361(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1361";
+        var possibleCaseIds = List.of(1680179801927341L, 1651064219316144L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
+    }
+
+    private void run1291(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1291";
+        var possibleCaseIds = List.of(1620403322799028L, 1627403399420113L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.addCourt("165")); // Carlisle
+    }
+
+    private void run1310(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1310";
+        Court court = getCaseData(caseDetails).getCourt();
+        if (!isEmpty(court) && court.getCode().equals("150")) {
+            caseDetails.getData().putAll(migrateCaseService.addCourt("554"));
+        } else {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected court id = 150, was = %s",
+                migrationId, caseDetails.getId(), isEmpty(court) ? "null" : court.getCode()
+            ));
+        }
+    }
+
 }

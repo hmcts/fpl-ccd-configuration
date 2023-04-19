@@ -13,7 +13,7 @@ module.exports = {
     I.fillField(this.fields.description, description);
   },
 
-  async submit(button, locator = '.hmcts-banner--success') {
+  async submit(button, locator = '.mat-tab-list') {
     await I.retryUntilExists(() => I.click(button), locator);
   },
 };

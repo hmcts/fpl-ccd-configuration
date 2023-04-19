@@ -4,7 +4,7 @@ const mandatorySubmissionFields = require('../fixtures/caseData/mandatorySubmiss
 
 Feature('Case outsourcing');
 
-Scenario('Private solicitor creates case on behalf of local authority ', async ({I, caseListPage}) => {
+Scenario('Private solicitor creates case on behalf of local authority', async ({I, caseListPage}) => {
   const localAuthority = 'Swansea City Council';
   const caseName = `On behalf of ${localAuthority}`;
 
@@ -20,7 +20,7 @@ Scenario('Private solicitor creates case on behalf of local authority ', async (
   caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
-Scenario('Local authority creates case on behalf of other local authority', async ({I, caseListPage}) => {
+Scenario('Local authority creates case on behalf of other local authority @nightlyOnly', async ({I, caseListPage}) => {
   const localAuthority = 'Swansea City Council';
   const caseName = `On behalf of ${localAuthority}`;
 
@@ -34,7 +34,7 @@ Scenario('Local authority creates case on behalf of other local authority', asyn
   caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
-Scenario('Local authority creates case for its own', async ({I, caseListPage}) => {
+Scenario('Local authority creates case for its own @nightlyOnly', async ({I, caseListPage}) => {
   const localAuthority = 'Wiltshire County Council';
   const caseName = `${localAuthority} case`;
 
@@ -45,7 +45,7 @@ Scenario('Local authority creates case for its own', async ({I, caseListPage}) =
   await caseListPage.verifyCaseIsShareable(caseId);
 });
 
-Scenario('Local authority revokes access from managing organisation', async ({I, caseListPage, caseViewPage}) => {
+Scenario('Local authority revokes access from managing organisation @nightlyOnly', async ({I, caseListPage, caseViewPage}) => {
   const localAuthority = 'Swansea City Council';
   const managingLocalAuthority = 'Wiltshire County Council';
   const caseName = `On behalf of ${localAuthority}`;
