@@ -140,10 +140,10 @@ public class FurtherEvidenceUploadedEventHandler {
             final CaseData caseData = event.getCaseData();
             final CaseData caseDataBefore = event.getCaseDataBefore();
 
-            var newNonConfidentialDocuments = getDocuments(caseData,
+            var newNonConfidentialDocuments = getNewDocuments(caseData,
                 caseDataBefore,
                 userType,
-                (oldBundle, newDoc) -> !newDoc.isConfidentialDocument() && !unwrapElements(oldBundle).contains(newDoc));
+                null);
 
             Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
             List<DocumentReference> documents = getDocumentReferences(newNonConfidentialDocuments);
@@ -169,6 +169,7 @@ public class FurtherEvidenceUploadedEventHandler {
         }
 
         if (isNotEmpty(recipients)) {
+            log.info("DFPL-1386 newCourtBundles " + newCourtBundles.size());
             newCourtBundles.entrySet().stream()
                 .filter(predicate)
                 .forEach(entry ->
@@ -274,10 +275,10 @@ public class FurtherEvidenceUploadedEventHandler {
 
             Map<String, Set<DocumentReference>> newCourtBundles = getNewCourtBundles(caseData, caseDataBefore);
 
-            log.info("DFPL-1386 newCourtBundles " + newCourtBundles.size());
             newCourtBundles
                     .forEach((key, value) -> {
                         if (value != null && !value.isEmpty()) {
+                            log.info("DFPL-1386 newCourtBundles " + value.size());
                             cafcassNotificationService.sendEmail(
                                     caseData,
                                     value,
@@ -307,30 +308,39 @@ public class FurtherEvidenceUploadedEventHandler {
             };
 
             documentInfoConsumer.accept(getGeneralEvidence(caseData, caseDataBefore, userType));
+            log.info("DFPL-1386 getGeneralEvidence: " + documentReferences.size());
 
             documentInfoConsumer.accept(getNewRespondentDocumentsUploaded(caseData,
                     caseDataBefore));
+            log.info("DFPL-1386 getNewRespondentDocumentsUploaded: " + documentReferences.size());
 
             documentInfoConsumer.accept(getNewCorrespondenceDocumentsByHmtcs(caseData,
                     caseDataBefore));
+            log.info("DFPL-1386 getNewCorrespondenceDocumentsByHmtcs: " + documentReferences.size());
 
             documentInfoConsumer.accept(getNewCorrespondenceDocumentsByLA(caseData,
                     caseDataBefore));
+            log.info("DFPL-1386 getNewCorrespondenceDocumentsByLA: " + documentReferences.size());
 
             documentInfoConsumer.accept(getNewCorrespondenceDocumentsBySolicitor(caseData,
                     caseDataBefore));
+            log.info("DFPL-1386 getNewCorrespondenceDocumentsBySolicitor: " + documentReferences.size());
 
             documentInfoConsumer.accept(getNewApplicationDocuments(caseData,
                     caseDataBefore));
+            log.info("DFPL-1386 getNewApplicationDocuments: " + documentReferences.size());
 
             documentInfoConsumer.accept(getHearingFurtherEvidenceDocuments(caseData,
                     caseDataBefore));
+            log.info("DFPL-1386 getHearingFurtherEvidenceDocuments: " + documentReferences.size());
 
             documentInfoConsumer.accept(getOtherApplicationBundle(caseData,
                     caseDataBefore));
+            log.info("DFPL-1386 getOtherApplicationBundle: " + documentReferences.size());
 
             documentInfoConsumer.accept(getC2DocumentBundle(caseData,
                     caseDataBefore));
+            log.info("DFPL-1386 getC2DocumentBundle: " + documentReferences.size());
 
             if (!documentReferences.isEmpty()) {
                 log.info("DFPL-1386 sendDocumentsToCafcass: " + documentReferences.size());
@@ -521,9 +531,18 @@ public class FurtherEvidenceUploadedEventHandler {
     private List<Element<SupportingEvidenceBundle>> getNewSupportingEvidenceBundle(
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
         List<Element<SupportingEvidenceBundle>> beforeSupportingEvidenceBundle) {
+        return getNewSupportingEvidenceBundle(supportingEvidenceBundle, beforeSupportingEvidenceBundle, null);
+    }
+
+    private List<Element<SupportingEvidenceBundle>> getNewSupportingEvidenceBundle(
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
+        List<Element<SupportingEvidenceBundle>> beforeSupportingEvidenceBundle,
+        Predicate<SupportingEvidenceBundle> additionalPredicate) {
         List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle = new ArrayList<>();
         defaultIfNull(supportingEvidenceBundle, new ArrayList<Element<SupportingEvidenceBundle>>()).forEach(newDoc -> {
-            if (hasNewDocumentUploaded(beforeSupportingEvidenceBundle, newDoc)) {
+            if (hasNewDocumentUploaded(beforeSupportingEvidenceBundle, newDoc)
+                && Optional.ofNullable(additionalPredicate).orElse((x) -> true)
+                .test(newDoc.getValue())) {
                 newSupportingEvidenceBundle.add(newDoc);
             }
         });
@@ -531,11 +550,10 @@ public class FurtherEvidenceUploadedEventHandler {
     }
 
     private DocumentInfo getGeneralEvidence(CaseData caseData, CaseData caseDataBefore, DocumentUploaderType userType) {
-        var supportingEvidenceBundles = getDocuments(caseData,
+        var supportingEvidenceBundles = getNewDocuments(caseData,
             caseDataBefore,
             userType,
-            (oldBundle, newDoc) -> !unwrapElements(oldBundle).contains(newDoc));
-
+            null);
 
         return supportingEvidenceBundles.stream()
                 .filter(bundle -> !NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(bundle.getType()))
@@ -559,14 +577,16 @@ public class FurtherEvidenceUploadedEventHandler {
                 );
     }
 
+    @SuppressWarnings("unchecked")
     private <T extends HearingDocument> List<HearingDocument> getNewHearingDocuments(List<Element<T>> documents,
-                                                                                     List<Element<T>> documentsBefore) {
-        List<T> unwrapedDocs = unwrapElements(documents);
-        List<T> unwrapedDocsBefore = unwrapElements(documentsBefore);
-
-        return unwrapedDocs.stream()
-            .filter(doc -> !unwrapedDocsBefore.contains(doc))
-            .collect(toList());
+                                                                       List<Element<T>> documentsBefore) {
+        List<Element<T>> newHearingDocuments = new ArrayList<>();
+        defaultIfNull(documents, new ArrayList<Element<T>>()).forEach(newDoc -> {
+            if (hasNewDocumentUploaded(documentsBefore, newDoc)) {
+                newHearingDocuments.add(newDoc);
+            }
+        });
+        return (List<HearingDocument>) unwrapElements(newHearingDocuments);
     }
 
     private Map<String, Set<DocumentReference>> getNewCourtBundles(CaseData caseData, CaseData caseDataBefore) {
@@ -594,22 +614,12 @@ public class FurtherEvidenceUploadedEventHandler {
                         }, toSet())));
     }
 
-    private List<SupportingEvidenceBundle> getDocuments(
+    private List<SupportingEvidenceBundle> getNewDocuments(
         CaseData caseData, CaseData caseDataBefore,
         DocumentUploaderType userType,
-        BiPredicate<List<Element<SupportingEvidenceBundle>>, SupportingEvidenceBundle> biPredicate) {
-
-        var newBundle = getEvidenceBundle(caseData, userType);
-        var oldBundle = getEvidenceBundle(caseDataBefore, userType);
-
-        List<SupportingEvidenceBundle> newDocs = new ArrayList<>();
-
-        unwrapElements(newBundle).forEach(newDoc -> {
-            if (biPredicate.test(oldBundle, newDoc)) {
-                newDocs.add(newDoc);
-            }
-        });
-        return newDocs;
+        Predicate<SupportingEvidenceBundle> additionalPredicate) {
+        return unwrapElements(getNewSupportingEvidenceBundle(getEvidenceBundle(caseData, userType),
+            getEvidenceBundle(caseDataBefore, userType), additionalPredicate));
     }
 
     private List<String> getDocumentNames(List<FurtherDocument> documentBundle) {

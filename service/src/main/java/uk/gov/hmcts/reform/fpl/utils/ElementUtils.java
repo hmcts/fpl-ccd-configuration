@@ -54,7 +54,7 @@ public class ElementUtils {
             .stream()
             .map(Element::getValue)
             .filter(Objects::nonNull)
-            .collect(toUnmodifiableList());
+            .collect(toList());
     }
 
     public static <T> Element<T> element(T element) {
