@@ -16,12 +16,11 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
 import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -30,20 +29,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CAFCASS;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CTSC;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_LA;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_ISSUED_CAFCASS;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_ISSUED_CTSC;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_ISSUED_LA;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_AND_NOP_ISSUED_CAFCASS;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_AND_NOP_ISSUED_CTSC;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_AND_NOP_ISSUED_LA;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
-import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.CAFCASS_EMAIL;
@@ -72,7 +59,7 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
     private NotificationClient notificationClient;
 
     @MockBean
-    private CoreCaseDataService coreCaseDataService;
+    private CCDConcurrencyHelper concurrencyHelper;
 
     @MockBean
     private DocumentDownloadService documentDownloadService;
@@ -91,7 +78,7 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
         postSubmittedEvent(toCallBackRequest(buildCaseDataWithSDO(DRAFT), GATEKEEPING_CASE_DATA));
 
         verify(eventService, never()).publishEvent(any());
-        verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any());
+        verify(concurrencyHelper, never()).submitEvent(any(), any(), any());
     }
 
     @Test
@@ -101,56 +88,7 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
         ));
 
         verify(eventService, never()).publishEvent(any());
-        verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any());
-    }
-
-    @Test
-    void shouldTriggerEventWhenUrgentHearingSubmitted() {
-        postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrder(), GATEKEEPING_CASE_DATA));
-
-        verifyEmails(URGENT_AND_NOP_ISSUED_CAFCASS, URGENT_AND_NOP_ISSUED_CTSC, URGENT_AND_NOP_ISSUED_LA);
-    }
-
-    @Test
-    void shouldTriggerEventWhenSDOSubmitted() {
-        postSubmittedEvent(toCallBackRequest(buildCaseDataWithSDO(SEALED), GATEKEEPING_CASE_DATA));
-
-        verifyEmails(SDO_AND_NOP_ISSUED_CAFCASS, SDO_AND_NOP_ISSUED_CTSC, SDO_AND_NOP_ISSUED_LA);
-    }
-
-    @Test
-    void shouldTriggerEventWhenSDOSubmittedAfterUrgentHearingOrder() {
-        postSubmittedEvent(toCallBackRequest(
-            buildCaseDataWithUrgentHearingOrderAndSDO(SEALED), CASE_MANAGEMENT_CASE_DATA
-        ));
-
-        verifyEmails(SDO_ISSUED_CAFCASS, SDO_ISSUED_CTSC, SDO_ISSUED_LA);
-    }
-
-    @Test
-    void shouldTriggerSendDocumentEventWhenSubmitted() {
-        postSubmittedEvent(toCallBackRequest(buildCaseDataWithSDO(SEALED), GATEKEEPING_CASE_DATA));
-
-        verify(coreCaseDataService).triggerEvent(
-            JURISDICTION,
-            CASE_TYPE,
-            CASE_ID,
-            SEND_DOCUMENT_EVENT,
-            Map.of("documentToBeSent", SDO_DOCUMENT)
-        );
-    }
-
-    @Test
-    void shouldTriggerSendDocumentEventForUrgentHearingOrder() {
-        postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrder(), GATEKEEPING_CASE_DATA));
-
-        verify(coreCaseDataService).triggerEvent(
-            JURISDICTION,
-            CASE_TYPE,
-            CASE_ID,
-            SEND_DOCUMENT_EVENT,
-            Map.of("documentToBeSent", URGENT_HEARING_ORDER_DOCUMENT)
-        );
+        verify(concurrencyHelper, never()).submitEvent(any(), any(), any());
     }
 
     private void verifyEmails(String cafcassTemplate, String ctcsTemplate, String laTemplate) {

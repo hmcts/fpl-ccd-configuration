@@ -1,7 +1,13 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -17,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUser
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.Address;
-import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -36,6 +41,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithDocument;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
@@ -53,11 +59,13 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.time.LocalDateTime.now;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.of;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
@@ -85,6 +93,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.NON_CONFIDENTIAL_1;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.NON_CONFIDENTIAL_2;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.PDF_DOCUMENT_1;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.PDF_DOCUMENT_2;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithAdditionalApplicationBundle;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithApplicationDocuments;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithC2AdditionalApplicationBundle;
@@ -98,6 +107,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialPDFDocumentsSolicitor;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildConfidentialDocumentList;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildConfidentialDocumentList2;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildHearingFurtherEvidenceBundle;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildNonConfidentialPdfDocumentList;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildRespondentStatementsList;
@@ -105,6 +115,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.commonCaseBuilder;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.createCourtBundleList;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.createDummyApplicationDocument;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.createDummyEvidenceBundle;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.userDetailsHMCTS;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.userDetailsLA;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.userDetailsRespondentSolicitor;
@@ -230,267 +241,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
         } else {
             verify(furtherEvidenceNotificationService, never()).sendNotification(any(), any(), any(), any());
         }
-    }
-
-    @Test
-    void shouldSendNotificationWhenApplicationDocumentIsUploadedByLA() {
-        // Further documents for main application -> Further application documents
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getApplicationDocuments().addAll(
-                wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER,
-                    PDF_DOCUMENT_1))),
-            Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
-            List.of(BIRTH_CERTIFICATE.getLabel()));
-    }
-
-    @Test
-    void shouldSendNotificationWhenNonConfidentialRespondentStatementsIsUploadedByLA() {
-        // Further documents for main application -> Respondent Statement
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getRespondentStatements().addAll(
-                buildRespondentStatementsList(buildNonConfidentialPdfDocumentList(LA_USER))),
-            Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
-            NON_CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenConfidentialRespondentStatementsIsUploadedByLA() {
-        // Further documents for main application -> Respondent Statement
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getRespondentStatements().addAll(
-                buildRespondentStatementsList(buildConfidentialDocumentList(LA_USER))),
-            Set.of(ALL_LAS),
-            CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenNonConfidentialAnyOtherDocIsUploadedByLA() {
-        // Further documents for main application -> Any other document does not relate to a hearing
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) -> caseData.getFurtherEvidenceDocumentsLA().addAll(buildNonConfidentialPdfDocumentList(LA_USER)),
-            Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
-            NON_CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenNonConfidentialNoticeOfActingOrIssueIsUploadedByLA() {
-        // Further documents for main application -> Any other document does not relate to a hearing
-        // No notification to CAFCASS if uploading NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) -> caseData.getFurtherEvidenceDocumentsLA().addAll(buildNonConfidentialPdfDocumentList(LA_USER,
-                NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
-            Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
-            NON_CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenConfidentialAnyOtherDocIsUploadedByLA() {
-        // Further documents for main application -> Any other document does not relate to a hearing
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getFurtherEvidenceDocumentsLA().addAll(buildConfidentialDocumentList(LA_USER)),
-            Set.of(ALL_LAS),
-            CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenConfidentialNoticeOfActingOrIssueIsUploadedByLA() {
-        // Further documents for main application -> Any other document does not relate to a hearing
-        // No notification to CAFCASS if uploading NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getFurtherEvidenceDocumentsLA().addAll(buildConfidentialDocumentList(LA_USER,
-                NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
-            Set.of(ALL_LAS),
-            CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenNonConfidentialAnyOtherDocRelatingToHearingIsUploadedByLA() {
-        // Further documents for main application -> Any other document relates to a hearing
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getHearingFurtherEvidenceDocuments().addAll(
-                buildHearingFurtherEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER))),
-            Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
-            NON_CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenNonConfidentialNoticeOfActingOrIssueRelatingToHearingIsUploadedByLA() {
-        // Further documents for main application -> Any other document relates to a hearing
-        // No notification to CAFCASS if uploading NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getHearingFurtherEvidenceDocuments().addAll(
-                buildHearingFurtherEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER,
-                    NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE))),
-            Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
-            NON_CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenConfidentialAnyOtherDocRelatingToHearingIsUploadedByLA() {
-        // Further documents for main application -> Any other document relates to a hearing
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getHearingFurtherEvidenceDocuments().addAll(
-                buildHearingFurtherEvidenceBundle(buildConfidentialDocumentList(LA_USER))),
-            Set.of(ALL_LAS),
-            CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenConfidentialNoticeOfActingOrIssueRelatingToHearingIsUploadedByLA() {
-        // Further documents for main application -> Any other document relates to a hearing
-        // No notification to CAFCASS if uploading NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getHearingFurtherEvidenceDocuments().addAll(
-                buildHearingFurtherEvidenceBundle(buildConfidentialDocumentList(LA_USER,
-                    NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE))),
-            Set.of(ALL_LAS),
-            CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldNotSendNotificationWhenAnyOtherDocsAreRemovedByLA() {
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY,
-            (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(
-                buildNonConfidentialPdfDocumentList(LA_USER)),
-            EMPTY_CASE_DATA_MODIFIER,
-            Set.of(),null);
-    }
-
-    @Test
-    void shouldNotSendNotificationWhenDocumentsAreSameByLA() {
-        List<Element<SupportingEvidenceBundle>> documents =
-            buildNonConfidentialPdfDocumentList(LA_USER);
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY,
-            (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(documents),
-            (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(documents), Set.of(),null);
-    }
-
-    @Test
-    void shouldSendNotificationWhenNonConfidentialRespondentStatementsIsUploadedByHMCTS() {
-        // Further documents for main application -> Respondent Statement
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsHMCTS(), HMCTS, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getRespondentStatements().addAll(
-                buildRespondentStatementsList(buildNonConfidentialPdfDocumentList(HMCTS_USER))),
-            Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
-            NON_CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenConfidentialRespondentStatementsIsUploadedByHMCTS() {
-        // Further documents for main application -> Respondent Statement
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsHMCTS(), HMCTS, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getRespondentStatements().addAll(
-                buildRespondentStatementsList(buildConfidentialDocumentList(HMCTS_USER))),
-            Set.of(), CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenNonConfidentialAnyOtherDocIsUploadedByHMCTS() {
-        // Further documents for main application -> Any other document
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsHMCTS(), HMCTS, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(
-                buildNonConfidentialPdfDocumentList(HMCTS_USER)),
-            Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
-            NON_CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenNonConfidentialNoticeOfActingOrIssueIsUploadedByHMCTS() {
-        // Further documents for main application -> Any other document
-        // No notification to CAFCASS if uploading NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsHMCTS(), HMCTS, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(
-                buildNonConfidentialPdfDocumentList(HMCTS_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
-            Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
-            NON_CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenConfidentialAnyOtherDocIsUploadedByHMCTS() {
-        // Further documents for main application -> Any other document
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsHMCTS(), HMCTS, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(
-                buildConfidentialDocumentList(HMCTS_USER)),
-            Set.of(), CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenConfidentialNoticeOfActingOrIssueIsUploadedByHMCTS() {
-        // Further documents for main application -> Any other document
-        // No notification to CAFCASS if uploading NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsHMCTS(), HMCTS, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(
-                buildConfidentialDocumentList(HMCTS_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
-            Set.of(), CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldNotSendNotificationWhenAnyOtherDocsAreRemovedByHMCTS() {
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsHMCTS(), HMCTS,
-            (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(
-                buildNonConfidentialPdfDocumentList(HMCTS_USER)),
-            EMPTY_CASE_DATA_MODIFIER, Set.of(), null);
-    }
-
-    @Test
-    void shouldNotSendNotificationWhenDocumentsAreSameByHMCTS() {
-        List<Element<SupportingEvidenceBundle>> documents =
-            buildNonConfidentialPdfDocumentList(HMCTS_USER);
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsHMCTS(), HMCTS,
-            (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(documents),
-            (caseData) ->  caseData.getFurtherEvidenceDocuments().addAll(documents), Set.of(), null);
-    }
-
-    @Test
-    void shouldSendNotificationWhenAnyOtherDocIsUploadedByRespSolicitor() {
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsRespondentSolicitor(), SOLICITOR, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getFurtherEvidenceDocumentsSolicitor().addAll(
-                buildNonConfidentialPdfDocumentList(REP_USER)),
-            Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
-            NON_CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenNoticeOfActingOrIssueIsUploadedByRespSolicitor() {
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsRespondentSolicitor(), SOLICITOR, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getFurtherEvidenceDocumentsSolicitor().addAll(
-                buildNonConfidentialPdfDocumentList(REP_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
-            Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
-            NON_CONFIDENTIAL);
-    }
-
-    @Test
-    void shouldSendNotificationWhenRespondentStatementsIsUploadedByRespSolicitor() {
-        // Further documents for main application -> Respondent Statement
-        verifyNotificationFurtherDocumentsTemplate(
-            userDetailsRespondentSolicitor(), SOLICITOR, EMPTY_CASE_DATA_MODIFIER,
-            (caseData) ->  caseData.getRespondentStatements().addAll(
-                buildRespondentStatementsList(buildNonConfidentialPdfDocumentList(REP_USER))),
-            Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
-            NON_CONFIDENTIAL);
     }
 
     @Test
@@ -627,12 +377,14 @@ class FurtherEvidenceUploadedEventHandlerTest {
         Collections.shuffle(totalHearing);
 
         CaseData caseData = commonCaseBuilder()
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .hearingDocuments(HearingDocuments.builder()
                 .courtBundleListV2(totalHearing)
                 .build())
             .build();
 
         CaseData caseDataBefore = commonCaseBuilder()
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .hearingDocuments(HearingDocuments.builder()
                 .courtBundleListV2(oldHearing)
                 .build())
@@ -1070,7 +822,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         Set<DocumentReference> documentReferences = unwrapElements(caseData.getApplicationDocuments())
                 .stream()
-                .map(ApplicationDocument::getDocument)
+                .map(WithDocument::getDocument)
                 .collect(toSet());
 
         verify(cafcassNotificationService).sendEmail(
@@ -1108,7 +860,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         Set<DocumentReference> documentReferences = unwrapElements(caseData.getApplicationDocuments())
                 .stream()
-                .map(ApplicationDocument::getDocument)
+                .map(WithDocument::getDocument)
                 .collect(toSet());
 
         verify(cafcassNotificationService, never()).sendEmail(
@@ -1509,6 +1261,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
             any());
     }
 
+    @Test
     void shouldNotSendNotificationWhenNoNewCourtBundleIsUploadedByLA() {
         String hearing1 = "1stHearing";
         String hearing2 = "2ndHearing";
@@ -1569,5 +1322,408 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     private static List<String> buildConfidentialDocumentsNamesList() {
         return List.of(CONFIDENTIAL_1, CONFIDENTIAL_2);
+    }
+
+    private static UserDetails getUserDetails(DocumentUploaderType uploaderType) {
+        switch (uploaderType) {
+            case DESIGNATED_LOCAL_AUTHORITY:
+                return userDetailsLA();
+            case HMCTS:
+                return userDetailsHMCTS();
+            case SOLICITOR:
+                return userDetailsRespondentSolicitor();
+            default:
+                throw new AssertionError("unexpected uploaderType");
+        }
+    }
+
+    static class RespondentStatementConfidentialChangeArgs implements ArgumentsProvider {
+
+        @Override
+        public Stream<Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, true, true),
+                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, true, false),
+                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, false, true),
+                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, false, false),
+                of(userDetailsHMCTS(), HMCTS, HMCTS_USER, true, true),
+                of(userDetailsHMCTS(), HMCTS, HMCTS_USER, true, false),
+                of(userDetailsHMCTS(), HMCTS, HMCTS_USER, false, true),
+                of(userDetailsHMCTS(), HMCTS, HMCTS_USER, false, false)
+            );
+        }
+    }
+
+    static class RespondentStatementArgs implements ArgumentsProvider {
+
+        @Override
+        public Stream<Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS), NON_CONFIDENTIAL, false),
+                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
+                    Set.of(ALL_LAS), CONFIDENTIAL, true),
+                of(userDetailsHMCTS(), HMCTS, HMCTS_USER,
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS), NON_CONFIDENTIAL, false),
+                of(userDetailsHMCTS(), HMCTS, HMCTS_USER,
+                    Set.of(), CONFIDENTIAL, true),
+                of(userDetailsRespondentSolicitor(), SOLICITOR, REP_USER,
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS), NON_CONFIDENTIAL, false)
+            // Note: Respondent/Child Solicitor cannot upload confidential document
+            );
+        }
+    }
+
+    @Nested
+    class RespondentStatement {
+
+        @ParameterizedTest
+        @ArgumentsSource(RespondentStatementArgs.class)
+        void shouldSendNotificationForNewUpload(UserDetails userDetails,
+                                                DocumentUploaderType uploadedType,
+                                                String uploadedBy,
+                                                Set<DocumentUploadNotificationUserType> notificationTypes,
+                                                List<String> expectedDocumentNames,
+                                                boolean confidential) {
+            verifyNotificationFurtherDocumentsTemplate(
+                userDetails, uploadedType, EMPTY_CASE_DATA_MODIFIER,
+                (caseData) ->  caseData.getRespondentStatements().addAll(
+                    buildRespondentStatementsList(
+                        confidential
+                            ? buildConfidentialDocumentList(uploadedBy)
+                            : buildNonConfidentialPdfDocumentList(uploadedBy)
+                    )),
+                notificationTypes, expectedDocumentNames);
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(RespondentStatementArgs.class)
+        void shouldSendNotificationForUpdatingWhenReplacingDocument(
+            UserDetails userDetails,
+            DocumentUploaderType uploadedType,
+            String uploadedBy,
+            Set<DocumentUploadNotificationUserType> notificationTypes,
+            List<String> expectedDocumentNames,
+            boolean confidential) {
+            verifyNotificationFurtherDocumentsTemplate(
+                userDetails, uploadedType,
+                (caseData) ->  caseData.getRespondentStatements().addAll(
+                    buildRespondentStatementsList(buildConfidentialDocumentList2(uploadedBy))),
+                (caseData) ->  caseData.getRespondentStatements().addAll(
+                    buildRespondentStatementsList(
+                        confidential
+                            ? buildConfidentialDocumentList(uploadedBy)
+                            : buildNonConfidentialPdfDocumentList(uploadedBy)
+                    )),
+                notificationTypes, expectedDocumentNames);
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(RespondentStatementConfidentialChangeArgs.class)
+        void shouldNotSendNotificationForConfidentialChangeOnly(UserDetails userDetails,
+                                                                DocumentUploaderType uploadedType,
+                                                                String uploadedBy,
+                                                                boolean oldConfidential,
+                                                                boolean newConfidential) {
+            verifyNotificationFurtherDocumentsTemplate(
+                userDetails, uploadedType,
+                (caseData) ->  caseData.getRespondentStatements().addAll(
+                    buildRespondentStatementsList(wrapElements(
+                        createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, oldConfidential, PDF_DOCUMENT_1)))),
+                (caseData) ->  caseData.getRespondentStatements().addAll(
+                    buildRespondentStatementsList(wrapElements(
+                        createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, newConfidential, PDF_DOCUMENT_1)))),
+                Set.of(), null);
+        }
+    }
+
+    static class ApplicationDocumentArgs implements ArgumentsProvider {
+
+        @Override
+        public Stream<Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+                    List.of(BIRTH_CERTIFICATE.getLabel()), false),
+                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
+                    Set.of(ALL_LAS),
+                    List.of(BIRTH_CERTIFICATE.getLabel()), true)
+            // Note: Only LAs can upload application documents
+            );
+        }
+    }
+
+    static class ApplicationDocumentConfidentialChangeArgs implements ArgumentsProvider {
+
+        @Override
+        public Stream<Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, true, true),
+                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, true, false),
+                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, false, true),
+                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, false, false)
+            );
+        }
+    }
+
+    @Nested
+    class ApplicationDocument {
+
+        @ParameterizedTest
+        @ArgumentsSource(ApplicationDocumentArgs.class)
+        void shouldSendNotificationForNewUpload(UserDetails userDetails,
+                                                DocumentUploaderType uploadedType,
+                                                String uploadedBy,
+                                                Set<DocumentUploadNotificationUserType> notificationTypes,
+                                                List<String> expectedDocumentNames,
+                                                boolean confidential) {
+            verifyNotificationFurtherDocumentsTemplate(
+                userDetails, uploadedType, EMPTY_CASE_DATA_MODIFIER,
+                (caseData) ->  caseData.getApplicationDocuments().addAll(
+                    wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
+                        PDF_DOCUMENT_1, confidential))),
+                notificationTypes, expectedDocumentNames);
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(ApplicationDocumentArgs.class)
+        void shouldSendNotificationForUpdatingWhenReplacingDocument(
+            UserDetails userDetails,
+            DocumentUploaderType uploadedType,
+            String uploadedBy,
+            Set<DocumentUploadNotificationUserType> notificationTypes,
+            List<String> expectedDocumentNames,
+            boolean confidential) {
+            verifyNotificationFurtherDocumentsTemplate(
+                userDetails, uploadedType,
+                (caseData) ->  caseData.getApplicationDocuments().addAll(
+                    wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
+                        PDF_DOCUMENT_2, confidential))),
+                (caseData) ->  caseData.getApplicationDocuments().addAll(
+                    wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
+                        PDF_DOCUMENT_1, confidential))),
+                notificationTypes, expectedDocumentNames);
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(ApplicationDocumentConfidentialChangeArgs.class)
+        void shouldNotSendNotificationForConfidentialChangeOnly(UserDetails userDetails,
+                                                                DocumentUploaderType uploadedType,
+                                                                String uploadedBy,
+                                                                boolean oldConfidential,
+                                                                boolean newConfidential) {
+            verifyNotificationFurtherDocumentsTemplate(
+                userDetails, uploadedType,
+                (caseData) ->  caseData.getApplicationDocuments().addAll(
+                    wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
+                        PDF_DOCUMENT_1, oldConfidential))),
+                (caseData) ->  caseData.getApplicationDocuments().addAll(
+                    wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
+                        PDF_DOCUMENT_1, newConfidential))),
+                Set.of(), null);
+        }
+    }
+
+    static class AnyOtherDocumentUploadArgs implements ArgumentsProvider {
+
+        static final boolean HEARING_RELATED_YES = true;
+        static final boolean HEARING_RELATED_NO = false;
+
+        @Override
+        public Stream<Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                // By DESIGNATED_LOCAL_AUTHORITY
+                of(DESIGNATED_LOCAL_AUTHORITY,
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+                    NON_CONFIDENTIAL,
+                    buildNonConfidentialPdfDocumentList(LA_USER),
+                    HEARING_RELATED_NO),
+                of(DESIGNATED_LOCAL_AUTHORITY,
+                    Set.of(ALL_LAS),
+                    CONFIDENTIAL,
+                    buildConfidentialDocumentList(LA_USER),
+                    HEARING_RELATED_NO),
+                of(DESIGNATED_LOCAL_AUTHORITY,
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+                    NON_CONFIDENTIAL,
+                    buildHearingFurtherEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER)),
+                    HEARING_RELATED_YES),
+                of(DESIGNATED_LOCAL_AUTHORITY,
+                    Set.of(ALL_LAS),
+                    CONFIDENTIAL,
+                    buildHearingFurtherEvidenceBundle(buildConfidentialDocumentList(LA_USER)),
+                    HEARING_RELATED_YES),
+                // Not notifying CAFCASS if document type is NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
+                of(DESIGNATED_LOCAL_AUTHORITY,
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
+                    NON_CONFIDENTIAL,
+                    buildNonConfidentialPdfDocumentList(LA_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE),
+                    HEARING_RELATED_NO),
+                of(DESIGNATED_LOCAL_AUTHORITY,
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
+                    NON_CONFIDENTIAL,
+                    buildHearingFurtherEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER,
+                        NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
+                    HEARING_RELATED_YES),
+                of(DESIGNATED_LOCAL_AUTHORITY,
+                    Set.of(ALL_LAS),
+                    CONFIDENTIAL,
+                    buildConfidentialDocumentList(LA_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE),
+                    HEARING_RELATED_NO),
+                of(DESIGNATED_LOCAL_AUTHORITY,
+                    Set.of(ALL_LAS),
+                    CONFIDENTIAL,
+                    buildHearingFurtherEvidenceBundle(buildConfidentialDocumentList(LA_USER,
+                        NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
+                    HEARING_RELATED_YES),
+
+                // By HMCTS
+                of(HMCTS,
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+                    NON_CONFIDENTIAL,
+                    buildNonConfidentialPdfDocumentList(HMCTS_USER),
+                    HEARING_RELATED_NO),
+                of(HMCTS,
+                    Set.of(),
+                    CONFIDENTIAL,
+                    buildConfidentialDocumentList(HMCTS_USER),
+                    HEARING_RELATED_NO),
+                of(HMCTS,
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+                    NON_CONFIDENTIAL,
+                    buildHearingFurtherEvidenceBundle(buildNonConfidentialPdfDocumentList(HMCTS_USER)),
+                    HEARING_RELATED_YES),
+                of(HMCTS,
+                    Set.of(),
+                    CONFIDENTIAL,
+                    buildHearingFurtherEvidenceBundle(buildConfidentialDocumentList(HMCTS_USER)),
+                    HEARING_RELATED_YES),
+                // Not notifying CAFCASS if document type is NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
+                of(HMCTS,
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
+                    NON_CONFIDENTIAL,
+                    buildNonConfidentialPdfDocumentList(HMCTS_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE),
+                    HEARING_RELATED_NO),
+                of(HMCTS,
+                    Set.of(),
+                    CONFIDENTIAL,
+                    buildConfidentialDocumentList(HMCTS_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE),
+                    HEARING_RELATED_NO),
+                of(HMCTS,
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
+                    NON_CONFIDENTIAL,
+                    buildHearingFurtherEvidenceBundle(buildNonConfidentialPdfDocumentList(HMCTS_USER,
+                        NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
+                    HEARING_RELATED_YES),
+                of(HMCTS,
+                    Set.of(),
+                    CONFIDENTIAL,
+                    buildHearingFurtherEvidenceBundle(buildConfidentialDocumentList(HMCTS_USER,
+                        NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
+                    HEARING_RELATED_YES),
+                // By Solicitor - no confidential document for solicitors
+                of(SOLICITOR,
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+                    NON_CONFIDENTIAL,
+                    buildNonConfidentialPdfDocumentList(REP_USER),
+                    HEARING_RELATED_NO),
+                of(SOLICITOR,
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+                    NON_CONFIDENTIAL,
+                    buildHearingFurtherEvidenceBundle(buildNonConfidentialPdfDocumentList(REP_USER)),
+                    HEARING_RELATED_YES),
+                // Not notifying CAFCASS if document type is NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
+                of(SOLICITOR,
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
+                    NON_CONFIDENTIAL,
+                    buildNonConfidentialPdfDocumentList(REP_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE),
+                    HEARING_RELATED_NO),
+                of(SOLICITOR,
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
+                    NON_CONFIDENTIAL,
+                    buildHearingFurtherEvidenceBundle(buildNonConfidentialPdfDocumentList(REP_USER,
+                        NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
+                    HEARING_RELATED_YES)
+            );
+        }
+    }
+
+    @Nested
+    class AnyOtherDocument {
+
+        private List<Element<SupportingEvidenceBundle>> document(CaseData caseData,
+                                                                 DocumentUploaderType uploaderType) {
+            switch (uploaderType) {
+                case DESIGNATED_LOCAL_AUTHORITY:
+                    return caseData.getFurtherEvidenceDocumentsLA();
+                case HMCTS:
+                    return caseData.getFurtherEvidenceDocuments();
+                case SOLICITOR:
+                    return caseData.getFurtherEvidenceDocumentsSolicitor();
+                default:
+                    throw new AssertionError("unexpected uploaderType");
+            }
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(AnyOtherDocumentUploadArgs.class)
+        @SuppressWarnings("unchecked")
+        void shouldSendNotificationForNewUpload(DocumentUploaderType uploaderType,
+            Set<DocumentUploadNotificationUserType> notificationTypes,
+            List<String> expectedDocumentNames,
+            List<?> updatingDocument,
+            boolean isRelatingToHearing) {
+            verifyNotificationFurtherDocumentsTemplate(
+                getUserDetails(uploaderType), uploaderType,
+                EMPTY_CASE_DATA_MODIFIER,
+                isRelatingToHearing
+                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
+                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) updatingDocument)
+                    : (caseData) -> document(caseData, uploaderType)
+                    .addAll((List<Element<SupportingEvidenceBundle>>) updatingDocument),
+                notificationTypes, expectedDocumentNames);
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(AnyOtherDocumentUploadArgs.class)
+        @SuppressWarnings("unchecked")
+        void shouldNotSendNotificationWhenDocsAreRemoved(DocumentUploaderType uploaderType,
+                                                         Set<DocumentUploadNotificationUserType> notificationTypes,
+                                                         List<String> expectedDocumentNames,
+                                                         List<?> originalDocuments,
+                                                         boolean isRelatingToHearing) {
+            verifyNotificationFurtherDocumentsTemplate(
+                getUserDetails(uploaderType), uploaderType,
+                isRelatingToHearing
+                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
+                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) originalDocuments)
+                    : (caseData) -> document(caseData, uploaderType)
+                    .addAll((List<Element<SupportingEvidenceBundle>>) originalDocuments),
+                EMPTY_CASE_DATA_MODIFIER,
+                Set.of(), null);
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(AnyOtherDocumentUploadArgs.class)
+        @SuppressWarnings("unchecked")
+        void shouldNotSendNotificationWhenDocsAreTheSame(DocumentUploaderType uploaderType,
+                                                Set<DocumentUploadNotificationUserType> notificationTypes,
+                                                List<String> expectedDocumentNames,
+                                                List<?> updatingDocument,
+                                                boolean isRelatingToHearing) {
+            verifyNotificationFurtherDocumentsTemplate(
+                getUserDetails(uploaderType), uploaderType,
+                isRelatingToHearing
+                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
+                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) updatingDocument)
+                    : (caseData) -> document(caseData, uploaderType)
+                    .addAll((List<Element<SupportingEvidenceBundle>>) updatingDocument),
+                isRelatingToHearing
+                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
+                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) updatingDocument)
+                    : (caseData) -> document(caseData, uploaderType)
+                    .addAll((List<Element<SupportingEvidenceBundle>>) updatingDocument),
+                Set.of(), null);
+        }
     }
 }

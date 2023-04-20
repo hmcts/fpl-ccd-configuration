@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReferenceWithLanguage;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +27,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService.UPDATE_CASE_EVENT;
 
 @Slf4j
 @Service
@@ -35,6 +37,7 @@ public class SendDocumentService {
     private final SendLetterService sendLetters;
     private final CoreCaseDataService caseService;
     private final SentDocumentHistoryService sentDocuments;
+    private final CaseConverter caseConverter;
 
     public void sendDocuments(CaseData caseData, List<DocumentReference> documentToBeSent, List<Recipient> parties) {
         sendDocuments(new SendDocumentRequest(caseData,
@@ -63,7 +66,7 @@ public class SendDocumentService {
         }
 
         if (isNotEmpty(deliverableRecipients) && isNotEmpty(documentToBeSent)) {
-
+            // Perform sendLetter calls
             List<SentDocument> docs = documentToBeSent.stream()
                 .flatMap(document -> sendLetters.send(document.getDocumentReference(),
                     deliverableRecipients,
@@ -72,10 +75,15 @@ public class SendDocumentService {
                     document.getLanguage()).stream())
                 .collect(toList());
 
-            List<Element<SentDocuments>> documentsSent = sentDocuments.addToHistory(
-                caseData.getDocumentsSentToParties(), docs);
+            // Pop the audit trail on the case data if successful
+            caseService.performPostSubmitCallback(caseData.getId(), UPDATE_CASE_EVENT,
+                caseDetails -> {
+                    CaseData currentCaseData = caseConverter.convert(caseDetails);
+                    List<Element<SentDocuments>> documentsSent = sentDocuments.addToHistory(
+                        currentCaseData.getDocumentsSentToParties(), docs);
 
-            caseService.updateCase(caseData.getId(), Map.of("documentsSentToParties", documentsSent));
+                    return Map.of("documentsSentToParties", documentsSent);
+                });
         }
     }
 
@@ -93,12 +101,26 @@ public class SendDocumentService {
     }
 
     private List<Recipient> getNotRepresentedRespondents(CaseData caseData) {
-        return unwrapElements(caseData.getRespondents1()).stream()
-            .filter(respondent -> ObjectUtils.isEmpty(respondent.getRepresentedBy())
-                && hasNoLegalRepresentation(respondent))
-            .filter(respondent -> !respondent.isDeceasedOrNFA())
-            .map(Respondent::getParty)
-            .collect(toList());
+        if (isNotEmpty(caseData.getRespondents1())) {
+            return caseData.getRespondents1().stream()
+                .filter(respondent -> ObjectUtils.isEmpty(respondent.getValue().getRepresentedBy())
+                    && hasNoLegalRepresentation(respondent.getValue()))
+                .filter(respondent -> !respondent.getValue().isDeceasedOrNFA())
+                .map(respondent -> respondent.getValue().getParty().toBuilder()
+                        .address(getPartyAddress(respondent, caseData)).build())
+                .collect(toList());
+        }
+
+        return emptyList();
+    }
+
+    private Address getPartyAddress(Element<Respondent> respondent, CaseData caseData) {
+        if (respondent.getValue().containsConfidentialDetails()) {
+            return ElementUtils.getElement(respondent.getId(), caseData.getConfidentialRespondents())
+                 .getValue().getParty().getAddress();
+        }
+
+        return respondent.getValue().getParty().getAddress();
     }
 
     private boolean hasNoLegalRepresentation(Respondent respondent) {
