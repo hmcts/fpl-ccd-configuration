@@ -18,6 +18,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 public class ElementUtils {
@@ -44,7 +45,7 @@ public class ElementUtils {
     public static <T> List<Element<T>> wrapElementsWithUUIDs(T... elements) {
         return Stream.of(elements)
             .filter(Objects::nonNull)
-            .map(element -> Element.<T>builder().id(UUID.randomUUID()).value(element).build())
+            .map(element -> element(element))
             .collect(toList());
     }
 

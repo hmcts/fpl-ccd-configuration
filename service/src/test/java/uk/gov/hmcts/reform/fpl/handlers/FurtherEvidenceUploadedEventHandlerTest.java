@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUser
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -31,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
@@ -94,6 +96,8 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.NON_CONFIDENTIAL_2;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.PDF_DOCUMENT_1;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.PDF_DOCUMENT_2;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.PDF_DOCUMENT_3;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.PDF_DOCUMENT_4;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithAdditionalApplicationBundle;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithApplicationDocuments;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithC2AdditionalApplicationBundle;
@@ -129,7 +133,7 @@ import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContent
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.SKELETON_ARGUMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -1070,22 +1074,22 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldSendNotificationWhenHearingDocumentsIsUploaded() {
-        final List<Element<HearingBooking>> hearingBooking = wrapElements(testHearing());
+        final List<Element<HearingBooking>> hearingBooking = wrapElementsWithUUIDs(testHearing());
         final String hearingBookingLabel = hearingBooking.get(0).getValue().toLabel();
-        final List<Element<CaseSummary>> caseSummaryList = wrapElements(
+        final List<Element<CaseSummary>> caseSummaryList = wrapElementsWithUUIDs(
             CaseSummary.builder().hearing(hearingBookingLabel)
                 .document(TestDataHelper.testDocumentReference("CaseSummary 1.pdf")).build(),
             CaseSummary.builder().hearing(hearingBookingLabel)
                 .document(TestDataHelper.testDocumentReference("CaseSummary 2.pdf")).build());
-        final List<Element<PositionStatementChild>> positionStatementChildList = wrapElements(
+        final List<Element<PositionStatementChild>> positionStatementChildList = wrapElementsWithUUIDs(
             PositionStatementChild.builder()
                 .hearing(hearingBookingLabel)
                 .document(TestDataHelper.testDocumentReference("PositionStatementChild.pdf")).build());
-        final List<Element<PositionStatementRespondent>> positionStatementRespondentList = wrapElements(
+        final List<Element<PositionStatementRespondent>> positionStatementRespondentList = wrapElementsWithUUIDs(
             PositionStatementRespondent.builder()
                 .hearing(hearingBookingLabel)
                 .document(TestDataHelper.testDocumentReference("PositionStatementRespondent.pdf")).build());
-        final List<Element<SkeletonArgument>> skeletonArgumentList = wrapElements(
+        final List<Element<SkeletonArgument>> skeletonArgumentList = wrapElementsWithUUIDs(
             SkeletonArgument.builder()
                 .hearing(hearingBookingLabel)
                 .document(TestDataHelper.testDocumentReference("SkeletonArgument.pdf")).build());
@@ -1150,14 +1154,14 @@ class FurtherEvidenceUploadedEventHandlerTest {
         final DocumentReference skeletonArgumentDoc =
             TestDataHelper.testDocumentReference("SkeletonArgument.pdf");
 
-        final List<Element<CaseSummary>> caseSummaryList = wrapElements(
+        final List<Element<CaseSummary>> caseSummaryList = wrapElementsWithUUIDs(
             CaseSummary.builder().hearing(hearing).document(caseSummaryDoc1).build(),
             CaseSummary.builder().hearing(hearing).document(caseSummaryDoc2).build());
-        final List<Element<PositionStatementChild>> positionStatementChildList = wrapElements(
+        final List<Element<PositionStatementChild>> positionStatementChildList = wrapElementsWithUUIDs(
             PositionStatementChild.builder().hearing(hearing).document(positionStatementChildDoc).build());
-        final List<Element<PositionStatementRespondent>> positionStatementRespondentList = wrapElements(
+        final List<Element<PositionStatementRespondent>> positionStatementRespondentList = wrapElementsWithUUIDs(
             PositionStatementRespondent.builder().hearing(hearing).document(positionStatementRespondentDoc).build());
-        final List<Element<SkeletonArgument>> skeletonArgumentList = wrapElements(
+        final List<Element<SkeletonArgument>> skeletonArgumentList = wrapElementsWithUUIDs(
             SkeletonArgument.builder().hearing(hearing).document(skeletonArgumentDoc).build());
 
         CaseData caseDataBefore = buildSubmittedCaseData();
@@ -1209,14 +1213,14 @@ class FurtherEvidenceUploadedEventHandlerTest {
         final DocumentReference skeletonArgumentDoc =
             TestDataHelper.testDocumentReference("SkeletonArgument.pdf");
 
-        final List<Element<CaseSummary>> caseSummaryList = wrapElements(
+        final List<Element<CaseSummary>> caseSummaryList = wrapElementsWithUUIDs(
             CaseSummary.builder().hearing(hearing).document(caseSummaryDoc1).build(),
             CaseSummary.builder().hearing(hearing).document(caseSummaryDoc2).build());
-        final List<Element<PositionStatementChild>> positionStatementChildList = wrapElements(
+        final List<Element<PositionStatementChild>> positionStatementChildList = wrapElementsWithUUIDs(
             PositionStatementChild.builder().hearing(hearing).document(positionStatementChildDoc).build());
-        final List<Element<PositionStatementRespondent>> positionStatementRespondentList = wrapElements(
+        final List<Element<PositionStatementRespondent>> positionStatementRespondentList = wrapElementsWithUUIDs(
             PositionStatementRespondent.builder().hearing(hearing).document(positionStatementRespondentDoc).build());
-        final List<Element<SkeletonArgument>> skeletonArgumentList = wrapElements(
+        final List<Element<SkeletonArgument>> skeletonArgumentList = wrapElementsWithUUIDs(
             SkeletonArgument.builder().hearing(hearing).document(skeletonArgumentDoc).build());
 
         CaseData caseDataBefore = buildSubmittedCaseData().toBuilder()
@@ -1375,7 +1379,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     @Nested
-    class RespondentStatement {
+    class RespondentStatementTests {
 
         @ParameterizedTest
         @ArgumentsSource(RespondentStatementArgs.class)
@@ -1398,23 +1402,35 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         @ParameterizedTest
         @ArgumentsSource(RespondentStatementArgs.class)
-        void shouldSendNotificationForUpdatingWhenReplacingDocument(
+        void shouldSendNotificationWhenReplacingConfidentialDocument(
             UserDetails userDetails,
             DocumentUploaderType uploadedType,
             String uploadedBy,
             Set<DocumentUploadNotificationUserType> notificationTypes,
             List<String> expectedDocumentNames,
             boolean confidential) {
+            UUID respondentId = UUID.randomUUID();
+            UUID elementId = UUID.randomUUID();
+            List<Element<RespondentStatement>> respondentStatement =
+                buildRespondentStatementsList(respondentId, List.of(
+                    element(elementId, createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, true,
+                        PDF_DOCUMENT_3)),
+                    element(elementId, createDummyEvidenceBundle(CONFIDENTIAL_2, uploadedBy, true,
+                        PDF_DOCUMENT_4))
+                ));
+
+            List<Element<RespondentStatement>> newRespondentStatement =
+                buildRespondentStatementsList(respondentId, List.of(
+                    element(elementId, createDummyEvidenceBundle(confidential ? CONFIDENTIAL_1 : NON_CONFIDENTIAL_1,
+                        uploadedBy, confidential, PDF_DOCUMENT_1)),
+                    element(elementId, createDummyEvidenceBundle(confidential ? CONFIDENTIAL_2 : NON_CONFIDENTIAL_2,
+                        uploadedBy, confidential, PDF_DOCUMENT_2))
+                ));
+
             verifyNotificationFurtherDocumentsTemplate(
                 userDetails, uploadedType,
-                (caseData) ->  caseData.getRespondentStatements().addAll(
-                    buildRespondentStatementsList(buildConfidentialDocumentList2(uploadedBy))),
-                (caseData) ->  caseData.getRespondentStatements().addAll(
-                    buildRespondentStatementsList(
-                        confidential
-                            ? buildConfidentialDocumentList(uploadedBy)
-                            : buildNonConfidentialPdfDocumentList(uploadedBy)
-                    )),
+                (caseData) ->  caseData.getRespondentStatements().addAll(respondentStatement), // before
+                (caseData) ->  caseData.getRespondentStatements().addAll(newRespondentStatement),
                 notificationTypes, expectedDocumentNames);
         }
 
@@ -1425,14 +1441,20 @@ class FurtherEvidenceUploadedEventHandlerTest {
                                                                 String uploadedBy,
                                                                 boolean oldConfidential,
                                                                 boolean newConfidential) {
+            UUID respondentId = UUID.randomUUID();
+            UUID elementId = UUID.randomUUID();
+            List<Element<RespondentStatement>> respondentStatement =
+                buildRespondentStatementsList(respondentId, List.of(element(elementId,
+                createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, oldConfidential, PDF_DOCUMENT_1))));
+
+            List<Element<RespondentStatement>> newRespondentStatement =
+                buildRespondentStatementsList(respondentId, List.of(element(elementId,
+                createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, newConfidential, PDF_DOCUMENT_1))));
+
             verifyNotificationFurtherDocumentsTemplate(
                 userDetails, uploadedType,
-                (caseData) ->  caseData.getRespondentStatements().addAll(
-                    buildRespondentStatementsList(wrapElements(
-                        createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, oldConfidential, PDF_DOCUMENT_1)))),
-                (caseData) ->  caseData.getRespondentStatements().addAll(
-                    buildRespondentStatementsList(wrapElements(
-                        createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, newConfidential, PDF_DOCUMENT_1)))),
+                (caseData) ->  caseData.getRespondentStatements().addAll(respondentStatement), // before
+                (caseData) ->  caseData.getRespondentStatements().addAll(newRespondentStatement),
                 Set.of(), null);
         }
     }
@@ -1467,7 +1489,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     @Nested
-    class ApplicationDocument {
+    class ApplicationDocumentTests {
 
         @ParameterizedTest
         @ArgumentsSource(ApplicationDocumentArgs.class)
@@ -1480,28 +1502,32 @@ class FurtherEvidenceUploadedEventHandlerTest {
             verifyNotificationFurtherDocumentsTemplate(
                 userDetails, uploadedType, EMPTY_CASE_DATA_MODIFIER,
                 (caseData) ->  caseData.getApplicationDocuments().addAll(
-                    wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
+                    wrapElementsWithUUIDs(createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
                         PDF_DOCUMENT_1, confidential))),
                 notificationTypes, expectedDocumentNames);
         }
 
         @ParameterizedTest
         @ArgumentsSource(ApplicationDocumentArgs.class)
-        void shouldSendNotificationForUpdatingWhenReplacingDocument(
+        void shouldSendNotificationWhenReplacingDocument(
             UserDetails userDetails,
             DocumentUploaderType uploadedType,
             String uploadedBy,
             Set<DocumentUploadNotificationUserType> notificationTypes,
             List<String> expectedDocumentNames,
             boolean confidential) {
+            UUID elementId = UUID.randomUUID();
+            List<Element<ApplicationDocument>> applicationDocuments =
+                List.of(element(elementId, createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
+                    PDF_DOCUMENT_2, confidential)));
+            List<Element<ApplicationDocument>> newApplicationDocuments =
+                List.of(element(elementId, createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
+                    PDF_DOCUMENT_1, confidential)));
+
             verifyNotificationFurtherDocumentsTemplate(
                 userDetails, uploadedType,
-                (caseData) ->  caseData.getApplicationDocuments().addAll(
-                    wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
-                        PDF_DOCUMENT_2, confidential))),
-                (caseData) ->  caseData.getApplicationDocuments().addAll(
-                    wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
-                        PDF_DOCUMENT_1, confidential))),
+                (caseData) ->  caseData.getApplicationDocuments().addAll(applicationDocuments),
+                (caseData) ->  caseData.getApplicationDocuments().addAll(newApplicationDocuments),
                 notificationTypes, expectedDocumentNames);
         }
 
@@ -1512,14 +1538,18 @@ class FurtherEvidenceUploadedEventHandlerTest {
                                                                 String uploadedBy,
                                                                 boolean oldConfidential,
                                                                 boolean newConfidential) {
+            UUID elementId = UUID.randomUUID();
+            List<Element<ApplicationDocument>> applicationDocuments =
+                List.of(element(elementId, createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
+                    PDF_DOCUMENT_1, oldConfidential)));
+            List<Element<ApplicationDocument>> newApplicationDocuments =
+                List.of(element(elementId, createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
+                    PDF_DOCUMENT_1, newConfidential)));
+
             verifyNotificationFurtherDocumentsTemplate(
                 userDetails, uploadedType,
-                (caseData) ->  caseData.getApplicationDocuments().addAll(
-                    wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
-                        PDF_DOCUMENT_1, oldConfidential))),
-                (caseData) ->  caseData.getApplicationDocuments().addAll(
-                    wrapElements(createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
-                        PDF_DOCUMENT_1, newConfidential))),
+                (caseData) ->  caseData.getApplicationDocuments().addAll(applicationDocuments),
+                (caseData) ->  caseData.getApplicationDocuments().addAll(newApplicationDocuments),
                 Set.of(), null);
         }
     }

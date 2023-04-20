@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import io.jsonwebtoken.lang.Assert;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -481,6 +482,7 @@ public class FurtherEvidenceUploadedEventHandler {
 
     private <T extends WithDocument> boolean hasNewDocumentUploaded(List<Element<T>> existingElements,
                                                                     Element<T> test) {
+        Assert.notNull(test.getId());
         Optional<Element<T>> hitElement = ElementUtils.findElement(test.getId(), defaultIfNull(existingElements,
             List.of()));
         if (!hitElement.isPresent()) {
@@ -582,7 +584,7 @@ public class FurtherEvidenceUploadedEventHandler {
 
     @SuppressWarnings("unchecked")
     private <T extends HearingDocument> List<HearingDocument> getNewHearingDocuments(List<Element<T>> documents,
-                                                                       List<Element<T>> documentsBefore) {
+                                                                                     List<Element<T>> documentsBefore) {
         List<Element<T>> newHearingDocuments = new ArrayList<>();
         defaultIfNull(documents, new ArrayList<Element<T>>()).forEach(newDoc -> {
             if (hasNewDocumentUploaded(documentsBefore, newDoc)) {
