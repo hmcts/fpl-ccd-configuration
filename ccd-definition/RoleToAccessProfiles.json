@@ -404,5 +404,19 @@
     "RoleName": "allocated-legal-advisor",
     "ReadOnly": "N",
     "AccessProfiles": "caseworker-publiclaw-judiciary"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "idam:caseworker-caa",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-caa"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "idam:caseworker-approver",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-approver"
   }
 ]
