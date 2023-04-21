@@ -60,12 +60,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.time.LocalDateTime.now;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 import static org.mockito.ArgumentMatchers.eq;
@@ -183,6 +185,44 @@ class FurtherEvidenceUploadedEventHandlerTest {
     private CafcassLookupConfiguration cafcassLookupConfiguration;
 
     private static final Consumer<CaseData> EMPTY_CASE_DATA_MODIFIER = whatever -> { };
+
+    private void verifyCafcassNotificationFurtherDocumentsTemplate(
+        final UserDetails uploadedBy,
+        DocumentUploaderType uploadedType,
+        Consumer<CaseData> beforeCaseDataModifier,
+        Consumer<CaseData> caseDataModifier,
+
+        Function<CaseData, Set<DocumentReference>> documentReferencesExtractor,
+        String documentTypeString, String emailSubjectInfo) {
+
+        CaseData caseDataBefore = buildSubmittedCaseData();
+        beforeCaseDataModifier.accept(caseDataBefore);
+        CaseData caseData = buildSubmittedCaseData();
+        caseDataModifier.accept(caseData);
+
+        when(cafcassLookupConfiguration.getCafcassEngland(any())).thenReturn(
+            Optional.of(new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)));
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            new FurtherEvidenceUploadedEvent(caseData, caseDataBefore, uploadedType, uploadedBy);
+        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+
+        if (isEmpty(documentTypeString)) {
+            verify(cafcassNotificationService, never()).sendEmail(any(), any(), any(), any());
+        } else {
+            verify(cafcassNotificationService).sendEmail(
+                eq(caseData),
+                eq(documentReferencesExtractor.apply(caseData)),
+                eq(NEW_DOCUMENT),
+                newDocumentDataCaptor.capture());
+
+            NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
+            assertThat(newDocumentData.getDocumentTypes())
+                .isEqualTo(documentTypeString);
+            assertThat(newDocumentData.getEmailSubjectInfo())
+                .isEqualTo(emailSubjectInfo);
+        }
+    }
 
     private void verifyNotificationFurtherDocumentsTemplate(final UserDetails uploadedBy,
                                                              DocumentUploaderType uploadedType,
@@ -426,207 +466,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         courtBundleData = courtBundleCaptor.getValue();
         assertThat(courtBundleData.getHearingDetails()).isEqualTo(secHearing);
-    }
-
-    @Test
-    void shouldEmailCafcassWhenDocsIsUploadedByLA() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
-
-        CaseData caseData = buildCaseDataWithNonConfidentialLADocuments();
-
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-                new FurtherEvidenceUploadedEvent(
-                        caseData,
-                        buildCaseDataWithConfidentialLADocuments(),
-                        DESIGNATED_LOCAL_AUTHORITY,
-                        userDetailsLA());
-
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
-
-        Set<DocumentReference> documentReferences = unwrapElements(caseData.getFurtherEvidenceDocumentsLA())
-                .stream()
-                .map(SupportingEvidenceBundle::getDocument)
-                .collect(toSet());
-
-        verify(cafcassNotificationService).sendEmail(
-                eq(caseData),
-                eq(documentReferences),
-                eq(NEW_DOCUMENT),
-                newDocumentDataCaptor.capture());
-
-        NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
-        assertThat(newDocumentData.getDocumentTypes())
-                .isEqualTo("• Child's guardian reports\n"
-                        + "• Child's guardian reports");
-        assertThat(newDocumentData.getEmailSubjectInfo())
-                .isEqualTo("Further documents for main application");
-    }
-
-    @Test
-    void shouldNotEmailCafcassWhenNoticeOfActingOrIssueDocsRelatingToHearingIsUploadedByLA() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-            .thenReturn(
-                Optional.of(
-                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                )
-            );
-
-        CaseData caseData = buildCaseDataWithHearingFurtherEvidenceBundle(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE);
-
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
-                caseData,
-                buildCaseDataWithConfidentialLADocuments(),
-                DESIGNATED_LOCAL_AUTHORITY,
-                userDetailsLA());
-
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
-
-        verify(cafcassNotificationService, never()).sendEmail(
-            any(),
-            any(),
-            any(),
-            any());
-    }
-
-    @Test
-    void shouldNotEmailCafcassWhenNoticeOfActingOrIssueDocsIsUploadedByLA() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-            .thenReturn(
-                Optional.of(
-                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                )
-            );
-
-        CaseData caseData = buildCaseDataWithNonConfidentialLADocuments(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE);
-
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
-                caseData,
-                buildCaseDataWithConfidentialLADocuments(),
-                DESIGNATED_LOCAL_AUTHORITY,
-                userDetailsLA());
-
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
-
-        verify(cafcassNotificationService, never()).sendEmail(
-            any(),
-            any(),
-            any(),
-            any());
-    }
-
-    @Test
-    void shouldEmailCafcassWhenDocsIsUploadedBySolicitor() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
-
-        CaseData caseData = buildCaseDataWithNonConfidentialPDFDocumentsSolicitor(REP_USER);
-
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-                new FurtherEvidenceUploadedEvent(
-                        caseData,
-                        buildCaseDataWithConfidentialLADocuments(),
-                        SOLICITOR,
-                        userDetailsRespondentSolicitor());
-
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
-
-        Set<DocumentReference> documentReferences = unwrapElements(caseData.getFurtherEvidenceDocumentsSolicitor())
-                .stream()
-                .map(SupportingEvidenceBundle::getDocument)
-                .collect(toSet());
-
-        verify(cafcassNotificationService).sendEmail(
-                eq(caseData),
-                eq(documentReferences),
-                eq(NEW_DOCUMENT),
-                newDocumentDataCaptor.capture());
-
-        NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
-        assertThat(newDocumentData.getDocumentTypes())
-                .contains("• non-confidential-1");
-        assertThat(newDocumentData.getDocumentTypes())
-                .contains("• non-confidential-2");
-
-        assertThat(newDocumentData.getEmailSubjectInfo())
-                .isEqualTo("Further documents for main application");
-    }
-
-    @Test
-    void shouldEmailCafcassWhenGuardianReportsAreUploadedBySolicitor() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-            .thenReturn(
-                Optional.of(
-                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                )
-            );
-
-        CaseData caseData = buildCaseDataWithNonConfidentialPDFDocumentsSolicitor(REP_USER, GUARDIAN_REPORTS);
-
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
-                caseData,
-                buildCaseDataWithConfidentialLADocuments(),
-                SOLICITOR,
-                userDetailsRespondentSolicitor());
-
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
-
-        Set<DocumentReference> documentReferences = unwrapElements(caseData.getFurtherEvidenceDocumentsSolicitor())
-            .stream()
-            .map(SupportingEvidenceBundle::getDocument)
-            .collect(toSet());
-
-        verify(cafcassNotificationService).sendEmail(
-            eq(caseData),
-            eq(documentReferences),
-            eq(NEW_DOCUMENT),
-            newDocumentDataCaptor.capture());
-
-        NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
-        assertThat(newDocumentData.getDocumentTypes())
-            .contains("• Child's guardian reports");
-        assertThat(newDocumentData.getDocumentTypes())
-            .contains("• Child's guardian reports");
-        assertThat(newDocumentData.getEmailSubjectInfo())
-            .isEqualTo("Further documents for main application");
-    }
-
-    @Test
-    void shouldNotEmailCafcassWhenNoticeOfActingOrIssueIsUploadedBySolicitor() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-            .thenReturn(
-                Optional.of(
-                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                )
-            );
-        CaseData caseData = buildCaseDataWithNonConfidentialPDFDocumentsSolicitor(REP_USER,
-            NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE);
-
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(
-                caseData,
-                buildCaseDataWithConfidentialLADocuments(),
-                SOLICITOR,
-                userDetailsRespondentSolicitor());
-
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
-
-        verify(cafcassNotificationService, never()).sendEmail(
-            any(),
-            any(),
-            any(),
-            any());
     }
 
     @Test
@@ -1556,6 +1395,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         static final boolean HEARING_RELATED_YES = true;
         static final boolean HEARING_RELATED_NO = false;
+        static final boolean NOTIFYING_CAFCASS = true;
+        static final boolean NOT_NOTIFYING_CAFCASS = false;
 
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
@@ -1565,113 +1406,114 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES),
                     NON_CONFIDENTIAL,
                     buildNonConfidentialPdfDocumentList(LA_USER),
-                    HEARING_RELATED_NO),
+                    HEARING_RELATED_NO, NOTIFYING_CAFCASS),
                 of(DESIGNATED_LOCAL_AUTHORITY,
                     Set.of(ALL_LAS),
                     CONFIDENTIAL,
                     buildConfidentialDocumentList(LA_USER),
-                    HEARING_RELATED_NO),
+                    HEARING_RELATED_NO, NOTIFYING_CAFCASS),
                 of(DESIGNATED_LOCAL_AUTHORITY,
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES),
                     NON_CONFIDENTIAL,
                     buildHearingFurtherEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER)),
-                    HEARING_RELATED_YES),
+                    HEARING_RELATED_YES, NOTIFYING_CAFCASS),
                 of(DESIGNATED_LOCAL_AUTHORITY,
                     Set.of(ALL_LAS),
                     CONFIDENTIAL,
                     buildHearingFurtherEvidenceBundle(buildConfidentialDocumentList(LA_USER)),
-                    HEARING_RELATED_YES),
-                // Not notifying CAFCASS if document type is NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
+                    HEARING_RELATED_YES, NOTIFYING_CAFCASS),
+                // Not notifying CAFCASS and CAFCASS_REPRESENTATIVES if document type is
+                // NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
                 of(DESIGNATED_LOCAL_AUTHORITY,
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
                     NON_CONFIDENTIAL,
                     buildNonConfidentialPdfDocumentList(LA_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE),
-                    HEARING_RELATED_NO),
+                    HEARING_RELATED_NO, NOT_NOTIFYING_CAFCASS),
                 of(DESIGNATED_LOCAL_AUTHORITY,
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
                     NON_CONFIDENTIAL,
                     buildHearingFurtherEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER,
                         NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
-                    HEARING_RELATED_YES),
+                    HEARING_RELATED_YES, NOT_NOTIFYING_CAFCASS),
                 of(DESIGNATED_LOCAL_AUTHORITY,
                     Set.of(ALL_LAS),
                     CONFIDENTIAL,
                     buildConfidentialDocumentList(LA_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE),
-                    HEARING_RELATED_NO),
+                    HEARING_RELATED_NO, NOT_NOTIFYING_CAFCASS),
                 of(DESIGNATED_LOCAL_AUTHORITY,
                     Set.of(ALL_LAS),
                     CONFIDENTIAL,
                     buildHearingFurtherEvidenceBundle(buildConfidentialDocumentList(LA_USER,
                         NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
-                    HEARING_RELATED_YES),
+                    HEARING_RELATED_YES, NOT_NOTIFYING_CAFCASS),
 
                 // By HMCTS
                 of(HMCTS,
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES),
                     NON_CONFIDENTIAL,
                     buildNonConfidentialPdfDocumentList(HMCTS_USER),
-                    HEARING_RELATED_NO),
+                    HEARING_RELATED_NO, NOTIFYING_CAFCASS),
                 of(HMCTS,
                     Set.of(),
                     CONFIDENTIAL,
                     buildConfidentialDocumentList(HMCTS_USER),
-                    HEARING_RELATED_NO),
+                    HEARING_RELATED_NO, NOTIFYING_CAFCASS),
                 of(HMCTS,
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES),
                     NON_CONFIDENTIAL,
                     buildHearingFurtherEvidenceBundle(buildNonConfidentialPdfDocumentList(HMCTS_USER)),
-                    HEARING_RELATED_YES),
+                    HEARING_RELATED_YES, NOTIFYING_CAFCASS),
                 of(HMCTS,
                     Set.of(),
                     CONFIDENTIAL,
                     buildHearingFurtherEvidenceBundle(buildConfidentialDocumentList(HMCTS_USER)),
-                    HEARING_RELATED_YES),
+                    HEARING_RELATED_YES, NOTIFYING_CAFCASS),
                 // Not notifying CAFCASS if document type is NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
                 of(HMCTS,
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
                     NON_CONFIDENTIAL,
                     buildNonConfidentialPdfDocumentList(HMCTS_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE),
-                    HEARING_RELATED_NO),
+                    HEARING_RELATED_NO, NOT_NOTIFYING_CAFCASS),
                 of(HMCTS,
                     Set.of(),
                     CONFIDENTIAL,
                     buildConfidentialDocumentList(HMCTS_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE),
-                    HEARING_RELATED_NO),
+                    HEARING_RELATED_NO, NOT_NOTIFYING_CAFCASS),
                 of(HMCTS,
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
                     NON_CONFIDENTIAL,
                     buildHearingFurtherEvidenceBundle(buildNonConfidentialPdfDocumentList(HMCTS_USER,
                         NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
-                    HEARING_RELATED_YES),
+                    HEARING_RELATED_YES, NOT_NOTIFYING_CAFCASS),
                 of(HMCTS,
                     Set.of(),
                     CONFIDENTIAL,
                     buildHearingFurtherEvidenceBundle(buildConfidentialDocumentList(HMCTS_USER,
                         NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
-                    HEARING_RELATED_YES),
+                    HEARING_RELATED_YES, NOT_NOTIFYING_CAFCASS),
                 // By Solicitor - no confidential document for solicitors
                 of(SOLICITOR,
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES),
                     NON_CONFIDENTIAL,
                     buildNonConfidentialPdfDocumentList(REP_USER),
-                    HEARING_RELATED_NO),
+                    HEARING_RELATED_NO, NOTIFYING_CAFCASS),
                 of(SOLICITOR,
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES),
                     NON_CONFIDENTIAL,
                     buildHearingFurtherEvidenceBundle(buildNonConfidentialPdfDocumentList(REP_USER)),
-                    HEARING_RELATED_YES),
+                    HEARING_RELATED_YES, NOTIFYING_CAFCASS),
                 // Not notifying CAFCASS if document type is NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE
                 of(SOLICITOR,
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
                     NON_CONFIDENTIAL,
                     buildNonConfidentialPdfDocumentList(REP_USER, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE),
-                    HEARING_RELATED_NO),
+                    HEARING_RELATED_NO, NOT_NOTIFYING_CAFCASS),
                 of(SOLICITOR,
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR),
                     NON_CONFIDENTIAL,
                     buildHearingFurtherEvidenceBundle(buildNonConfidentialPdfDocumentList(REP_USER,
                         NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)),
-                    HEARING_RELATED_YES)
+                    HEARING_RELATED_YES, NOT_NOTIFYING_CAFCASS)
             );
         }
     }
@@ -1693,14 +1535,30 @@ class FurtherEvidenceUploadedEventHandlerTest {
             }
         }
 
+        @SuppressWarnings("unchecked")
+        Set<DocumentReference> getExpectedDocumentReferences(CaseData caseData, DocumentUploaderType uploaderType,
+                                                             boolean isRelatingToHearing) {
+            if (isRelatingToHearing) {
+                return unwrapElements(caseData.getHearingFurtherEvidenceDocuments())
+                    .stream()
+                    .map(sfvb -> unwrapElements(sfvb.getSupportingEvidenceBundle()))
+                    .flatMap(List::stream)
+                    .map(f -> f.getDocument())
+                    .collect(toSet());
+            } else {
+                return unwrapElements(document(caseData, uploaderType)).stream()
+                    .map(f -> f.getDocument()).collect(toSet());
+            }
+        }
+
         @ParameterizedTest
         @ArgumentsSource(AnyOtherDocumentUploadTestArgs.class)
         @SuppressWarnings("unchecked")
         void shouldSendNotificationForNewUpload(DocumentUploaderType uploaderType,
-            Set<DocumentUploadNotificationUserType> notificationTypes,
-            List<String> expectedDocumentNames,
-            List<?> updatingDocument,
-            boolean isRelatingToHearing) {
+                                                Set<DocumentUploadNotificationUserType> notificationTypes,
+                                                List<String> expectedDocumentNames,
+                                                List<?> updatingDocument,
+                                                boolean isRelatingToHearing) {
             verifyNotificationFurtherDocumentsTemplate(
                 getUserDetails(uploaderType), uploaderType,
                 EMPTY_CASE_DATA_MODIFIER,
@@ -1715,11 +1573,34 @@ class FurtherEvidenceUploadedEventHandlerTest {
         @ParameterizedTest
         @ArgumentsSource(AnyOtherDocumentUploadTestArgs.class)
         @SuppressWarnings("unchecked")
+        void shouldSendNotificationToCafcassForNewUpload(DocumentUploaderType uploaderType,
+                                                         Set<DocumentUploadNotificationUserType> notificationTypes,
+                                                         List<String> expectedDocumentNames,
+                                                         List<?> updatingDocument,
+                                                         boolean isRelatingToHearing,
+                                                         boolean isNotifyingCafcass) {
+            verifyCafcassNotificationFurtherDocumentsTemplate(
+                getUserDetails(uploaderType), uploaderType,
+                EMPTY_CASE_DATA_MODIFIER,
+                isRelatingToHearing
+                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
+                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) updatingDocument)
+                    : (caseData) -> document(caseData, uploaderType)
+                    .addAll((List<Element<SupportingEvidenceBundle>>) updatingDocument),
+                (caseData) -> getExpectedDocumentReferences(caseData, uploaderType, isRelatingToHearing),
+                isNotifyingCafcass ? "• Child's guardian reports\n• Child's guardian reports" : null,
+                isNotifyingCafcass ? "Further documents for main application" : null);
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(AnyOtherDocumentUploadTestArgs.class)
+        @SuppressWarnings("unchecked")
         void shouldNotSendNotificationWhenDocsAreRemoved(DocumentUploaderType uploaderType,
                                                          Set<DocumentUploadNotificationUserType> notificationTypes,
                                                          List<String> expectedDocumentNames,
                                                          List<?> originalDocuments,
-                                                         boolean isRelatingToHearing) {
+                                                         boolean isRelatingToHearing,
+                                                         boolean isNotifyingCafcass) {
             verifyNotificationFurtherDocumentsTemplate(
                 getUserDetails(uploaderType), uploaderType,
                 isRelatingToHearing
@@ -1735,10 +1616,11 @@ class FurtherEvidenceUploadedEventHandlerTest {
         @ArgumentsSource(AnyOtherDocumentUploadTestArgs.class)
         @SuppressWarnings("unchecked")
         void shouldNotSendNotificationWhenDocsAreTheSame(DocumentUploaderType uploaderType,
-                                                Set<DocumentUploadNotificationUserType> notificationTypes,
-                                                List<String> expectedDocumentNames,
-                                                List<?> updatingDocument,
-                                                boolean isRelatingToHearing) {
+                                                         Set<DocumentUploadNotificationUserType> notificationTypes,
+                                                         List<String> expectedDocumentNames,
+                                                         List<?> updatingDocument,
+                                                         boolean isRelatingToHearing,
+                                                         boolean isNotifyingCafcass) {
             verifyNotificationFurtherDocumentsTemplate(
                 getUserDetails(uploaderType), uploaderType,
                 isRelatingToHearing
