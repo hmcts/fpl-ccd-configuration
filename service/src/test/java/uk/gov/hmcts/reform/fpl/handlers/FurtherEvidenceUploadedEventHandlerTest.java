@@ -1500,8 +1500,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
             verifyNotificationFurtherDocumentsTemplate(
                 userDetails, uploadedType, EMPTY_CASE_DATA_MODIFIER,
                 (caseData) ->  caseData.getApplicationDocuments().addAll(
-                    wrapElementsWithUUIDs(createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
-                        PDF_DOCUMENT_1, confidential))),
+                    wrapElementsWithUUIDs(createDummyApplicationDocument("whatever", uploadedBy,
+                        PDF_DOCUMENT_1, confidential, BIRTH_CERTIFICATE))),
                 notificationTypes, expectedDocumentNames);
         }
 
@@ -1516,11 +1516,11 @@ class FurtherEvidenceUploadedEventHandlerTest {
             boolean confidential) {
             UUID elementId = UUID.randomUUID();
             List<Element<ApplicationDocument>> applicationDocuments =
-                List.of(element(elementId, createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
-                    PDF_DOCUMENT_2, confidential)));
+                List.of(element(elementId, createDummyApplicationDocument("whatever2", uploadedBy,
+                    PDF_DOCUMENT_2, confidential, BIRTH_CERTIFICATE)));
             List<Element<ApplicationDocument>> newApplicationDocuments =
-                List.of(element(elementId, createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
-                    PDF_DOCUMENT_1, confidential)));
+                List.of(element(elementId, createDummyApplicationDocument("whatever1", uploadedBy,
+                    PDF_DOCUMENT_1, confidential, BIRTH_CERTIFICATE)));
 
             verifyNotificationFurtherDocumentsTemplate(
                 userDetails, uploadedType,
@@ -1538,11 +1538,11 @@ class FurtherEvidenceUploadedEventHandlerTest {
                                                                 boolean newConfidential) {
             UUID elementId = UUID.randomUUID();
             List<Element<ApplicationDocument>> applicationDocuments =
-                List.of(element(elementId, createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
-                    PDF_DOCUMENT_1, oldConfidential)));
+                List.of(element(elementId, createDummyApplicationDocument("whatever", uploadedBy,
+                    PDF_DOCUMENT_1, oldConfidential, BIRTH_CERTIFICATE)));
             List<Element<ApplicationDocument>> newApplicationDocuments =
-                List.of(element(elementId, createDummyApplicationDocument(NON_CONFIDENTIAL_1, uploadedBy,
-                    PDF_DOCUMENT_1, newConfidential)));
+                List.of(element(elementId, createDummyApplicationDocument("whatever", uploadedBy,
+                    PDF_DOCUMENT_1, newConfidential, BIRTH_CERTIFICATE)));
 
             verifyNotificationFurtherDocumentsTemplate(
                 userDetails, uploadedType,

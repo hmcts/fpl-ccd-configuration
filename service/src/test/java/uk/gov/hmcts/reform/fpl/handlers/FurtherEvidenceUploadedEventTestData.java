@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
@@ -58,12 +59,19 @@ public class FurtherEvidenceUploadedEventTestData {
     public static final String NON_CONFIDENTIAL_2 = "non-confidential-2";
     public static final String CONFIDENTIAL_1 = "confidential-doc-1";
     public static final String CONFIDENTIAL_2 = "confidential-doc-2";
+    public static final String CONFIDENTIAL_3 = "confidential-doc-3";
+    public static final String CONFIDENTIAL_4 = "confidential-doc-4";
     public static final DocumentReference PDF_DOCUMENT_1 = getPDFDocument();
     public static final DocumentReference PDF_DOCUMENT_2 = getPDFDocument();
     public static final DocumentReference PDF_DOCUMENT_3 = getPDFDocument();
     public static final DocumentReference PDF_DOCUMENT_4 = getPDFDocument();
     public static final DocumentReference NON_PDF_DOCUMENT_1 = getNonPDFDocument();
     private static final FurtherEvidenceType DEFAULT_FURTHER_EVIDENCE_TYPE = GUARDIAN_REPORTS;
+
+    private static final UUID DOC_ELEMENT_1_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
+    private static final UUID DOC_ELEMENT_2_ID = UUID.fromString("22222222-2222-2222-2222-222222222222");
+    private static final UUID DOC_ELEMENT_3_ID = UUID.fromString("33333333-3333-3333-3333-333333333333");
+    private static final UUID DOC_ELEMENT_4_ID = UUID.fromString("44444444-4444-4444-4444-444444444444");
 
     private FurtherEvidenceUploadedEventTestData() {
     }
@@ -273,28 +281,20 @@ public class FurtherEvidenceUploadedEventTestData {
     }
 
     public static List<Element<SupportingEvidenceBundle>> buildConfidentialDocumentList(final String uploadedBy) {
-        return wrapElementsWithUUIDs(
-            createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, true, PDF_DOCUMENT_1),
-            createDummyEvidenceBundle(CONFIDENTIAL_2, uploadedBy, true, PDF_DOCUMENT_2));
+        return List.of(
+            element(DOC_ELEMENT_1_ID, createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, true, PDF_DOCUMENT_1)),
+            element(DOC_ELEMENT_2_ID, createDummyEvidenceBundle(CONFIDENTIAL_2, uploadedBy, true, PDF_DOCUMENT_2))
+        );
     }
 
     public static List<Element<SupportingEvidenceBundle>> buildConfidentialDocumentList(final String uploadedBy,
                                                                                         FurtherEvidenceType type) {
-        return wrapElementsWithUUIDs(
-            createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, true, PDF_DOCUMENT_1, type),
-            createDummyEvidenceBundle(CONFIDENTIAL_2, uploadedBy, true, PDF_DOCUMENT_2, type));
-    }
-
-    public static List<Element<SupportingEvidenceBundle>> buildNonConfidentialDocumentList(final String uploadedBy) {
-        return wrapElementsWithUUIDs(
-            createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, false, PDF_DOCUMENT_1),
-            createDummyEvidenceBundle(CONFIDENTIAL_2, uploadedBy, false, PDF_DOCUMENT_2));
-    }
-
-    public static List<Element<SupportingEvidenceBundle>> buildConfidentialDocumentList2(final String uploadedBy) {
-        return wrapElementsWithUUIDs(
-            createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, true, PDF_DOCUMENT_3),
-            createDummyEvidenceBundle(CONFIDENTIAL_2, uploadedBy, true, PDF_DOCUMENT_4));
+        return List.of(
+            element(DOC_ELEMENT_1_ID,
+                createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, true, PDF_DOCUMENT_1, type)),
+            element(DOC_ELEMENT_2_ID,
+                createDummyEvidenceBundle(CONFIDENTIAL_2, uploadedBy, true, PDF_DOCUMENT_2, type))
+        );
     }
 
     public static List<Element<SupportingEvidenceBundle>> buildNonConfidentialPdfDocumentList(final String uploadedBy) {
@@ -303,9 +303,12 @@ public class FurtherEvidenceUploadedEventTestData {
 
     public static List<Element<SupportingEvidenceBundle>>
         buildNonConfidentialPdfDocumentList(final String uploadedBy, FurtherEvidenceType type) {
-        return wrapElementsWithUUIDs(
-            createDummyEvidenceBundle(NON_CONFIDENTIAL_1, uploadedBy, false, PDF_DOCUMENT_1, type),
-            createDummyEvidenceBundle(NON_CONFIDENTIAL_2, uploadedBy, false, PDF_DOCUMENT_2, type));
+        return List.of(
+            element(DOC_ELEMENT_1_ID,
+                createDummyEvidenceBundle(NON_CONFIDENTIAL_1, uploadedBy, false, PDF_DOCUMENT_1, type)),
+            element(DOC_ELEMENT_2_ID,
+                createDummyEvidenceBundle(NON_CONFIDENTIAL_2, uploadedBy, false, PDF_DOCUMENT_2, type))
+        );
     }
 
 
@@ -340,19 +343,25 @@ public class FurtherEvidenceUploadedEventTestData {
 
     public static ApplicationDocument createDummyApplicationDocument(String name, String uploadedBy,
                                                                      DocumentReference docRef) {
-        return createDummyApplicationDocument(name,uploadedBy, docRef, false);
+        return createDummyApplicationDocument(name, uploadedBy, docRef, false);
     }
 
     public static ApplicationDocument createDummyApplicationDocument(final String name, final String uploadedBy,
                                                                      DocumentReference docRef, boolean confidential) {
+        return createDummyApplicationDocument(name, uploadedBy, docRef, confidential, BIRTH_CERTIFICATE);
+    }
+
+    public static ApplicationDocument createDummyApplicationDocument(final String name, final String uploadedBy,
+                                                                     DocumentReference docRef, boolean confidential,
+                                                                     ApplicationDocumentType documentType) {
         return ApplicationDocument.builder()
-                .documentName(name)
-                .documentType(BIRTH_CERTIFICATE)
-                .uploadedBy(uploadedBy)
-                .document(docRef)
-                .dateTimeUploaded(LocalDateTime.now())
-                .confidential(confidential ? List.of("CONFIDENTIAL") : List.of())
-                .build();
+            .documentName(name)
+            .documentType(documentType)
+            .uploadedBy(uploadedBy)
+            .document(docRef)
+            .dateTimeUploaded(LocalDateTime.now())
+            .confidential(confidential ? List.of("CONFIDENTIAL") : List.of())
+            .build();
     }
 
     public static CaseData buildCaseDataWithCourtBundleList(int count, String hearing, String uploadedBy) {
