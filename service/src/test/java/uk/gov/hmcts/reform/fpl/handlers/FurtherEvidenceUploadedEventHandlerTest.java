@@ -1356,7 +1356,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         }
     }
 
-    static class RespondentStatementArgs implements ArgumentsProvider {
+    static class RespondentStatementUploadTestArgs implements ArgumentsProvider {
 
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
@@ -1377,10 +1377,10 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     @Nested
-    class RespondentStatementTests {
+    class RespondentStatementUploadTests {
 
         @ParameterizedTest
-        @ArgumentsSource(RespondentStatementArgs.class)
+        @ArgumentsSource(RespondentStatementUploadTestArgs.class)
         void shouldSendNotificationForNewUpload(UserDetails userDetails,
                                                 DocumentUploaderType uploadedType,
                                                 String uploadedBy,
@@ -1399,7 +1399,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         }
 
         @ParameterizedTest
-        @ArgumentsSource(RespondentStatementArgs.class)
+        @ArgumentsSource(RespondentStatementUploadTestArgs.class)
         void shouldSendNotificationWhenReplacingConfidentialDocument(
             UserDetails userDetails,
             DocumentUploaderType uploadedType,
@@ -1457,7 +1457,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         }
     }
 
-    static class ApplicationDocumentArgs implements ArgumentsProvider {
+    static class ApplicationDocumentUploadTestArgs implements ArgumentsProvider {
 
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
@@ -1487,10 +1487,10 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     @Nested
-    class ApplicationDocumentTests {
+    class ApplicationDocumentUploadTests {
 
         @ParameterizedTest
-        @ArgumentsSource(ApplicationDocumentArgs.class)
+        @ArgumentsSource(ApplicationDocumentUploadTestArgs.class)
         void shouldSendNotificationForNewUpload(UserDetails userDetails,
                                                 DocumentUploaderType uploadedType,
                                                 String uploadedBy,
@@ -1506,7 +1506,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         }
 
         @ParameterizedTest
-        @ArgumentsSource(ApplicationDocumentArgs.class)
+        @ArgumentsSource(ApplicationDocumentUploadTestArgs.class)
         void shouldSendNotificationWhenReplacingDocument(
             UserDetails userDetails,
             DocumentUploaderType uploadedType,
@@ -1552,7 +1552,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         }
     }
 
-    static class AnyOtherDocumentUploadArgs implements ArgumentsProvider {
+    static class AnyOtherDocumentUploadTestArgs implements ArgumentsProvider {
 
         static final boolean HEARING_RELATED_YES = true;
         static final boolean HEARING_RELATED_NO = false;
@@ -1677,7 +1677,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     @Nested
-    class AnyOtherDocumentTests {
+    class AnyOtherDocumentUploadTests {
 
         private List<Element<SupportingEvidenceBundle>> document(CaseData caseData,
                                                                  DocumentUploaderType uploaderType) {
@@ -1694,7 +1694,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         }
 
         @ParameterizedTest
-        @ArgumentsSource(AnyOtherDocumentUploadArgs.class)
+        @ArgumentsSource(AnyOtherDocumentUploadTestArgs.class)
         @SuppressWarnings("unchecked")
         void shouldSendNotificationForNewUpload(DocumentUploaderType uploaderType,
             Set<DocumentUploadNotificationUserType> notificationTypes,
@@ -1713,7 +1713,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         }
 
         @ParameterizedTest
-        @ArgumentsSource(AnyOtherDocumentUploadArgs.class)
+        @ArgumentsSource(AnyOtherDocumentUploadTestArgs.class)
         @SuppressWarnings("unchecked")
         void shouldNotSendNotificationWhenDocsAreRemoved(DocumentUploaderType uploaderType,
                                                          Set<DocumentUploadNotificationUserType> notificationTypes,
@@ -1732,7 +1732,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         }
 
         @ParameterizedTest
-        @ArgumentsSource(AnyOtherDocumentUploadArgs.class)
+        @ArgumentsSource(AnyOtherDocumentUploadTestArgs.class)
         @SuppressWarnings("unchecked")
         void shouldNotSendNotificationWhenDocsAreTheSame(DocumentUploaderType uploaderType,
                                                 Set<DocumentUploadNotificationUserType> notificationTypes,
