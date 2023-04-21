@@ -252,16 +252,23 @@ public class GatekeepingOrderService {
                 StandardDirection standardDirection = converter
                     .convert(caseDetails.getData().get(requestedType.getFieldName()), StandardDirection.class);
 
-                DirectionConfiguration directionConfig = ordersLookupService.getDirectionConfiguration(requestedType);
+                if (standardDirection != null) {
+                    DirectionConfiguration directionConfig = ordersLookupService
+                        .getDirectionConfiguration(requestedType);
 
-                if (standardDirection.getDueDateType() == DirectionDueDateType.DAYS) {
-                    standardDirection.setDateToBeCompletedBy(
-                        calculateDirectionDueDate(firstHearing, directionConfig.getDisplay(),
-                            standardDirection.getDaysBeforeHearing()));
+                    if (standardDirection.getDueDateType() == DirectionDueDateType.DAYS) {
+                        standardDirection.setDateToBeCompletedBy(
+                            calculateDirectionDueDate(firstHearing, directionConfig.getDisplay(),
+                                standardDirection.getDaysBeforeHearing()));
+                    }
+
+                    return standardDirection.applyConfig(directionConfig);
+                } else {
+                    // DFPL-1381 quick fix for null pointer exception
+                    return null;
                 }
-
-                return standardDirection.applyConfig(directionConfig);
             })
+            .filter(Objects::nonNull)
             .collect(toList());
 
         eventData.setStandardDirections(wrapElements(standardDirections));

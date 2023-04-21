@@ -152,6 +152,47 @@ class GatekeepingOrderRouteValidatorTest {
     }
 
     @Test
+    void allowAccessToEventShouldReturnNoErrorWhenInterimCareOrderAlone() {
+        CaseData caseData = CaseData.builder()
+            .urgentDirectionsOrder(null)
+            .orders(Orders.builder().orderType(List.of(OrderType.INTERIM_CARE_ORDER)).build())
+            .build();
+
+        assertThat(underTest.allowAccessToEvent(caseData, ADD_URGENT_DIRECTIONS.getId())).isEmpty();
+    }
+
+    @Test
+    void allowAccessToEventShouldReturnNoErrorWhenSecureAccommodationOrderAlone() {
+        CaseData caseData = CaseData.builder()
+            .urgentDirectionsOrder(null)
+            .orders(Orders.builder().orderType(List.of(OrderType.SECURE_ACCOMMODATION_ORDER)).build())
+            .build();
+
+        assertThat(underTest.allowAccessToEvent(caseData, ADD_URGENT_DIRECTIONS.getId())).isEmpty();
+    }
+
+    @Test
+    void allowAccessToEventShouldReturnNoErrorWhenChildRecoveryOrderAlone() {
+        CaseData caseData = CaseData.builder()
+            .urgentDirectionsOrder(null)
+            .orders(Orders.builder().orderType(List.of(OrderType.CHILD_RECOVERY_ORDER)).build())
+            .build();
+
+        assertThat(underTest.allowAccessToEvent(caseData, ADD_URGENT_DIRECTIONS.getId())).isEmpty();
+    }
+
+    @Test
+    void allowAccessToEventShouldReturnNoErrorWhenCombinedEPOAndICO() {
+        CaseData caseData = CaseData.builder()
+            .urgentDirectionsOrder(null)
+            .orders(Orders.builder().orderType(List.of(OrderType.EMERGENCY_PROTECTION_ORDER,
+                OrderType.INTERIM_CARE_ORDER)).build())
+            .build();
+
+        assertThat(underTest.allowAccessToEvent(caseData, ADD_URGENT_DIRECTIONS.getId())).isEmpty();
+    }
+
+    @Test
     void allowAccessToUrgentHearingRouteShouldReturnErrorWhenStateIsCaseManagement() {
         CaseData caseData = CaseData.builder().hearingDetails(HEARINGS).state(State.CASE_MANAGEMENT).build();
 
