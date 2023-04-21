@@ -25,6 +25,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.CHILD_RECOVERY_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CONTACT_WITH_CHILD_IN_CARE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.REFUSE_CONTACT_WITH_CHILD;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.SECURE_ACCOMMODATION_ORDER;
@@ -99,7 +100,7 @@ public class Orders {
     }
 
     public boolean containsInterimCareOrder() {
-        return isNotEmpty(orderType) && orderType.contains(OrderType.INTERIM_CARE_ORDER);
+        return isNotEmpty(orderType) && orderType.contains(INTERIM_CARE_ORDER);
     }
 
     public boolean containsCareOrder() {
@@ -112,5 +113,21 @@ public class Orders {
 
     public boolean isEmergencyProtectionOrderOnly() {
         return isNotEmpty(orderType) && orderType.size() == 1 && orderType.contains(EMERGENCY_PROTECTION_ORDER);
+    }
+
+    public boolean isInterimCareOrderOnly() {
+        return isNotEmpty(orderType) && orderType.size() == 1 && orderType.contains(INTERIM_CARE_ORDER);
+    }
+
+    public boolean isSecureAccommodationOrderOnly() {
+        return isNotEmpty(orderType) && orderType.size() == 1 && orderType.contains(SECURE_ACCOMMODATION_ORDER);
+    }
+
+    public boolean isChildRecoveryOrderOnly() {
+        return isNotEmpty(orderType) && orderType.size() == 1 && orderType.contains(CHILD_RECOVERY_ORDER);
+    }
+
+    public boolean isEPOCombinedWithICO() {
+        return isNotEmpty(orderType) && containsInterimCareOrder() && orderContainsEPO();
     }
 }

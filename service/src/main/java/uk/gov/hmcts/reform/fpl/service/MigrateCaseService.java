@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
 import uk.gov.hmcts.reform.fpl.model.Placement;
@@ -47,6 +48,7 @@ public class MigrateCaseService {
     private static final String PLACEMENT_NON_CONFIDENTIAL = "placementsNonConfidential";
     private static final String PLACEMENT_NON_CONFIDENTIAL_NOTICES = "placementsNonConfidentialNotices";
     private final CaseNoteService caseNoteService;
+    private final CourtService courtService;
     private final DocumentListService documentListService;
 
     public Map<String, Object> removeHearingOrderBundleDraft(CaseData caseData, String migrationId, UUID bundleId,
@@ -516,6 +518,16 @@ public class MigrateCaseService {
         }
 
         return Map.of("skeletonArgumentList", updatedSkeletonArguments);
+    }
+
+    public Map<String, Object> addCourt(String courtId) {
+        Optional<Court> court = courtService.getCourt(courtId);
+
+        if (court.isPresent()) {
+            return Map.of("court", court.get());
+        } else {
+            throw new IllegalArgumentException(format("Court not found with ID %s", courtId));
+        }
     }
 
     private String stripIllegalCharacters(String str) {

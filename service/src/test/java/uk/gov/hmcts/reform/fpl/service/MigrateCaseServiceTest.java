@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -55,6 +56,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith({MockitoExtension.class})
@@ -67,6 +69,9 @@ class MigrateCaseServiceTest {
     private CaseNoteService caseNoteService;
     @Mock
     private DocumentListService documentListService;
+
+    @Mock
+    private CourtService courtService;
 
     @InjectMocks
     private MigrateCaseService underTest;
@@ -1391,4 +1396,29 @@ class MigrateCaseServiceTest {
                     MIGRATION_ID, 1, skeletonArgumentToBeRemoved.getId().toString()));
         }
     }
+
+    @TestInstance(TestInstance.Lifecycle.PER_METHOD)
+    @Nested
+    class AddCourt {
+
+        @Test
+        void shouldGetCourtFieldToUpdate() {
+            Court court = Court.builder().code("165").name("Carlisle").build();
+            when(courtService.getCourt("165")).thenReturn(Optional.of(court));
+
+            Map<String, Object> updatedFields = underTest.addCourt("165");
+
+            assertThat(updatedFields).extracting("court").isEqualTo(court);
+        }
+
+        @Test
+        void shouldThrowExceptionIfCourtNotFound() {
+            when(courtService.getCourt("NOTCOURT")).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> underTest.addCourt("NOTCOURT"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Court not found with ID NOTCOURT");
+        }
+    }
+
 }
