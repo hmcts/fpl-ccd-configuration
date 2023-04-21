@@ -65,6 +65,7 @@ import java.util.stream.Stream;
 
 import static java.time.LocalDateTime.now;
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -189,8 +190,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         Consumer<CaseData> caseDataModifier,
 
         Function<CaseData, Set<DocumentReference>> documentReferencesExtractor,
-        String documentTypeString, String emailSubjectInfo)
-    {
+        String documentTypeString, String emailSubjectInfo) {
 
         CaseData caseDataBefore = buildSubmittedCaseData();
         beforeCaseDataModifier.accept(caseDataBefore);
@@ -1581,8 +1581,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
             List<String> expectedDocumentNames,
             List<?> updatingDocument,
             boolean isRelatingToHearing,
-            boolean isNotifyingCafcass)
-        {
+            boolean isNotifyingCafcass) {
             verifyCafcassNotificationFurtherDocumentsTemplate(
                 getUserDetails(uploaderType), uploaderType,
                 isRelatingToHearing
@@ -1629,8 +1628,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
             List<String> expectedDocumentNames,
             List<?> updatingDocument,
             boolean isRelatingToHearing,
-            boolean isNotifyingCafcass)
-        {
+            boolean isNotifyingCafcass) {
             verifyCafcassNotificationFurtherDocumentsTemplate(
                 getUserDetails(uploaderType), uploaderType,
                 isRelatingToHearing
@@ -1646,6 +1644,52 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 (caseData) -> getExpectedDocumentReferences(caseData, uploaderType, isRelatingToHearing),
                 null,
                 null);
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(AnyOtherDocumentUploadTestArgs.class)
+        @SuppressWarnings("unchecked")
+        void shouldNotSendNotificationWhenConfidentialChanged(
+            DocumentUploaderType uploaderType,
+            Set<DocumentUploadNotificationUserType> notificationTypes,
+            List<String> expectedDocumentNames,
+            List<?> originalDocuments,
+            boolean isRelatingToHearing,
+            boolean isNotifyingCafcass) {
+            List<?> beforeDocument = originalDocuments;
+            List<?> afterDocuments;
+            if (isRelatingToHearing) {
+                afterDocuments = ((List<Element<HearingFurtherEvidenceBundle>>) originalDocuments)
+                    .stream()
+                    .map(hfvb -> element(hfvb.getId(), hfvb.getValue().toBuilder()
+                        .supportingEvidenceBundle(hfvb.getValue().getSupportingEvidenceBundle().stream()
+                            .map(seb -> element(seb.getId(), seb.getValue().toBuilder().confidential(seb.getValue()
+                                .getConfidential() != null ? null : List.of("CONFIDENTIAL"))
+                                .build()))
+                            .collect(toList()))
+                        .build()))
+                    .collect(toList());
+            } else {
+                afterDocuments = ((List<Element<SupportingEvidenceBundle>>) originalDocuments).stream()
+                    .map(seb -> element(seb.getId(), seb.getValue().toBuilder().confidential(seb.getValue()
+                            .getConfidential() != null ? null : List.of("CONFIDENTIAL"))
+                        .build()))
+                    .collect(toList());
+            }
+
+            verifyNotificationFurtherDocumentsTemplate(
+                getUserDetails(uploaderType), uploaderType,
+                isRelatingToHearing
+                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
+                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) originalDocuments)
+                    : (caseData) -> document(caseData, uploaderType)
+                    .addAll((List<Element<SupportingEvidenceBundle>>) originalDocuments),
+                isRelatingToHearing
+                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
+                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) afterDocuments)
+                    : (caseData) -> document(caseData, uploaderType)
+                    .addAll((List<Element<SupportingEvidenceBundle>>) afterDocuments),
+                Set.of(), null);
         }
     }
 }
