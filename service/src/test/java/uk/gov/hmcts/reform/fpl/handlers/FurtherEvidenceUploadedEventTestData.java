@@ -402,7 +402,7 @@ public class FurtherEvidenceUploadedEventTestData {
         List<Element<SupportingEvidenceBundle>> bundle
     ) {
         return wrapElementsWithUUIDs(HearingFurtherEvidenceBundle.builder()
-            .hearingName(UUID.randomUUID().toString())
+            .hearingName("hearingName-" + UUID.randomUUID().toString())
             .supportingEvidenceBundle(bundle)
             .build());
     }
