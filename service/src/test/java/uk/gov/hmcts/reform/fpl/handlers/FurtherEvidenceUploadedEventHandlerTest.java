@@ -355,7 +355,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
         assertThat(courtBundleData.getHearingDetails()).isEqualTo(hearing);
     }
 
-
     @Test
     void shouldEmailCafcassWhenNewBundlesAreAdded() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))

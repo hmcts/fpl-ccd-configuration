@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -371,8 +370,8 @@ public class FurtherEvidenceUploadedEventTestData {
         return IntStream.rangeClosed(1, count)
             .boxed()
             .map(value -> {
-                Element<CourtBundle> courtBundleElement = ElementUtils.element(createDummyCourtBundle(uploadedBy));
-                return ElementUtils.element(HearingCourtBundle.builder()
+                Element<CourtBundle> courtBundleElement = element(createDummyCourtBundle(uploadedBy));
+                return element(HearingCourtBundle.builder()
                         .hearing(hearing)
                         .courtBundle(List.of(courtBundleElement))
                         .build()
