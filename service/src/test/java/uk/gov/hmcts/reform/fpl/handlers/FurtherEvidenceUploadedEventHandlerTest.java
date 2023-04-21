@@ -1619,5 +1619,33 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     .addAll((List<Element<SupportingEvidenceBundle>>) updatingDocument),
                 Set.of(), null);
         }
+
+        @ParameterizedTest
+        @ArgumentsSource(AnyOtherDocumentUploadTestArgs.class)
+        @SuppressWarnings("unchecked")
+        void shouldNotSendNotificationToCafcassWhenDocsAreTheSame(
+            DocumentUploaderType uploaderType,
+            Set<DocumentUploadNotificationUserType> notificationTypes,
+            List<String> expectedDocumentNames,
+            List<?> updatingDocument,
+            boolean isRelatingToHearing,
+            boolean isNotifyingCafcass)
+        {
+            verifyCafcassNotificationFurtherDocumentsTemplate(
+                getUserDetails(uploaderType), uploaderType,
+                isRelatingToHearing
+                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
+                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) updatingDocument)
+                    : (caseData) -> document(caseData, uploaderType)
+                    .addAll((List<Element<SupportingEvidenceBundle>>) updatingDocument),
+                isRelatingToHearing
+                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
+                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) updatingDocument)
+                    : (caseData) -> document(caseData, uploaderType)
+                    .addAll((List<Element<SupportingEvidenceBundle>>) updatingDocument),
+                (caseData) -> getExpectedDocumentReferences(caseData, uploaderType, isRelatingToHearing),
+                null,
+                null);
+        }
     }
 }
