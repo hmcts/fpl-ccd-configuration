@@ -1495,8 +1495,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         @SuppressWarnings("unchecked")
         Set<DocumentReference> getExpectedDocumentReferences(CaseData caseData,
-                                                                    DocumentUploaderType uploaderType,
-                                                                    boolean isRelatingToHearing) {
+                                                             DocumentUploaderType uploaderType,
+                                                             boolean isRelatingToHearing) {
             if (isRelatingToHearing) {
                 return unwrapElements(caseData.getHearingFurtherEvidenceDocuments())
                     .stream()
