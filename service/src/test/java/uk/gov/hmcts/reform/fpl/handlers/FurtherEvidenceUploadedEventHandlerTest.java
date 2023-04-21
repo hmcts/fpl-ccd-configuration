@@ -1677,7 +1677,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     @Nested
-    class AnyOtherDocument {
+    class AnyOtherDocumentTests {
 
         private List<Element<SupportingEvidenceBundle>> document(CaseData caseData,
                                                                  DocumentUploaderType uploaderType) {
