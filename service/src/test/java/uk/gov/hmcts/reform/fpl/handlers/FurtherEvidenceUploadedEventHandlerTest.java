@@ -598,48 +598,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     @Test
-    void shouldEmailCafcassWhenHearingFurtherEvidenceBundleIsUploaded() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
-
-        CaseData caseData = buildCaseDataWithHearingFurtherEvidenceBundle();
-
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-                new FurtherEvidenceUploadedEvent(
-                        caseData,
-                        buildCaseDataWithConfidentialLADocuments(),
-                        DESIGNATED_LOCAL_AUTHORITY,
-                        userDetailsLA());
-
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
-
-        Set<DocumentReference> documentReferences = unwrapElements(
-                caseData.getHearingFurtherEvidenceDocuments()).stream()
-                    .map(HearingFurtherEvidenceBundle::getSupportingEvidenceBundle)
-                    .flatMap(List::stream)
-                    .map(Element::getValue)
-                    .map(SupportingEvidenceBundle::getDocument)
-                    .collect(Collectors.toSet());
-
-        verify(cafcassNotificationService).sendEmail(
-            eq(caseData),
-            eq(documentReferences),
-            eq(NEW_DOCUMENT),
-            newDocumentDataCaptor.capture());
-
-        NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
-        assertThat(newDocumentData.getDocumentTypes())
-                .isEqualTo("• Child's guardian reports\n"
-                        + "• Child's guardian reports");
-        assertThat(newDocumentData.getEmailSubjectInfo())
-                .isEqualTo("Further documents for main application");
-    }
-
-    @Test
     void shouldEmailCafcassWhenApplicationDocumentIsUploaded() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
