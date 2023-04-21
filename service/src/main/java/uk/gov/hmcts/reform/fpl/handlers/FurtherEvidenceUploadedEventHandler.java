@@ -69,7 +69,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.ALL_LAS;
-import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.CAFCASS_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.CHILD_SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.RESPONDENT_SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
@@ -113,8 +113,8 @@ public class FurtherEvidenceUploadedEventHandler {
             final Set<String> recipients = new LinkedHashSet<>();
             if (!entry.getValue().isEmpty()) {
                 DocumentUploadNotificationUserType key = entry.getKey();
-                if (key == CAFCASS) {
-                    recipients.addAll(furtherEvidenceNotificationService.getCafcassEmails(caseData));
+                if (key == CAFCASS_REPRESENTATIVES) {
+                    recipients.addAll(furtherEvidenceNotificationService.getCafcassRepresentativeEmails(caseData));
                 } else if (key == CHILD_SOLICITOR) {
                     recipients.addAll(furtherEvidenceNotificationService.getChildSolicitorEmails(caseData));
                 } else if (key == RESPONDENT_SOLICITOR) {
@@ -666,7 +666,7 @@ public class FurtherEvidenceUploadedEventHandler {
         // initialisation
         Map<DocumentUploadNotificationUserType, List<FurtherDocument>> ret = new HashMap<>();
         ret.put(ALL_LAS, new ArrayList<>());
-        ret.put(CAFCASS, new ArrayList<>());
+        ret.put(CAFCASS_REPRESENTATIVES, new ArrayList<>());
         ret.put(CHILD_SOLICITOR, new ArrayList<>());
         ret.put(RESPONDENT_SOLICITOR, new ArrayList<>());
 
@@ -679,7 +679,7 @@ public class FurtherEvidenceUploadedEventHandler {
         unwrapElements(newApplicationDocuments).forEach(applicationDocument -> {
             ret.get(ALL_LAS).add(applicationDocument);
             if (!applicationDocument.isConfidentialDocument()) {
-                ret.get(CAFCASS).add(applicationDocument);
+                ret.get(CAFCASS_REPRESENTATIVES).add(applicationDocument);
                 ret.get(CHILD_SOLICITOR).add(applicationDocument);
                 ret.get(RESPONDENT_SOLICITOR).add(applicationDocument);
             }
@@ -692,7 +692,7 @@ public class FurtherEvidenceUploadedEventHandler {
                 getEvidenceBundleFromRespondentStatements(beforeCaseData));
         unwrapElements(respondentStatements).forEach(respondentStatement -> {
             if (!respondentStatement.isConfidentialDocument()) {
-                ret.get(CAFCASS).add(respondentStatement);
+                ret.get(CAFCASS_REPRESENTATIVES).add(respondentStatement);
                 ret.get(CHILD_SOLICITOR).add(respondentStatement);
                 ret.get(RESPONDENT_SOLICITOR).add(respondentStatement);
             }
@@ -712,7 +712,7 @@ public class FurtherEvidenceUploadedEventHandler {
                 ret.get(CHILD_SOLICITOR).add(doc);
                 ret.get(RESPONDENT_SOLICITOR).add(doc);
                 if (!NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(doc.getType())) {
-                    ret.get(CAFCASS).add(doc);
+                    ret.get(CAFCASS_REPRESENTATIVES).add(doc);
                 }
             }
             ret.get(ALL_LAS).add(doc);
@@ -727,7 +727,7 @@ public class FurtherEvidenceUploadedEventHandler {
                 ret.get(CHILD_SOLICITOR).add(doc);
                 ret.get(RESPONDENT_SOLICITOR).add(doc);
                 if (!NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(doc.getType())) {
-                    ret.get(CAFCASS).add(doc);
+                    ret.get(CAFCASS_REPRESENTATIVES).add(doc);
                 }
                 ret.get(ALL_LAS).add(doc);
             }
@@ -742,7 +742,7 @@ public class FurtherEvidenceUploadedEventHandler {
             ret.get(CHILD_SOLICITOR).add(doc);
             ret.get(RESPONDENT_SOLICITOR).add(doc);
             if (!NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(doc.getType())) {
-                ret.get(CAFCASS).add(doc);
+                ret.get(CAFCASS_REPRESENTATIVES).add(doc);
             }
             ret.get(ALL_LAS).add(doc);
         });
@@ -756,7 +756,7 @@ public class FurtherEvidenceUploadedEventHandler {
                 ret.get(CHILD_SOLICITOR).add(doc);
                 ret.get(RESPONDENT_SOLICITOR).add(doc);
                 if (!NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(doc.getType())) {
-                    ret.get(CAFCASS).add(doc);
+                    ret.get(CAFCASS_REPRESENTATIVES).add(doc);
                 }
             }
             if (!(doc.isUploadedByHMCTS() && doc.isConfidentialDocument())) {
