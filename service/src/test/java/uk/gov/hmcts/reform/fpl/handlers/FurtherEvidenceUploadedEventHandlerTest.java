@@ -83,7 +83,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.ALL_LAS;
-import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.CAFCASS_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.CHILD_SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.RESPONDENT_SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
@@ -205,7 +205,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         when(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData))
             .thenReturn(Set.of(LA_USER_EMAIL, LA2_USER_EMAIL));
         final Set<String> allCafcassEmails = Set.of(CAFCASS_EMAIL);
-        when(furtherEvidenceNotificationService.getCafcassEmails(caseData))
+        when(furtherEvidenceNotificationService.getCafcassRepresentativeEmails(caseData))
             .thenReturn(Set.of(CAFCASS_EMAIL));
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
@@ -220,7 +220,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 verify(furtherEvidenceNotificationService, never()).sendNotification(any(),
                     eq(allLAs), any(), any());
             }
-            if (notificationTypes.contains(CAFCASS)) {
+            if (notificationTypes.contains(CAFCASS_REPRESENTATIVES)) {
                 verify(furtherEvidenceNotificationService).sendNotification(
                     any(), eq(allCafcassEmails), eq(SENDER), eq(expectedDocumentNames));
             } else {
@@ -1362,15 +1362,15 @@ class FurtherEvidenceUploadedEventHandlerTest {
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
                 of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
-                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS), NON_CONFIDENTIAL, false),
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES), NON_CONFIDENTIAL, false),
                 of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
                     Set.of(ALL_LAS), CONFIDENTIAL, true),
                 of(userDetailsHMCTS(), HMCTS, HMCTS_USER,
-                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS), NON_CONFIDENTIAL, false),
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES), NON_CONFIDENTIAL, false),
                 of(userDetailsHMCTS(), HMCTS, HMCTS_USER,
                     Set.of(), CONFIDENTIAL, true),
                 of(userDetailsRespondentSolicitor(), SOLICITOR, REP_USER,
-                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS), NON_CONFIDENTIAL, false)
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES), NON_CONFIDENTIAL, false)
             // Note: Respondent/Child Solicitor cannot upload confidential document
             );
         }
@@ -1463,7 +1463,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
                 of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
-                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES),
                     List.of(BIRTH_CERTIFICATE.getLabel()), false),
                 of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
                     Set.of(ALL_LAS),
@@ -1562,7 +1562,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
             return Stream.of(
                 // By DESIGNATED_LOCAL_AUTHORITY
                 of(DESIGNATED_LOCAL_AUTHORITY,
-                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES),
                     NON_CONFIDENTIAL,
                     buildNonConfidentialPdfDocumentList(LA_USER),
                     HEARING_RELATED_NO),
@@ -1572,7 +1572,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     buildConfidentialDocumentList(LA_USER),
                     HEARING_RELATED_NO),
                 of(DESIGNATED_LOCAL_AUTHORITY,
-                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES),
                     NON_CONFIDENTIAL,
                     buildHearingFurtherEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER)),
                     HEARING_RELATED_YES),
@@ -1607,7 +1607,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
                 // By HMCTS
                 of(HMCTS,
-                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES),
                     NON_CONFIDENTIAL,
                     buildNonConfidentialPdfDocumentList(HMCTS_USER),
                     HEARING_RELATED_NO),
@@ -1617,7 +1617,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     buildConfidentialDocumentList(HMCTS_USER),
                     HEARING_RELATED_NO),
                 of(HMCTS,
-                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES),
                     NON_CONFIDENTIAL,
                     buildHearingFurtherEvidenceBundle(buildNonConfidentialPdfDocumentList(HMCTS_USER)),
                     HEARING_RELATED_YES),
@@ -1651,12 +1651,12 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     HEARING_RELATED_YES),
                 // By Solicitor - no confidential document for solicitors
                 of(SOLICITOR,
-                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES),
                     NON_CONFIDENTIAL,
                     buildNonConfidentialPdfDocumentList(REP_USER),
                     HEARING_RELATED_NO),
                 of(SOLICITOR,
-                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS),
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES),
                     NON_CONFIDENTIAL,
                     buildHearingFurtherEvidenceBundle(buildNonConfidentialPdfDocumentList(REP_USER)),
                     HEARING_RELATED_YES),
