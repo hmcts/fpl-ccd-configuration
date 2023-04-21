@@ -1201,15 +1201,18 @@ class FurtherEvidenceUploadedEventHandlerTest {
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
                 of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
-                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES), NON_CONFIDENTIAL, false),
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES), NON_CONFIDENTIAL,
+                    false),
                 of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
                     Set.of(ALL_LAS), CONFIDENTIAL, true),
                 of(userDetailsHMCTS(), HMCTS, HMCTS_USER,
-                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES), NON_CONFIDENTIAL, false),
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES), NON_CONFIDENTIAL,
+                    false),
                 of(userDetailsHMCTS(), HMCTS, HMCTS_USER,
                     Set.of(), CONFIDENTIAL, true),
                 of(userDetailsRespondentSolicitor(), SOLICITOR, REP_USER,
-                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES), NON_CONFIDENTIAL, false)
+                    Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES), NON_CONFIDENTIAL,
+                    false)
             // Note: Respondent/Child Solicitor cannot upload confidential document
             );
         }
