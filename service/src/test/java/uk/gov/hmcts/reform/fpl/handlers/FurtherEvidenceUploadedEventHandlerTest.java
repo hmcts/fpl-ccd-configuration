@@ -141,7 +141,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
     private static final String REP_USER = "REP";
     private static final String LA_USER_EMAIL = "la@examaple.com";
     private static final String LA2_USER_EMAIL = "la2@examaple.com";
-    private static final String CAFCASS_EMAIL = "cafcass@examaple.com";
+    private static final String CAFCASS_REPRESENTATIVE_EMAIL = "cafcass@examaple.com";
     private static final String SENDER_FORENAME = "The";
     private static final String SENDER_SURNAME = "Sender";
     private static final String SENDER = SENDER_FORENAME + " " + SENDER_SURNAME;
@@ -204,9 +204,9 @@ class FurtherEvidenceUploadedEventHandlerTest {
         final Set<String> allLAs = Set.of(LA_USER_EMAIL, LA2_USER_EMAIL);
         when(furtherEvidenceNotificationService.getLocalAuthoritiesRecipients(caseData))
             .thenReturn(Set.of(LA_USER_EMAIL, LA2_USER_EMAIL));
-        final Set<String> allCafcassEmails = Set.of(CAFCASS_EMAIL);
+        final Set<String> allCafcassRepresentativeEmails = Set.of(CAFCASS_REPRESENTATIVE_EMAIL);
         when(furtherEvidenceNotificationService.getCafcassRepresentativeEmails(caseData))
-            .thenReturn(Set.of(CAFCASS_EMAIL));
+            .thenReturn(Set.of(CAFCASS_REPRESENTATIVE_EMAIL));
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
             new FurtherEvidenceUploadedEvent(caseData, caseDataBefore, uploadedType, uploadedBy);
@@ -222,10 +222,10 @@ class FurtherEvidenceUploadedEventHandlerTest {
             }
             if (notificationTypes.contains(CAFCASS_REPRESENTATIVES)) {
                 verify(furtherEvidenceNotificationService).sendNotification(
-                    any(), eq(allCafcassEmails), eq(SENDER), eq(expectedDocumentNames));
+                    any(), eq(allCafcassRepresentativeEmails), eq(SENDER), eq(expectedDocumentNames));
             } else {
                 verify(furtherEvidenceNotificationService, never()).sendNotification(any(),
-                    eq(allCafcassEmails), any(), any());
+                    eq(allCafcassRepresentativeEmails), any(), any());
             }
             if (notificationTypes.contains(CHILD_SOLICITOR)) {
                 verify(furtherEvidenceNotificationService).sendNotification(
