@@ -63,11 +63,12 @@ public class DraftOrdersUploadedEventHandler {
         }
 
         Stream.of(DRAFT_CMO, AGREED_CMO).forEach(hearingOrderType -> {
-            List<HearingOrder> orders = switch (hearingOrderType) {
-                case DRAFT_CMO -> getHearingOrdersBundlesDraftReview(caseData);
-                case AGREED_CMO -> getHearingOrdersBundlesDrafts(caseData);
-                default -> emptyList();
-            };
+            List<HearingOrder> orders;
+            if (DRAFT_CMO.equals(hearingOrderType)) {
+                orders = getHearingOrdersBundlesDraftReview(caseData);
+            } else {
+                orders = getHearingOrdersBundlesDrafts(caseData);
+            }
 
             if (!isEmpty(orders)) {
                 final DraftOrdersUploadedTemplate content = draftOrdersContentProvider.buildContent(
