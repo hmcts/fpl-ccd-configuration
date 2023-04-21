@@ -61,7 +61,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.time.LocalDateTime.now;
@@ -107,7 +106,6 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithCorrespondencesByLA;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithCorrespondencesBySolicitor;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithCourtBundleList;
-import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithHearingFurtherEvidenceBundle;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialLADocuments;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildConfidentialDocumentList;
@@ -191,7 +189,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
         Consumer<CaseData> caseDataModifier,
 
         Function<CaseData, Set<DocumentReference>> documentReferencesExtractor,
-        String documentTypeString, String emailSubjectInfo) {
+        String documentTypeString, String emailSubjectInfo)
+    {
 
         CaseData caseDataBefore = buildSubmittedCaseData();
         beforeCaseDataModifier.accept(caseDataBefore);
@@ -1495,8 +1494,9 @@ class FurtherEvidenceUploadedEventHandlerTest {
         }
 
         @SuppressWarnings("unchecked")
-        Set<DocumentReference> getExpectedDocumentReferences(CaseData caseData, DocumentUploaderType uploaderType,
-                                                             boolean isRelatingToHearing) {
+        Set<DocumentReference> getExpectedDocumentReferences(CaseData caseData,
+                                                                    DocumentUploaderType uploaderType,
+                                                                    boolean isRelatingToHearing) {
             if (isRelatingToHearing) {
                 return unwrapElements(caseData.getHearingFurtherEvidenceDocuments())
                     .stream()
@@ -1517,7 +1517,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
                                                 Set<DocumentUploadNotificationUserType> notificationTypes,
                                                 List<String> expectedDocumentNames,
                                                 List<?> updatingDocument,
-                                                boolean isRelatingToHearing) {
+                                                boolean isRelatingToHearing,
+                                                boolean isNotifyingCafcass) {
             verifyNotificationFurtherDocumentsTemplate(
                 getUserDetails(uploaderType), uploaderType,
                 EMPTY_CASE_DATA_MODIFIER,
@@ -1569,6 +1570,30 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     .addAll((List<Element<SupportingEvidenceBundle>>) originalDocuments),
                 EMPTY_CASE_DATA_MODIFIER,
                 Set.of(), null);
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(AnyOtherDocumentUploadTestArgs.class)
+        @SuppressWarnings("unchecked")
+        void shouldNotSendNotificationToCafcassWhenDocsAreRemoved(
+            DocumentUploaderType uploaderType,
+            Set<DocumentUploadNotificationUserType> notificationTypes,
+            List<String> expectedDocumentNames,
+            List<?> updatingDocument,
+            boolean isRelatingToHearing,
+            boolean isNotifyingCafcass)
+        {
+            verifyCafcassNotificationFurtherDocumentsTemplate(
+                getUserDetails(uploaderType), uploaderType,
+                isRelatingToHearing
+                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
+                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) updatingDocument)
+                    : (caseData) -> document(caseData, uploaderType)
+                    .addAll((List<Element<SupportingEvidenceBundle>>) updatingDocument),
+                EMPTY_CASE_DATA_MODIFIER,
+                (caseData) -> getExpectedDocumentReferences(caseData, uploaderType, isRelatingToHearing),
+                null,
+                null);
         }
 
         @ParameterizedTest
