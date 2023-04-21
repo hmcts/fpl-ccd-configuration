@@ -207,9 +207,8 @@ class DraftsOrdersUploadedEventHandlerTest {
         );
     }
 
-
     @Test
-    void shouldSendNotificationToHearingJudge() {
+    void shouldSendNotificationToHearingJudgeWhenDraftCMOUploaded() {
         final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
         final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
 
@@ -229,7 +228,45 @@ class DraftsOrdersUploadedEventHandlerTest {
 
         when(draftOrdersContentProvider.buildContent(
             caseData, selectedHearing.getValue(), judge,
-            unwrapElements(selectedHearingBundle.getOrders())
+            unwrapElements(selectedHearingBundle.getOrders()),
+            DRAFT_CMO
+        )).thenReturn(DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA);
+
+        underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
+
+        verify(notificationService).sendEmail(
+            DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE,
+            judge.getJudgeEmailAddress(),
+            DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA,
+            CASE_ID
+        );
+
+        verifyNoMoreInteractions(notificationService);
+    }
+
+    @Test
+    void shouldSendNotificationToHearingJudgeWhenAgreedCMOUploaded() {
+        final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
+        final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
+
+        final HearingOrdersBundle bundle = ordersBundle(hearing.getId(), DRAFT_CMO, C21);
+        final HearingOrdersBundle selectedHearingBundle = ordersBundle(selectedHearing.getId(), AGREED_CMO, C21, C21);
+
+        final JudgeAndLegalAdvisor judge = selectedHearing.getValue().getJudgeAndLegalAdvisor();
+
+        final CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .allocatedJudge(allocatedJudge())
+            .hearingDetails(List.of(hearing, selectedHearing))
+            .hearingOrdersBundlesDrafts(wrapElements(bundle, selectedHearingBundle))
+            .lastHearingOrderDraftsHearingId(selectedHearing.getId())
+            .build();
+
+        when(draftOrdersContentProvider.buildContent(
+            caseData, selectedHearing.getValue(), judge,
+            unwrapElements(selectedHearingBundle.getOrders()),
+            AGREED_CMO
         )).thenReturn(DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA);
 
         underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
