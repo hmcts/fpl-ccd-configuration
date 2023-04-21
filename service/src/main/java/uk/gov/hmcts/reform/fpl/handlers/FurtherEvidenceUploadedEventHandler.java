@@ -445,21 +445,11 @@ public class FurtherEvidenceUploadedEventHandler {
     }
 
     private DocumentInfo getHearingFurtherEvidenceDocuments(CaseData caseData, CaseData caseDataBefore) {
-        List<HearingFurtherEvidenceBundle> newHearingFurtherEvidenceDocuments = unwrapElements(
-                caseData.getHearingFurtherEvidenceDocuments());
-        List<HearingFurtherEvidenceBundle> oldHearingFurtherEvidenceDocuments = unwrapElements(
-                caseDataBefore.getHearingFurtherEvidenceDocuments());
+        List<Element<SupportingEvidenceBundle>> newAnyOtherDocumentFromHearings =
+            getNewSupportingEvidenceBundle(getEvidenceBundleFromHearings(caseData),
+                getEvidenceBundleFromHearings(caseDataBefore));
 
-        Set<Element<SupportingEvidenceBundle>> oldSupportingEvidenceBundle =
-                oldHearingFurtherEvidenceDocuments.stream()
-                .map(HearingFurtherEvidenceBundle::getSupportingEvidenceBundle)
-                .flatMap(List::stream)
-                .collect(toSet());
-
-        return newHearingFurtherEvidenceDocuments.stream()
-                .map(HearingFurtherEvidenceBundle::getSupportingEvidenceBundle)
-                .flatMap(List::stream)
-                .filter(not(oldSupportingEvidenceBundle::contains))
+        return newAnyOtherDocumentFromHearings.stream()
                 .map(Element::getValue)
                 .filter(bundle -> !NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(bundle.getType()))
                 .map(supportingEvidenceBundle -> {
