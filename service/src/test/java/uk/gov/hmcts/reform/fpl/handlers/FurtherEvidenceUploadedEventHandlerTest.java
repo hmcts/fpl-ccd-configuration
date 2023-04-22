@@ -1459,22 +1459,34 @@ class FurtherEvidenceUploadedEventHandlerTest {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private static Consumer<CaseData> toCaseDataModifier(List<?> documents,
+                                                         DocumentUploaderType uploaderType,
+                                                         boolean isRelatingToHearing) {
+        return isRelatingToHearing
+            ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
+            .addAll((List<Element<HearingFurtherEvidenceBundle>>) documents)
+            : (caseData) -> document(caseData, uploaderType)
+            .addAll((List<Element<SupportingEvidenceBundle>>) documents);
+    }
+
+    private static List<Element<SupportingEvidenceBundle>> document(CaseData caseData,
+                                                                    DocumentUploaderType uploaderType) {
+        switch (uploaderType) {
+            case DESIGNATED_LOCAL_AUTHORITY:
+                return caseData.getFurtherEvidenceDocumentsLA();
+            case HMCTS:
+                return caseData.getFurtherEvidenceDocuments();
+            case SOLICITOR:
+                return caseData.getFurtherEvidenceDocumentsSolicitor();
+            default:
+                throw new AssertionError("unexpected uploaderType");
+        }
+    }
+
+
     @Nested
     class AnyOtherDocumentUploadTests {
-
-        private List<Element<SupportingEvidenceBundle>> document(CaseData caseData,
-                                                                 DocumentUploaderType uploaderType) {
-            switch (uploaderType) {
-                case DESIGNATED_LOCAL_AUTHORITY:
-                    return caseData.getFurtherEvidenceDocumentsLA();
-                case HMCTS:
-                    return caseData.getFurtherEvidenceDocuments();
-                case SOLICITOR:
-                    return caseData.getFurtherEvidenceDocumentsSolicitor();
-                default:
-                    throw new AssertionError("unexpected uploaderType");
-            }
-        }
 
         @SuppressWarnings("unchecked")
         Set<DocumentReference> getExpectedDocumentReferences(CaseData caseData,
@@ -1499,17 +1511,13 @@ class FurtherEvidenceUploadedEventHandlerTest {
         void shouldSendNotificationForNewUpload(DocumentUploaderType uploaderType,
                                                 Set<DocumentUploadNotificationUserType> notificationTypes,
                                                 List<String> expectedDocumentNames,
-                                                List<?> updatingDocument,
+                                                List<?> documents,
                                                 boolean isRelatingToHearing,
                                                 boolean isNotifyingCafcass) {
             verifyNotificationFurtherDocumentsTemplate(
                 getUserDetails(uploaderType), uploaderType,
                 EMPTY_CASE_DATA_MODIFIER,
-                isRelatingToHearing
-                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
-                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) updatingDocument)
-                    : (caseData) -> document(caseData, uploaderType)
-                    .addAll((List<Element<SupportingEvidenceBundle>>) updatingDocument),
+                toCaseDataModifier(documents, uploaderType, isRelatingToHearing),
                 notificationTypes, expectedDocumentNames);
         }
 
@@ -1519,17 +1527,13 @@ class FurtherEvidenceUploadedEventHandlerTest {
         void shouldSendNotificationToCafcassForNewUpload(DocumentUploaderType uploaderType,
                                                          Set<DocumentUploadNotificationUserType> notificationTypes,
                                                          List<String> expectedDocumentNames,
-                                                         List<?> updatingDocument,
+                                                         List<?> documents,
                                                          boolean isRelatingToHearing,
                                                          boolean isNotifyingCafcass) {
             verifyCafcassNotificationFurtherDocumentsTemplate(
                 getUserDetails(uploaderType), uploaderType,
                 EMPTY_CASE_DATA_MODIFIER,
-                isRelatingToHearing
-                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
-                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) updatingDocument)
-                    : (caseData) -> document(caseData, uploaderType)
-                    .addAll((List<Element<SupportingEvidenceBundle>>) updatingDocument),
+                toCaseDataModifier(documents, uploaderType, isRelatingToHearing),
                 (caseData) -> getExpectedDocumentReferences(caseData, uploaderType, isRelatingToHearing),
                 isNotifyingCafcass ? "• Child's guardian reports\n• Child's guardian reports" : null,
                 isNotifyingCafcass ? "Further documents for main application" : null);
@@ -1567,16 +1571,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
             verifyNotificationFurtherDocumentsTemplate(
                 getUserDetails(uploaderType), uploaderType,
-                isRelatingToHearing
-                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
-                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) beforeDocument)
-                    : (caseData) -> document(caseData, uploaderType)
-                    .addAll((List<Element<SupportingEvidenceBundle>>) beforeDocument),
-                isRelatingToHearing
-                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
-                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) afterDocuments)
-                    : (caseData) -> document(caseData, uploaderType)
-                    .addAll((List<Element<SupportingEvidenceBundle>>) afterDocuments),
+                toCaseDataModifier(beforeDocument, uploaderType, isRelatingToHearing),
+                toCaseDataModifier(afterDocuments, uploaderType, isRelatingToHearing),
                 notificationTypes, expectedDocumentNames);
         }
 
@@ -1613,16 +1609,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
             verifyCafcassNotificationFurtherDocumentsTemplate(
                 getUserDetails(uploaderType), uploaderType,
-                isRelatingToHearing
-                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
-                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) beforeDocument)
-                    : (caseData) -> document(caseData, uploaderType)
-                    .addAll((List<Element<SupportingEvidenceBundle>>) beforeDocument),
-                isRelatingToHearing
-                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
-                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) afterDocuments)
-                    : (caseData) -> document(caseData, uploaderType)
-                    .addAll((List<Element<SupportingEvidenceBundle>>) afterDocuments),
+                toCaseDataModifier(beforeDocument, uploaderType, isRelatingToHearing),
+                toCaseDataModifier(afterDocuments, uploaderType, isRelatingToHearing),
                 (caseData) -> getExpectedDocumentReferences(caseData, uploaderType, isRelatingToHearing),
                 isNotifyingCafcass ? "• Child's guardian reports\n• Child's guardian reports" : null,
                 isNotifyingCafcass ? "Further documents for main application" : null);
@@ -1639,11 +1627,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
                                                          boolean isNotifyingCafcass) {
             verifyNotificationFurtherDocumentsTemplate(
                 getUserDetails(uploaderType), uploaderType,
-                isRelatingToHearing
-                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
-                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) documents)
-                    : (caseData) -> document(caseData, uploaderType)
-                    .addAll((List<Element<SupportingEvidenceBundle>>) documents),
+                toCaseDataModifier(documents, uploaderType, isRelatingToHearing),
                 EMPTY_CASE_DATA_MODIFIER,
                 Set.of(), null);
         }
@@ -1660,11 +1644,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
             boolean isNotifyingCafcass) {
             verifyCafcassNotificationFurtherDocumentsTemplate(
                 getUserDetails(uploaderType), uploaderType,
-                isRelatingToHearing
-                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
-                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) documents)
-                    : (caseData) -> document(caseData, uploaderType)
-                    .addAll((List<Element<SupportingEvidenceBundle>>) documents),
+                toCaseDataModifier(documents, uploaderType, isRelatingToHearing),
                 EMPTY_CASE_DATA_MODIFIER,
                 (caseData) -> getExpectedDocumentReferences(caseData, uploaderType, isRelatingToHearing),
                 null,
@@ -1682,16 +1662,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
                                                          boolean isNotifyingCafcass) {
             verifyNotificationFurtherDocumentsTemplate(
                 getUserDetails(uploaderType), uploaderType,
-                isRelatingToHearing
-                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
-                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) documents)
-                    : (caseData) -> document(caseData, uploaderType)
-                    .addAll((List<Element<SupportingEvidenceBundle>>) documents),
-                isRelatingToHearing
-                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
-                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) documents)
-                    : (caseData) -> document(caseData, uploaderType)
-                    .addAll((List<Element<SupportingEvidenceBundle>>) documents),
+                toCaseDataModifier(documents, uploaderType, isRelatingToHearing),
+                toCaseDataModifier(documents, uploaderType, isRelatingToHearing),
                 Set.of(), null);
         }
 
@@ -1707,16 +1679,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
             boolean isNotifyingCafcass) {
             verifyCafcassNotificationFurtherDocumentsTemplate(
                 getUserDetails(uploaderType), uploaderType,
-                isRelatingToHearing
-                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
-                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) documents)
-                    : (caseData) -> document(caseData, uploaderType)
-                    .addAll((List<Element<SupportingEvidenceBundle>>) documents),
-                isRelatingToHearing
-                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
-                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) documents)
-                    : (caseData) -> document(caseData, uploaderType)
-                    .addAll((List<Element<SupportingEvidenceBundle>>) documents),
+                toCaseDataModifier(documents, uploaderType, isRelatingToHearing),
+                toCaseDataModifier(documents, uploaderType, isRelatingToHearing),
                 (caseData) -> getExpectedDocumentReferences(caseData, uploaderType, isRelatingToHearing),
                 null,
                 null);
@@ -1757,16 +1721,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
             verifyNotificationFurtherDocumentsTemplate(
                 getUserDetails(uploaderType), uploaderType,
-                isRelatingToHearing
-                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
-                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) documents)
-                    : (caseData) -> document(caseData, uploaderType)
-                    .addAll((List<Element<SupportingEvidenceBundle>>) documents),
-                isRelatingToHearing
-                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
-                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) afterDocuments)
-                    : (caseData) -> document(caseData, uploaderType)
-                    .addAll((List<Element<SupportingEvidenceBundle>>) afterDocuments),
+                toCaseDataModifier(documents, uploaderType, isRelatingToHearing),
+                toCaseDataModifier(afterDocuments, uploaderType, isRelatingToHearing),
                 Set.of(), null);
         }
 
@@ -1804,16 +1760,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
             }
             verifyCafcassNotificationFurtherDocumentsTemplate(
                 getUserDetails(uploaderType), uploaderType,
-                isRelatingToHearing
-                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
-                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) documents)
-                    : (caseData) -> document(caseData, uploaderType)
-                    .addAll((List<Element<SupportingEvidenceBundle>>) documents),
-                isRelatingToHearing
-                    ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
-                    .addAll((List<Element<HearingFurtherEvidenceBundle>>) afterDocuments)
-                    : (caseData) -> document(caseData, uploaderType)
-                    .addAll((List<Element<SupportingEvidenceBundle>>) afterDocuments),
+                toCaseDataModifier(documents, uploaderType, isRelatingToHearing),
+                toCaseDataModifier(afterDocuments, uploaderType, isRelatingToHearing),
                 (caseData) -> getExpectedDocumentReferences(caseData, uploaderType, isRelatingToHearing),
                 null,
                 null);
