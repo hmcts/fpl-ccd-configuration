@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocument;
-import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -360,7 +359,6 @@ public class FurtherEvidenceUploadedEventHandler {
                         .map(DocumentInfo::getDocumentType)
                         .findFirst().orElse("UNKNOWN");
 
-
                 cafcassNotificationService.sendEmail(
                         caseData,
                         documentReferences,
@@ -398,7 +396,7 @@ public class FurtherEvidenceUploadedEventHandler {
                     documentRef.setType(ADDITIONAL_APPLICATIONS);
                     return documentRef;
                 })
-                .collect(collectingAndThen(toSet(),
+                .collect(collectingAndThen(toList(),
                     data -> DocumentInfo.builder()
                         .documentReferences(data)
                         .documentTypes(data.stream()
@@ -433,7 +431,7 @@ public class FurtherEvidenceUploadedEventHandler {
                     documentRef.setType(ADDITIONAL_APPLICATIONS);
                     return documentRef;
                 })
-                .collect(collectingAndThen(toSet(),
+                .collect(collectingAndThen(toList(),
                     data -> DocumentInfo.builder()
                         .documentReferences(data)
                         .documentTypes(data.stream()
@@ -459,7 +457,7 @@ public class FurtherEvidenceUploadedEventHandler {
                             .orElse(supportingEvidenceBundle.getName()));
                     return document;
                 })
-                .collect(collectingAndThen(toSet(),
+                .collect(collectingAndThen(toList(),
                     data -> DocumentInfo.builder()
                                 .documentReferences(data)
                                 .documentTypes(data.stream()
@@ -498,7 +496,7 @@ public class FurtherEvidenceUploadedEventHandler {
                             .orElse(applicationDocument.getDocumentName()));
                     return document;
                 })
-                .collect(collectingAndThen(toSet(),
+                .collect(collectingAndThen(toList(),
                     data ->
                         DocumentInfo.builder()
                             .documentReferences(data)
@@ -559,7 +557,7 @@ public class FurtherEvidenceUploadedEventHandler {
                             .orElse(bundle.getName()));
                     return document;
                 })
-                .collect(collectingAndThen(toSet(),
+                .collect(collectingAndThen(toList(),
                     data ->
                         DocumentInfo.builder()
                             .documentReferences(data)
@@ -819,7 +817,7 @@ public class FurtherEvidenceUploadedEventHandler {
                     );
                     return document;
                 })
-                .collect(collectingAndThen(toSet(),
+                .collect(collectingAndThen(toList(),
                     data -> DocumentInfo.builder()
                             .documentReferences(data)
                             .documentTypes(List.of(documentType))

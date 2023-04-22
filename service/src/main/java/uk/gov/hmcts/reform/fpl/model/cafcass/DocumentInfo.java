@@ -12,7 +12,7 @@ import java.util.Set;
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocumentInfo {
-    private Set<DocumentReference> documentReferences;
+    private List<DocumentReference> documentReferences;
     private List<String> documentTypes;
     private String documentType;
 }
