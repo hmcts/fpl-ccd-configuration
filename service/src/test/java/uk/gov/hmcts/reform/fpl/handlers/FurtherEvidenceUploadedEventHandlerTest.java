@@ -597,44 +597,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     @Test
-    void shouldEmailCafcassWhenApplicationDocumentIsUploaded() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
-
-        CaseData caseData = buildCaseDataWithApplicationDocuments();
-
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-                new FurtherEvidenceUploadedEvent(
-                        caseData,
-                        buildCaseDataWithConfidentialLADocuments(),
-                        DESIGNATED_LOCAL_AUTHORITY,
-                        userDetailsLA());
-
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
-
-        Set<DocumentReference> documentReferences = unwrapElements(caseData.getApplicationDocuments())
-                .stream()
-                .map(WithDocument::getDocument)
-                .collect(toSet());
-
-        verify(cafcassNotificationService).sendEmail(
-                eq(caseData),
-                eq(documentReferences),
-                eq(NEW_DOCUMENT),
-                newDocumentDataCaptor.capture());
-
-        NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
-        assertThat(newDocumentData.getDocumentTypes())
-                .isEqualTo("• Birth certificate");
-        assertThat(newDocumentData.getEmailSubjectInfo())
-                .isEqualTo("Further documents for main application");
-    }
-
-    @Test
     void shouldNotEmailCafcassWhenNoApplicationDocumentIsUploaded() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
@@ -1289,17 +1251,38 @@ class FurtherEvidenceUploadedEventHandlerTest {
         @ParameterizedTest
         @ArgumentsSource(ApplicationDocumentUploadTestArgs.class)
         void shouldSendNotificationForNewUpload(UserDetails userDetails,
-                                                DocumentUploaderType uploadedType,
+                                                DocumentUploaderType uploaderType,
                                                 String uploadedBy,
                                                 Set<DocumentUploadNotificationUserType> notificationTypes,
                                                 List<String> expectedDocumentNames,
                                                 boolean confidential) {
             verifyNotificationFurtherDocumentsTemplate(
-                userDetails, uploadedType, EMPTY_CASE_DATA_MODIFIER,
+                userDetails, uploaderType, EMPTY_CASE_DATA_MODIFIER,
                 (caseData) ->  caseData.getApplicationDocuments().addAll(
                     wrapElementsWithUUIDs(createDummyApplicationDocument("whatever", uploadedBy,
                         PDF_DOCUMENT_1, confidential, BIRTH_CERTIFICATE))),
                 notificationTypes, expectedDocumentNames);
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(ApplicationDocumentUploadTestArgs.class)
+        void shouldSendNotificationToCafcassForNewUpload(UserDetails userDetails,
+                                                         DocumentUploaderType uploaderType,
+                                                         String uploadedBy,
+                                                         Set<DocumentUploadNotificationUserType> notificationTypes,
+                                                         List<String> expectedDocumentNames,
+                                                         boolean confidential) {
+            List<Element<ApplicationDocument>> applicationDocuments =
+                wrapElementsWithUUIDs(createDummyApplicationDocument("whatever", uploadedBy,
+                    PDF_DOCUMENT_1, confidential, BIRTH_CERTIFICATE));
+            verifyCafcassNotificationFurtherDocumentsTemplate(
+                userDetails, uploaderType,
+                EMPTY_CASE_DATA_MODIFIER,
+                (caseData) ->  caseData.getApplicationDocuments().addAll(applicationDocuments),
+                (caseData) -> unwrapElements(applicationDocuments).stream()
+                    .map(ad -> ad.getDocument()).collect(toSet()),
+                "• Birth certificate",
+                "Further documents for main application");
         }
 
         @ParameterizedTest
