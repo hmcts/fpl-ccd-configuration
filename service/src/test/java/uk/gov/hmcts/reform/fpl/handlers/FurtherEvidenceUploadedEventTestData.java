@@ -75,6 +75,9 @@ public class FurtherEvidenceUploadedEventTestData {
     public static CaseData buildSubmittedCaseData() {
         return commonCaseBuilder()
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .correspondenceDocuments(new ArrayList<>())
+            .correspondenceDocumentsSolicitor(new ArrayList<>())
+            .correspondenceDocumentsLA(new ArrayList<>())
             .applicationDocuments(new ArrayList<>())
             .hearingDocuments(HearingDocuments.builder()
                 .courtBundleListV2(new ArrayList<>())
@@ -96,7 +99,7 @@ public class FurtherEvidenceUploadedEventTestData {
     public static CaseData buildCaseDataWithNonConfidentialLADocuments(FurtherEvidenceType type) {
         return commonCaseBuilder()
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .furtherEvidenceDocumentsLA(buildNonConfidentialPdfDocumentList(LA_USER, type))
+            .furtherEvidenceDocumentsLA(buildNonConfidentialDocumentList(LA_USER, type))
             .build();
     }
 
@@ -117,7 +120,7 @@ public class FurtherEvidenceUploadedEventTestData {
         return commonCaseBuilder()
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .furtherEvidenceDocumentsSolicitor(
-                removeEvidenceBundleType(buildNonConfidentialPdfDocumentList(uploadedBy)))
+                removeEvidenceBundleType(buildNonConfidentialDocumentList(uploadedBy)))
             .build();
     }
 
@@ -126,15 +129,16 @@ public class FurtherEvidenceUploadedEventTestData {
         return commonCaseBuilder()
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .furtherEvidenceDocumentsSolicitor(
-                buildNonConfidentialPdfDocumentList(uploadedBy, type))
+                buildNonConfidentialDocumentList(uploadedBy, type))
             .build();
     }
 
-    private static List<Element<SupportingEvidenceBundle>> removeEvidenceBundleType(
+    public static List<Element<SupportingEvidenceBundle>> removeEvidenceBundleType(
             List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle
     ) {
-        return unwrapElements(supportingEvidenceBundle).stream()
-                .map(evidenceBundle -> element(evidenceBundle.toBuilder().type(null).build()))
+        return supportingEvidenceBundle.stream()
+                .map(evidenceBundle -> element(evidenceBundle.getId(),
+                    evidenceBundle.getValue().toBuilder().type(null).build()))
                 .collect(Collectors.toList());
     }
 
@@ -156,21 +160,21 @@ public class FurtherEvidenceUploadedEventTestData {
         return commonCaseBuilder()
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .respondentStatements(buildRespondentStatementsList(
-                removeEvidenceBundleType(buildNonConfidentialPdfDocumentList(REP_USER))))
+                removeEvidenceBundleType(buildNonConfidentialDocumentList(REP_USER))))
             .build();
     }
 
     public static CaseData buildCaseDataWithCorrespondencesByHmtcs() {
         return commonCaseBuilder()
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .correspondenceDocuments((buildNonConfidentialPdfDocumentList(HMCTS_USER)))
+                .correspondenceDocuments((buildNonConfidentialDocumentList(HMCTS_USER)))
                 .build();
     }
 
     public static CaseData buildCaseDataWithCorrespondencesByLA() {
         return commonCaseBuilder()
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .correspondenceDocumentsLA((buildNonConfidentialPdfDocumentList(LA_USER)))
+                .correspondenceDocumentsLA((buildNonConfidentialDocumentList(LA_USER)))
                 .build();
     }
 
@@ -178,7 +182,7 @@ public class FurtherEvidenceUploadedEventTestData {
         return commonCaseBuilder()
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .correspondenceDocumentsSolicitor(
-                    removeEvidenceBundleType((buildNonConfidentialPdfDocumentList(REP_SOLICITOR_USER_EMAIL))))
+                    removeEvidenceBundleType((buildNonConfidentialDocumentList(REP_SOLICITOR_USER_EMAIL))))
                 .build();
     }
 
@@ -187,7 +191,7 @@ public class FurtherEvidenceUploadedEventTestData {
                 .id(UUID.randomUUID())
                 .applicationType(OtherApplicationType.C1_WITH_SUPPLEMENT)
                 .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(now().plusDays(1), DATE_TIME))
-                .supportingEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER))
+                .supportingEvidenceBundle(buildNonConfidentialDocumentList(LA_USER))
                 .build();
 
 
@@ -207,7 +211,7 @@ public class FurtherEvidenceUploadedEventTestData {
                 .id(UUID.randomUUID())
                 .type(WITH_NOTICE)
                 .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(now().plusDays(1), DATE_TIME))
-                .supportingEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER))
+                .supportingEvidenceBundle(buildNonConfidentialDocumentList(LA_USER))
                 .build();
 
 
@@ -246,12 +250,12 @@ public class FurtherEvidenceUploadedEventTestData {
         );
     }
 
-    public static List<Element<SupportingEvidenceBundle>> buildNonConfidentialPdfDocumentList(final String uploadedBy) {
-        return buildNonConfidentialPdfDocumentList(uploadedBy, DEFAULT_FURTHER_EVIDENCE_TYPE);
+    public static List<Element<SupportingEvidenceBundle>> buildNonConfidentialDocumentList(final String uploadedBy) {
+        return buildNonConfidentialDocumentList(uploadedBy, DEFAULT_FURTHER_EVIDENCE_TYPE);
     }
 
-    public static List<Element<SupportingEvidenceBundle>>
-        buildNonConfidentialPdfDocumentList(final String uploadedBy, FurtherEvidenceType type) {
+    public static List<Element<SupportingEvidenceBundle>> buildNonConfidentialDocumentList(final String uploadedBy,
+                                                                                           FurtherEvidenceType type) {
         return List.of(
             element(DOC_ELEMENT_1_ID,
                 createDummyEvidenceBundle(NON_CONFIDENTIAL_1, uploadedBy, false, PDF_DOCUMENT_1, type)),
@@ -259,7 +263,6 @@ public class FurtherEvidenceUploadedEventTestData {
                 createDummyEvidenceBundle(NON_CONFIDENTIAL_2, uploadedBy, false, PDF_DOCUMENT_2, type))
         );
     }
-
 
     public static List<Element<SupportingEvidenceBundle>> buildNonConfidentialNonPDFDocumentList(
         final String uploadedBy) {
