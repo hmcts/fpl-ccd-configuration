@@ -1112,8 +1112,43 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         @ParameterizedTest
         @ArgumentsSource(RespondentStatementConfidentialChangeArgs.class)
+        void shouldNotSendNotificationWhenDocsAreRemoved(UserDetails userDetails,
+                                                         DocumentUploaderType uploaderType,
+                                                         String uploadedBy,
+                                                         boolean oldConfidential,
+                                                         boolean newConfidential) {
+            UUID respondentId = UUID.randomUUID();
+            UUID elementId = UUID.randomUUID();
+            UUID element2Id = UUID.randomUUID();
+            List<Element<RespondentStatement>> beforeRespondentStatements =
+                buildRespondentStatementsList(respondentId, List.of(
+                    element(elementId, createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, oldConfidential,
+                        PDF_DOCUMENT_1)),
+                    element(element2Id, createDummyEvidenceBundle(CONFIDENTIAL_2, uploadedBy, oldConfidential,
+                        PDF_DOCUMENT_2))));
+
+            List<Element<RespondentStatement>> afterRespondentStatements =
+                buildRespondentStatementsList(respondentId, List.of(element(elementId,
+                    createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, newConfidential, PDF_DOCUMENT_1))));
+
+            verifyNotificationFurtherDocumentsTemplate(
+                userDetails, uploaderType,
+                (caseData) ->  caseData.getRespondentStatements().addAll(beforeRespondentStatements),
+                (caseData) ->  caseData.getRespondentStatements().addAll(afterRespondentStatements),
+                Set.of(), null);
+
+            verifyCafcassNotificationFurtherDocumentsTemplate(
+                userDetails, uploaderType,
+                (caseData) ->  caseData.getRespondentStatements().addAll(beforeRespondentStatements),
+                (caseData) ->  caseData.getRespondentStatements().addAll(afterRespondentStatements),
+                toDocumentReferencesExtractor(afterRespondentStatements),
+                null, null);
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(RespondentStatementConfidentialChangeArgs.class)
         void shouldNotSendNotificationForConfidentialChangeOnly(UserDetails userDetails,
-                                                                DocumentUploaderType uploadedType,
+                                                                DocumentUploaderType uploaderType,
                                                                 String uploadedBy,
                                                                 boolean oldConfidential,
                                                                 boolean newConfidential) {
@@ -1128,7 +1163,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, newConfidential, PDF_DOCUMENT_1))));
 
             verifyNotificationFurtherDocumentsTemplate(
-                userDetails, uploadedType,
+                userDetails, uploaderType,
                 (caseData) ->  caseData.getRespondentStatements().addAll(respondentStatement), // before
                 (caseData) ->  caseData.getRespondentStatements().addAll(newRespondentStatement),
                 Set.of(), null);

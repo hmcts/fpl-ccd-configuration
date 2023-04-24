@@ -781,38 +781,44 @@ public class FurtherEvidenceUploadedEventHandler {
     }
 
     private DocumentInfo getNewRespondentDocumentsUploaded(CaseData caseData, CaseData caseDataBefore) {
-        return getDocumentInfo(unwrapElements(getEvidenceBundleFromRespondentStatements(caseDataBefore)),
-            unwrapElements(getEvidenceBundleFromRespondentStatements(caseData)),
+        return getDocumentInfo(getEvidenceBundleFromRespondentStatements(caseDataBefore),
+            getEvidenceBundleFromRespondentStatements(caseData),
             "Respondent statement", FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION);
     }
 
     private DocumentInfo  getNewCorrespondenceDocumentsByHmtcs(CaseData caseData, CaseData caseDataBefore) {
-        List<SupportingEvidenceBundle> oldBundle = unwrapElements(caseDataBefore.getCorrespondenceDocuments());
-        List<SupportingEvidenceBundle> newBundle = unwrapElements(caseData.getCorrespondenceDocuments());
+        List<Element<SupportingEvidenceBundle>> oldBundle = caseDataBefore.getCorrespondenceDocuments();
+        List<Element<SupportingEvidenceBundle>> newBundle = caseData.getCorrespondenceDocuments();
 
         return getDocumentInfo(oldBundle, newBundle, CORRESPONDENCE, CORRESPONDENCE);
     }
 
     private DocumentInfo getNewCorrespondenceDocumentsByLA(CaseData caseData, CaseData caseDataBefore) {
-        List<SupportingEvidenceBundle> oldBundle = unwrapElements(caseDataBefore.getCorrespondenceDocumentsLA());
-        List<SupportingEvidenceBundle> newBundle = unwrapElements(caseData.getCorrespondenceDocumentsLA());
+        List<Element<SupportingEvidenceBundle>> oldBundle = caseDataBefore.getCorrespondenceDocumentsLA();
+        List<Element<SupportingEvidenceBundle>> newBundle = caseData.getCorrespondenceDocumentsLA();
 
         return getDocumentInfo(oldBundle, newBundle, CORRESPONDENCE, CORRESPONDENCE);
     }
 
     private DocumentInfo getNewCorrespondenceDocumentsBySolicitor(CaseData caseData, CaseData caseDataBefore) {
-        List<SupportingEvidenceBundle> oldBundle = unwrapElements(caseDataBefore.getCorrespondenceDocumentsSolicitor());
-        List<SupportingEvidenceBundle> newBundle = unwrapElements(caseData.getCorrespondenceDocumentsSolicitor());
+        List<Element<SupportingEvidenceBundle>> oldBundle = caseDataBefore.getCorrespondenceDocumentsSolicitor();
+        List<Element<SupportingEvidenceBundle>> newBundle = caseData.getCorrespondenceDocumentsSolicitor();
 
         return getDocumentInfo(oldBundle, newBundle, CORRESPONDENCE, CORRESPONDENCE);
     }
 
-    private DocumentInfo getDocumentInfo(List<SupportingEvidenceBundle> oldBundle,
-                                         List<SupportingEvidenceBundle> newBundle,
+    private DocumentInfo getDocumentInfo(List<Element<SupportingEvidenceBundle>> oldBundle,
+                                         List<Element<SupportingEvidenceBundle>> newBundle,
                                          String documentType,
                                          String type) {
-        return newBundle.stream()
-                .filter(bundle -> !oldBundle.contains(bundle))
+        List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle = new ArrayList<>();
+        defaultIfNull(newBundle, new ArrayList<Element<SupportingEvidenceBundle>>()).forEach(newDoc -> {
+            if (hasNewDocumentUploaded(oldBundle, newDoc)) {
+                newSupportingEvidenceBundle.add(newDoc);
+            }
+        });
+        return unwrapElements(newSupportingEvidenceBundle).stream()
+                //.filter(bundle -> !oldBundle.contains(bundle))
                 .map(bundle -> {
                     DocumentReference document = bundle.getDocument();
                     document.setType(
