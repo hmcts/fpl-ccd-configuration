@@ -818,7 +818,6 @@ public class FurtherEvidenceUploadedEventHandler {
             }
         });
         return unwrapElements(newSupportingEvidenceBundle).stream()
-                //.filter(bundle -> !oldBundle.contains(bundle))
                 .map(bundle -> {
                     DocumentReference document = bundle.getDocument();
                     document.setType(

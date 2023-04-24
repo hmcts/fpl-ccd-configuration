@@ -103,7 +103,6 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithCorrespondencesByLA;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithCorrespondencesBySolicitor;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithCourtBundleList;
-import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialLADocuments;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildConfidentialDocumentList;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildHearingFurtherEvidenceBundle;
@@ -628,34 +627,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 .isEqualTo("• Correspondence");
         assertThat(newDocumentData.getEmailSubjectInfo())
                 .isEqualTo("Correspondence");
-    }
-
-
-    @Test
-    void shouldNotSendEmailToCafcassWhenNoNewDocIsUploadedByLA() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
-
-        CaseData caseData = buildCaseDataWithNonConfidentialLADocuments();
-
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-                new FurtherEvidenceUploadedEvent(
-                        caseData,
-                        caseData,
-                        DESIGNATED_LOCAL_AUTHORITY,
-                        userDetailsLA());
-
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
-
-        verify(cafcassNotificationService, never()).sendEmail(
-                any(),
-                any(),
-                any(),
-                any());
     }
 
     private void verifyNotificationForCourtBundleTemplate(final UserDetails uploadedBy,
@@ -1271,13 +1242,12 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         @ParameterizedTest
         @ArgumentsSource(ApplicationDocumentUploadTestArgs.class)
-        void shouldSendNotificationWhenDocsAreReplaced(
-            UserDetails userDetails,
-            DocumentUploaderType uploaderType,
-            String uploadedBy,
-            Set<DocumentUploadNotificationUserType> notificationTypes,
-            List<String> expectedDocumentNames,
-            boolean confidential) {
+        void shouldSendNotificationWhenDocsAreReplaced(UserDetails userDetails,
+                                                       DocumentUploaderType uploaderType,
+                                                       String uploadedBy,
+                                                       Set<DocumentUploadNotificationUserType> notificationTypes,
+                                                       List<String> expectedDocumentNames,
+                                                       boolean confidential) {
             UUID elementId = UUID.randomUUID();
             List<Element<ApplicationDocument>> beforeApplicationDocuments =
                 List.of(element(elementId, createDummyApplicationDocument("whatever2", uploadedBy,
@@ -1303,13 +1273,12 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         @ParameterizedTest
         @ArgumentsSource(ApplicationDocumentUploadTestArgs.class)
-        void shouldNotSendNotificationWhenDocsAreRemoved(
-            UserDetails userDetails,
-            DocumentUploaderType uploaderType,
-            String uploadedBy,
-            Set<DocumentUploadNotificationUserType> notificationTypes,
-            List<String> expectedDocumentNames,
-            boolean confidential) {
+        void shouldNotSendNotificationWhenDocsAreRemoved(UserDetails userDetails,
+                                                         DocumentUploaderType uploaderType,
+                                                         String uploadedBy,
+                                                         Set<DocumentUploadNotificationUserType> notificationTypes,
+                                                         List<String> expectedDocumentNames,
+                                                         boolean confidential) {
             UUID elementId = UUID.randomUUID();
             List<Element<ApplicationDocument>> applicationDocuments =
                 List.of(element(elementId, createDummyApplicationDocument("whatever2", uploadedBy,
@@ -1332,13 +1301,12 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         @ParameterizedTest
         @ArgumentsSource(ApplicationDocumentUploadTestArgs.class)
-        void shouldNotSendNotificationWhenDocsAreTheSame(
-            UserDetails userDetails,
-            DocumentUploaderType uploaderType,
-            String uploadedBy,
-            Set<DocumentUploadNotificationUserType> notificationTypes,
-            List<String> expectedDocumentNames,
-            boolean confidential) {
+        void shouldNotSendNotificationWhenDocsAreTheSame(UserDetails userDetails,
+                                                         DocumentUploaderType uploaderType,
+                                                         String uploadedBy,
+                                                         Set<DocumentUploadNotificationUserType> notificationTypes,
+                                                         List<String> expectedDocumentNames,
+                                                         boolean confidential) {
             UUID elementId = UUID.randomUUID();
             List<Element<ApplicationDocument>> applicationDocuments =
                 List.of(element(elementId, createDummyApplicationDocument("whatever2", uploadedBy,
@@ -1678,13 +1646,12 @@ class FurtherEvidenceUploadedEventHandlerTest {
         @ParameterizedTest
         @ArgumentsSource(AnyOtherDocumentUploadTestArgs.class)
         @SuppressWarnings("unchecked")
-        void shouldNotSendNotificationWhenConfidentialChanged(
-            DocumentUploaderType uploaderType,
-            Set<DocumentUploadNotificationUserType> notificationTypes,
-            List<String> expectedDocumentNames,
-            List<?> documents,
-            boolean isRelatingToHearing,
-            boolean isNotifyingCafcass) {
+        void shouldNotSendNotificationWhenConfidentialChanged(DocumentUploaderType uploaderType,
+                                                              Set<DocumentUploadNotificationUserType> notificationTypes,
+                                                              List<String> expectedDocumentNames,
+                                                              List<?> documents,
+                                                              boolean isRelatingToHearing,
+                                                              boolean isNotifyingCafcass) {
             List<?> beforeDocument = documents;
             List<?> afterDocuments;
             if (isRelatingToHearing) {
