@@ -1248,6 +1248,12 @@ class FurtherEvidenceUploadedEventHandlerTest {
     @Nested
     class ApplicationDocumentUploadTests {
 
+        private Function<CaseData, Set<DocumentReference>> toDocumentReferencesExtractor(
+            List<Element<ApplicationDocument>> applicationDocuments) {
+            return (caseData) -> unwrapElements(applicationDocuments).stream()
+                .map(ad -> ad.getDocument()).collect(toSet());
+        }
+
         @ParameterizedTest
         @ArgumentsSource(ApplicationDocumentUploadTestArgs.class)
         void shouldSendNotificationForNewUpload(UserDetails userDetails,
@@ -1279,8 +1285,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 userDetails, uploaderType,
                 EMPTY_CASE_DATA_MODIFIER,
                 (caseData) ->  caseData.getApplicationDocuments().addAll(applicationDocuments),
-                (caseData) -> unwrapElements(applicationDocuments).stream()
-                    .map(ad -> ad.getDocument()).collect(toSet()),
+                toDocumentReferencesExtractor(applicationDocuments),
                 "• Birth certificate",
                 "Further documents for main application");
         }
@@ -1289,7 +1294,57 @@ class FurtherEvidenceUploadedEventHandlerTest {
         @ArgumentsSource(ApplicationDocumentUploadTestArgs.class)
         void shouldSendNotificationWhenDocsAreReplaced(
             UserDetails userDetails,
-            DocumentUploaderType uploadedType,
+            DocumentUploaderType uploaderType,
+            String uploadedBy,
+            Set<DocumentUploadNotificationUserType> notificationTypes,
+            List<String> expectedDocumentNames,
+            boolean confidential) {
+            UUID elementId = UUID.randomUUID();
+            List<Element<ApplicationDocument>> beforeApplicationDocuments =
+                List.of(element(elementId, createDummyApplicationDocument("whatever2", uploadedBy,
+                    PDF_DOCUMENT_2, confidential, BIRTH_CERTIFICATE)));
+            List<Element<ApplicationDocument>> afterApplicationDocuments =
+                List.of(element(elementId, createDummyApplicationDocument("whatever1", uploadedBy,
+                    PDF_DOCUMENT_1, confidential, BIRTH_CERTIFICATE)));
+
+            verifyNotificationFurtherDocumentsTemplate(
+                userDetails, uploaderType,
+                (caseData) ->  caseData.getApplicationDocuments().addAll(beforeApplicationDocuments),
+                (caseData) ->  caseData.getApplicationDocuments().addAll(afterApplicationDocuments),
+                notificationTypes, expectedDocumentNames);
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(ApplicationDocumentUploadTestArgs.class)
+        void shouldSendNotificationToCafcassWhenDocsAreReplaced(
+            UserDetails userDetails,
+            DocumentUploaderType uploaderType,
+            String uploadedBy,
+            Set<DocumentUploadNotificationUserType> notificationTypes,
+            List<String> expectedDocumentNames,
+            boolean confidential) {
+            UUID elementId = UUID.randomUUID();
+            List<Element<ApplicationDocument>> beforeApplicationDocuments =
+                List.of(element(elementId, createDummyApplicationDocument("whatever2", uploadedBy,
+                    PDF_DOCUMENT_2, confidential, BIRTH_CERTIFICATE)));
+            List<Element<ApplicationDocument>> afterApplicationDocuments =
+                List.of(element(elementId, createDummyApplicationDocument("whatever1", uploadedBy,
+                    PDF_DOCUMENT_1, confidential, BIRTH_CERTIFICATE)));
+
+            verifyCafcassNotificationFurtherDocumentsTemplate(
+                userDetails, uploaderType,
+                (caseData) ->  caseData.getApplicationDocuments().addAll(beforeApplicationDocuments),
+                (caseData) ->  caseData.getApplicationDocuments().addAll(afterApplicationDocuments),
+                toDocumentReferencesExtractor(afterApplicationDocuments),
+                "• Birth certificate",
+                "Further documents for main application");
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(ApplicationDocumentUploadTestArgs.class)
+        void shouldNotSendNotificationWhenDocsAreRemoved(
+            UserDetails userDetails,
+            DocumentUploaderType uploaderType,
             String uploadedBy,
             Set<DocumentUploadNotificationUserType> notificationTypes,
             List<String> expectedDocumentNames,
@@ -1298,21 +1353,85 @@ class FurtherEvidenceUploadedEventHandlerTest {
             List<Element<ApplicationDocument>> applicationDocuments =
                 List.of(element(elementId, createDummyApplicationDocument("whatever2", uploadedBy,
                     PDF_DOCUMENT_2, confidential, BIRTH_CERTIFICATE)));
-            List<Element<ApplicationDocument>> newApplicationDocuments =
-                List.of(element(elementId, createDummyApplicationDocument("whatever1", uploadedBy,
-                    PDF_DOCUMENT_1, confidential, BIRTH_CERTIFICATE)));
 
             verifyNotificationFurtherDocumentsTemplate(
-                userDetails, uploadedType,
+                userDetails, uploaderType,
                 (caseData) ->  caseData.getApplicationDocuments().addAll(applicationDocuments),
-                (caseData) ->  caseData.getApplicationDocuments().addAll(newApplicationDocuments),
-                notificationTypes, expectedDocumentNames);
+                EMPTY_CASE_DATA_MODIFIER,
+                Set.of(), null);
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(ApplicationDocumentUploadTestArgs.class)
+        void shouldNotSendNotificationToCafcassWhenDocsAreRemoved(
+            UserDetails userDetails,
+            DocumentUploaderType uploaderType,
+            String uploadedBy,
+            Set<DocumentUploadNotificationUserType> notificationTypes,
+            List<String> expectedDocumentNames,
+            boolean confidential) {
+            UUID elementId = UUID.randomUUID();
+            List<Element<ApplicationDocument>> applicationDocuments =
+                List.of(element(elementId, createDummyApplicationDocument("whatever2", uploadedBy,
+                    PDF_DOCUMENT_2, confidential, BIRTH_CERTIFICATE)));
+
+            verifyCafcassNotificationFurtherDocumentsTemplate(
+                getUserDetails(uploaderType), uploaderType,
+                (caseData) ->  caseData.getApplicationDocuments().addAll(applicationDocuments),
+                EMPTY_CASE_DATA_MODIFIER,
+                toDocumentReferencesExtractor(applicationDocuments),
+                null,
+                null);
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(ApplicationDocumentUploadTestArgs.class)
+        void shouldNotSendNotificationWhenDocsAreTheSame(
+            UserDetails userDetails,
+            DocumentUploaderType uploaderType,
+            String uploadedBy,
+            Set<DocumentUploadNotificationUserType> notificationTypes,
+            List<String> expectedDocumentNames,
+            boolean confidential) {
+            UUID elementId = UUID.randomUUID();
+            List<Element<ApplicationDocument>> applicationDocuments =
+                List.of(element(elementId, createDummyApplicationDocument("whatever2", uploadedBy,
+                    PDF_DOCUMENT_2, confidential, BIRTH_CERTIFICATE)));
+
+            verifyNotificationFurtherDocumentsTemplate(
+                userDetails, uploaderType,
+                (caseData) ->  caseData.getApplicationDocuments().addAll(applicationDocuments),
+                (caseData) ->  caseData.getApplicationDocuments().addAll(applicationDocuments),
+                Set.of(), null);
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(ApplicationDocumentUploadTestArgs.class)
+        void shouldNotSendNotificationToCafcassWhenDocsAreTheSame(
+            UserDetails userDetails,
+            DocumentUploaderType uploaderType,
+            String uploadedBy,
+            Set<DocumentUploadNotificationUserType> notificationTypes,
+            List<String> expectedDocumentNames,
+            boolean confidential) {
+            UUID elementId = UUID.randomUUID();
+            List<Element<ApplicationDocument>> applicationDocuments =
+                List.of(element(elementId, createDummyApplicationDocument("whatever2", uploadedBy,
+                    PDF_DOCUMENT_2, confidential, BIRTH_CERTIFICATE)));
+
+            verifyCafcassNotificationFurtherDocumentsTemplate(
+                getUserDetails(uploaderType), uploaderType,
+                (caseData) ->  caseData.getApplicationDocuments().addAll(applicationDocuments),
+                (caseData) ->  caseData.getApplicationDocuments().addAll(applicationDocuments),
+                toDocumentReferencesExtractor(applicationDocuments),
+                null,
+                null);
         }
 
         @ParameterizedTest
         @ArgumentsSource(ApplicationDocumentConfidentialChangeArgs.class)
         void shouldNotSendNotificationWhenConfidentialChanged(UserDetails userDetails,
-                                                              DocumentUploaderType uploadedType,
+                                                              DocumentUploaderType uploaderType,
                                                               String uploadedBy,
                                                               boolean oldConfidential,
                                                               boolean newConfidential) {
@@ -1325,10 +1444,34 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     PDF_DOCUMENT_1, newConfidential, BIRTH_CERTIFICATE)));
 
             verifyNotificationFurtherDocumentsTemplate(
-                userDetails, uploadedType,
+                userDetails, uploaderType,
                 (caseData) ->  caseData.getApplicationDocuments().addAll(applicationDocuments),
                 (caseData) ->  caseData.getApplicationDocuments().addAll(newApplicationDocuments),
                 Set.of(), null);
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(ApplicationDocumentConfidentialChangeArgs.class)
+        void shouldNotSendNotificationToCafcassWhenConfidentialChanged(UserDetails userDetails,
+                                                                       DocumentUploaderType uploaderType,
+                                                                       String uploadedBy,
+                                                                       boolean oldConfidential,
+                                                                       boolean newConfidential) {
+            UUID elementId = UUID.randomUUID();
+            List<Element<ApplicationDocument>> beforeApplicationDocuments =
+                List.of(element(elementId, createDummyApplicationDocument("whatever", uploadedBy,
+                    PDF_DOCUMENT_1, oldConfidential, BIRTH_CERTIFICATE)));
+            List<Element<ApplicationDocument>> afterApplicationDocuments =
+                List.of(element(elementId, createDummyApplicationDocument("whatever", uploadedBy,
+                    PDF_DOCUMENT_1, newConfidential, BIRTH_CERTIFICATE)));
+
+            verifyCafcassNotificationFurtherDocumentsTemplate(
+                getUserDetails(uploaderType), uploaderType,
+                (caseData) ->  caseData.getApplicationDocuments().addAll(beforeApplicationDocuments),
+                (caseData) ->  caseData.getApplicationDocuments().addAll(afterApplicationDocuments),
+                toDocumentReferencesExtractor(beforeApplicationDocuments),
+                null,
+                null);
         }
     }
 
@@ -1459,10 +1602,12 @@ class FurtherEvidenceUploadedEventHandlerTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private static Consumer<CaseData> toCaseDataModifier(List<?> documents,
-                                                         DocumentUploaderType uploaderType,
-                                                         boolean isRelatingToHearing) {
+    @Nested
+    class AnyOtherDocumentUploadTests {
+        @SuppressWarnings("unchecked")
+        private Consumer<CaseData> toCaseDataModifier(List<?> documents,
+                                                  DocumentUploaderType uploaderType,
+                                                  boolean isRelatingToHearing) {
         return isRelatingToHearing
             ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
             .addAll((List<Element<HearingFurtherEvidenceBundle>>) documents)
@@ -1470,23 +1615,19 @@ class FurtherEvidenceUploadedEventHandlerTest {
             .addAll((List<Element<SupportingEvidenceBundle>>) documents);
     }
 
-    private static List<Element<SupportingEvidenceBundle>> document(CaseData caseData,
-                                                                    DocumentUploaderType uploaderType) {
-        switch (uploaderType) {
-            case DESIGNATED_LOCAL_AUTHORITY:
-                return caseData.getFurtherEvidenceDocumentsLA();
-            case HMCTS:
-                return caseData.getFurtherEvidenceDocuments();
-            case SOLICITOR:
-                return caseData.getFurtherEvidenceDocumentsSolicitor();
-            default:
-                throw new AssertionError("unexpected uploaderType");
+        private List<Element<SupportingEvidenceBundle>> document(CaseData caseData,
+                                                                 DocumentUploaderType uploaderType) {
+            switch (uploaderType) {
+                case DESIGNATED_LOCAL_AUTHORITY:
+                    return caseData.getFurtherEvidenceDocumentsLA();
+                case HMCTS:
+                    return caseData.getFurtherEvidenceDocuments();
+                case SOLICITOR:
+                    return caseData.getFurtherEvidenceDocumentsSolicitor();
+                default:
+                    throw new AssertionError("unexpected uploaderType");
+            }
         }
-    }
-
-
-    @Nested
-    class AnyOtherDocumentUploadTests {
 
         @SuppressWarnings("unchecked")
         Set<DocumentReference> getExpectedDocumentReferences(CaseData caseData,
