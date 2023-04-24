@@ -59,8 +59,6 @@ public class FurtherEvidenceUploadedEventTestData {
     public static final String NON_CONFIDENTIAL_2 = "non-confidential-2";
     public static final String CONFIDENTIAL_1 = "confidential-doc-1";
     public static final String CONFIDENTIAL_2 = "confidential-doc-2";
-    public static final String CONFIDENTIAL_3 = "confidential-doc-3";
-    public static final String CONFIDENTIAL_4 = "confidential-doc-4";
     public static final DocumentReference PDF_DOCUMENT_1 = getPDFDocument();
     public static final DocumentReference PDF_DOCUMENT_2 = getPDFDocument();
     public static final DocumentReference PDF_DOCUMENT_3 = getPDFDocument();
@@ -70,8 +68,6 @@ public class FurtherEvidenceUploadedEventTestData {
 
     private static final UUID DOC_ELEMENT_1_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
     private static final UUID DOC_ELEMENT_2_ID = UUID.fromString("22222222-2222-2222-2222-222222222222");
-    private static final UUID DOC_ELEMENT_3_ID = UUID.fromString("33333333-3333-3333-3333-333333333333");
-    private static final UUID DOC_ELEMENT_4_ID = UUID.fromString("44444444-4444-4444-4444-444444444444");
 
     private FurtherEvidenceUploadedEventTestData() {
     }
@@ -107,13 +103,6 @@ public class FurtherEvidenceUploadedEventTestData {
     public static CaseData buildCaseDataWithConfidentialLADocuments() {
         return commonCaseBuilder()
             .furtherEvidenceDocumentsLA(buildConfidentialDocumentList(LA_USER))
-            .build();
-    }
-
-    public static CaseData buildCaseDataWithNonConfidentialDocuments(final String uploadedBy) {
-        return commonCaseBuilder()
-            .furtherEvidenceDocuments(
-                buildNonConfidentialPdfDocumentList(uploadedBy))
             .build();
     }
 
@@ -193,27 +182,6 @@ public class FurtherEvidenceUploadedEventTestData {
                 .build();
     }
 
-    public static CaseData buildCaseDataWithHearingFurtherEvidenceBundle() {
-        HearingFurtherEvidenceBundle bundle = HearingFurtherEvidenceBundle.builder()
-                .hearingName("Case management hearing, 1 April 2022")
-                .supportingEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER))
-                .build();
-        return commonCaseBuilder()
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .hearingFurtherEvidenceDocuments(wrapElementsWithUUIDs(bundle))
-                .build();
-    }
-
-    public static CaseData buildCaseDataWithHearingFurtherEvidenceBundle(FurtherEvidenceType type) {
-        HearingFurtherEvidenceBundle bundle = HearingFurtherEvidenceBundle.builder()
-            .hearingName("Case management hearing, 1 April 2022")
-            .supportingEvidenceBundle(buildNonConfidentialPdfDocumentList(LA_USER, type))
-            .build();
-        return commonCaseBuilder()
-            .hearingFurtherEvidenceDocuments(wrapElementsWithUUIDs(bundle))
-            .build();
-    }
-
     public static CaseData buildCaseDataWithAdditionalApplicationBundle() {
         OtherApplicationsBundle otherBundle = OtherApplicationsBundle.builder()
                 .id(UUID.randomUUID())
@@ -258,25 +226,6 @@ public class FurtherEvidenceUploadedEventTestData {
         return commonCaseBuilder()
             .respondentStatements(buildRespondentStatementsList(
                 removeEvidenceBundleType(buildNonConfidentialNonPDFDocumentList(REP_USER))))
-            .build();
-    }
-
-    public static CaseData buildCaseDataWithConfidentialRespondentStatementsSolicitor() {
-        return commonCaseBuilder()
-            .respondentStatements(buildRespondentStatementsList(
-                removeEvidenceBundleType(buildConfidentialDocumentList(REP_USER))))
-            .build();
-    }
-
-    public static CaseData buildCaseDataWithApplicationDocuments() {
-        return commonCaseBuilder()
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .applicationDocuments(
-                    wrapElementsWithUUIDs(
-                            createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER, PDF_DOCUMENT_1),
-                            createDummyApplicationDocument(NON_CONFIDENTIAL_1, LA_USER, PDF_DOCUMENT_1)
-                    )
-                )
             .build();
     }
 

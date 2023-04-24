@@ -96,7 +96,6 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.PDF_DOCUMENT_1;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.PDF_DOCUMENT_2;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.PDF_DOCUMENT_3;
-import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.PDF_DOCUMENT_4;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithAdditionalApplicationBundle;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithC2AdditionalApplicationBundle;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithConfidentialLADocuments;
@@ -1147,26 +1146,64 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         @ParameterizedTest
         @ArgumentsSource(RespondentStatementConfidentialChangeArgs.class)
-        void shouldNotSendNotificationForConfidentialChangeOnly(UserDetails userDetails,
-                                                                DocumentUploaderType uploaderType,
-                                                                String uploadedBy,
-                                                                boolean oldConfidential,
-                                                                boolean newConfidential) {
+        void shouldNotSendNotificationWhenDocsAreTheSame(UserDetails userDetails,
+                                                         DocumentUploaderType uploaderType,
+                                                         String uploadedBy,
+                                                         boolean oldConfidential,
+                                                         boolean newConfidential) {
             UUID respondentId = UUID.randomUUID();
             UUID elementId = UUID.randomUUID();
-            List<Element<RespondentStatement>> respondentStatement =
+            UUID element2Id = UUID.randomUUID();
+            List<Element<RespondentStatement>> respondentStatements =
+                buildRespondentStatementsList(respondentId, List.of(
+                    element(elementId, createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, oldConfidential,
+                        PDF_DOCUMENT_1)),
+                    element(element2Id, createDummyEvidenceBundle(CONFIDENTIAL_2, uploadedBy, oldConfidential,
+                        PDF_DOCUMENT_2))));
+
+            verifyNotificationFurtherDocumentsTemplate(
+                userDetails, uploaderType,
+                (caseData) -> caseData.getRespondentStatements().addAll(respondentStatements),
+                (caseData) -> caseData.getRespondentStatements().addAll(respondentStatements),
+                Set.of(), null);
+
+            verifyCafcassNotificationFurtherDocumentsTemplate(
+                userDetails, uploaderType,
+                (caseData) -> caseData.getRespondentStatements().addAll(respondentStatements),
+                (caseData) -> caseData.getRespondentStatements().addAll(respondentStatements),
+                toDocumentReferencesExtractor(respondentStatements),
+                null, null);
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(RespondentStatementConfidentialChangeArgs.class)
+        void shouldNotSendNotificationWhenConfidentialChanged(UserDetails userDetails,
+                                                              DocumentUploaderType uploaderType,
+                                                              String uploadedBy,
+                                                              boolean oldConfidential,
+                                                              boolean newConfidential) {
+            UUID respondentId = UUID.randomUUID();
+            UUID elementId = UUID.randomUUID();
+            List<Element<RespondentStatement>> beforeRespondentStatement =
                 buildRespondentStatementsList(respondentId, List.of(element(elementId,
                 createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, oldConfidential, PDF_DOCUMENT_1))));
 
-            List<Element<RespondentStatement>> newRespondentStatement =
+            List<Element<RespondentStatement>> afterRespondentStatement =
                 buildRespondentStatementsList(respondentId, List.of(element(elementId,
                 createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, newConfidential, PDF_DOCUMENT_1))));
 
             verifyNotificationFurtherDocumentsTemplate(
                 userDetails, uploaderType,
-                (caseData) ->  caseData.getRespondentStatements().addAll(respondentStatement), // before
-                (caseData) ->  caseData.getRespondentStatements().addAll(newRespondentStatement),
+                (caseData) ->  caseData.getRespondentStatements().addAll(beforeRespondentStatement), // before
+                (caseData) ->  caseData.getRespondentStatements().addAll(afterRespondentStatement),
                 Set.of(), null);
+
+            verifyCafcassNotificationFurtherDocumentsTemplate(
+                userDetails, uploaderType,
+                (caseData) -> caseData.getRespondentStatements().addAll(beforeRespondentStatement),
+                (caseData) -> caseData.getRespondentStatements().addAll(afterRespondentStatement),
+                toDocumentReferencesExtractor(afterRespondentStatement),
+                null, null);
         }
     }
 
