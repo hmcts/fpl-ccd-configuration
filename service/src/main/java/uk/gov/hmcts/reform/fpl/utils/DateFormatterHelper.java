@@ -37,6 +37,10 @@ public class DateFormatterHelper {
     public static String formatLocalDateTimeBaseUsingFormat(LocalDateTime dateTime, String format) {
         return dateTime.format(DateTimeFormatter.ofPattern(format, Locale.UK));
     }
+    
+    public static String formatLocalDateBaseUsingFormat(LocalDate date, String format) {
+        return date.format(DateTimeFormatter.ofPattern(format, Locale.UK));
+    }
 
     public static LocalDate parseLocalDateFromStringUsingFormat(String date, String format) {
         return LocalDate.parse(date, DateTimeFormatter.ofPattern(format, Locale.UK));

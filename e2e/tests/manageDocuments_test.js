@@ -32,7 +32,7 @@ async function setupScenario(I) {
 
 Scenario('HMCTS Admin and LA upload confidential and non confidential further evidence documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
   await setupScenario(I);
-  await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
+  await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
 
   manageDocumentsEventPage.selectFurtherEvidence();
   await I.goToNextPage();
@@ -86,7 +86,7 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential further ev
   I.seeInExpandedDocument(supportingEvidenceDocuments[3].name, config.swanseaLocalAuthorityUserOne.email, dateFormat(submittedAt, 'd mmm yyyy'));
 });
 
-Scenario('HMCTS Admin and LA upload confidential and non confidential respondent statement', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
+Scenario('HMCTS Admin and LA upload confidential and non confidential respondent statement @nightlyOnly', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
 
@@ -160,8 +160,7 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential respondent
   I.dontSeeDocumentSection(respondent1StatementsSection, supportingEvidenceDocuments[0].name);
 });
 
-// @flaky?
-Scenario('HMCTS Admin and LA upload confidential and non confidential correspondence documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
+Scenario('HMCTS Admin and LA upload confidential and non confidential correspondence documents @nightlyOnly', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
@@ -202,7 +201,7 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential correspond
   assertConfidentialCorrespondence(I, 'local authority', 2, 'Correspondence document', 'Test notes');
 });
 
-Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadAdditionalApplicationsEventPage}) => {
+Scenario('HMCTS Admin and LA upload confidential C2 supporting documents @nightlyOnly', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadAdditionalApplicationsEventPage}) => {
   await setupScenario(I);
   await manageDocumentsForLAHelper.uploadC2(I, caseViewPage, uploadAdditionalApplicationsEventPage);
 
@@ -256,7 +255,7 @@ Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async
   assertC2SupportingDocuments(I, 'C2 application', 4, 'C2 supporting document', 'Supports the C2 application');
 });
 
-Scenario('HMCTS Admin and LA upload confidential Other applications supporting documents @flaky', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadAdditionalApplicationsEventPage}) => {
+Scenario('HMCTS Admin and LA upload confidential Other applications supporting documents @nightlyOnly', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadAdditionalApplicationsEventPage}) => {
   await setupScenario(I);
   await manageDocumentsForLAHelper.uploadOtherApplications(I, caseViewPage, uploadAdditionalApplicationsEventPage);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
@@ -307,7 +306,7 @@ Scenario('HMCTS Admin and LA upload confidential Other applications supporting d
   assertC2SupportingDocuments(I, 'Other applications', 4, 'C2 supporting document', 'Supports the C2 application');
 });
 
-Scenario('Solicitor with access uploads documents', async ({I, manageDocumentsEventPage, caseViewPage}) => {
+Scenario('Solicitor with access uploads documents @nightlyOnly', async ({I, manageDocumentsEventPage, caseViewPage}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(solicitor, caseId);
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);

@@ -11,6 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.DirtiesContext;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.docmosis.DocmosisHelper;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
@@ -30,7 +31,7 @@ import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
@@ -52,6 +53,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_ADMIN_EMAIL;
@@ -68,6 +70,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.COVERSHEET_PDF;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntilSecs;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersMap;
@@ -163,7 +166,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     DocmosisHelper docmosisHelper;
 
     @MockBean
-    private CoreCaseDataService coreCaseDataService;
+    private CCDConcurrencyHelper concurrencyHelper;
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
@@ -226,11 +229,17 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     void shouldSendOrdersByPostWhenOrderIssued() {
         CaseData caseData = caseData();
 
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
         postSubmittedEvent(caseData);
 
         verify(sendLetterApi, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2)).sendLetter(eq(SERVICE_AUTH_TOKEN),
             printRequest.capture());
-        verify(coreCaseDataService).updateCase(eq(CASE_ID), caseDataDelta.capture());
+        verify(concurrencyHelper, times(2)).submitEvent(any(), eq(CASE_ID), caseDataDelta.capture());
 
         LetterWithPdfsRequest expectedPrintRequest1 = printRequest(
             CASE_ID, ORDER, COVERSHEET_REPRESENTATIVE_BINARY, ORDER_BINARY
@@ -276,6 +285,13 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     @Test
     void shouldNotifyRepresentativesServedDigitallyWhenOrderIssued() {
         CaseData caseData = caseData();
+
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
         postSubmittedEvent(caseData);
 
         verifyCafcassOrderNotification();
@@ -290,6 +306,11 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     @Test
     void shouldNotifyRepresentativesServedByEmailWhenOrderIssued() {
         CaseData caseData = caseData();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
 
         postSubmittedEvent(caseData);
 
@@ -303,6 +324,11 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     @Test
     void shouldNotifyLocalAuthorityWhenOrderIssued() {
         CaseData caseData = caseData();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
 
         postSubmittedEvent(caseData);
 
@@ -317,6 +343,11 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     @Test
     void shouldNotifyAdminWhenOrderIssued() {
         CaseData caseData = caseData();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
 
         postSubmittedEvent(caseData);
 
@@ -330,6 +361,11 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     @Test
     void shouldNotifyCtscWhenEnabledWhenOrderIssued() {
         CaseData caseData = caseData().toBuilder().sendToCtsc("Yes").build();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
 
         postSubmittedEvent(caseData);
 
@@ -362,6 +398,11 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
                 .translationRequirements(TRANSLATION_REQUIREMENTS)
                 .build())
         ).build();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
 
         postSubmittedEvent(caseData);
 
@@ -372,6 +413,11 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     @Test
     void shouldNotifyTranslationTeamIfTranslationIsNotRequired() {
         CaseData caseData = caseData();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
 
         postSubmittedEvent(caseData);
 
@@ -383,6 +429,12 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     @SuppressWarnings("unchecked")
     void shouldSendAmendedNotificationToLocalAuthorityWhenAmendedOrder() {
         CaseData caseData = caseData();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
         CaseData caseDataBefore = caseDataBefore();
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(asCaseDetails(caseData))
@@ -401,7 +453,20 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     @Test
     void shouldSendOrdersByPostWhenOrderAmended() {
         CaseData caseData = caseData();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
         CaseData caseDataBefore = caseDataBefore();
+
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(asCaseDetails(caseData))
             .caseDetailsBefore(asCaseDetails(caseDataBefore))
@@ -409,11 +474,11 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(request);
 
-        checkUntil(() -> {
+        checkUntilSecs(() -> {
             verify(sendLetterApi, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2)).sendLetter(eq(SERVICE_AUTH_TOKEN),
                 printRequest.capture());
-            verify(coreCaseDataService).updateCase(eq(CASE_ID), caseDataDelta.capture());
-        });
+            verify(concurrencyHelper, times(2)).submitEvent(any(), eq(CASE_ID), caseDataDelta.capture());
+        }, 2);
 
         LetterWithPdfsRequest expectedPrintRequest1 = printRequest(
             CASE_ID, ORDER, COVERSHEET_REPRESENTATIVE_BINARY, ORDER_BINARY
@@ -450,6 +515,12 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     @Test
     void shouldNotifyRepresentativesServedDigitallyWhenOrderAmended() {
         CaseData caseData = caseData();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
         CaseData caseDataBefore = caseDataBefore();
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(asCaseDetails(caseData))
@@ -468,6 +539,12 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     @Test
     void shouldNotifyRepresentativesServedByEmailWhenOrderAmended() {
         CaseData caseData = caseData();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
         CaseData caseDataBefore = caseDataBefore();
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(asCaseDetails(caseData))
