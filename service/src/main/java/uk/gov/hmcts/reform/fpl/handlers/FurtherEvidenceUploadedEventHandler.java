@@ -167,7 +167,6 @@ public class FurtherEvidenceUploadedEventHandler {
         }
 
         if (isNotEmpty(recipients)) {
-            log.info("DFPL-1386 newCourtBundles " + newCourtBundles.size());
             newCourtBundles.entrySet().stream()
                 .filter(predicate)
                 .forEach(entry ->
@@ -225,28 +224,24 @@ public class FurtherEvidenceUploadedEventHandler {
             List<HearingDocument> newCaseSummaries = getNewHearingDocuments(
                 caseData.getHearingDocuments().getCaseSummaryList(),
                 caseDataBefore.getHearingDocuments().getCaseSummaryList());
-            log.info("DFPL-1386 hearingDocument->newCaseSummaries: " + newCaseSummaries.size());
             sendHearingDocumentsToCafcass(caseData, newCaseSummaries, CASE_SUMMARY);
 
             List<HearingDocument> newPositionStatementChildren =
                 getNewHearingDocuments(
                     caseData.getHearingDocuments().getPositionStatementChildListV2(),
                     caseDataBefore.getHearingDocuments().getPositionStatementChildListV2());
-            log.info("DFPL-1386 hearingDocument->newPositionStatementChildren: " + newCaseSummaries.size());
             sendHearingDocumentsToCafcass(caseData, newPositionStatementChildren, POSITION_STATEMENT_CHILD);
 
             List<HearingDocument> newPositionStatementRespondents =
                 getNewHearingDocuments(
                     caseData.getHearingDocuments().getPositionStatementRespondentListV2(),
                     caseDataBefore.getHearingDocuments().getPositionStatementRespondentListV2());
-            log.info("DFPL-1386 hearingDocument->newPositionStatementRespondents: " + newCaseSummaries.size());
             sendHearingDocumentsToCafcass(caseData, newPositionStatementRespondents, POSITION_STATEMENT_RESPONDENT);
 
             List<HearingDocument> newSkeletonArgument =
                 getNewHearingDocuments(
                     caseData.getHearingDocuments().getSkeletonArgumentList(),
                     caseDataBefore.getHearingDocuments().getSkeletonArgumentList());
-            log.info("DFPL-1386 hearingDocument->newSkeletonArgument: " + newCaseSummaries.size());
             sendHearingDocumentsToCafcass(caseData, newSkeletonArgument, SKELETON_ARGUMENT);
         }
     }
@@ -279,7 +274,6 @@ public class FurtherEvidenceUploadedEventHandler {
             newCourtBundles
                     .forEach((key, value) -> {
                         if (value != null && !value.isEmpty()) {
-                            log.info("DFPL-1386 newCourtBundles " + value.size());
                             cafcassNotificationService.sendEmail(
                                     caseData,
                                     value,
