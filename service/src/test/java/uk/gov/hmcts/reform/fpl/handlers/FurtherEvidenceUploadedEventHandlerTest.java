@@ -1045,13 +1045,15 @@ class FurtherEvidenceUploadedEventHandlerTest {
                                                               boolean newConfidential,
                                                               boolean oldConfidential) {
             List<Element<SupportingEvidenceBundle>> beforeCorrespondences =
-                removeEvidenceBundleType(newConfidential
-                    ? buildConfidentialDocumentList(uploadedBy)
-                    : buildNonConfidentialDocumentList(uploadedBy));
-            List<Element<SupportingEvidenceBundle>> afterCorrespondences =
                 removeEvidenceBundleType(oldConfidential
                     ? buildConfidentialDocumentList(uploadedBy)
                     : buildNonConfidentialDocumentList(uploadedBy));
+            List<Element<SupportingEvidenceBundle>> afterCorrespondences =
+                beforeCorrespondences.stream()
+                    .map(seb -> element(seb.getId(), seb.getValue().toBuilder()
+                        .confidential(newConfidential ? List.of("CONFIDENTIAL") : null)
+                        .build()))
+                    .collect(toList());
             verifyCafcassNotificationTemplate(
                 userDetails, uploaderType,
                 (caseData) ->  getCorrespondenceDocuments(caseData, uploaderType).addAll(beforeCorrespondences),

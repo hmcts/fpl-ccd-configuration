@@ -143,6 +143,7 @@ public class FurtherEvidenceUploadedEventHandler {
                 caseDataBefore, userType, newDoc -> !newDoc.isConfidentialDocument(), true);
 
             Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
+            // filter document with PDF file extension
             List<DocumentReference> documents = getDocumentReferences(newNonConfidentialDocuments);
             sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(allRecipients));
         }

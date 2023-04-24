@@ -37,6 +37,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithRandomUUID;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 
 public class FurtherEvidenceUploadedEventTestData {
@@ -67,6 +68,8 @@ public class FurtherEvidenceUploadedEventTestData {
 
     private static final UUID DOC_ELEMENT_1_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
     private static final UUID DOC_ELEMENT_2_ID = UUID.fromString("22222222-2222-2222-2222-222222222222");
+    private static final UUID DOC_ELEMENT_3_ID = UUID.fromString("33333333-3333-3333-3333-333333333333");
+    private static final UUID DOC_ELEMENT_4_ID = UUID.fromString("44444444-4444-4444-4444-444444444444");
 
     private FurtherEvidenceUploadedEventTestData() {
     }
@@ -256,9 +259,9 @@ public class FurtherEvidenceUploadedEventTestData {
     public static List<Element<SupportingEvidenceBundle>> buildNonConfidentialDocumentList(final String uploadedBy,
                                                                                            FurtherEvidenceType type) {
         return List.of(
-            element(DOC_ELEMENT_1_ID,
+            element(DOC_ELEMENT_3_ID,
                 createDummyEvidenceBundle(NON_CONFIDENTIAL_1, uploadedBy, false, PDF_DOCUMENT_1, type)),
-            element(DOC_ELEMENT_2_ID,
+            element(DOC_ELEMENT_4_ID,
                 createDummyEvidenceBundle(NON_CONFIDENTIAL_2, uploadedBy, false, PDF_DOCUMENT_2, type))
         );
     }
@@ -367,7 +370,7 @@ public class FurtherEvidenceUploadedEventTestData {
     public static List<Element<RespondentStatement>> buildRespondentStatementsList(
         UUID respondentId, List<Element<SupportingEvidenceBundle>> bundle
     ) {
-        return wrapElements(RespondentStatement.builder()
+        return wrapElementsWithRandomUUID(RespondentStatement.builder()
             .respondentId(respondentId)
             .respondentName("name")
             .supportingEvidenceBundle(bundle)
