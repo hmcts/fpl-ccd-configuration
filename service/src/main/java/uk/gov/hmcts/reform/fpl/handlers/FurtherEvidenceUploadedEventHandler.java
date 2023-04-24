@@ -786,7 +786,7 @@ public class FurtherEvidenceUploadedEventHandler {
             "Respondent statement", FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION);
     }
 
-    private DocumentInfo  getNewCorrespondenceDocumentsByHmtcs(CaseData caseData, CaseData caseDataBefore) {
+    private DocumentInfo getNewCorrespondenceDocumentsByHmtcs(CaseData caseData, CaseData caseDataBefore) {
         List<Element<SupportingEvidenceBundle>> oldBundle = caseDataBefore.getCorrespondenceDocuments();
         List<Element<SupportingEvidenceBundle>> newBundle = caseData.getCorrespondenceDocuments();
 
