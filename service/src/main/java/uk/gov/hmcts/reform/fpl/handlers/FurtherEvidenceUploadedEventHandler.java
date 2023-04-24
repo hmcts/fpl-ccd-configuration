@@ -308,42 +308,32 @@ public class FurtherEvidenceUploadedEventHandler {
             };
 
             documentInfoConsumer.accept(getNewGeneralEvidence(caseData, caseDataBefore, userType));
-            log.info("DFPL-1386 getGeneralEvidence: " + documentReferences.size());
 
             documentInfoConsumer.accept(getNewRespondentDocumentsUploaded(caseData,
                     caseDataBefore));
-            log.info("DFPL-1386 getNewRespondentDocumentsUploaded: " + documentReferences.size());
 
             documentInfoConsumer.accept(getNewCorrespondenceDocumentsByHmtcs(caseData,
                     caseDataBefore));
-            log.info("DFPL-1386 getNewCorrespondenceDocumentsByHmtcs: " + documentReferences.size());
 
             documentInfoConsumer.accept(getNewCorrespondenceDocumentsByLA(caseData,
                     caseDataBefore));
-            log.info("DFPL-1386 getNewCorrespondenceDocumentsByLA: " + documentReferences.size());
 
             documentInfoConsumer.accept(getNewCorrespondenceDocumentsBySolicitor(caseData,
                     caseDataBefore));
-            log.info("DFPL-1386 getNewCorrespondenceDocumentsBySolicitor: " + documentReferences.size());
 
             documentInfoConsumer.accept(getNewApplicationDocuments(caseData,
                     caseDataBefore));
-            log.info("DFPL-1386 getNewApplicationDocuments: " + documentReferences.size());
 
             documentInfoConsumer.accept(getHearingFurtherEvidenceDocuments(caseData,
                     caseDataBefore));
-            log.info("DFPL-1386 getHearingFurtherEvidenceDocuments: " + documentReferences.size());
 
             documentInfoConsumer.accept(getOtherApplicationBundle(caseData,
                     caseDataBefore));
-            log.info("DFPL-1386 getOtherApplicationBundle: " + documentReferences.size());
 
             documentInfoConsumer.accept(getC2DocumentBundle(caseData,
                     caseDataBefore));
-            log.info("DFPL-1386 getC2DocumentBundle: " + documentReferences.size());
 
             if (!documentReferences.isEmpty()) {
-                log.info(">>> DFPL-1386 sendDocumentsToCafcass: " + documentReferences.size());
                 String documentTypes = documentInfos.stream()
                         .filter(documentInfo ->
                                 !documentInfo.getDocumentReferences().isEmpty())
