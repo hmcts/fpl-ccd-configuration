@@ -1489,14 +1489,13 @@ class FurtherEvidenceUploadedEventHandlerTest {
     class AnyOtherDocumentUploadTests {
         @SuppressWarnings("unchecked")
         private Consumer<CaseData> toCaseDataModifier(List<?> documents,
-                                                  DocumentUploaderType uploaderType,
-                                                  boolean isRelatingToHearing) {
-        return isRelatingToHearing
-            ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
-            .addAll((List<Element<HearingFurtherEvidenceBundle>>) documents)
-            : (caseData) -> document(caseData, uploaderType)
-            .addAll((List<Element<SupportingEvidenceBundle>>) documents);
-    }
+                                                      DocumentUploaderType uploaderType,
+                                                      boolean isRelatingToHearing) {
+            return isRelatingToHearing ? (caseData) -> caseData.getHearingFurtherEvidenceDocuments()
+                .addAll((List<Element<HearingFurtherEvidenceBundle>>) documents)
+                : (caseData) -> document(caseData, uploaderType)
+                .addAll((List<Element<SupportingEvidenceBundle>>) documents);
+        }
 
         private List<Element<SupportingEvidenceBundle>> document(CaseData caseData,
                                                                  DocumentUploaderType uploaderType) {
