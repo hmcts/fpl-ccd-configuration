@@ -6,7 +6,6 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import java.util.List;
-import java.util.Set;
 
 @Data
 @Builder(toBuilder = true)
