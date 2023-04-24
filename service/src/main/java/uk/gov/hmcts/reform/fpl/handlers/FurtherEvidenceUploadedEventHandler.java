@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import io.jsonwebtoken.lang.Assert;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
@@ -458,7 +458,7 @@ public class FurtherEvidenceUploadedEventHandler {
 
     private <T extends WithDocument> boolean hasNewDocumentUploaded(List<Element<T>> existingElements,
                                                                     Element<T> test) {
-        Assert.notNull(test.getId());
+        Assert.notNull(test.getId(), "id is required to determine change of uploaded document");
         Optional<Element<T>> hitElement = ElementUtils.findElement(test.getId(), defaultIfNull(existingElements,
             List.of()));
         if (!hitElement.isPresent()) {
