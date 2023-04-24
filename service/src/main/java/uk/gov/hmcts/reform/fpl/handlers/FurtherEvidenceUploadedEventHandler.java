@@ -140,9 +140,7 @@ public class FurtherEvidenceUploadedEventHandler {
             final CaseData caseDataBefore = event.getCaseDataBefore();
 
             var newNonConfidentialDocuments = getNewDocuments(caseData,
-                caseDataBefore,
-                userType,
-                newDoc -> !newDoc.isConfidentialDocument());
+                caseDataBefore, userType, newDoc -> !newDoc.isConfidentialDocument(), true);
 
             Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
             List<DocumentReference> documents = getDocumentReferences(newNonConfidentialDocuments);
@@ -611,8 +609,16 @@ public class FurtherEvidenceUploadedEventHandler {
         CaseData caseData, CaseData caseDataBefore,
         DocumentUploaderType userType,
         Predicate<SupportingEvidenceBundle> additionalPredicate) {
-        return unwrapElements(getNewSupportingEvidenceBundle(getEvidenceBundle(caseData, userType),
-            getEvidenceBundle(caseDataBefore, userType), additionalPredicate));
+        return getNewDocuments(caseData, caseDataBefore, userType, additionalPredicate, false);
+    }
+
+    private List<SupportingEvidenceBundle> getNewDocuments(
+        CaseData caseData, CaseData caseDataBefore,
+        DocumentUploaderType userType,
+        Predicate<SupportingEvidenceBundle> additionalPredicate, boolean concatRespondentStatement) {
+        return unwrapElements(getNewSupportingEvidenceBundle(
+            getEvidenceBundle(caseData, userType, concatRespondentStatement),
+            getEvidenceBundle(caseDataBefore, userType, concatRespondentStatement), additionalPredicate));
     }
 
     private List<String> getDocumentNames(List<FurtherDocument> documentBundle) {
@@ -633,16 +639,20 @@ public class FurtherEvidenceUploadedEventHandler {
     }
 
     private List<Element<SupportingEvidenceBundle>> getEvidenceBundle(CaseData caseData,
-                                                                      DocumentUploaderType uploaderType) {
+                                                                      DocumentUploaderType uploaderType,
+                                                                      boolean concatRespondentStatement) {
         if (uploaderType == DESIGNATED_LOCAL_AUTHORITY || uploaderType == SECONDARY_LOCAL_AUTHORITY) {
             return caseData.getFurtherEvidenceDocumentsLA();
         }  else if (uploaderType == SOLICITOR) {
             List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle =
                 defaultIfNull(caseData.getFurtherEvidenceDocumentsSolicitor(), List.of());
-            List<Element<SupportingEvidenceBundle>> respondentStatementsBundle =
-                getEvidenceBundleFromRespondentStatements(caseData);
-
-            return concatEvidenceBundles(furtherEvidenceBundle, respondentStatementsBundle);
+            if (concatRespondentStatement) {
+                List<Element<SupportingEvidenceBundle>> respondentStatementsBundle =
+                    getEvidenceBundleFromRespondentStatements(caseData);
+                return concatEvidenceBundles(furtherEvidenceBundle, respondentStatementsBundle);
+            } else {
+                return furtherEvidenceBundle;
+            }
         } else {
             return caseData.getFurtherEvidenceDocuments();
         }
@@ -771,14 +781,9 @@ public class FurtherEvidenceUploadedEventHandler {
     }
 
     private DocumentInfo getNewRespondentDocumentsUploaded(CaseData caseData, CaseData caseDataBefore) {
-        List<SupportingEvidenceBundle> oldBundle = caseDataBefore.getRespondentStatements().stream()
-                .flatMap(statement -> unwrapElements(statement.getValue().getSupportingEvidenceBundle()).stream())
-                .collect(toList());
-        List<SupportingEvidenceBundle> newBundle = caseData.getRespondentStatements().stream()
-                .flatMap(statement -> unwrapElements(statement.getValue().getSupportingEvidenceBundle()).stream())
-                .collect(toList());
-
-        return getDocumentInfo(oldBundle, newBundle, "Respondent statement", FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION);
+        return getDocumentInfo(unwrapElements(getEvidenceBundleFromRespondentStatements(caseDataBefore)),
+            unwrapElements(getEvidenceBundleFromRespondentStatements(caseData)),
+            "Respondent statement", FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION);
     }
 
     private DocumentInfo  getNewCorrespondenceDocumentsByHmtcs(CaseData caseData, CaseData caseDataBefore) {
