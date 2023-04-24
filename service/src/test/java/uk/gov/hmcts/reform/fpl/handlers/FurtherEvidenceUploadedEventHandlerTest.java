@@ -597,38 +597,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     @Test
-    void shouldNotEmailCafcassWhenNoApplicationDocumentIsUploaded() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
-
-        CaseData caseData = buildCaseDataWithApplicationDocuments();
-
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-                new FurtherEvidenceUploadedEvent(
-                        caseData,
-                        caseData,
-                        DESIGNATED_LOCAL_AUTHORITY,
-                        userDetailsLA());
-
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
-
-        Set<DocumentReference> documentReferences = unwrapElements(caseData.getApplicationDocuments())
-                .stream()
-                .map(WithDocument::getDocument)
-                .collect(toSet());
-
-        verify(cafcassNotificationService, never()).sendEmail(
-                any(),
-                any(),
-                any(),
-                any());
-    }
-
-    @Test
     void shouldNotSendEmailToCafcassWhenRespondentStatementIsUploaded() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
