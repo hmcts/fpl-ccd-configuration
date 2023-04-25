@@ -1472,7 +1472,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     buildNonConfidentialDocumentList(LA_USER),
                     HEARING_RELATED_NO, NOTIFYING_CAFCASS),
                 of(DESIGNATED_LOCAL_AUTHORITY,
-                    Set.of(ALL_LAS),
+                    Set.of(ALL_LAS, CAFCASS_REPRESENTATIVES),
                     CONFIDENTIAL,
                     buildConfidentialDocumentList(LA_USER),
                     HEARING_RELATED_NO, NOTIFYING_CAFCASS),

@@ -694,9 +694,10 @@ public class FurtherEvidenceUploadedEventHandler {
             if (!doc.isConfidentialDocument()) {
                 ret.get(CHILD_SOLICITOR).add(doc);
                 ret.get(RESPONDENT_SOLICITOR).add(doc);
-                if (!NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(doc.getType())) {
-                    ret.get(CAFCASS_REPRESENTATIVES).add(doc);
-                }
+            }
+            // confidential docs uploaded by LA should restrict the access from solicitor only
+            if (!NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(doc.getType())) {
+                ret.get(CAFCASS_REPRESENTATIVES).add(doc);
             }
             ret.get(ALL_LAS).add(doc);
         });
