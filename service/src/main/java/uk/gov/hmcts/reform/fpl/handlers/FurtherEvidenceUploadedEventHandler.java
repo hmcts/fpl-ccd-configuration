@@ -72,6 +72,7 @@ import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificat
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.CHILD_SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType.RESPONDENT_SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.HMCTS;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.CASE_SUMMARY;
@@ -293,7 +294,7 @@ public class FurtherEvidenceUploadedEventHandler {
 
         if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             final CaseData caseDataBefore = event.getCaseDataBefore();
-            final DocumentUploaderType userType = event.getUserType();
+            final DocumentUploaderType uploaderType = event.getUserType();
             final Set<DocumentReference> documentReferences = new HashSet<>();
             final Set<DocumentInfo> documentInfos = new HashSet<>();
 
@@ -302,7 +303,7 @@ public class FurtherEvidenceUploadedEventHandler {
                 documentInfos.add(documentInfo);
             };
 
-            documentInfoConsumer.accept(getNewGeneralEvidence(caseData, caseDataBefore, userType));
+            documentInfoConsumer.accept(getNewGeneralEvidence(caseData, caseDataBefore, uploaderType));
 
             documentInfoConsumer.accept(getNewRespondentDocumentsUploaded(caseData,
                     caseDataBefore));
@@ -320,7 +321,7 @@ public class FurtherEvidenceUploadedEventHandler {
                     caseDataBefore));
 
             documentInfoConsumer.accept(getHearingFurtherEvidenceDocuments(caseData,
-                    caseDataBefore));
+                    caseDataBefore, uploaderType));
 
             documentInfoConsumer.accept(getOtherApplicationBundle(caseData,
                     caseDataBefore));
@@ -425,7 +426,8 @@ public class FurtherEvidenceUploadedEventHandler {
                 );
     }
 
-    private DocumentInfo getHearingFurtherEvidenceDocuments(CaseData caseData, CaseData caseDataBefore) {
+    private DocumentInfo getHearingFurtherEvidenceDocuments(CaseData caseData, CaseData caseDataBefore,
+                                                            DocumentUploaderType uploaderType) {
         List<Element<SupportingEvidenceBundle>> newAnyOtherDocumentFromHearings =
             getNewSupportingEvidenceBundle(getEvidenceBundleFromHearings(caseData),
                 getEvidenceBundleFromHearings(caseDataBefore));
@@ -433,6 +435,7 @@ public class FurtherEvidenceUploadedEventHandler {
         return newAnyOtherDocumentFromHearings.stream()
                 .map(Element::getValue)
                 .filter(bundle -> !NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(bundle.getType()))
+                .filter(bundle -> HMCTS.equals(uploaderType) ? !bundle.isConfidentialDocument() : true)
                 .map(supportingEvidenceBundle -> {
                     DocumentReference document = supportingEvidenceBundle.getDocument();
                     document.setType(Optional.ofNullable(supportingEvidenceBundle.getType())
@@ -524,12 +527,13 @@ public class FurtherEvidenceUploadedEventHandler {
         return newSupportingEvidenceBundle;
     }
 
+    // this method is dedicated to Cafcass logic
     private DocumentInfo getNewGeneralEvidence(CaseData caseData, CaseData caseDataBefore,
-                                               DocumentUploaderType userType) {
+                                               DocumentUploaderType uploaderType) {
         var supportingEvidenceBundles = getNewDocuments(caseData,
             caseDataBefore,
-            userType,
-            null);
+            uploaderType,
+            HMCTS.equals(uploaderType) ? newDoc -> !newDoc.isConfidentialDocument() : null);
 
         return supportingEvidenceBundles.stream()
                 .filter(bundle -> !NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(bundle.getType()))
@@ -739,11 +743,11 @@ public class FurtherEvidenceUploadedEventHandler {
             if (!doc.isConfidentialDocument()) {
                 ret.get(CHILD_SOLICITOR).add(doc);
                 ret.get(RESPONDENT_SOLICITOR).add(doc);
+            }
+            if (!(doc.isUploadedByHMCTS() && doc.isConfidentialDocument())) {
                 if (!NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(doc.getType())) {
                     ret.get(CAFCASS_REPRESENTATIVES).add(doc);
                 }
-            }
-            if (!(doc.isUploadedByHMCTS() && doc.isConfidentialDocument())) {
                 ret.get(ALL_LAS).add(doc);
             }
         });
