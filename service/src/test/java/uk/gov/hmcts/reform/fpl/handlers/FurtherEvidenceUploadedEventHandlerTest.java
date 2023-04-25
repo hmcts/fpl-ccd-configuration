@@ -1460,6 +1460,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         static final boolean HEARING_RELATED_YES = true;
         static final boolean HEARING_RELATED_NO = false;
+
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
