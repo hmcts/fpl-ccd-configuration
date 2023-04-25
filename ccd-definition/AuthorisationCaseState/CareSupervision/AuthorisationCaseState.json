@@ -8,7 +8,8 @@
       "caseworker-publiclaw-systemupdate",
       "caseworker-caa",
       "caseworker-approver",
-      "caseworker-ras-validation"
+      "caseworker-ras-validation",
+      "caseworker-wa-task-configuration"
     ],
     "CRUD": "CRU"
   },
@@ -28,7 +29,8 @@
       "caseworker-publiclaw-bulkscansystemupdate",
       "caseworker-caa",
       "caseworker-approver",
-      "caseworker-ras-validation"
+      "caseworker-ras-validation",
+      "caseworker-wa-task-configuration"
     ],
     "CRUD": "CRU"
   },
@@ -48,7 +50,8 @@
       "caseworker-publiclaw-bulkscansystemupdate",
       "caseworker-caa",
       "caseworker-approver",
-      "caseworker-ras-validation"
+      "caseworker-ras-validation",
+      "caseworker-wa-task-configuration"
     ],
     "CRUD": "CRU"
   },
@@ -68,7 +71,8 @@
       "caseworker-publiclaw-bulkscansystemupdate",
       "caseworker-caa",
       "caseworker-approver",
-      "caseworker-ras-validation"
+      "caseworker-ras-validation",
+      "caseworker-wa-task-configuration"
     ],
     "CRUD": "CRU"
   },
@@ -88,7 +92,8 @@
       "caseworker-caa",
       "caseworker-approver",
       "caseworker-ras-validation",
-      "caseworker-publiclaw-cafcass"
+      "caseworker-publiclaw-cafcass",
+      "caseworker-wa-task-configuration"
     ],
     "CRUD": "CRU"
   },
@@ -103,7 +108,8 @@
       "caseworker-caa",
       "caseworker-approver",
       "caseworker-ras-validation",
-      "caseworker-publiclaw-cafcass"
+      "caseworker-publiclaw-cafcass",
+      "caseworker-wa-task-configuration"
     ],
     "CRUD": "CRU"
   },
@@ -123,7 +129,8 @@
       "caseworker-publiclaw-bulkscansystemupdate",
       "caseworker-caa",
       "caseworker-approver",
-      "caseworker-ras-validation"
+      "caseworker-ras-validation",
+      "caseworker-wa-task-configuration"
     ],
     "CRUD": "CRU"
   },
@@ -142,7 +149,8 @@
       "caseworker-publiclaw-bulkscan",
       "caseworker-publiclaw-bulkscansystemupdate",
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-wa-task-configuration"
     ],
     "CRUD": "CRU"
   },

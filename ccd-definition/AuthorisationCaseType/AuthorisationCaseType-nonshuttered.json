@@ -14,7 +14,8 @@
       "caseworker-publiclaw-bulkscansystemupdate",
       "caseworker-caa",
       "caseworker-approver",
-      "caseworker-ras-validation"
+      "caseworker-ras-validation",
+      "caseworker-wa-task-configuration"
     ],
     "CRUD": "CRU"
   },
