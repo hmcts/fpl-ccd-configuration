@@ -2,15 +2,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "MedwayDFJCourts",
-    "ListElementCode": "163",
-    "ListElement": "Canterbury",
-    "DisplayOrder": 1
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "MedwayDFJCourts",
     "ListElementCode": "267",
     "ListElement": "Medway",
-    "DisplayOrder": 2
+    "DisplayOrder": 1
   }
 ]

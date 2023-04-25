@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
-import uk.gov.hmcts.reform.fpl.model.DfjAreaCourtMapping;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthorityName;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
@@ -51,7 +50,6 @@ public class CaseInitiationService {
     private final FeatureToggleService featureToggleService;
     private final LocalAuthorityService localAuthorities;
     private final HmctsCourtLookupConfiguration courtLookup;
-    private final DfjAreaLookUpService dfjLookUpService;
 
     public Optional<String> getUserOrganisationId() {
         return organisationService.findOrganisation().map(Organisation::getOrganisationIdentifier);
@@ -214,7 +212,7 @@ public class CaseInitiationService {
                 .representativeType(RepresentativeType.LOCAL_AUTHORITY)
                 .build();
 
-            return addDfjAndCourtDetails(updatedCaseData);
+            return addCourtDetails(updatedCaseData);
         }
 
         if (userLocalAuthority.isPresent()) {
@@ -226,7 +224,7 @@ public class CaseInitiationService {
                 .representativeType(RepresentativeType.LOCAL_AUTHORITY)
                 .build();
 
-            return addDfjAndCourtDetails(updatedCaseData);
+            return addCourtDetails(updatedCaseData);
         }
 
         if (nonNull(caseData.getRepresentativeType())) {
@@ -246,14 +244,14 @@ public class CaseInitiationService {
                     .representativeType(caseData.getRepresentativeType())
                     .build();
 
-                return addDfjAndCourtDetails(updatedCaseData);
+                return addCourtDetails(updatedCaseData);
             }
         }
 
         return caseData;
     }
 
-    private CaseData addDfjAndCourtDetails(CaseData caseData) {
+    private CaseData addCourtDetails(CaseData caseData) {
         if (isEmpty(caseData.getCaseLocalAuthorityName())) {
             return caseData.toBuilder().court(
                 Court.builder().build()
@@ -264,13 +262,7 @@ public class CaseInitiationService {
 
         if (isNotEmpty(courts)) {
             if (courts.size() == 1) {
-                Court court = courts.get(0);
-                DfjAreaCourtMapping dfjArea = dfjLookUpService.getDfjArea(court.getCode());
-                return caseData.toBuilder()
-                    .court(court)
-                    .courtField(dfjArea.getCourtField())
-                    .dfjArea(dfjArea.getDfjArea())
-                    .build();
+                return caseData.toBuilder().court(courts.get(0)).build();
             } else {
                 return caseData.toBuilder().multiCourts(YesNo.YES).build();
             }

@@ -2,14 +2,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ReadingDFJCourts",
-    "ListElementCode": "305",
+    "ListElementCode": "150",
     "ListElement": "Reading",
     "DisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ReadingDFJCourts",
-    "ListElementCode": "291",
+    "ListElementCode": "150",
     "ListElement": "Oxford",
     "DisplayOrder": 2
   }
