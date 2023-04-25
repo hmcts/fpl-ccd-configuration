@@ -54,8 +54,7 @@
     "CaseFieldID": "respondentPolicy0",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver",
-      "caseworker-publiclaw-systemupdate"
+      "caseworker-approver"
     ],
     "CRUD": "CRUD"
   },
@@ -65,8 +64,7 @@
     "CaseFieldID": "respondentPolicy1",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver",
-      "caseworker-publiclaw-systemupdate"
+      "caseworker-approver"
     ],
     "CRUD": "CRUD"
   },
@@ -76,8 +74,7 @@
     "CaseFieldID": "respondentPolicy2",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver",
-      "caseworker-publiclaw-systemupdate"
+      "caseworker-approver"
     ],
     "CRUD": "CRUD"
   },
@@ -87,8 +84,7 @@
     "CaseFieldID": "respondentPolicy3",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver",
-      "caseworker-publiclaw-systemupdate"
+      "caseworker-approver"
     ],
     "CRUD": "CRUD"
   },
@@ -98,8 +94,7 @@
     "CaseFieldID": "respondentPolicy4",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver",
-      "caseworker-publiclaw-systemupdate"
+      "caseworker-approver"
     ],
     "CRUD": "CRUD"
   },
@@ -109,8 +104,7 @@
     "CaseFieldID": "respondentPolicy5",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver",
-      "caseworker-publiclaw-systemupdate"
+      "caseworker-approver"
     ],
     "CRUD": "CRUD"
   },
@@ -120,8 +114,7 @@
     "CaseFieldID": "respondentPolicy6",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver",
-      "caseworker-publiclaw-systemupdate"
+      "caseworker-approver"
     ],
     "CRUD": "CRUD"
   },
@@ -131,8 +124,7 @@
     "CaseFieldID": "respondentPolicy7",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver",
-      "caseworker-publiclaw-systemupdate"
+      "caseworker-approver"
     ],
     "CRUD": "CRUD"
   },
@@ -142,8 +134,7 @@
     "CaseFieldID": "respondentPolicy8",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver",
-      "caseworker-publiclaw-systemupdate"
+      "caseworker-approver"
     ],
     "CRUD": "CRUD"
   },
@@ -153,8 +144,7 @@
     "CaseFieldID": "respondentPolicy9",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver",
-      "caseworker-publiclaw-systemupdate"
+      "caseworker-approver"
     ],
     "CRUD": "CRUD"
   },
