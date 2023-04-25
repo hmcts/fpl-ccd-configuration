@@ -161,6 +161,9 @@ cafcass:
       expertReports: EXPERT
       childsGuardianReports: REPORTING TO COURT
       courtBundle: BUNDLE
+      caseSummary: BUNDLE
+      positionStatementChild: REPORTING TO COURT
+      positionStatementRespondent: REPORTING TO COURT
       other: CORRESPONDENCE
       correspondence: CORRESPONDENCE
       additionalDocument: APPLICATION
