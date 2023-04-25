@@ -53,9 +53,9 @@
         "orderType": [
           "OTHER"
         ],
-        "court": "344"
+        "court": "22"
       },
-      "representativeType": "RESPONDENT_SOLICITOR"
+      "representativeType": "RESPONDENT_SOLICITOR" 
     }
   }
 }
