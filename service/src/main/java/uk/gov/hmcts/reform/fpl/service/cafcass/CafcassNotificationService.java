@@ -218,6 +218,8 @@ public class CafcassNotificationService {
                     .map(key -> key.contains("'")
                             ? key.replace("'", "") : key)
                     .orElse("other");
+            log.info("DFPL-1388 lookupKey = " + lookupKey);
+
 
 
             String cafcassDocumentMappingType = configuration.getDocumentType().get(lookupKey);
