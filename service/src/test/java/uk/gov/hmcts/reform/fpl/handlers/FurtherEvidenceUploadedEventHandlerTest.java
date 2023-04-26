@@ -319,6 +319,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         verifyNoMoreInteractions(translationRequestService);
     }
 
+    // Cafcass Notification: Court Bundle Test Cases
     @Test
     void shouldNotEmailCafcassWhenNoNewBundle() {
         String hearing = "Hearing";
@@ -461,6 +462,43 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         courtBundleData = courtBundleCaptor.getValue();
         assertThat(courtBundleData.getHearingDetails()).isEqualTo(secHearing);
+    }
+
+    // Cafcass Notification: Documents for additional applications
+    @Test
+    void shouldNotEmailCafcassWhenConfidentialAdditionalBundleIsUploadedByAdmin() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+            .thenReturn(
+                Optional.of(
+                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                )
+            );
+
+        CaseData beforeCaseData = buildSubmittedCaseData();
+        CaseData caseData = buildCaseDataWithAdditionalApplicationBundle(HMCTS_USER, true);
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            new FurtherEvidenceUploadedEvent(
+                caseData,
+                beforeCaseData,
+                HMCTS,
+                userDetailsHMCTS());
+
+        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+
+        Set<DocumentReference> documentReferences = unwrapElements(caseData.getAdditionalApplicationsBundle())
+            .stream()
+            .map(AdditionalApplicationsBundle::getOtherApplicationsBundle)
+            .map(OtherApplicationsBundle::getAllDocumentReferences)
+            .flatMap(List::stream)
+            .map(Element::getValue)
+            .collect(toSet());
+
+        verify(cafcassNotificationService, never()).sendEmail(
+            eq(caseData),
+            eq(documentReferences),
+            eq(NEW_DOCUMENT),
+            newDocumentDataCaptor.capture());
     }
 
     @Test

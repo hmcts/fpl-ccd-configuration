@@ -166,11 +166,17 @@ public class FurtherEvidenceUploadedEventTestData {
     }
 
     public static CaseData buildCaseDataWithAdditionalApplicationBundle() {
+        return buildCaseDataWithAdditionalApplicationBundle(LA_USER, false);
+    }
+
+    public static CaseData buildCaseDataWithAdditionalApplicationBundle(final String uploadedBy, boolean confidential) {
         OtherApplicationsBundle otherBundle = OtherApplicationsBundle.builder()
                 .id(UUID.randomUUID())
                 .applicationType(OtherApplicationType.C1_WITH_SUPPLEMENT)
                 .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(now().plusDays(1), DATE_TIME))
-                .supportingEvidenceBundle(buildNonConfidentialDocumentList(LA_USER))
+                .supportingEvidenceBundle(confidential
+                    ? buildConfidentialDocumentList(uploadedBy)
+                    : buildNonConfidentialDocumentList(uploadedBy))
                 .build();
 
 
