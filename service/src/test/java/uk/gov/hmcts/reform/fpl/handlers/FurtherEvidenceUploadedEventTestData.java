@@ -195,7 +195,8 @@ public class FurtherEvidenceUploadedEventTestData {
         return buildCaseDataWithC2AdditionalApplicationBundle(LA_USER, false);
     }
 
-    public static CaseData buildCaseDataWithC2AdditionalApplicationBundle(final String uploadedBy, boolean confidential) {
+    public static CaseData buildCaseDataWithC2AdditionalApplicationBundle(final String uploadedBy,
+                                                                          boolean confidential) {
         C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder()
                 .id(UUID.randomUUID())
                 .type(WITH_NOTICE)
