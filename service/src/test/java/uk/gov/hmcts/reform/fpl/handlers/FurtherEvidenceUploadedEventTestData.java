@@ -165,28 +165,6 @@ public class FurtherEvidenceUploadedEventTestData {
             .build();
     }
 
-    public static CaseData buildCaseDataWithCorrespondencesByHmtcs() {
-        return commonCaseBuilder()
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .correspondenceDocuments((buildNonConfidentialDocumentList(HMCTS_USER)))
-                .build();
-    }
-
-    public static CaseData buildCaseDataWithCorrespondencesByLA() {
-        return commonCaseBuilder()
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .correspondenceDocumentsLA((buildNonConfidentialDocumentList(LA_USER)))
-                .build();
-    }
-
-    public static CaseData buildCaseDataWithCorrespondencesBySolicitor() {
-        return commonCaseBuilder()
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .correspondenceDocumentsSolicitor(
-                    removeEvidenceBundleType((buildNonConfidentialDocumentList(REP_SOLICITOR_USER_EMAIL))))
-                .build();
-    }
-
     public static CaseData buildCaseDataWithAdditionalApplicationBundle() {
         OtherApplicationsBundle otherBundle = OtherApplicationsBundle.builder()
                 .id(UUID.randomUUID())
