@@ -29,7 +29,11 @@ public class GatekeepingOrderRouteValidator {
         "There is a standard direction order on this case and the urgent direction event can not be used.";
 
     public List<String> allowAccessToEvent(CaseData caseData) {
-        return isStandDirectionExist(caseData) ? List.of(EVENT_ACCESS_VALIDATION_MESSAGE) : List.of();
+        StandardDirectionOrder sdo = defaultIfNull(
+            caseData.getStandardDirectionOrder(), StandardDirectionOrder.builder().build()
+        );
+
+        return sdo.isSealed() ? List.of(EVENT_ACCESS_VALIDATION_MESSAGE) : List.of();
     }
 
     public List<String> allowAccessToEvent(CaseData caseData, String eventName) {
@@ -39,7 +43,7 @@ public class GatekeepingOrderRouteValidator {
                     StandardDirectionOrder.builder().build());
                 if (udo.isSealed()) {
                     return List.of(URGENT_DIRECTIONS_VALIDATION_MESSAGE);
-                } else if (isStandDirectionExist(caseData)) {
+                } else if (caseData.getStandardDirectionOrder() != null) {
                     return List.of(URGENT_DIRECTIONS_NOT_ALLOWED_MESSAGE);
                 } else {
                     return List.of();
@@ -67,13 +71,5 @@ public class GatekeepingOrderRouteValidator {
         return caseData.isCareOrderCombinedWithUrgentDirections() || caseData.isStandaloneEPOApplication()
             || caseData.isStandaloneInterimCareOrder() || caseData.isStandaloneSecureAccommodationOrder()
             || caseData.isStandaloneChildRecoveryOrder() || caseData.isEPOCombinedWithICO();
-    }
-
-    private boolean isStandDirectionExist(CaseData caseData) {
-        StandardDirectionOrder sdo = defaultIfNull(
-            caseData.getStandardDirectionOrder(), StandardDirectionOrder.builder().build()
-        );
-
-        return sdo.isSealed();
     }
 }
