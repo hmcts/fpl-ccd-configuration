@@ -303,8 +303,8 @@ public class FurtherEvidenceUploadedEventHandler {
                 documentInfos.add(documentInfo);
             };
 
-            Predicate<SupportingEvidenceBundle> additionalPredicate =
-                 newDoc -> HMCTS.equals(uploaderType) ? !newDoc.isConfidentialDocument() : true;
+            Predicate<SupportingEvidenceBundle> additionalPredicate = newDoc ->
+                HMCTS.equals(uploaderType) ? !newDoc.isConfidentialDocument() : true;
 
             documentInfoConsumer.accept(getNewGeneralEvidence(caseData, caseDataBefore, uploaderType,
                 additionalPredicate));
