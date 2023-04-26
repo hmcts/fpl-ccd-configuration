@@ -303,31 +303,32 @@ public class FurtherEvidenceUploadedEventHandler {
                 documentInfos.add(documentInfo);
             };
 
-            documentInfoConsumer.accept(getNewGeneralEvidence(caseData, caseDataBefore, uploaderType));
+            Predicate<SupportingEvidenceBundle> additionalPredicate =
+                 newDoc -> HMCTS.equals(uploaderType) ? !newDoc.isConfidentialDocument() : true;
 
-            documentInfoConsumer.accept(getNewRespondentDocumentsUploaded(caseData,
-                    caseDataBefore));
+            documentInfoConsumer.accept(getNewGeneralEvidence(caseData, caseDataBefore, uploaderType,
+                additionalPredicate));
 
-            documentInfoConsumer.accept(getNewCorrespondenceDocumentsByHmtcs(caseData,
-                    caseDataBefore));
+            documentInfoConsumer.accept(getNewRespondentStatementsUploaded(caseData, caseDataBefore,
+                additionalPredicate));
 
-            documentInfoConsumer.accept(getNewCorrespondenceDocumentsByLA(caseData,
-                    caseDataBefore));
+            documentInfoConsumer.accept(getNewCorrespondenceDocumentsByHmtcs(caseData, caseDataBefore,
+                additionalPredicate));
 
-            documentInfoConsumer.accept(getNewCorrespondenceDocumentsBySolicitor(caseData,
-                    caseDataBefore));
+            documentInfoConsumer.accept(getNewCorrespondenceDocumentsByLA(caseData, caseDataBefore,
+                additionalPredicate));
 
-            documentInfoConsumer.accept(getNewApplicationDocuments(caseData,
-                    caseDataBefore));
+            documentInfoConsumer.accept(getNewCorrespondenceDocumentsBySolicitor(caseData, caseDataBefore,
+                additionalPredicate));
 
-            documentInfoConsumer.accept(getHearingFurtherEvidenceDocuments(caseData,
-                    caseDataBefore, uploaderType));
+            documentInfoConsumer.accept(getNewApplicationDocuments(caseData, caseDataBefore));
 
-            documentInfoConsumer.accept(getOtherApplicationBundle(caseData,
-                    caseDataBefore));
+            documentInfoConsumer.accept(getHearingFurtherEvidenceDocuments(caseData, caseDataBefore,
+                additionalPredicate));
 
-            documentInfoConsumer.accept(getC2DocumentBundle(caseData,
-                    caseDataBefore));
+            documentInfoConsumer.accept(getOtherApplicationBundle(caseData, caseDataBefore));
+
+            documentInfoConsumer.accept(getC2DocumentBundle(caseData, caseDataBefore));
 
             if (!documentReferences.isEmpty()) {
                 String documentTypes = documentInfos.stream()
@@ -427,7 +428,7 @@ public class FurtherEvidenceUploadedEventHandler {
     }
 
     private DocumentInfo getHearingFurtherEvidenceDocuments(CaseData caseData, CaseData caseDataBefore,
-                                                            DocumentUploaderType uploaderType) {
+                                                            Predicate<SupportingEvidenceBundle> additionalPredicate) {
         List<Element<SupportingEvidenceBundle>> newAnyOtherDocumentFromHearings =
             getNewSupportingEvidenceBundle(getEvidenceBundleFromHearings(caseData),
                 getEvidenceBundleFromHearings(caseDataBefore));
@@ -435,7 +436,7 @@ public class FurtherEvidenceUploadedEventHandler {
         return newAnyOtherDocumentFromHearings.stream()
                 .map(Element::getValue)
                 .filter(bundle -> !NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(bundle.getType()))
-                .filter(bundle -> HMCTS.equals(uploaderType) ? !bundle.isConfidentialDocument() : true)
+                .filter(additionalPredicate)
                 .map(supportingEvidenceBundle -> {
                     DocumentReference document = supportingEvidenceBundle.getDocument();
                     document.setType(Optional.ofNullable(supportingEvidenceBundle.getType())
@@ -527,13 +528,11 @@ public class FurtherEvidenceUploadedEventHandler {
         return newSupportingEvidenceBundle;
     }
 
-    // this method is dedicated to Cafcass logic
     private DocumentInfo getNewGeneralEvidence(CaseData caseData, CaseData caseDataBefore,
-                                               DocumentUploaderType uploaderType) {
+                                               DocumentUploaderType uploaderType,
+                                               Predicate<SupportingEvidenceBundle> additionalPredicate) {
         var supportingEvidenceBundles = getNewDocuments(caseData,
-            caseDataBefore,
-            uploaderType,
-            HMCTS.equals(uploaderType) ? newDoc -> !newDoc.isConfidentialDocument() : null);
+            caseDataBefore, uploaderType, additionalPredicate);
 
         return supportingEvidenceBundles.stream()
                 .filter(bundle -> !NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(bundle.getType()))
@@ -596,18 +595,18 @@ public class FurtherEvidenceUploadedEventHandler {
 
     private List<SupportingEvidenceBundle> getNewDocuments(
         CaseData caseData, CaseData caseDataBefore,
-        DocumentUploaderType userType,
+        DocumentUploaderType uploaderType,
         Predicate<SupportingEvidenceBundle> additionalPredicate) {
-        return getNewDocuments(caseData, caseDataBefore, userType, additionalPredicate, false);
+        return getNewDocuments(caseData, caseDataBefore, uploaderType, additionalPredicate, false);
     }
 
     private List<SupportingEvidenceBundle> getNewDocuments(
         CaseData caseData, CaseData caseDataBefore,
-        DocumentUploaderType userType,
+        DocumentUploaderType uploaderType,
         Predicate<SupportingEvidenceBundle> additionalPredicate, boolean concatRespondentStatement) {
         return unwrapElements(getNewSupportingEvidenceBundle(
-            getEvidenceBundle(caseData, userType, concatRespondentStatement),
-            getEvidenceBundle(caseDataBefore, userType, concatRespondentStatement), additionalPredicate));
+            getEvidenceBundle(caseData, uploaderType, concatRespondentStatement),
+            getEvidenceBundle(caseDataBefore, uploaderType, concatRespondentStatement), additionalPredicate));
     }
 
     private List<String> getDocumentNames(List<FurtherDocument> documentBundle) {
@@ -679,11 +678,11 @@ public class FurtherEvidenceUploadedEventHandler {
                 getEvidenceBundleFromRespondentStatements(beforeCaseData));
         unwrapElements(respondentStatements).forEach(respondentStatement -> {
             if (!respondentStatement.isConfidentialDocument()) {
-                ret.get(CAFCASS_REPRESENTATIVES).add(respondentStatement);
                 ret.get(CHILD_SOLICITOR).add(respondentStatement);
                 ret.get(RESPONDENT_SOLICITOR).add(respondentStatement);
             }
             if (!(respondentStatement.isUploadedByHMCTS() && respondentStatement.isConfidentialDocument())) {
+                ret.get(CAFCASS_REPRESENTATIVES).add(respondentStatement);
                 ret.get(ALL_LAS).add(respondentStatement);
             }
         });
@@ -770,40 +769,47 @@ public class FurtherEvidenceUploadedEventHandler {
         return evidenceBundle;
     }
 
-    private DocumentInfo getNewRespondentDocumentsUploaded(CaseData caseData, CaseData caseDataBefore) {
+    private DocumentInfo getNewRespondentStatementsUploaded(CaseData caseData, CaseData caseDataBefore,
+                                                            Predicate<SupportingEvidenceBundle> additionalPredicate) {
         return getDocumentInfo(getEvidenceBundleFromRespondentStatements(caseDataBefore),
             getEvidenceBundleFromRespondentStatements(caseData),
-            "Respondent statement", FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION);
+            "Respondent statement", FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION, additionalPredicate);
     }
 
-    private DocumentInfo getNewCorrespondenceDocumentsByHmtcs(CaseData caseData, CaseData caseDataBefore) {
+    private DocumentInfo getNewCorrespondenceDocumentsByHmtcs(CaseData caseData, CaseData caseDataBefore,
+                                                              Predicate<SupportingEvidenceBundle> additionalPredicate) {
         List<Element<SupportingEvidenceBundle>> oldBundle = caseDataBefore.getCorrespondenceDocuments();
         List<Element<SupportingEvidenceBundle>> newBundle = caseData.getCorrespondenceDocuments();
 
-        return getDocumentInfo(oldBundle, newBundle, CORRESPONDENCE, CORRESPONDENCE);
+        return getDocumentInfo(oldBundle, newBundle, CORRESPONDENCE, CORRESPONDENCE, additionalPredicate);
     }
 
-    private DocumentInfo getNewCorrespondenceDocumentsByLA(CaseData caseData, CaseData caseDataBefore) {
+    private DocumentInfo getNewCorrespondenceDocumentsByLA(CaseData caseData, CaseData caseDataBefore,
+                                                           Predicate<SupportingEvidenceBundle> additionalPredicate) {
         List<Element<SupportingEvidenceBundle>> oldBundle = caseDataBefore.getCorrespondenceDocumentsLA();
         List<Element<SupportingEvidenceBundle>> newBundle = caseData.getCorrespondenceDocumentsLA();
 
-        return getDocumentInfo(oldBundle, newBundle, CORRESPONDENCE, CORRESPONDENCE);
+        return getDocumentInfo(oldBundle, newBundle, CORRESPONDENCE, CORRESPONDENCE, additionalPredicate);
     }
 
-    private DocumentInfo getNewCorrespondenceDocumentsBySolicitor(CaseData caseData, CaseData caseDataBefore) {
+    private DocumentInfo getNewCorrespondenceDocumentsBySolicitor(CaseData caseData, CaseData caseDataBefore,
+                                                                  Predicate<SupportingEvidenceBundle>
+                                                                      additionalPredicate) {
         List<Element<SupportingEvidenceBundle>> oldBundle = caseDataBefore.getCorrespondenceDocumentsSolicitor();
         List<Element<SupportingEvidenceBundle>> newBundle = caseData.getCorrespondenceDocumentsSolicitor();
 
-        return getDocumentInfo(oldBundle, newBundle, CORRESPONDENCE, CORRESPONDENCE);
+        return getDocumentInfo(oldBundle, newBundle, CORRESPONDENCE, CORRESPONDENCE, additionalPredicate);
     }
 
     private DocumentInfo getDocumentInfo(List<Element<SupportingEvidenceBundle>> oldBundle,
                                          List<Element<SupportingEvidenceBundle>> newBundle,
-                                         String documentType,
-                                         String type) {
+                                         String documentType, String type,
+                                         Predicate<SupportingEvidenceBundle> additionalPredicate) {
         List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle = new ArrayList<>();
         defaultIfNull(newBundle, new ArrayList<Element<SupportingEvidenceBundle>>()).forEach(newDoc -> {
-            if (hasNewDocumentUploaded(oldBundle, newDoc)) {
+            if (hasNewDocumentUploaded(oldBundle, newDoc)
+                && Optional.ofNullable(additionalPredicate).orElse((x) -> true)
+                .test(newDoc.getValue())) {
                 newSupportingEvidenceBundle.add(newDoc);
             }
         });

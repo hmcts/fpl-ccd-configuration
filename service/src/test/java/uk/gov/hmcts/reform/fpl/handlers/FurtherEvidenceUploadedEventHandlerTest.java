@@ -277,6 +277,10 @@ class FurtherEvidenceUploadedEventHandlerTest {
         }
     }
 
+    private boolean isNotifyingCafcass(Set<DocumentUploadNotificationUserType> notificationUserTypes) {
+        return nullSafeCollection(notificationUserTypes).contains(CAFCASS_REPRESENTATIVES);
+    }
+
     @Test
     void shouldNotNotifyTranslationTeamWhenNoChange() {
         when(calculator.calculate(CASE_DATA, CASE_DATA_BEFORE)).thenReturn(List.of());
@@ -975,7 +979,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 EMPTY_CASE_DATA_MODIFIER,
                 (caseData) ->  getCorrespondenceDocuments(caseData, uploaderType).addAll(correspondences),
                 toDocumentReferencesExtractor(correspondences),
-                "• Correspondence", "Correspondence");
+                HMCTS.equals(uploaderType) && confidential ? null : "• Correspondence",
+                HMCTS.equals(uploaderType) && confidential ? null : "Correspondence");
         }
 
         @ParameterizedTest
@@ -999,7 +1004,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 (caseData) ->  getCorrespondenceDocuments(caseData, uploaderType).addAll(beforeCorrespondences),
                 (caseData) ->  getCorrespondenceDocuments(caseData, uploaderType).addAll(afterCorrespondences),
                 toDocumentReferencesExtractor(afterCorrespondences),
-                "• Correspondence", "Correspondence");
+                HMCTS.equals(uploaderType) && confidential ? null : "• Correspondence",
+                HMCTS.equals(uploaderType) && confidential ? null : "Correspondence");
         }
 
         @ParameterizedTest
@@ -1086,7 +1092,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES), NON_CONFIDENTIAL,
                     false),
                 of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
-                    Set.of(ALL_LAS), CONFIDENTIAL, true),
+                    Set.of(ALL_LAS, CAFCASS_REPRESENTATIVES), CONFIDENTIAL, true),
                 of(userDetailsHMCTS(), HMCTS, HMCTS_USER,
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES), NON_CONFIDENTIAL,
                     false),
@@ -1134,8 +1140,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 EMPTY_CASE_DATA_MODIFIER,
                 (caseData) ->  caseData.getRespondentStatements().addAll(respondentStatements),
                 toDocumentReferencesExtractor(respondentStatements),
-                "• Respondent statement",
-                "Further documents for main application");
+                isNotifyingCafcass(notificationTypes) ? "• Respondent statement" : null,
+                isNotifyingCafcass(notificationTypes) ? "Further documents for main application" : null);
         }
 
         @ParameterizedTest
@@ -1174,8 +1180,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 EMPTY_CASE_DATA_MODIFIER,
                 (caseData) ->  caseData.getRespondentStatements().addAll(respondentStatements),
                 toDocumentReferencesExtractor(respondentStatements),
-                "• Respondent statement",
-                "Further documents for main application");
+                isNotifyingCafcass(notificationTypes) ? "• Respondent statement" : null,
+                isNotifyingCafcass(notificationTypes) ? "Further documents for main application" : null);
         }
 
         @ParameterizedTest
@@ -1593,10 +1599,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 .addAll((List<Element<HearingFurtherEvidenceBundle>>) documents)
                 : (caseData) -> document(caseData, uploaderType)
                 .addAll((List<Element<SupportingEvidenceBundle>>) documents);
-        }
-
-        private boolean isNotifyingCafcass(Set<DocumentUploadNotificationUserType> notificationUserTypes) {
-            return nullSafeCollection(notificationUserTypes).contains(CAFCASS_REPRESENTATIVES);
         }
 
         private List<Element<SupportingEvidenceBundle>> document(CaseData caseData,
