@@ -25,13 +25,11 @@ public class GatekeepingOrderRouteValidator {
     private static final String EVENT_ACCESS_VALIDATION_MESSAGE = "There is already a gatekeeping order for this case";
     private static final String HEARING_DETAILS_REQUIRED = "You need to add hearing details for the notice of "
         + "proceedings";
+    private static final String URGENT_DIRECTIONS_NOT_ALLOWED_MESSAGE =
+        "There is a standard direction order on this case and the urgent direction event can not be used.";
 
     public List<String> allowAccessToEvent(CaseData caseData) {
-        StandardDirectionOrder sdo = defaultIfNull(
-            caseData.getStandardDirectionOrder(), StandardDirectionOrder.builder().build()
-        );
-
-        return sdo.isSealed() ? List.of(EVENT_ACCESS_VALIDATION_MESSAGE) : List.of();
+        return isStandDirectionExist(caseData) ? List.of(EVENT_ACCESS_VALIDATION_MESSAGE) : List.of();
     }
 
     public List<String> allowAccessToEvent(CaseData caseData, String eventName) {
@@ -39,7 +37,13 @@ public class GatekeepingOrderRouteValidator {
             if (allowAddUrgentDirections(caseData)) {
                 StandardDirectionOrder udo = defaultIfNull(caseData.getUrgentDirectionsOrder(),
                     StandardDirectionOrder.builder().build());
-                return udo.isSealed() ? List.of(URGENT_DIRECTIONS_VALIDATION_MESSAGE) : List.of();
+                if (udo.isSealed()) {
+                    return List.of(URGENT_DIRECTIONS_VALIDATION_MESSAGE);
+                } else if (isStandDirectionExist(caseData)) {
+                    return List.of(URGENT_DIRECTIONS_NOT_ALLOWED_MESSAGE);
+                } else {
+                    return List.of();
+                }
             } else {
                 return List.of(NO_URGENT_DIRECTIONS_REQUIRED_MESSAGE);
             }
@@ -63,5 +67,13 @@ public class GatekeepingOrderRouteValidator {
         return caseData.isCareOrderCombinedWithUrgentDirections() || caseData.isStandaloneEPOApplication()
             || caseData.isStandaloneInterimCareOrder() || caseData.isStandaloneSecureAccommodationOrder()
             || caseData.isStandaloneChildRecoveryOrder() || caseData.isEPOCombinedWithICO();
+    }
+
+    private boolean isStandDirectionExist(CaseData caseData) {
+        StandardDirectionOrder sdo = defaultIfNull(
+            caseData.getStandardDirectionOrder(), StandardDirectionOrder.builder().build()
+        );
+
+        return sdo.isSealed();
     }
 }
