@@ -192,11 +192,17 @@ public class FurtherEvidenceUploadedEventTestData {
     }
 
     public static CaseData buildCaseDataWithC2AdditionalApplicationBundle() {
+        return buildCaseDataWithC2AdditionalApplicationBundle(LA_USER, false);
+    }
+
+    public static CaseData buildCaseDataWithC2AdditionalApplicationBundle(final String uploadedBy, boolean confidential) {
         C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder()
                 .id(UUID.randomUUID())
                 .type(WITH_NOTICE)
                 .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(now().plusDays(1), DATE_TIME))
-                .supportingEvidenceBundle(buildNonConfidentialDocumentList(LA_USER))
+                .supportingEvidenceBundle(confidential
+                    ? buildConfidentialDocumentList(uploadedBy)
+                    : buildNonConfidentialDocumentList(uploadedBy))
                 .build();
 
 

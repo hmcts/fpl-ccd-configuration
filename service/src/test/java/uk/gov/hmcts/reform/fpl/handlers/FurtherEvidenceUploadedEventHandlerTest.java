@@ -548,6 +548,43 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     @Test
+    void shouldEmailCafcassWhenConfidentialC2AdditionalBundleIsUploadedByAdmin() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+            .thenReturn(
+                Optional.of(
+                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                )
+            );
+
+        CaseData beforeCaseData = buildSubmittedCaseData();
+        CaseData caseData = buildCaseDataWithC2AdditionalApplicationBundle(HMCTS_USER, true);
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            new FurtherEvidenceUploadedEvent(
+                caseData,
+                beforeCaseData,
+                HMCTS,
+                userDetailsHMCTS());
+
+        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
+
+        Set<DocumentReference> documentReferences = unwrapElements(caseData.getAdditionalApplicationsBundle())
+            .stream()
+            .map(AdditionalApplicationsBundle::getC2DocumentBundle)
+            .map(C2DocumentBundle::getAllC2DocumentReferences)
+            .flatMap(List::stream)
+            .map(Element::getValue)
+            .collect(toSet());
+
+
+        verify(cafcassNotificationService, never()).sendEmail(
+            eq(caseData),
+            eq(documentReferences),
+            eq(NEW_DOCUMENT),
+            newDocumentDataCaptor.capture());
+    }
+
+    @Test
     void shouldEmailCafcassWhenC2AdditionalBundleIsUploadedByLA() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(

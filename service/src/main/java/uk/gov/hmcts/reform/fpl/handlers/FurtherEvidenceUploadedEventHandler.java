@@ -328,10 +328,9 @@ public class FurtherEvidenceUploadedEventHandler {
                 additionalPredicate));
 
             // documents for additional applications
-            documentInfoConsumer.accept(getOtherApplicationBundle(caseData, caseDataBefore,
-                uploaderType));
+            documentInfoConsumer.accept(getOtherApplicationBundle(caseData, caseDataBefore, uploaderType));
 
-            documentInfoConsumer.accept(getC2DocumentBundle(caseData, caseDataBefore));
+            documentInfoConsumer.accept(getC2DocumentBundle(caseData, caseDataBefore, uploaderType));
 
             if (!documentReferences.isEmpty()) {
                 String documentTypes = documentInfos.stream()
@@ -409,7 +408,22 @@ public class FurtherEvidenceUploadedEventHandler {
                 );
     }
 
-    private DocumentInfo getC2DocumentBundle(CaseData caseData, CaseData caseDataBefore) {
+    private DocumentInfo getC2DocumentBundle(CaseData caseData, CaseData caseDataBefore,
+                                             DocumentUploaderType uploaderType) {
+        Function<C2DocumentBundle, List<DocumentReference>> otherApplicationBundleMapper =
+            bundle -> {
+                switch (uploaderType) {
+                    case HMCTS:
+                        return unwrapElements(bundle.getSupportingEvidenceNC()).stream().map(
+                            SupportingEvidenceBundle::getDocument).collect(toList());
+                    case DESIGNATED_LOCAL_AUTHORITY:
+                        return unwrapElements(bundle.getSupportingEvidenceLA()).stream().map(
+                            SupportingEvidenceBundle::getDocument).collect(toList());
+                    default:
+                        return unwrapElements(bundle.getAllC2DocumentReferences());
+                }
+            };
+
         Set<DocumentReference> oldDocumentReferences = unwrapElements(
                     caseDataBefore.getAdditionalApplicationsBundle()
                 ).stream()
@@ -424,10 +438,9 @@ public class FurtherEvidenceUploadedEventHandler {
         return unwrapElements(caseData.getAdditionalApplicationsBundle()).stream()
                 .map(AdditionalApplicationsBundle::getC2DocumentBundle)
                 .filter(Objects::nonNull)
-                .map(C2DocumentBundle::getAllC2DocumentReferences)
+                .map(otherApplicationBundleMapper)
                 .filter(Objects::nonNull)
                 .flatMap(List::stream)
-                .map(Element::getValue)
                 .filter(not(oldDocumentReferences::contains))
                 .map(documentRef -> {
                     documentRef.setType(ADDITIONAL_APPLICATIONS);
