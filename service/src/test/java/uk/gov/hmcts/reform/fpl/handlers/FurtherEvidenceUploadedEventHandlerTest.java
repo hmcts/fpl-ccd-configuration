@@ -466,7 +466,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     // Cafcass Notification: Documents for additional applications
     @Test
-    void shouldNotEmailCafcassWhenConfidentialAdditionalBundleIsUploadedByAdmin() {
+    void shouldNotEmailCafcassWhenConfidentialAdditionalBundleIsUploadedByHmcts() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
             .thenReturn(
                 Optional.of(
@@ -548,7 +548,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     @Test
-    void shouldEmailCafcassWhenConfidentialC2AdditionalBundleIsUploadedByAdmin() {
+    void shouldEmailCafcassWhenConfidentialC2AdditionalBundleIsUploadedByHmcts() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
             .thenReturn(
                 Optional.of(
@@ -575,7 +575,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
             .flatMap(List::stream)
             .map(Element::getValue)
             .collect(toSet());
-
 
         verify(cafcassNotificationService, never()).sendEmail(
             eq(caseData),
@@ -719,6 +718,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
             List.of(hearing1, hearing2, hearing3));
     }
 
+    // Hearing Document > Case Summary/Position Statement/Skeleton argument
     @Test
     void shouldSendNotificationWhenHearingDocumentsIsUploaded() {
         final List<Element<HearingBooking>> hearingBooking = wrapElementsWithUUIDs(testHearing());
