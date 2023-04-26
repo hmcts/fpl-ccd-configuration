@@ -275,6 +275,12 @@ scheduler:
       description: 'Find undelivered emails'
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UndeliveredEmailsFinder'
       cron: ${UPDATE_SUMMARY_TAB_CRON:0 0 8 ? * * *}
+    - name: 'Migration'
+      enabled: true
+      cronGroup: "NIGHTLY_CRON"
+      description: 'Perform Migrations'
+      jobClass: 'uk.gov.hmcts.reform.fpl.jobs.CaseMigrationJob'
+      cron: ${MIGRATION_TASK_CRON:0 52 14 26 4 ? *}
 
 testing:
   support:
@@ -330,3 +336,9 @@ contacts:
   passport_office:
     address: 'Glasgow CPST, HMPO Glasgow, 96 Milton Street, Glasgow, G4 0BT'
     email: 'Glasgowcaveats@hmpo.gov.uk'
+
+fpl:
+  migration:
+    migrationId: DFPL-test
+    # ID_LIST/ES_QUERY
+    migrationType: ID_LIST

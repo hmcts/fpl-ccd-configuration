@@ -32,7 +32,7 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Slf4j
 public class MigrateCaseController extends CallbackController {
-    private static final String MIGRATION_ID_KEY = "migrationId";
+    public static final String MIGRATION_ID_KEY = "migrationId";
 
     private final MigrateCaseService migrateCaseService;
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
@@ -47,7 +47,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1291", this::run1291,
         "DFPL-1310", this::run1310,
         "DFPL-1371", this::run1371,
-        "DFPL-1380", this::run1380
+        "DFPL-test", this::runTest
     );
 
     @PostMapping("/about-to-submit")
@@ -150,5 +150,9 @@ public class MigrateCaseController extends CallbackController {
         var possibleCaseIds = List.of(1662460879255241L);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
         caseDetails.getData().put("state", State.FINAL_HEARING);
+    }
+
+    private void runTest(CaseDetails caseDetails) {
+        log.info("Running test on " + caseDetails.getId().toString());
     }
 }
