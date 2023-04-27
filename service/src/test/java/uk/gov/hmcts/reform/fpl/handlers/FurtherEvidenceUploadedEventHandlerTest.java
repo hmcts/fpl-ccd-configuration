@@ -176,7 +176,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
     private static final Consumer<CaseData> EMPTY_CASE_DATA_MODIFIER = whatever -> { };
 
     private void verifyCafcassNotificationTemplate(
-        final UserDetails uploadedBy,
         DocumentUploaderType uploaderType,
         Consumer<CaseData> beforeCaseDataModifier,
         Consumer<CaseData> caseDataModifier,
@@ -193,7 +192,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
             Optional.of(new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)));
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(caseData, caseDataBefore, uploaderType, uploadedBy);
+            new FurtherEvidenceUploadedEvent(caseData, caseDataBefore, uploaderType,
+                getUserDetails(uploaderType));
         furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
 
         if (isEmpty(documentTypeString)) {
@@ -213,8 +213,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         }
     }
 
-    private void verifyNotificationTemplate(final UserDetails uploadedBy,
-                                            DocumentUploaderType uploaderType,
+    private void verifyNotificationTemplate(DocumentUploaderType uploaderType,
                                             Consumer<CaseData> beforeCaseDataModifier,
                                             Consumer<CaseData> caseDataModifier,
                                             Set<DocumentUploadNotificationUserType> notificationTypes,
@@ -238,7 +237,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
             .thenReturn(Set.of(CAFCASS_REPRESENTATIVE_EMAIL));
 
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-            new FurtherEvidenceUploadedEvent(caseData, caseDataBefore, uploaderType, uploadedBy);
+            new FurtherEvidenceUploadedEvent(caseData, caseDataBefore, uploaderType,
+                getUserDetails(uploaderType));
         furtherEvidenceUploadedEventHandler.sendDocumentsUploadedNotification(furtherEvidenceUploadedEvent);
 
         if (!notificationTypes.isEmpty()) {
@@ -277,19 +277,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     private static boolean isNotifyingCafcass(Set<DocumentUploadNotificationUserType> notificationUserTypes) {
         return nullSafeCollection(notificationUserTypes).contains(CAFCASS_REPRESENTATIVES);
-    }
-
-    private static UserDetails getUserDetailsByDocumentUploaderType(DocumentUploaderType uploaderType) {
-        switch (uploaderType) {
-            case DESIGNATED_LOCAL_AUTHORITY:
-                return userDetailsLA();
-            case HMCTS:
-                return userDetailsHMCTS();
-            case SOLICITOR:
-                return userDetailsRespondentSolicitor();
-            default:
-                throw new RuntimeException("unsupported " + DocumentUploaderType.class.getSimpleName());
-        }
     }
 
     @Test
@@ -553,7 +540,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
             FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
                 new FurtherEvidenceUploadedEvent(caseData, caseDataBefore, uploaderType,
-                    getUserDetailsByDocumentUploaderType(uploaderType));
+                    getUserDetails(uploaderType));
 
             furtherEvidenceUploadedEventHandler.sendCourtBundlesToCafcass(furtherEvidenceUploadedEvent);
 
@@ -608,7 +595,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     caseData,
                     caseDataBefore,
                     uploaderType,
-                    getUserDetailsByDocumentUploaderType(uploaderType));
+                    getUserDetails(uploaderType));
 
             furtherEvidenceUploadedEventHandler.sendCourtBundlesUploadedNotification(furtherEvidenceUploadedEvent);
 
@@ -995,11 +982,11 @@ class FurtherEvidenceUploadedEventHandlerTest {
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
-                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, false),
-                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, true),
-                of(userDetailsHMCTS(), HMCTS, HMCTS_USER, false),
-                of(userDetailsHMCTS(), HMCTS, HMCTS_USER, true),
-                of(userDetailsRespondentSolicitor(), SOLICITOR, REP_SOLICITOR_USER_EMAIL, false)
+                of(DESIGNATED_LOCAL_AUTHORITY, LA_USER, false),
+                of(DESIGNATED_LOCAL_AUTHORITY, LA_USER, true),
+                of(HMCTS, HMCTS_USER, false),
+                of(HMCTS, HMCTS_USER, true),
+                of(SOLICITOR, REP_SOLICITOR_USER_EMAIL, false)
 
             // Note: Respondent/Child Solicitor cannot upload confidential document
             );
@@ -1011,10 +998,10 @@ class FurtherEvidenceUploadedEventHandlerTest {
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
-                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, true, false),
-                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, false, true),
-                of(userDetailsHMCTS(), HMCTS, HMCTS_USER, true, false),
-                of(userDetailsHMCTS(), HMCTS, HMCTS_USER, false, true)
+                of(DESIGNATED_LOCAL_AUTHORITY, LA_USER, true, false),
+                of(DESIGNATED_LOCAL_AUTHORITY, LA_USER, false, true),
+                of(HMCTS, HMCTS_USER, true, false),
+                of(HMCTS, HMCTS_USER, false, true)
             );
         }
     }
@@ -1043,8 +1030,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         @ParameterizedTest
         @ArgumentsSource(CorrespondenceUploadTestArgs.class)
-        void shouldSendNotificationForNewUpload(UserDetails userDetails,
-                                                DocumentUploaderType uploaderType,
+        void shouldSendNotificationForNewUpload(DocumentUploaderType uploaderType,
                                                 String uploadedBy,
                                                 boolean confidential) {
             List<Element<SupportingEvidenceBundle>> correspondences =
@@ -1052,7 +1038,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     ? buildConfidentialDocumentList(uploadedBy)
                     : buildNonConfidentialDocumentList(uploadedBy));
             verifyCafcassNotificationTemplate(
-                userDetails, uploaderType,
+                uploaderType,
                 EMPTY_CASE_DATA_MODIFIER,
                 (caseData) ->  getCorrespondenceDocuments(caseData, uploaderType).addAll(correspondences),
                 toDocumentReferencesExtractor(correspondences),
@@ -1062,8 +1048,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         @ParameterizedTest
         @ArgumentsSource(CorrespondenceUploadTestArgs.class)
-        void shouldSendNotificationWhenDocsAreReplaced(UserDetails userDetails,
-                                                       DocumentUploaderType uploaderType,
+        void shouldSendNotificationWhenDocsAreReplaced(DocumentUploaderType uploaderType,
                                                        String uploadedBy,
                                                        boolean confidential) {
             List<Element<SupportingEvidenceBundle>> beforeCorrespondences =
@@ -1077,7 +1062,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     .build()))
                 .collect(toList());
 
-            verifyCafcassNotificationTemplate(userDetails, uploaderType,
+            verifyCafcassNotificationTemplate(uploaderType,
                 (caseData) ->  getCorrespondenceDocuments(caseData, uploaderType).addAll(beforeCorrespondences),
                 (caseData) ->  getCorrespondenceDocuments(caseData, uploaderType).addAll(afterCorrespondences),
                 toDocumentReferencesExtractor(afterCorrespondences),
@@ -1087,8 +1072,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         @ParameterizedTest
         @ArgumentsSource(CorrespondenceUploadTestArgs.class)
-        void shouldNotSendNotificationWhenDocsAreRemoved(UserDetails userDetails,
-                                                         DocumentUploaderType uploaderType,
+        void shouldNotSendNotificationWhenDocsAreRemoved(DocumentUploaderType uploaderType,
                                                          String uploadedBy,
                                                          boolean confidential) {
             List<Element<SupportingEvidenceBundle>> correspondences =
@@ -1096,7 +1080,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     ? buildConfidentialDocumentList(uploadedBy)
                     : buildNonConfidentialDocumentList(uploadedBy));
             verifyCafcassNotificationTemplate(
-                userDetails, uploaderType,
+                uploaderType,
                 (caseData) ->  getCorrespondenceDocuments(caseData, uploaderType).addAll(correspondences),
                 EMPTY_CASE_DATA_MODIFIER,
                 toDocumentReferencesExtractor(correspondences),
@@ -1105,8 +1089,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         @ParameterizedTest
         @ArgumentsSource(CorrespondenceUploadTestArgs.class)
-        void shouldNotSendNotificationWhenDocsAreTheSame(UserDetails userDetails,
-                                                         DocumentUploaderType uploaderType,
+        void shouldNotSendNotificationWhenDocsAreTheSame(DocumentUploaderType uploaderType,
                                                          String uploadedBy,
                                                          boolean confidential) {
             List<Element<SupportingEvidenceBundle>> correspondences =
@@ -1114,7 +1097,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     ? buildConfidentialDocumentList(uploadedBy)
                     : buildNonConfidentialDocumentList(uploadedBy));
             verifyCafcassNotificationTemplate(
-                userDetails, uploaderType,
+                uploaderType,
                 (caseData) ->  getCorrespondenceDocuments(caseData, uploaderType).addAll(correspondences),
                 (caseData) ->  getCorrespondenceDocuments(caseData, uploaderType).addAll(correspondences),
                 toDocumentReferencesExtractor(correspondences),
@@ -1123,8 +1106,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         @ParameterizedTest
         @ArgumentsSource(CorrespondenceConfidentialChangeArgs.class)
-        void shouldNotSendNotificationWhenConfidentialChanged(UserDetails userDetails,
-                                                              DocumentUploaderType uploaderType,
+        void shouldNotSendNotificationWhenConfidentialChanged(DocumentUploaderType uploaderType,
                                                               String uploadedBy,
                                                               boolean newConfidential,
                                                               boolean oldConfidential) {
@@ -1139,7 +1121,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
                         .build()))
                     .collect(toList());
             verifyCafcassNotificationTemplate(
-                userDetails, uploaderType,
+                uploaderType,
                 (caseData) ->  getCorrespondenceDocuments(caseData, uploaderType).addAll(beforeCorrespondences),
                 (caseData) ->  getCorrespondenceDocuments(caseData, uploaderType).addAll(afterCorrespondences),
                 toDocumentReferencesExtractor(afterCorrespondences),
@@ -1152,10 +1134,10 @@ class FurtherEvidenceUploadedEventHandlerTest {
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
-                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, true, false),
-                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, false, true),
-                of(userDetailsHMCTS(), HMCTS, HMCTS_USER, true, false),
-                of(userDetailsHMCTS(), HMCTS, HMCTS_USER, false, true)
+                of(DESIGNATED_LOCAL_AUTHORITY, LA_USER, true, false),
+                of(DESIGNATED_LOCAL_AUTHORITY, LA_USER, false, true),
+                of(HMCTS, HMCTS_USER, true, false),
+                of(HMCTS, HMCTS_USER, false, true)
             );
         }
     }
@@ -1165,17 +1147,17 @@ class FurtherEvidenceUploadedEventHandlerTest {
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
-                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
+                of(DESIGNATED_LOCAL_AUTHORITY, LA_USER,
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES), NON_CONFIDENTIAL,
                     false),
-                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
+                of(DESIGNATED_LOCAL_AUTHORITY, LA_USER,
                     Set.of(ALL_LAS, CAFCASS_REPRESENTATIVES), CONFIDENTIAL, true),
-                of(userDetailsHMCTS(), HMCTS, HMCTS_USER,
+                of(HMCTS, HMCTS_USER,
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES), NON_CONFIDENTIAL,
                     false),
-                of(userDetailsHMCTS(), HMCTS, HMCTS_USER,
+                of(HMCTS, HMCTS_USER,
                     Set.of(), CONFIDENTIAL, true),
-                of(userDetailsRespondentSolicitor(), SOLICITOR, REP_USER,
+                of(SOLICITOR, REP_USER,
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES), NON_CONFIDENTIAL,
                     false)
             // Note: Respondent/Child Solicitor cannot upload confidential document
@@ -1197,8 +1179,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         @ParameterizedTest
         @ArgumentsSource(RespondentStatementUploadTestArgs.class)
-        void shouldSendNotificationForNewUpload(UserDetails userDetails,
-                                                DocumentUploaderType uploaderType,
+        void shouldSendNotificationForNewUpload(DocumentUploaderType uploaderType,
                                                 String uploadedBy,
                                                 Set<DocumentUploadNotificationUserType> notificationTypes,
                                                 List<String> expectedDocumentNames,
@@ -1208,12 +1189,10 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     ? buildConfidentialDocumentList(uploadedBy)
                     : buildNonConfidentialDocumentList(uploadedBy)
             );
-            verifyNotificationTemplate(
-                userDetails, uploaderType, EMPTY_CASE_DATA_MODIFIER,
+            verifyNotificationTemplate(uploaderType, EMPTY_CASE_DATA_MODIFIER,
                 (caseData) ->  caseData.getRespondentStatements().addAll(respondentStatements),
                 notificationTypes, expectedDocumentNames);
-            verifyCafcassNotificationTemplate(
-                userDetails, uploaderType,
+            verifyCafcassNotificationTemplate(uploaderType,
                 EMPTY_CASE_DATA_MODIFIER,
                 (caseData) ->  caseData.getRespondentStatements().addAll(respondentStatements),
                 toDocumentReferencesExtractor(respondentStatements),
@@ -1223,8 +1202,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         @ParameterizedTest
         @ArgumentsSource(RespondentStatementUploadTestArgs.class)
-        void shouldSendNotificationWhenDocsAreReplaced(UserDetails userDetails,
-                                                       DocumentUploaderType uploaderType,
+        void shouldSendNotificationWhenDocsAreReplaced(DocumentUploaderType uploaderType,
                                                        String uploadedBy,
                                                        Set<DocumentUploadNotificationUserType> notificationTypes,
                                                        List<String> expectedDocumentNames,
@@ -1247,13 +1225,13 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 .collect(toList());
 
             verifyNotificationTemplate(
-                userDetails, uploaderType,
+                uploaderType,
                 (caseData) ->  caseData.getRespondentStatements().addAll(beforeRespondentStatement),
                 (caseData) ->  caseData.getRespondentStatements().addAll(afterRespondentStatement),
                 notificationTypes, expectedDocumentNames);
 
             verifyCafcassNotificationTemplate(
-                userDetails, uploaderType,
+                uploaderType,
                 EMPTY_CASE_DATA_MODIFIER,
                 (caseData) ->  caseData.getRespondentStatements().addAll(respondentStatements),
                 toDocumentReferencesExtractor(respondentStatements),
@@ -1263,8 +1241,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         @ParameterizedTest
         @ArgumentsSource(RespondentStatementConfidentialChangeArgs.class)
-        void shouldNotSendNotificationWhenDocsAreRemoved(UserDetails userDetails,
-                                                         DocumentUploaderType uploaderType,
+        void shouldNotSendNotificationWhenDocsAreRemoved(DocumentUploaderType uploaderType,
                                                          String uploadedBy,
                                                          boolean oldConfidential,
                                                          boolean newConfidential) {
@@ -1283,13 +1260,13 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, newConfidential, PDF_DOCUMENT_1))));
 
             verifyNotificationTemplate(
-                userDetails, uploaderType,
+                uploaderType,
                 (caseData) ->  caseData.getRespondentStatements().addAll(beforeRespondentStatements),
                 (caseData) ->  caseData.getRespondentStatements().addAll(afterRespondentStatements),
                 Set.of(), null);
 
             verifyCafcassNotificationTemplate(
-                userDetails, uploaderType,
+                uploaderType,
                 (caseData) ->  caseData.getRespondentStatements().addAll(beforeRespondentStatements),
                 (caseData) ->  caseData.getRespondentStatements().addAll(afterRespondentStatements),
                 toDocumentReferencesExtractor(afterRespondentStatements),
@@ -1298,8 +1275,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         @ParameterizedTest
         @ArgumentsSource(RespondentStatementConfidentialChangeArgs.class)
-        void shouldNotSendNotificationWhenDocsAreTheSame(UserDetails userDetails,
-                                                         DocumentUploaderType uploaderType,
+        void shouldNotSendNotificationWhenDocsAreTheSame(DocumentUploaderType uploaderType,
                                                          String uploadedBy,
                                                          boolean oldConfidential,
                                                          boolean newConfidential) {
@@ -1314,13 +1290,13 @@ class FurtherEvidenceUploadedEventHandlerTest {
                         PDF_DOCUMENT_2))));
 
             verifyNotificationTemplate(
-                userDetails, uploaderType,
+                uploaderType,
                 (caseData) -> caseData.getRespondentStatements().addAll(respondentStatements),
                 (caseData) -> caseData.getRespondentStatements().addAll(respondentStatements),
                 Set.of(), null);
 
             verifyCafcassNotificationTemplate(
-                userDetails, uploaderType,
+                uploaderType,
                 (caseData) -> caseData.getRespondentStatements().addAll(respondentStatements),
                 (caseData) -> caseData.getRespondentStatements().addAll(respondentStatements),
                 toDocumentReferencesExtractor(respondentStatements),
@@ -1329,8 +1305,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         @ParameterizedTest
         @ArgumentsSource(RespondentStatementConfidentialChangeArgs.class)
-        void shouldNotSendNotificationWhenConfidentialChanged(UserDetails userDetails,
-                                                              DocumentUploaderType uploaderType,
+        void shouldNotSendNotificationWhenConfidentialChanged(DocumentUploaderType uploaderType,
                                                               String uploadedBy,
                                                               boolean oldConfidential,
                                                               boolean newConfidential) {
@@ -1345,13 +1320,13 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 createDummyEvidenceBundle(CONFIDENTIAL_1, uploadedBy, newConfidential, PDF_DOCUMENT_1))));
 
             verifyNotificationTemplate(
-                userDetails, uploaderType,
+                uploaderType,
                 (caseData) ->  caseData.getRespondentStatements().addAll(beforeRespondentStatement), // before
                 (caseData) ->  caseData.getRespondentStatements().addAll(afterRespondentStatement),
                 Set.of(), null);
 
             verifyCafcassNotificationTemplate(
-                userDetails, uploaderType,
+                uploaderType,
                 (caseData) -> caseData.getRespondentStatements().addAll(beforeRespondentStatement),
                 (caseData) -> caseData.getRespondentStatements().addAll(afterRespondentStatement),
                 toDocumentReferencesExtractor(afterRespondentStatement),
@@ -1364,10 +1339,10 @@ class FurtherEvidenceUploadedEventHandlerTest {
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
-                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
+                of(DESIGNATED_LOCAL_AUTHORITY, LA_USER,
                     Set.of(ALL_LAS, CHILD_SOLICITOR, RESPONDENT_SOLICITOR, CAFCASS_REPRESENTATIVES),
                     List.of(BIRTH_CERTIFICATE.getLabel()), false),
-                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER,
+                of(DESIGNATED_LOCAL_AUTHORITY, LA_USER,
                     Set.of(ALL_LAS),
                     List.of(BIRTH_CERTIFICATE.getLabel()), true)
             // Note: Only LAs can upload application documents
@@ -1380,10 +1355,10 @@ class FurtherEvidenceUploadedEventHandlerTest {
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
-                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, true, true),
-                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, true, false),
-                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, false, true),
-                of(userDetailsLA(), DESIGNATED_LOCAL_AUTHORITY, LA_USER, false, false)
+                of(DESIGNATED_LOCAL_AUTHORITY, LA_USER, true, true),
+                of(DESIGNATED_LOCAL_AUTHORITY, LA_USER, true, false),
+                of(DESIGNATED_LOCAL_AUTHORITY, LA_USER, false, true),
+                of(DESIGNATED_LOCAL_AUTHORITY, LA_USER, false, false)
             );
         }
     }
@@ -1399,8 +1374,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         @ParameterizedTest
         @ArgumentsSource(ApplicationDocumentUploadTestArgs.class)
-        void shouldSendNotificationForNewUpload(UserDetails userDetails,
-                                                DocumentUploaderType uploaderType,
+        void shouldSendNotificationForNewUpload(DocumentUploaderType uploaderType,
                                                 String uploadedBy,
                                                 Set<DocumentUploadNotificationUserType> notificationTypes,
                                                 List<String> expectedDocumentNames,
@@ -1409,11 +1383,11 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 wrapElementsWithUUIDs(createDummyApplicationDocument("whatever", uploadedBy,
                     PDF_DOCUMENT_1, confidential, BIRTH_CERTIFICATE));
             verifyNotificationTemplate(
-                userDetails, uploaderType, EMPTY_CASE_DATA_MODIFIER,
+                uploaderType, EMPTY_CASE_DATA_MODIFIER,
                 (caseData) ->  caseData.getApplicationDocuments().addAll(applicationDocuments),
                 notificationTypes, expectedDocumentNames);
             verifyCafcassNotificationTemplate(
-                userDetails, uploaderType,
+                uploaderType,
                 EMPTY_CASE_DATA_MODIFIER,
                 (caseData) ->  caseData.getApplicationDocuments().addAll(applicationDocuments),
                 toDocumentReferencesExtractor(applicationDocuments),
@@ -1423,8 +1397,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         @ParameterizedTest
         @ArgumentsSource(ApplicationDocumentUploadTestArgs.class)
-        void shouldSendNotificationWhenDocsAreReplaced(UserDetails userDetails,
-                                                       DocumentUploaderType uploaderType,
+        void shouldSendNotificationWhenDocsAreReplaced(DocumentUploaderType uploaderType,
                                                        String uploadedBy,
                                                        Set<DocumentUploadNotificationUserType> notificationTypes,
                                                        List<String> expectedDocumentNames,
@@ -1438,13 +1411,13 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     PDF_DOCUMENT_1, confidential, BIRTH_CERTIFICATE)));
 
             verifyNotificationTemplate(
-                userDetails, uploaderType,
+                uploaderType,
                 (caseData) ->  caseData.getApplicationDocuments().addAll(beforeApplicationDocuments),
                 (caseData) ->  caseData.getApplicationDocuments().addAll(afterApplicationDocuments),
                 notificationTypes, expectedDocumentNames);
 
             verifyCafcassNotificationTemplate(
-                userDetails, uploaderType,
+                uploaderType,
                 (caseData) ->  caseData.getApplicationDocuments().addAll(beforeApplicationDocuments),
                 (caseData) ->  caseData.getApplicationDocuments().addAll(afterApplicationDocuments),
                 toDocumentReferencesExtractor(afterApplicationDocuments),
@@ -1454,8 +1427,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         @ParameterizedTest
         @ArgumentsSource(ApplicationDocumentUploadTestArgs.class)
-        void shouldNotSendNotificationWhenDocsAreRemoved(UserDetails userDetails,
-                                                         DocumentUploaderType uploaderType,
+        void shouldNotSendNotificationWhenDocsAreRemoved(DocumentUploaderType uploaderType,
                                                          String uploadedBy,
                                                          Set<DocumentUploadNotificationUserType> notificationTypes,
                                                          List<String> expectedDocumentNames,
@@ -1466,13 +1438,13 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     PDF_DOCUMENT_2, confidential, BIRTH_CERTIFICATE)));
 
             verifyNotificationTemplate(
-                userDetails, uploaderType,
+                uploaderType,
                 (caseData) ->  caseData.getApplicationDocuments().addAll(applicationDocuments),
                 EMPTY_CASE_DATA_MODIFIER,
                 Set.of(), null);
 
             verifyCafcassNotificationTemplate(
-                getUserDetails(uploaderType), uploaderType,
+                uploaderType,
                 (caseData) ->  caseData.getApplicationDocuments().addAll(applicationDocuments),
                 EMPTY_CASE_DATA_MODIFIER,
                 toDocumentReferencesExtractor(applicationDocuments),
@@ -1482,8 +1454,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         @ParameterizedTest
         @ArgumentsSource(ApplicationDocumentUploadTestArgs.class)
-        void shouldNotSendNotificationWhenDocsAreTheSame(UserDetails userDetails,
-                                                         DocumentUploaderType uploaderType,
+        void shouldNotSendNotificationWhenDocsAreTheSame(DocumentUploaderType uploaderType,
                                                          String uploadedBy,
                                                          Set<DocumentUploadNotificationUserType> notificationTypes,
                                                          List<String> expectedDocumentNames,
@@ -1494,13 +1465,13 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     PDF_DOCUMENT_2, confidential, BIRTH_CERTIFICATE)));
 
             verifyNotificationTemplate(
-                userDetails, uploaderType,
+                uploaderType,
                 (caseData) ->  caseData.getApplicationDocuments().addAll(applicationDocuments),
                 (caseData) ->  caseData.getApplicationDocuments().addAll(applicationDocuments),
                 Set.of(), null);
 
             verifyCafcassNotificationTemplate(
-                getUserDetails(uploaderType), uploaderType,
+                uploaderType,
                 (caseData) ->  caseData.getApplicationDocuments().addAll(applicationDocuments),
                 (caseData) ->  caseData.getApplicationDocuments().addAll(applicationDocuments),
                 toDocumentReferencesExtractor(applicationDocuments),
@@ -1510,8 +1481,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         @ParameterizedTest
         @ArgumentsSource(ApplicationDocumentConfidentialChangeArgs.class)
-        void shouldNotSendNotificationWhenConfidentialChanged(UserDetails userDetails,
-                                                              DocumentUploaderType uploaderType,
+        void shouldNotSendNotificationWhenConfidentialChanged(DocumentUploaderType uploaderType,
                                                               String uploadedBy,
                                                               boolean oldConfidential,
                                                               boolean newConfidential) {
@@ -1524,13 +1494,13 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     PDF_DOCUMENT_1, newConfidential, BIRTH_CERTIFICATE)));
 
             verifyNotificationTemplate(
-                userDetails, uploaderType,
+                uploaderType,
                 (caseData) ->  caseData.getApplicationDocuments().addAll(beforeApplicationDocuments),
                 (caseData) ->  caseData.getApplicationDocuments().addAll(afterApplicationDocuments),
                 Set.of(), null);
 
             verifyCafcassNotificationTemplate(
-                getUserDetails(uploaderType), uploaderType,
+                uploaderType,
                 (caseData) ->  caseData.getApplicationDocuments().addAll(beforeApplicationDocuments),
                 (caseData) ->  caseData.getApplicationDocuments().addAll(afterApplicationDocuments),
                 toDocumentReferencesExtractor(beforeApplicationDocuments),
@@ -1718,12 +1688,12 @@ class FurtherEvidenceUploadedEventHandlerTest {
                                                 List<?> documents,
                                                 boolean isRelatingToHearing) {
             verifyNotificationTemplate(
-                getUserDetails(uploaderType), uploaderType,
+                uploaderType,
                 EMPTY_CASE_DATA_MODIFIER,
                 toCaseDataModifier(documents, uploaderType, isRelatingToHearing),
                 notificationTypes, expectedDocumentNames);
             verifyCafcassNotificationTemplate(
-                getUserDetails(uploaderType), uploaderType,
+                uploaderType,
                 EMPTY_CASE_DATA_MODIFIER,
                 toCaseDataModifier(documents, uploaderType, isRelatingToHearing),
                 (caseData) -> getExpectedDocumentReferences(caseData, uploaderType, isRelatingToHearing),
@@ -1761,13 +1731,13 @@ class FurtherEvidenceUploadedEventHandlerTest {
             }
 
             verifyNotificationTemplate(
-                getUserDetails(uploaderType), uploaderType,
+                uploaderType,
                 toCaseDataModifier(beforeDocument, uploaderType, isRelatingToHearing),
                 toCaseDataModifier(afterDocuments, uploaderType, isRelatingToHearing),
                 notificationTypes, expectedDocumentNames);
 
             verifyCafcassNotificationTemplate(
-                getUserDetails(uploaderType), uploaderType,
+                uploaderType,
                 toCaseDataModifier(beforeDocument, uploaderType, isRelatingToHearing),
                 toCaseDataModifier(afterDocuments, uploaderType, isRelatingToHearing),
                 (caseData) -> getExpectedDocumentReferences(caseData, uploaderType, isRelatingToHearing),
@@ -1784,12 +1754,12 @@ class FurtherEvidenceUploadedEventHandlerTest {
                                                          List<?> documents,
                                                          boolean isRelatingToHearing) {
             verifyNotificationTemplate(
-                getUserDetails(uploaderType), uploaderType,
+                uploaderType,
                 toCaseDataModifier(documents, uploaderType, isRelatingToHearing),
                 EMPTY_CASE_DATA_MODIFIER,
                 Set.of(), null);
             verifyCafcassNotificationTemplate(
-                getUserDetails(uploaderType), uploaderType,
+                uploaderType,
                 toCaseDataModifier(documents, uploaderType, isRelatingToHearing),
                 EMPTY_CASE_DATA_MODIFIER,
                 (caseData) -> getExpectedDocumentReferences(caseData, uploaderType, isRelatingToHearing),
@@ -1806,12 +1776,12 @@ class FurtherEvidenceUploadedEventHandlerTest {
                                                          List<?> documents,
                                                          boolean isRelatingToHearing) {
             verifyNotificationTemplate(
-                getUserDetails(uploaderType), uploaderType,
+                uploaderType,
                 toCaseDataModifier(documents, uploaderType, isRelatingToHearing),
                 toCaseDataModifier(documents, uploaderType, isRelatingToHearing),
                 Set.of(), null);
             verifyCafcassNotificationTemplate(
-                getUserDetails(uploaderType), uploaderType,
+                uploaderType,
                 toCaseDataModifier(documents, uploaderType, isRelatingToHearing),
                 toCaseDataModifier(documents, uploaderType, isRelatingToHearing),
                 (caseData) -> getExpectedDocumentReferences(caseData, uploaderType, isRelatingToHearing),
@@ -1850,13 +1820,12 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     .collect(toList());
             }
 
-            verifyNotificationTemplate(
-                getUserDetails(uploaderType), uploaderType,
+            verifyNotificationTemplate(uploaderType,
                 toCaseDataModifier(documents, uploaderType, isRelatingToHearing),
                 toCaseDataModifier(afterDocuments, uploaderType, isRelatingToHearing),
                 Set.of(), null);
             verifyCafcassNotificationTemplate(
-                getUserDetails(uploaderType), uploaderType,
+                uploaderType,
                 toCaseDataModifier(documents, uploaderType, isRelatingToHearing),
                 toCaseDataModifier(afterDocuments, uploaderType, isRelatingToHearing),
                 (caseData) -> getExpectedDocumentReferences(caseData, uploaderType, isRelatingToHearing),
