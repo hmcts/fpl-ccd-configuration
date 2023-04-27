@@ -155,8 +155,10 @@ public class FurtherEvidenceUploadedEventHandler {
     public void sendCourtBundlesUploadedNotification(final FurtherEvidenceUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
         final CaseData caseDataBefore = event.getCaseDataBefore();
+        final DocumentUploaderType uploaderType = event.getUserType();
 
-        Map<String, Set<DocumentReference>> newCourtBundles = getNewCourtBundles(caseData, caseDataBefore);
+        Map<String, Set<DocumentReference>> newCourtBundles = getNewCourtBundles(caseData, caseDataBefore,
+            uploaderType);
         final Set<String> recipients = new HashSet<>();
 
         Predicate<Map.Entry<String, Set<DocumentReference>>> predicate = not(entry -> entry.getValue().isEmpty());
@@ -270,8 +272,10 @@ public class FurtherEvidenceUploadedEventHandler {
 
         if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             final CaseData caseDataBefore = event.getCaseDataBefore();
+            DocumentUploaderType uploaderType = event.getUserType();
 
-            Map<String, Set<DocumentReference>> newCourtBundles = getNewCourtBundles(caseData, caseDataBefore);
+            Map<String, Set<DocumentReference>> newCourtBundles = getNewCourtBundles(caseData, caseDataBefore,
+                uploaderType);
 
             newCourtBundles
                     .forEach((key, value) -> {
@@ -598,7 +602,8 @@ public class FurtherEvidenceUploadedEventHandler {
         return (List<HearingDocument>) unwrapElements(newHearingDocuments);
     }
 
-    private Map<String, Set<DocumentReference>> getNewCourtBundles(CaseData caseData, CaseData caseDataBefore) {
+    private Map<String, Set<DocumentReference>> getNewCourtBundles(CaseData caseData, CaseData caseDataBefore,
+                                                                   DocumentUploaderType uploaderType) {
         Map<String, List<CourtBundle>> oldMapOfCourtBundles =
             unwrapElements(caseDataBefore.getHearingDocuments().getCourtBundleListV2()).stream()
                 .collect(
@@ -617,7 +622,9 @@ public class FurtherEvidenceUploadedEventHandler {
 
                             List<CourtBundle> filteredBundle = new ArrayList<>(bundles);
                             filteredBundle.removeAll(oldBundles);
-                            return filteredBundle.stream().map(CourtBundle::getDocument)
+                            return filteredBundle.stream()
+                                .filter(newDoc -> HMCTS.equals(uploaderType) ? !newDoc.isConfidentialDocument() : true)
+                                .map(CourtBundle::getDocument)
                                 .collect(toSet())
                                 .stream();
                         }, toSet())));

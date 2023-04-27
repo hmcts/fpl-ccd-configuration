@@ -320,10 +320,16 @@ public class FurtherEvidenceUploadedEventTestData {
 
     public static List<Element<HearingCourtBundle>> createCourtBundleList(int count, String hearing,
                                                                           String uploadedBy) {
+        return createCourtBundleList(count, hearing, uploadedBy, false);
+    }
+
+    public static List<Element<HearingCourtBundle>> createCourtBundleList(int count, String hearing,
+                                                                          String uploadedBy, boolean confidential) {
         return IntStream.rangeClosed(1, count)
             .boxed()
             .map(value -> {
-                Element<CourtBundle> courtBundleElement = element(createDummyCourtBundle(uploadedBy));
+                Element<CourtBundle> courtBundleElement = element(UUID.nameUUIDFromBytes((hearing + value).getBytes()),
+                    createDummyCourtBundle(uploadedBy, confidential));
                 return element(HearingCourtBundle.builder()
                         .hearing(hearing)
                         .courtBundle(List.of(courtBundleElement))
@@ -334,8 +340,9 @@ public class FurtherEvidenceUploadedEventTestData {
             .collect(Collectors.toList());
     }
 
-    public static CourtBundle createDummyCourtBundle(String uploadedBy) {
+    public static CourtBundle createDummyCourtBundle(String uploadedBy, boolean confidential) {
         return CourtBundle.builder()
+            .confidential(confidential ? List.of("CONFIDENTIAL") : List.of())
             .document(getPDFDocument())
             .dateTimeUploaded(LocalDateTime.now())
             .uploadedBy(uploadedBy)
