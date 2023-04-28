@@ -36,7 +36,6 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithRandomUUID;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 
 public class FurtherEvidenceUploadedEventTestData {
@@ -367,7 +366,7 @@ public class FurtherEvidenceUploadedEventTestData {
     public static List<Element<RespondentStatement>> buildRespondentStatementsList(
         UUID respondentId, List<Element<SupportingEvidenceBundle>> bundle
     ) {
-        return wrapElementsWithRandomUUID(RespondentStatement.builder()
+        return wrapElementsWithUUIDs(RespondentStatement.builder()
             .respondentId(respondentId)
             .respondentName("name")
             .supportingEvidenceBundle(bundle)
