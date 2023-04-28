@@ -550,15 +550,13 @@ public class FurtherEvidenceUploadedEventHandler {
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
         List<Element<SupportingEvidenceBundle>> beforeSupportingEvidenceBundle,
         Predicate<SupportingEvidenceBundle> additionalPredicate) {
-        List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle = new ArrayList<>();
-        defaultIfNull(supportingEvidenceBundle, new ArrayList<Element<SupportingEvidenceBundle>>()).forEach(newDoc -> {
-            if (hasNewDocumentUploaded(beforeSupportingEvidenceBundle, newDoc)
-                && Optional.ofNullable(additionalPredicate).orElse((x) -> true)
-                .test(newDoc.getValue())) {
-                newSupportingEvidenceBundle.add(newDoc);
-            }
-        });
-        return newSupportingEvidenceBundle;
+
+        return defaultIfNull(supportingEvidenceBundle, new ArrayList<Element<SupportingEvidenceBundle>>())
+            .stream()
+            .filter(newDoc -> hasNewDocumentUploaded(beforeSupportingEvidenceBundle, newDoc))
+            .filter(newDoc -> Optional.ofNullable(additionalPredicate).orElse((x) -> true)
+                .test(newDoc.getValue()))
+            .collect(toList());
     }
 
     private DocumentInfo getNewGeneralEvidence(CaseData caseData, CaseData caseDataBefore,
