@@ -5,8 +5,6 @@ import com.launchdarkly.sdk.UserAttribute;
 import com.launchdarkly.sdk.server.LDClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -14,7 +12,6 @@ import org.mockito.Mockito;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -23,7 +20,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.matchers.LDUserMatcher.ldUser;
@@ -41,29 +37,6 @@ class FeatureToggleServiceTest {
     @AfterEach
     void resetLaunchDarklyClient() {
         reset(ldClient);
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForCtsc(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isCtscEnabled(LOCAL_AUTHORITY)).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("CTSC"),
-            argThat(ldUser(ENVIRONMENT).withLocalAuthority(LOCAL_AUTHORITY).build()),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @MethodSource("userAttributesTestSource")
-    void shouldNotAccumulateAttributesBetweenRequests(Runnable functionToTest, Runnable accumulateFunction,
-                                                      List<UserAttribute> attributes) {
-        accumulateFunction.run();
-        functionToTest.run();
-
-        verify(ldClient, times(2)).boolVariation(anyString(), ldUser.capture(), anyBoolean());
-        assertThat(ldUser.getValue().getCustomAttributes()).containsExactlyInAnyOrderElementsOf(attributes);
     }
 
     @ParameterizedTest
@@ -170,19 +143,6 @@ class FeatureToggleServiceTest {
             eq("cafcass-subject-category"),
             argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
-    }
-
-    private static Stream<Arguments> userAttributesTestSource() {
-        return Stream.of(
-            Arguments.of(
-                (Runnable) () -> service.isRestrictedFromCaseSubmission("test-name"),
-                (Runnable) () -> service.isCtscEnabled("test name"),
-                buildAttributes("localAuthorityName")),
-            Arguments.of(
-                (Runnable) () -> service.isCtscEnabled("test name"),
-                (Runnable) () -> service.isRestrictedFromCaseSubmission("test-name"),
-                buildAttributes("localAuthorityName"))
-        );
     }
 
     private static List<UserAttribute> buildAttributes(String... additionalAttributes) {
