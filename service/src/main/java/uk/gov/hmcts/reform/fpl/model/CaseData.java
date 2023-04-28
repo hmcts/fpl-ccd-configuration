@@ -1256,4 +1256,32 @@ public class CaseData extends CaseDataParent {
             .map(Orders::isEmergencyProtectionOrderOnly)
             .orElse(false);
     }
+
+    @JsonIgnore
+    public boolean isStandaloneInterimCareOrder() {
+        return ofNullable(getOrders())
+            .map(Orders::isInterimCareOrderOnly)
+            .orElse(false);
+    }
+
+    @JsonIgnore
+    public boolean isStandaloneSecureAccommodationOrder() {
+        return ofNullable(getOrders())
+            .map(Orders::isSecureAccommodationOrderOnly)
+            .orElse(false);
+    }
+
+    @JsonIgnore
+    public boolean isStandaloneChildRecoveryOrder() {
+        return ofNullable(getOrders())
+            .map(Orders::isChildRecoveryOrderOnly)
+            .orElse(false);
+    }
+
+    @JsonIgnore
+    public boolean isEPOCombinedWithICO() {
+        return ofNullable(getOrders())
+            .map(Orders::isEPOCombinedWithICO)
+            .orElse(false);
+    }
 }
