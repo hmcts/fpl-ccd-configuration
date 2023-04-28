@@ -735,7 +735,7 @@ public class FurtherEvidenceUploadedEventHandler {
                 ret.get(CHILD_SOLICITOR).add(doc);
                 ret.get(RESPONDENT_SOLICITOR).add(doc);
             }
-            // confidential docs uploaded by LA should restrict the access from solicitor only
+            // confidential docs uploaded by LA should be restricted the access by solicitors only
             if (!NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE.equals(doc.getType())) {
                 ret.get(CAFCASS_REPRESENTATIVES).add(doc);
             }
