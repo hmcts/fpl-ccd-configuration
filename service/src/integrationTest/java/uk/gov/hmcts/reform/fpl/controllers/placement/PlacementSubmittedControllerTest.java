@@ -8,9 +8,6 @@ import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
-import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fnp.client.FeesRegisterApi;
@@ -25,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
@@ -51,9 +49,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Currency.GBP;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Service.FPL;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_UPDATE_EVENT;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_ADMIN_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CTSC_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
@@ -99,7 +94,7 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
     private FeesRegisterApi feesRegisterApi;
 
     @MockBean
-    private CoreCaseDataApi coreCaseDataApi;
+    private CCDConcurrencyHelper concurrencyHelper;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -130,14 +125,6 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
 
         given(feesRegisterApi.findFee("default", "miscellaneous", "family", "family court", "Placement", "adoption"))
             .willReturn(feeResponse(FEE.doubleValue()));
-
-        given(coreCaseDataApi.startEventForCaseWorker(USER_AUTH_TOKEN,
-            SERVICE_AUTH_TOKEN,
-            SYS_USER_ID,
-            JURISDICTION,
-            CASE_TYPE, CASE_ID.toString(),
-            CASE_UPDATE_EVENT))
-            .willReturn(StartEventResponse.builder().eventId(CASE_UPDATE_EVENT).token(EVENT_TOKEN).build());
     }
 
     @Test
@@ -177,23 +164,23 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
             .thenReturn(FIRST_PARENT_NOTICE_DOCUMENT);
         when(sendLetterApi.sendLetter(anyString(), any(LetterWithPdfsRequest.class)))
             .thenReturn(new SendLetterResponse(LETTER_ID));
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
 
         postSubmittedEvent(caseData);
 
         final CreditAccountPaymentRequest expectedPaymentRequest = expectedCreditAccountPaymentRequest();
-        final CaseDataContent expectedCaseUpdateRequest = expectedCaseDataContent();
+        final Map<String, Object> expectedCaseUpdateRequest = expectedCaseDataContent();
 
         verify(paymentApi).createCreditAccountPayment(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest);
 
-        verify(coreCaseDataApi).submitEventForCaseWorker(
-            USER_AUTH_TOKEN,
-            SERVICE_AUTH_TOKEN,
-            SYS_USER_ID,
-            JURISDICTION,
-            CASE_TYPE,
-            CASE_ID.toString(),
-            true,
-            expectedCaseUpdateRequest);
+        verify(concurrencyHelper).submitEvent(
+            any(),
+            eq(CASE_ID),
+            eq(expectedCaseUpdateRequest));
 
         checkUntil(() -> {
 
@@ -235,22 +222,23 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
 
         when(paymentApi.createCreditAccountPayment(any(), any(), any())).thenThrow(feignException(403));
 
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
         postSubmittedEvent(caseData);
 
         final CreditAccountPaymentRequest expectedPaymentRequest = expectedCreditAccountPaymentRequest();
-        final CaseDataContent expectedCaseUpdateRequest = expectedCaseDataContent();
+        final Map<String, Object> expectedCaseUpdateRequest = expectedCaseDataContent();
 
         verify(paymentApi).createCreditAccountPayment(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest);
 
-        verify(coreCaseDataApi).submitEventForCaseWorker(
-            USER_AUTH_TOKEN,
-            SERVICE_AUTH_TOKEN,
-            SYS_USER_ID,
-            JURISDICTION,
-            CASE_TYPE,
-            CASE_ID.toString(),
-            true,
-            expectedCaseUpdateRequest);
+        verify(concurrencyHelper).submitEvent(
+            any(),
+            eq(CASE_ID),
+            eq(expectedCaseUpdateRequest));
 
         verify(notificationClient).sendEmail(
             INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
@@ -286,10 +274,15 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
                 .placements(wrapElements(placement))
                 .build())
             .build();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
 
         postSubmittedEvent(caseData);
 
-        verifyNoInteractions(feesRegisterApi, paymentApi, coreCaseDataApi, notificationClient);
+        verifyNoInteractions(feesRegisterApi, paymentApi, notificationClient);
     }
 
     @Test
@@ -325,10 +318,15 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
                 .placements(wrapElements(existingApplicationForChild1, newApplicationForChild2))
                 .build())
             .build();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
 
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 
-        verifyNoInteractions(notificationClient, paymentApi, coreCaseDataApi);
+        verifyNoInteractions(notificationClient, paymentApi);
     }
 
     @Nested
@@ -353,8 +351,7 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
             when(uploadDocumentService.uploadPDF(sealedApplicationContent, "application.pdf"))
                 .thenReturn(sealedDocument);
 
-            given(coreCaseDataApi.startEventForCaseWorker(any(), any(), any(), any(), any(), any(),
-                eq(INTERNAL_CHANGE_PLACEMENT)))
+            given(concurrencyHelper.startEvent(any(), eq(INTERNAL_CHANGE_PLACEMENT)))
                 .willReturn(StartEventResponse.builder().eventId(INTERNAL_CHANGE_PLACEMENT).token(EVENT_TOKEN).build());
         }
 
@@ -377,6 +374,11 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
                     .placementPaymentRequired(NO)
                     .build())
                 .build();
+            when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+                .caseDetails(asCaseDetails(caseData))
+                .eventId(i.getArgument(1))
+                .token("token")
+                .build());
 
             postSubmittedEvent(caseData);
 
@@ -386,24 +388,7 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
             expectedCaseChanges.put("placements", List.of(element(applicationUUID, sealedPlacement)));
             expectedCaseChanges.put("placement", sealedPlacement);
 
-            final CaseDataContent expectedCaseDataContent = CaseDataContent.builder()
-                .event(Event.builder()
-                    .id(INTERNAL_CHANGE_PLACEMENT)
-                    .build())
-                .data(expectedCaseChanges)
-                .eventToken(EVENT_TOKEN)
-                .ignoreWarning(false)
-                .build();
-
-            verify(coreCaseDataApi).submitEventForCaseWorker(
-                USER_AUTH_TOKEN,
-                SERVICE_AUTH_TOKEN,
-                SYS_USER_ID,
-                JURISDICTION,
-                CASE_TYPE,
-                "1",
-                true,
-                expectedCaseDataContent);
+            verify(concurrencyHelper).submitEvent(any(), eq(1L), eq(expectedCaseChanges));
         }
     }
 
@@ -426,7 +411,7 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
             .build();
     }
 
-    private CaseDataContent expectedCaseDataContent() {
+    private Map<String, Object> expectedCaseDataContent() {
         final Map<String, Object> expectedCaseChanges = new HashMap<>();
 
         expectedCaseChanges.put("placementLastPaymentTime", now());
@@ -434,13 +419,6 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
         expectedCaseChanges.put("placementPayment", null);
         expectedCaseChanges.put("placement", null);
 
-        return CaseDataContent.builder()
-            .event(Event.builder()
-                .id(CASE_UPDATE_EVENT)
-                .build())
-            .data(expectedCaseChanges)
-            .eventToken(EVENT_TOKEN)
-            .ignoreWarning(false)
-            .build();
+        return expectedCaseChanges;
     }
 }

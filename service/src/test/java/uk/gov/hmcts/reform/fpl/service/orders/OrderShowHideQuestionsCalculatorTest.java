@@ -239,9 +239,9 @@ class OrderShowHideQuestionsCalculatorTest {
         epoQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         epoQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
         epoQuestions.put("childArrangementSpecificIssueProhibitedSteps", "NO");
-        epoQuestions.put("closeCase", "NO");
+        epoQuestions.put("closeCase", "YES");
         epoQuestions.put("whichOthers", "YES");
-        epoQuestions.put("isFinalOrder", "NO");
+        epoQuestions.put("isFinalOrder", "YES");
         epoQuestions.put("orderIsByConsent", "NO");
         epoQuestions.put("appointedGuardian", "NO");
         epoQuestions.put("respondentsRefused", "NO");
@@ -365,7 +365,7 @@ class OrderShowHideQuestionsCalculatorTest {
         specialGuardianshipOrderQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         specialGuardianshipOrderQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
         specialGuardianshipOrderQuestions.put("childArrangementSpecificIssueProhibitedSteps", "NO");
-        specialGuardianshipOrderQuestions.put("closeCase", "NO");
+        specialGuardianshipOrderQuestions.put("closeCase", "YES");
         specialGuardianshipOrderQuestions.put("isFinalOrder", "YES");
         specialGuardianshipOrderQuestions.put("orderIsByConsent", "YES");
         specialGuardianshipOrderQuestions.put("whichOthers", "YES");
@@ -493,7 +493,7 @@ class OrderShowHideQuestionsCalculatorTest {
         refusedContactOrderQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         refusedContactOrderQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
         refusedContactOrderQuestions.put("childArrangementSpecificIssueProhibitedSteps", "NO");
-        refusedContactOrderQuestions.put("closeCase", "NO");
+        refusedContactOrderQuestions.put("closeCase", "YES");
         refusedContactOrderQuestions.put("isFinalOrder", "YES");
         refusedContactOrderQuestions.put("orderIsByConsent", "YES");
         refusedContactOrderQuestions.put("appointedGuardian", "NO");
@@ -578,11 +578,11 @@ class OrderShowHideQuestionsCalculatorTest {
         contactWithAChildOrderInCareOrder.put("childArrangementSpecificIssueProhibitedSteps", "NO");
         contactWithAChildOrderInCareOrder.put("whichOthers", "NO");
         contactWithAChildOrderInCareOrder.put("dischargeOfCareDetails", "NO");
-        contactWithAChildOrderInCareOrder.put("closeCase", "NO");
+        contactWithAChildOrderInCareOrder.put("closeCase", "YES");
         contactWithAChildOrderInCareOrder.put("whichChildren", "YES");
         contactWithAChildOrderInCareOrder.put("orderIsByConsent", "YES");
         contactWithAChildOrderInCareOrder.put("furtherDirections", "NO");
-        contactWithAChildOrderInCareOrder.put("isFinalOrder", "NO");
+        contactWithAChildOrderInCareOrder.put("isFinalOrder", "YES");
         contactWithAChildOrderInCareOrder.put("appointedGuardian", "NO");
         contactWithAChildOrderInCareOrder.put("parentResponsible", "NO");
         contactWithAChildOrderInCareOrder.put("respondentsRefused", "NO");
@@ -706,7 +706,7 @@ class OrderShowHideQuestionsCalculatorTest {
         placementOrder.put("childArrangementSpecificIssueProhibitedSteps", "NO");
         placementOrder.put("whichOthers", "NO");
         placementOrder.put("dischargeOfCareDetails", "NO");
-        placementOrder.put("closeCase", "NO");
+        placementOrder.put("closeCase", "YES");
         placementOrder.put("whichChildren", "NO");
         placementOrder.put("orderIsByConsent", "NO");
         placementOrder.put("furtherDirections", "NO");
@@ -754,7 +754,7 @@ class OrderShowHideQuestionsCalculatorTest {
         childAssessmentOrder.put("whichChildren", "NO");
         childAssessmentOrder.put("orderIsByConsent", "YES");
         childAssessmentOrder.put("furtherDirections", "NO");
-        childAssessmentOrder.put("isFinalOrder", "NO");
+        childAssessmentOrder.put("isFinalOrder", "YES");
         childAssessmentOrder.put("appointedGuardian", "NO");
         childAssessmentOrder.put("parentResponsible", "NO");
         childAssessmentOrder.put("childPlacementApplications", "NO");
@@ -934,11 +934,11 @@ class OrderShowHideQuestionsCalculatorTest {
         declarationOfParentage.put("childArrangementSpecificIssueProhibitedSteps", "NO");
         declarationOfParentage.put("whichOthers", "NO");
         declarationOfParentage.put("dischargeOfCareDetails", "NO");
-        declarationOfParentage.put("closeCase", "NO");
+        declarationOfParentage.put("closeCase", "YES");
         declarationOfParentage.put("whichChildren", "NO");
         declarationOfParentage.put("orderIsByConsent", "NO");
         declarationOfParentage.put("furtherDirections", "NO");
-        declarationOfParentage.put("isFinalOrder", "NO");
+        declarationOfParentage.put("isFinalOrder", "YES");
         declarationOfParentage.put("appointedGuardian", "NO");
         declarationOfParentage.put("parentResponsible", "NO");
         declarationOfParentage.put("respondentsRefused", "NO");
@@ -982,7 +982,7 @@ class OrderShowHideQuestionsCalculatorTest {
         familyAssistanceOrder.put("whichChildren", "YES");
         familyAssistanceOrder.put("orderIsByConsent", "YES");
         familyAssistanceOrder.put("furtherDirections", "YES");
-        familyAssistanceOrder.put("isFinalOrder", "NO");
+        familyAssistanceOrder.put("isFinalOrder", "YES");
         familyAssistanceOrder.put("appointedGuardian", "NO");
         familyAssistanceOrder.put("parentResponsible", "NO");
         familyAssistanceOrder.put("respondentsRefused", "NO");

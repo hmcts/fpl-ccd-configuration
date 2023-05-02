@@ -190,7 +190,7 @@ class CourtServiceTest {
         }
 
         @Test
-        void shouldReturnNullWhenUserDidNotSelectCourt() {
+        void shouldReturnCTSCEmailAsDefaultWhenUserDidNotSelectCourt() {
             final CaseData caseData = CaseData.builder()
                 .caseLocalAuthority("LA1")
                 .multiCourts(YesNo.YES)
@@ -198,7 +198,7 @@ class CourtServiceTest {
 
             final String actualEmail = underTest.getCourtEmail(caseData);
 
-            assertThat(actualEmail).isNull();
+            assertThat(actualEmail).isEqualTo(ctscEmail);
         }
     }
 
@@ -251,7 +251,7 @@ class CourtServiceTest {
         }
 
         @Test
-        void shouldReturnNullWhenUserDidNotSelectCourt() {
+        void shouldReturnCTSCEmailAsDefaultWhenUserDidNotSelectCourt() {
             final CaseData caseData = CaseData.builder()
                 .caseLocalAuthority("LA1")
                 .multiCourts(YesNo.YES)
@@ -259,7 +259,7 @@ class CourtServiceTest {
 
             final String actualEmail = underTest.getCourtEmailNotCtsc(caseData);
 
-            assertThat(actualEmail).isNull();
+            assertThat(actualEmail).isEqualTo(ctscEmail);
         }
     }
 
