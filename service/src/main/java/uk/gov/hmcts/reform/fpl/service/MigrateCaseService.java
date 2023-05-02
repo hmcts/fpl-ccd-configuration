@@ -539,10 +539,10 @@ public class MigrateCaseService {
             .replace(">", "");
     }
 
-    public Map<String, Object> removeHearingFurtherEvidenceSolicitorDocuments(CaseData caseData,
-                                                                              String migrationId,
-                                                                              UUID expectedHearingId,
-                                                                              UUID expectedDocId) {
+    public Map<String, Object> removeHearingFurtherEvidenceDocuments(CaseData caseData,
+                                                                     String migrationId,
+                                                                     UUID expectedHearingId,
+                                                                     UUID expectedDocId) {
         Long caseId = caseData.getId();
 
         Element<HearingFurtherEvidenceBundle> elementToBeUpdated = caseData.getHearingFurtherEvidenceDocuments()
