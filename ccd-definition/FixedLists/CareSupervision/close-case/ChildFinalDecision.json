@@ -26,5 +26,12 @@
     "ListElementCode": "FINAL_ORDER",
     "ListElement": "Final order issued",
     "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildFinalDecision",
+    "ListElementCode": "HOUSEKEEPING",
+    "ListElement": "Housekeeping",
+    "DisplayOrder": 5
   }
 ]
