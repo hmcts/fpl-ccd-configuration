@@ -49,16 +49,16 @@ public class ReferenceDataConsumerTestBase {
     protected DslPart buildOrganisationsResponsePactDsl() {
         return newJsonBody(ob -> ob
             .array("users", pa ->
-                pa.object(u -> u.stringType("userIdentifier", "123456")
-                    .stringType("firstName", "firstName")
-                    .stringType("lastName", "lastName")
-                    .stringType("email", "email@org.com"))
+                pa.object(u -> u.stringType("userIdentifier", "userId")
+                    .stringType("firstName", "first")
+                    .stringType("lastName", "last")
+                    .stringType("email", "email@email.com"))
             ))
             .build();
     }
 
     protected DslPart buildOrganisationUserResponsePactDsl() {
-        return newJsonBody(u -> u.stringType("userIdentifier", "123456"))
+        return newJsonBody(u -> u.stringType("userIdentifier", "userId"))
             .build();
     }
 }
