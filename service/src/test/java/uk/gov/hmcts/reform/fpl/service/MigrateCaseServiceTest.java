@@ -1444,4 +1444,59 @@ class MigrateCaseServiceTest {
                 .hasMessage(format("Migration {id = %s, case reference = %s}, hearing not found", MIGRATION_ID, 1));
         }
     }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveFurtherEvidenceSolicitorDocuments {
+        private final Element<SupportingEvidenceBundle> seb1 = element(SupportingEvidenceBundle.builder()
+            .build());
+        private final Element<SupportingEvidenceBundle> seb2 = element(SupportingEvidenceBundle.builder()
+            .build());
+        private final Element<SupportingEvidenceBundle> sebToBeRemoved =
+            element(SupportingEvidenceBundle.builder().build());
+
+        private UUID hearingFurtherEvidenceBundleId = UUID.randomUUID();
+
+        @Test
+        void shouldRemoveTargetSupportingEvidenceBundle() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocumentsSolicitor(List.of(seb1, seb2, sebToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeFurtherEvidenceSolicitorDocuments(caseData,
+                MIGRATION_ID, sebToBeRemoved.getId());
+
+            assertThat(updatedFields).extracting("furtherEvidenceDocumentsSolicitor").asList()
+                .containsExactly(seb1, seb2);
+        }
+
+        @Test
+        void shouldReturnNullWhenLastSupportingEvidenceBundleIsRemoved() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocumentsSolicitor(List.of(sebToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeFurtherEvidenceSolicitorDocuments(caseData,
+                MIGRATION_ID, sebToBeRemoved.getId());
+
+            assertThat(updatedFields).extracting("furtherEvidenceDocumentsSolicitor").isNull();
+        }
+
+        @Test
+        void shouldThrowExceptionIfTargetSupportingEvidenceBundleNotExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocumentsSolicitor(List.of(seb1, seb2))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeFurtherEvidenceSolicitorDocuments(caseData,
+                MIGRATION_ID, sebToBeRemoved.getId()))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format(
+                    "Migration {id = %s, case reference = %s}, further evidence documents solicitor not found",
+                    MIGRATION_ID, 1, sebToBeRemoved.getId().toString()));
+        }
+    }
 }
