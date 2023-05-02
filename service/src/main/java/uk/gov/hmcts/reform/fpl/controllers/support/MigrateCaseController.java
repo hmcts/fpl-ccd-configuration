@@ -129,9 +129,10 @@ public class MigrateCaseController extends CallbackController {
         var migrationId = "DFPL-1437";
 
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), List.of(1680258979928537L), migrationId);
-        caseDetails.getData().putAll(migrateCaseService.removeFurtherEvidenceSolicitorDocuments(getCaseData(caseDetails), migrationId,
-            UUID.fromString("97d51061-4ca1-4af6-94da-61160a681e2f")));
-        caseDetails.getData().putAll(migrateCaseService.removeHearingFurtherEvidenceDocuments(getCaseData(caseDetails), migrationId,
+        caseDetails.getData().putAll(migrateCaseService.removeFurtherEvidenceSolicitorDocuments(
+            getCaseData(caseDetails), migrationId, UUID.fromString("97d51061-4ca1-4af6-94da-61160a681e2f")));
+        caseDetails.getData().putAll(migrateCaseService.removeHearingFurtherEvidenceDocuments(getCaseData(caseDetails),
+            migrationId,
             UUID.fromString("c696b0d4-b11b-492e-bcbb-4142d5e47258"),
             UUID.fromString("94161ba0-c229-453d-a6ce-06228aa4cf66")));
         caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(getCaseData(caseDetails)));
