@@ -11,7 +11,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -36,7 +35,6 @@ import uk.gov.service.notify.NotificationClient;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
@@ -158,9 +156,6 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
     @MockBean
     private DocmosisCoverDocumentsService documentService;
 
-    @MockBean
-    private LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
-
     UploadTranslationsSubmittedControllerTest() {
         super("upload-translations");
     }
@@ -204,9 +199,6 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
                 new SendLetterResponse(LETTER_3_ID),
                 new SendLetterResponse(LETTER_4_ID)
             );
-
-        when(localAuthorityEmailLookupConfiguration.getSharedInbox(LOCAL_AUTHORITY_1_CODE))
-            .thenReturn(Optional.of(LOCAL_AUTHORITY_1_INBOX));
     }
 
     @Test
