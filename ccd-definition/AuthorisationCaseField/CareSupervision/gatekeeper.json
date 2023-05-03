@@ -340,7 +340,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderPreview",
     "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CR"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
