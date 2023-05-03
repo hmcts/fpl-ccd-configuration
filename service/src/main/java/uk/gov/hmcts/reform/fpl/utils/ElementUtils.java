@@ -18,7 +18,6 @@ import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 public class ElementUtils {
@@ -45,7 +44,31 @@ public class ElementUtils {
     public static <T> List<Element<T>> wrapElementsWithUUIDs(T... elements) {
         return Stream.of(elements)
             .filter(Objects::nonNull)
-            .map(element -> Element.<T>builder().id(UUID.randomUUID()).value(element).build())
+            .map(ElementUtils::element)
+            .collect(toList());
+    }
+
+    public static <T> List<Element<T>> wrapElementsWithUUIDs(List<T> elements) {
+        return nullSafeCollection(elements).stream()
+            .filter(Objects::nonNull)
+            .map(ElementUtils::element)
+            .collect(toList());
+    }
+
+    @SafeVarargs
+    @Deprecated // use wrapElementsWithUUIDs instead
+    public static <T> List<Element<T>> wrapElementsWithRandomUUID(T... elements) {
+        return Stream.of(elements)
+            .filter(Objects::nonNull)
+            .map(ElementUtils::element)
+            .collect(toList());
+    }
+
+    @Deprecated // use wrapElementsWithUUIDs instead
+    public static <T> List<Element<T>> wrapElementsWithRandomUUID(List<T> elements) {
+        return nullSafeCollection(elements).stream()
+            .filter(Objects::nonNull)
+            .map(ElementUtils::element)
             .collect(toList());
     }
 
@@ -54,7 +77,7 @@ public class ElementUtils {
             .stream()
             .map(Element::getValue)
             .filter(Objects::nonNull)
-            .collect(toUnmodifiableList());
+            .collect(toList());
     }
 
     public static <T> Element<T> element(T element) {
@@ -151,21 +174,6 @@ public class ElementUtils {
             .forEach(element -> element.setId(UUID.randomUUID()));
 
         return elements;
-    }
-
-    @SafeVarargs
-    public static <T> List<Element<T>> wrapElementsWithRandomUUID(T... elements) {
-        return Stream.of(elements)
-            .filter(Objects::nonNull)
-            .map(ElementUtils::element)
-            .collect(toList());
-    }
-
-    public static <T> List<Element<T>> wrapElementsWithRandomUUID(List<T> elements) {
-        return nullSafeCollection(elements).stream()
-            .filter(Objects::nonNull)
-            .map(ElementUtils::element)
-            .collect(toList());
     }
 
     public static <T> List<Element<T>> removeElementWithUUID(List<Element<T>> elements, UUID id) {
