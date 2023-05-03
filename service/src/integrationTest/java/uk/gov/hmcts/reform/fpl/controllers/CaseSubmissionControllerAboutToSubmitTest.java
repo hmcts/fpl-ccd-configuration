@@ -40,13 +40,10 @@ import static java.util.Map.of;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
-import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -97,14 +94,12 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldSetCtscPropertyToYesWhenCtscLaunchDarklyVariableIsEnabled() {
-        given(featureToggleService.isCtscEnabled(anyString())).willReturn(false);
-
+    void shouldSetCtscPropertyToYesRegardlessOfLDVariable() {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent("fixtures/case.json");
 
         assertThat(callbackResponse.getData())
             .containsEntry("caseLocalAuthority", LOCAL_AUTHORITY_1_CODE)
-            .containsEntry("sendToCtsc", "No")
+            .containsEntry("sendToCtsc", "Yes")
             .containsEntry("submittedForm", ImmutableMap.<String, String>builder()
                 .put("document_url", document.links.self.href)
                 .put("document_binary_url", document.links.binary.href)
@@ -114,16 +109,13 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldSetCtscPropertyToNoWhenCtscLaunchDarklyVariableIsDisabled() {
-        given(featureToggleService.isCtscEnabled(anyString())).willReturn(true);
-
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent("fixtures/case.json");
 
         assertThat(callbackResponse.getData()).containsEntry("sendToCtsc", "Yes");
-        verify(featureToggleService).isCtscEnabled(LOCAL_AUTHORITY_1_NAME);
     }
 
     @Test
-    void shouldSetCtscPropertyToNoWhenCaseLocalAuthorityIsNotSet() {
+    void shouldSetCtscPropertyToYesRegardlessOfIfCaseLocalAuthorityIsNotSet() {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(CaseDetails.builder()
             .id(2313L)
@@ -138,13 +130,11 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             .build());
 
         assertThat(callbackResponse.getData())
-            .containsEntry("sendToCtsc", "No");
+            .containsEntry("sendToCtsc", "Yes");
     }
 
     @Test
     void shouldRetainPaymentInformationInCase() {
-        given(featureToggleService.isCtscEnabled(anyString())).willReturn(true);
-
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(CaseDetails.builder()
             .id(2313L)
             .data(Map.of(
