@@ -47,8 +47,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1291", this::run1291,
         "DFPL-1310", this::run1310,
         "DFPL-1371", this::run1371,
-        "DFPL-1380", this::run1380,
-        "DFPL-1390", this::run1390
+        "DFPL-1380", this::run1380
     );
 
     @PostMapping("/about-to-submit")
@@ -151,12 +150,5 @@ public class MigrateCaseController extends CallbackController {
         var possibleCaseIds = List.of(1662460879255241L);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
         caseDetails.getData().put("state", State.FINAL_HEARING);
-    }
-
-    private void run1390(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1390";
-        var possibleCaseIds = List.of(1653643268362527L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
     }
 }
