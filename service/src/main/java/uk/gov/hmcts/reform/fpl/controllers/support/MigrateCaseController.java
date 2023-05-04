@@ -38,7 +38,6 @@ public class MigrateCaseController extends CallbackController {
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1303", this::run1303,
         "DFPL-1320", this::run1320,
         "DFPL-1335", this::run1335,
         "DFPL-1261", this::run1261,
@@ -47,7 +46,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1291", this::run1291,
         "DFPL-1310", this::run1310,
         "DFPL-1371", this::run1371,
-        "DFPL-1380", this::run1380
+        "DFPL-1380", this::run1380,
+        "DFPL-1401", this::run1401
     );
 
     @PostMapping("/about-to-submit")
@@ -101,15 +101,6 @@ public class MigrateCaseController extends CallbackController {
             "e4e70bf5-4905-4c13-9d59-d20a202b6c9a", migrationId));
     }
 
-    private void run1303(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1303";
-        var possibleCaseIds = List.of(1652697388556674L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        caseDetails.getData().putAll(migrateCaseService.removeApplicationDocument(getCaseData(caseDetails),
-            migrationId,
-            UUID.fromString("7b381f49-d6f9-4a17-a72a-5e39fb48a671")));
-    }
-
     private void run1361(CaseDetails caseDetails) {
         var migrationId = "DFPL-1361";
         var possibleCaseIds = List.of(1680179801927341L, 1651064219316144L);
@@ -150,5 +141,12 @@ public class MigrateCaseController extends CallbackController {
         var possibleCaseIds = List.of(1662460879255241L);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
         caseDetails.getData().put("state", State.FINAL_HEARING);
+    }
+
+    private void run1401(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1401";
+        var possibleCaseIds = List.of(1666959378667166L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().put("relatingLA", "NCC");
     }
 }
