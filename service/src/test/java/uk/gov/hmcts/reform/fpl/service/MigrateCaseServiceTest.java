@@ -23,12 +23,14 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
@@ -1355,4 +1357,146 @@ class MigrateCaseServiceTest {
         }
     }
 
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveHearingFurtherEvidenceDocuments {
+        private final Element<SupportingEvidenceBundle> seb1 = element(SupportingEvidenceBundle.builder()
+            .build());
+        private final Element<SupportingEvidenceBundle> seb2 = element(SupportingEvidenceBundle.builder()
+            .build());
+        private final Element<SupportingEvidenceBundle> sebToBeRemoved =
+            element(SupportingEvidenceBundle.builder().build());
+
+        private UUID hearingFurtherEvidenceBundleId = UUID.randomUUID();
+
+        @Test
+        void shouldRemoveTargetSupportingEvidenceBundle() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(
+                    element(hearingFurtherEvidenceBundleId, HearingFurtherEvidenceBundle.builder()
+                        .supportingEvidenceBundle(List.of(seb1, seb2, sebToBeRemoved))
+                        .build())
+                ))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeHearingFurtherEvidenceDocuments(caseData, MIGRATION_ID,
+                hearingFurtherEvidenceBundleId, sebToBeRemoved.getId());
+
+            assertThat(updatedFields).extracting("hearingFurtherEvidenceDocuments").asList()
+                .containsExactly(
+                    element(hearingFurtherEvidenceBundleId, HearingFurtherEvidenceBundle.builder()
+                        .supportingEvidenceBundle(List.of(seb1, seb2))
+                        .build()
+                ));
+        }
+
+        @Test
+        void shouldReturnNullWhenLastSupportingEvidenceBundleIsRemoved() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(
+                    element(hearingFurtherEvidenceBundleId, HearingFurtherEvidenceBundle.builder()
+                        .supportingEvidenceBundle(List.of(sebToBeRemoved))
+                        .build())
+                ))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeHearingFurtherEvidenceDocuments(caseData, MIGRATION_ID,
+                hearingFurtherEvidenceBundleId, sebToBeRemoved.getId());
+
+            assertThat(updatedFields).extracting("hearingFurtherEvidenceDocuments").isNull();
+        }
+
+        @Test
+        void shouldThrowExceptionIfTargetSupportingEvidenceBundleNotExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(
+                    element(hearingFurtherEvidenceBundleId, HearingFurtherEvidenceBundle.builder()
+                        .supportingEvidenceBundle(List.of(seb1, seb2))
+                        .build())
+                ))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeHearingFurtherEvidenceDocuments(caseData, MIGRATION_ID,
+                    hearingFurtherEvidenceBundleId, sebToBeRemoved.getId()))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format(
+                    "Migration {id = %s, case reference = %s}, hearing further evidence documents not found",
+                    MIGRATION_ID, 1, sebToBeRemoved.getId().toString()));
+        }
+
+        @Test
+        void shouldThrowExceptionIfHearingIdNotExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(
+                    element(hearingFurtherEvidenceBundleId, HearingFurtherEvidenceBundle.builder()
+                        .supportingEvidenceBundle(List.of(seb1, seb2, sebToBeRemoved))
+                        .build())
+                ))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeHearingFurtherEvidenceDocuments(caseData, MIGRATION_ID,
+                UUID.randomUUID(), sebToBeRemoved.getId()))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, hearing not found", MIGRATION_ID, 1));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveFurtherEvidenceSolicitorDocuments {
+        private final Element<SupportingEvidenceBundle> seb1 = element(SupportingEvidenceBundle.builder()
+            .build());
+        private final Element<SupportingEvidenceBundle> seb2 = element(SupportingEvidenceBundle.builder()
+            .build());
+        private final Element<SupportingEvidenceBundle> sebToBeRemoved =
+            element(SupportingEvidenceBundle.builder().build());
+
+        private UUID hearingFurtherEvidenceBundleId = UUID.randomUUID();
+
+        @Test
+        void shouldRemoveTargetSupportingEvidenceBundle() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocumentsSolicitor(List.of(seb1, seb2, sebToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeFurtherEvidenceSolicitorDocuments(caseData,
+                MIGRATION_ID, sebToBeRemoved.getId());
+
+            assertThat(updatedFields).extracting("furtherEvidenceDocumentsSolicitor").asList()
+                .containsExactly(seb1, seb2);
+        }
+
+        @Test
+        void shouldReturnNullWhenLastSupportingEvidenceBundleIsRemoved() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocumentsSolicitor(List.of(sebToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeFurtherEvidenceSolicitorDocuments(caseData,
+                MIGRATION_ID, sebToBeRemoved.getId());
+
+            assertThat(updatedFields).extracting("furtherEvidenceDocumentsSolicitor").isNull();
+        }
+
+        @Test
+        void shouldThrowExceptionIfTargetSupportingEvidenceBundleNotExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocumentsSolicitor(List.of(seb1, seb2))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeFurtherEvidenceSolicitorDocuments(caseData,
+                MIGRATION_ID, sebToBeRemoved.getId()))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format(
+                    "Migration {id = %s, case reference = %s}, further evidence documents solicitor not found",
+                    MIGRATION_ID, 1, sebToBeRemoved.getId().toString()));
+        }
+    }
 }
