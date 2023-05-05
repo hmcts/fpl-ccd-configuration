@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
+import uk.gov.hmcts.reform.fpl.service.DocumentMetadataDownloadService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
@@ -92,6 +93,9 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
 
     @MockBean
     private FeatureToggleService featureToggleService;
+
+    @MockBean
+    private DocumentMetadataDownloadService documentMetadataDownloadService;
 
     @Test
     void sendNotificationWhenNewDocumentUploadNotificationToggledOffForLA() {

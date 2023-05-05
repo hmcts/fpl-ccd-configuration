@@ -104,6 +104,22 @@ public class FurtherEvidenceUploadedEventHandler {
     private final DocumentMetadataDownloadService documentMetadataDownloadService;
 
     @EventListener
+    public void testMeataData(final FurtherEvidenceUploadedEvent event) {
+        final CaseData caseData = event.getCaseData();
+        final CaseData caseDataBefore = event.getCaseDataBefore();
+        final DocumentUploaderType uploaderType = event.getUserType();
+        log.info("test testMeataData");
+        getNewCourtBundles(caseData, caseDataBefore, uploaderType).forEach((key, value) -> {
+                log.info("====== Hearing: " + key + " ======");
+                value.forEach(docRef -> {
+                    log.info("doc: " + docRef.getUrl());
+                    documentMetadataDownloadService.getDocumentMetadata(docRef.getUrl());
+                });
+            }
+        );
+    }
+
+    @EventListener
     public void sendDocumentsUploadedNotification(final FurtherEvidenceUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
         final CaseData caseDataBefore = event.getCaseDataBefore();
@@ -161,13 +177,6 @@ public class FurtherEvidenceUploadedEventHandler {
         Map<String, Set<DocumentReference>> newCourtBundles = getNewCourtBundles(caseData, caseDataBefore,
             uploaderType);
         final Set<String> recipients = new HashSet<>();
-
-        log.info("test court bundle meta data");
-        newCourtBundles.values().forEach((value) -> {
-            value.forEach(docRef -> documentMetadataDownloadService.getDocumentMetadata(
-                docRef.getUrl()));
-        });
-
 
         Predicate<Map.Entry<String, Set<DocumentReference>>> predicate = not(entry -> entry.getValue().isEmpty());
 
