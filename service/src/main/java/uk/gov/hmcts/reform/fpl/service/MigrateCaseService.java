@@ -11,12 +11,14 @@ import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
@@ -536,6 +538,70 @@ public class MigrateCaseService {
         }
         return str.replace("<", "")
             .replace(">", "");
+    }
+
+    public Map<String, Object> removeHearingFurtherEvidenceDocuments(CaseData caseData,
+                                                                     String migrationId,
+                                                                     UUID expectedHearingId,
+                                                                     UUID expectedDocId) {
+        Long caseId = caseData.getId();
+
+        Element<HearingFurtherEvidenceBundle> elementToBeUpdated = caseData.getHearingFurtherEvidenceDocuments()
+            .stream()
+            .filter(hfed -> expectedHearingId.equals(hfed.getId()))
+            .findFirst().orElseThrow(() -> new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, hearing not found",
+                migrationId, caseId)));
+        List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle =
+            elementToBeUpdated.getValue().getSupportingEvidenceBundle().stream()
+                .filter(el -> !expectedDocId.equals(el.getId()))
+                .collect(toList());
+        if (newSupportingEvidenceBundle.size() != elementToBeUpdated.getValue().getSupportingEvidenceBundle()
+            .size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, hearing further evidence documents not found",
+                migrationId, caseId));
+        }
+        elementToBeUpdated.getValue().setSupportingEvidenceBundle(newSupportingEvidenceBundle);
+
+        List<Element<HearingFurtherEvidenceBundle>> listOfHearingFurtherEvidenceBundle =
+            caseData.getHearingFurtherEvidenceDocuments().stream()
+                .filter(el -> !expectedHearingId.equals(el.getId()))
+                .collect(toList());
+        if (!newSupportingEvidenceBundle.isEmpty()) {
+            listOfHearingFurtherEvidenceBundle.add(elementToBeUpdated);
+        }
+        if (listOfHearingFurtherEvidenceBundle.isEmpty()) {
+            Map<String, Object> ret = new HashMap<>();
+            ret.put("hearingFurtherEvidenceDocuments", null);
+            return ret;
+        } else {
+            return Map.of("hearingFurtherEvidenceDocuments", listOfHearingFurtherEvidenceBundle);
+        }
+    }
+
+    public Map<String, Object> removeFurtherEvidenceSolicitorDocuments(CaseData caseData,
+                                                                       String migrationId,
+                                                                       UUID expectedDocId) {
+        Long caseId = caseData.getId();
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsSolicitor =
+            caseData.getFurtherEvidenceDocumentsSolicitor().stream()
+                .filter(el -> !expectedDocId.equals(el.getId()))
+                .collect(toList());
+
+        if (furtherEvidenceDocumentsSolicitor.size() != caseData.getFurtherEvidenceDocumentsSolicitor().size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, further evidence documents solicitor not found",
+                migrationId, caseId));
+        }
+
+        if (furtherEvidenceDocumentsSolicitor.isEmpty()) {
+            Map<String, Object> ret = new HashMap<>();
+            ret.put("furtherEvidenceDocumentsSolicitor", null);
+            return ret;
+        } else {
+            return Map.of("furtherEvidenceDocumentsSolicitor", furtherEvidenceDocumentsSolicitor);
+        }
     }
 
     @SuppressWarnings("unchecked")

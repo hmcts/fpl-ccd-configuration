@@ -38,8 +38,6 @@ public class MigrateCaseController extends CallbackController {
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1320", this::run1320,
-        "DFPL-1335", this::run1335,
         "DFPL-1261", this::run1261,
         "DFPL-1226", this::run1226,
         "DFPL-1361", this::run1361,
@@ -47,6 +45,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1310", this::run1310,
         "DFPL-1371", this::run1371,
         "DFPL-1380", this::run1380,
+        "DFPL-1437", this::run1437,
         "DFPL-1242", this::run1242
     );
 
@@ -83,41 +82,6 @@ public class MigrateCaseController extends CallbackController {
     private void run1226(CaseDetails caseDetails) {
         migrateCaseService.doDocumentViewNCCheck(caseDetails.getId(), "DFPL-1226", caseDetails);
         caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(getCaseData(caseDetails)));
-    }
-
-    private void run1320(CaseDetails caseDetails) {
-        String migrationId = "DFPL-1320";
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), List.of(1667466628958196L), migrationId);
-        caseDetails.getData().putAll(
-            migrateCaseService.removeJudicialMessage(getCaseData(caseDetails), migrationId,
-                "afb1a77d-08c9-4ad1-a03f-e7b47c8eb8c3"));
-    }
-
-    private void run1335(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1335";
-        var possibleCaseIds = List.of(1677078973744903L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        caseDetails.getData().putAll(migrateCaseService.removeSkeletonArgument(getCaseData(caseDetails),
-            "e4e70bf5-4905-4c13-9d59-d20a202b6c9a", migrationId));
-    }
-
-    @SuppressWarnings("unchecked")
-    private void run1242(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1242";
-
-        var invalidOrderType = "EDUCATION_SUPERVISION__ORDER";
-        var validOrderType = "EDUCATION_SUPERVISION_ORDER";
-
-        caseDetails.getData().putAll(migrateCaseService.fixOrderTypeTypo(migrationId, caseDetails));
-    }
-    
-    private void run1303(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1303";
-        var possibleCaseIds = List.of(1652697388556674L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        caseDetails.getData().putAll(migrateCaseService.removeApplicationDocument(getCaseData(caseDetails),
-            migrationId,
-            UUID.fromString("7b381f49-d6f9-4a17-a72a-5e39fb48a671")));
     }
 
     private void run1361(CaseDetails caseDetails) {
@@ -160,5 +124,28 @@ public class MigrateCaseController extends CallbackController {
         var possibleCaseIds = List.of(1662460879255241L);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
         caseDetails.getData().put("state", State.FINAL_HEARING);
+    }
+
+    private void run1437(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1437";
+
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), List.of(1680258979928537L), migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removeFurtherEvidenceSolicitorDocuments(
+            getCaseData(caseDetails), migrationId, UUID.fromString("97d51061-4ca1-4af6-94da-61160a681e2f")));
+        caseDetails.getData().putAll(migrateCaseService.removeHearingFurtherEvidenceDocuments(getCaseData(caseDetails),
+            migrationId,
+            UUID.fromString("c696b0d4-b11b-492e-bcbb-4142d5e47258"),
+            UUID.fromString("94161ba0-c229-453d-a6ce-06228aa4cf66")));
+        caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(getCaseData(caseDetails)));
+    }
+
+    @SuppressWarnings("unchecked")
+    private void run1242(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1242";
+
+        var invalidOrderType = "EDUCATION_SUPERVISION__ORDER";
+        var validOrderType = "EDUCATION_SUPERVISION_ORDER";
+
+        caseDetails.getData().putAll(migrateCaseService.fixOrderTypeTypo(migrationId, caseDetails));
     }
 }
