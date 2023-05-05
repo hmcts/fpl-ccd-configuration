@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.FurtherDocument;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithDocument;
+import uk.gov.hmcts.reform.fpl.service.DocumentMetadataDownloadService;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
@@ -100,6 +101,7 @@ public class FurtherEvidenceUploadedEventHandler {
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private static final String PDF = "pdf";
     private static final String LIST = "•";
+    private final DocumentMetadataDownloadService documentMetadataDownloadService;
 
     @EventListener
     public void sendDocumentsUploadedNotification(final FurtherEvidenceUploadedEvent event) {
@@ -159,6 +161,13 @@ public class FurtherEvidenceUploadedEventHandler {
         Map<String, Set<DocumentReference>> newCourtBundles = getNewCourtBundles(caseData, caseDataBefore,
             uploaderType);
         final Set<String> recipients = new HashSet<>();
+
+        log.info("test court bundle meta data");
+        newCourtBundles.values().forEach((value) -> {
+            value.forEach(docRef -> documentMetadataDownloadService.getDocumentMetadata(
+                docRef.getUrl()));
+        });
+
 
         Predicate<Map.Entry<String, Set<DocumentReference>>> predicate = not(entry -> entry.getValue().isEmpty());
 
@@ -647,7 +656,7 @@ public class FurtherEvidenceUploadedEventHandler {
         return documentBundle.stream().map(FurtherDocument::getName).collect(toList());
     }
 
-    private List<DocumentReference> getDocumentReferencesHavingPdfExtension(List<SupportingEvidenceBundle> 
+    private List<DocumentReference> getDocumentReferencesHavingPdfExtension(List<SupportingEvidenceBundle>
                                                                                 documentBundle) {
         List<DocumentReference> documentReferences = new ArrayList<>();
 
