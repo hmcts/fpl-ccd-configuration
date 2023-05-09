@@ -1285,7 +1285,8 @@ public class CaseData extends CaseDataParent {
             .orElse(false);
     }
 
-    public String getCaseLocalAuthority() {
+    @JsonIgnore
+    public String getCaseLaOrRelatingLa() {
         return isEmpty(caseLocalAuthority) ? relatingLA : caseLocalAuthority;
     }
 }
