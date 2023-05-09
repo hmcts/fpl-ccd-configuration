@@ -75,7 +75,7 @@ class ChildrenUpdatedEventHandlerTest {
 
     @Test
     void notifyChangeOfAddress() {
-        when(caseData.getCaseLocalAuthority()).thenReturn("SW");
+        when(caseData.getCaseLaOrRelatingLa()).thenReturn("SW");
         when(caseData.getAllChildren()).thenReturn(children);
         when(caseDataBefore.getAllChildren()).thenReturn(children);
         when(childrenService.hasAddressChange(children, children)).thenReturn(true);
