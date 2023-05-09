@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import static uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService.UPDATE_CASE_EVENT;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -53,8 +55,15 @@ public class NoticeOfChangeService {
         for (ChangeOrganisationRequest changeRequest : changeRequests) {
             log.info("About to apply representation change {}", changeRequest);
 
-            coreCaseDataService.triggerEvent(caseData.getId(), "updateRepresentation",
-                Map.of("changeOrganisationRequestField", changeRequest));
+            // Save the change request on the case
+            coreCaseDataService.performPostSubmitCallback(caseData.getId(), UPDATE_CASE_EVENT,
+                caseDetails -> Map.of("changeOrganisationRequestField", changeRequest)
+            );
+
+            // Apply a NoC through about-to-start
+            coreCaseDataService.performPostSubmitCallback(caseData.getId(), "updateRepresentation",
+                caseDetails -> Map.of(), true
+            );
 
             log.info("Representation change applied {}", changeRequest);
         }
