@@ -22,6 +22,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
@@ -51,6 +52,10 @@ public class SendLetterService {
         byte[] mainDocumentBinary = documentDownloadService.downloadDocument(mainDocumentPDF.getBinaryUrl());
         var mainDocumentCopy = uploadDocument(mainDocumentBinary, mainDocumentPDF.getFilename());
 
+        List<String> recipientNames = recipients.stream()
+            .map(Recipient::getFullName)
+            .collect(Collectors.toList());
+
         String mainDocumentEncoded = Base64.getEncoder().encodeToString(mainDocumentBinary);
         for (Recipient recipient : recipients) {
             byte[] coverDocument = docmosisCoverDocumentsService.createCoverDocuments(familyManCaseNumber,
@@ -67,7 +72,7 @@ public class SendLetterService {
                         Map.of(
                             "caseId", caseId,
                             "documentName", mainDocument.getFilename(),
-                            "recipients", recipients)));
+                            "recipients", recipientNames)));
                 letterId = Optional.ofNullable(response).map(r -> r.letterId.toString()).orElse(EMPTY);
 
                 sentDocuments.add(SentDocument.builder()
