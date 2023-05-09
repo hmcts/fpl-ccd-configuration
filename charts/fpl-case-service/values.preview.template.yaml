@@ -73,6 +73,8 @@ idam-pr:
   redirect_uris:
     XUI:
       - https://xui-${SERVICE_FQDN}/oauth2/callback
+    XUIMO:
+      - https://xui-mo-${SERVICE_FQDN}/oauth2/callback
 
 xui-webapp:
   enabled: true
@@ -300,7 +302,7 @@ aac-manage-case-assignment:
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       MCA_DS_PROXY_URLS_ALLOWED_LIST: /searchCases.*,/internal/searchCases.*,/internal/cases.*
       MCA_DEF_STORE_PROXY_URLS_ALLOWED_LIST: /api/display/challenge-questions.*
-      MANAGE_CASE_S2S_AUTHORISED_SERVICES: xui_webapp,ccd_data,fpl_case_service
+      MANAGE_CASE_S2S_AUTHORISED_SERVICES: xui_webapp,ccd_data,fpl_case_service,xui_mo_webapp
       CCD_DATA_STORE_API_BASE_URL: http://${SERVICE_NAME}-ccd-data-store-api
       CCD_DEFINITION_STORE_API_BASE_URL: http://${SERVICE_NAME}-ccd-definition-store
       PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
@@ -309,13 +311,20 @@ aac-manage-case-assignment:
     keyVaults:
       aac:
         secrets:
-          - aac-manage-case-s2s-secret
-          - idam-mca-client-secret
-          - idam-mca-system-user-username
-          - idam-mca-system-user-password
-          - idam-noc-approver-username
-          - idam-noc-approver-password
-          - notify-mca-api-key-secret
+          - name: aac-manage-case-s2s-secret
+            alias: MANAGE_CASE_S2S_KEY
+          - name: idam-mca-client-secret
+            alias: IDAM_CLIENT_SECRET
+          - name: idam-mca-system-user-username
+            alias: IDAM_CAA_USERNAME
+          - name: idam-mca-system-user-password
+            alias: IDAM_CAA_PASSWORD
+          - name: idam-noc-approver-username
+            alias: IDAM_NOC_APPROVER_USERNAME
+          - name: idam-noc-approver-password
+            alias: IDAM_NOC_APPROVER_PASSWORD
+          - name: notify-mca-api-key-secret
+            alias: NOTIFY_MCA_API_KEY
 
 ccd-case-document-am-api:
   enabled: true
@@ -333,3 +342,17 @@ ccd-case-document-am-api:
       DM_STORE_BASE_URL: http://dm-store-aat.service.core-compute-aat.internal
       CCD_DATA_STORE_API_BASE_URL: http://${SERVICE_NAME}-ccd-data-store-api
       CASE_DOCUMENT_AM_API_S2S_SECRET: ${CCD_CASE_DOCUMENT_AM_API_SECRET}
+
+xui-mo-webapp:
+  enabled: true
+  nodejs:
+    imagePullPolicy: Always
+    releaseNameOverride: ${SERVICE_NAME}-xui-mo-webapp
+    image: hmctspublic.azurecr.io/xui/mo-webapp:latest
+    ingressHost: xui-mo-${SERVICE_FQDN}
+    environment:
+      MANAGE_CASE_LINK: https://xui-${SERVICE_FQDN}/cases
+      MANAGE_ORG_LINK: https://xui-mo-${SERVICE_FQDN}
+      SERVICES_CCD_DATA_STORE_API: http://${SERVICE_NAME}-ccd-data-store-api
+      SERVICES_MCA_PROXY_API: http://${SERVICE_NAME}-aac
+      CASE_TYPES: CARE_SUPERVISION_EPO

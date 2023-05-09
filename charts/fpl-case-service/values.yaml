@@ -7,6 +7,9 @@ idam-pr:
 xui-webapp:
   enabled: false
 
+xui-mo-webapp:
+  enabled: false
+
 elastic:
   enabled: false
 
