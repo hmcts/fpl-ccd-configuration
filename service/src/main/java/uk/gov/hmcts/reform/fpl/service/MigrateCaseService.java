@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -600,6 +601,31 @@ public class MigrateCaseService {
             return ret;
         } else {
             return Map.of("furtherEvidenceDocumentsSolicitor", furtherEvidenceDocumentsSolicitor);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> fixOrderTypeTypo(String migrationId, CaseDetails caseDetails) {
+        String invalidOrderType = "EDUCATION_SUPERVISION__ORDER";
+        String validOrderType = "EDUCATION_SUPERVISION_ORDER";
+
+        Optional<Map> orders = Optional.ofNullable((Map) caseDetails.getData().get("orders"));
+        if (orders.isPresent()) {
+            Optional<List<String>> orderType = Optional.ofNullable((List<String>) orders.get().get("orderType"));
+            if (orderType.isPresent() && orderType.get().contains(invalidOrderType)) {
+                Map ordersMap = new HashMap<>(orders.get());
+                List<String> newOrderType = new ArrayList<>(((List<String>) ordersMap.get("orderType")));
+                newOrderType.replaceAll(target -> target.equals(invalidOrderType) ? validOrderType : target);
+                ordersMap.put("orderType", newOrderType);
+                return Map.of("orders", ordersMap);
+            } else {
+                throw new AssertionError(format("Migration {id = %s}, case does not have [orders.orderType] "
+                        + "or missing target invalid order type [%s]",
+                    migrationId, invalidOrderType));
+            }
+        } else {
+            throw new AssertionError(format("Migration {id = %s}, case does not have [orders]",
+                migrationId));
         }
     }
 }
