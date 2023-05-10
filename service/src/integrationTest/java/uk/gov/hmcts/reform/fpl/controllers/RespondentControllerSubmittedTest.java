@@ -5,11 +5,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.AdditionalAnswers;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesRequest;
@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
+import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -47,8 +48,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APPROVED;
 import static uk.gov.hmcts.reform.ccd.model.Organisation.organisation;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_COUNSELLOR_REMOVED_EMAIL_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
@@ -59,6 +58,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
+import static uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService.UPDATE_CASE_EVENT;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -103,13 +103,16 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
         .build();
 
     @MockBean
-    private CoreCaseDataApi coreCaseDataApi;
+    private CCDConcurrencyHelper concurrencyHelper;
 
     @MockBean
     private OrganisationApi orgApi;
 
     @MockBean
     private NotificationClient notificationClient;
+
+    @Captor
+    private ArgumentCaptor<Map<String, Object>> caseCaptor;
 
     RespondentControllerSubmittedTest() {
         super("enter-respondents");
@@ -124,10 +127,12 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
 
         final List<StartEventResponse> startEventResponses = IntStream.range(0, 2)
             .mapToObj(i -> RandomStringUtils.randomAlphanumeric(10))
-            .map(token -> StartEventResponse.builder().eventId("updateRepresentation").token(token).build())
+            .map(token -> StartEventResponse.builder()
+                .caseDetails(CaseDetails.builder().data(Map.of()).build())
+                .eventId("updateRepresentation").token(token).build())
             .collect(toList());
 
-        when(coreCaseDataApi.startEventForCaseWorker(any(), any(), any(), any(), any(), any(), any()))
+        when(concurrencyHelper.startEvent(any(), eq("updateRepresentation")))
             .thenAnswer(AdditionalAnswers.returnsElementsOf(startEventResponses));
     }
 
@@ -163,6 +168,17 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
         final CaseData caseData = caseDataBefore.toBuilder()
             .respondents1(wrapElements(respondentWithRegisteredSolicitor, respondentWithUnregisteredSolicitor))
             .build();
+
+        when(concurrencyHelper.startEvent(any(), eq(UPDATE_CASE_EVENT)))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(asCaseDetails(caseData))
+                .eventId(UPDATE_CASE_EVENT)
+                .build());
+        when(concurrencyHelper.startEvent(any(), eq("internal-update-case-summary")))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(asCaseDetails(caseData))
+                .eventId("internal-update-case-summary")
+                .build());
 
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 
@@ -208,6 +224,17 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .build();
 
+        when(concurrencyHelper.startEvent(any(), eq(UPDATE_CASE_EVENT)))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(asCaseDetails(caseData))
+                .eventId(UPDATE_CASE_EVENT)
+                .build());
+        when(concurrencyHelper.startEvent(any(), eq("internal-update-case-summary")))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(asCaseDetails(caseData))
+                .eventId("internal-update-case-summary")
+                .build());
+
         postSubmittedEvent(caseData);
 
         verifyNoInteractions(notificationClient);
@@ -238,6 +265,7 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
             ))
             .respondents1(wrapElements(
                 Respondent.builder()
+                    .party(RespondentParty.builder().build())
                     .solicitor(RespondentSolicitor.builder()
                         .organisation(Organisation.builder().organisationID("some other id").build())
                         .build())
@@ -255,6 +283,17 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
                     .build()
             ))
             .build();
+
+        when(concurrencyHelper.startEvent(any(), eq(UPDATE_CASE_EVENT)))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(asCaseDetails(caseData))
+                .eventId(UPDATE_CASE_EVENT)
+                .build());
+        when(concurrencyHelper.startEvent(any(), eq("internal-update-case-summary")))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(asCaseDetails(caseData))
+                .eventId("internal-update-case-summary")
+                .build());
 
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 
@@ -305,6 +344,17 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
             .respondents1(updatedRespondents)
             .build();
 
+        when(concurrencyHelper.startEvent(any(), eq(UPDATE_CASE_EVENT)))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(asCaseDetails(caseData))
+                .eventId(UPDATE_CASE_EVENT)
+                .build());
+        when(concurrencyHelper.startEvent(any(), eq("internal-update-case-summary")))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(asCaseDetails(caseData))
+                .eventId("internal-update-case-summary")
+                .build());
+
         when(orgApi.findUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN))
             .thenReturn(uk.gov.hmcts.reform.rd.model.Organisation.builder().name(ORGANISATION_NAME).build());
 
@@ -314,21 +364,14 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
             .map(changeRequest -> Map.of("changeOrganisationRequestField", changeRequest))
             .collect(toList());
 
-        verify(coreCaseDataApi, times(2)).startEventForCaseWorker(
-            USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, SYS_USER_ID, JURISDICTION,
-            CASE_TYPE, caseData.getId().toString(), "updateRepresentation"
+        // setup change field, submit to aac (org1), setup change field, submit to aac (org2), update case-summary
+        verify(concurrencyHelper, times(5)).submitEvent(any(),
+            eq(caseData.getId()), caseCaptor.capture()
         );
 
-        final ArgumentCaptor<CaseDataContent> captor = ArgumentCaptor.forClass(CaseDataContent.class);
-
-        verify(coreCaseDataApi, times(2)).submitEventForCaseWorker(
-            eq(USER_AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(SYS_USER_ID), eq(JURISDICTION),
-            eq(CASE_TYPE), eq(caseData.getId().toString()), eq(true), captor.capture()
-        );
-
-        assertThat(captor.getAllValues())
-            .extracting(CaseDataContent::getData)
-            .containsExactlyInAnyOrderElementsOf(update);
+        assertThat(caseCaptor.getAllValues())
+            .asList()
+            .containsOnlyOnceElementsOf(update);
     }
 
     @Test
@@ -338,13 +381,25 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
             .respondents1(updatedRespondents)
             .build();
 
+        when(concurrencyHelper.startEvent(any(), any()))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(asCaseDetails(caseData))
+                .eventId(UPDATE_CASE_EVENT)
+                .build());
+        when(concurrencyHelper.startEvent(any(), eq("internal-update-case-summary")))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(asCaseDetails(caseData))
+                .eventId("internal-update-case-summary")
+                .build());
+
         postSubmittedEvent(toCallBackRequest(caseData, nocCaseDataBefore));
 
-        verifyNoInteractions(coreCaseDataApi);
+        verifyNoInteractions(concurrencyHelper);
     }
 
     private static Element<Respondent> respondent(Organisation organisation) {
         return element(Respondent.builder()
+            .party(RespondentParty.builder().build())
             .solicitor(RespondentSolicitor.builder()
                 .organisation(organisation)
                 .build())
@@ -353,6 +408,7 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
 
     private static Element<Respondent> respondent(Element<Respondent> respondent, Organisation organisation) {
         return element(respondent.getId(), respondent.getValue().toBuilder()
+            .party(RespondentParty.builder().build())
             .solicitor(RespondentSolicitor.builder()
                 .organisation(organisation)
                 .build())
