@@ -242,7 +242,7 @@ class CaseSubmissionServiceTest {
     void shouldGenerateC17SupplementSuccessfully() {
         CaseData caseData = givenCaseData.toBuilder()
             .orders(givenCaseData.getOrders().toBuilder()
-                .orderType(List.of(OrderType.EDUCATION_SUPERVISION__ORDER))
+                .orderType(List.of(OrderType.EDUCATION_SUPERVISION_ORDER))
                 .build())
             .build();
         caseSubmissionService.generateC1SupplementPDF(caseData, false);
