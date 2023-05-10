@@ -685,7 +685,7 @@ class CaseSubmissionGenerationServiceTest {
         void shouldPopulateC17Supplement() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
-                    .orderType(of(OrderType.EDUCATION_SUPERVISION__ORDER))
+                    .orderType(of(OrderType.EDUCATION_SUPERVISION_ORDER))
                     .educationSupervisionOrderDirectionsAppliedFor("direction applied")
                     .educationSupervisionOrderPriorConsultationOtherLA("other LA")
                     .educationSupervisionOrderPriorConsultationType(List.of(PriorConsultationType.PROVIDE_ACCOMMODATION,
@@ -711,7 +711,7 @@ class CaseSubmissionGenerationServiceTest {
         void shouldNotPopulateDraftWatermarkOrSealIfDraft() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
-                    .orderType(of(OrderType.EDUCATION_SUPERVISION__ORDER))
+                    .orderType(of(OrderType.EDUCATION_SUPERVISION_ORDER))
                     .educationSupervisionOrderDirectionsAppliedFor("direction applied")
                     .educationSupervisionOrderPriorConsultationOtherLA("other LA")
                     .educationSupervisionOrderPriorConsultationType(List.of(PriorConsultationType.PROVIDE_ACCOMMODATION,
@@ -730,7 +730,7 @@ class CaseSubmissionGenerationServiceTest {
         void shouldPopulateDraftWatermarkOrSealIfNotDraft() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
-                    .orderType(of(OrderType.EDUCATION_SUPERVISION__ORDER))
+                    .orderType(of(OrderType.EDUCATION_SUPERVISION_ORDER))
                     .educationSupervisionOrderDirectionsAppliedFor("direction applied")
                     .educationSupervisionOrderPriorConsultationOtherLA("other LA")
                     .educationSupervisionOrderPriorConsultationType(List.of(PriorConsultationType.PROVIDE_ACCOMMODATION,
@@ -928,7 +928,7 @@ class CaseSubmissionGenerationServiceTest {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
                     .orderType(of(OrderType.CARE_ORDER,
-                        OrderType.EDUCATION_SUPERVISION__ORDER))
+                        OrderType.EDUCATION_SUPERVISION_ORDER))
                     .build())
                 .build();
 
