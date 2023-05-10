@@ -27,9 +27,16 @@ public abstract class AbstractCallbackTest extends AbstractTest {
     private MockMvc mockMvc;
 
     private final String eventName;
+    private final String eventId;
 
     protected AbstractCallbackTest(String eventName) {
         this.eventName = eventName;
+        this.eventId = eventName;
+    }
+
+    protected AbstractCallbackTest(String eventName, String eventId) {
+        this.eventName = eventName;
+        this.eventId = eventId;
     }
 
     protected AboutToStartOrSubmitCallbackResponse postAboutToStartEvent(byte[] data, int expectedStatus,
@@ -310,6 +317,7 @@ public abstract class AbstractCallbackTest extends AbstractTest {
     private CallbackRequest toCallbackRequest(CaseDetails caseDetails) {
         return CallbackRequest.builder()
             .caseDetails(caseDetails)
+            .eventId(eventId)
             .caseDetailsBefore(CaseDetails.builder().data(Map.of()).build())
             .build();
     }

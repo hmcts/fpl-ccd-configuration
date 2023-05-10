@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.removeorder.RemoveApplicationService;
 import uk.gov.hmcts.reform.fpl.service.removeorder.RemoveOrderService;
+import uk.gov.hmcts.reform.fpl.service.removeorder.RemovePlacementApplicationService;
 import uk.gov.hmcts.reform.fpl.service.removeorder.RemoveSentDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
@@ -39,6 +40,7 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.RemovableType.ADDITIONAL_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.RemovableType.APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.RemovableType.ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.RemovableType.PLACEMENT_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.RemovableType.SENT_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
@@ -52,10 +54,12 @@ public class RemovalToolController extends CallbackController {
     private static final String REMOVABLE_ORDER_LIST_KEY = "removableOrderList";
     private static final String REMOVABLE_APPLICATION_LIST_KEY = "removableApplicationList";
     private static final String REMOVABLE_SENT_DOCUMENT_LIST = "removableSentDocumentList";
+    private static final String REMOVABLE_PLACEMENT_APPLICATION_LIST = "removablePlacementApplicationList";
     private final ObjectMapper mapper;
     private final RemoveOrderService orderService;
     private final RemoveApplicationService applicationService;
     private final RemoveSentDocumentService documentService;
+    private final RemovePlacementApplicationService placementApplicationService;
 
     public static final String CMO_ERROR_MESSAGE = "Email the help desk at dcd-familypubliclawservicedesk@hmcts.net to"
         + " remove this order. Quoting CMO %s, and the hearing it was added for.";
@@ -70,6 +74,7 @@ public class RemovalToolController extends CallbackController {
         data.put(REMOVABLE_ORDER_LIST_KEY, orderService.buildDynamicListOfOrders(caseData));
         data.put(REMOVABLE_APPLICATION_LIST_KEY, applicationService.buildDynamicList(caseData));
         data.put(REMOVABLE_SENT_DOCUMENT_LIST, documentService.buildDynamicList(caseData));
+        data.put(REMOVABLE_PLACEMENT_APPLICATION_LIST, placementApplicationService.buildDynamicList(caseData));
 
         return respond(data);
     }
@@ -117,6 +122,8 @@ public class RemovalToolController extends CallbackController {
         } else if (caseData.getRemovalToolData().getRemovableType() == APPLICATION
             && isEmpty(caseData.getC110A().getDocument())) {
             return respond(caseDetailsMap, List.of(APPLICATION_FORM_ALREADY_REMOVED_ERROR_MESSAGE));
+        } else if (caseData.getRemovalToolData().getRemovableType() == PLACEMENT_APPLICATION) {
+            placementApplicationService.populatePlacementApplication(caseData, caseDetailsMap);
         }
         return respond(caseDetailsMap);
     }
@@ -141,6 +148,8 @@ public class RemovalToolController extends CallbackController {
             UUID removedDocId = getDynamicListSelectedValue(caseData.getRemovalToolData()
                     .getRemovableSentDocumentList(), mapper);
             documentService.removeSentDocumentFromCase(caseData, caseDetailsMap, removedDocId);
+        } else if (caseData.getRemovalToolData().getRemovableType() == PLACEMENT_APPLICATION) {
+            placementApplicationService.removePlacementApplicationFromCase(caseData, caseDetailsMap);
         } else {
             if (isEmpty(caseData.getC110A().getDocument())) {
                 return respond(caseDetailsMap, List.of(APPLICATION_FORM_ALREADY_REMOVED_ERROR_MESSAGE));

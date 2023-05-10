@@ -7,6 +7,9 @@ idam-pr:
 xui-webapp:
   enabled: false
 
+xui-mo-webapp:
+  enabled: false
+
 elastic:
   enabled: false
 
@@ -77,6 +80,7 @@ java:
         - AppInsightsInstrumentationKey
         - scheduler-db-password
         - rcj-family-high-court-inbox
+        - court-to-court-admin-mapping
   applicationPort: 4000
 
 ccd-case-document-am-api:

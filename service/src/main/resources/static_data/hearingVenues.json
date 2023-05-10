@@ -3621,7 +3621,7 @@
   },
   {
     "hearingVenueId": 404,
-    "venue": "Watford County Court and Family Court",
+    "venue": "Watford County Court and Family Court (CLOSED)",
     "address": {
       "AddressLine1": "Watford County Court and Family Court, Cassiobury House",
       "AddressLine2": "3rd Floor",
@@ -3631,7 +3631,7 @@
   },
   {
     "hearingVenueId": 436,
-    "venue": "Watford County Court and Family Court (New address after 19 Sep 2022)",
+    "venue": "Watford County Court and Family Court",
     "address": {
       "AddressLine1": "Watford County and Family Court, 10 King Street",
       "AddressLine2": "",

@@ -32,12 +32,14 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -45,10 +47,14 @@ import static org.apache.commons.lang3.ObjectUtils.firstNonNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionType.APPOINT_CHILDREN_GUARDIAN_IMMEDIATE;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionType.ARRANGE_INTERPRETERS_IMMEDIATE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.UDO;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -75,21 +81,29 @@ public class GatekeepingOrderService {
 
         return GatekeepingOrderSealDecision.builder()
             .draftDocument(order)
-            .nextSteps(buildNextStepsLabel(caseData))
-            .dateOfIssue(LocalDate.now())
+            .dateOfIssue(time.now().toLocalDate())
             .orderStatus(null)
             .build();
     }
 
-    public StandardDirectionOrder buildOrderFromUploadedFile(CaseData caseData) {
-        GatekeepingOrderEventData gatekeepingOrderEventData = caseData.getGatekeepingOrderEventData();
+    public GatekeepingOrderSealDecision buildSealedDecision(CaseData caseData) {
+        DocumentReference order = getOrderDocument(caseData);
 
-        final GatekeepingOrderSealDecision decision = gatekeepingOrderEventData.getGatekeepingOrderSealDecision();
+        return GatekeepingOrderSealDecision.builder()
+            .draftDocument(order)
+            .dateOfIssue(time.now().toLocalDate())
+            .orderStatus(SEALED)
+            .build();
+    }
+
+    public StandardDirectionOrder buildOrderFromUploadedFile(CaseData caseData) {
+        var eventData = caseData.getGatekeepingOrderEventData();
+        final GatekeepingOrderSealDecision decision = eventData.getGatekeepingOrderSealDecision();
 
         DocumentReference document = decision.getDraftDocument();
 
         LanguageTranslationRequirement translationRequirements =
-            gatekeepingOrderEventData.getGatekeepingTranslationRequirements();
+            eventData.getGatekeepingTranslationRequirements();
         return buildBaseGatekeepingOrder(caseData).toBuilder()
             .dateOfUpload(time.now().toLocalDate())
             .uploader(userService.getUserName())
@@ -99,15 +113,16 @@ public class GatekeepingOrderService {
     }
 
     public StandardDirectionOrder buildOrderFromGeneratedFile(CaseData caseData) {
-        GatekeepingOrderEventData gatekeepingOrderEventData = caseData.getGatekeepingOrderEventData();
-        final GatekeepingOrderSealDecision decision = gatekeepingOrderEventData
-            .getGatekeepingOrderSealDecision();
+
+        final GatekeepingOrderSealDecision decision =
+            caseData.getGatekeepingOrderEventData().getGatekeepingOrderSealDecision();
 
         StandardDirectionOrder currentOrder = buildBaseGatekeepingOrder(caseData);
 
         if (decision.isSealed()) {
-            DocumentReference sealedDocument = buildFromDocument(generateOrder(caseData));
 
+            var docmosisTemplate = nonNull(caseData.getGatekeepingOrderRouter()) ? SDO : UDO;
+            DocumentReference sealedDocument = buildFromDocument(generateOrder(caseData, docmosisTemplate));
             return currentOrder.toBuilder()
                 .dateOfIssue(formatLocalDateToString(decision.getDateOfIssue(), DATE))
                 .unsealedDocumentCopy(decision.getDraftDocument())
@@ -144,35 +159,6 @@ public class GatekeepingOrderService {
         return judgeAndLegalAdvisor.isUsingAllocatedJudge() || isNotEmpty(judgeAndLegalAdvisor.getJudgeTitle());
     }
 
-    //this constructs a label which hides the option to seal if mandatory information is missing
-    //previous button can break this functionality as logic uses a hidden field (EUI-3922)
-    private String buildNextStepsLabel(CaseData caseData) {
-        List<String> requiredMissingInformation = new ArrayList<>();
-
-        if (caseData.getFirstHearing().isEmpty()) {
-            requiredMissingInformation.add("* the first hearing details");
-        }
-
-        if (isEmpty(caseData.getAllocatedJudge())) {
-            requiredMissingInformation.add("* the allocated judge");
-        }
-
-        if (!hasEnteredIssuingJudge(caseData.getGatekeepingOrderEventData().getGatekeepingOrderIssuingJudge())) {
-            requiredMissingInformation.add("* the judge issuing the order");
-        }
-
-        if (requiredMissingInformation.isEmpty()) {
-            return null;
-        } else {
-            final String nextStepsLabel = "## Next steps\n\n"
-                + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-                + "You cannot seal and send the order until adding:";
-            requiredMissingInformation.add(0, nextStepsLabel);
-
-            return String.join("\n\n", requiredMissingInformation);
-        }
-    }
-
     private StandardDirectionOrder buildBaseGatekeepingOrder(CaseData caseData) {
         GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
 
@@ -199,32 +185,43 @@ public class GatekeepingOrderService {
     }
 
     private DocumentReference getOrderDocument(CaseData caseData) {
-        final GatekeepingOrderRoute route = caseData.getGatekeepingOrderRouter();
 
-        if (route == UPLOAD) {
+        final GatekeepingOrderRoute sdoRouter;
+        final DocmosisTemplates docmosisTemplate;
+        if (nonNull(caseData.getGatekeepingOrderRouter())) {
+            sdoRouter = caseData.getGatekeepingOrderRouter();
+            docmosisTemplate = SDO;
+        } else {
+            sdoRouter = caseData.getUrgentDirectionsRouter();
+            docmosisTemplate = UDO;
+        }
+
+        if (sdoRouter == UPLOAD) {
             return firstNonNull(
                 caseData.getReplacementSDO(),
                 caseData.getPreparedSDO(),
                 caseData.getGatekeepingOrderEventData().getCurrentSDO());
         }
-
-        return buildFromDocument(generateOrder(caseData));
+        return buildFromDocument(generateOrder(caseData, docmosisTemplate));
     }
 
-    private Document generateOrder(CaseData caseData) {
+    private Document generateOrder(CaseData caseData, DocmosisTemplates docmosisTemplate) {
         DocmosisStandardDirectionOrder templateData = gatekeepingOrderGenerationService.getTemplateData(caseData);
-        return documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
+        return documentService.getDocumentFromDocmosisOrderTemplate(templateData, docmosisTemplate);
     }
 
     public CaseData populateStandardDirections(CaseDetails caseDetails) {
         final CaseData caseData = converter.convert(caseDetails);
         final GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
+        var order = nonNull(caseData.getGatekeepingOrderRouter())
+            ? caseData.getStandardDirectionOrder() : caseData.getUrgentDirectionsOrder();
 
-        final List<DirectionType> requestedDirections = eventData.getRequestedDirections();
-        final List<StandardDirection> draftStandardDirections = ofNullable(caseData.getStandardDirectionOrder())
+        final List<StandardDirection> draftStandardDirections = ofNullable(order)
             .map(StandardDirectionOrder::getStandardDirections)
             .map(ElementUtils::unwrapElements)
             .orElseGet(ArrayList::new);
+
+        final List<DirectionType> requestedDirections = eventData.getRequestedDirections();
 
         final HearingBooking firstHearing = getHearing(caseData).orElse(null);
 
@@ -246,7 +243,7 @@ public class GatekeepingOrderService {
 
     public CaseData updateStandardDirections(CaseDetails caseDetails) {
         final CaseData caseData = converter.convert(caseDetails);
-        final GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
+        final var eventData = caseData.getGatekeepingOrderEventData();
 
         final HearingBooking firstHearing = getHearing(caseData).orElse(null);
 
@@ -255,16 +252,23 @@ public class GatekeepingOrderService {
                 StandardDirection standardDirection = converter
                     .convert(caseDetails.getData().get(requestedType.getFieldName()), StandardDirection.class);
 
-                DirectionConfiguration directionConfig = ordersLookupService.getDirectionConfiguration(requestedType);
+                if (standardDirection != null) {
+                    DirectionConfiguration directionConfig = ordersLookupService
+                        .getDirectionConfiguration(requestedType);
 
-                if (standardDirection.getDueDateType() == DirectionDueDateType.DAYS) {
-                    standardDirection.setDateToBeCompletedBy(
-                        calculateDirectionDueDate(firstHearing, directionConfig.getDisplay(),
-                            standardDirection.getDaysBeforeHearing()));
+                    if (standardDirection.getDueDateType() == DirectionDueDateType.DAYS) {
+                        standardDirection.setDateToBeCompletedBy(
+                            calculateDirectionDueDate(firstHearing, directionConfig.getDisplay(),
+                                standardDirection.getDaysBeforeHearing()));
+                    }
+
+                    return standardDirection.applyConfig(directionConfig);
+                } else {
+                    // DFPL-1381 quick fix for null pointer exception
+                    return null;
                 }
-
-                return standardDirection.applyConfig(directionConfig);
             })
+            .filter(Objects::nonNull)
             .collect(toList());
 
         eventData.setStandardDirections(wrapElements(standardDirections));
@@ -302,12 +306,23 @@ public class GatekeepingOrderService {
 
     private StandardDirection buildStandardDirection(DirectionType type, HearingBooking hearing) {
         final DirectionConfiguration directionConfig = ordersLookupService.getDirectionConfiguration(type);
+        final boolean isImmediateStandardDirection =
+            APPOINT_CHILDREN_GUARDIAN_IMMEDIATE.equals(type) || ARRANGE_INTERPRETERS_IMMEDIATE.equals(type);
+        final int defaultDaysBeforeHearing = 2;
 
         return StandardDirection.builder()
-            .dateToBeCompletedBy(calculateDirectionDueDate(hearing, directionConfig.getDisplay()))
-            .dueDateType(DAYS)
-            .build()
-            .applyConfig(directionConfig);
+            .type(directionConfig.getType())
+            .title(directionConfig.getTitle())
+            .assignee(directionConfig.getAssignee())
+            .description(directionConfig.getText())
+            .dateToBeCompletedBy(
+                isImmediateStandardDirection
+                    ? null
+                    : calculateDirectionDueDate(hearing, directionConfig.getDisplay())
+            )
+            .dueDateType(isImmediateStandardDirection ? null : DAYS)
+            .daysBeforeHearing(isImmediateStandardDirection ? null : defaultDaysBeforeHearing)
+            .build();
     }
 
     private LocalDateTime calculateDirectionDueDate(HearingBooking hearing, Display display) {
@@ -325,12 +340,21 @@ public class GatekeepingOrderService {
             return null;
         }
 
-        final Integer daysBefore = Optional.ofNullable(workingDays).orElse(Optional.ofNullable(display.getDelta())
+        final int daysBefore = Optional.ofNullable(workingDays).orElse(Optional.ofNullable(display.getDelta())
             .map(Integer::parseInt)
             .orElse(0));
 
         LocalDate deadline = daysBefore == 0 ? hearingDay : calendarService.getWorkingDayFrom(hearingDay, daysBefore);
 
-        return LocalDateTime.of(deadline, LocalTime.parse(defaultIfNull(display.getTime(), "00:00:00")));
+        LocalTime deadlineTime =
+            LocalTime.parse(
+                Optional.of(hearing)
+                    .map(HearingBooking::getStartDate)
+                    .map(startDate -> startDate.format(DateTimeFormatter.ofPattern("HH:mm:ss")))
+                    .orElse("00:00:00")
+            );
+
+        return LocalDateTime.of(deadline, deadlineTime);
+
     }
 }

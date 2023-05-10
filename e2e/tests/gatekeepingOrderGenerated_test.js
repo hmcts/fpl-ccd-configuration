@@ -15,6 +15,9 @@ async function setupScenario(I) {
 Scenario('Gatekeeping judge drafts gatekeeping order', async ({I, caseViewPage, addGatekeepingOrderEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
+  addGatekeepingOrderEventPage.selectCorrectLevelOfJudge('Yes');
+  await I.goToNextPage();
+
   addGatekeepingOrderEventPage.createGatekeepingOrderThroughService();
   await I.runAccessibilityTest();
   await I.goToNextPage();
@@ -83,14 +86,15 @@ Scenario('Gatekeeping judge drafts gatekeeping order', async ({I, caseViewPage, 
   I.dontSee('Court');
   I.dontSee('Arrange interpreters');
 
-  await addGatekeepingOrderEventPage.seeDays('Request permission for expert evidence',3);
-  addGatekeepingOrderEventPage.clickDateAndTime('Request permission for expert evidence');
-  await addGatekeepingOrderEventPage.seeDate('Request permission for expert evidence','2050-01-05 12:00:00');
+  await addGatekeepingOrderEventPage.seeDays('REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE',3);
+  await addGatekeepingOrderEventPage.clickDateAndTime('REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE');
+  await addGatekeepingOrderEventPage.seeDate('REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE','2050-01-05 12:00:00');
 
-  await addGatekeepingOrderEventPage.seeDays('Ask for disclosure',2);
+  await addGatekeepingOrderEventPage.seeDays('ASK_FOR_DISCLOSURE',2);
 
-  await addGatekeepingOrderEventPage.seeDays('Send documents to all parties',2);
-  await addGatekeepingOrderEventPage.seeDetails('Send documents to all parties', 'Give all parties access to all documents sent to the court, including:\n\n' +
+  await addGatekeepingOrderEventPage.seeDays('SEND_DOCUMENTS_TO_ALL_PARTIES',2);
+  await addGatekeepingOrderEventPage.seeDetails('SEND_DOCUMENTS_TO_ALL_PARTIES',
+    'Give all parties access to all documents sent to the court, including:\n\n' +
       '- the application form\n' +
       '- annex documents\n' +
       '- evidential checklist documents\n' +
@@ -113,10 +117,55 @@ Scenario('Gatekeeping judge drafts gatekeeping order', async ({I, caseViewPage, 
   addGatekeepingOrderEventPage.verifyNextStepsLabel();
   await I.runAccessibilityTest();
   await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.addGatekeepingOrder);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.seeInTab(['Gatekeeping order', 'File'], 'draft-standard-directions-order.pdf');
+
+  caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
+  I.seeInTab(['Allocation decision', 'Which level of judge is needed for this case?'], 'District Judge');
+});
+
+Scenario('Gatekeeping order allocated to Magistrate judge', async ({I, caseViewPage, addGatekeepingOrderEventPage}) => {
+  await setupScenario(I);
+  await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
+  addGatekeepingOrderEventPage.selectCorrectLevelOfJudge('No');
+  await addGatekeepingOrderEventPage.selectAllocationDecision('Magistrate');
+  await addGatekeepingOrderEventPage.enterProposalReason('new information was acquired');
+  await I.goToNextPage();
+
+  addGatekeepingOrderEventPage.createGatekeepingOrderThroughService();
+  await I.goToNextPage();
+
+  I.see('Request permission for expert evidence');
+  I.see('Request help to take part in proceedings');
+  I.see('Ask for disclosure');
+  I.click('Request permission for expert evidence');
+  I.click('Ask for disclosure');
+  I.click('Send documents to all parties');
+  await I.goToNextPage();
+
+  I.see(hearingDate);
+  I.see('Request permission for expert evidence');
+  I.see('Ask for disclosure');
+  await I.goToNextPage();
+
+  I.see(hearingDate);
+  await I.addAnotherElementToCollection();
+  await addGatekeepingOrderEventPage.enterCustomDirections(directions[0]);
+  await I.goToNextPage();
+
+  addGatekeepingOrderEventPage.enterIssuingJudge('Judy', 'Bob Ross');
+  await I.goToNextPage();
+
+  addGatekeepingOrderEventPage.verifyNextStepsLabel();
+  await I.completeEvent('Save and continue');
+
+  caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
+  I.seeInTab(['Gatekeeping order', 'File'], 'draft-standard-directions-order.pdf');
+
+  caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
+  I.seeInTab(['Allocation decision', 'Which level of judge is needed for this case?'], 'Magistrate');
+  I.seeInTab(['Allocation decision', 'Give reason'], 'new information was acquired');
 });
 
 Scenario('Gatekeeping judge adds allocated judge', async ({I, caseViewPage, allocatedJudgeEventPage}) => {
@@ -124,7 +173,7 @@ Scenario('Gatekeeping judge adds allocated judge', async ({I, caseViewPage, allo
   await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
   await allocatedJudgeEventPage.enterAllocatedJudge('Moley', 'moley@example.com');
   await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.applicationActions.allocatedJudge);
+
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.seeInTab(['Allocated Judge', 'Judge or magistrate\'s title'], 'Her Honour Judge');
   I.seeInTab(['Allocated Judge', 'Last name'], 'Moley');
@@ -134,6 +183,8 @@ Scenario('Gatekeeping judge adds allocated judge', async ({I, caseViewPage, allo
 Scenario('Gatekeeping judge seals gatekeeping order', async ({I, caseViewPage, addGatekeepingOrderEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
+  addGatekeepingOrderEventPage.selectCorrectLevelOfJudge('Yes');
+  await I.goToNextPage();
 
   I.seeCheckboxIsChecked('Request permission for expert evidence');
   I.seeCheckboxIsChecked('Ask for disclosure');
@@ -173,10 +224,10 @@ Scenario('Gatekeeping judge seals gatekeeping order', async ({I, caseViewPage, a
   I.see('Identify alternative carers');
   I.dontSee('Send documents to all parties');
 
-  await addGatekeepingOrderEventPage.seeDate('Request permission for expert evidence','2050-01-05 12:00:00');
+  await addGatekeepingOrderEventPage.seeDate('REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE','2050-01-05 12:00:00');
 
-  addGatekeepingOrderEventPage.clickNumberOfDaysBeforeHearing('Identify alternative carers');
-  await addGatekeepingOrderEventPage.seeDays('Identify alternative carers',0);
+  await addGatekeepingOrderEventPage.clickNumberOfDaysBeforeHearing('IDENTIFY_ALTERNATIVE_CARERS');
+  await addGatekeepingOrderEventPage.seeDays('IDENTIFY_ALTERNATIVE_CARERS',0);
 
   await I.goToNextPage();
 
@@ -185,7 +236,6 @@ Scenario('Gatekeeping judge seals gatekeeping order', async ({I, caseViewPage, a
   await I.goToNextPage();
   await addGatekeepingOrderEventPage.markAsFinal({day: 11, month: 1, year: 2020});
   await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.addGatekeepingOrder);
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.seeInTab(['Gatekeeping order', 'File'], 'standard-directions-order.pdf');
@@ -193,5 +243,4 @@ Scenario('Gatekeeping judge seals gatekeeping order', async ({I, caseViewPage, a
 
   caseViewPage.selectTab(caseViewPage.tabs.history);
   I.seeEndStateForEvent(config.administrationActions.addGatekeepingOrder, 'Case management');
-
 });

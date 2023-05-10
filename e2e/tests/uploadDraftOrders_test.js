@@ -91,7 +91,7 @@ Scenario('Local authority uploads draft orders', async ({I, caseViewPage, upload
   I.seeInExpandedDocument(supportingDoc.name, config.swanseaLocalAuthorityUserOne.email, dateFormat(date, 'd mmm yyyy'));
 });
 
-Scenario('Respondent solicitor uploads draft orders', async ({I, caseViewPage, enterRepresentativesEventPage, uploadCaseManagementOrderEventPage}) => {
+Scenario('Respondent solicitor uploads draft orders @nightlyOnly', async ({I, caseViewPage, enterRepresentativesEventPage, uploadCaseManagementOrderEventPage}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 
@@ -113,7 +113,7 @@ Scenario('Respondent solicitor uploads draft orders', async ({I, caseViewPage, e
   ]);
 });
 
-Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
+Scenario('Judge makes changes to agreed CMO and seals @nightlyOnly', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 
@@ -136,7 +136,7 @@ Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage,
   I.dontSeeInTab(hearing2);
 });
 
-Scenario('Judge sends draft orders to the local authority', async ({I, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage}) => {
+Scenario('Judge sends draft orders to the local authority @nightlyOnly', async ({I, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage}) => {
   await setupScenario(I);
   await localAuthorityUploadsDocuments(I, caseViewPage, uploadCaseManagementOrderEventPage);
 
@@ -162,7 +162,7 @@ Scenario('Judge sends draft orders to the local authority', async ({I, caseViewP
   I.seeInTab(['Refused Order 2', 'Changes requested by judge'], 'note2');
 });
 
-Scenario('Local authority makes changes requested by the judge', async ({I, caseViewPage, uploadCaseManagementOrderEventPage}) => {
+Scenario('Local authority makes changes requested by the judge @nightlyOnly', async ({I, caseViewPage, uploadCaseManagementOrderEventPage}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
 
@@ -184,7 +184,7 @@ Scenario('Local authority makes changes requested by the judge', async ({I, case
   I.dontSee(linkLabel);
 });
 
-Scenario('Judge seals and sends draft orders for no hearing to parties', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
+Scenario('Judge seals and sends draft orders for no hearing to parties @nightlyOnly', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 
@@ -210,7 +210,7 @@ Scenario('Judge seals and sends draft orders for no hearing to parties', async (
   assertDocumentSentToParties(I);
 });
 
-Scenario('Judge seals and sends draft orders for hearing to parties', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
+Scenario('Judge seals and sends draft orders for hearing to parties @nightlyOnly', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 

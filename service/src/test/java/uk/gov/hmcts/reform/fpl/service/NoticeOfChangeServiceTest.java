@@ -26,6 +26,9 @@ import java.util.Optional;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -202,12 +205,10 @@ class NoticeOfChangeServiceTest {
 
             underTest.updateRepresentativesAccess(caseData, caseDataBefore, SolicitorRole.Representing.RESPONDENT);
 
-            verify(coreCaseDataService).triggerEvent(CASE_ID, "updateRepresentation",
-                Map.of("changeOrganisationRequestField", changeOrganisationRequest1));
-
-            verify(coreCaseDataService).triggerEvent(CASE_ID, "updateRepresentation",
-                Map.of("changeOrganisationRequestField", changeOrganisationRequest2));
-
+            verify(coreCaseDataService, times(2))
+                .performPostSubmitCallback(eq(CASE_ID), eq("updateRepresentation"), any(), eq(true));
+            verify(coreCaseDataService, times(2))
+                .performPostSubmitCallback(eq(CASE_ID), eq("internal-change-UPDATE_CASE"), any());
         }
 
         private Element<Respondent> respondent(Organisation organisation) {

@@ -1,14 +1,10 @@
 const config = require('../config.js');
 const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWithMultipleChildren.json');
 
-let caseId;
-
 Feature('Add Case Flag');
 
 async function setupScenario(I) {
-  if (!caseId) {
-    caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
-  }
+  let caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 }
 
