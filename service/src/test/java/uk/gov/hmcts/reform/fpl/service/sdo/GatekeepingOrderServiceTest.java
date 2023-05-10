@@ -15,6 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionType;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -31,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
@@ -48,7 +50,6 @@ import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +59,6 @@ import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -67,18 +67,20 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DATE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionType.APPOINT_CHILDREN_GUARDIAN_IMMEDIATE;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionType.ARRANGE_INTERPRETERS_IMMEDIATE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6A;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.UDO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
-import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testHearing;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
@@ -88,12 +90,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudgeAndLegalAdvi
 @SpringBootTest(classes = {JacksonAutoConfiguration.class, CaseConverter.class, GatekeepingOrderService.class,
     FixedTimeConfiguration.class})
 class GatekeepingOrderServiceTest {
-    private static final String NEXT_STEPS = "## Next steps\n\n"
-        + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-        + "You cannot seal and send the order until adding:\n\n";
-
-    private static final Document DOCUMENT = testDocument();
-    private static final DocumentReference REFERENCE = buildFromDocument(DOCUMENT);
 
     @Autowired
     Time time;
@@ -121,105 +117,6 @@ class GatekeepingOrderServiceTest {
 
     @Autowired
     private GatekeepingOrderService underTest;
-
-    @BeforeEach
-    void setUp() {
-        given(documentService.getDocumentFromDocmosisOrderTemplate(any(), eq(SDO))).willReturn(DOCUMENT);
-    }
-
-    @Test
-    void shouldNotBuildNextStepsLabelWhenAllRequiredInformationPresent() {
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(wrapElements(HearingBooking.builder().startDate(LocalDateTime.now()).build()))
-            .allocatedJudge(Judge.builder().judgeLastName("Judy").build())
-            .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
-                .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder().useAllocatedJudge("Yes").build())
-                .build())
-            .build();
-
-        GatekeepingOrderSealDecision expected = GatekeepingOrderSealDecision.builder()
-            .draftDocument(REFERENCE)
-            .orderStatus(null)
-            .nextSteps(null)
-            .dateOfIssue(LocalDate.now())
-            .build();
-
-        assertThat(underTest.buildSealDecision(caseData)).isEqualTo(expected);
-    }
-
-    @Test
-    void shouldBuildNextStepsLabelWhenNoHearingDetails() {
-        CaseData caseData = CaseData.builder()
-            .allocatedJudge(Judge.builder().judgeLastName("Judy").build())
-            .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
-                .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder().useAllocatedJudge("Yes").build())
-                .build())
-            .build();
-
-        GatekeepingOrderSealDecision expected = GatekeepingOrderSealDecision.builder()
-            .draftDocument(REFERENCE)
-            .orderStatus(null)
-            .nextSteps(NEXT_STEPS + "* the first hearing details")
-            .dateOfIssue(LocalDate.now())
-            .build();
-
-        assertThat(underTest.buildSealDecision(caseData)).isEqualTo(expected);
-    }
-
-    @Test
-    void shouldBuildNextStepsLabelWhenNoAllocatedJudge() {
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(wrapElements(HearingBooking.builder().startDate(LocalDateTime.now()).build()))
-            .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
-                .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder().useAllocatedJudge("No")
-                    .judgeTitle(HIS_HONOUR_JUDGE)
-                    .judgeLastName("Nelson")
-                    .build())
-                .build())
-            .build();
-
-        GatekeepingOrderSealDecision expected = GatekeepingOrderSealDecision.builder()
-            .draftDocument(REFERENCE)
-            .orderStatus(null)
-            .nextSteps(NEXT_STEPS + "* the allocated judge")
-            .dateOfIssue(LocalDate.now())
-            .build();
-
-        assertThat(underTest.buildSealDecision(caseData)).isEqualTo(expected);
-    }
-
-    @Test
-    void shouldBuildNextStepsLabelWhenNoIssuingJudge() {
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(wrapElements(HearingBooking.builder().startDate(LocalDateTime.now()).build()))
-            .allocatedJudge(Judge.builder().judgeLastName("Judy").build())
-            .build();
-
-        GatekeepingOrderSealDecision expected = GatekeepingOrderSealDecision.builder()
-            .draftDocument(REFERENCE)
-            .orderStatus(null)
-            .nextSteps(NEXT_STEPS + "* the judge issuing the order")
-            .dateOfIssue(LocalDate.now())
-            .build();
-
-        assertThat(underTest.buildSealDecision(caseData)).isEqualTo(expected);
-    }
-
-    @Test
-    void shouldBuildNextStepsLabelWhenAllFieldsMandatoryFieldsMissing() {
-        CaseData caseData = CaseData.builder().build();
-
-        GatekeepingOrderSealDecision expected = GatekeepingOrderSealDecision.builder()
-            .draftDocument(REFERENCE)
-            .orderStatus(null)
-            .nextSteps(NEXT_STEPS + "* the first hearing details\n\n"
-                + "* the allocated judge\n\n"
-                + "* the judge issuing the order")
-            .dateOfIssue(LocalDate.now())
-            .build();
-
-        assertThat(underTest.buildSealDecision(caseData)).isEqualTo(expected);
-    }
 
     @Test
     void shouldSetAllocatedJudgeLabel() {
@@ -261,6 +158,9 @@ class GatekeepingOrderServiceTest {
             .data(newHashMap(Map.of("directionsForAllParties", List.of(type))))
             .build();
 
+        final boolean isImmediateStandardDirection =
+            APPOINT_CHILDREN_GUARDIAN_IMMEDIATE.equals(type) || ARRANGE_INTERPRETERS_IMMEDIATE.equals(type);
+
         when(ordersLookupService.getDirectionConfiguration(type)).thenReturn(directionConfiguration);
 
         underTest.populateStandardDirections(caseDetails);
@@ -270,9 +170,9 @@ class GatekeepingOrderServiceTest {
             .title(directionConfiguration.getTitle())
             .description(directionConfiguration.getText())
             .assignee(directionConfiguration.getAssignee())
-            .daysBeforeHearing(1)
+            .daysBeforeHearing(isImmediateStandardDirection ? null : 2)
             .dateToBeCompletedBy(null)
-            .dueDateType(DAYS)
+            .dueDateType(isImmediateStandardDirection ? null : DAYS)
             .build();
 
         assertThat(caseDetails.getData().get("direction-" + type)).isEqualTo(expectedDirection);
@@ -285,7 +185,7 @@ class GatekeepingOrderServiceTest {
 
         final int dueDateDaysBeforeHearing = 2;
         final LocalDateTime hearingDate = LocalDateTime.of(2050, 1, 10, 12, 0, 0);
-        final LocalDateTime directionDueDate = LocalDateTime.of(2050, 1, 8, 0, 0, 0);
+        final LocalDateTime directionDueDate = LocalDateTime.of(2050, 1, 8, 12, 0, 0);
 
         final HearingBooking hearing1 = HearingBooking.builder()
             .type(CASE_MANAGEMENT)
@@ -309,6 +209,9 @@ class GatekeepingOrderServiceTest {
                 "hearingDetails", wrapElements(hearing1, hearing2))))
             .build();
 
+        final boolean isImmediateStandardDirection =
+            APPOINT_CHILDREN_GUARDIAN_IMMEDIATE.equals(type) || ARRANGE_INTERPRETERS_IMMEDIATE.equals(type);
+
         underTest.populateStandardDirections(caseDetails);
 
         final StandardDirection expectedDirection = StandardDirection.builder()
@@ -316,9 +219,9 @@ class GatekeepingOrderServiceTest {
             .title(directionConfiguration.getTitle())
             .description(directionConfiguration.getText())
             .assignee(directionConfiguration.getAssignee())
-            .daysBeforeHearing(dueDateDaysBeforeHearing)
-            .dateToBeCompletedBy(directionDueDate)
-            .dueDateType(DAYS)
+            .daysBeforeHearing(isImmediateStandardDirection ? null : dueDateDaysBeforeHearing)
+            .dateToBeCompletedBy(isImmediateStandardDirection ? null : directionDueDate)
+            .dueDateType(isImmediateStandardDirection ? null : DAYS)
             .build();
 
         assertThat(caseDetails.getData().get("direction-" + type)).isEqualTo(expectedDirection);
@@ -329,7 +232,7 @@ class GatekeepingOrderServiceTest {
     void shouldCreateDirectionFromConfAndSetDefaultDatesFromHearingWhenDefaultDaysBeforeHearingIs0(DirectionType type) {
 
         final LocalDateTime hearingDate = LocalDateTime.of(2050, 1, 10, 12, 0, 0);
-        final LocalDateTime directionDueDate = LocalDateTime.of(2050, 1, 10, 0, 0, 0);
+        final LocalDateTime directionDueDate = LocalDateTime.of(2050, 1, 10, 12, 0, 0);
 
         final HearingBooking hearing = HearingBooking.builder()
             .type(CASE_MANAGEMENT)
@@ -346,6 +249,9 @@ class GatekeepingOrderServiceTest {
                 "hearingDetails", wrapElements(hearing))))
             .build();
 
+        final boolean isImmediateStandardDirection =
+            APPOINT_CHILDREN_GUARDIAN_IMMEDIATE.equals(type) || ARRANGE_INTERPRETERS_IMMEDIATE.equals(type);
+
         underTest.populateStandardDirections(caseDetails);
 
         final StandardDirection expectedDirection = StandardDirection.builder()
@@ -353,9 +259,9 @@ class GatekeepingOrderServiceTest {
             .title(directionConfiguration.getTitle())
             .description(directionConfiguration.getText())
             .assignee(directionConfiguration.getAssignee())
-            .daysBeforeHearing(0)
-            .dateToBeCompletedBy(directionDueDate)
-            .dueDateType(DAYS)
+            .daysBeforeHearing(isImmediateStandardDirection ? null : 2)
+            .dateToBeCompletedBy(isImmediateStandardDirection ? null : directionDueDate)
+            .dueDateType(isImmediateStandardDirection ? null : DAYS)
             .build();
 
         assertThat(caseDetails.getData().get("direction-" + type)).isEqualTo(expectedDirection);
@@ -365,7 +271,7 @@ class GatekeepingOrderServiceTest {
 
     @ParameterizedTest
     @EnumSource(value = DirectionType.class)
-    void shouldGetStandardDirectionsFromDraft(DirectionType type) {
+    void shouldGetStandardDirectionsFromDraftSDO(DirectionType type) {
         final StandardDirection draftDirection = StandardDirection.builder()
             .type(type)
             .title("title")
@@ -381,6 +287,36 @@ class GatekeepingOrderServiceTest {
                 "standardDirectionOrder", StandardDirectionOrder.builder()
                     .standardDirections(wrapElements(draftDirection))
                     .build(),
+                "gatekeepingOrderRouter", SERVICE,
+                "directionsForAllParties", List.of(type))))
+            .build();
+
+        underTest.populateStandardDirections(caseDetails);
+
+        assertThat(caseDetails.getData().get("direction-" + type)).isEqualTo(draftDirection);
+
+        verifyNoInteractions(ordersLookupService, calendarService);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = DirectionType.class)
+    void shouldGetStandardDirectionsFromDraftUDO(DirectionType type) {
+        final StandardDirection draftDirection = StandardDirection.builder()
+            .type(type)
+            .title("title")
+            .description("Text")
+            .assignee(COURT)
+            .daysBeforeHearing(0)
+            .dateToBeCompletedBy(LocalDateTime.now())
+            .dueDateType(DATE)
+            .build();
+
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .data(newHashMap(Map.of(
+                "urgentDirectionsOrder", StandardDirectionOrder.builder()
+                    .standardDirections(wrapElements(draftDirection))
+                    .build(),
+                "urgentDirectionsOrderRouter", SERVICE,
                 "directionsForAllParties", List.of(type))))
             .build();
 
@@ -436,19 +372,22 @@ class GatekeepingOrderServiceTest {
 
         final DirectionConfiguration directionConfiguration = directionConfiguration(type, 0);
 
+        final boolean isImmediateStandardDirection =
+            APPOINT_CHILDREN_GUARDIAN_IMMEDIATE.equals(type) || ARRANGE_INTERPRETERS_IMMEDIATE.equals(type);
+
         final StandardDirection oldDirectionDraft = StandardDirection.builder()
             .type(type)
             .title("title")
             .description("Text")
             .assignee(COURT)
-            .daysBeforeHearing(0)
-            .dateToBeCompletedBy(LocalDateTime.now())
-            .dueDateType(DATE)
+            .daysBeforeHearing(isImmediateStandardDirection ? null : 0)
+            .dateToBeCompletedBy(isImmediateStandardDirection ? null : LocalDateTime.now())
+            .dueDateType(isImmediateStandardDirection ? null : DATE)
             .build();
 
         final StandardDirection newDirectionDraft = StandardDirection.builder()
-            .daysBeforeHearing(10)
-            .dueDateType(DAYS)
+            .daysBeforeHearing(isImmediateStandardDirection ? null : 10)
+            .dueDateType(isImmediateStandardDirection ? null : DAYS)
             .build();
 
         final StandardDirection expectedDirection = StandardDirection.builder()
@@ -456,9 +395,9 @@ class GatekeepingOrderServiceTest {
             .title(directionConfiguration.getTitle())
             .description(directionConfiguration.getText())
             .assignee(directionConfiguration.getAssignee())
-            .daysBeforeHearing(newDirectionDraft.getDaysBeforeHearing())
+            .daysBeforeHearing(isImmediateStandardDirection ? null : newDirectionDraft.getDaysBeforeHearing())
             .dateToBeCompletedBy(null)
-            .dueDateType(DAYS)
+            .dueDateType(isImmediateStandardDirection ? null : DAYS)
             .build();
 
         final CaseDetails caseDetails = CaseDetails.builder()
@@ -496,7 +435,7 @@ class GatekeepingOrderServiceTest {
     @Nested
     class SealDecisionForServiceRoute {
 
-        final GatekeepingOrderRoute serviceRoute = GatekeepingOrderRoute.SERVICE;
+        final GatekeepingOrderRoute serviceRoute = SERVICE;
         final Document generatedDocument = TestDataHelper.testDocument();
 
         final DocumentReference generatedOrder = DocumentReference.builder()
@@ -527,12 +466,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(generatedOrder)
-                .nextSteps("## Next steps\n\n"
-                    + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-                    + "You cannot seal and send the order until adding:\n\n"
-                    + "* the first hearing details\n\n"
-                    + "* the allocated judge\n\n"
-                    + "* the judge issuing the order")
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -553,11 +486,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(generatedOrder)
-                .nextSteps("## Next steps\n\n"
-                    + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-                    + "You cannot seal and send the order until adding:\n\n"
-                    + "* the first hearing details\n\n"
-                    + "* the judge issuing the order")
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -578,11 +506,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(generatedOrder)
-                .nextSteps("## Next steps\n\n"
-                    + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-                    + "You cannot seal and send the order until adding:\n\n"
-                    + "* the allocated judge\n\n"
-                    + "* the judge issuing the order")
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -605,11 +528,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(generatedOrder)
-                .nextSteps("## Next steps\n\n"
-                    + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-                    + "You cannot seal and send the order until adding:\n\n"
-                    + "* the first hearing details\n\n"
-                    + "* the allocated judge")
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -634,7 +552,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(generatedOrder)
-                .nextSteps(null)
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -673,12 +590,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(replacementSDO)
-                .nextSteps("## Next steps\n\n"
-                    + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-                    + "You cannot seal and send the order until adding:\n\n"
-                    + "* the first hearing details\n\n"
-                    + "* the allocated judge\n\n"
-                    + "* the judge issuing the order")
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -701,12 +612,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(preparedSDO)
-                .nextSteps("## Next steps\n\n"
-                    + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-                    + "You cannot seal and send the order until adding:\n\n"
-                    + "* the first hearing details\n\n"
-                    + "* the allocated judge\n\n"
-                    + "* the judge issuing the order")
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -715,7 +620,7 @@ class GatekeepingOrderServiceTest {
         }
 
         @Test
-        void shouldUsePreviouslyCurrentOrderWhenNoPreviouseOrderNorReplacement() {
+        void shouldUsePreviouslyCurrentOrderWhenNoPreviousOrderNorReplacement() {
             final CaseData caseData = CaseData.builder()
                 .gatekeepingOrderRouter(uploadRoute)
                 .replacementSDO(null)
@@ -729,12 +634,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(currentSDO)
-                .nextSteps("## Next steps\n\n"
-                    + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-                    + "You cannot seal and send the order until adding:\n\n"
-                    + "* the first hearing details\n\n"
-                    + "* the allocated judge\n\n"
-                    + "* the judge issuing the order")
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -753,12 +652,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(replacementSDO)
-                .nextSteps("## Next steps\n\n"
-                    + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-                    + "You cannot seal and send the order until adding:\n\n"
-                    + "* the first hearing details\n\n"
-                    + "* the allocated judge\n\n"
-                    + "* the judge issuing the order")
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -778,11 +671,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(replacementSDO)
-                .nextSteps("## Next steps\n\n"
-                    + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-                    + "You cannot seal and send the order until adding:\n\n"
-                    + "* the first hearing details\n\n"
-                    + "* the judge issuing the order")
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -802,11 +690,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(replacementSDO)
-                .nextSteps("## Next steps\n\n"
-                    + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-                    + "You cannot seal and send the order until adding:\n\n"
-                    + "* the allocated judge\n\n"
-                    + "* the judge issuing the order")
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -828,11 +711,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(replacementSDO)
-                .nextSteps("## Next steps\n\n"
-                    + "Your order will be saved as a draft in 'Draft orders'.\n\n"
-                    + "You cannot seal and send the order until adding:\n\n"
-                    + "* the first hearing details\n\n"
-                    + "* the allocated judge")
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -856,7 +734,6 @@ class GatekeepingOrderServiceTest {
 
             final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
                 .draftDocument(replacementSDO)
-                .nextSteps(null)
                 .dateOfIssue(time.now().toLocalDate())
                 .orderStatus(null)
                 .build();
@@ -1001,20 +878,20 @@ class GatekeepingOrderServiceTest {
             .filename(generatedDocument.originalDocumentName)
             .build();
 
-        @BeforeEach
-        void init() {
+        private void setupMocks(DocmosisTemplates docmosisTemplate) {
             final DocmosisStandardDirectionOrder docmosisOrder = DocmosisStandardDirectionOrder.builder()
                 .ccdCaseNumber("1")
                 .build();
 
             when(gatekeepingOrderGenerationService.getTemplateData(any()))
                 .thenReturn(docmosisOrder);
-            when(documentService.getDocumentFromDocmosisOrderTemplate(docmosisOrder, SDO))
+            when(documentService.getDocumentFromDocmosisOrderTemplate(docmosisOrder, docmosisTemplate))
                 .thenReturn(generatedDocument);
         }
 
         @Test
         void shouldBuildGatekeepingOrderWhenDecisionIsToKeepOrderAsDraft() {
+            setupMocks(SDO);
             final GatekeepingOrderSealDecision sealDecision = GatekeepingOrderSealDecision.builder()
                 .orderStatus(DRAFT)
                 .draftDocument(draftOrder)
@@ -1041,6 +918,7 @@ class GatekeepingOrderServiceTest {
 
         @Test
         void shouldBuildGatekeepingOrderWhenDecisionIsToSealOrder() {
+            setupMocks(SDO);
             final GatekeepingOrderSealDecision sealDecision = GatekeepingOrderSealDecision.builder()
                 .orderStatus(SEALED)
                 .draftDocument(draftOrder)
@@ -1051,6 +929,7 @@ class GatekeepingOrderServiceTest {
                 .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                     .gatekeepingOrderSealDecision(sealDecision)
                     .build())
+                .gatekeepingOrderRouter(SERVICE)
                 .build();
 
             final StandardDirectionOrder actualOrder = underTest.buildOrderFromGeneratedFile(caseData);
@@ -1064,13 +943,14 @@ class GatekeepingOrderServiceTest {
                 .build();
 
             assertThat(actualOrder).isEqualTo(expectedOrder);
-
             verifyNoInteractions(sealingService);
+            verify(documentService).getDocumentFromDocmosisOrderTemplate(any(DocmosisOrder.class), eq(SDO));
             verify(gatekeepingOrderGenerationService).getTemplateData(caseData);
         }
 
         @Test
         void shouldBuildGatekeepingOrderWhenDecisionIsToSealOrderWithTranslation() {
+            setupMocks(UDO);
             final GatekeepingOrderSealDecision sealDecision = GatekeepingOrderSealDecision.builder()
                 .orderStatus(SEALED)
                 .draftDocument(draftOrder)
@@ -1082,6 +962,7 @@ class GatekeepingOrderServiceTest {
                 .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                     .gatekeepingOrderSealDecision(sealDecision)
                     .build())
+                .urgentDirectionsRouter(SERVICE)
                 .build();
 
             final StandardDirectionOrder actualOrder = underTest.buildOrderFromGeneratedFile(caseData);
@@ -1098,6 +979,7 @@ class GatekeepingOrderServiceTest {
             assertThat(actualOrder).isEqualTo(expectedOrder);
 
             verifyNoInteractions(sealingService);
+            verify(documentService).getDocumentFromDocmosisOrderTemplate(any(DocmosisOrder.class), eq(UDO));
             verify(gatekeepingOrderGenerationService).getTemplateData(caseData);
         }
 

@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtToCourtAdminLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.DirectionsOrderType;
 import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -24,9 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
-import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO;
-import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO_AND_NOP;
-import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.URGENT_AND_NOP;
+import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO_OR_UDO_AND_NOP;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -34,7 +34,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 
 @ContextConfiguration(classes = {
     GatekeepingOrderEventHandler.class, SDOIssuedCafcassContentProvider.class, CaseUrlService.class,
-    SDOIssuedContentProvider.class, CtscEmailLookupConfiguration.class, EmailNotificationHelper.class
+    SDOIssuedContentProvider.class, CtscEmailLookupConfiguration.class, EmailNotificationHelper.class,
+    HmctsCourtToCourtAdminLookupConfiguration.class
 })
 @MockBean(TranslationRequestService.class)
 class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
@@ -68,7 +69,10 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     @Test
     void cafcassSDOAndNoPEmailTemplate() {
-        underTest.notifyCafcass(EVENT_BUILDER.notificationGroup(SDO_AND_NOP).build());
+        underTest.notifyCafcass(EVENT_BUILDER
+            .notificationGroup(SDO_OR_UDO_AND_NOP)
+            .directionsOrderType(DirectionsOrderType.SDO)
+            .build());
 
         assertThat(response())
             .hasSubject("SDO and notice of proceedings issued, " + CHILD_LAST_NAME)
@@ -90,54 +94,11 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
     }
 
     @Test
-    void cafcassUrgentHearingOrderAndNoPEmailTemplate() {
-        underTest.notifyCafcass(EVENT_BUILDER.notificationGroup(URGENT_AND_NOP).build());
-
-        assertThat(response())
-            .hasSubject("Urgent hearing order and notice of proceedings issued, " + CHILD_LAST_NAME)
-            .hasBody(emailContent()
-                .line("An urgent hearing order and notice of proceedings have been issued for:")
-                .line()
-                .callout("Stevens, FAM_NUM, hearing 12 May 2021")
-                .line()
-                .h1("Next steps")
-                .line("You should now check the order to see your directions and compliance dates.")
-                .line()
-                .line("You can review it by using this link " + GOV_NOTIFY_DOC_URL + ".")
-                .line()
-                .line("HM Courts & Tribunals Service")
-                .line()
-                .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                    + "contactfpl@justice.gov.uk")
-            );
-    }
-
-    @Test
-    void cafcassSDOEmailTemplate() {
-        underTest.notifyCafcass(EVENT_BUILDER.notificationGroup(SDO).build());
-
-        assertThat(response())
-            .hasSubject("Gatekeeping order issued, " + CHILD_LAST_NAME)
-            .hasBody(emailContent()
-                .line("The gatekeeping order has been issued for:")
-                .line()
-                .callout("Stevens, FAM_NUM, hearing 12 May 2021")
-                .line()
-                .h1("Next steps")
-                .line("You should now check the order to see your directions and compliance dates.")
-                .line()
-                .line("You can review it by using this link " + GOV_NOTIFY_DOC_URL + ".")
-                .line()
-                .line("HM Courts & Tribunals Service")
-                .line()
-                .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                    + "contactfpl@justice.gov.uk")
-            );
-    }
-
-    @Test
     void ctcsSDOAndNoPEmailTemplate() {
-        underTest.notifyCTSC(EVENT_BUILDER.notificationGroup(SDO_AND_NOP).build());
+        underTest.notifyCTSC(EVENT_BUILDER
+            .notificationGroup(SDO_OR_UDO_AND_NOP)
+            .directionsOrderType(DirectionsOrderType.SDO)
+            .build());
 
         assertThat(response())
             .hasSubject("SDO and notice of proceedings issued, " + CHILD_LAST_NAME)
@@ -151,43 +112,11 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
     }
 
     @Test
-    void ctcsUrgentHearingOrderAndNoPEmailTemplate() {
-        underTest.notifyCTSC(EVENT_BUILDER.notificationGroup(URGENT_AND_NOP).build());
-
-        assertThat(response())
-            .hasSubject("Urgent hearing order and notice of proceedings issued, " + CHILD_LAST_NAME)
-            .hasBody(emailContent()
-                .line("An urgent hearing order and notice of proceedings have been issued for:")
-                .line()
-                .callout("Stevens, FAM_NUM, hearing 12 May 2021")
-                .line()
-                .end("To view the order, sign into " + caseDetailsUrl(ID, ORDERS))
-            );
-    }
-
-    @Test
-    void ctcsSDOEmailTemplate() {
-        underTest.notifyCTSC(EVENT_BUILDER.notificationGroup(SDO).build());
-
-        assertThat(response())
-            .hasSubject("Gatekeeping order issued, " + CHILD_LAST_NAME)
-            .hasBody(emailContent()
-                .line("The gatekeeping order has been issued for:")
-                .line()
-                .callout("Stevens, FAM_NUM, hearing 12 May 2021")
-                .line()
-                .line("You can review it by signing in to: " + caseDetailsUrl(ID, ORDERS))
-                .line()
-                .line("HM Courts & Tribunals Service")
-                .line()
-                .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
-                    + "contactfpl@justice.gov.uk")
-            );
-    }
-
-    @Test
     void laSDOAndNoPEmailTemplate() {
-        underTest.notifyLocalAuthority(EVENT_BUILDER.notificationGroup(SDO_AND_NOP).build());
+        underTest.notifyLocalAuthority(EVENT_BUILDER
+            .notificationGroup(SDO_OR_UDO_AND_NOP)
+            .directionsOrderType(DirectionsOrderType.SDO)
+            .build());
 
         assertThat(response())
             .hasSubject("SDO and notice of proceedings issued, " + CHILD_LAST_NAME)
@@ -215,22 +144,23 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
     }
 
     @Test
-    void laUrgentHearingOrderAndNoPEmailTemplate() {
-        underTest.notifyLocalAuthority(EVENT_BUILDER.notificationGroup(URGENT_AND_NOP).build());
+    void cafcassUDOAndNoPEmailTemplate() {
+        underTest.notifyCafcass(EVENT_BUILDER
+            .notificationGroup(SDO_OR_UDO_AND_NOP)
+            .directionsOrderType(DirectionsOrderType.UDO)
+            .build());
 
         assertThat(response())
-            .hasSubject("Urgent hearing order and notice of proceedings issued, " + CHILD_LAST_NAME)
+            .hasSubject("UDO and notice of proceedings issued, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
-                .line("An urgent hearing order and notice of proceedings have been issued for:")
+                .line("The urgent directions order and notice of proceedings have been issued for:")
                 .line()
                 .callout("Stevens, FAM_NUM, hearing 12 May 2021")
                 .line()
-                .h1("Next steps")
-                .line("You should now:")
-                .list("serve all parties with the order", "check for directions and compliance dates")
+                .h1("Next steps ")
+                .line("You should now check the order to see your directions and compliance dates.")
                 .line()
-                .line("To view the order, sign in to:")
-                .line(caseDetailsUrl(ID, ORDERS))
+                .line("You can review it by using this link " + GOV_NOTIFY_DOC_URL + ".")
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .line()
@@ -240,30 +170,49 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
     }
 
     @Test
-    void laSDOEmailTemplate() {
-        underTest.notifyLocalAuthority(EVENT_BUILDER.notificationGroup(SDO).build());
+    void ctcsUDOAndNoPEmailTemplate() {
+        underTest.notifyCTSC(EVENT_BUILDER
+            .notificationGroup(SDO_OR_UDO_AND_NOP)
+            .directionsOrderType(DirectionsOrderType.UDO)
+            .build());
 
         assertThat(response())
-            .hasSubject("Gatekeeping order issued, " + CHILD_LAST_NAME)
+            .hasSubject("UDO and notice of proceedings issued, " + CHILD_LAST_NAME)
             .hasBody(emailContent()
-                .line("The gatekeeping order has been issued for:")
+                .line("The urgent directions order and notice of proceedings have been issued for:")
+                .line()
+                .callout("Stevens, FAM_NUM, hearing 12 May 2021")
+                .line(" ")
+                .end("To view the order, sign into " + caseDetailsUrl(ID, ORDERS))
+            );
+    }
+
+    @Test
+    void laUDOAndNoPEmailTemplate() {
+        underTest.notifyLocalAuthority(EVENT_BUILDER
+            .notificationGroup(SDO_OR_UDO_AND_NOP)
+            .directionsOrderType(DirectionsOrderType.UDO)
+            .build());
+
+        assertThat(response())
+            .hasSubject("UDO and notice of proceedings issued, " + CHILD_LAST_NAME)
+            .hasBody(emailContent()
+                .line("The urgent directions order and notice of proceedings have been issued for:")
                 .line()
                 .callout("Stevens, FAM_NUM, hearing 12 May 2021")
                 .line()
                 .h1("Next steps")
-                .line("You should now check the order to see your directions and compliance dates.")
+                .line("You should now:")
+                .list("serve all parties with the UDO", "check your directions and compliance dates")
                 .line()
-                .line("You can review it by signing in to: " + caseDetailsUrl(ID, ORDERS))
+                .line("To view the order, sign in to:")
+                .line(caseDetailsUrl(ID, ORDERS))
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .line()
                 .line("For local authority guidance navigate to this link:")
                 .line("https://www.gov.uk/government/publications/"
                     + "myhmcts-how-to-apply-for-a-family-public-law-order")
-                .line()
-                .line("For legal representation guidance navigate to this link:")
-                .line("https://www.gov.uk/government/publications/"
-                    + "myhmcts-how-to-respond-to-a-family-public-law-order-application")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                     + "contactfpl@justice.gov.uk")

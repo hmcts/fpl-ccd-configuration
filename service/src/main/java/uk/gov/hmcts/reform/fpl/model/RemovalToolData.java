@@ -31,6 +31,7 @@ public class RemovalToolData {
     List<Element<StandardDirectionOrder>> hiddenStandardDirectionOrders;
     List<Element<AdditionalApplicationsBundle>> hiddenApplicationsBundle;
     List<Element<SentDocuments>> hiddenDocumentsSentToParties;
+    List<Element<RemovedPlacement>> removedPlacements;
 
     @Temp
     Object removableOrderList;
@@ -59,11 +60,18 @@ public class RemovalToolData {
     @Temp
     ApplicationRemovalReason reasonToRemoveApplication;
 
+    @Temp
+    Object removablePlacementApplicationList;
+
+    @Temp
+    String reasonToRemovePlacementApplication;
+
     static List<String> otherTemporaryFields = List.of("orderTitleToBeRemoved", "applicationTypeToBeRemoved",
         "orderToBeRemoved", "c2ApplicationToBeRemoved", "otherApplicationToBeRemoved", "orderIssuedDateToBeRemoved",
         "orderDateToBeRemoved", "hearingToUnlink", "showRemoveCMOFieldsFlag", "showRemoveSDOWarningFlag",
         "showReasonFieldFlag", "partyNameToBeRemoved", "sentAtToBeRemoved", "letterIdToBeRemoved",
-        "sentDocumentToBeRemoved");
+        "sentDocumentToBeRemoved", "removablePlacementApplicationList", "placementApplicationToBeRemoved",
+        "reasonToRemovePlacementApplication");
 
     public static List<String> temporaryFields() {
         List<String> tempFields = getFieldsListWithAnnotation(RemovalToolData.class, Temp.class).stream()
@@ -93,4 +101,7 @@ public class RemovalToolData {
         return defaultIfNull(hiddenOrders, new ArrayList<>());
     }
 
+    public List<Element<RemovedPlacement>> getRemovedPlacements() {
+        return defaultIfNull(removedPlacements, new ArrayList<>());
+    }
 }

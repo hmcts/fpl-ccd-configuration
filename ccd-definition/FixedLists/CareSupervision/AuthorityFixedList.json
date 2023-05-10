@@ -206,7 +206,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "CMB",
-    "ListElement": "Cumbria County Council",
+    "ListElement": "Cumberland Council",
     "DisplayOrder": 75
   },
   {
@@ -383,13 +383,6 @@
     "ListElementCode": "IOW",
     "ListElement": "Isle of Wight Council",
     "DisplayOrder": 148
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AuthorityFixedList",
-    "ListElementCode": "KECH",
-    "ListElement": "Royal Borough of Kensington and Chelsea",
-    "DisplayOrder": 149
   },
   {
     "LiveFrom": "01/01/2017",
@@ -898,23 +891,30 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "KECH",
+    "ListElement": "Royal Borough of Kensington and Chelsea",
+    "DisplayOrder": 319
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "WIM",
     "ListElement": "Royal Borough of Windsor & Maidenhead",
-    "DisplayOrder": 319
+    "DisplayOrder": 320
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "RTL",
     "ListElement": "Rutland County Council",
-    "DisplayOrder": 320
+    "DisplayOrder": 321
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "SAL",
     "ListElement": "Salford City Council",
-    "DisplayOrder": 321
+    "DisplayOrder": 322
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1164,9 +1164,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "WMF",
+    "ListElement": "Westmorland and Furness Council",
+    "DisplayOrder": 430
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "WIC",
     "ListElement": "Wigan Council",
-    "DisplayOrder": 430
+    "DisplayOrder": 431
   },
   {
     "LiveFrom": "01/01/2017",

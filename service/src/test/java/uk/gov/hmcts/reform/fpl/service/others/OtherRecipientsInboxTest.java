@@ -33,6 +33,40 @@ class OtherRecipientsInboxTest {
     private final OtherRecipientsInbox underTest = new OtherRecipientsInbox();
 
     @Test
+    void testShouldReturnAllOtherRecipientsWhoAreRepresentedByEmail() {
+        Other firstOther = testOther("First other");
+        firstOther.addRepresentative(REPRESENTATIVE_ID_1);
+
+        Other secondOther = testOther("Second other");
+        secondOther.addRepresentative(REPRESENTATIVE_ID_2);
+
+        Element<Representative> representingOther1 = element(REPRESENTATIVE_ID_1, Representative.builder()
+            .servingPreferences(EMAIL)
+            .role(RepresentativeRole.REPRESENTING_OTHER_PERSON_1)
+            .email(REPRESENTING_OTHER_1_EMAIL)
+            .build());
+
+        Element<Representative> representingOther2 = element(REPRESENTATIVE_ID_2, Representative.builder()
+            .servingPreferences(EMAIL)
+            .role(RepresentativeRole.REPRESENTING_OTHER_PERSON_2)
+            .email(REPRESENTING_OTHER_2_EMAIL)
+            .build());
+
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder()
+                .firstOther(firstOther)
+            .additionalOthers(List.of(element(secondOther), element(testOther("Third other"))))
+            .build())
+            .representatives(List.of(representingOther1, representingOther2))
+            .build();
+
+        Set<Element<Representative>> allRecipients = underTest.getAllRecipients(
+            EMAIL, caseData, Function.identity()
+        );
+        assertThat(allRecipients).contains(representingOther1, representingOther2);
+    }
+
+    @Test
     void testShouldReturnAllOtherNonSelectedRecipientsWhoAreRepresentedByEmail() {
         Other firstOther = testOther("First other");
         firstOther.addRepresentative(REPRESENTATIVE_ID_1);

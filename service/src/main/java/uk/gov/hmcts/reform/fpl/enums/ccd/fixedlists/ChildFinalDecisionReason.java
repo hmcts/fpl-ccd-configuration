@@ -10,7 +10,8 @@ public enum ChildFinalDecisionReason {
     REFUSAL("Application refused"),
     WITHDRAWN("Application withdrawn"),
     NO_ORDER("No order made"),
-    OTHER("Other");
+    OTHER("Other"),
+    HOUSEKEEPING("Housekeeping");
 
     private final String label;
 }

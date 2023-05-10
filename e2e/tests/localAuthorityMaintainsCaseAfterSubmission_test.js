@@ -32,7 +32,7 @@ Scenario('local authority add an external barrister as a legal representative fo
   I.seeInTab(['LA counsel/external solicitors 1', 'Phone number'], legalRepresentatives.barrister.telephone);
 });
 
-Scenario('local authority update its details', async ({ I, caseViewPage, enterLocalAuthorityEventPage }) => {
+Scenario('local authority update its details @nightlyOnly', async ({ I, caseViewPage, enterLocalAuthorityEventPage }) => {
   await setupScenario(I);
   const solicitorEmail = 'solicitor@test.com';
 
@@ -46,7 +46,7 @@ Scenario('local authority update its details', async ({ I, caseViewPage, enterLo
   I.seeInTab(['Local authority 1', 'Colleague 1', 'Email address'], solicitorEmail);
 });
 
-Scenario('local authority provides a statements of service', async ({ I, caseViewPage, addStatementOfServiceEventPage }) => {
+Scenario('local authority provides a statements of service @nightlyOnly', async ({ I, caseViewPage, addStatementOfServiceEventPage }) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.addStatementOfService);
   await addStatementOfServiceEventPage.enterRecipientDetails(recipients[0]);
@@ -85,7 +85,7 @@ Scenario('local authority provides a statements of service', async ({ I, caseVie
   I.seeInTab(['Recipients 2', 'Recipient\'s email address'], recipients[1].email);
 });
 
-Scenario('local authority upload placement application and court admin make order', async ({I, caseViewPage, placementEventPage, manageOrdersEventPage}) => {
+Scenario('local authority upload placement application and court admin make order @nightlyOnly', async ({I, caseViewPage, placementEventPage, manageOrdersEventPage}) => {
 
   const placementFee = '£490.0';
   await setupScenario(I);

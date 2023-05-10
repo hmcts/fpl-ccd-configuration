@@ -14,25 +14,29 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class OtherRecipientsInbox {
+
+    public <R> Set<R> getAllRecipients(RepresentativeServingPreferences servingPreferences, CaseData caseData,
+                                       Function<Element<Representative>, R> mapperFunction) {
+
+        return getAllOtherRepresentativeElements(servingPreferences, caseData)
+            .map(mapperFunction)
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
 
     public <R> Set<R> getNonSelectedRecipients(RepresentativeServingPreferences servingPreferences,
                                                CaseData caseData, List<Element<Other>> othersSelected,
                                                Function<Element<Representative>, R> mapperFunction) {
 
-        Set<UUID> allOthersRepresentativeIds = caseData.getAllOthers().stream()
-            .flatMap(otherElement -> otherElement.getValue().getRepresentedBy().stream().map(Element::getValue))
-            .collect(Collectors.toSet());
 
         Set<UUID> selectedRepresentativeIds = othersSelected.stream()
             .flatMap(otherElement -> otherElement.getValue().getRepresentedBy().stream().map(Element::getValue))
             .collect(Collectors.toSet());
 
-        return caseData.getRepresentativesElementsByServedPreference(servingPreferences)
-            .stream()
-            .filter(representativeElement -> allOthersRepresentativeIds.contains(representativeElement.getId()))
+        return getAllOtherRepresentativeElements(servingPreferences, caseData)
             .filter(representativeElement -> !selectedRepresentativeIds.contains(representativeElement.getId()))
             .map(mapperFunction)
             .collect(Collectors.toCollection(LinkedHashSet::new));
@@ -46,5 +50,18 @@ public class OtherRecipientsInbox {
             .map(Other::toParty)
             .collect(Collectors.toCollection(LinkedHashSet::new));
 
+    }
+
+    private Stream<Element<Representative>> getAllOtherRepresentativeElements(
+        RepresentativeServingPreferences servingPreferences,
+        CaseData caseData
+    ) {
+        Set<UUID> allOthersRepresentativeIds = caseData.getAllOthers().stream()
+            .flatMap(otherElement -> otherElement.getValue().getRepresentedBy().stream().map(Element::getValue))
+            .collect(Collectors.toSet());
+
+        return caseData.getRepresentativesElementsByServedPreference(servingPreferences)
+            .stream()
+            .filter(representativeElement -> allOthersRepresentativeIds.contains(representativeElement.getId()));
     }
 }

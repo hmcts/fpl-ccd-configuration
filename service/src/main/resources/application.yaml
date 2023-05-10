@@ -65,7 +65,7 @@ fees-register:
       jurisdiction2: family court
       keyword: CareOrder
       service: public law
-    EDUCATION_SUPERVISION__ORDER:
+    EDUCATION_SUPERVISION_ORDER:
       channel: default
       event: miscellaneous
       jurisdiction1: family
@@ -325,3 +325,8 @@ case_document_am:
   url: ${CASE_DOCUMENT_AM_URL:http://localhost:4455}
   health:
     url: ${case_document_am.url}/health
+
+contacts:
+  passport_office:
+    address: 'Glasgow CPST, HMPO Glasgow, 96 Milton Street, Glasgow, G4 0BT'
+    email: 'Glasgowcaveats@hmpo.gov.uk'
