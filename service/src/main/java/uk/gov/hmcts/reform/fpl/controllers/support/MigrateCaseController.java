@@ -45,7 +45,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1310", this::run1310,
         "DFPL-1371", this::run1371,
         "DFPL-1380", this::run1380,
-        "DFPL-1437", this::run1437
+        "DFPL-1437", this::run1437,
+        "DFPL-1242", this::run1242
     );
 
     @PostMapping("/about-to-submit")
@@ -136,5 +137,15 @@ public class MigrateCaseController extends CallbackController {
             UUID.fromString("c696b0d4-b11b-492e-bcbb-4142d5e47258"),
             UUID.fromString("94161ba0-c229-453d-a6ce-06228aa4cf66")));
         caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(getCaseData(caseDetails)));
+    }
+
+    @SuppressWarnings("unchecked")
+    private void run1242(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1242";
+
+        var invalidOrderType = "EDUCATION_SUPERVISION__ORDER";
+        var validOrderType = "EDUCATION_SUPERVISION_ORDER";
+
+        caseDetails.getData().putAll(migrateCaseService.fixOrderTypeTypo(migrationId, caseDetails));
     }
 }

@@ -275,7 +275,7 @@ class GroundsCheckerTest {
     @Test
     void shouldReturnEmptyErrorsWhenGroundsProvidedForEducationSupervisionOrder() {
         final CaseData caseData = CaseData.builder()
-            .orders(Orders.builder().orderType(List.of(OrderType.EDUCATION_SUPERVISION__ORDER)).build())
+            .orders(Orders.builder().orderType(List.of(OrderType.EDUCATION_SUPERVISION_ORDER)).build())
             .groundsForEducationSupervisionOrder(GroundsForEducationSupervisionOrder.builder()
                 .groundDetails("ground details").build())
             .build();
@@ -291,7 +291,7 @@ class GroundsCheckerTest {
     void shouldReturnErrorWhenEducationSupervisionOrderRequestedButNoGroundsProvided() {
         final CaseData caseData = CaseData.builder()
             .orders(Orders.builder()
-                .orderType(List.of(OrderType.EDUCATION_SUPERVISION__ORDER))
+                .orderType(List.of(OrderType.EDUCATION_SUPERVISION_ORDER))
                 .build())
             .build();
 
