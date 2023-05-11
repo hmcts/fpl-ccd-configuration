@@ -46,7 +46,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1371", this::run1371,
         "DFPL-1380", this::run1380,
         "DFPL-1437", this::run1437,
-        "DFPL-log", this::runLog
+        "DFPL-log", this::runLog,
+        "DFPL-1242", this::run1242
     );
 
     @PostMapping("/about-to-submit")
@@ -141,5 +142,15 @@ public class MigrateCaseController extends CallbackController {
 
     private void runLog(CaseDetails caseDetails) {
         log.info("Migration 'log' on case {}", caseDetails.getId());
+    }
+      
+    @SuppressWarnings("unchecked")
+    private void run1242(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1242";
+
+        var invalidOrderType = "EDUCATION_SUPERVISION__ORDER";
+        var validOrderType = "EDUCATION_SUPERVISION_ORDER";
+
+        caseDetails.getData().putAll(migrateCaseService.fixOrderTypeTypo(migrationId, caseDetails));
     }
 }
