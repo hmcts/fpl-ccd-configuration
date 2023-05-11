@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.ApplicationDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService;
@@ -96,6 +97,7 @@ public class ManageDocumentsLAController extends CallbackController {
     private final DocumentListService documentListService;
     private final UserService userService;
     private final PartyListGenerator partyListGenerator;
+    private final CoreCaseDataService coreCaseDataService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
@@ -315,6 +317,12 @@ public class ManageDocumentsLAController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
+        coreCaseDataService.performPostSubmitCallbackWithoutChange(request.getCaseDetails().getId(),
+            "internal-change-manage-doc-la");
+    }
+
+    @PostMapping("/post-submit-callback/submitted")
+    public void handlePostSubmitCallbackSubmitteddEvent(@RequestBody CallbackRequest request) {
         final UserDetails userDetails = idamClient.getUserDetails(requestData.authorisation());
         final CaseData caseData = getCaseData(request);
         final CaseData caseDataBefore = getCaseDataBefore(request);

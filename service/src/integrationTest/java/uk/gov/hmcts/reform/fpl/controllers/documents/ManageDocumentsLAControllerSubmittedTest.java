@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.service.DocumentMetadataDownloadService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -65,14 +64,11 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     @MockBean
     private CafcassNotificationService cafcassNotificationService;
 
-    @MockBean
-    private DocumentMetadataDownloadService documentMetadataDownloadService;
-
     @Captor
     private ArgumentCaptor<Set<DocumentReference>> documentReferences;
 
     ManageDocumentsLAControllerSubmittedTest() {
-        super("manage-documents-la");
+        super("manage-documents-la/post-submit-callback");
     }
 
     @BeforeEach

@@ -101,23 +101,6 @@ public class FurtherEvidenceUploadedEventHandler {
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private static final String PDF = "pdf";
     private static final String LIST = "•";
-    private final DocumentMetadataDownloadService documentMetadataDownloadService;
-
-    @EventListener
-    public void testMeataData(final FurtherEvidenceUploadedEvent event) {
-        final CaseData caseData = event.getCaseData();
-        final CaseData caseDataBefore = event.getCaseDataBefore();
-        final DocumentUploaderType uploaderType = event.getUserType();
-        log.info("test testMeataData");
-        getNewCourtBundles(caseData, caseDataBefore, uploaderType).forEach((key, value) -> {
-                log.info("====== Hearing: " + key + " ======");
-                value.forEach(docRef -> {
-                    log.info("doc: " + docRef.getUrl());
-                    documentMetadataDownloadService.getDocumentMetadata(docRef.getUrl());
-                });
-            }
-        );
-    }
 
     @EventListener
     public void sendDocumentsUploadedNotification(final FurtherEvidenceUploadedEvent event) {

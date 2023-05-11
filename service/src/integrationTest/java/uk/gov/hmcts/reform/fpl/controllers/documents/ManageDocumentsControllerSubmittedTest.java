@@ -39,7 +39,7 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
     private CafcassNotificationService cafcassNotificationService;
 
     ManageDocumentsControllerSubmittedTest() {
-        super("manage-documents");
+        super("manage-documents/post-submit-callback");
     }
 
     @BeforeEach

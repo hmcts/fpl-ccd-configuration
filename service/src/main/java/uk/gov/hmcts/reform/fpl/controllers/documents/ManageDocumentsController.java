@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SupportingEvidenceValidatorService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
@@ -89,6 +90,7 @@ public class ManageDocumentsController extends CallbackController {
     private final ConfidentialDocumentsSplitter confidentialDocuments;
     private final DocumentListService documentListService;
     private final PartyListGenerator partyListGenerator;
+    private final CoreCaseDataService coreCaseDataService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
@@ -317,6 +319,12 @@ public class ManageDocumentsController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
+        coreCaseDataService.performPostSubmitCallbackWithoutChange(request.getCaseDetails().getId(),
+            "internal-change-manage-doc");
+    }
+
+    @PostMapping("/post-submit-callback/submitted")
+    public void handlePostSubmitCallbackSubmitteddEvent(@RequestBody CallbackRequest request) {
         CaseData caseData = getCaseData(request);
 
         DocumentUploaderType userType = getUploaderType(caseData.getId());
@@ -329,6 +337,7 @@ public class ManageDocumentsController extends CallbackController {
                 getCaseDataBefore(request), userType, userDetails));
         }
     }
+
 
     private DocumentUploaderType getUploaderType(Long id) {
 
