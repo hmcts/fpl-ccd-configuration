@@ -46,7 +46,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1371", this::run1371,
         "DFPL-1380", this::run1380,
         "DFPL-1437", this::run1437,
-        "DFPL-1242", this::run1242
+        "DFPL-1242", this::run1242,
+        "DFPL-1451", this::run1451
     );
 
     @PostMapping("/about-to-submit")
@@ -147,5 +148,17 @@ public class MigrateCaseController extends CallbackController {
         var validOrderType = "EDUCATION_SUPERVISION_ORDER";
 
         caseDetails.getData().putAll(migrateCaseService.fixOrderTypeTypo(migrationId, caseDetails));
+    }
+
+    private void run1451(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1451";
+        var possibleCaseIds = List.of(1669909306379829L);
+        final UUID expectedOrderId = UUID.fromString("c93a824b-75ce-4ffd-ad30-ad7f42c01ed9");
+        final UUID expectedHearingOrderBundleId = UUID.fromString("ebdf7ea7-a2e8-4296-be98-109b9070348e");
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removeDraftUploadedCMOs(getCaseData(caseDetails),
+            migrationId, expectedOrderId));
+        caseDetails.getData().putAll(migrateCaseService.removeHearingOrdersBundlesDrafts(getCaseData(caseDetails),
+            migrationId, expectedHearingOrderBundleId));
     }
 }
