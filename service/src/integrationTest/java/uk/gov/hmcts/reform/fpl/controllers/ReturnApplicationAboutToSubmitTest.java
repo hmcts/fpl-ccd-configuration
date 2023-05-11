@@ -53,7 +53,7 @@ class ReturnApplicationAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldMigrateSubmittedDocumentToReturnedDocumentBundleIfMainApplicationIsRemovedBySupeAdmin() {
+    void shouldMigrateSubmittedDocumentToReturnedDocumentBundleIfMainApplicationIsRemovedBySuperAdmin() {
         DocumentReference submittedForm = null;
 
         ReturnApplication returnApplication = ReturnApplication.builder()
