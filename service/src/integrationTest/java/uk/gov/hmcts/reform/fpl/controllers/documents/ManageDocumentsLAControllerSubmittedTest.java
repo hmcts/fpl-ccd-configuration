@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
 @ActiveProfiles("integration-test")
@@ -26,7 +27,7 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
 
     @BeforeEach
     void init() {
-        given(coreCaseDataService.performPostSubmitCallbackWithoutChange(any(), "internal-change-manage-doc-la"))
+        given(coreCaseDataService.performPostSubmitCallbackWithoutChange(any(), eq("internal-change-manage-doc-la")))
             .willReturn(CaseDetails.builder().build());
     }
 
