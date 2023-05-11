@@ -338,7 +338,6 @@ public class ManageDocumentsController extends CallbackController {
         }
     }
 
-
     private DocumentUploaderType getUploaderType(Long id) {
 
         final Set<CaseRole> caseRoles = userService.getCaseRoles(id);
