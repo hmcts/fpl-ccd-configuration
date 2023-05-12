@@ -22,7 +22,7 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     private CoreCaseDataService coreCaseDataService;
 
     ManageDocumentsLAControllerSubmittedTest() {
-        super("manage-documents");
+        super("manage-documents-la");
     }
 
     @BeforeEach
