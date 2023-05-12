@@ -647,7 +647,7 @@ public class FurtherEvidenceUploadedEventHandler {
         return documentBundle.stream().map(FurtherDocument::getName).collect(toList());
     }
 
-    private List<DocumentReference> getDocumentReferencesHavingPdfExtension(List<SupportingEvidenceBundle>
+    private List<DocumentReference> getDocumentReferencesHavingPdfExtension(List<SupportingEvidenceBundle> 
                                                                                 documentBundle) {
         List<DocumentReference> documentReferences = new ArrayList<>();
 
