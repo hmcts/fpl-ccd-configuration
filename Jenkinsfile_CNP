@@ -160,11 +160,13 @@ withPipeline(type, product, component) {
 
   onMaster() {
     env.ENV = 'aat'
-    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER,
+                  AppPipelineDsl.PactRoles.CONSUMER_DEPLOY_CHECK])
   }
   onPR() {
     env.ENV = 'preview'
-    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER,
+                  AppPipelineDsl.PactRoles.CONSUMER_DEPLOY_CHECK])
   }
   onDemo {
     env.ENV = 'demo'
@@ -210,8 +212,8 @@ withPipeline(type, product, component) {
     uploadCoreCaseDataDefinitions('preview', '0')
 
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
-    env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
-    env.URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
+    env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+    env.URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.SWANSEA_ORG_ID = "62LYJRF"
     env.MOCKED_PAYMENTS = false
     env.PARALLEL_CHUNKS = 12
@@ -302,9 +304,10 @@ withPipeline(type, product, component) {
     yarnBuilder.yarn('install-dependencies')
     yarnBuilder.yarn('lint-ui-tests')
     env.URL = "https://manage-case.aat.platform.hmcts.net"
-    env.TEST_CONF_FPL_URL = "https://fpl-case-service-staging.service.core-compute-aat.internal"
+    env.TEST_CONF_FPL_URL = "https://fpl-case-service-staging.aat.platform.hmcts.net"
   }
 
-  def branchesToSync = ['demo', 'perftest', 'ithc']
+  //def branchesToSync = ['demo', 'perftest', 'ithc'] TODO: uncomment this once testing in demo for WA completed
+  def branchesToSync = ['perftest', 'ithc']
   syncBranchesWithMaster(branchesToSync)
 }

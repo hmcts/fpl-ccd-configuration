@@ -52,6 +52,36 @@ class ReturnApplicationAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(extractedCaseData.getReturnApplication()).isEqualTo(expectedReturnApplication);
     }
 
+    @Test
+    void shouldMigrateSubmittedDocumentToReturnedDocumentBundleIfMainApplicationIsRemovedBySuperAdmin() {
+        DocumentReference submittedForm = null;
+
+        ReturnApplication returnApplication = ReturnApplication.builder()
+            .note("Some note")
+            .reason(List.of(INCOMPLETE))
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .returnApplication(returnApplication)
+            .dateSubmitted(LocalDate.of(2050, 5, 19))
+            .c110A(uk.gov.hmcts.reform.fpl.model.group.C110A.builder()
+                .submittedForm(submittedForm)
+                .build())
+            .state(State.OPEN)
+            .build();
+
+        CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        ReturnApplication expectedReturnApplication = returnApplication.toBuilder()
+            .returnedDate(getFormattedDate())
+            .submittedDate("19 May 2050")
+            .document(null)
+            .build();
+
+        assertThat(extractedCaseData.getC110A().getSubmittedForm()).isNull();
+        assertThat(extractedCaseData.getReturnApplication()).isEqualTo(expectedReturnApplication);
+    }
+
     private String getFormattedDate() {
         return formatLocalDateToString(dateNow(), "d MMMM yyyy");
     }

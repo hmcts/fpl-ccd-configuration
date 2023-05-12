@@ -2,11 +2,13 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -22,9 +24,13 @@ import uk.gov.hmcts.reform.fpl.service.legalcounsel.RepresentableLegalCounselUpd
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.springframework.util.ObjectUtils.isEmpty;
+
 @Api
+@Slf4j
 @RestController
 @RequestMapping("/callback/noc-decision")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -83,9 +89,14 @@ public class NoticeOfChangeController extends CallbackController {
             );
     }
 
-    @PostMapping("/update-respondents")
+    @PostMapping("/update-respondents/about-to-start")
     public CallbackResponse handleRespondentUpdate(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        return caseAssignmentService.applyDecisionAsSystemUser(caseDetails);
+
+        AboutToStartOrSubmitCallbackResponse aacResponse = caseAssignmentService.applyDecision(caseDetails);
+        if (!isEmpty(aacResponse.getErrors())) {
+            log.error(aacResponse.getErrors().stream().collect(Collectors.joining(", ")));
+        }
+        return aacResponse;
     }
 }

@@ -27,6 +27,8 @@ class GatekeepingOrderRouteValidatorTest {
     private static final String EVENT_ACCESS_VALIDATION_MESSAGE = "There is already a gatekeeping order for this case";
     private static final String HEARING_DETAILS_REQUIRED = "You need to add hearing details for the notice of "
         + "proceedings";
+    private static final String URGENT_DIRECTIONS_NOT_ALLOWED_MESSAGE =
+        "There is a standard direction order on this case and the urgent direction event can not be used.";
     private static final List<Element<HearingBooking>> HEARINGS = List.of(element(mock(HearingBooking.class)));
 
     private final GatekeepingOrderRouteValidator underTest = new GatekeepingOrderRouteValidator();
@@ -149,6 +151,61 @@ class GatekeepingOrderRouteValidatorTest {
             .build();
 
         assertThat(underTest.allowAccessToEvent(caseData, ADD_URGENT_DIRECTIONS.getId())).isEmpty();
+    }
+
+    @Test
+    void allowAccessToEventShouldReturnNoErrorWhenInterimCareOrderAlone() {
+        CaseData caseData = CaseData.builder()
+            .urgentDirectionsOrder(null)
+            .orders(Orders.builder().orderType(List.of(OrderType.INTERIM_CARE_ORDER)).build())
+            .build();
+
+        assertThat(underTest.allowAccessToEvent(caseData, ADD_URGENT_DIRECTIONS.getId())).isEmpty();
+    }
+
+    @Test
+    void allowAccessToEventShouldReturnNoErrorWhenSecureAccommodationOrderAlone() {
+        CaseData caseData = CaseData.builder()
+            .urgentDirectionsOrder(null)
+            .orders(Orders.builder().orderType(List.of(OrderType.SECURE_ACCOMMODATION_ORDER)).build())
+            .build();
+
+        assertThat(underTest.allowAccessToEvent(caseData, ADD_URGENT_DIRECTIONS.getId())).isEmpty();
+    }
+
+    @Test
+    void allowAccessToEventShouldReturnNoErrorWhenChildRecoveryOrderAlone() {
+        CaseData caseData = CaseData.builder()
+            .urgentDirectionsOrder(null)
+            .orders(Orders.builder().orderType(List.of(OrderType.CHILD_RECOVERY_ORDER)).build())
+            .build();
+
+        assertThat(underTest.allowAccessToEvent(caseData, ADD_URGENT_DIRECTIONS.getId())).isEmpty();
+    }
+
+    @Test
+    void allowAccessToEventShouldReturnNoErrorWhenCombinedEPOAndICO() {
+        CaseData caseData = CaseData.builder()
+            .urgentDirectionsOrder(null)
+            .orders(Orders.builder().orderType(List.of(OrderType.EMERGENCY_PROTECTION_ORDER,
+                OrderType.INTERIM_CARE_ORDER)).build())
+            .build();
+
+        assertThat(underTest.allowAccessToEvent(caseData, ADD_URGENT_DIRECTIONS.getId())).isEmpty();
+    }
+
+    @Test
+    void allowAccessToEventShouldReturnErrorWhenAddingUrgentDirectionButSDOIsSealed() {
+        StandardDirectionOrder sdo = mock(StandardDirectionOrder.class);
+        CaseData caseData = CaseData.builder()
+            .urgentDirectionsRouter(GatekeepingOrderRoute.UPLOAD)
+            .standardDirectionOrder(sdo)
+            .orders(Orders.builder().orderType(List.of(OrderType.EMERGENCY_PROTECTION_ORDER)).build())
+            .build();
+        when(sdo.isSealed()).thenReturn(true);
+
+        assertThat(underTest.allowAccessToEvent(caseData, ADD_URGENT_DIRECTIONS.getId()))
+            .isEqualTo(List.of(URGENT_DIRECTIONS_NOT_ALLOWED_MESSAGE));
     }
 
     @Test

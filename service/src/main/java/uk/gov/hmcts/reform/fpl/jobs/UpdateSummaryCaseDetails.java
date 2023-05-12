@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.service.search.SearchService.ES_DEFAULT_SIZE;
 import static uk.gov.hmcts.reform.fpl.utils.JobHelper.buildStats;
 import static uk.gov.hmcts.reform.fpl.utils.JobHelper.paginate;
@@ -109,7 +107,7 @@ public class UpdateSummaryCaseDetails implements Job {
             }
         }
 
-        log.info("Job '{}' finished. {}", jobName, buildStats(total, updated, failed));
+        log.info("Job '{}' finished. {}", jobName, buildStats(total, 0, updated, failed));
     }
 
     private boolean shouldUpdate(Map<String, Object> updatedData, CaseData oldData) {

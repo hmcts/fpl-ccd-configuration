@@ -45,6 +45,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 
 abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallbackTest {
     protected static final String CONFIDENTIAL_MARKER = "CONFIDENTIAL";
@@ -191,7 +192,7 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
     protected static RespondentStatement buildRespondentStatement(boolean confidential, boolean isUploadedByHMCTS) {
         RespondentStatement.RespondentStatementBuilder builder
             = RespondentStatement.builder().respondentName("Timothy Jones")
-            .supportingEvidenceBundle(wrapElements(buildEvidenceBundle(confidential, isUploadedByHMCTS)));
+            .supportingEvidenceBundle(wrapElementsWithUUIDs(buildEvidenceBundle(confidential, isUploadedByHMCTS)));
         return builder.build();
     }
 
@@ -199,7 +200,7 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
                                                                                     boolean isUploadedByHMCTS) {
         HearingFurtherEvidenceBundle.HearingFurtherEvidenceBundleBuilder builder
             = HearingFurtherEvidenceBundle.builder().hearingName("Hearing1")
-            .supportingEvidenceBundle(wrapElements(buildEvidenceBundle(confidential, isUploadedByHMCTS)));
+            .supportingEvidenceBundle(wrapElementsWithUUIDs(buildEvidenceBundle(confidential, isUploadedByHMCTS)));
         return builder.build();
     }
 
@@ -235,7 +236,7 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
             "representatives", buildRepresentatives(),
             "children1", buildChildren1(),
             "respondents1", buildRespondents1(),
-            "applicationDocuments", wrapElements(applicationDocument)
+            "applicationDocuments", wrapElementsWithUUIDs(applicationDocument)
         );
     }
 
@@ -254,7 +255,7 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
             "representatives", buildRepresentatives(),
             "children1", buildChildren1(),
             "respondents1", buildRespondents1(),
-            bundleName, wrapElements(supportingEvidenceBundle)
+            bundleName, wrapElementsWithUUIDs(supportingEvidenceBundle)
         );
     }
 
