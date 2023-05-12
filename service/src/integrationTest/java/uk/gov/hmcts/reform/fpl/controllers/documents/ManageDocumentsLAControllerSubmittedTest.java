@@ -32,7 +32,7 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     }
 
     @Test
-    void shouldTriggerPostSubmitCallback(){
+    void shouldTriggerPostSubmitCallback() {
         postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments("test",
             false));
     }
