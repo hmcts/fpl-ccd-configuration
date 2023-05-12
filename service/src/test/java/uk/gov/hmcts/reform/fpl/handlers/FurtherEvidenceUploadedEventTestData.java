@@ -281,8 +281,9 @@ public class FurtherEvidenceUploadedEventTestData {
         return buildNonConfidentialPdfDocumentList(uploadedBy, DEFAULT_FURTHER_EVIDENCE_TYPE);
     }
 
-    public static List<Element<SupportingEvidenceBundle>>
-    buildNonConfidentialPdfDocumentList(final String uploadedBy, FurtherEvidenceType type) {
+    public static List<Element<SupportingEvidenceBundle>> buildNonConfidentialPdfDocumentList(
+        final String uploadedBy, FurtherEvidenceType type) {
+
         return wrapElementsWithUUIDs(
             createDummyEvidenceBundle(NON_CONFIDENTIAL_1, uploadedBy, false, PDF_DOCUMENT_1, type),
             createDummyEvidenceBundle(NON_CONFIDENTIAL_2, uploadedBy, false, PDF_DOCUMENT_2, type));
