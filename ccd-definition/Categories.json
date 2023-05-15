@@ -1,0 +1,286 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "bundle",
+    "CategoryLabel": "Bundle",
+    "DisplayOrder": "1"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "caseSummary",
+    "CategoryLabel": "Case Summary",
+    "DisplayOrder": "2"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "positionStatements",
+    "CategoryLabel": "Position Statements",
+    "DisplayOrder": "3"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "threshold",
+    "CategoryLabel": "Threshold",
+    "DisplayOrder": "4"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "skeletonArguments",
+    "CategoryLabel": "Skeleton Arguments",
+    "DisplayOrder": "5"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "draftOrderForReviewPriorToHearing",
+    "CategoryLabel": "Draft order for review prior to hearing",
+    "DisplayOrder": "6"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "applications",
+    "CategoryLabel": "Applications",
+    "DisplayOrder": "7"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "originalApplications",
+    "CategoryLabel": "Original Applications",
+    "ParentCategoryID": "applications",
+    "DisplayOrder": "700"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "c1AndOtherApplications",
+    "CategoryLabel": "C1 & other applications",
+    "ParentCategoryID": "applications",
+    "DisplayOrder": "701"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "c2Applications",
+    "CategoryLabel": "C2 applications",
+    "ParentCategoryID": "applications",
+    "DisplayOrder": "702"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "orders",
+    "CategoryLabel": "Orders",
+    "DisplayOrder": "8"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "judgementsFactsAndReasons",
+    "CategoryLabel": "Judgements/facts and reasons",
+    "ParentCategoryID": "orders",
+    "DisplayOrder": "800"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "transcripts",
+    "CategoryLabel": "Transcripts",
+    "ParentCategoryID": "orders",
+    "DisplayOrder": "801"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "draftOrders",
+    "CategoryLabel": "Draft Orders",
+    "ParentCategoryID": "orders",
+    "DisplayOrder": "802"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "applicantsDocuments",
+    "CategoryLabel": "Applicant's Documents",
+    "DisplayOrder": "9"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "documentsFiledOnIssue",
+    "CategoryLabel": "Documents filed on issue",
+    "ParentCategoryID": "applicantsDocuments",
+    "DisplayOrder": "900"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "applicantWitnessStatements",
+    "CategoryLabel": "Witness Statements",
+    "ParentCategoryID": "applicantsDocuments",
+    "DisplayOrder": "901"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "carePlan",
+    "CategoryLabel": "Care Plan",
+    "ParentCategoryID": "applicantsDocuments",
+    "DisplayOrder": "902"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "parentAssessments",
+    "CategoryLabel": "Parent assessments",
+    "ParentCategoryID": "applicantsDocuments",
+    "DisplayOrder": "903"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "familyAndViabilityAssessments",
+    "CategoryLabel": "Family and viability assessments",
+    "ParentCategoryID": "applicantsDocuments",
+    "DisplayOrder": "904"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "meetingNotes",
+    "CategoryLabel": "Meeting Notes",
+    "ParentCategoryID": "applicantsDocuments",
+    "DisplayOrder": "905"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "contactNotes",
+    "CategoryLabel": "Contact Notes",
+    "ParentCategoryID": "applicantsDocuments",
+    "DisplayOrder": "906"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "parent_respondentsStatements",
+    "CategoryLabel": "Respondents' statements",
+    "DisplayOrder": "10"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "respondentsStatements",
+    "CategoryLabel": "Respondents' statements",
+    "ParentCategoryID": "parent_respondentsStatements",
+    "DisplayOrder": "1001"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "respondentWitnessStatements",
+    "CategoryLabel": "Witness statements",
+    "ParentCategoryID": "parent_respondentsStatements",
+    "DisplayOrder": "1002"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "guardiansEvidence",
+    "CategoryLabel": "Guardian's evidence",
+    "DisplayOrder": "11"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "parent_expertReports",
+    "CategoryLabel": "Expert reports",
+    "DisplayOrder": "12"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "expertReports",
+    "CategoryLabel": "Expert reports",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1201"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "drugAndAlcoholReports",
+    "CategoryLabel": "Drug and alcohol reports",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1202"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "lettersOfInstructionReferrals",
+    "CategoryLabel": "Letters of instruction/referrals",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1203"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "policeDisclosure",
+    "CategoryLabel": "Police disclosure",
+    "DisplayOrder": "13"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "medicalRecords",
+    "CategoryLabel": "Medical records",
+    "DisplayOrder": "14"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "courtCorrespondence",
+    "CategoryLabel": "Court Correspondence",
+    "DisplayOrder": "15"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "hearingNotices",
+    "CategoryLabel": "Hearing notices",
+    "DisplayOrder": "16"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "noticeOfActingNoticeOfIssue",
+    "CategoryLabel": "Notice of Acting / notice of issue",
+    "DisplayOrder": "17"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "previousProceedings",
+    "CategoryLabel": "Previous proceedings",
+    "DisplayOrder": "18"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "placementApplicationsAndResponses",
+    "CategoryLabel": "Placement applications and responses",
+    "DisplayOrder": "19"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "ploPilotDocuments",
+    "CategoryLabel": "PLO pilot documents",
+    "DisplayOrder": "20"
+  }
+]
