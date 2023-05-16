@@ -274,7 +274,7 @@ public class RoboticsDataService {
                 return "Supervision Order";
             case EMERGENCY_PROTECTION_ORDER:
                 return "Emergency Protection Order";
-            case EDUCATION_SUPERVISION__ORDER:
+            case EDUCATION_SUPERVISION_ORDER:
                 return "Education Supervision Order";
             case OTHER:
                 return "Discharge of a Care Order";

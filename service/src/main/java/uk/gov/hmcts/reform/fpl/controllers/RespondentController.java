@@ -97,7 +97,6 @@ public class RespondentController extends CallbackController {
 
     private void prepareNewRespondents(CaseDetails caseDetails, CaseData caseData, CaseData caseDataBefore) {
         confidentialDetailsService.addConfidentialDetailsToCase(caseDetails, caseData.getAllRespondents(), RESPONDENT);
-
         caseData = getCaseData(caseDetails);
 
         // can either do before or after but have to update case details manually either way as if there is no
@@ -115,6 +114,8 @@ public class RespondentController extends CallbackController {
         );
 
         caseDetails.getData().put(RESPONDENTS_KEY, newRespondents);
+
+        caseData = getCaseData(caseDetails);
         if (!OPEN.equals(caseData.getState())) {
             caseDetails.getData().putAll(respondentAfterSubmissionRepresentationService.updateRepresentation(
                 caseData, caseDataBefore, Representing.RESPONDENT, true

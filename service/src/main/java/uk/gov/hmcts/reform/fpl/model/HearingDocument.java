@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentMetaData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithDocument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,7 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOC
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
-public class HearingDocument extends DocumentMetaData {
+public class HearingDocument extends DocumentMetaData implements WithDocument {
     protected String hearing;
     protected DocumentReference document;
     protected String hasConfidentialAddress;
