@@ -27,7 +27,7 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
 
     @BeforeEach
     void init() {
-        given(coreCaseDataService.performPostSubmitCallbackWithoutChange(any(), eq("internal-change-manage-doc-la")))
+        given(coreCaseDataService.performPostSubmitCallbackWithoutChange(any(), eq("internal-change-manageDocLa")))
             .willReturn(CaseDetails.builder().build());
     }
 

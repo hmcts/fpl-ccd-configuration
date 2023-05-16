@@ -320,7 +320,7 @@ public class ManageDocumentsController extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
         coreCaseDataService.performPostSubmitCallbackWithoutChange(request.getCaseDetails().getId(),
-            "internal-change-manage-doc");
+            "internal-change-manageDoc");
     }
 
     @PostMapping("/post-submit-callback/submitted")

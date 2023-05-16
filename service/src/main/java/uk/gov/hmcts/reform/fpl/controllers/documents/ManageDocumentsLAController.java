@@ -318,7 +318,7 @@ public class ManageDocumentsLAController extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
         coreCaseDataService.performPostSubmitCallbackWithoutChange(request.getCaseDetails().getId(),
-            "internal-change-manage-doc-la");
+            "internal-change-manageDocLa");
     }
 
     @PostMapping("/post-submit-callback/submitted")
