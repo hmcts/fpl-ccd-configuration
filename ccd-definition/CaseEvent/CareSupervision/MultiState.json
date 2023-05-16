@@ -80,7 +80,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "internal-change-manage-doc",
+    "ID": "internal-change-manageDoc",
     "Name": "Post-process of manage document",
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
@@ -90,7 +90,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "internal-change-manage-doc-la",
+    "ID": "internal-change-manageDocLa",
     "Name": "Post-process of manage document LA",
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
