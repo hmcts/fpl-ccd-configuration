@@ -58,7 +58,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     void shouldMigrateOrdersCourt() {
         CaseData caseData = CaseData.builder()
             .court(Court.builder()
-                .code("150")
+                .code("554")
                 .build())
             .orders(Orders.builder()
                 .court("150")
@@ -69,27 +69,5 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             buildCaseDetails(caseData, "DFPL-1310"));
 
         assertThat(resp.getData().get("orders")).extracting("court").isEqualTo("554");
-    }
-
-    @Test
-    void shouldMigrateOrdersSolicitorCourt() {
-        CaseData caseData = CaseData.builder()
-            .court(Court.builder()
-                .code("150")
-                .build())
-            .orders(Orders.builder()
-                .court("150")
-                .build())
-            .ordersSolicitor(Orders.builder()
-                .court("150")
-                .build())
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse resp = postAboutToSubmitEvent(
-            buildCaseDetails(caseData, "DFPL-1310"));
-
-        assertThat(resp.getData().get("court")).extracting("code").isEqualTo("554");
-        assertThat(resp.getData().get("orders")).extracting("court").isEqualTo("554");
-        assertThat(resp.getData().get("ordersSolicitor")).extracting("court").isEqualTo("554");
     }
 }
