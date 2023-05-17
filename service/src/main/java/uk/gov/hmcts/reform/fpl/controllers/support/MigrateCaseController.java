@@ -13,15 +13,15 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
-import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -100,16 +100,19 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.addCourt("165")); // Carlisle
     }
 
+    @SuppressWarnings("unchecked")
     private void run1310(CaseDetails caseDetails) {
         var migrationId = "DFPL-1310";
         Court court = getCaseData(caseDetails).getCourt();
         if (!isEmpty(court) && court.getCode().equals("150")) {
-            CaseData caseData = getCaseData(caseDetails);
             caseDetails.getData().putAll(migrateCaseService.addCourt("554"));
-            Orders orders = caseData.getOrders().toBuilder()
-                .court("554")
-                .build();
-            caseDetails.getData().put("orders", orders);
+
+            Optional<Map> orders = Optional.ofNullable((Map) caseDetails.getData().get("orders"));
+            if (orders.isPresent()) {
+                Map ordersMap = new HashMap<>(orders.get());
+                ordersMap.put("court", "554");
+                caseDetails.getData().put("orders", ordersMap);
+            }
         } else {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, expected court id = 150, was = %s",
