@@ -113,6 +113,14 @@ public class MigrateCaseController extends CallbackController {
                 ordersMap.put("court", "554");
                 caseDetails.getData().put("orders", ordersMap);
             }
+
+            Optional<Map> ordersSolicitor = Optional.ofNullable((Map) caseDetails.getData().get("ordersSolicitor"));
+            if (ordersSolicitor.isPresent()) {
+                Map ordersSolicitorMap = new HashMap<>(ordersSolicitor.get());
+                ordersSolicitorMap.put("court", "554");
+                caseDetails.getData().put("ordersSolicitor", ordersSolicitorMap);
+            }
+
         } else {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, expected court id = 150, was = %s",
