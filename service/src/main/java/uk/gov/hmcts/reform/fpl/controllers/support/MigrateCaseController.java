@@ -13,7 +13,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
@@ -102,7 +104,12 @@ public class MigrateCaseController extends CallbackController {
         var migrationId = "DFPL-1310";
         Court court = getCaseData(caseDetails).getCourt();
         if (!isEmpty(court) && court.getCode().equals("150")) {
+            CaseData caseData = getCaseData(caseDetails);
             caseDetails.getData().putAll(migrateCaseService.addCourt("554"));
+            Orders orders = caseData.getOrders().toBuilder()
+                .court("554")
+                .build();
+            caseDetails.getData().put("orders", orders);
         } else {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, expected court id = 150, was = %s",
