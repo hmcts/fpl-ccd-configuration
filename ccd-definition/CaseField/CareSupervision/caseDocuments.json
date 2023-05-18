@@ -141,7 +141,8 @@
     "FieldTypeParameter": "CaseSummary",
     "Label": "Case summary",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "CategoryID": "caseSummary"
   },
   {
     "LiveFrom": "01/01/2017",
