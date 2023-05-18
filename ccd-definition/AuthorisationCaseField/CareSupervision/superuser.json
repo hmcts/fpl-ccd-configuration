@@ -1383,6 +1383,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "componentLauncher",
     "UserRole": "caseworker-publiclaw-superuser",
-    "CRUD": "CRU"
+    "CRUD": "R"
   }
 ]
