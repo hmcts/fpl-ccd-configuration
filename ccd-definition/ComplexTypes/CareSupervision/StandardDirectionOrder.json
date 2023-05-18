@@ -144,7 +144,8 @@
     "FieldType": "Document",
     "ElementLabel": "Unsealed copy",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "orderStatus=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "orderStatus=\"DO_NOT_SHOW\"",
+    "CategoryID": ""
   },
   {
     "LiveFrom": "01/01/2017",
