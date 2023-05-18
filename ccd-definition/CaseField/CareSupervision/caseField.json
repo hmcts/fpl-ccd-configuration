@@ -1014,8 +1014,7 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "GeneratedOrder",
     "SecurityClassification": "Public",
-    "Searchable": "N",
-    "CategoryID":  "orders"
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
