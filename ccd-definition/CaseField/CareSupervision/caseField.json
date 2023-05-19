@@ -974,8 +974,7 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "AdditionalApplicationsBundle",
     "SecurityClassification": "Public",
-    "Searchable": "N",
-    "CategoryID": "c2Applications"
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1083,8 +1082,7 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "DocumentsSentToParty",
     "SecurityClassification": "Public",
-    "Searchable": "N",
-    "CategoryID": "documentsSentToParties"
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",

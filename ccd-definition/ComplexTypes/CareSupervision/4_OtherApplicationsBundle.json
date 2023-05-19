@@ -16,7 +16,8 @@
     "ElementLabel": "File",
     "RegularExpression": ".doc,.docx,.pdf",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "CategoryID": "c2Applications"
   },
   {
     "LiveFrom": "01/01/2017",

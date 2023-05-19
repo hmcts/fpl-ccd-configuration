@@ -15,7 +15,8 @@
     "FieldType": "Document",
     "ElementLabel": "File",
     "RegularExpression": ".doc,.docx,.pdf",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "CategoryID": "c2Applications"
   },
   {
     "LiveFrom": "01/01/2017",
