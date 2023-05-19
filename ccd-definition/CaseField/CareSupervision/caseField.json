@@ -1082,7 +1082,8 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "DocumentsSentToParty",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "CategoryID": "documentsSentToParties"
   },
   {
     "LiveFrom": "01/01/2017",
