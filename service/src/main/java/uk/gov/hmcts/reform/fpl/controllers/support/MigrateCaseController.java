@@ -35,7 +35,8 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-1359", this::run1359,
         "DFPL-1401", this::run1401,
-        "DFPL-1451", this::run1451
+        "DFPL-1451", this::run1451,
+        "DFPL-1466", this::run1466
     );
 
     @PostMapping("/about-to-submit")
@@ -80,5 +81,14 @@ public class MigrateCaseController extends CallbackController {
             migrationId, expectedOrderId));
         caseDetails.getData().putAll(migrateCaseService.removeHearingOrdersBundlesDrafts(getCaseData(caseDetails),
             migrationId, expectedHearingOrderBundleId));
+    }
+
+    private void run1466(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1466";
+        var possibleCaseIds = List.of(1665396049325141L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(getCaseData(caseDetails),
+            migrationId, UUID.fromString("b8da3a48-441f-4210-a21c-7008d256aa32")));
     }
 }
