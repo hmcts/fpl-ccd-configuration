@@ -153,10 +153,18 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "applicantsOtherDocuments",
+    "CategoryLabel": "Applicant's other documents",
+    "ParentCategoryID": "applicantsDocuments",
+    "DisplayOrder": "905"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "meetingNotes",
     "CategoryLabel": "Meeting Notes",
     "ParentCategoryID": "applicantsDocuments",
-    "DisplayOrder": "905"
+    "DisplayOrder": "906"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -164,7 +172,7 @@
     "CategoryID": "contactNotes",
     "CategoryLabel": "Contact Notes",
     "ParentCategoryID": "applicantsDocuments",
-    "DisplayOrder": "906"
+    "DisplayOrder": "907"
   },
   {
     "LiveFrom": "01/01/2017",
