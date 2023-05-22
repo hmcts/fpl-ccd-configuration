@@ -255,4 +255,7 @@
   <suppress>
     <vulnerabilityName>CVE-2023-20863</vulnerabilityName>
   </suppress>
+  <suppress>
+    <vulnerabilityName>CVE-2021-46877</vulnerabilityName>
+  </suppress>
 </suppressions>
