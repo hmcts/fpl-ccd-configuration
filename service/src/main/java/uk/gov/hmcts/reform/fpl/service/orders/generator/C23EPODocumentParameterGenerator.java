@@ -46,7 +46,7 @@ public class C23EPODocumentParameterGenerator implements DocmosisParameterGenera
     public DocmosisParameters generate(CaseData caseData) {
         ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
 
-        String localAuthorityCode = caseData.getCaseLocalAuthority();
+        String localAuthorityCode = caseData.getCaseLaOrRelatingLa();
         String localAuthorityName = laNameLookup.getLocalAuthorityName(localAuthorityCode);
 
         List<Element<Child>> selectedChildren = childrenSmartSelector.getSelectedChildren(caseData);

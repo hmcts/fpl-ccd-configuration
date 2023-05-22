@@ -45,7 +45,7 @@ public class GatekeepingOrderEventHandler {
             event.getOrder(),
             event.getDirectionsOrderType());
 
-        String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
+        String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLaOrRelatingLa()).getEmail();
 
         notificationService
             .sendEmail(event.getNotificationGroup().getCafcassTemplate(), recipient, parameters, caseData.getId());
