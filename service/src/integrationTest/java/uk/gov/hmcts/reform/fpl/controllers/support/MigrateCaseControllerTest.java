@@ -91,21 +91,4 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                     migrationId, invalidCaseId));
         }
     }
-  
-    @Test
-    void shouldMigrateOrdersCourt() {
-        CaseData caseData = CaseData.builder()
-            .court(Court.builder()
-                .code("554")
-                .build())
-            .orders(Orders.builder()
-                .court("150")
-                .build())
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse resp = postAboutToSubmitEvent(
-            buildCaseDetails(caseData, "DFPL-1310"));
-
-        assertThat(resp.getData().get("orders")).extracting("court").isEqualTo("554");
-    }
 }
