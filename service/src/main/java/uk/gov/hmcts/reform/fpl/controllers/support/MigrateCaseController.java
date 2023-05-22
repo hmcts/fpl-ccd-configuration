@@ -144,6 +144,7 @@ public class MigrateCaseController extends CallbackController {
             UUID.fromString("94161ba0-c229-453d-a6ce-06228aa4cf66")));
         caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(getCaseData(caseDetails)));
     }
+    
     private void run1401(CaseDetails caseDetails) {
         var migrationId = "DFPL-1401";
         var possibleCaseIds = List.of(1666959378667166L);
