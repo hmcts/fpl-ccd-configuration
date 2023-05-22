@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.controllers.support;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -54,6 +56,42 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         return caseDetails;
     }
 
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl1401 {
+
+        private final String migrationId = "DFPL-1401";
+        private final long validCaseId = 1666959378667166L;
+        private final long invalidCaseId = 1643728359986136L;
+
+        @Test
+        void shouldAddRelatingLA() {
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getRelatingLA()).isEqualTo("NCC");
+        }
+
+        @Test
+        void shouldThrowExceptionIfWrongCaseId() {
+            CaseData caseData = CaseData.builder()
+                .id(invalidCaseId)
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format(
+                    "Migration {id = %s, case reference = %s}, case id not one of the expected options",
+                    migrationId, invalidCaseId));
+        }
+    }
+  
     @Test
     void shouldMigrateOrdersCourt() {
         CaseData caseData = CaseData.builder()
