@@ -1284,4 +1284,9 @@ public class CaseData extends CaseDataParent {
             .map(Orders::isEPOCombinedWithICO)
             .orElse(false);
     }
+
+    @JsonIgnore
+    public String getCaseLaOrRelatingLa() {
+        return isEmpty(caseLocalAuthority) ? relatingLA : caseLocalAuthority;
+    }
 }
