@@ -131,7 +131,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
 
     @Test
     void shouldGovNotifyCafcassWelsh() {
-        given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
+        given(CASE_DATA.getCaseLaOrRelatingLa()).willReturn(LOCAL_AUTHORITY_CODE);
         given(cafcassLookupConfiguration.getCafcassWelsh(LOCAL_AUTHORITY_CODE))
             .willReturn(Optional.of(new Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)));
         given(cmoContentProvider.buildCMOIssuedNotificationParameters(CASE_DATA, CMO, DIGITAL_SERVICE))
@@ -147,7 +147,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
 
     @Test
     void shouldNotGovNotifyCafcassWhenCafcassIsEngland() {
-        given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
+        given(CASE_DATA.getCaseLaOrRelatingLa()).willReturn(LOCAL_AUTHORITY_CODE);
         given(cafcassLookupConfiguration.getCafcassWelsh(LOCAL_AUTHORITY_CODE))
                 .willReturn(Optional.empty());
 
@@ -161,7 +161,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
 
     @Test
     void shouldSendGridNotifyToCafcassEngland() {
-        given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
+        given(CASE_DATA.getCaseLaOrRelatingLa()).willReturn(LOCAL_AUTHORITY_CODE);
         given(cafcassLookupConfiguration.getCafcassEngland(LOCAL_AUTHORITY_CODE))
             .willReturn(Optional.of(new Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)));
 
@@ -177,7 +177,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
 
     @Test
     void shouldNotSendGridNotifyToCafcassWhenCafcassIsNotEngland() {
-        given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
+        given(CASE_DATA.getCaseLaOrRelatingLa()).willReturn(LOCAL_AUTHORITY_CODE);
         given(cafcassLookupConfiguration.getCafcassEngland(LOCAL_AUTHORITY_CODE))
                 .willReturn(Optional.empty());
 
