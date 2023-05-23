@@ -385,10 +385,10 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             eq(CASE_ID), caseCaptor.capture());
 
         LetterWithPdfsRequest expectedPrintRequest1 = printRequest(CASE_ID, noticeOfHearing,
-            COVERSHEET_REPRESENTATIVE_BINARY, NOTICE_OF_HEARING_BINARY);
+            REPRESENTATIVE_POST.getValue(), COVERSHEET_REPRESENTATIVE_BINARY, NOTICE_OF_HEARING_BINARY);
 
         LetterWithPdfsRequest expectedPrintRequest2 = printRequest(CASE_ID, noticeOfHearing,
-            COVERSHEET_RESPONDENT_BINARY, NOTICE_OF_HEARING_BINARY);
+            RESPONDENT_NOT_REPRESENTED.getParty(), COVERSHEET_RESPONDENT_BINARY, NOTICE_OF_HEARING_BINARY);
 
         SentDocument expectedDocumentSentToRepresentative = documentSent(REPRESENTATIVE_POST.getValue(),
             COVERSHEET_REPRESENTATIVE, NOTICE_OF_HEARING_DOCUMENT, LETTER_1_ID, now());

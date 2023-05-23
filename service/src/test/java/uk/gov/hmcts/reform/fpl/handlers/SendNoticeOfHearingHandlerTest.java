@@ -127,6 +127,7 @@ class SendNoticeOfHearingHandlerTest {
     void shouldSendNotificationToCafcassWhenNewHearingIsAdded() {
         given(CASE_DATA.getId()).willReturn(CASE_ID);
         given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
+        given(CASE_DATA.getCaseLaOrRelatingLa()).willReturn(LOCAL_AUTHORITY_CODE);
         given(cafcassLookup.getCafcass(LOCAL_AUTHORITY_CODE)).willReturn(new Cafcass("", CAFCASS_EMAIL_ADDRESS));
         given(contentProvider.buildNewNoticeOfHearingNotification(CASE_DATA, HEARING, DIGITAL_SERVICE))
             .willReturn(EMAIL_REP_NOTIFY_DATA);
@@ -147,7 +148,7 @@ class SendNoticeOfHearingHandlerTest {
         DocumentReference documentReference = DocumentReference.builder().build();
         NoticeOfHearingCafcassData noticeOfHearingCafcassData = NoticeOfHearingCafcassData.builder().build();
         given(CASE_DATA.getId()).willReturn(CASE_ID);
-        given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
+        given(CASE_DATA.getCaseLaOrRelatingLa()).willReturn(LOCAL_AUTHORITY_CODE);
         given(contentProvider.buildNewNoticeOfHearingNotificationCafcassData(CASE_DATA, HEARING))
                 .willReturn(noticeOfHearingCafcassData);
         given(cafcassLookup.getCafcassEngland(LOCAL_AUTHORITY_CODE))
