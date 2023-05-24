@@ -29,7 +29,7 @@ public class CafcassEmailContentProvider extends SharedNotifyContentProvider {
 
         SubmitCaseCafcassTemplate template = buildNotifyTemplate(SubmitCaseCafcassTemplate.builder().build(), caseData);
 
-        template.setCafcass(cafcassLookup.getCafcass(caseData.getCaseLocalAuthority()).getName());
+        template.setCafcass(cafcassLookup.getCafcass(caseData.getCaseLaOrRelatingLa()).getName());
         template.setLocalAuthority(laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()));
         template.setDocumentLink(linkToAttachedDocument(caseData.getC110A().getSubmittedForm()));
 
