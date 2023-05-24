@@ -404,12 +404,12 @@ bootJar {
 
 test {
   maxHeapSize = "1024m"
-  useJUnitPlatform()
+  //useJUnitPlatform()
 }
 
 integration {
   maxHeapSize = "1024m"
-  useJUnitPlatform()
+  //useJUnitPlatform()
 }
 
 pitest {
