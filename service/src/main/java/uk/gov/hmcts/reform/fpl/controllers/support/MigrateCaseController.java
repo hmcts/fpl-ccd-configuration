@@ -36,7 +36,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1359", this::run1359,
         "DFPL-1401", this::run1401,
         "DFPL-1451", this::run1451,
-        "DFPL-1511", this::run1511
+        "DFPL-1484", this::run1484
     );
 
     @PostMapping("/about-to-submit")
@@ -83,13 +83,13 @@ public class MigrateCaseController extends CallbackController {
             migrationId, expectedHearingOrderBundleId));
     }
 
-    private void run1511(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1511";
-        var possibleCaseIds = List.of(1677685368445274L);
+    private void run1484(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1484";
+        var possibleCaseIds = List.of(1681381038761399L);
+        final UUID hearingId = UUID.fromString("1a41582a-57f5-4802-90b6-949f15ee5875");
+        final UUID courtBundleId = UUID.fromString("edc59f83-5e96-4fa2-809a-f34ba71a1204");
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        caseDetails.getData().putAll(migrateCaseService.removeHearingFurtherEvidenceDocuments(getCaseData(caseDetails),
-            migrationId, UUID.fromString("12671a55-219b-4a36-a9e7-84f8f9e4877c"),
-            UUID.fromString("c56032ea-4f5f-4aba-9b4f-30f459b2ffed")));
-        caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(getCaseData(caseDetails)));
+        caseDetails.getData().putAll(migrateCaseService.removeCourtBundleByHearingId(getCaseData(caseDetails),
+            migrationId, hearingId, courtBundleId));
     }
 }
