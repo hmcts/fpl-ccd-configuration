@@ -315,7 +315,6 @@ cafcass:
       childsGuardianReports: REPORTING TO COURT
       courtBundle: BUNDLE
       caseSummary: BUNDLE
-      skeletonArgument: BUNDLE
       positionStatementChild: BUNDLE
       positionStatementRespondent: BUNDLE
       other: CORRESPONDENCE
