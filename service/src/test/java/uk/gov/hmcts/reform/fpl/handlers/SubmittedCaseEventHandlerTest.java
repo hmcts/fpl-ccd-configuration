@@ -116,6 +116,7 @@ class SubmittedCaseEventHandlerTest {
 
         final SubmitCaseCafcassTemplate parameters = mock(SubmitCaseCafcassTemplate.class);
 
+        when(caseData.getCaseLaOrRelatingLa()).thenReturn(LOCAL_AUTHORITY_CODE);
         when(caseData.getCaseLocalAuthority()).thenReturn(LOCAL_AUTHORITY_CODE);
         when(caseData.getRepresentativeType()).thenReturn(RepresentativeType.LOCAL_AUTHORITY);
         when(caseData.getId()).thenReturn(CASE_ID);
@@ -141,7 +142,7 @@ class SubmittedCaseEventHandlerTest {
 
         final NewApplicationCafcassData parameters = mock(NewApplicationCafcassData.class);
 
-        when(caseData.getCaseLocalAuthority()).thenReturn(LOCAL_AUTHORITY_CODE);
+        when(caseData.getCaseLaOrRelatingLa()).thenReturn(LOCAL_AUTHORITY_CODE);
         when(cafcassEmailContentProvider.buildCafcassSubmissionSendGridData(caseData)).thenReturn(parameters);
         when(caseData.getC110A()).thenReturn(c110A);
         when(cafcassLookupConfiguration.getCafcassEngland(LOCAL_AUTHORITY_CODE))

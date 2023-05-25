@@ -750,8 +750,7 @@
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
-          "[LASHARED]",
-          "caseworker-publiclaw-solicitor"
+          "[LASHARED]"
         ],
         "CRUD": "CR"
       }

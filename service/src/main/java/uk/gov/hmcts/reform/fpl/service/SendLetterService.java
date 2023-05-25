@@ -64,7 +64,10 @@ public class SendLetterService {
                 SendLetterResponse response = sendLetterApi.sendLetter(authTokenGenerator.generate(),
                     new LetterWithPdfsRequest(List.of(coverDocumentEncoded, mainDocumentEncoded),
                         SEND_LETTER_TYPE,
-                        Map.of("caseId", caseId, "documentName", mainDocument.getFilename())));
+                        Map.of(
+                            "caseId", caseId,
+                            "documentName", mainDocument.getFilename(),
+                            "recipients", List.of(recipient.getFullName()))));
                 letterId = Optional.ofNullable(response).map(r -> r.letterId.toString()).orElse(EMPTY);
 
                 sentDocuments.add(SentDocument.builder()
