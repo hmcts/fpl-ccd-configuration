@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.service.ccd;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
@@ -43,35 +45,32 @@ public class CoreCaseDataService {
         return performPostSubmitCallback(caseId, eventName, changeFunction, false);
     }
 
+    @Retryable(value = { Exception.class }, label = "post submit callback")
     public CaseDetails performPostSubmitCallback(Long caseId,
                                                  String eventName,
                                                  Function<CaseDetails, Map<String, Object>> changeFunction,
                                                  boolean submitIfEmpty) {
-        int retries = 0;
-        while (retries < RETRIES) {
-            try {
-                StartEventResponse startEventResponse = concurrencyHelper.startEvent(caseId, eventName);
-                CaseDetails caseDetails = startEventResponse.getCaseDetails();
-                // Work around immutable maps
-                HashMap<String, Object> caseDetailsMap = new HashMap<>(caseDetails.getData());
-                caseDetails.setData(caseDetailsMap);
+        StartEventResponse startEventResponse = concurrencyHelper.startEvent(caseId, eventName);
+        CaseDetails caseDetails = startEventResponse.getCaseDetails();
+        // Work around immutable maps
+        HashMap<String, Object> caseDetailsMap = new HashMap<>(caseDetails.getData());
+        caseDetails.setData(caseDetailsMap);
 
-                Map<String, Object> updates = changeFunction.apply(caseDetails);
+        Map<String, Object> updates = changeFunction.apply(caseDetails);
 
-                if (!updates.isEmpty() || submitIfEmpty) {
-                    log.info("Submitting event {} on case {}", eventName, caseId);
-                    concurrencyHelper.submitEvent(startEventResponse, caseId, updates);
-                } else {
-                    log.info("No updates, skipping submit event");
-                }
-                caseDetails.getData().putAll(updates);
-                return caseDetails;
-            } catch (Exception e) {
-                log.error("Failed to create event on ccd", e);
-                retries++;
-            }
+        if (!updates.isEmpty() || submitIfEmpty) {
+            log.info("Submitting event {} on case {}", eventName, caseId);
+            concurrencyHelper.submitEvent(startEventResponse, caseId, updates);
+        } else {
+            log.info("No updates, skipping submit event");
         }
-        log.error("All 3 retries failed");
+        caseDetails.getData().putAll(updates);
+        return caseDetails;
+    }
+
+    @Recover
+    public CaseDetails recoverPostSubmitCallback(Exception e) {
+        log.error("All retries failed", e);
         return null;
     }
 
