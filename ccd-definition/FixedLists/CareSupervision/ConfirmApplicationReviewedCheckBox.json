@@ -1,0 +1,9 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ConfirmApplicationReviewedCheckBox",
+    "ListElementCode": "ADDITIONAL_APPLICATION_REVIEWED",
+    "ListElement": "The application has been reviewed",
+    "DisplayOrder": 1
+  }
+]
