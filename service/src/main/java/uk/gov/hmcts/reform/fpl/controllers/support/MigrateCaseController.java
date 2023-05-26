@@ -36,7 +36,9 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1359", this::run1359,
         "DFPL-1401", this::run1401,
         "DFPL-1451", this::run1451,
-        "DFPL-1466", this::run1466
+        "DFPL-1466", this::run1466,
+        "DFPL-1501", this::run1501,
+        "DFPL-1511", this::run1511
     );
 
     @PostMapping("/about-to-submit")
@@ -90,5 +92,24 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(getCaseData(caseDetails),
             migrationId, UUID.fromString("b8da3a48-441f-4210-a21c-7008d256aa32")));
+    }
+
+    private void run1501(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1501";
+        var possibleCaseIds = List.of(1659711594032934L);
+
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removeFurtherEvidenceSolicitorDocuments(
+            getCaseData(caseDetails), migrationId, UUID.fromString("43a9287c-f840-4104-958f-cbd98d28aea3")));
+    }
+
+    private void run1511(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1511";
+        var possibleCaseIds = List.of(1677685368445274L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removeHearingFurtherEvidenceDocuments(getCaseData(caseDetails),
+            migrationId, UUID.fromString("12671a55-219b-4a36-a9e7-84f8f9e4877c"),
+            UUID.fromString("c56032ea-4f5f-4aba-9b4f-30f459b2ffed")));
+        caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(getCaseData(caseDetails)));
     }
 }

@@ -136,11 +136,17 @@ class SendLetterServiceTest {
         assertThat(letterWithPdfsRequestValues.get(0).getDocuments())
             .isEqualTo(List.of(COVER_DOCUMENTS_ENCODED.get(0), MAIN_DOCUMENT_ENCODED));
         assertThat(letterWithPdfsRequestValues.get(0).getAdditionalData())
-            .isEqualTo(Map.of("caseId", CASE_ID, "documentName", MAIN_DOCUMENT_REFERENCE.getFilename()));
+            .isEqualTo(Map.of(
+                "caseId", CASE_ID,
+                "documentName", MAIN_DOCUMENT_REFERENCE.getFilename(),
+                "recipients", List.of(RECIPIENTS.get(0).getFullName())));
         assertThat(letterWithPdfsRequestValues.get(1).getDocuments())
             .isEqualTo(List.of(COVER_DOCUMENTS_ENCODED.get(1), MAIN_DOCUMENT_ENCODED));
         assertThat(letterWithPdfsRequestValues.get(1).getAdditionalData())
-            .isEqualTo(Map.of("caseId", CASE_ID, "documentName", MAIN_DOCUMENT_REFERENCE.getFilename()));
+            .isEqualTo(Map.of(
+                "caseId", CASE_ID,
+                "documentName", MAIN_DOCUMENT_REFERENCE.getFilename(),
+                "recipients", List.of(RECIPIENTS.get(1).getFullName())));
     }
 
     @Test
