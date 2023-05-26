@@ -11,7 +11,9 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.Cardinality;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
@@ -79,6 +81,15 @@ public class PlacementController extends CallbackController {
         final CaseData caseData = getCaseData(caseDetails);
 
         final PlacementEventData eventData = placementService.preparePlacement(caseData);
+
+        Placement currentPlacement = eventData.getPlacement();
+
+        if (currentPlacement.isSubmitted().equals(YesNo.YES)) {
+            caseProperties.put("placementHasExistingApplication", YesNo.YES);
+            caseProperties.put("placementHasExistingApplicationMessage",
+                String.format("%s has an existing placement application submitted on %s.", currentPlacement.getChildName(),
+                    currentPlacement.getUploadedDateTime()));
+        }
 
         putFields(caseProperties, eventData, PLACEMENT_GROUP);
 

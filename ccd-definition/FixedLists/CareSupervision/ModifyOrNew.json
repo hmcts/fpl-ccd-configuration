@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ModifyOrNew",
+    "ListElementCode": "MODIFY",
+    "ListElement": "Modify the existing placement application",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ModifyOrNew",
+    "ListElementCode": "ISSUE_NEW",
+    "ListElement": "Issue a new placement application",
+    "DisplayOrder": 2
+  }
+]
