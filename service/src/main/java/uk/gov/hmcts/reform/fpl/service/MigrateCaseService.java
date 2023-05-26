@@ -631,10 +631,10 @@ public class MigrateCaseService {
         }
     }
 
-    public Map<String, Object> removeCourtBundleByHearingId(CaseData caseData,
-                                                            String migrationId,
-                                                            UUID expectedHearingId,
-                                                            UUID expectedBundleId) {
+    public Map<String, Object> removeCourtBundleByBundleId(CaseData caseData,
+                                                           String migrationId,
+                                                           UUID expectedHearingId,
+                                                           UUID expectedBundleId) {
         Long caseId = caseData.getId();
 
         Element<HearingCourtBundle> elementToBeUpdated = caseData.getHearingDocuments().getCourtBundleListV2()

@@ -89,7 +89,7 @@ public class MigrateCaseController extends CallbackController {
         final UUID hearingId = UUID.fromString("1a41582a-57f5-4802-90b6-949f15ee5875");
         final UUID courtBundleId = UUID.fromString("edc59f83-5e96-4fa2-809a-f34ba71a1204");
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        caseDetails.getData().putAll(migrateCaseService.removeCourtBundleByHearingId(getCaseData(caseDetails),
+        caseDetails.getData().putAll(migrateCaseService.removeCourtBundleByBundleId(getCaseData(caseDetails),
             migrationId, hearingId, courtBundleId));
     }
 }
