@@ -34,7 +34,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION__ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.service.robotics.SampleRoboticsTestDataHelper.expectedRoboticsData;
 import static uk.gov.hmcts.reform.fpl.service.robotics.SampleRoboticsTestDataHelper.invalidRoboticsDataWithZeroOwningCourt;
@@ -167,7 +167,7 @@ class RoboticsNotificationServiceTest {
         CaseData caseData = prepareCaseData();
 
         given(roboticsDataService.prepareRoboticsData(caseData))
-            .willReturn(expectedRoboticsData(EDUCATION_SUPERVISION__ORDER.getLabel()));
+            .willReturn(expectedRoboticsData(EDUCATION_SUPERVISION_ORDER.getLabel()));
 
         verify(emailService, never()).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
     }

@@ -23,7 +23,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CHILD_ASSESSMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CHILD_RECOVERY_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CONTACT_WITH_CHILD_IN_CARE;
-import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION__ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.OTHER;
@@ -96,7 +96,7 @@ public class Orders {
     }
 
     public boolean isEducationSupervisionOrder() {
-        return isNotEmpty(orderType) && orderType.contains(EDUCATION_SUPERVISION__ORDER);
+        return isNotEmpty(orderType) && orderType.contains(EDUCATION_SUPERVISION_ORDER);
     }
 
     public boolean containsInterimCareOrder() {

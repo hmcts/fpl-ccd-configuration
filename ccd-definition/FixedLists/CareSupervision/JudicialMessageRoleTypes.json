@@ -10,7 +10,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessageRoleTypes",
     "ListElementCode": "JUDICIARY",
-    "ListElement": "Judiciary",
+    "ListElement": "Allocated Judge",
     "DisplayOrder": 2
   },
   {
@@ -24,7 +24,14 @@
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessageRoleTypes",
     "ListElementCode": "OTHER",
-    "ListElement": "Other",
+    "ListElement": "Legal Adviser",
     "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageRoleTypes",
+    "ListElementCode": "HEARING_JUDGE",
+    "ListElement": "Hearing Judge",
+    "DisplayOrder": 5
   }
 ]

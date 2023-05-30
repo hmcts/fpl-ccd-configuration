@@ -70,7 +70,7 @@ public class FurtherEvidenceNotificationService {
         return emails;
     }
 
-    public Set<String> getCafcassEmails(CaseData caseData) {
+    public Set<String> getCafcassRepresentativeEmails(CaseData caseData) {
         return representativesInbox.getRepresentativeEmailsFilteredByRole(caseData,
             DIGITAL_SERVICE, List.of(CAFCASS));
     }
