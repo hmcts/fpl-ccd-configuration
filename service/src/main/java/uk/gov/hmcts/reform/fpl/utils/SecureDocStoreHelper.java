@@ -213,7 +213,7 @@ public class SecureDocStoreHelper implements DisposableBean {
     public void destroy() throws Exception {
         log.info("[SECURE DOC STORE TEST] Shutdown scheduler");
         retryScheduler.shutdownNow();
-        if(!retryScheduler.isShutdown()) {
+        if (!retryScheduler.isShutdown()) {
             log.error("[SECURE DOC STORE TEST] Fail to shutdown scheduler");
         }
     }
