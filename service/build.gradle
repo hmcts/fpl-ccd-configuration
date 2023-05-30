@@ -75,6 +75,26 @@ sourceSets {
     }
 }
 
+ idea {
+   module {
+     testSourceDirs += file('src/integrationTest/java')
+     testSourceDirs += file('src/functionalTest/java')
+   }
+ }
+
+ configurations {
+   functionalTestImplementation.extendsFrom testImplementation
+   functionalTestRuntime.extendsFrom testRuntime
+   integrationTestImplementation.extendsFrom testImplementation
+   integrationTestRuntime.extendsFrom testRuntime
+   cftlibTestImplementation.extendsFrom testImplementation
+   cftlibTestRuntime.extendsFrom testRuntime
+ }
+
+ configurations.integrationTestImplementation {
+   exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-hystrix'
+ }
+
 tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
@@ -119,6 +139,17 @@ project.ext {
     pacticipantVersion = getCheckedOutGitCommitHash()
 }
 
+ tasks.named("processContractTestResources") {
+   duplicatesStrategy = DuplicatesStrategy.INCLUDE
+ }
+
+ tasks.named("processFunctionalTestResources") {
+   duplicatesStrategy = DuplicatesStrategy.INCLUDE
+ }
+
+ tasks.named("processIntegrationTestResources") {
+   duplicatesStrategy = DuplicatesStrategy.INCLUDE
+ }
 
 task runContractTests(type: Test, description: 'Runs contract tests.', group: 'Verification') {
     onlyIf {
@@ -196,7 +227,7 @@ task crossbrowser(description: 'Runs crossbrowser tests.') {
 }
 
 task fortifyScan(type: JavaExec)  {
-  main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+  mainClass = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
   classpath += sourceSets.test.runtimeClasspath
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }
@@ -217,8 +248,8 @@ checkstyle {
 jacocoTestReport {
   executionData(test, integration)
   reports {
-    xml.enabled = true
-    csv.enabled = false
+    xml.required = true
+    csv.required = false
     xml.destination = file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
   }
 }
@@ -372,13 +403,16 @@ dependencies {
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
 
-  integrationTestImplementation configurations.testRuntimeOnly {
-    exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-hystrix'
-  }
 
-  functionalTestImplementation configurations.runtimeOnly
 
-  smokeTestImplementation configurations.runtimeOnly
+  integrationTestImplementation sourceSets.main.runtimeClasspath
+  integrationTestImplementation sourceSets.test.runtimeClasspath
+
+  functionalTestImplementation sourceSets.main.runtimeClasspath
+  functionalTestImplementation sourceSets.test.runtimeClasspath
+
+  smokeTestImplementation sourceSets.main.runtimeClasspath
+  smokeTestImplementation sourceSets.test.runtimeClasspath
 
   contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
   contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
