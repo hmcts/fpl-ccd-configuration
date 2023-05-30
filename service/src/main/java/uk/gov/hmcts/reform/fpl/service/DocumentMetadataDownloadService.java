@@ -24,9 +24,8 @@ public class DocumentMetadataDownloadService {
     private final DocumentMetadataDownloadClientApi documentMetadataDownloadClient;
     private final IdamClient idamClient;
     private final RequestData requestData;
-    private final FeatureToggleService featureToggleService;
-    private final SecureDocStoreService secureDocStoreService;
     private final SystemUserService systemUserService;
+    private final SecureDocStoreHelper secureDocStoreHelper;
 
     public DocumentReference getDocumentMetadata(final String documentUrlString) {
         boolean useSystemUser = false;
@@ -50,7 +49,7 @@ public class DocumentMetadataDownloadService {
 
         DocumentReference ret = null;
         try {
-            ret = new SecureDocStoreHelper(secureDocStoreService, featureToggleService)
+            ret = secureDocStoreHelper
                 .getDocumentMetadata(documentUrlString, () -> {
                     uk.gov.hmcts.reform.document.domain.Document document =
                         documentMetadataDownloadClient.getDocumentMetadata(

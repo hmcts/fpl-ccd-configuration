@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
 import uk.gov.hmcts.reform.document.domain.UploadResponse;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader;
+import uk.gov.hmcts.reform.fpl.utils.SecureDocStoreHelper;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -42,6 +43,9 @@ class UploadDocumentServiceTest {
     @InjectMocks
     private SecureDocStoreService secureDocStoreService;
 
+    @InjectMocks
+    private SecureDocStoreHelper secureDocStoreHelper;
+
     private UploadDocumentService uploadDocumentService;
 
     @BeforeEach
@@ -51,7 +55,7 @@ class UploadDocumentServiceTest {
         given(requestData.userId()).willReturn(USER_ID);
 
         uploadDocumentService = new UploadDocumentService(
-            authTokenGenerator, documentUploadClient, requestData, secureDocStoreService, featureToggleService
+            authTokenGenerator, documentUploadClient, requestData, secureDocStoreHelper
         );
     }
 

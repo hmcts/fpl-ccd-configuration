@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.utils;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -9,21 +11,28 @@ import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SecureDocStoreService;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Slf4j
-public class SecureDocStoreHelper {
+@Service
+public class SecureDocStoreHelper implements DisposableBean {
 
     private FeatureToggleService featureToggleService;
     private SecureDocStoreService secureDocStoreService;
+    public final ScheduledExecutorService retryScheduler;
 
     public SecureDocStoreHelper(SecureDocStoreService secureDocStoreService,
                                 FeatureToggleService featureToggleService) {
         this.featureToggleService = featureToggleService;
         this.secureDocStoreService = secureDocStoreService;
+        retryScheduler = Executors.newScheduledThreadPool(1);
     }
 
     public byte[] download(final String documentUrlString) {
@@ -48,6 +57,8 @@ public class SecureDocStoreHelper {
         } catch (Exception t) {
             if (!featureToggleService.isSecureDocstoreEnabled()) {
                 log.error("↑ ↑ ↑ ↑ ↑ ↑ ↑ EXCEPTION CAUGHT (SECURE DOC STORE: DISABLED) ↑ ↑ ↑ ↑ ↑ ↑ ↑", t);
+                retrySecureDocStoreTest(documentUrlString,
+                    () -> secureDocStoreService.downloadDocument(documentUrlString));
             } else if (oldDmStoreApproach == null) {
                 throw t;
             }
@@ -107,6 +118,8 @@ public class SecureDocStoreHelper {
             if (!featureToggleService.isSecureDocstoreEnabled()) {
                 log.error("↑ ↑ ↑ ↑ ↑ ↑ ↑ EXCEPTION CAUGHT WHEN DOWNLOADING METADATA (SECURE DOC STORE: DISABLED)"
                     + " ↑ ↑ ↑ ↑ ↑ ↑ ↑", t);
+                retrySecureDocStoreTest(documentUrlString,
+                    () -> secureDocStoreService.getDocumentMetadata(documentUrlString));
             } else if (oldDmStoreApproach == null) {
                 throw t;
             }
@@ -176,5 +189,32 @@ public class SecureDocStoreHelper {
             .createdBy(document.createdBy)
             .links(links)
             .build();
+    }
+
+    private void retrySecureDocStoreTest(final String documentUrlString, Callable<?> retrySecureDocStoreApi) {
+        // assign ID to each retry for traceability
+        String retryTestId = UUID.randomUUID().toString();
+        log.info("[SECURE DOC STORE TEST] {} Will retry API with 30s delay, document meta data: {}",
+            retryTestId, documentUrlString);
+
+        retryScheduler.schedule(() -> {
+            try {
+                retrySecureDocStoreApi.call();
+                log.info("[SECURE DOC STORE TEST] {} Success, document meta data: {}",
+                    retryTestId, documentUrlString);
+            } catch (Exception e) {
+                log.info("[SECURE DOC STORE TEST] {} Failed, document meta data: {}",
+                    retryTestId, documentUrlString);
+            }
+        }, 30, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        log.info("[SECURE DOC STORE TEST] Shutdown scheduler");
+        retryScheduler.shutdownNow();
+        if(!retryScheduler.isShutdown()) {
+            log.error("[SECURE DOC STORE TEST] Fail to shutdown scheduler");
+        }
     }
 }

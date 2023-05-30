@@ -31,12 +31,11 @@ public class DocumentDownloadService {
     private final IdamClient idamClient;
     private final RequestData requestData;
 
-    private final SecureDocStoreService secureDocStoreService;
-    private final FeatureToggleService featureToggleService;
     private final SystemUserService systemUserService;
+    private final SecureDocStoreHelper secureDocStoreHelper;
 
     public byte[] downloadDocument(final String documentUrlString) {
-        return new SecureDocStoreHelper(secureDocStoreService, featureToggleService).download(documentUrlString, () -> {
+        return secureDocStoreHelper.download(documentUrlString, () -> {
             String userRoles = "caseworker-publiclaw-systemupdate";
             boolean useSystemUser = false;
             try {

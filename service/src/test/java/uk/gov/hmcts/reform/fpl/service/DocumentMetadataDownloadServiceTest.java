@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.utils.SecureDocStoreHelper;
 import uk.gov.hmcts.reform.fpl.utils.extension.TestLogger;
 import uk.gov.hmcts.reform.fpl.utils.extension.TestLogs;
 import uk.gov.hmcts.reform.fpl.utils.extension.TestLogsExtension;
@@ -58,6 +60,8 @@ class DocumentMetadataDownloadServiceTest {
     private FeatureToggleService featureToggleService;
     @Mock
     private SystemUserService systemUserService;
+    @InjectMocks
+    private SecureDocStoreHelper secureDocStoreHelper;
 
     private DocumentMetadataDownloadService documentMetadataDownloadService;
 
@@ -80,9 +84,8 @@ class DocumentMetadataDownloadServiceTest {
                 documentMetadataDownloadClient,
                 idamClient,
                 requestData,
-                featureToggleService,
-                secureDocStoreService,
-                systemUserService);
+                systemUserService,
+                secureDocStoreHelper);
     }
 
     @Test

@@ -21,20 +21,17 @@ public class UploadDocumentService {
     private final DocumentUploadClientApi documentUploadClient;
     private final RequestData requestData;
 
-    private final SecureDocStoreService secureDocStoreService;
-    private final FeatureToggleService featureToggleService;
+    private final SecureDocStoreHelper secureDocStoreHelper;
 
 
     public UploadDocumentService(AuthTokenGenerator authTokenGenerator,
                                  DocumentUploadClientApi documentUploadClient,
                                  RequestData requestData,
-                                 SecureDocStoreService secureDocStoreService,
-                                 FeatureToggleService featureToggleService) {
+                                 SecureDocStoreHelper secureDocStoreHelper) {
         this.authTokenGenerator = authTokenGenerator;
         this.documentUploadClient = documentUploadClient;
         this.requestData = requestData;
-        this.secureDocStoreService = secureDocStoreService;
-        this.featureToggleService = featureToggleService;
+        this.secureDocStoreHelper = secureDocStoreHelper;
     }
 
     // REFACTOR: 08/04/2021 Remove this method in subsequent PR
@@ -43,7 +40,7 @@ public class UploadDocumentService {
     }
 
     public Document uploadDocument(byte[] byteArray, String fileName, String contentType) {
-        return new SecureDocStoreHelper(secureDocStoreService, featureToggleService)
+        return secureDocStoreHelper
             .uploadDocument(byteArray, fileName, contentType, () -> {
                 MultipartFile file = new InMemoryMultipartFile("files", fileName, contentType, byteArray);
 

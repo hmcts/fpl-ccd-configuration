@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.exceptions.EmptyFileException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.utils.SecureDocStoreHelper;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
@@ -63,6 +65,9 @@ class DocumentDownloadServiceTest {
     @Mock
     private ByteArrayResource byteArrayResource;
 
+    @InjectMocks
+    private SecureDocStoreHelper secureDocStoreHelper;
+
     private DocumentDownloadService documentDownloadService;
 
     private final Document document = document();
@@ -87,9 +92,8 @@ class DocumentDownloadServiceTest {
             documentDownloadClient,
             idamClient,
             requestData,
-            secureDocStoreService,
-            featureToggleService,
-            systemUserService);
+            systemUserService,
+            secureDocStoreHelper);
     }
 
     @Test
