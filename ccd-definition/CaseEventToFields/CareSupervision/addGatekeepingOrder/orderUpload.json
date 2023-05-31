@@ -11,6 +11,6 @@
     "PageColumnNumber": 1,
     "PageShowCondition": "gatekeepingOrderRouter=\"UPLOAD\" AND useUploadRoute=\"\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/prepare-decision/mid-event",
-    "ShowSummaryChangeOption": "N"
+    "ShowSummaryChangeOption": "Y"
   }
 ]
