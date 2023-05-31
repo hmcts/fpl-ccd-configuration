@@ -75,28 +75,32 @@ sourceSets {
     }
 }
 
- idea {
-   module {
-     testSourceDirs += file('src/integrationTest/java')
-     testSourceDirs += file('src/functionalTest/java')
-   }
+idea {
+ module {
+   testSourceDirs += file('src/integrationTest/java')
+   testSourceDirs += file('src/functionalTest/java')
  }
+}
 
- configurations {
-   functionalTestImplementation.extendsFrom testImplementation
-   functionalTestRuntime.extendsFrom testRuntime
-   integrationTestImplementation.extendsFrom testImplementation
-   integrationTestRuntime.extendsFrom testRuntime
-   cftlibTestImplementation.extendsFrom testImplementation
-   cftlibTestRuntime.extendsFrom testRuntime
- }
+configurations {
+ functionalTestImplementation.extendsFrom testImplementation
+ functionalTestRuntime.extendsFrom testRuntime
+ integrationTestImplementation.extendsFrom testImplementation
+ integrationTestRuntime.extendsFrom testRuntime
+ cftlibTestImplementation.extendsFrom testImplementation
+ cftlibTestRuntime.extendsFrom testRuntime
+}
 
- configurations.integrationTestImplementation {
-   exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-hystrix'
- }
+configurations.integrationTestImplementation {
+ exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-hystrix'
+}
 
 tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
+}
+
+tasks.withType(Copy) {
+  duplicatesStrategy(DuplicatesStrategy.INCLUDE)
 }
 
 task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
@@ -138,18 +142,6 @@ project.ext {
     pacticipant = 'fpl_ccdConfiguration'
     pacticipantVersion = getCheckedOutGitCommitHash()
 }
-
- tasks.named("processContractTestResources") {
-   duplicatesStrategy = DuplicatesStrategy.INCLUDE
- }
-
- tasks.named("processFunctionalTestResources") {
-   duplicatesStrategy = DuplicatesStrategy.INCLUDE
- }
-
- tasks.named("processIntegrationTestResources") {
-   duplicatesStrategy = DuplicatesStrategy.INCLUDE
- }
 
 task runContractTests(type: Test, description: 'Runs contract tests.', group: 'Verification') {
     onlyIf {
