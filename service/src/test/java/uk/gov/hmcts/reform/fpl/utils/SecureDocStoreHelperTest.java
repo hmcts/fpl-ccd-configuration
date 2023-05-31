@@ -16,9 +16,17 @@ import uk.gov.hmcts.reform.fpl.utils.extension.TestLogger;
 import uk.gov.hmcts.reform.fpl.utils.extension.TestLogs;
 import uk.gov.hmcts.reform.fpl.utils.extension.TestLogsExtension;
 
+import java.util.UUID;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith({SpringExtension.class, TestLogsExtension.class})
@@ -279,6 +287,46 @@ class SecureDocStoreHelperTest {
                     .isInstanceOf(RuntimeException.class)
                     .hasMessage("TEST RUNTIME EXCEPTION");
             }
+        }
+    }
+
+    @Nested
+    class RetrySecDocStore {
+        @Test
+        void shouldFireRetryWith30sDelay() {
+            when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(false);
+            when(secureDocStoreService.downloadDocument(DOCUMENT_URL_STRING)).thenThrow(
+                new RuntimeException("TEST RUNTIME EXCEPTION"));
+
+            ScheduledExecutorService retryScheduler = mock(ScheduledExecutorService.class);
+            SecureDocStoreHelper underTest = new SecureDocStoreHelper(secureDocStoreService, featureToggleService,
+                retryScheduler);
+
+            underTest.download(DOCUMENT_URL_STRING, () -> null);
+
+            assertThat(logs.getInfos().stream()
+                    .filter(logMsg -> logMsg.contains("Will retry API with 30s delay")).count())
+                .isEqualTo(1);
+            verify(retryScheduler).schedule(any(Runnable.class), eq(30L), eq(TimeUnit.SECONDS));
+        }
+
+        @Test
+        void shouldShutDownScheduler() throws Exception {
+            when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(false);
+            when(secureDocStoreService.downloadDocument(DOCUMENT_URL_STRING)).thenThrow(
+                new RuntimeException("TEST RUNTIME EXCEPTION"));
+
+            SecureDocStoreHelper underTest = new SecureDocStoreHelper(secureDocStoreService, featureToggleService);
+
+            underTest.download(DOCUMENT_URL_STRING, () -> null);
+            underTest.download(DOCUMENT_URL_STRING, () -> null);
+            underTest.download(DOCUMENT_URL_STRING, () -> null);
+            underTest.download(DOCUMENT_URL_STRING, () -> null);
+
+            underTest.destroy();
+
+            assertThat(logs.getInfos()).contains("[SECURE DOC STORE TEST] Shutdown scheduler");
+            assertThat(logs.getInfos()).doesNotContain("[SECURE DOC STORE TEST] Fail to shutdown scheduler");
         }
     }
 }
