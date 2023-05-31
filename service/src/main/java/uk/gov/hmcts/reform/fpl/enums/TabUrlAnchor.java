@@ -17,6 +17,7 @@ public enum TabUrlAnchor {
     HISTORY("History"),
     HEARINGS("Hearings"),
     DRAFT_ORDERS("Draft%20orders"),
+    HEARING_DOCUMENTS("Hearing%20documents"),
     ORDERS("Orders"),
     PEOPLE("People%20in%20the%20case"),
     LEGAL_BASIS("Legal%20basis"),

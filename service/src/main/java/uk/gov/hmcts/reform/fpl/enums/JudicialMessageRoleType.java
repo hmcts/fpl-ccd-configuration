@@ -4,5 +4,6 @@ public enum JudicialMessageRoleType {
     CTSC,
     JUDICIARY,
     LOCAL_COURT_ADMIN,
-    OTHER
+    OTHER,
+    HEARING_JUDGE
 }
