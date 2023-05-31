@@ -1979,5 +1979,12 @@
     "CaseFieldID": "contactWithChildInCareOrderType",
     "UserRole": "[EPSMANAGING]",
     "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "caseSummaryList",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "CRU"
   }
 ]

@@ -13,6 +13,8 @@ public class CaseSummary extends HearingDocument {
 
     @Builder(toBuilder = true)
     public CaseSummary(DocumentReference document,
+                       DocumentReference documentLA,
+                       DocumentReference documentCTSC,
                        LocalDateTime dateTimeUploaded,
                        String uploadedBy,
                        String hearing,
@@ -21,6 +23,8 @@ public class CaseSummary extends HearingDocument {
         super.uploadedBy = uploadedBy;
         super.hearing = hearing;
         super.document = document;
+        super.documentLA = documentLA;
+        super.documentCTSC = documentCTSC;
         super.hasConfidentialAddress = hasConfidentialAddress;
     }
 }
