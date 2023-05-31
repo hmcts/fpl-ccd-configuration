@@ -205,16 +205,16 @@ public class SecureDocStoreHelper implements DisposableBean {
     private void retrySecureDocStoreTest(final String documentUrlString, Callable<?> retrySecureDocStoreApi) {
         // assign ID to each retry for traceability
         String retryTestId = UUID.randomUUID().toString();
-        log.info("[SECURE DOC STORE TEST] {} Will retry API with 30s delay, document meta data: {}",
+        log.info("[SECURE DOC STORE TEST] {} Will retry API with 30s delay, documentUrlString: {}",
             retryTestId, documentUrlString);
 
         retryScheduler.schedule(() -> {
             try {
                 retrySecureDocStoreApi.call();
-                log.info("[SECURE DOC STORE TEST] {} Success, document meta data: {}",
+                log.info("[SECURE DOC STORE TEST] {} Success, documentUrlString: {}",
                     retryTestId, documentUrlString);
             } catch (Exception e) {
-                log.info("[SECURE DOC STORE TEST] {} Failed, document meta data: {}",
+                log.error("[SECURE DOC STORE TEST] {} Failed, documentUrlString: {}",
                     retryTestId, documentUrlString);
             }
         }, 30, TimeUnit.SECONDS);

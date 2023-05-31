@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -22,9 +24,9 @@ import java.util.concurrent.TimeUnit;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -291,22 +293,58 @@ class SecureDocStoreHelperTest {
 
     @Nested
     class RetrySecDocStore {
+        @Captor
+        ArgumentCaptor<Runnable> retryCommand;
+
         @Test
-        void shouldFireRetryWith30sDelay() {
+        void shouldLogFailMsgIfRetryFail() {
+            ScheduledExecutorService retryScheduler = mock(ScheduledExecutorService.class);
+
             when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(false);
             when(secureDocStoreService.downloadDocument(DOCUMENT_URL_STRING)).thenThrow(
                 new RuntimeException("TEST RUNTIME EXCEPTION"));
 
-            ScheduledExecutorService retryScheduler = mock(ScheduledExecutorService.class);
             SecureDocStoreHelper underTest = new SecureDocStoreHelper(secureDocStoreService, featureToggleService,
                 retryScheduler);
 
             underTest.download(DOCUMENT_URL_STRING, () -> null);
 
             assertThat(logs.getInfos().stream()
-                    .filter(logMsg -> logMsg.contains("Will retry API with 30s delay")).count())
+                .filter(logMsg -> logMsg.contains("Will retry API with 30s delay")).count())
                 .isEqualTo(1);
-            verify(retryScheduler).schedule(any(Runnable.class), eq(30L), eq(TimeUnit.SECONDS));
+            verify(retryScheduler).schedule(retryCommand.capture(), eq(30L), eq(TimeUnit.SECONDS));
+
+            retryCommand.getValue().run();
+            verify(secureDocStoreService, times(2)).downloadDocument(DOCUMENT_URL_STRING);
+            assertThat(logs.getErrors().stream()
+                .filter(logMsg -> logMsg.contains("Failed, documentUrlString:")).count())
+                .isEqualTo(1);
+        }
+
+        @Test
+        void shouldLogSuccessMsgIfRetryFail() {
+            ScheduledExecutorService retryScheduler = mock(ScheduledExecutorService.class);
+
+            when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(false);
+            when(secureDocStoreService.downloadDocument(DOCUMENT_URL_STRING))
+                .thenThrow(new RuntimeException("TEST RUNTIME EXCEPTION"))
+                .thenReturn(new byte[]{0, 1});
+
+            SecureDocStoreHelper underTest = new SecureDocStoreHelper(secureDocStoreService, featureToggleService,
+                retryScheduler);
+
+            underTest.download(DOCUMENT_URL_STRING, () -> null);
+
+            assertThat(logs.getInfos().stream()
+                .filter(logMsg -> logMsg.contains("Will retry API with 30s delay")).count())
+                .isEqualTo(1);
+            verify(retryScheduler).schedule(retryCommand.capture(), eq(30L), eq(TimeUnit.SECONDS));
+
+            retryCommand.getValue().run();
+            verify(secureDocStoreService, times(2)).downloadDocument(DOCUMENT_URL_STRING);
+            assertThat(logs.getInfos().stream()
+                .filter(logMsg -> logMsg.contains("Success, documentUrlString:")).count())
+                .isEqualTo(1);
         }
 
         @Test
@@ -325,7 +363,25 @@ class SecureDocStoreHelperTest {
             underTest.destroy();
 
             assertThat(logs.getInfos()).contains("[SECURE DOC STORE TEST] Shutdown scheduler");
-            assertThat(logs.getInfos()).doesNotContain("[SECURE DOC STORE TEST] Fail to shutdown scheduler");
+            assertThat(logs.getErrors()).doesNotContain("[SECURE DOC STORE TEST] Fail to shutdown scheduler");
+        }
+
+        @Test
+        void shouldLogErrLogIfFailToShutDownScheduler() throws Exception {
+            ScheduledExecutorService retryScheduler = mock(ScheduledExecutorService.class);
+
+            when(retryScheduler.isShutdown()).thenReturn(false);
+            when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(false);
+            when(secureDocStoreService.downloadDocument(DOCUMENT_URL_STRING)).thenThrow(
+                new RuntimeException("TEST RUNTIME EXCEPTION"));
+
+            SecureDocStoreHelper underTest = new SecureDocStoreHelper(secureDocStoreService, featureToggleService,
+                retryScheduler);
+
+            underTest.destroy();
+
+            assertThat(logs.getInfos()).contains("[SECURE DOC STORE TEST] Shutdown scheduler");
+            assertThat(logs.getErrors()).contains("[SECURE DOC STORE TEST] Fail to shutdown scheduler");
         }
     }
 }
