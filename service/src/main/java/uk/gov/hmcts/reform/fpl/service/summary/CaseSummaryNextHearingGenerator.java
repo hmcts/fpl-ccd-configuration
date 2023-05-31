@@ -38,6 +38,7 @@ public class CaseSummaryNextHearingGenerator implements CaseSummaryFieldsGenerat
                 .caseSummaryHasNextHearing("Yes")
                 .caseSummaryNextHearingType(nextHearing.getType().getLabel())
                 .caseSummaryNextHearingDate(nextHearing.getStartDate().toLocalDate())
+                .caseSummaryNextHearingDateTime(nextHearing.getStartDate())
                 .caseSummaryNextHearingJudge(generateSummaryNextHearingJudge(nextHearing,
                     caseData.getAllocatedJudge(),
                     HearingBooking::getHearingJudgeLabel))
