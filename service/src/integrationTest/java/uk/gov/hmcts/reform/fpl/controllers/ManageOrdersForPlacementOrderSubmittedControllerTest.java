@@ -188,7 +188,7 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
         //Order
         checkPlacementOrderWasDeliveredAsExpected();
         //Order notification
-        checkOrderNotificationLetterWasMailedToParents();
+        checkOrderNotificationLetterWasMailedToParents(father.getValue(), mother.getValue());
         checkCaseDataHasReferenceToSentLetters(firstLetterId, secondLetterId, father, mother);
 
         verify(cafcassNotificationService).sendEmail(any(),
@@ -307,15 +307,15 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
         checkEmailWasDelivered(PRIVATE_SOLICITOR_USER_EMAIL, ORDER_NOTIFICATION_BINARY);
     }
 
-    private void checkOrderNotificationLetterWasMailedToParents() {
+    private void checkOrderNotificationLetterWasMailedToParents(Respondent father, Respondent mother) {
         checkUntil(() -> verify(sendLetterApi, times(2)).sendLetter(
             eq(SERVICE_AUTH_TOKEN),
             letterCaptor.capture()
         ));
         assertThat(letterCaptor.getAllValues()).usingRecursiveComparison().isEqualTo(List.of(
-            printRequest(TEST_CASE_ID, ORDER_NOTIFICATION_DOCUMENT_REFERENCE,
+            printRequest(TEST_CASE_ID, ORDER_NOTIFICATION_DOCUMENT_REFERENCE, father.getParty(),
                 FATHER_COVERSHEET_BINARY, ORDER_NOTIFICATION_BINARY),
-            printRequest(TEST_CASE_ID, ORDER_NOTIFICATION_DOCUMENT_REFERENCE,
+            printRequest(TEST_CASE_ID, ORDER_NOTIFICATION_DOCUMENT_REFERENCE, mother.getParty(),
                 MOTHER_COVERSHEET_BINARY, ORDER_NOTIFICATION_BINARY)
         ));
     }
