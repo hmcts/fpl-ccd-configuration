@@ -74,6 +74,7 @@ class CaseSummaryNextHearingGeneratorTest {
         assertThat(actual).isEqualTo(SyntheticCaseSummary.builder()
             .caseSummaryHasNextHearing("Yes")
             .caseSummaryNextHearingDate(NOW.toLocalDate())
+            .caseSummaryNextHearingDateTime(NOW)
             .caseSummaryNextHearingType("Case management")
             .build());
     }
@@ -99,6 +100,7 @@ class CaseSummaryNextHearingGeneratorTest {
         assertThat(actual).isEqualTo(SyntheticCaseSummary.builder()
             .caseSummaryHasNextHearing("Yes")
             .caseSummaryNextHearingDate(NOW.toLocalDate())
+            .caseSummaryNextHearingDateTime(NOW)
             .caseSummaryNextHearingType("Case management")
             .build());
     }
@@ -118,6 +120,7 @@ class CaseSummaryNextHearingGeneratorTest {
         assertThat(actual).isEqualTo(SyntheticCaseSummary.builder()
             .caseSummaryHasNextHearing("Yes")
             .caseSummaryNextHearingDate(NOW.toLocalDate())
+            .caseSummaryNextHearingDateTime(NOW)
             .caseSummaryNextHearingType("Case management")
             .build());
     }
@@ -138,6 +141,7 @@ class CaseSummaryNextHearingGeneratorTest {
         assertThat(actual).isEqualTo(SyntheticCaseSummary.builder()
             .caseSummaryHasNextHearing("Yes")
             .caseSummaryNextHearingDate(NOW.toLocalDate())
+            .caseSummaryNextHearingDateTime(NOW)
             .caseSummaryNextHearingType("Case management")
             .build());
     }
@@ -163,6 +167,7 @@ class CaseSummaryNextHearingGeneratorTest {
         assertThat(actual).isEqualTo(SyntheticCaseSummary.builder()
             .caseSummaryHasNextHearing("Yes")
             .caseSummaryNextHearingDate(NOW.toLocalDate())
+            .caseSummaryNextHearingDateTime(NOW)
             .caseSummaryNextHearingType("Case management")
             .build());
     }
@@ -188,6 +193,7 @@ class CaseSummaryNextHearingGeneratorTest {
         assertThat(actual).isEqualTo(SyntheticCaseSummary.builder()
             .caseSummaryHasNextHearing("Yes")
             .caseSummaryNextHearingDate(NOW.toLocalDate())
+            .caseSummaryNextHearingDateTime(NOW)
             .caseSummaryNextHearingType("Case management")
             .caseSummaryNextHearingJudge(HEARING_JUDGE_LABEL)
             .caseSummaryNextHearingEmailAddress(HEARING_JUDGE_EMAIL_ADDRESS)
@@ -215,6 +221,7 @@ class CaseSummaryNextHearingGeneratorTest {
         assertThat(actual).isEqualTo(SyntheticCaseSummary.builder()
             .caseSummaryHasNextHearing("Yes")
             .caseSummaryNextHearingDate(NOW.toLocalDate())
+            .caseSummaryNextHearingDateTime(NOW)
             .caseSummaryNextHearingType("Case management")
             .caseSummaryNextHearingCMO(DOCUMENT_REFERENCE)
             .build());
@@ -245,6 +252,7 @@ class CaseSummaryNextHearingGeneratorTest {
         assertThat(actual).isEqualTo(SyntheticCaseSummary.builder()
             .caseSummaryHasNextHearing("Yes")
             .caseSummaryNextHearingDate(NOW.toLocalDate())
+            .caseSummaryNextHearingDateTime(NOW)
             .caseSummaryNextHearingType("Case management")
             .build());
     }
