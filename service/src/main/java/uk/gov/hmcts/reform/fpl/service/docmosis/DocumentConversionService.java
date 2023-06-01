@@ -31,7 +31,7 @@ public class DocumentConversionService {
     private final DocmosisConfiguration configuration;
     private final DocumentDownloadService downloadService;
     private final UploadDocumentService uploadService;
-    private static final String PDF = "pdf";
+    public static final String PDF = "pdf";
 
     public DocumentReference convertToPdf(DocumentReference document) {
         String filename = document.getFilename();
@@ -43,6 +43,16 @@ public class DocumentConversionService {
         byte[] updatedContent = convertToPdf(documentContent, filename);
         Document uploadedPDF = uploadService.uploadPDF(updatedContent, updateExtension(filename, PDF));
         return DocumentReference.buildFromDocument(uploadedPDF);
+    }
+
+    public byte[] convertToPdfBytes(DocumentReference document) {
+        String filename = document.getFilename();
+
+        byte[] documentContent = downloadService.downloadDocument(document.getBinaryUrl());
+        if (hasExtension(filename, PDF)) {
+            return documentContent;
+        }
+        return convertToPdf(documentContent, filename);
     }
 
     public byte[] convertToPdf(byte[] documentContents, String filename) {
