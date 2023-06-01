@@ -45,6 +45,14 @@ public class DocumentConversionService {
         return DocumentReference.buildFromDocument(uploadedPDF);
     }
 
+    public byte[] convertToPdf(byte[] documentContents, String filename) {
+        if (!hasExtension(filename, PDF)) {
+            return convertDocument(documentContents, filename, updateExtension(filename, PDF));
+        }
+
+        return documentContents;
+    }
+
     public byte[] convertToPdfBytes(DocumentReference document) {
         String filename = document.getFilename();
 
@@ -53,14 +61,6 @@ public class DocumentConversionService {
             return documentContent;
         }
         return convertToPdf(documentContent, filename);
-    }
-
-    public byte[] convertToPdf(byte[] documentContents, String filename) {
-        if (!hasExtension(filename, PDF)) {
-            return convertDocument(documentContents, filename, updateExtension(filename, PDF));
-        }
-
-        return documentContents;
     }
 
     private byte[] convertDocument(byte[] binaries, String oldName, String newName) {
