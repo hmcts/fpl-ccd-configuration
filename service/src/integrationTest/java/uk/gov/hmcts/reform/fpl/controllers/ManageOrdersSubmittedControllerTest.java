@@ -242,11 +242,11 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         verify(concurrencyHelper, times(2)).submitEvent(any(), eq(CASE_ID), caseDataDelta.capture());
 
         LetterWithPdfsRequest expectedPrintRequest1 = printRequest(
-            CASE_ID, ORDER, COVERSHEET_REPRESENTATIVE_BINARY, ORDER_BINARY
+            CASE_ID, ORDER, REPRESENTATIVE_POST.getValue(), COVERSHEET_REPRESENTATIVE_BINARY, ORDER_BINARY
         );
 
         LetterWithPdfsRequest expectedPrintRequest2 = printRequest(
-            CASE_ID, ORDER, COVERSHEET_RESPONDENT_BINARY, ORDER_BINARY
+            CASE_ID, ORDER, RESPONDENT_NOT_REPRESENTED.getParty(), COVERSHEET_RESPONDENT_BINARY, ORDER_BINARY
         );
 
         assertThat(printRequest.getAllValues()).usingRecursiveComparison()
@@ -481,11 +481,11 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         }, 2);
 
         LetterWithPdfsRequest expectedPrintRequest1 = printRequest(
-            CASE_ID, ORDER, COVERSHEET_REPRESENTATIVE_BINARY, ORDER_BINARY
+            CASE_ID, ORDER, REPRESENTATIVE_POST.getValue(), COVERSHEET_REPRESENTATIVE_BINARY, ORDER_BINARY
         );
 
         LetterWithPdfsRequest expectedPrintRequest2 = printRequest(
-            CASE_ID, ORDER, COVERSHEET_RESPONDENT_BINARY, ORDER_BINARY
+            CASE_ID, ORDER, RESPONDENT_NOT_REPRESENTED.getParty(), COVERSHEET_RESPONDENT_BINARY, ORDER_BINARY
         );
 
         assertThat(printRequest.getAllValues()).usingRecursiveComparison()

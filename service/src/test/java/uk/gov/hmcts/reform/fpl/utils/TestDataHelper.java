@@ -316,11 +316,15 @@ public class TestDataHelper {
             .build();
     }
 
-    public static LetterWithPdfsRequest printRequest(Long caseId, DocumentReference order, byte[]... binaries) {
+    public static LetterWithPdfsRequest printRequest(Long caseId, DocumentReference order, Recipient recipient,
+                                                     byte[]... binaries) {
         List<String> documents = Stream.of(binaries)
             .map(Base64.getEncoder()::encodeToString)
             .collect(toList());
-        Map<String, Object> parameters = Map.of("caseId", caseId, "documentName", order.getFilename());
+        Map<String, Object> parameters = Map.of(
+            "caseId", caseId,
+            "documentName", order.getFilename(),
+            "recipients", List.of(recipient.getFullName()));
         return new LetterWithPdfsRequest(documents, "FPLA001", parameters);
     }
 

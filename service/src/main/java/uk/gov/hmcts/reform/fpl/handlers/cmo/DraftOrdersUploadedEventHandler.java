@@ -35,6 +35,8 @@ import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
@@ -53,11 +55,6 @@ public class DraftOrdersUploadedEventHandler {
     public void sendNotificationToJudge(final DraftOrdersUploaded event) {
         final CaseData caseData = event.getCaseData();
         final HearingBooking hearing = getHearingBooking(caseData);
-        final List<HearingOrder> orders = getOrders(caseData);
-
-        if (isEmpty(orders)) {
-            return;
-        }
 
         AbstractJudge judge = getJudge(caseData, hearing);
 
@@ -65,13 +62,25 @@ public class DraftOrdersUploadedEventHandler {
             return;
         }
 
-        final DraftOrdersUploadedTemplate content = draftOrdersContentProvider.buildContent(
-            caseData, hearing, judge, orders
-        );
+        Stream.of(DRAFT_CMO, AGREED_CMO).forEach(hearingOrderType -> {
+            List<HearingOrder> orders;
+            if (DRAFT_CMO.equals(hearingOrderType)) {
+                orders = getHearingOrdersBundlesDraftReview(caseData);
+            } else {
+                orders = getHearingOrdersBundlesDrafts(caseData);
+            }
 
-        notificationService.sendEmail(
-            DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE, judge.getJudgeEmailAddress(), content, caseData.getId()
-        );
+            if (!isEmpty(orders)) {
+                final DraftOrdersUploadedTemplate content = draftOrdersContentProvider.buildContent(
+                    caseData, hearing, judge, orders, hearingOrderType
+                );
+
+                notificationService.sendEmail(
+                    DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE, judge.getJudgeEmailAddress(), content, caseData.getId()
+                );
+            }
+        });
+
     }
 
     @Async
@@ -122,8 +131,24 @@ public class DraftOrdersUploadedEventHandler {
     }
 
     private List<HearingOrder> getOrders(CaseData caseData) {
-        return Stream.concat(nullSafeList(caseData.getHearingOrdersBundlesDrafts()).stream(),
-                nullSafeList(caseData.getHearingOrdersBundlesDraftReview()).stream())
+        return getDraftOrdersByHearingId(caseData,
+            Stream.concat(nullSafeList(caseData.getHearingOrdersBundlesDrafts()).stream(),
+                nullSafeList(caseData.getHearingOrdersBundlesDraftReview()).stream()));
+    }
+
+    private List<HearingOrder> getHearingOrdersBundlesDrafts(CaseData caseData) {
+        return getDraftOrdersByHearingId(caseData,
+            nullSafeList(caseData.getHearingOrdersBundlesDrafts()).stream());
+    }
+
+    private List<HearingOrder> getHearingOrdersBundlesDraftReview(CaseData caseData) {
+        return getDraftOrdersByHearingId(caseData,
+            nullSafeList(caseData.getHearingOrdersBundlesDraftReview()).stream());
+    }
+
+    private List<HearingOrder> getDraftOrdersByHearingId(CaseData caseData,
+                                         Stream<Element<HearingOrdersBundle>> draftOrdersBundles) {
+        return draftOrdersBundles
             .map(Element::getValue)
             .filter(b -> Objects.equals(b.getHearingId(), caseData.getLastHearingOrderDraftsHearingId()))
             .findFirst()
