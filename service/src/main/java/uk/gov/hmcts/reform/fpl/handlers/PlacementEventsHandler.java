@@ -119,7 +119,7 @@ public class PlacementEventsHandler {
             docsToSend.forEach(el -> el.setType(PLACEMENT_APPLICATION.getLabel()));
 
             cafcassNotificationService.sendEmail(caseData,
-                of(event.getPlacement().getApplication()),
+                docsToSend,
                 PLACEMENT_APPLICATION,
                 placementApplicationCafcassData);
         }
