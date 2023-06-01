@@ -44,7 +44,6 @@ sourceSets {
       runtimeClasspath += main.output + test.output
       srcDir file('src/functionalTest/java')
     }
-    resources.srcDir file('src/functionalTest/resources')
   }
 
   integrationTest {
@@ -53,7 +52,6 @@ sourceSets {
       runtimeClasspath += main.output + test.output
       srcDir file('src/integrationTest/java')
     }
-    resources.srcDir file('src/integrationTest/resources')
   }
 
     smokeTest {
@@ -62,7 +60,6 @@ sourceSets {
             runtimeClasspath += main.output
             srcDir file('src/smokeTest/java')
         }
-        resources.srcDir file('src/smokeTest/resources')
     }
 
     contractTest {
@@ -71,7 +68,6 @@ sourceSets {
             runtimeClasspath += main.output
             srcDir file('src/contractTest/java')
         }
-        resources.srcDir file('src/contractTest/resources')
     }
 }
 
@@ -99,10 +95,6 @@ tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
 
-tasks.withType(Copy) {
-  duplicatesStrategy(DuplicatesStrategy.INCLUDE)
-}
-
 task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
@@ -112,16 +104,8 @@ task integration(type: Test, description: 'Runs the integration tests.', group: 
 }
 check.dependsOn integration
 
-task installDependencies(type: Exec, description: 'Installs Yarn dependencies.') {
-  commandLine '/usr/bin/yarn', '--mutex', 'network', '--frozen-lockfile', '--silent', 'install'
-}
-
-task checkDependenciesIntegrity(type: Exec, description: 'Checks integrity of Yarn dependencies.') {
-  commandLine '/usr/bin/yarn', '--mutex', 'network', '--frozen-lockfile', '--silent', 'check', '--integrity'
-}
-
 task lintUserInterfaceTests(type: Exec, description: 'Runs linting of E2E tests.') {
-  commandLine '/usr/bin/yarn', '--silent', 'lint'
+  commandLine '/usr/bin/yarn', 'lint'
 }
 
 task runSmokeTests(type: Exec, description: 'Runs smoke tests.') {
@@ -196,15 +180,15 @@ task smoke(type: Test, description: 'Runs smoke test.', group: 'Verification') {
 }
 
 task runCodeceptSmokeTest(type: Test, description: 'Runs the old codecept smoke test.', group: 'Verification') {
-  dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runSmokeTests))
+  dependsOn(inStrictOrder(runSmokeTests))
 }
 
 task functional(description: 'Runs the functional tests.') {
-  dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runApiTests))
+  dependsOn(inStrictOrder(runApiTests))
 }
 
 task contract(description: 'Runs the contract tests.') {
-    dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, runContractTests))
+    dependsOn(inStrictOrder(runContractTests))
 }
 
 task runCrossBrowserTests(type: Exec, description: 'Runs ExpertUI cross brower tests.') {
@@ -215,7 +199,7 @@ task runCrossBrowserTests(type: Exec, description: 'Runs ExpertUI cross brower t
 }
 
 task crossbrowser(description: 'Runs crossbrowser tests.') {
-  dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runCrossBrowserTests))
+  dependsOn(inStrictOrder(lintUserInterfaceTests, runCrossBrowserTests))
 }
 
 task fortifyScan(type: JavaExec)  {
