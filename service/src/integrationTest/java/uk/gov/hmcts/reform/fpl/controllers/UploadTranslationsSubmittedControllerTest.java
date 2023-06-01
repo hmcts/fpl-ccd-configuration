@@ -243,10 +243,14 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
         assertThat(printRequest.getAllValues()).usingRecursiveComparison()
             .isEqualTo(List.of(
-                printRequest(CASE_ID, ORIGINAL_ORDER, COVERSHEET_REPRESENTATIVE_BINARY_ENGLISH, ORDER_BINARY),
-                printRequest(CASE_ID, ORIGINAL_ORDER, COVERSHEET_RESPONDENT_BINARY_ENGLISH, ORDER_BINARY),
-                printRequest(CASE_ID, TRANSLATED_ORDER, COVERSHEET_REPRESENTATIVE_BINARY, ORDER_BINARY),
-                printRequest(CASE_ID, TRANSLATED_ORDER, COVERSHEET_RESPONDENT_BINARY, ORDER_BINARY)
+                printRequest(CASE_ID, ORIGINAL_ORDER, REPRESENTATIVE_POST.getValue(),
+                    COVERSHEET_REPRESENTATIVE_BINARY_ENGLISH, ORDER_BINARY),
+                printRequest(CASE_ID, ORIGINAL_ORDER, RESPONDENT_NOT_REPRESENTED.getParty(),
+                    COVERSHEET_RESPONDENT_BINARY_ENGLISH, ORDER_BINARY),
+                printRequest(CASE_ID, TRANSLATED_ORDER, REPRESENTATIVE_POST.getValue(),
+                    COVERSHEET_REPRESENTATIVE_BINARY, ORDER_BINARY),
+                printRequest(CASE_ID, TRANSLATED_ORDER, RESPONDENT_NOT_REPRESENTED.getParty(),
+                    COVERSHEET_RESPONDENT_BINARY, ORDER_BINARY)
             ));
 
         List<Element<SentDocuments>> documentsSent = mapper.convertValue(

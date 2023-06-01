@@ -269,37 +269,37 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         final PBAPayment pbaPayment = lastBundle.getPbaPayment();
 
-        publishEvent(new AdditionalApplicationsUploadedEvent(oldCaseData, caseDataBefore,
-            applicantsListGenerator.getApplicant(oldCaseData, lastBundle)));
+        publishEvent(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore,
+            applicantsListGenerator.getApplicant(caseData, lastBundle)));
 
-        publishEvent(new AdditonalAppLicationDraftOrderUploadedEvent(oldCaseData, caseDataBefore));
+        publishEvent(new AdditonalAppLicationDraftOrderUploadedEvent(caseData, caseDataBefore));
 
         if (isNotPaidByPba(pbaPayment)) {
-            log.info("Payment for case {} not taken due to user decision", oldCaseDetails.getId());
-            publishEvent(new AdditionalApplicationsPbaPaymentNotTakenEvent(oldCaseData));
+            log.info("Payment for case {} not taken due to user decision", caseDetails.getId());
+            publishEvent(new AdditionalApplicationsPbaPaymentNotTakenEvent(caseData));
         } else {
             if (isNotEmpty(lastBundle.getC2DocumentBundle())
                 && isNotEmpty(lastBundle.getC2DocumentBundle().getRequestedHearingToAdjourn())
-                && uploadAdditionalApplicationsService.onlyApplyingForAnAdjournment(oldCaseData,
+                && uploadAdditionalApplicationsService.onlyApplyingForAnAdjournment(caseData,
                     lastBundle.getC2DocumentBundle())) {
                 // we skipped payment related things as there's a hearing we want to adjourn + no other extras
-                log.info("Payment for case {} skipped as requesting adjournment", oldCaseDetails.getId());
-            } else if (amountToPayShownToUser(oldCaseDetails)) {
+                log.info("Payment for case {} skipped as requesting adjournment", caseDetails.getId());
+            } else if (amountToPayShownToUser(caseDetails)) {
                 try {
                     FeesData feesData = applicationsFeeCalculator.getFeeDataForAdditionalApplications(lastBundle);
-                    paymentService.makePaymentForAdditionalApplications(oldCaseDetails.getId(), oldCaseData, feesData);
+                    paymentService.makePaymentForAdditionalApplications(caseDetails.getId(), caseData, feesData);
                 } catch (FeeRegisterException | PaymentsApiException paymentException) {
-                    log.error("Additional applications payment for case {} failed", oldCaseDetails.getId());
-                    publishEvent(new FailedPBAPaymentEvent(oldCaseData,
+                    log.error("Additional applications payment for case {} failed", caseDetails.getId());
+                    publishEvent(new FailedPBAPaymentEvent(caseData,
                         uploadAdditionalApplicationsService.getApplicationTypes(lastBundle),
-                        applicantsListGenerator.getApplicant(oldCaseData, lastBundle)));
+                        applicantsListGenerator.getApplicant(caseData, lastBundle)));
                 }
-            } else if (NO.getValue().equals(oldCaseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY))) {
+            } else if (NO.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY))) {
                 log.error("Additional applications payment for case {} not taken as payment fee not shown to user",
-                    oldCaseDetails.getId());
-                publishEvent(new FailedPBAPaymentEvent(oldCaseData,
+                    caseDetails.getId());
+                publishEvent(new FailedPBAPaymentEvent(caseData,
                     uploadAdditionalApplicationsService.getApplicationTypes(lastBundle),
-                    applicantsListGenerator.getApplicant(oldCaseData, lastBundle)));
+                    applicantsListGenerator.getApplicant(caseData, lastBundle)));
             }
         }
     }

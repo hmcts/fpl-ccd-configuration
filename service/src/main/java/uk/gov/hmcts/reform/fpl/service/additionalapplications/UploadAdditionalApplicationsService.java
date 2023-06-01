@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -82,7 +83,8 @@ public class UploadAdditionalApplicationsService {
             .pbaPayment(caseData.getTemporaryPbaPayment())
             .amountToPay(caseData.getAmountToPay())
             .author(uploadedBy)
-            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(now, DATE_TIME));
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(now, DATE_TIME))
+            .applicationReviewed(YesNo.NO);
 
         List<AdditionalApplicationType> additionalApplicationTypeList = caseData.getAdditionalApplicationType();
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.C2_ORDER)) {
