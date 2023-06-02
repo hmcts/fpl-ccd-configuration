@@ -69,6 +69,14 @@ public class HearingDocuments {
         return defaultIfNull(caseSummaryList, new ArrayList<>());
     }
 
+    public List<Element<CaseSummary>> getCaseSummaryListLA() {
+        return defaultIfNull(caseSummaryListLA, new ArrayList<>());
+    }
+
+    public List<Element<CaseSummary>> getCaseSummaryListCTSC() {
+        return defaultIfNull(caseSummaryListCTSC, new ArrayList<>());
+    }
+
     public List<Element<PositionStatementChild>> getPositionStatementChildListV2() {
         return defaultIfNull(positionStatementChildListV2, new ArrayList<>());
     }
