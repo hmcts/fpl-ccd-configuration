@@ -19,24 +19,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CaseSummary",
-    "ListElementCode": "documentLA",
-    "FieldType": "Document",
-    "ElementLabel": "Case summary",
-    "SecurityClassification": "Public",
-    "CategoryID": "caseSummary"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "CaseSummary",
-    "ListElementCode": "documentCTSC",
-    "FieldType": "Document",
-    "ElementLabel": "Case summary",
-    "SecurityClassification": "Public",
-    "CategoryID": "caseSummary"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "CaseSummary",
     "ListElementCode": "dateTimeUploaded",
     "FieldType": "DateTime",
     "ElementLabel": "Date and time uploaded",

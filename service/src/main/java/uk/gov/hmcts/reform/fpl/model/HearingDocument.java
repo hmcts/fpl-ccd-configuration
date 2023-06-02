@@ -21,37 +21,26 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOC
 @NoArgsConstructor(force = true)
 public class HearingDocument extends DocumentMetaData implements WithDocument {
     protected String hearing;
-    protected DocumentReference document; // un-confidential
-    protected DocumentReference documentLA; // marked as confidential by LA
-    protected DocumentReference documentCTSC; // marked as confidential by CTSC
+    protected DocumentReference document;
     protected String hasConfidentialAddress;
     protected List<String> documentAcknowledge;
 
     public String getHasConfidentialAddress() {
-        return (getTypeOfDocument() != null && (!YesNo.isYesOrNo(hasConfidentialAddress)))
+        return (document != null && (!YesNo.isYesOrNo(hasConfidentialAddress)))
             ? YesNo.NO.getValue() : hasConfidentialAddress;
     }
 
     @JsonIgnore
     @Override
     public DocumentReference getTypeOfDocument() {
-        if (document != null) {
-            return document;
-        }
-        if (documentLA != null) {
-            return documentLA;
-        }
-        if (documentCTSC != null) {
-            return documentCTSC;
-        }
-        return null;
+        return document;
     }
 
     public List<String> getDocumentAcknowledge() {
         if (this.documentAcknowledge == null) {
             this.documentAcknowledge = new ArrayList<>();
         }
-        if (getTypeOfDocument() != null && !this.documentAcknowledge.contains(DOCUMENT_ACKNOWLEDGEMENT_KEY)) {
+        if (document != null && !this.documentAcknowledge.contains(DOCUMENT_ACKNOWLEDGEMENT_KEY)) {
             this.documentAcknowledge.add(DOCUMENT_ACKNOWLEDGEMENT_KEY);
         }
         return this.documentAcknowledge;
