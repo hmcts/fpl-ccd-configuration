@@ -59,7 +59,8 @@ public class CoreCaseDataService {
                 Map<String, Object> updates = changeFunction.apply(caseDetails);
 
                 if (!updates.isEmpty() || submitIfEmpty) {
-                    log.info("Submitting event {} on case {}", eventName, caseId);
+                    log.info("Submitting event {} on case {}. Current retry: {} (of {})", eventName, caseId, retries,
+                        RETRIES);
                     concurrencyHelper.submitEvent(startEventResponse, caseId, updates);
                 } else {
                     log.info("No updates, skipping submit event");
