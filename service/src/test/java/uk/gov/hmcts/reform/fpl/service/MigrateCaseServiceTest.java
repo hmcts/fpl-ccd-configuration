@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
@@ -1665,6 +1666,49 @@ class MigrateCaseServiceTest {
 
     @Nested
     class CaseFileViewMigrations {
+
+        @Test
+        void shouldMoveSingleCaseSummaryWithConfidentialAddressToCaseSummaryListLA() {
+            Element<CaseSummary> caseSummaryListElement = element(UUID.randomUUID(), CaseSummary.builder()
+                .hasConfidentialAddress(YesNo.YES.getValue())
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .caseSummaryList(List.of(caseSummaryListElement))
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(
+                caseData, MIGRATION_ID);
+            assertThat(updatedFields).extracting("caseSummaryList").asList().isEmpty();
+            assertThat(updatedFields).extracting("caseSummaryListLA").asList()
+                .containsExactly(caseSummaryListElement);
+        }
+
+        @Test
+        void shouldMoveOneOfCaseSummariesWithConfidentialAddressToCaseSummaryListLA() {
+            Element<CaseSummary> caseSummaryListElementWithConfidentialAddress = element(UUID.randomUUID(),
+                CaseSummary.builder().hasConfidentialAddress(YesNo.YES.getValue()).build());
+            Element<CaseSummary> caseSummaryListElement = element(UUID.randomUUID(), CaseSummary.builder()
+                .hasConfidentialAddress(YesNo.NO.getValue())
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .caseSummaryList(List.of(caseSummaryListElement, caseSummaryListElementWithConfidentialAddress))
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(
+                caseData, MIGRATION_ID);
+            assertThat(updatedFields).extracting("caseSummaryList").asList()
+                .containsExactly(caseSummaryListElement);
+            assertThat(updatedFields).extracting("caseSummaryListLA").asList()
+                .containsExactly(caseSummaryListElementWithConfidentialAddress);
+        }
 
     }
 }
