@@ -1662,4 +1662,9 @@ class MigrateCaseServiceTest {
                     MIGRATION_ID, 1, targetBundleId));
         }
     }
+
+    @Nested
+    class CaseFileViewMigrations {
+
+    }
 }
