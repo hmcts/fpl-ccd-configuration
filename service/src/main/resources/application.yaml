@@ -298,6 +298,7 @@ cafcass:
     documentType:
       order: ORDER
       noticeOfHearing: ORDER
+      noticeOfPlacement: ORDER
       respondentStatement: COURT PAPER
       applicationStatement: COURT PAPER
       otherReports: COURT PAPER
@@ -320,6 +321,7 @@ cafcass:
       correspondence: CORRESPONDENCE
       additionalDocument: APPLICATION
       newApplication: APPLICATION
+      placementApplication: APPLICATION
 
 case_document_am:
   url: ${CASE_DOCUMENT_AM_URL:http://localhost:4455}
