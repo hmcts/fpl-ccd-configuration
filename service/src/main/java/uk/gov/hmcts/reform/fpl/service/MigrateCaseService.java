@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
@@ -54,6 +55,22 @@ public class MigrateCaseService {
     private final CaseNoteService caseNoteService;
     private final CourtService courtService;
     private final DocumentListService documentListService;
+
+    public Map<String, Object> moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(CaseData caseData,
+                                                                                         String migrationId) {
+        List<Element<CaseSummary>> caseSummaryListLA = caseData.getHearingDocuments().getCaseSummaryList().stream()
+            .filter(cs -> YesNo.YES.getValue().equals(cs.getValue().getHasConfidentialAddress()))
+            .collect(toList());
+
+        List<Element<CaseSummary>> newCaseSummaryList = caseData.getHearingDocuments().getCaseSummaryList().stream()
+            .filter(cs -> YesNo.NO.getValue().equals(cs.getValue().getHasConfidentialAddress()))
+            .collect(toList());
+
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("caseSummaryListLA", caseSummaryListLA);
+        ret.put("caseSummaryList", newCaseSummaryList);
+        return ret;
+    }
 
     public Map<String, Object> removeHearingOrderBundleDraft(CaseData caseData, String migrationId, UUID bundleId,
                                                              UUID orderId) {
