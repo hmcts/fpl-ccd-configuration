@@ -1694,18 +1694,21 @@ class MigrateCaseServiceTest {
             Element<CaseSummary> caseSummaryListElement = element(UUID.randomUUID(), CaseSummary.builder()
                 .hasConfidentialAddress(YesNo.NO.getValue())
                 .build());
+            Element<CaseSummary> caseSummaryListElementTwo = element(UUID.randomUUID(), CaseSummary.builder()
+                .build());
 
             CaseData caseData = CaseData.builder()
                 .id(1L)
                 .hearingDocuments(HearingDocuments.builder()
-                    .caseSummaryList(List.of(caseSummaryListElement, caseSummaryListElementWithConfidentialAddress))
+                    .caseSummaryList(List.of(caseSummaryListElement, caseSummaryListElementWithConfidentialAddress,
+                        caseSummaryListElementTwo))
                     .build())
                 .build();
 
             Map<String, Object> updatedFields = underTest.moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(
                 caseData, MIGRATION_ID);
             assertThat(updatedFields).extracting("caseSummaryList").asList()
-                .containsExactly(caseSummaryListElement);
+                .containsExactly(caseSummaryListElement, caseSummaryListElementTwo);
             assertThat(updatedFields).extracting("caseSummaryListLA").asList()
                 .containsExactly(caseSummaryListElementWithConfidentialAddress);
         }
