@@ -218,6 +218,7 @@ public class FurtherEvidenceUploadedEventHandler {
         }
     }
 
+    @Async
     @EventListener
     public void sendHearingDocumentsToCafcass(final FurtherEvidenceUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
@@ -265,6 +266,7 @@ public class FurtherEvidenceUploadedEventHandler {
                         .build()));
     }
 
+    @Async
     @EventListener
     public void sendCourtBundlesToCafcass(final FurtherEvidenceUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
@@ -292,6 +294,7 @@ public class FurtherEvidenceUploadedEventHandler {
         }
     }
 
+    @Async
     @EventListener
     public void sendDocumentsToCafcass(final FurtherEvidenceUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
