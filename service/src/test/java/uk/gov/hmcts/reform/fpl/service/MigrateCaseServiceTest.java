@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
@@ -1666,5 +1667,46 @@ class MigrateCaseServiceTest {
     @Nested
     class CaseFileViewMigrations {
 
+        @Test
+        void shouldMigratePositionStatementChild() {
+            Element<PositionStatementChild> positionStatementOne = element(UUID.randomUUID(),
+                PositionStatementChild.builder().build());
+            Element<PositionStatementChild> positionStatementTwo = element(UUID.randomUUID(),
+                PositionStatementChild.builder().build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .positionStatementChildListV2(List.of(positionStatementOne, positionStatementTwo)).build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migratePositionStatementChild(caseData, MIGRATION_ID);
+            assertThat(updatedFields).extracting("positionStatementChildListV2").isNull();
+            assertThat(updatedFields).extracting("posStmtChildListLA").asList().isEmpty();
+            assertThat(updatedFields).extracting("posStmtChildList").asList()
+                .contains(positionStatementTwo, positionStatementOne);
+        }
+
+        @Test
+        void shouldMigratePositionStatementChildWithConfidentialAddress() {
+            Element<PositionStatementChild> positionStatementWithConfidentialAddress = element(UUID.randomUUID(),
+                PositionStatementChild.builder().hasConfidentialAddress(YesNo.YES.getValue()).build());
+            Element<PositionStatementChild> positionStatementChildElement = element(UUID.randomUUID(),
+                PositionStatementChild.builder().hasConfidentialAddress(YesNo.NO.getValue()).build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .positionStatementChildListV2(List.of(positionStatementWithConfidentialAddress,
+                        positionStatementChildElement)).build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migratePositionStatementChild(caseData, MIGRATION_ID);
+            assertThat(updatedFields).extracting("positionStatementChildListV2").isNull();
+            assertThat(updatedFields).extracting("posStmtChildListLA").asList()
+                .contains(positionStatementWithConfidentialAddress);
+            assertThat(updatedFields).extracting("posStmtChildList").asList()
+                .contains(positionStatementChildElement);
+        }
     }
 }
