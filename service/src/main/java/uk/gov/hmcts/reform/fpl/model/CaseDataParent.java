@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.validation.groups.SecureAccommodationGroup;
 
@@ -32,6 +33,10 @@ public class CaseDataParent {
     protected final List<Element<Direction>> otherPartiesDirectionsCustom;
     protected final List<Element<Direction>> respondentDirections;
     protected final List<Element<Direction>> respondentDirectionsCustom;
+
+    protected final List<Element<DocumentReference>> parentAssessmentList;
+    protected final List<Element<DocumentReference>> parentAssessmentListLA;
+    protected final List<Element<DocumentReference>> parentAssessmentListCTSC;
 
     @NotNull(message = "Add the grounds for the application", groups = SecureAccommodationGroup.class)
     @Valid
