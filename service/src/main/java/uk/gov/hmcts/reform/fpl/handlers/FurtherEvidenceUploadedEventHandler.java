@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -218,6 +219,7 @@ public class FurtherEvidenceUploadedEventHandler {
         }
     }
 
+    @Retryable
     @Async
     @EventListener
     public void sendHearingDocumentsToCafcass(final FurtherEvidenceUploadedEvent event) {
@@ -266,6 +268,7 @@ public class FurtherEvidenceUploadedEventHandler {
                         .build()));
     }
 
+    @Retryable
     @Async
     @EventListener
     public void sendCourtBundlesToCafcass(final FurtherEvidenceUploadedEvent event) {
@@ -294,6 +297,7 @@ public class FurtherEvidenceUploadedEventHandler {
         }
     }
 
+    @Retryable
     @Async
     @EventListener
     public void sendDocumentsToCafcass(final FurtherEvidenceUploadedEvent event) {
