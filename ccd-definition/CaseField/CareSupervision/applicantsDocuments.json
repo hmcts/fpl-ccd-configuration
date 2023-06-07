@@ -130,5 +130,38 @@
     "SecurityClassification": "Public",
     "Searchable": "N",
     "CategoryID": "meetingNotes"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "contactNoteList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Document",
+    "Label": "Contact notes",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "CategoryID": "contactNotes"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "contactNoteListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Document",
+    "Label": "Contact notes",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "CategoryID": "contactNotes"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "contactNoteListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Document",
+    "Label": "Contact notes",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "CategoryID": "contactNotes"
   }
 ]
