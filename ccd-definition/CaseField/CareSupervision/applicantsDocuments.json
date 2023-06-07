@@ -97,5 +97,38 @@
     "SecurityClassification": "Public",
     "Searchable": "N",
     "CategoryID": "applicantsOtherDocuments"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "meetingNoteList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Document",
+    "Label": "Meeting notes",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "CategoryID": "meetingNotes"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "meetingNoteListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Document",
+    "Label": "Meeting notes",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "CategoryID": "meetingNotes"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "meetingNoteListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Document",
+    "Label": "Meeting notes",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "CategoryID": "meetingNotes"
   }
 ]
