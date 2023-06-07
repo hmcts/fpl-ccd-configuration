@@ -1,0 +1,68 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "parentAssessmentList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Document",
+    "Label": "Parent assessments",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "CategoryID": "parentAssessments"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "parentAssessmentListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Document",
+    "Label": "Parent assessments",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "CategoryID": "parentAssessments"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "parentAssessmentListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Document",
+    "Label": "Parent assessments",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "CategoryID": "parentAssessments"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "famAndViabilityList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Document",
+    "Label": "Family and viability assessments",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "CategoryID": "familyAndViabilityAssessments"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "famAndViabilityListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Document",
+    "Label": "Family and viability assessments",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "CategoryID": "familyAndViabilityAssessments"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "famAndViabilityListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Document",
+    "Label": "Family and viability assessments",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "CategoryID": "familyAndViabilityAssessments"
+  }
+]
