@@ -1167,19 +1167,5 @@
     "CaseFieldID": "contactNoteListLA",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "contactNoteList",
-    "UserRole": "caseworker-publiclaw-cafcass",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "contactNoteListLA",
-    "UserRole": "caseworker-publiclaw-cafcass",
-    "CRUD": "R"
   }
 ]
