@@ -33,6 +33,8 @@ public class MigrateCaseController extends CallbackController {
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
+        "DFPL-1233", this::run1233,
+        "DFPL-1233Rollback", this::run1233Rollback,
         "DFPL-1359", this::run1359,
         "DFPL-1401", this::run1401,
         "DFPL-1451", this::run1451,
@@ -59,6 +61,14 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
+    }
+
+    private void run1233Rollback(CaseDetails caseDetails) {
+        caseDetails.getData().putAll(migrateCaseService.rollbackHearingType(getCaseData(caseDetails)));
+    }
+
+    private void run1233(CaseDetails caseDetails) {
+        caseDetails.getData().putAll(migrateCaseService.migrateHearingType(getCaseData(caseDetails)));
     }
 
     private void run1359(CaseDetails caseDetails) {
@@ -101,8 +111,8 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
         caseDetails.getData().putAll(migrateCaseService.removeFurtherEvidenceSolicitorDocuments(
             getCaseData(caseDetails), migrationId, UUID.fromString("43a9287c-f840-4104-958f-cbd98d28aea3")));
-    }  
-  
+    }
+
     private void run1484(CaseDetails caseDetails) {
         var migrationId = "DFPL-1484";
         var possibleCaseIds = List.of(1681381038761399L);

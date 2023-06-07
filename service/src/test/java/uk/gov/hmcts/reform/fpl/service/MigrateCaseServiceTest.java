@@ -61,6 +61,9 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.ACCELERATED_DISCHARGE_OF_CARE;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.FURTHER_CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith({MockitoExtension.class})
@@ -1292,7 +1295,7 @@ class MigrateCaseServiceTest {
                     + "or missing target invalid order type [EDUCATION_SUPERVISION__ORDER]");
         }
     }
-    
+
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class RemoveJudicialMessage {
@@ -1660,6 +1663,196 @@ class MigrateCaseServiceTest {
                 .hasMessage(format(
                     "Migration {id = %s, case reference = %s}, hearing court bundle not found",
                     MIGRATION_ID, 1, targetBundleId));
+        }
+    }
+
+
+    @Nested
+    class MigratingHearingDetails {
+        private final UUID otherHearingBookingId = UUID.randomUUID();
+
+        @Test
+        void shouldSetTypeToFurtherCaseManagementWhenTypeDetailsMatchFurtherCaseManagementJudgmentOfHearing() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(OTHER)
+                .typeDetails("directions Judgment")
+                .build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(bookings)
+                .build();
+
+            Map<String, Object> updates = underTest.migrateHearingType(caseData);
+
+            List<Element<HearingBooking>> expected = new ArrayList<>();
+            expected.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(FURTHER_CASE_MANAGEMENT)
+                .typeDetails("directions Judgment")
+                .build()));
+
+            assertThat(updates).containsEntry("hearingDetails", expected);
+        }
+
+
+        @Test
+        void shouldReturnEmptyMapWhenNoHearingDetailsPresent() {
+            CaseData caseData = CaseData.builder()
+                .build();
+            Map<String, Object> updates = underTest.migrateHearingType(caseData);
+            assertThat(updates).isEmpty();
+        }
+
+
+        @Test
+        void shouldSetTypeToAccelaratedDichargeOfCareWhenTypeDetailsMatchFullHearingAndAccelaratedDichargeOfCare() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(OTHER)
+                .typeDetails("Threshold Discharge")
+                .build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(bookings)
+                .build();
+
+            Map<String, Object> updates = underTest.migrateHearingType(caseData);
+
+            List<Element<HearingBooking>> expected = new ArrayList<>();
+            expected.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(ACCELERATED_DISCHARGE_OF_CARE)
+                .typeDetails("Threshold Discharge")
+                .build()));
+
+            assertThat(updates).containsEntry("hearingDetails", expected);
+        }
+
+        @Test
+        void shouldSetTypeToNullWhenTypeDetailsDontMatch() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(OTHER)
+                .typeDetails("TEST")
+                .build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(bookings)
+                .build();
+
+            Map<String, Object> updates = underTest.migrateHearingType(caseData);
+
+            List<Element<HearingBooking>> expected = new ArrayList<>();
+            expected.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(null)
+                .typeDetails("TEST")
+                .build()));
+
+            assertThat(updates).containsEntry("hearingDetails", expected);
+        }
+    }
+
+    @Nested
+    class RollbackHearingDetails {
+        private final UUID otherHearingBookingId = UUID.randomUUID();
+
+        @Test
+        void shouldSetTypeToOtherWhenTypeIsFurtherCaseManagement() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(FURTHER_CASE_MANAGEMENT)
+                .typeDetails("directions Judgment")
+                .build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(bookings)
+                .build();
+
+            Map<String, Object> updates = underTest.rollbackHearingType(caseData);
+
+            List<Element<HearingBooking>> expected = new ArrayList<>();
+            expected.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(OTHER)
+                .typeDetails("directions Judgment")
+                .build()));
+
+            assertThat(updates).containsEntry("hearingDetails", expected);
+        }
+
+        @Test
+        void shouldReturnEmptyMapWhenNoHearingDetailsPresent() {
+            CaseData caseData = CaseData.builder()
+                .build();
+            Map<String, Object> updates = underTest.rollbackHearingType(caseData);
+            assertThat(updates).isEmpty();
+        }
+
+        @Test
+        void shouldSetTypeToOtherWhenTypeIsNull() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(null)
+                .typeDetails("directions Judgment")
+                .build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(bookings)
+                .build();
+
+            Map<String, Object> updates = underTest.rollbackHearingType(caseData);
+
+            List<Element<HearingBooking>> expected = new ArrayList<>();
+            expected.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(OTHER)
+                .typeDetails("directions Judgment")
+                .build()));
+
+            assertThat(updates).containsEntry("hearingDetails", expected);
+        }
+
+        @Test
+        void shouldNotUpdateHearingTypeToOtherWhenTypeIsFutherCaseManagmentTypeDetailsIsNull() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(FURTHER_CASE_MANAGEMENT)
+                .typeDetails(null)
+                .build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(bookings)
+                .build();
+
+            Map<String, Object> updates = underTest.rollbackHearingType(caseData);
+
+            List<Element<HearingBooking>> expected = new ArrayList<>();
+            expected.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(FURTHER_CASE_MANAGEMENT)
+                .typeDetails(null)
+                .build()));
+
+            assertThat(updates).containsEntry("hearingDetails", expected);
+        }
+
+        @Test
+        void shouldNotUpdateHearingTypeToOtherWhenTypeIsFutherCaseManagmentTypeDetailsIsEmpty() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(FURTHER_CASE_MANAGEMENT)
+                .typeDetails("")
+                .build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(bookings)
+                .build();
+
+            Map<String, Object> updates = underTest.rollbackHearingType(caseData);
+
+            List<Element<HearingBooking>> expected = new ArrayList<>();
+            expected.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(FURTHER_CASE_MANAGEMENT)
+                .typeDetails("")
+                .build()));
+
+            assertThat(updates).containsEntry("hearingDetails", expected);
         }
     }
 }

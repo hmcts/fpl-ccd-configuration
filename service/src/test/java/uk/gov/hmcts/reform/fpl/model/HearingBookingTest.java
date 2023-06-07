@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.INTERPRETER;
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.NONE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.SOMETHING_ELSE;
@@ -301,15 +300,13 @@ class HearingBookingTest {
         }
 
         @Test
-        void shouldThrowIllegalStateExceptionIfHearingTypeIsNull() {
+        void shouldReturnOtherLabelWhenTypeIsSetNull() {
             HearingBooking hearingBooking = HearingBooking.builder()
                 .type(null)
                 .startDate(LocalDate.of(2020, 10, 10).atStartOfDay())
                 .build();
 
-            assertThatExceptionOfType(IllegalStateException.class)
-                .isThrownBy(() -> hearingBooking.toLabel())
-                .withMessageContaining("Unexpected null hearing type.");
+            assertThat(hearingBooking.toLabel()).isEqualTo("Other hearing, 10 October 2020");
         }
 
     }
