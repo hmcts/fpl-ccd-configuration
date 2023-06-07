@@ -21,6 +21,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public class HearingDocuments {
     // the element ID is the ID of the linked hearing
     private final List<Element<HearingCourtBundle>> courtBundleListV2;
+    private final List<Element<HearingCourtBundle>> courtBundleListLA;
+    private final List<Element<HearingCourtBundle>> courtBundleListCTSC;
     // the element ID is the ID of the linked hearing
     private final List<Element<CourtBundle>> courtBundleList;
     // the element ID is the ID of the linked hearing
@@ -61,6 +63,14 @@ public class HearingDocuments {
 
     public List<Element<HearingCourtBundle>> getCourtBundleListV2() {
         return defaultIfNull(courtBundleListV2, new ArrayList<>());
+    }
+
+    public List<Element<HearingCourtBundle>> getCourtBundleListLA() {
+        return defaultIfNull(courtBundleListLA, new ArrayList<>());
+    }
+
+    public List<Element<HearingCourtBundle>> getCourtBundleListCTSC() {
+        return defaultIfNull(courtBundleListCTSC, new ArrayList<>());
     }
 
     public List<Element<CaseSummary>> getCaseSummaryList() {
