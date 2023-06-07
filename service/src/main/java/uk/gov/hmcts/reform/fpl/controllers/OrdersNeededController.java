@@ -179,6 +179,11 @@ public class OrdersNeededController extends CallbackController {
     }
 
     private Court getCourtSelection(String courtID) {
-        return courtLookup.getCourtByCode(courtID).orElse(null);
+        // This needs to get the court out of the NEW list of courts, the old onboarding way might not have all courts
+        // especially in the lower environments, we should also match the 'Family Court sitting at XYZ' pattern.
+        Optional<Court> court = Optional.ofNullable(courtLookUpService.getCourtByCode(courtID).orElse(null));
+        return court.map(c -> c.toBuilder()
+            .name("Family Court sitting at " + c.getName())
+            .build()).orElse(null);
     }
 }
