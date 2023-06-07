@@ -40,6 +40,9 @@ public class CaseDataParent {
     protected final List<Element<DocumentReference>> famAndViabilityList;
     protected final List<Element<DocumentReference>> famAndViabilityListLA;
     protected final List<Element<DocumentReference>> famAndViabilityListCTSC;
+    protected final List<Element<DocumentReference>> applicantOtherDocList;
+    protected final List<Element<DocumentReference>> applicantOtherDocListLA;
+    protected final List<Element<DocumentReference>> applicantOtherDocListCTSC;
 
     @NotNull(message = "Add the grounds for the application", groups = SecureAccommodationGroup.class)
     @Valid
