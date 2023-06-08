@@ -2,6 +2,39 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respStmtList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Document",
+    "Label": "Respondent statements",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "CategoryID": "respondentsStatements"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respStmtListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Document",
+    "Label": "Respondent statements",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "CategoryID": "respondentsStatements"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respStmtListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Document",
+    "Label": "Respondent statements",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "CategoryID": "respondentsStatements"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingFurtherEvidenceDocuments",
     "FieldType": "Collection",
     "FieldTypeParameter": "HearingFurtherEvidenceBundle",
