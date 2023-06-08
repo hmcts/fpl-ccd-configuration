@@ -43,7 +43,6 @@ import uk.gov.service.notify.NotificationClient;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
