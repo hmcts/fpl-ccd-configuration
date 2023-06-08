@@ -83,7 +83,8 @@ public class MigrateCaseService {
 
         List<Element<PositionStatementRespondent>> posStmtRespList = caseData.getHearingDocuments()
             .getPositionStatementRespondentListV2().stream()
-            .filter(cs -> YesNo.NO.getValue().equals(cs.getValue().getHasConfidentialAddress()))
+            .filter(cs -> YesNo.NO.getValue().equals(Optional.ofNullable(cs.getValue().getHasConfidentialAddress())
+                .orElse(YesNo.NO.getValue())))
             .collect(toList());
 
         Map<String, Object> ret = new HashMap<>();
