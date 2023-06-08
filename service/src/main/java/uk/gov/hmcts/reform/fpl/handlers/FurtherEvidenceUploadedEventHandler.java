@@ -102,6 +102,8 @@ public class FurtherEvidenceUploadedEventHandler {
     private static final String PDF = "pdf";
     private static final String LIST = "•";
 
+    @Retryable
+    @Async
     @EventListener
     public void sendDocumentsUploadedNotification(final FurtherEvidenceUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
@@ -134,6 +136,8 @@ public class FurtherEvidenceUploadedEventHandler {
         });
     }
 
+    @Retryable
+    @Async
     @EventListener
     public void sendDocumentsByPost(final FurtherEvidenceUploadedEvent event) {
         DocumentUploaderType userType = event.getUserType();
@@ -151,6 +155,8 @@ public class FurtherEvidenceUploadedEventHandler {
         }
     }
 
+    @Retryable
+    @Async
     @EventListener
     public void sendCourtBundlesUploadedNotification(final FurtherEvidenceUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
@@ -179,6 +185,8 @@ public class FurtherEvidenceUploadedEventHandler {
         }
     }
 
+    @Retryable
+    @Async
     @EventListener
     public void sendHearingDocumentsUploadedNotification(final FurtherEvidenceUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
@@ -654,7 +662,7 @@ public class FurtherEvidenceUploadedEventHandler {
         return documentBundle.stream().map(FurtherDocument::getName).collect(toList());
     }
 
-    private List<DocumentReference> getDocumentReferencesHavingPdfExtension(List<SupportingEvidenceBundle> 
+    private List<DocumentReference> getDocumentReferencesHavingPdfExtension(List<SupportingEvidenceBundle>
                                                                                 documentBundle) {
         List<DocumentReference> documentReferences = new ArrayList<>();
 
