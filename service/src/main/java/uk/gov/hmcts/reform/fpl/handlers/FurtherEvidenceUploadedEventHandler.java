@@ -102,7 +102,6 @@ public class FurtherEvidenceUploadedEventHandler {
     private static final String PDF = "pdf";
     private static final String LIST = "•";
 
-    @Retryable
     @Async
     @EventListener
     public void sendDocumentsUploadedNotification(final FurtherEvidenceUploadedEvent event) {
@@ -136,7 +135,6 @@ public class FurtherEvidenceUploadedEventHandler {
         });
     }
 
-    @Retryable
     @Async
     @EventListener
     public void sendDocumentsByPost(final FurtherEvidenceUploadedEvent event) {
@@ -155,7 +153,6 @@ public class FurtherEvidenceUploadedEventHandler {
         }
     }
 
-    @Retryable
     @Async
     @EventListener
     public void sendCourtBundlesUploadedNotification(final FurtherEvidenceUploadedEvent event) {
@@ -185,7 +182,6 @@ public class FurtherEvidenceUploadedEventHandler {
         }
     }
 
-    @Retryable
     @Async
     @EventListener
     public void sendHearingDocumentsUploadedNotification(final FurtherEvidenceUploadedEvent event) {
