@@ -1668,6 +1668,48 @@ class MigrateCaseServiceTest {
     class CaseFileViewMigrations {
 
         @Test
+        void shouldMigratePositionStatementChild() {
+            Element<PositionStatementChild> positionStatementOne = element(UUID.randomUUID(),
+                PositionStatementChild.builder().build());
+            Element<PositionStatementChild> positionStatementTwo = element(UUID.randomUUID(),
+                PositionStatementChild.builder().build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .positionStatementChildListV2(List.of(positionStatementOne, positionStatementTwo)).build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migratePositionStatementChild(caseData, MIGRATION_ID);
+            assertThat(updatedFields).extracting("positionStatementChildListV2").isNull();
+            assertThat(updatedFields).extracting("posStmtChildListLA").asList().isEmpty();
+            assertThat(updatedFields).extracting("posStmtChildList").asList()
+                .contains(positionStatementTwo, positionStatementOne);
+        }
+
+        @Test
+        void shouldMigratePositionStatementChildWithConfidentialAddress() {
+            Element<PositionStatementChild> positionStatementWithConfidentialAddress = element(UUID.randomUUID(),
+                PositionStatementChild.builder().hasConfidentialAddress(YesNo.YES.getValue()).build());
+            Element<PositionStatementChild> positionStatementChildElement = element(UUID.randomUUID(),
+                PositionStatementChild.builder().hasConfidentialAddress(YesNo.NO.getValue()).build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .positionStatementChildListV2(List.of(positionStatementWithConfidentialAddress,
+                        positionStatementChildElement)).build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migratePositionStatementChild(caseData, MIGRATION_ID);
+            assertThat(updatedFields).extracting("positionStatementChildListV2").isNull();
+            assertThat(updatedFields).extracting("posStmtChildListLA").asList()
+                .contains(positionStatementWithConfidentialAddress);
+            assertThat(updatedFields).extracting("posStmtChildList").asList()
+                .contains(positionStatementChildElement);
+        }
+
+        @Test
         void shouldMoveSingleCaseSummaryWithConfidentialAddressToCaseSummaryListLA() {
             Element<CaseSummary> caseSummaryListElement = element(UUID.randomUUID(), CaseSummary.builder()
                 .hasConfidentialAddress(YesNo.YES.getValue())
@@ -1712,6 +1754,49 @@ class MigrateCaseServiceTest {
             assertThat(updatedFields).extracting("caseSummaryListLA").asList()
                 .containsExactly(caseSummaryListElementWithConfidentialAddress);
         }
-
     }
+
+    @Test
+    void shouldMigratePositionStatementRespondent() {
+        Element<PositionStatementRespondent> positionStatementOne = element(UUID.randomUUID(),
+            PositionStatementRespondent.builder().build());
+        Element<PositionStatementRespondent> positionStatementTwo = element(UUID.randomUUID(),
+            PositionStatementRespondent.builder().build());
+
+        CaseData caseData = CaseData.builder()
+            .id(1L)
+            .hearingDocuments(HearingDocuments.builder()
+                .positionStatementRespondentListV2(List.of(positionStatementOne, positionStatementTwo)).build())
+            .build();
+
+        Map<String, Object> updatedFields = underTest.migratePositionStatementRespondent(caseData, MIGRATION_ID);
+        assertThat(updatedFields).extracting("positionStatementRespondentListV2").isNull();
+        assertThat(updatedFields).extracting("posStmtRespListLA").asList().isEmpty();
+        assertThat(updatedFields).extracting("posStmtRespList").asList()
+            .contains(positionStatementTwo, positionStatementOne);
+    }
+
+    @Test
+    void shouldMigratePositionStatementRespondentWithConfidentialAddress() {
+        Element<PositionStatementRespondent> positionStatementWithConfidentialAddress = element(UUID.randomUUID(),
+            PositionStatementRespondent.builder().hasConfidentialAddress(YesNo.YES.getValue()).build());
+        Element<PositionStatementRespondent> positionStatementRespoondentElement = element(UUID.randomUUID(),
+            PositionStatementRespondent.builder().hasConfidentialAddress(YesNo.NO.getValue()).build());
+
+        CaseData caseData = CaseData.builder()
+            .id(1L)
+            .hearingDocuments(HearingDocuments.builder()
+                .positionStatementRespondentListV2(List.of(positionStatementWithConfidentialAddress,
+                    positionStatementRespoondentElement)).build())
+            .build();
+
+        Map<String, Object> updatedFields = underTest.migratePositionStatementRespondent(caseData, MIGRATION_ID);
+        assertThat(updatedFields).extracting("positionStatementRespondentListV2").isNull();
+        assertThat(updatedFields).extracting("posStmtRespListLA").asList()
+            .contains(positionStatementWithConfidentialAddress);
+        assertThat(updatedFields).extracting("posStmtRespList").asList()
+            .contains(positionStatementRespoondentElement);
+>>>>>>> DFPL-1438
+    }
+
 }
