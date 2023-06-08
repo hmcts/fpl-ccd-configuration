@@ -1709,8 +1709,6 @@ class MigrateCaseServiceTest {
                 .contains(positionStatementChildElement);
         }
 
-
-
         @Test
         void shouldMigratePositionStatementRespondent() {
             Element<PositionStatementRespondent> positionStatementOne = element(UUID.randomUUID(),
