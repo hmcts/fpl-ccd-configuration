@@ -22,7 +22,8 @@
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "Position statement respondent",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "CategoryID": "positionStatements"
   },
   {
     "LiveFrom": "01/01/2017",
