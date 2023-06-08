@@ -22,6 +22,7 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -161,7 +162,7 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(asCaseDetails(caseData));
 
         verifyNoInteractions(notificationClient);
-        verify(concurrencyHelper).submitEvent(any(),
+        verify(concurrencyHelper, timeout(10000)).submitEvent(any(),
             eq(CASE_ID),
             eq(caseSummary()));
     }

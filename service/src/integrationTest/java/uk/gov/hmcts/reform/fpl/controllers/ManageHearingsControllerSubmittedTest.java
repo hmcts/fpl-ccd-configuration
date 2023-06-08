@@ -282,7 +282,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         verifyNoInteractions(notificationClient);
 
         verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
-        verify(concurrencyHelper).submitEvent(any(), eq(CASE_ID), anyMap());
+        verify(concurrencyHelper, timeout(10000)).submitEvent(any(), eq(CASE_ID), anyMap());
 
         verifyNoMoreInteractions(concurrencyHelper);
     }
@@ -304,7 +304,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         verifyNoInteractions(notificationClient);
         verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
-        verify(concurrencyHelper).submitEvent(any(),
+        verify(concurrencyHelper, timeout(10000)).submitEvent(any(),
             eq(CASE_ID),
             eq(caseSummary("Yes", "Case management", LocalDate.of(2050, 5, 20))));
         verifyNoMoreInteractions(concurrencyHelper);
@@ -687,7 +687,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         verifyNoInteractions(notificationClient);
 
         verify(concurrencyHelper).startEvent(eq(CASE_ID), any());
-        verify(concurrencyHelper).submitEvent(any(), eq(CASE_ID), anyMap());
+        verify(concurrencyHelper, timeout(10000)).submitEvent(any(), eq(CASE_ID), anyMap());
 
         verifyNoMoreInteractions(concurrencyHelper);
     }

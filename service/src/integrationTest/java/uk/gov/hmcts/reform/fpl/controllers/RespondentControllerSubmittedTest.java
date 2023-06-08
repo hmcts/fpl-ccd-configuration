@@ -49,7 +49,11 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APPROVED;
 import static uk.gov.hmcts.reform.ccd.model.Organisation.organisation;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_2_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_COUNSELLOR_REMOVED_EMAIL_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LOCAL_AUTHORITY_ADDED_DESIGNATED_LA_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LOCAL_AUTHORITY_ADDED_SHARED_LA_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORA;
@@ -364,10 +368,15 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
             .map(changeRequest -> Map.of("changeOrganisationRequestField", changeRequest))
             .collect(toList());
 
+        //checkUntil() -> for each org
         // setup change field, submit to aac (org1), setup change field, submit to aac (org2), update case-summary
         verify(concurrencyHelper, times(5)).submitEvent(any(),
             eq(caseData.getId()), caseCaptor.capture()
         );
+
+        checkUntil(() -> {
+
+        });
 
         assertThat(caseCaptor.getAllValues())
             .asList()
