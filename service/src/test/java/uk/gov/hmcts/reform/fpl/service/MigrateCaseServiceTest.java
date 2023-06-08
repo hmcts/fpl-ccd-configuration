@@ -1796,7 +1796,6 @@ class MigrateCaseServiceTest {
             .contains(positionStatementWithConfidentialAddress);
         assertThat(updatedFields).extracting("posStmtRespList").asList()
             .contains(positionStatementRespoondentElement);
->>>>>>> DFPL-1438
     }
 
 }
