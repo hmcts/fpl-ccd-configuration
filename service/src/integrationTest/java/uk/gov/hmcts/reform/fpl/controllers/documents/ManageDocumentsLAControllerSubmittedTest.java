@@ -191,7 +191,7 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
         postSubmittedEvent(buildCallbackRequestForAddingCourtBundle());
 
-        verify(cafcassNotificationService).sendEmail(isA(CaseData.class),
+        verify(cafcassNotificationService, timeout(1000)).sendEmail(isA(CaseData.class),
             documentReferences.capture(),
             eq(COURT_BUNDLE),
             isA(CourtBundleData.class));
@@ -246,7 +246,7 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
             .caseDetailsBefore(caseDetailsBefore)
             .build());
 
-        verify(cafcassNotificationService).sendEmail(isA(CaseData.class),
+        verify(cafcassNotificationService, timeout(1000)).sendEmail(isA(CaseData.class),
             documentReferences.capture(),
             eq(COURT_BUNDLE),
             isA(CourtBundleData.class));
