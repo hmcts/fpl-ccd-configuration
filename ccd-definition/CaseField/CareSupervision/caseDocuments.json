@@ -173,12 +173,74 @@
     "FieldTypeParameter": "PositionStatementChild",
     "Label": "Position statement child",
     "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Deprecated. Use posStmtChildList, posStmtChildListLA, posStmtChildListCTSC instead"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "posStmtChildList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatementChild",
+    "Label": "Position statement child",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "posStmtChildListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatementChild",
+    "Label": "Position statement child",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "posStmtChildListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatementChild",
+    "Label": "Position statement child",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "positionStatementRespondentListV2",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatementRespondent",
+    "Label": "Position statement respondent",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Deprecated. Use posStmtRespList, posStmtRespListLA, posStmtRespListCTSC instead"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "posStmtRespList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatementRespondent",
+    "Label": "Position statement respondent",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "posStmtRespListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatementRespondent",
+    "Label": "Position statement respondent",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "posStmtRespListCTSC",
     "FieldType": "Collection",
     "FieldTypeParameter": "PositionStatementRespondent",
     "Label": "Position statement respondent",
