@@ -9,7 +9,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -27,9 +29,17 @@ public class HearingDocuments {
     private final List<Element<CaseSummary>> caseSummaryList;
 
     // the element ID of each position statement is unique
+    @Deprecated
     private final List<Element<PositionStatementChild>> positionStatementChildListV2;
+    private final List<Element<PositionStatementChild>> posStmtChildList;
+    private final List<Element<PositionStatementChild>> posStmtChildListLA;
+    private final List<Element<PositionStatementChild>> posStmtChildListCTSC;
     // the element ID of each position statement is unique
+    @Deprecated
     private final List<Element<PositionStatementRespondent>> positionStatementRespondentListV2;
+    private final List<Element<PositionStatementRespondent>> posStmtRespList;
+    private final List<Element<PositionStatementRespondent>> posStmtRespListLA;
+    private final List<Element<PositionStatementRespondent>> posStmtRespListCTSC;
     // the element ID of each Skeleton argument is unique
     private final List<Element<SkeletonArgument>> skeletonArgumentList;
 
@@ -67,12 +77,43 @@ public class HearingDocuments {
         return defaultIfNull(caseSummaryList, new ArrayList<>());
     }
 
+    @Deprecated
     public List<Element<PositionStatementChild>> getPositionStatementChildListV2() {
-        return defaultIfNull(positionStatementChildListV2, new ArrayList<>());
+        List<Element<PositionStatementChild>> oldList = defaultIfNull(positionStatementChildListV2, new ArrayList<>());
+        List<Element<PositionStatementChild>> newList = defaultIfNull(posStmtChildList, new ArrayList<>());
+        return Stream.concat(oldList.stream(), newList.stream()).collect(toList());
     }
 
+    public List<Element<PositionStatementChild>> getPosStmtChildList() {
+        return defaultIfNull(posStmtChildList, new ArrayList<>());
+    }
+
+    public List<Element<PositionStatementChild>> getPosStmtChildListLA() {
+        return defaultIfNull(posStmtChildListLA, new ArrayList<>());
+    }
+
+    public List<Element<PositionStatementChild>> getPosStmtChildListCTSC() {
+        return defaultIfNull(posStmtChildListCTSC, new ArrayList<>());
+    }
+
+    @Deprecated
     public List<Element<PositionStatementRespondent>> getPositionStatementRespondentListV2() {
-        return defaultIfNull(positionStatementRespondentListV2, new ArrayList<>());
+        List<Element<PositionStatementRespondent>> oldList = defaultIfNull(positionStatementRespondentListV2,
+            new ArrayList<>());
+        List<Element<PositionStatementRespondent>> newList = defaultIfNull(posStmtRespList, new ArrayList<>());
+        return Stream.concat(oldList.stream(), newList.stream()).collect(toList());
+    }
+
+    public List<Element<PositionStatementRespondent>> getPosStmtRespList() {
+        return defaultIfNull(posStmtRespList, new ArrayList<>());
+    }
+
+    public List<Element<PositionStatementRespondent>> getPosStmtRespListLA() {
+        return defaultIfNull(posStmtRespListLA, new ArrayList<>());
+    }
+
+    public List<Element<PositionStatementRespondent>> getPosStmtRespListCTSC() {
+        return defaultIfNull(posStmtRespListCTSC, new ArrayList<>());
     }
 
     public List<Element<SkeletonArgument>> getSkeletonArgumentList() {
