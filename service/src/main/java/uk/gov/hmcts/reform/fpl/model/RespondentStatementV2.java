@@ -14,6 +14,4 @@ import java.util.UUID;
 public class RespondentStatementV2 extends SupportingEvidenceBundle {
     private String respondentName;
     private UUID respondentId;
-
-
 }
