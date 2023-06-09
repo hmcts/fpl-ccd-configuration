@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
+import uk.gov.hmcts.reform.fpl.exceptions.EmailFailedSendException;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
@@ -223,7 +224,7 @@ public class FurtherEvidenceUploadedEventHandler {
         }
     }
 
-    @Retryable
+    @Retryable(value = EmailFailedSendException.class)
     @Async
     @EventListener
     public void sendHearingDocumentsToCafcass(final FurtherEvidenceUploadedEvent event) {
@@ -272,7 +273,7 @@ public class FurtherEvidenceUploadedEventHandler {
                         .build()));
     }
 
-    @Retryable
+    @Retryable(value = EmailFailedSendException.class)
     @Async
     @EventListener
     public void sendCourtBundlesToCafcass(final FurtherEvidenceUploadedEvent event) {
@@ -301,7 +302,7 @@ public class FurtherEvidenceUploadedEventHandler {
         }
     }
 
-    @Retryable
+    @Retryable(value = EmailFailedSendException.class)
     @Async
     @EventListener
     public void sendDocumentsToCafcass(final FurtherEvidenceUploadedEvent event) {
