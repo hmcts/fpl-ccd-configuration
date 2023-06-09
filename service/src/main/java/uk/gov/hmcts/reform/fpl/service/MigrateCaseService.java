@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatementV2;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -711,19 +712,62 @@ public class MigrateCaseService {
         }
     }
 
+    private Element<RespondentStatementV2> toRespondentStatementV2(UUID respondentId, String respondentName,
+                                                                   Element<SupportingEvidenceBundle> sebElement) {
+        SupportingEvidenceBundle seb = sebElement.getValue();
+        return element(sebElement.getId(), RespondentStatementV2.builder()
+            .respondentId(respondentId)
+            .respondentName(respondentName)
+            .confidential(seb.getConfidential())
+            .dateTimeReceived(seb.getDateTimeReceived())
+            .dateTimeUploaded(seb.getDateTimeUploaded())
+            .document(seb.getDocument())
+            .documentAcknowledge(seb.getDocumentAcknowledge())
+            .expertReportType(seb.getExpertReportType())
+            .hasConfidentialAddress(seb.getHasConfidentialAddress())
+            .name(seb.getName())
+            .notes(seb.getNotes())
+            .removalReason(seb.getRemovalReason())
+            .translatedDocument(seb.getTranslatedDocument())
+            .translationRequirements(seb.getTranslationRequirements())
+            .translationUploadDateTime(seb.getTranslationUploadDateTime())
+            .type(seb.getType())
+            .uploadedBy(seb.getUploadedBy())
+            .uploadedBySolicitor(seb.getUploadedBySolicitor())
+            .build());
+    }
+
     public Map<String, Object> migrateRespondentStatement(CaseData caseData, String migrationId) {
-        List<Element<SupportingEvidenceBundle>> respStmtList =
+        List<Element<RespondentStatementV2>> respStmtList =
             caseData.getRespondentStatements().stream()
-                .flatMap(rs -> rs.getValue().getSupportingEvidenceNC().stream())
+                .flatMap(rs -> {
+                    UUID respondentId = rs.getValue().getRespondentId();
+                    String respondentName = rs.getValue().getRespondentName();
+                    return rs.getValue().getSupportingEvidenceNC().stream().map(
+                        seb -> toRespondentStatementV2(respondentId, respondentName, seb)
+                    );
+                })
                 .collect(toList());
-        List<Element<SupportingEvidenceBundle>> respStmtListLA =
+        List<Element<RespondentStatementV2>> respStmtListLA =
             caseData.getRespondentStatements().stream()
-                .flatMap(rs -> rs.getValue().getSupportingEvidenceLA().stream())
+                .flatMap(rs -> {
+                    UUID respondentId = rs.getValue().getRespondentId();
+                    String respondentName = rs.getValue().getRespondentName();
+                    return rs.getValue().getSupportingEvidenceLA().stream().map(
+                        seb -> toRespondentStatementV2(respondentId, respondentName, seb)
+                    );
+                })
                 .filter(seb -> !respStmtList.contains(seb))
                 .collect(toList());
-        List<Element<SupportingEvidenceBundle>> respStmtListCTSC =
+        List<Element<RespondentStatementV2>> respStmtListCTSC =
             caseData.getRespondentStatements().stream()
-                .flatMap(rs -> rs.getValue().getSupportingEvidenceBundle().stream())
+                .flatMap(rs -> {
+                    UUID respondentId = rs.getValue().getRespondentId();
+                    String respondentName = rs.getValue().getRespondentName();
+                    return rs.getValue().getSupportingEvidenceBundle().stream().map(
+                        seb -> toRespondentStatementV2(respondentId, respondentName, seb)
+                    );
+                })
                 .filter(seb -> !respStmtList.contains(seb) && !respStmtListLA.contains(seb))
                 .collect(toList());
 
