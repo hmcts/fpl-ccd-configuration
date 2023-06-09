@@ -5,4 +5,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 public interface WithDocument {
 
     DocumentReference getDocument();
+
+    String getRemovalReason();
 }

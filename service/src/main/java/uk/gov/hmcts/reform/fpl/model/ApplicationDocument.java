@@ -27,6 +27,7 @@ public class ApplicationDocument implements FurtherDocument, WithDocument {
     private String includedInSWET;
     private List<String> documentAcknowledge;
     private List<String> confidential;
+    private String removalReason;
 
     @JsonIgnore
     public boolean hasDocument() {

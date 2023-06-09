@@ -22,6 +22,7 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOC
 public class HearingDocument extends DocumentMetaData implements WithDocument {
     protected String hearing;
     protected DocumentReference document;
+    private String removalReason;
     protected String hasConfidentialAddress;
     protected List<String> documentAcknowledge;
 
