@@ -27,8 +27,9 @@ public class HearingDocuments {
     private final List<Element<CourtBundle>> courtBundleList;
     // the element ID is the ID of the linked hearing
     private final List<Element<CaseSummary>> caseSummaryList;
-    private final List<Element<CaseSummary>> caseSummaryListCTSC;
     private final List<Element<CaseSummary>> caseSummaryListLA;
+    private final List<Element<CaseSummary>> caseSummaryListCTSC;
+    private final List<Element<CaseSummary>> caseSummaryListRemoved;
 
     // the element ID of each position statement is unique
     @Deprecated(since = "DFPL-1491")
