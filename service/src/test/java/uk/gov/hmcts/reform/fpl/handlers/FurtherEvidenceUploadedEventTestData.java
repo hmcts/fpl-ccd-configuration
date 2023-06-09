@@ -266,6 +266,7 @@ public class FurtherEvidenceUploadedEventTestData {
         return createDummyEvidenceBundle(name, uploadedBy, confidential, docRef, DEFAULT_FURTHER_EVIDENCE_TYPE);
     }
 
+    @SuppressWarnings("unchecked")
     public static SupportingEvidenceBundle  createDummyEvidenceBundle(final String name, final String uploadedBy,
                                                                       boolean confidential, DocumentReference docRef,
                                                                       FurtherEvidenceType type) {
