@@ -705,6 +705,10 @@ public class CaseData extends CaseDataParent {
     private final List<Element<CourtAdminDocument>> otherCourtAdminDocuments;
     private final List<Element<ScannedDocument>> scannedDocuments;
 
+    /**
+     * @deprecated Data restructure due to CaseFileView change. Making use of respStmtList, respStmtListLA and
+     * respStmtListCTSC in the future which are defined in CaseDataParent
+     */
     @Deprecated(since = "DFPL-1438")
     private final List<Element<RespondentStatement>> respondentStatements;
     private final Object manageDocumentsHearingList;
