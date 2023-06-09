@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.validation.groups.SecureAccommodationGroup;
 
@@ -21,9 +20,10 @@ import javax.validation.constraints.NotNull;
 @Data
 public class CaseDataParent {
 
-    protected final List<Element<DocumentReference>> respStmtList;
-    protected final List<Element<DocumentReference>> respStmtListLA;
-    protected final List<Element<DocumentReference>> respStmtListCTSC;
+    protected final List<Element<RespondentStatementV2>> respStmtList;
+    protected final List<Element<RespondentStatementV2>> respStmtListLA;
+    protected final List<Element<RespondentStatementV2>> respStmtListCTSC;
+    protected final List<Element<RespondentStatementV2>> respStmtListHidden;
     protected final List<Element<Direction>> allParties;
     protected final List<Element<Direction>> allPartiesCustom;
     protected final List<Element<Direction>> localAuthorityDirections;

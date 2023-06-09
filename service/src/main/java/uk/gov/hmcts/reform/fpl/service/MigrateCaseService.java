@@ -710,4 +710,28 @@ public class MigrateCaseService {
             return Map.of("courtBundleListV2", listOfHearingCourtBundles);
         }
     }
+
+    public Map<String, Object> migrateRespondentStatement(CaseData caseData, String migrationId) {
+        List<Element<SupportingEvidenceBundle>> respStmtList =
+            caseData.getRespondentStatements().stream()
+                .flatMap(rs -> rs.getValue().getSupportingEvidenceNC().stream())
+                .collect(toList());
+        List<Element<SupportingEvidenceBundle>> respStmtListLA =
+            caseData.getRespondentStatements().stream()
+                .flatMap(rs -> rs.getValue().getSupportingEvidenceLA().stream())
+                .filter(seb -> !respStmtList.contains(seb))
+                .collect(toList());
+        List<Element<SupportingEvidenceBundle>> respStmtListCTSC =
+            caseData.getRespondentStatements().stream()
+                .flatMap(rs -> rs.getValue().getSupportingEvidenceBundle().stream())
+                .filter(seb -> !respStmtList.contains(seb) && !respStmtListLA.contains(seb))
+                .collect(toList());
+
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("respStmtList", respStmtList);
+        ret.put("respStmtListLA", respStmtListLA);
+        ret.put("respStmtListCTSC", respStmtListCTSC);
+        ret.put("respondentStatements", null);
+        return ret;
+    }
 }
