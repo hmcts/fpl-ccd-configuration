@@ -1,0 +1,32 @@
+[
+  {
+    "email": "hmcts-admin@example.com",
+    "id": "e24fb55f-4911-4705-a07e-4f0ed5f62539",
+    "roleAssignments": [
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "ctsc",
+        "grantType": "STANDARD",
+        "roleCategory": "CTSC",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {
+          "caseType": "CARE_SUPERVISION_EPO",
+          "jurisdiction": "PUBLICLAW"
+        },
+        "authorisations": [ "PUBLICLAW" ]
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "hmcts-ctsc",
+        "grantType": "BASIC",
+        "roleCategory": "CTSC",
+        "classification": "PRIVATE",
+        "readOnly": true,
+        "authorisations": [],
+        "attributes": {}
+      }
+    ],
+    "overrideAll": true
+  }
+]

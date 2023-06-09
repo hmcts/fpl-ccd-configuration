@@ -38,5 +38,17 @@
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
     "FieldShowCondition": "allocatedJudge=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "listGatekeepingHearing",
+    "CaseFieldID": "judicialUser",
+    "PageFieldDisplayOrder": 10,
+    "DisplayContext": "MANDATORY",
+    "PageID": "ListGatekeepingHearingAllocatedJudge",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N"
   }
 ]

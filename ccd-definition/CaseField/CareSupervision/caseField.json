@@ -2,6 +2,15 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "judicialUser",
+    "Label": "Judicial User",
+    "FieldType": "JudicialUser",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "taskList",
     "Label": "Case name",
     "FieldType": "Text",
