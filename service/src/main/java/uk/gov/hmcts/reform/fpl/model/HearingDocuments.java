@@ -29,13 +29,13 @@ public class HearingDocuments {
     private final List<Element<CaseSummary>> caseSummaryList;
 
     // the element ID of each position statement is unique
-    @Deprecated
+    @Deprecated(since = "DFPL-1491")
     private final List<Element<PositionStatementChild>> positionStatementChildListV2;
     private final List<Element<PositionStatementChild>> posStmtChildList;
     private final List<Element<PositionStatementChild>> posStmtChildListLA;
     private final List<Element<PositionStatementChild>> posStmtChildListCTSC;
     // the element ID of each position statement is unique
-    @Deprecated
+    @Deprecated(since = "DFPL-1491")
     private final List<Element<PositionStatementRespondent>> positionStatementRespondentListV2;
     private final List<Element<PositionStatementRespondent>> posStmtRespList;
     private final List<Element<PositionStatementRespondent>> posStmtRespListLA;
