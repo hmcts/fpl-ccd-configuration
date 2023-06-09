@@ -137,7 +137,7 @@ public class FurtherEvidenceUploadedEventTestData {
             List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle
     ) {
         return supportingEvidenceBundle.stream()
-                .map(evidenceBundle -> element(evidenceBundle.getId(),
+                .map(evidenceBundle -> element(evidenceBundle.getId(), (SupportingEvidenceBundle)
                     evidenceBundle.getValue().toBuilder().type(null).build()))
                 .collect(Collectors.toList());
     }
