@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.email.content.cmo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -19,6 +20,7 @@ import java.util.List;
 import static java.lang.System.lineSeparator;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.uncapitalize;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 
 @Component
@@ -27,10 +29,12 @@ public class DraftOrdersUploadedContentProvider extends AbstractEmailContentProv
     private final EmailNotificationHelper helper;
 
     public DraftOrdersUploadedTemplate buildContent(CaseData caseData, HearingBooking hearing,
-                                                    AbstractJudge judge, List<HearingOrder> orders) {
+                                                    AbstractJudge judge, List<HearingOrder> orders,
+                                                    HearingOrderType hearingOrderType) {
 
         return DraftOrdersUploadedTemplate.builder()
-            .caseUrl(getCaseUrl(caseData.getId(), TabUrlAnchor.DRAFT_ORDERS))
+            .caseUrl(getCaseUrl(caseData.getId(),
+                (DRAFT_CMO.equals(hearingOrderType) ? TabUrlAnchor.HEARING_DOCUMENTS : TabUrlAnchor.DRAFT_ORDERS)))
             .judgeTitle(getJudgeTitle(judge))
             .judgeName(getJudgeName(judge))
             .lastName(helper.getEldestChildLastName(caseData.getAllChildren()))

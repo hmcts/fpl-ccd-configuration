@@ -2,6 +2,8 @@ spring:
   config:
     activate:
       on-profile: integration-test
+  main:
+    lazy-initialization: true
 
 management:
   endpoints:
