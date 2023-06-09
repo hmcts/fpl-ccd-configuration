@@ -229,6 +229,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "posStmtChildListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatementChild",
+    "Label": "Position statement child",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "positionStatementRespondentListV2",
     "FieldType": "Collection",
     "FieldTypeParameter": "PositionStatementRespondent",
@@ -261,6 +271,16 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "posStmtRespListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatementRespondent",
+    "Label": "Position statement respondent",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "posStmtRespListRemoved",
     "FieldType": "Collection",
     "FieldTypeParameter": "PositionStatementRespondent",
     "Label": "Position statement respondent",
