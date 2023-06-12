@@ -29,7 +29,10 @@ public class CftlibConfig implements CFTLibConfigurer {
             "caseworker-publiclaw-courtadmin",
             "caseworker-caa",
             "ctsc",
-            "hmcts-ctsc"
+            "hmcts-ctsc",
+            "GS_profile",
+            "caseworker-ras-validation",
+            "caseworker-wa-task-configuration",
         };
         lib.createRoles(roles);
 

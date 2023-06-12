@@ -68,6 +68,14 @@ rd_professional:
   api:
     url: ${RD_PROFESSIONAL_API_URL:http://localhost:8765}
 
+rd_judicial:
+  api:
+    url: ${RD_JUDICIAL_API_URL:http://localhost:8765}
+
+am_role_assignment:
+  api:
+    url: ${AM_API_URL:http://localhost:4096}
+
 fees-register:
   api:
     url: ${FEES_REGISTER_API_URL:http://localhost:8765}

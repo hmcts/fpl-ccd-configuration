@@ -28,5 +28,25 @@
       }
     ],
     "overrideAll": true
+  },
+  {
+    "email": "damian@swansea.gov.uk",
+    "id": "365465",
+    "roleAssignments": [
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "idam:caseworker-publiclaw-solicitor",
+        "grantType": "STANDARD",
+        "roleCategory": "CTSC",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {
+          "caseType": "CARE_SUPERVISION_EPO",
+          "jurisdiction": "PUBLICLAW"
+        },
+        "authorisations": [ "PUBLICLAW" ]
+      }
+    ],
+    "overrideAll": true
   }
 ]

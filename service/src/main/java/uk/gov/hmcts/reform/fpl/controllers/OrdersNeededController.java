@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.am.client.AmApi;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.service.CourtLookUpService;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
 
 import java.util.List;
 import java.util.Map;
@@ -46,6 +48,8 @@ public class OrdersNeededController extends CallbackController {
         .collect(Collectors.toList());
     private final HmctsCourtLookupConfiguration courtLookup;
     private final CourtLookUpService courtLookUpService;
+
+    private final JudicialService judicialService;
 
     @PostMapping("/mid-event")
     @SuppressWarnings("unchecked")
@@ -164,6 +168,8 @@ public class OrdersNeededController extends CallbackController {
         if (ordersFieldName.equals("ordersSolicitor")) {
             data.put("orders", data.get("ordersSolicitor"));
         }
+
+        judicialService.assignAllocatedJudge(caseDetails.getId(), caseData.getJudicialUser().getIdamId());
 
         return respond(caseDetails);
     }

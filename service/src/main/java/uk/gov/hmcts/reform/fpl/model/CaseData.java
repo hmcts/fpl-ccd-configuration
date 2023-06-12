@@ -180,6 +180,8 @@ public class CaseData extends CaseDataParent {
     private Court court;
     private List<Element<Court>> pastCourtList;
 
+    private JudicialUser judicialUser;
+
     public List<Element<Court>> getPastCourtList() {
         return defaultIfNull(pastCourtList, new ArrayList<>());
     }
