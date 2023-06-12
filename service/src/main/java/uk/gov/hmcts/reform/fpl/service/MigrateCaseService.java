@@ -737,7 +737,7 @@ public class MigrateCaseService {
             .build());
     }
 
-    public Map<String, Object> migrateRespondentStatement(CaseData caseData, String migrationId) {
+    public Map<String, Object> migrateRespondentStatement(CaseData caseData) {
         List<Element<RespondentStatementV2>> respStmtList =
             caseData.getRespondentStatements().stream()
                 .flatMap(rs -> {

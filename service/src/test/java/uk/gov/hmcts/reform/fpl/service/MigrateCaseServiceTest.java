@@ -33,6 +33,8 @@ import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatementV2;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
@@ -1749,6 +1751,95 @@ class MigrateCaseServiceTest {
                 .contains(positionStatementWithConfidentialAddress);
             assertThat(updatedFields).extracting("posStmtRespList").asList()
                 .contains(positionStatementRespoondentElement);
+        }
+
+        @Test
+        void shouldMigrateNonConfidentialRespondentStatement() {
+            UUID respondentOneId = UUID.randomUUID();
+            UUID respondentTwoId = UUID.randomUUID();
+
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .document(document1)
+                .build();
+
+            Element<RespondentStatement> respondentStatementOne = element(UUID.randomUUID(),
+                RespondentStatement.builder().respondentId(respondentOneId).respondentName("NAME 1")
+                    .supportingEvidenceBundle(List.of(element(doc1Id, sebOne)))
+                    .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .respondentStatements(List.of(respondentStatementOne))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateRespondentStatement(caseData);
+
+            assertThat(updatedFields).extracting("respondentStatements").isNull();
+            assertThat(updatedFields).extracting("respStmtList").asList()
+                .contains(
+                    element(doc1Id, RespondentStatementV2.builder()
+                        .respondentId(respondentOneId)
+                        .respondentName("NAME 1")
+                        .document(document1)
+                        .build())
+                );
+            assertThat(updatedFields).extracting("respStmtListLA").asList().isEmpty();
+            assertThat(updatedFields).extracting("respStmtListCTSC").asList().isEmpty();
+        }
+
+        @Test
+        void shouldMigrateNonConfidentialMultipleRespondentStatements() {
+            UUID respondentOneId = UUID.randomUUID();
+            UUID respondentTwoId = UUID.randomUUID();
+
+            UUID doc1Id = UUID.randomUUID();
+            UUID doc2Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .document(document1)
+                .build();
+
+            DocumentReference document2 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebTwo = SupportingEvidenceBundle.builder()
+                .document(document2)
+                .build();
+
+            Element<RespondentStatement> respondentStatementOne = element(UUID.randomUUID(),
+                RespondentStatement.builder().respondentId(respondentOneId).respondentName("NAME 1")
+                    .supportingEvidenceBundle(List.of(element(doc1Id, sebOne)))
+                    .build());
+            Element<RespondentStatement> respondentStatementTwo = element(UUID.randomUUID(),
+                RespondentStatement.builder().respondentId(respondentTwoId).respondentName("NAME 2")
+                    .supportingEvidenceBundle(List.of(element(doc2Id, sebTwo)))
+                    .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .respondentStatements(List.of(respondentStatementOne, respondentStatementTwo))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateRespondentStatement(caseData);
+
+            assertThat(updatedFields).extracting("respondentStatements").isNull();
+            assertThat(updatedFields).extracting("respStmtList").asList()
+                .contains(
+                    element(doc1Id, RespondentStatementV2.builder()
+                        .respondentId(respondentOneId)
+                        .respondentName("NAME 1")
+                        .document(document1)
+                        .build()),
+                    element(doc2Id, RespondentStatementV2.builder()
+                        .respondentId(respondentTwoId)
+                        .respondentName("NAME 2")
+                        .document(document2)
+                        .build())
+                );
+            assertThat(updatedFields).extracting("respStmtListLA").asList().isEmpty();
+            assertThat(updatedFields).extracting("respStmtListCTSC").asList().isEmpty();
         }
     }
 
