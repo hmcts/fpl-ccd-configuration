@@ -529,6 +529,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
+    "Publish": "Y",
     "EndButtonLabel": "Save and continue"
   },
   {
