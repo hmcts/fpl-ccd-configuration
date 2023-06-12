@@ -16,15 +16,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "WorkAllocationTaskType",
-    "ListElementCode": "ORDER_UPLOADED",
-    "ListElement": "Order uploaded",
+    "ListElementCode": "CORRESPONDENCE_UPLOADED",
+    "ListElement": "Correspondence Uploaded",
     "DisplayOrder": 2
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "WorkAllocationTaskType",
-    "ListElementCode": "CORRESPONDENCE_UPLOADED",
-    "ListElement": "Correspondence Uploaded",
+    "ListElementCode": "ORDER_UPLOADED",
+    "ListElement": "Order uploaded",
     "DisplayOrder": 3
   },
   {

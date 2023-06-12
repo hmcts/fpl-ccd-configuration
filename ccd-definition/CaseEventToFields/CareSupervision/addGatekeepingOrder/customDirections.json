@@ -1,0 +1,53 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "useServiceRoute",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "CustomDirections",
+    "PageDisplayOrder": 5,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "gatekeepingOrderRouter=\"DO NOT SHOW\"",
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "useUploadRoute",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "PageID": "CustomDirections",
+    "PageDisplayOrder": 5,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "gatekeepingOrderRouter=\"DO NOT SHOW\"",
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "gatekeepingOrderHasHearing2",
+    "PageFieldDisplayOrder": 0,
+    "DisplayContext": "READONLY",
+    "PageID": "CustomDirections",
+    "PageDisplayOrder": 5,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "customDirections=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "customDirections",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "COMPLEX",
+    "PageID": "CustomDirections",
+    "PageDisplayOrder": 5,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
+    "PageShowCondition": "gatekeepingOrderRouter=\"SERVICE\" OR useServiceRoute=\"YES\""
+  }
+]

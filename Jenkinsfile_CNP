@@ -8,6 +8,9 @@ def type = "java"
 
 def product = "fpl"
 def component = "case-service"
+
+def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
+
 AppPipelineConfig pipelineConf;
 
 def serviceSecrets = [
@@ -157,11 +160,13 @@ withPipeline(type, product, component) {
 
   onMaster() {
     env.ENV = 'aat'
-    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER,
+                  AppPipelineDsl.PactRoles.CONSUMER_DEPLOY_CHECK])
   }
   onPR() {
     env.ENV = 'preview'
-    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER,
+                  AppPipelineDsl.PactRoles.CONSUMER_DEPLOY_CHECK])
   }
   onDemo {
     env.ENV = 'demo'
@@ -187,11 +192,17 @@ withPipeline(type, product, component) {
   }
 
   before('smoketest:saat') {
+    yarnBuilder.yarn('yarn-update')
+    yarnBuilder.yarn('install-dependencies')
+    yarnBuilder.yarn('lint-ui-tests')
     env.URL = "https://ccd-case-management-web-saat.service.core-compute-saat.internal"
     archiveCoreCaseDataDefinitions('saat')
   }
 
   before('smoketest:preview') {
+    yarnBuilder.yarn('yarn-update')
+    yarnBuilder.yarn('install-dependencies')
+    yarnBuilder.yarn('lint-ui-tests')
     sh """
       eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
       ./fpla-docker/bin/add-roles.sh
@@ -201,8 +212,8 @@ withPipeline(type, product, component) {
     uploadCoreCaseDataDefinitions('preview', '0')
 
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
-    env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
-    env.URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
+    env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+    env.URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.SWANSEA_ORG_ID = "62LYJRF"
     env.MOCKED_PAYMENTS = false
     env.PARALLEL_CHUNKS = 12
@@ -243,12 +254,10 @@ withPipeline(type, product, component) {
   }
 
   before('functionalTest:aat') {
-    env.SKIP_BROWSER_TESTS = 'true'
   }
 
   before('functionalTest:demo') {
     env.SKIP_API_TESTS = 'true'
-    env.SKIP_BROWSER_TESTS = 'true'
   }
 
   afterAlways('functionalTest:aat') {
@@ -260,11 +269,14 @@ withPipeline(type, product, component) {
   }
 
   before('functionalTest:preview') {
-    env.PARALLEL_CHUNKS = 12
-    env.TESTS_SELECTOR = '(?=.*)^(?!.*(@smoke-tests|@flaky))'
+    yarnBuilder.yarn('yarn-update')
+    yarnBuilder.yarn('install-dependencies')
+    yarnBuilder.yarn('lint-ui-tests')
   }
 
-  afterAlways('functionalTest:preview') {
+  afterSuccess('functionalTest:preview') {
+    env.PARALLEL_CHUNKS = 12
+    yarnBuilder.yarn('test:functional')
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
@@ -288,11 +300,14 @@ withPipeline(type, product, component) {
   }
 
   before('smoketest:aat') {
+    yarnBuilder.yarn('yarn-update')
+    yarnBuilder.yarn('install-dependencies')
+    yarnBuilder.yarn('lint-ui-tests')
     env.URL = "https://manage-case.aat.platform.hmcts.net"
-    env.TEST_CONF_FPL_URL = "https://fpl-case-service-staging.service.core-compute-aat.internal"
-    env.SMOKE_TESTS_SELECTOR = "@smoke-tests"
+    env.TEST_CONF_FPL_URL = "https://fpl-case-service-staging.aat.platform.hmcts.net"
   }
 
-  def branchesToSync = ['demo', 'perftest', 'ithc']
+  //def branchesToSync = ['demo', 'perftest', 'ithc'] TODO: uncomment this once testing in demo for WA completed
+  def branchesToSync = ['perftest', 'ithc']
   syncBranchesWithMaster(branchesToSync)
 }

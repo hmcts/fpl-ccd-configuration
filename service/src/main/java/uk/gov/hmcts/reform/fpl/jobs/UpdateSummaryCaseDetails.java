@@ -49,6 +49,15 @@ public class UpdateSummaryCaseDetails implements Job {
     private final FeatureToggleService toggleService;
     private final CaseSummaryService summaryService;
 
+    public Map<String, Object> getUpdates(CaseDetails caseDetails) {
+        CaseData caseData = converter.convert(caseDetails);
+        Map<String, Object> updatedData = summaryService.generateSummaryFields(caseData);
+        if (shouldUpdate(updatedData, caseData)) {
+            return updatedData;
+        }
+        return Map.of();
+    }
+
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
         final String jobName = jobExecutionContext.getJobDetail().getKey().getName();
@@ -59,9 +68,6 @@ public class UpdateSummaryCaseDetails implements Job {
         final ESQuery query = buildQuery(toggleService.isSummaryTabFirstCronRunEnabled());
 
         int total;
-        int skipped = 0;
-        int updated = 0;
-        int failed = 0;
 
         try {
             total = searchService.searchResultsSize(query);
@@ -74,6 +80,9 @@ public class UpdateSummaryCaseDetails implements Job {
             return;
         }
 
+        int updated = 0;
+        int failed = 0;
+
         int pages = paginate(total);
         log.debug("Job '{}' split the search query over {} pages", jobName, pages);
         for (int i = 0; i < pages; i++) {
@@ -82,17 +91,12 @@ public class UpdateSummaryCaseDetails implements Job {
                 for (CaseDetails caseDetails : cases) {
                     final Long caseId = caseDetails.getId();
                     try {
-                        CaseData caseData = converter.convert(caseDetails);
-                        Map<String, Object> updatedData = summaryService.generateSummaryFields(caseData);
-                        if (shouldUpdate(updatedData, caseData)) {
-                            log.debug("Job '{}' updating case {}", jobName, caseId);
-                            ccdService.triggerEvent(JURISDICTION, CASE_TYPE, caseId, EVENT_NAME, updatedData);
-                            log.info("Job '{}' updated case {}", jobName, caseId);
-                            updated++;
-                        } else {
-                            log.debug("Job '{}' skipped case {}", jobName, caseId);
-                            skipped++;
-                        }
+                        log.debug("Job '{}' updating case {}", jobName, caseId);
+                        ccdService.performPostSubmitCallback(
+                            caseId,
+                            EVENT_NAME,
+                            this::getUpdates
+                        );
                     } catch (Exception e) {
                         log.error("Job '{}' could not update case {} due to {}", jobName, caseId, e.getMessage(), e);
                         failed++;
@@ -105,7 +109,7 @@ public class UpdateSummaryCaseDetails implements Job {
             }
         }
 
-        log.info("Job '{}' finished. {}", jobName, buildStats(total, skipped, updated, failed));
+        log.info("Job '{}' finished. {}", jobName, buildStats(total, 0, updated, failed));
     }
 
     private boolean shouldUpdate(Map<String, Object> updatedData, CaseData oldData) {

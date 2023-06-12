@@ -88,27 +88,12 @@ task integration(type: Test, description: 'Runs the integration tests.', group: 
 }
 check.dependsOn integration
 
-task installDependencies(type: Exec, description: 'Installs Yarn dependencies.') {
-  commandLine '/usr/bin/yarn', '--mutex', 'network', '--frozen-lockfile', '--silent', 'install'
-}
-
-task checkDependenciesIntegrity(type: Exec, description: 'Checks integrity of Yarn dependencies.') {
-  commandLine '/usr/bin/yarn', '--mutex', 'network', '--frozen-lockfile', '--silent', 'check', '--integrity'
-}
-
 task lintUserInterfaceTests(type: Exec, description: 'Runs linting of E2E tests.') {
-  commandLine '/usr/bin/yarn', '--silent', 'lint'
+  commandLine '/usr/bin/yarn', 'lint'
 }
 
 task runSmokeTests(type: Exec, description: 'Runs smoke tests.') {
-  commandLine '/usr/bin/yarn', '--silent', 'test:smoke'
-}
-
-task runBrowserTests(type: Exec, description: 'Runs brower tests.') {
-  onlyIf {
-    return System.env.SKIP_BROWSER_TESTS == null || System.env.SKIP_BROWSER_TESTS == 'false'
-  }
-  commandLine '/usr/bin/yarn', '--silent', 'test:functional'
+  commandLine '/usr/bin/yarn', 'test:smoke'
 }
 
 task runApiTests(type: Test, description: 'Runs api tests.', group: 'Verification') {
@@ -136,7 +121,6 @@ task runContractTests(type: Test, description: 'Runs contract tests.', group: 'V
     classpath = sourceSets.contractTest.runtimeClasspath
     systemProperty 'pact.rootDir', "pacts"
     testLogging.showStandardStreams = true
-
 }
 
 task runAndPublishConsumerPactTests(type: Test, description: 'Publish pact test to broker.', group: 'Verification') {
@@ -181,26 +165,26 @@ task smoke(type: Test, description: 'Runs smoke test.', group: 'Verification') {
 }
 
 task runCodeceptSmokeTest(type: Test, description: 'Runs the old codecept smoke test.', group: 'Verification') {
-  dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runSmokeTests))
+  dependsOn(inStrictOrder(runSmokeTests))
 }
 
 task functional(description: 'Runs the functional tests.') {
-  dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runApiTests, runBrowserTests))
+   dependsOn(inStrictOrder(runApiTests))
 }
 
 task contract(description: 'Runs the contract tests.') {
-    dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, runContractTests))
+    dependsOn(inStrictOrder(runContractTests))
 }
 
 task runCrossBrowserTests(type: Exec, description: 'Runs ExpertUI cross brower tests.') {
   onlyIf {
     return System.env.SKIP_BROWSER_TESTS == null || System.env.SKIP_BROWSER_TESTS == 'false'
   }
-  commandLine '/usr/bin/yarn', '--silent', 'test:crossbrowser'
+  commandLine '/usr/bin/yarn', 'test:crossbrowser'
 }
 
 task crossbrowser(description: 'Runs crossbrowser tests.') {
-  dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runCrossBrowserTests))
+  dependsOn(inStrictOrder(lintUserInterfaceTests, runCrossBrowserTests))
 }
 
 task fortifyScan(type: JavaExec)  {
@@ -332,7 +316,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0'
   compile group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
-  compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '3.0.3'
+  compile group: 'com.github.hmcts', name: 'send-letter-client', version: '3.0.16'
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.3-RELEASE'
 
   compile group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'

@@ -13,6 +13,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -38,7 +39,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedV
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithRandomUUID;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 
 class ElementUtilsTest {
 
@@ -356,21 +357,21 @@ class ElementUtilsTest {
 
         @Test
         void shouldWrapAllObjectsWithElement() {
-            assertThat(wrapElementsWithRandomUUID("First", "Second")).hasSize(2);
-            assertThat(wrapElementsWithRandomUUID("First", "Second")
+            assertThat(wrapElementsWithUUIDs("First", "Second")).hasSize(2);
+            assertThat(wrapElementsWithUUIDs("First", "Second")
                 .stream().map(Element::getId).collect(toSet()))
                 .hasSize(2);
         }
 
         @Test
         void shouldReturnEmptyElementListIfNoObjectsToWrap() {
-            assertThat(wrapElementsWithRandomUUID()).isEmpty();
+            assertThat(wrapElementsWithUUIDs()).isEmpty();
         }
 
         @Test
         void shouldWrapNonNullObjectsWithElement() {
-            assertThat(wrapElementsWithRandomUUID("First", null)).hasSize(1);
-            assertThat(wrapElementsWithRandomUUID("First", null)
+            assertThat(wrapElementsWithUUIDs("First", null)).hasSize(1);
+            assertThat(wrapElementsWithUUIDs("First", null)
                 .stream().map(Element::getId).collect(toSet()))
                 .hasSize(1);
         }
@@ -382,25 +383,25 @@ class ElementUtilsTest {
         @Test
         void shouldWrapAllObjectsWithElement() {
             List<String> elements = List.of("First", "Second");
-            assertThat(wrapElementsWithRandomUUID(elements)).extracting(Element::getValue).isEqualTo(elements);
+            assertThat(wrapElementsWithUUIDs(elements)).extracting(Element::getValue).isEqualTo(elements);
         }
 
         @Test
         void shouldWrapAllObjectsWithElementWithUniqueId() {
             List<String> elements = List.of("First", "Second");
-            assertThat(wrapElementsWithRandomUUID(elements).stream().map(Element::getId).collect(Collectors.toSet()))
+            assertThat(wrapElementsWithUUIDs(elements).stream().map(Element::getId).collect(Collectors.toSet()))
                 .hasSize(2);
         }
 
         @Test
         void shouldReturnEmptyElementListIfNoObjectsToWrap() {
-            assertThat(wrapElementsWithRandomUUID(emptyList())).isEmpty();
+            assertThat(wrapElementsWithUUIDs(emptyList())).isEmpty();
         }
 
         @Test
         void shouldReturnEmptyListWhenListOfElementsIsNull() {
             List<String> elements = null;
-            assertThat(wrapElementsWithRandomUUID(elements)).isEmpty();
+            assertThat(wrapElementsWithUUIDs(elements)).isEmpty();
         }
     }
 
@@ -518,6 +519,48 @@ class ElementUtilsTest {
 
             assertThat(actualElement.getValue()).isEqualTo("Test");
             assertThat(actualElement.getId()).isEqualTo(id);
+        }
+    }
+
+    @Nested
+    class RemoveElement {
+
+        @Test
+        void shouldRemoveElement() {
+            UUID id = UUID.randomUUID();
+
+            Element<String> element1 = element("test");
+            Element<String> element2 = element("string");
+            Element<String> element3 = element("element");
+            Element<String> elementToBeRemoved = element(id, "element to be removed");
+
+            List<Element<String>> elements = List.of(element1, element2, element3, elementToBeRemoved);
+
+            assertThat(ElementUtils.removeElementWithUUID(elements, id))
+                .containsOnly(element1, element2, element3);
+        }
+
+        @Test
+        void shouldNotRemoveElementIfIdNotFound() {
+            Element<String> element1 = element("test");
+            Element<String> element2 = element("string");
+            Element<String> element3 = element("element");
+
+            List<Element<String>> elements = List.of(element1, element2, element3);
+
+            assertThat(ElementUtils.removeElementWithUUID(elements, UUID.randomUUID()))
+                .containsOnly(element1, element2, element3);
+        }
+
+        @Test
+        void shouldRemoveElementIfOnlyOneElementExist() {
+            UUID id = UUID.randomUUID();
+
+            Element<String> elementToBeRemoved = element(id, "element to be removed");
+
+            List<Element<String>> elements = List.of(elementToBeRemoved);
+
+            assertThat(ElementUtils.removeElementWithUUID(elements, id)).isEmpty();
         }
     }
 }

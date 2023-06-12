@@ -136,6 +136,7 @@ class GeneratedOrderEventHandlerTest {
     @BeforeEach
     void before() {
         given(CASE_DATA.getId()).willReturn(CASE_ID);
+        given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
 
         given(localAuthorityRecipients.getRecipients(
             RecipientsRequest.builder().caseData(CASE_DATA).build()
@@ -339,6 +340,7 @@ class GeneratedOrderEventHandlerTest {
                 .build();
 
         CaseData caseData = CaseData.builder()
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .selectedHearingId(selectedHearingId)
                 .hearingDetails(List.of(
                         hearingBookingElementOne,

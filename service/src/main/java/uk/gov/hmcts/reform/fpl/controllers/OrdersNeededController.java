@@ -41,7 +41,7 @@ public class OrdersNeededController extends CallbackController {
         OrderType.CHILD_RECOVERY_ORDER,
         OrderType.REFUSE_CONTACT_WITH_CHILD,
         OrderType.SECURE_ACCOMMODATION_ORDER,
-        OrderType.EDUCATION_SUPERVISION__ORDER);
+        OrderType.EDUCATION_SUPERVISION_ORDER);
     public static final List<String> STANDALONE_ORDER_TYPE_NAME = STANDALONE_ORDER_TYPE.stream().map(OrderType::name)
         .collect(Collectors.toList());
     private final HmctsCourtLookupConfiguration courtLookup;
@@ -106,7 +106,7 @@ public class OrdersNeededController extends CallbackController {
                     data.remove("groundsForChildRecoveryOrder");
                 }
 
-                if (!orderTypes.contains(OrderType.EDUCATION_SUPERVISION__ORDER.name())) {
+                if (!orderTypes.contains(OrderType.EDUCATION_SUPERVISION_ORDER.name())) {
                     data.remove("groundsForEducationSupervisionOrder");
                 }
             });
@@ -179,6 +179,11 @@ public class OrdersNeededController extends CallbackController {
     }
 
     private Court getCourtSelection(String courtID) {
-        return courtLookup.getCourtByCode(courtID).orElse(null);
+        // This needs to get the court out of the NEW list of courts, the old onboarding way might not have all courts
+        // especially in the lower environments, we should also match the 'Family Court sitting at XYZ' pattern.
+        Optional<Court> court = Optional.ofNullable(courtLookUpService.getCourtByCode(courtID).orElse(null));
+        return court.map(c -> c.toBuilder()
+            .name("Family Court sitting at " + c.getName())
+            .build()).orElse(null);
     }
 }
