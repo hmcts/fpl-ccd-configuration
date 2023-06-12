@@ -351,9 +351,12 @@ public class ManageLocalAuthoritiesService {
             .map(DynamicList::getValueCode)
             .flatMap(courtLookUpService::getCourtByCode);
         if (chosenCourt.isPresent()) {
-            chosenCourt.get().setDateTransferred(time.now());
+            Court newCourt = chosenCourt.get().toBuilder()
+                .dateTransferred(time.now())
+                .name("Family Court sitting at " + chosenCourt.get().getName())
+                .build();
             caseData.setPastCourtList(buildPastCourtsList(caseData));
-            caseData.setCourt(chosenCourt.get());
+            caseData.setCourt(newCourt);
             return caseData.getCourt();
         }
         return null;
