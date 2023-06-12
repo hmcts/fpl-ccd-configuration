@@ -1680,7 +1680,7 @@ class MigrateCaseServiceTest {
                     .positionStatementChildListV2(List.of(positionStatementOne, positionStatementTwo)).build())
                 .build();
 
-            Map<String, Object> updatedFields = underTest.migratePositionStatementChild(caseData, MIGRATION_ID);
+            Map<String, Object> updatedFields = underTest.migratePositionStatementChild(caseData);
             assertThat(updatedFields).extracting("positionStatementChildListV2").isNull();
             assertThat(updatedFields).extracting("posStmtChildListLA").asList().isEmpty();
             assertThat(updatedFields).extracting("posStmtChildList").asList()
@@ -1701,7 +1701,7 @@ class MigrateCaseServiceTest {
                         positionStatementChildElement)).build())
                 .build();
 
-            Map<String, Object> updatedFields = underTest.migratePositionStatementChild(caseData, MIGRATION_ID);
+            Map<String, Object> updatedFields = underTest.migratePositionStatementChild(caseData);
             assertThat(updatedFields).extracting("positionStatementChildListV2").isNull();
             assertThat(updatedFields).extracting("posStmtChildListLA").asList()
                 .contains(positionStatementWithConfidentialAddress);
@@ -1722,7 +1722,7 @@ class MigrateCaseServiceTest {
                     .positionStatementRespondentListV2(List.of(positionStatementOne, positionStatementTwo)).build())
                 .build();
 
-            Map<String, Object> updatedFields = underTest.migratePositionStatementRespondent(caseData, MIGRATION_ID);
+            Map<String, Object> updatedFields = underTest.migratePositionStatementRespondent(caseData);
             assertThat(updatedFields).extracting("positionStatementRespondentListV2").isNull();
             assertThat(updatedFields).extracting("posStmtRespListLA").asList().isEmpty();
             assertThat(updatedFields).extracting("posStmtRespList").asList()
@@ -1743,7 +1743,7 @@ class MigrateCaseServiceTest {
                         positionStatementRespoondentElement)).build())
                 .build();
 
-            Map<String, Object> updatedFields = underTest.migratePositionStatementRespondent(caseData, MIGRATION_ID);
+            Map<String, Object> updatedFields = underTest.migratePositionStatementRespondent(caseData);
             assertThat(updatedFields).extracting("positionStatementRespondentListV2").isNull();
             assertThat(updatedFields).extracting("posStmtRespListLA").asList()
                 .contains(positionStatementWithConfidentialAddress);

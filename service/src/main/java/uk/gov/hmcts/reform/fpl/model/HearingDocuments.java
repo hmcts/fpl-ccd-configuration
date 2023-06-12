@@ -29,6 +29,12 @@ public class HearingDocuments {
     private final List<Element<CaseSummary>> caseSummaryList;
 
     // the element ID of each position statement is unique
+    /**
+     * positionStatementChildListV2.
+     *
+     * @deprecated Data restructure due to CaseFileView change. Making use of posStmtChildList, posStmtChildListLA and
+     *     posStmtChildListCTSC in the future
+     */
     @Deprecated(since = "DFPL-1491")
     private final List<Element<PositionStatementChild>> positionStatementChildListV2;
     private final List<Element<PositionStatementChild>> posStmtChildList;
@@ -36,6 +42,12 @@ public class HearingDocuments {
     private final List<Element<PositionStatementChild>> posStmtChildListCTSC;
     private final List<Element<PositionStatementChild>> posStmtChildListRemoved;
     // the element ID of each position statement is unique
+    /**
+     * positionStatementRespondentListV2.
+     *
+     * @deprecated Data restructure due to CaseFileView change. Making use of posStmtRespList, posStmtRespListLA and
+     *     posStmtRespListCTSC in the future
+     */
     @Deprecated(since = "DFPL-1491")
     private final List<Element<PositionStatementRespondent>> positionStatementRespondentListV2;
     private final List<Element<PositionStatementRespondent>> posStmtRespList;
@@ -79,7 +91,13 @@ public class HearingDocuments {
         return defaultIfNull(caseSummaryList, new ArrayList<>());
     }
 
-    @Deprecated
+    /**
+     * Method to get the position statement child list.
+     *
+     * @deprecated Data restructure due to CaseFileView change. Making use of getPosStmtChildList(),
+     *     getPosStmtChildListLA() and getPosStmtChildListCTSC() in the future
+     */
+    @Deprecated(since = "DFPL-1491")
     public List<Element<PositionStatementChild>> getPositionStatementChildListV2() {
         List<Element<PositionStatementChild>> oldList = defaultIfNull(positionStatementChildListV2, new ArrayList<>());
         List<Element<PositionStatementChild>> newList = defaultIfNull(posStmtChildList, new ArrayList<>());
@@ -98,7 +116,13 @@ public class HearingDocuments {
         return defaultIfNull(posStmtChildListCTSC, new ArrayList<>());
     }
 
-    @Deprecated
+    /**
+     * Method to get the position statement respondent list.
+     *
+     * @deprecated Data restructure due to CaseFileView change. Making use of getPosStmtRespList(),
+     *     getPosStmtRespListLA() and getPosStmtRespListCTSC() in the future
+     */
+    @Deprecated(since = "DFPL-1491")
     public List<Element<PositionStatementRespondent>> getPositionStatementRespondentListV2() {
         List<Element<PositionStatementRespondent>> oldList = defaultIfNull(positionStatementRespondentListV2,
             new ArrayList<>());
