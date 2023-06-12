@@ -42,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -365,6 +366,7 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
             .collect(toList());
 
         //checkUntil() -> for each org
+        checkUntil(() -> verify(concurrencyHelper, timeout(10000)).submitEvent(any(), eq(caseData.getId()),caseCaptor.capture()));
         // setup change field, submit to aac (org1), setup change field, submit to aac (org2), update case-summary
         verify(concurrencyHelper, times(5)).submitEvent(any(),
             eq(caseData.getId()), caseCaptor.capture()

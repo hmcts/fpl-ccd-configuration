@@ -110,7 +110,7 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
 
         verify(notificationClient).sendEmail(
             JUDICIAL_MESSAGE_REPLY_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, notificationReference(CASE_ID));
-        verify(concurrencyHelper).submitEvent(any(),
+        verify(concurrencyHelper, timeout(10000)).submitEvent(any(),
             eq(CASE_ID),
             eq(caseSummary()));
     }
