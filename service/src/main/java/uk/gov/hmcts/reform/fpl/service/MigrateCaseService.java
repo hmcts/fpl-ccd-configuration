@@ -57,6 +57,7 @@ public class MigrateCaseService {
     private final CourtService courtService;
     private final DocumentListService documentListService;
 
+    @SuppressWarnings("squid:CallToDeprecatedMethod")
     public Map<String, Object> migratePositionStatementChild(CaseData caseData) {
         List<Element<PositionStatementChild>> posStmtChildListLA = caseData.getHearingDocuments()
             .getPositionStatementChildListV2().stream()
@@ -76,6 +77,7 @@ public class MigrateCaseService {
         return ret;
     }
 
+    @SuppressWarnings("squid:CallToDeprecatedMethod")
     public Map<String, Object> migratePositionStatementRespondent(CaseData caseData) {
         List<Element<PositionStatementRespondent>> posStmtRespListLA = caseData.getHearingDocuments()
             .getPositionStatementRespondentListV2().stream()
