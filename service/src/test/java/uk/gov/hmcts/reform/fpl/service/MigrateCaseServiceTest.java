@@ -1878,6 +1878,43 @@ class MigrateCaseServiceTest {
         }
 
         @Test
+        void shouldMigrateRespondentStatementContainsConfidentialAddressByLA() {
+            UUID respondentOneId = UUID.randomUUID();
+
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .document(document1)
+                .hasConfidentialAddress("Yes")
+                .build();
+
+            Element<RespondentStatement> respondentStatementOne = element(UUID.randomUUID(),
+                RespondentStatement.builder().respondentId(respondentOneId).respondentName("NAME 1")
+                    .supportingEvidenceBundle(List.of(element(doc1Id, sebOne)))
+                    .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .respondentStatements(List.of(respondentStatementOne))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateRespondentStatement(caseData);
+
+            assertThat(updatedFields).extracting("respondentStatements").isNull();
+            assertThat(updatedFields).extracting("respStmtList").asList().isEmpty();
+            assertThat(updatedFields).extracting("respStmtListLA").asList()
+                .contains(
+                    element(doc1Id, RespondentStatementV2.builder()
+                        .respondentId(respondentOneId)
+                        .respondentName("NAME 1")
+                        .document(document1)
+                        .hasConfidentialAddress("Yes")
+                        .build()));
+            assertThat(updatedFields).extracting("respStmtListCTSC").asList().isEmpty();
+        }
+
+        @Test
         void shouldMigrateConfidentialRespondentStatementByCTSC() {
             UUID respondentOneId = UUID.randomUUID();
 
@@ -1912,6 +1949,45 @@ class MigrateCaseServiceTest {
                         .respondentName("NAME 1")
                         .document(document1)
                         .confidential(List.of("CONFIDENTIAL"))
+                        .uploadedBy("HMCTS")
+                        .build()));
+        }
+
+        @Test
+        void shouldMigrateRespondentStatementContainsConfidentialAddressByCTSC() {
+            UUID respondentOneId = UUID.randomUUID();
+
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .document(document1)
+                .hasConfidentialAddress("Yes")
+                .uploadedBy("HMCTS")
+                .build();
+
+            Element<RespondentStatement> respondentStatementOne = element(UUID.randomUUID(),
+                RespondentStatement.builder().respondentId(respondentOneId).respondentName("NAME 1")
+                    .supportingEvidenceBundle(List.of(element(doc1Id, sebOne)))
+                    .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .respondentStatements(List.of(respondentStatementOne))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateRespondentStatement(caseData);
+
+            assertThat(updatedFields).extracting("respondentStatements").isNull();
+            assertThat(updatedFields).extracting("respStmtList").asList().isEmpty();
+            assertThat(updatedFields).extracting("respStmtListLA").asList().isEmpty();
+            assertThat(updatedFields).extracting("respStmtListCTSC").asList()
+                .contains(
+                    element(doc1Id, RespondentStatementV2.builder()
+                        .respondentId(respondentOneId)
+                        .respondentName("NAME 1")
+                        .document(document1)
+                        .hasConfidentialAddress("Yes")
                         .uploadedBy("HMCTS")
                         .build()));
         }
