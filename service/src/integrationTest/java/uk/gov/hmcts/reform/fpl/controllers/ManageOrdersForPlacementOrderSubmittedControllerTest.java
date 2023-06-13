@@ -149,10 +149,14 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
             .thenReturn(ORDER_NOTIFICATION_BINARY);
         when(documentConversionService.convertToPdf(ORDER_DOCUMENT_REFERENCE))
             .thenReturn(ORDER_DOCUMENT_REFERENCE);
+        when(documentConversionService.convertToPdfBytes(ORDER_DOCUMENT_REFERENCE))
+            .thenReturn(ORDER_BINARY);
         when(documentConversionService.convertToPdf(ORDER_NOTIFICATION_DOCUMENT_REFERENCE))
             .thenReturn(ORDER_NOTIFICATION_DOCUMENT_REFERENCE);
+        when(documentConversionService.convertToPdfBytes(ORDER_NOTIFICATION_DOCUMENT_REFERENCE))
+            .thenReturn(ORDER_NOTIFICATION_BINARY);
         when(uploadDocumentService.uploadPDF(ORDER_NOTIFICATION_BINARY,
-            ORDER_NOTIFICATION_DOCUMENT_REFERENCE.getFilename()))
+            ORDER_NOTIFICATION_DOCUMENT_REFERENCE.getFilename() + ".pdf"))
             .thenReturn(ORDER_NOTIFICATION_DOCUMENT);
         when(uploadDocumentService.uploadPDF(FATHER_COVERSHEET_BINARY, COVERSHEET_PDF))
             .thenReturn(FATHER_COVERSHEET_DOCUMENT);
