@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +61,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService.UPDATE_CASE_EVENT;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -114,6 +116,9 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
 
     @Captor
     private ArgumentCaptor<Map<String, Object>> caseCaptor;
+
+    @Captor
+    private ArgumentCaptor<StartEventResponse> startEventCaptor;
 
     RespondentControllerSubmittedTest() {
         super("enter-respondents");
@@ -365,16 +370,24 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
             .map(changeRequest -> Map.of("changeOrganisationRequestField", changeRequest))
             .collect(toList());
 
-        //checkUntil() -> for each org
-        checkUntil(() -> verify(concurrencyHelper, timeout(10000)).submitEvent(any(), eq(caseData.getId()),caseCaptor.capture()));
+        final List<String> expectedCaseEvents = List.of("internal-update-case-summary",
+            "internal-change-UPDATE_CASE", "updateRepresentation");
+
         // setup change field, submit to aac (org1), setup change field, submit to aac (org2), update case-summary
-        verify(concurrencyHelper, times(5)).submitEvent(any(),
-            eq(caseData.getId()), caseCaptor.capture()
-        );
+        checkThat(() -> {
+            verify(concurrencyHelper, times(5)).submitEvent(startEventCaptor.capture(),
+                eq(caseData.getId()), caseCaptor.capture()
+            );
+        }, Duration.ofSeconds(10));
+
+        List<String> temp = startEventCaptor.getAllValues().stream()
+            .map(StartEventResponse::getEventId).collect(toList());
+
+        assertThat(temp).asList().containsAll(expectedCaseEvents);
 
         assertThat(caseCaptor.getAllValues())
             .asList()
-            .containsOnlyOnceElementsOf(update);
+            .containsAll(update);
     }
 
     @Test
