@@ -280,7 +280,7 @@ scheduler:
       cronGroup: "NIGHTLY_CRON"
       description: 'Create work allocation tasks if a CMO has not been uploaded within 5 days'
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.CreateWAOrderChasingTasks'
-      cron: ${CHASE_CMO_TASK_CRON:0 0 1 ? * * *}
+      cron: ${CHASE_CMO_TASK_CRON:0 0 13 ? * * *}
 
 testing:
   support:
