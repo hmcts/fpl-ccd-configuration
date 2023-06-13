@@ -109,8 +109,8 @@ public class CaseDataExtractionService {
         if (ObjectUtils.isNotEmpty(caseData.getLocalAuthorities())) {
             return ofNullable(caseData.getDesignatedLocalAuthority())
                 .map(LocalAuthority::getName)
-                .orElse((caseData.isC1Application()) ?
-                    ofNullable(caseData.getLocalAuthorities().get(0))
+                .orElse((caseData.isC1Application())
+                    ? ofNullable(caseData.getLocalAuthorities().get(0))
                         .map(Element::getValue)
                         .map(LocalAuthority::getName).orElse("")
                     : "");
