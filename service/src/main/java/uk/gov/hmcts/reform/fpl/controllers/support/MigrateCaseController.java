@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -122,124 +123,51 @@ public class MigrateCaseController extends CallbackController {
 
     private void run1500(CaseDetails caseDetails) {
         // for QA testing purpose
-        caseDetails.getData().put("parentAssessmentList", List.of(
-            element(UUID.randomUUID(), ManagedDocument.builder()
-                .document(DocumentReference.builder()
-                    .url(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s",
-                        "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                    .binaryUrl(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s/binary",
-                        "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                    .filename("non-confidential-parent-assessment.pdf").build())
-                .build())));
+        Map<String, String> fieldNameToFilename = new HashMap<>();
+        fieldNameToFilename.put("parentAssessmentList", "parent-assessment");
+        fieldNameToFilename.put("famAndViabilityList", "family-and-viability");
+        fieldNameToFilename.put("applicantOtherDocListRemoved", "applicant-other-doc");
 
-        caseDetails.getData().put("parentAssessmentListLA", List.of(
-            element(UUID.randomUUID(), ManagedDocument.builder()
-                .document(DocumentReference.builder()
-                    .url(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s",
-                        "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                    .binaryUrl(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s/binary",
-                        "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                    .filename("la-confidential-parent-assessment.pdf").build())
-                .build())));
+        fieldNameToFilename.entrySet().stream().forEach(e -> {
+            caseDetails.getData().put(e.getKey(), List.of(
+                element(UUID.randomUUID(), ManagedDocument.builder()
+                    .document(DocumentReference.builder()
+                        .url(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s",
+                            "6e4efc77-1906-4906-b0ca-5154155db1a6"))
+                        .binaryUrl(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s/binary",
+                            "6e4efc77-1906-4906-b0ca-5154155db1a6"))
+                        .filename(format("non-confidential-%s.pdf", e.getValue())).build())
+                    .build())));
 
-        caseDetails.getData().put("parentAssessmentListCTSC", List.of(
-            element(UUID.randomUUID(), ManagedDocument.builder()
-                .document(DocumentReference.builder()
-                    .url(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s",
-                        "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                    .binaryUrl(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s/binary",
-                        "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                    .filename("ctsc-confidential-parent-assessment.pdf").build())
-                .build())));
+            caseDetails.getData().put(e.getKey() + "LA", List.of(
+                element(UUID.randomUUID(), ManagedDocument.builder()
+                    .document(DocumentReference.builder()
+                        .url(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s",
+                            "6e4efc77-1906-4906-b0ca-5154155db1a6"))
+                        .binaryUrl(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s/binary",
+                            "6e4efc77-1906-4906-b0ca-5154155db1a6"))
+                        .filename(format("la-confidential-%s.pdf", e.getValue())).build())
+                    .build())));
 
-        caseDetails.getData().put("parentAssessmentListRemoved", List.of(
-            element(UUID.randomUUID(), ManagedDocument.builder()
-                .document(DocumentReference.builder()
-                    .url(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s",
-                        "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                    .binaryUrl(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s/binary",
-                        "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                    .filename("removed-parent-assessment.pdf").build())
-                .build())));
+            caseDetails.getData().put(e.getKey() + "CTSC", List.of(
+                element(UUID.randomUUID(), ManagedDocument.builder()
+                    .document(DocumentReference.builder()
+                        .url(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s",
+                            "6e4efc77-1906-4906-b0ca-5154155db1a6"))
+                        .binaryUrl(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s/binary",
+                            "6e4efc77-1906-4906-b0ca-5154155db1a6"))
+                        .filename(format("ctsc-confidential-%s.pdf", e.getValue())).build())
+                    .build())));
 
-        caseDetails.getData().put("famAndViabilityList", List.of(
-            element(UUID.randomUUID(), ManagedDocument.builder()
-                .document(DocumentReference.builder()
-                    .url(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s",
-                        "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                    .binaryUrl(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s/binary",
-                        "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                    .filename("non-confidential-fam-and-via.pdf").build())
-                .build())));
-
-        caseDetails.getData().put("famAndViabilityListLA", List.of(
-            element(UUID.randomUUID(), ManagedDocument.builder()
-                .document(DocumentReference.builder()
-                    .url(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s",
-                        "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                    .binaryUrl(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s/binary",
-                        "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                    .filename("la-confidential-fam-and-via.pdf").build())
-                .build())));
-
-        caseDetails.getData().put("famAndViabilityListCTSC", List.of(
-            element(UUID.randomUUID(), ManagedDocument.builder()
-                .document(DocumentReference.builder()
-                    .url(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s",
-                        "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                    .binaryUrl(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s/binary",
-                        "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                    .filename("ctsc-confidential-fam-and-via.pdf").build())
-                .build())));
-
-        caseDetails.getData().put("famAndViabilityListRemoved", List.of(
-            element(UUID.randomUUID(), ManagedDocument.builder()
-                .document(DocumentReference.builder()
-                    .url(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s",
-                        "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                    .binaryUrl(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s/binary",
-                        "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                    .filename("removed-fam-and-via.pdf").build())
-                .build())));
-
-        caseDetails.getData().put("applicantOtherDocList", List.of(
-            element(UUID.randomUUID(), ManagedDocument.builder()
-                .document(DocumentReference.builder()
-                    .url(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s",
-                        "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                    .binaryUrl(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s/binary",
-                        "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                    .filename("non-confidential-applicant-other-doc.pdf").build())
-                .build())));
-
-        caseDetails.getData().put("applicantOtherDocListLA", List.of(
-            element(UUID.randomUUID(), ManagedDocument.builder()
-                .document(DocumentReference.builder()
-                    .url(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s",
-                        "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                    .binaryUrl(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s/binary",
-                        "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                    .filename("la-confidential-applicant-other-doc.pdf").build())
-                .build())));
-
-        caseDetails.getData().put("applicantOtherDocListCTSC", List.of(
-            element(UUID.randomUUID(), ManagedDocument.builder()
-                .document(DocumentReference.builder()
-                    .url(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s",
-                        "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                    .binaryUrl(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s/binary",
-                        "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                    .filename("ctsc-confidential-applicant-other-doc.pdf").build())
-                .build())));
-
-        caseDetails.getData().put("applicantOtherDocListRemoved", List.of(
-            element(UUID.randomUUID(), ManagedDocument.builder()
-                .document(DocumentReference.builder()
-                    .url(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s",
-                        "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                    .binaryUrl(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s/binary",
-                        "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                    .filename("removed-applicant-other-doc.pdf").build())
-                .build())));
+            caseDetails.getData().put(e.getKey() + "Removed", List.of(
+                element(UUID.randomUUID(), ManagedDocument.builder()
+                    .document(DocumentReference.builder()
+                        .url(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s",
+                            "6e4efc77-1906-4906-b0ca-5154155db1a6"))
+                        .binaryUrl(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s/binary",
+                            "6e4efc77-1906-4906-b0ca-5154155db1a6"))
+                        .filename(format("removed-%s.pdf", e.getValue())).build())
+                    .build())));
+        });
     }
 }
