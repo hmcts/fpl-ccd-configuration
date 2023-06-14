@@ -4,7 +4,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "judgementList",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "JudgementFactsAndReasons",
     "Label": "Judgements/facts and reasons",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -14,7 +14,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "judgementListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "JudgementFactsAndReasons",
     "Label": "Judgements/facts and reasons",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -24,7 +24,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "judgementListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "JudgementFactsAndReasons",
     "Label": "Judgements/facts and reasons",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -34,7 +34,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "judgementListRemoved",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "JudgementFactsAndReasons",
     "Label": "Judgements/facts and reasons",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -44,7 +44,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "transcriptList",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "Transcript",
     "Label": "Transcripts",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -54,7 +54,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "transcriptListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "Transcript",
     "Label": "Transcripts",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -64,7 +64,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "transcriptListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "Transcript",
     "Label": "Transcripts",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -74,7 +74,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "transcriptListRemoved",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "Transcript",
     "Label": "Transcripts",
     "SecurityClassification": "Public",
     "Searchable": "N"

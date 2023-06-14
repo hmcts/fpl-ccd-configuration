@@ -164,7 +164,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "contactNoteList",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "ContactNote",
     "Label": "Contact notes",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -174,7 +174,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "contactNoteListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "ContactNote",
     "Label": "Contact notes",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -184,7 +184,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "contactNoteListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "ContactNote",
     "Label": "Contact notes",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -194,7 +194,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "contactNoteListRemoved",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "ContactNote",
     "Label": "Contact notes",
     "SecurityClassification": "Public",
     "Searchable": "N"
