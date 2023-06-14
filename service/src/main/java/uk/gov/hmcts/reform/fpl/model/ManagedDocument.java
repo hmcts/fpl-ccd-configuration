@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.WithDocument;
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ParentAssessment implements WithDocument {
+public class ManagedDocument implements WithDocument {
     private DocumentReference document;
     private String removalReason;
 }

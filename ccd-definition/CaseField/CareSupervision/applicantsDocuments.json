@@ -44,7 +44,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "famAndViabilityList",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "FamilyAndViabilityAssessment",
     "Label": "Family and viability assessments",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -54,7 +54,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "famAndViabilityListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "FamilyAndViabilityAssessment",
     "Label": "Family and viability assessments",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -64,7 +64,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "famAndViabilityListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "FamilyAndViabilityAssessment",
     "Label": "Family and viability assessments",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -74,7 +74,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "famAndViabilityListRemoved",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "FamilyAndViabilityAssessment",
     "Label": "Family and viability assessments",
     "SecurityClassification": "Public",
     "Searchable": "N"
