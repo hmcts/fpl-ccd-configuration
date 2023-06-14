@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,8 +24,8 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static java.lang.String.format;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Api
 @RestController
