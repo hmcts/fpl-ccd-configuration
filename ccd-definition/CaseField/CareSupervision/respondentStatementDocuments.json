@@ -4,7 +4,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "respWitnessStmtList",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "RespondentWitnessStatement",
     "Label": "Witness statements",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -14,7 +14,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "respWitnessStmtListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "RespondentWitnessStatement",
     "Label": "Witness statements",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -24,7 +24,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "respWitnessStmtListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "RespondentWitnessStatement",
     "Label": "Witness statements",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -34,7 +34,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "respWitnessStmtListRemoved",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "RespondentWitnessStatement",
     "Label": "Witness statements",
     "SecurityClassification": "Public",
     "Searchable": "N"
