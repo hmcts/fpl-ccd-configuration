@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.controllers.support;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -8,8 +10,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Court;
-import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
@@ -54,42 +54,39 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         return caseDetails;
     }
 
-    @Test
-    void shouldMigrateOrdersCourt() {
-        CaseData caseData = CaseData.builder()
-            .court(Court.builder()
-                .code("150")
-                .build())
-            .orders(Orders.builder()
-                .court("150")
-                .build())
-            .build();
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl1401 {
 
-        AboutToStartOrSubmitCallbackResponse resp = postAboutToSubmitEvent(
-            buildCaseDetails(caseData, "DFPL-1310"));
+        private final String migrationId = "DFPL-1401";
+        private final long validCaseId = 1666959378667166L;
+        private final long invalidCaseId = 1643728359986136L;
 
-        assertThat(resp.getData().get("orders")).extracting("court").isEqualTo("554");
-    }
+        @Test
+        void shouldAddRelatingLA() {
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .build();
 
-    @Test
-    void shouldMigrateOrdersSolicitorCourt() {
-        CaseData caseData = CaseData.builder()
-            .court(Court.builder()
-                .code("150")
-                .build())
-            .orders(Orders.builder()
-                .court("150")
-                .build())
-            .ordersSolicitor(Orders.builder()
-                .court("150")
-                .build())
-            .build();
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
 
-        AboutToStartOrSubmitCallbackResponse resp = postAboutToSubmitEvent(
-            buildCaseDetails(caseData, "DFPL-1310"));
+            assertThat(responseData.getRelatingLA()).isEqualTo("NCC");
+        }
 
-        assertThat(resp.getData().get("court")).extracting("code").isEqualTo("554");
-        assertThat(resp.getData().get("orders")).extracting("court").isEqualTo("554");
-        assertThat(resp.getData().get("ordersSolicitor")).extracting("court").isEqualTo("554");
+        @Test
+        void shouldThrowExceptionIfWrongCaseId() {
+            CaseData caseData = CaseData.builder()
+                .id(invalidCaseId)
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format(
+                    "Migration {id = %s, case reference = %s}, case id not one of the expected options",
+                    migrationId, invalidCaseId));
+        }
     }
 }

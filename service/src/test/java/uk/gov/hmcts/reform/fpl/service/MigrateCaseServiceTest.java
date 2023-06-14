@@ -24,7 +24,9 @@ import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.Placement;
@@ -1563,6 +1565,101 @@ class MigrateCaseServiceTest {
                 .hasMessage(format(
                     "Migration {id = %s, case reference = %s}, further evidence documents solicitor not found",
                     MIGRATION_ID, 1, sebToBeRemoved.getId().toString()));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveCourtBundleByBundleId {
+
+        private UUID hearingId = UUID.randomUUID();
+
+        private UUID targetBundleId = UUID.randomUUID();
+
+        private final Element<CourtBundle> cb1 = element(CourtBundle.builder()
+            .document(DocumentReference.builder().build()).build());
+        private final Element<CourtBundle> cb2 = element(CourtBundle.builder()
+            .document(DocumentReference.builder().build()).build());
+
+        private final Element<HearingCourtBundle> singleCbHearingCourtBundle = element(hearingId,
+            HearingCourtBundle.builder().courtBundle(List.of(
+                element(targetBundleId, CourtBundle.builder().document(DocumentReference.builder().build()).build())
+            ))
+            .build());
+
+        private final Element<HearingCourtBundle> mixedCourtBundlesHearingCourtBundle = element(hearingId,
+            HearingCourtBundle.builder().courtBundle(List.of(cb1, cb2,
+                    element(targetBundleId, CourtBundle.builder().document(DocumentReference.builder().build()).build())
+                ))
+                .build());
+
+        private final Element<HearingCourtBundle> expectedHearingCourtBundle = element(hearingId,
+            HearingCourtBundle.builder().courtBundle(List.of(cb1, cb2)).build());
+
+        @Test
+        void shouldRemoveTargetedCourtBundleWithOtherCourtBundleInTheSameHearing() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(List.of(mixedCourtBundlesHearingCourtBundle))
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeCourtBundleByBundleId(caseData, MIGRATION_ID,
+                hearingId, targetBundleId);
+
+            assertThat(updatedFields).extracting("courtBundleListV2").asList()
+                .containsExactly(expectedHearingCourtBundle);
+        }
+
+        @Test
+        void shouldRemoveTargetedCourtBundleIfItIsTheOnlyCourtBundle() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(List.of(singleCbHearingCourtBundle))
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeCourtBundleByBundleId(caseData, MIGRATION_ID,
+                hearingId, targetBundleId);
+
+            assertThat(updatedFields).extracting("courtBundleListV2")
+                .isNull();
+        }
+
+        @Test
+        void shouldThrowExceptionIfTargetHearingNotExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(List.of(mixedCourtBundlesHearingCourtBundle))
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeCourtBundleByBundleId(caseData, MIGRATION_ID,
+                UUID.randomUUID(), targetBundleId))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format(
+                    "Migration {id = %s, case reference = %s}, hearing not found",
+                    MIGRATION_ID, 1, hearingId));
+        }
+
+        @Test
+        void shouldThrowExceptionIfTargetCourtBundleNotExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(List.of(mixedCourtBundlesHearingCourtBundle))
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeCourtBundleByBundleId(caseData, MIGRATION_ID,
+                hearingId, UUID.randomUUID()))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format(
+                    "Migration {id = %s, case reference = %s}, hearing court bundle not found",
+                    MIGRATION_ID, 1, targetBundleId));
         }
     }
 }

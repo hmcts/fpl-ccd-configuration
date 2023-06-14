@@ -177,7 +177,7 @@ class RespondentsUpdatedEventHandlerTest {
         CaseData caseData = mock(CaseData.class);
         CaseData caseDataBefore = mock(CaseData.class);
 
-        when(caseData.getCaseLocalAuthority()).thenReturn("SW");
+        when(caseData.getCaseLaOrRelatingLa()).thenReturn("SW");
         when(caseData.getAllRespondents()).thenReturn(respondents);
         when(caseDataBefore.getAllRespondents()).thenReturn(respondents);
         when(respondentService.hasAddressChange(respondents, respondents)).thenReturn(true);

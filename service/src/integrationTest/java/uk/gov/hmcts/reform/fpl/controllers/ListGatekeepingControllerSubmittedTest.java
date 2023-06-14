@@ -304,6 +304,8 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
 
         given(documentConversionService.convertToPdf(noticeOfHearing))
             .willReturn(noticeOfHearing);
+        given(documentConversionService.convertToPdfBytes(any()))
+            .willReturn(NOTICE_OF_HEARING_BINARY);
 
         given(otherRecipientsInbox.getNonSelectedRecipients(
             EMAIL,
@@ -316,7 +318,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             .willReturn(new SendLetterResponse(LETTER_1_ID))
             .willReturn(new SendLetterResponse(LETTER_2_ID));
 
-        given(uploadDocumentService.uploadPDF(NOTICE_OF_HEARING_BINARY, noticeOfHearing.getFilename()))
+        given(uploadDocumentService.uploadPDF(eq(NOTICE_OF_HEARING_BINARY), any()))
             .willReturn(NOTICE_OF_HEARING_DOCUMENT);
         given(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY, COVERSHEET_PDF))
             .willReturn(COVERSHEET_REPRESENTATIVE);
@@ -385,10 +387,10 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             eq(CASE_ID), caseCaptor.capture());
 
         LetterWithPdfsRequest expectedPrintRequest1 = printRequest(CASE_ID, noticeOfHearing,
-            COVERSHEET_REPRESENTATIVE_BINARY, NOTICE_OF_HEARING_BINARY);
+            REPRESENTATIVE_POST.getValue(), COVERSHEET_REPRESENTATIVE_BINARY, NOTICE_OF_HEARING_BINARY);
 
         LetterWithPdfsRequest expectedPrintRequest2 = printRequest(CASE_ID, noticeOfHearing,
-            COVERSHEET_RESPONDENT_BINARY, NOTICE_OF_HEARING_BINARY);
+            RESPONDENT_NOT_REPRESENTED.getParty(), COVERSHEET_RESPONDENT_BINARY, NOTICE_OF_HEARING_BINARY);
 
         SentDocument expectedDocumentSentToRepresentative = documentSent(REPRESENTATIVE_POST.getValue(),
             COVERSHEET_REPRESENTATIVE, NOTICE_OF_HEARING_DOCUMENT, LETTER_1_ID, now());

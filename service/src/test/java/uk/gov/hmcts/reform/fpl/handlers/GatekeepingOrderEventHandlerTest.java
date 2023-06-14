@@ -101,6 +101,30 @@ class GatekeepingOrderEventHandlerTest {
     }
 
     @Test
+    void shouldNotifyCafcassOfIssuedStandaloneSDO() {
+        final CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .relatingLA(LOCAL_AUTHORITY_CODE)
+            .build();
+
+        final GatekeepingOrderEvent event = gatekeepingOrderEvent(SDO_OR_UDO_AND_NOP, caseData);
+
+        given(cafcassLookup.getCafcass(LOCAL_AUTHORITY_CODE))
+            .willReturn(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
+
+        given(cafcassContentProvider.getNotifyData(caseData, ORDER, SDO)).willReturn(NOTIFY_DATA);
+
+        underTest.notifyCafcass(event);
+
+        verify(notificationService).sendEmail(
+            SDO_OR_UDO_AND_NOP_ISSUED_CAFCASS,
+            CAFCASS_EMAIL_ADDRESS,
+            NOTIFY_DATA,
+            CASE_ID
+        );
+    }
+
+    @Test
     void shouldNotifyLocalAuthorityOfIssuedSDO() {
         final CaseData caseData = CaseData.builder().id(CASE_ID).build();
 

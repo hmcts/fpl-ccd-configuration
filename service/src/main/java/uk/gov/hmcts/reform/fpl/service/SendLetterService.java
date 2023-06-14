@@ -25,7 +25,9 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+import static uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService.PDF;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.updateExtension;
 
 @Slf4j
 @Service
@@ -47,11 +49,10 @@ public class SendLetterService {
                                    String familyManCaseNumber, Language language) {
         List<SentDocument> sentDocuments = new ArrayList<>();
         // make sure mainDocument is in PDF format
-        DocumentReference mainDocumentPDF = documentConversionService.convertToPdf(mainDocument);
-        byte[] mainDocumentBinary = documentDownloadService.downloadDocument(mainDocumentPDF.getBinaryUrl());
-        var mainDocumentCopy = uploadDocument(mainDocumentBinary, mainDocumentPDF.getFilename());
+        byte[] mainDocumentPDFBinary = documentConversionService.convertToPdfBytes(mainDocument);
+        var mainDocumentCopy = uploadDocument(mainDocumentPDFBinary, updateExtension(mainDocument.getFilename(), PDF));
 
-        String mainDocumentEncoded = Base64.getEncoder().encodeToString(mainDocumentBinary);
+        String mainDocumentEncoded = Base64.getEncoder().encodeToString(mainDocumentPDFBinary);
         for (Recipient recipient : recipients) {
             byte[] coverDocument = docmosisCoverDocumentsService.createCoverDocuments(familyManCaseNumber,
                 caseId,
@@ -64,7 +65,10 @@ public class SendLetterService {
                 SendLetterResponse response = sendLetterApi.sendLetter(authTokenGenerator.generate(),
                     new LetterWithPdfsRequest(List.of(coverDocumentEncoded, mainDocumentEncoded),
                         SEND_LETTER_TYPE,
-                        Map.of("caseId", caseId, "documentName", mainDocument.getFilename())));
+                        Map.of(
+                            "caseId", caseId,
+                            "documentName", mainDocument.getFilename(),
+                            "recipients", List.of(recipient.getFullName()))));
                 letterId = Optional.ofNullable(response).map(r -> r.letterId.toString()).orElse(EMPTY);
 
                 sentDocuments.add(SentDocument.builder()

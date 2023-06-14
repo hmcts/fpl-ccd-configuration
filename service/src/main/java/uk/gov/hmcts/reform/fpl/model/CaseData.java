@@ -54,6 +54,7 @@ import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.event.CaseProgressionReportEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ChildExtensionEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
+import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthoritiesEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
@@ -1236,6 +1237,11 @@ public class CaseData extends CaseDataParent {
             .orElse(false);
     }
 
+    @JsonUnwrapped
+    @Builder.Default
+    protected final ConfirmApplicationReviewedEventData confirmApplicationReviewedEventData =
+        ConfirmApplicationReviewedEventData.builder().build();
+
     @JsonIgnore
     public boolean isEducationSupervisionApplication() {
         return ofNullable(getOrders())
@@ -1283,5 +1289,10 @@ public class CaseData extends CaseDataParent {
         return ofNullable(getOrders())
             .map(Orders::isEPOCombinedWithICO)
             .orElse(false);
+    }
+
+    @JsonIgnore
+    public String getCaseLaOrRelatingLa() {
+        return isEmpty(caseLocalAuthority) ? relatingLA : caseLocalAuthority;
     }
 }

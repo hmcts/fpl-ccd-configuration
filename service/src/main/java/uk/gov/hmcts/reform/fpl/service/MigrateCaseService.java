@@ -10,7 +10,9 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
 import uk.gov.hmcts.reform.fpl.model.Placement;
@@ -626,6 +628,47 @@ public class MigrateCaseService {
         } else {
             throw new AssertionError(format("Migration {id = %s}, case does not have [orders]",
                 migrationId));
+        }
+    }
+
+    public Map<String, Object> removeCourtBundleByBundleId(CaseData caseData,
+                                                           String migrationId,
+                                                           UUID expectedHearingId,
+                                                           UUID expectedBundleId) {
+        Long caseId = caseData.getId();
+
+        Element<HearingCourtBundle> elementToBeUpdated = caseData.getHearingDocuments().getCourtBundleListV2()
+            .stream()
+            .filter(hfed -> expectedHearingId.equals(hfed.getId()))
+            .findFirst().orElseThrow(() -> new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, hearing not found",
+                migrationId, caseId)));
+        List<Element<CourtBundle>> newCourtBundleList =
+            elementToBeUpdated.getValue().getCourtBundle().stream()
+                .filter(el -> !expectedBundleId.equals(el.getId()))
+                .collect(toList());
+        if (newCourtBundleList.size() != elementToBeUpdated.getValue().getCourtBundle()
+            .size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, hearing court bundle not found",
+                migrationId, caseId));
+        }
+        elementToBeUpdated.getValue().setCourtBundle(newCourtBundleList);
+
+        List<Element<HearingCourtBundle>> listOfHearingCourtBundles =
+            caseData.getHearingDocuments().getCourtBundleListV2().stream()
+                .filter(el -> !expectedHearingId.equals(el.getId()))
+                .collect(toList());
+        if (!newCourtBundleList.isEmpty()) {
+            listOfHearingCourtBundles.add(elementToBeUpdated);
+        }
+        if (listOfHearingCourtBundles.isEmpty() || (listOfHearingCourtBundles.size() == 1
+            && listOfHearingCourtBundles.get(0).getValue().getCourtBundle().isEmpty())) {
+            Map<String, Object> ret = new HashMap<>();
+            ret.put("courtBundleListV2", null);
+            return ret;
+        } else {
+            return Map.of("courtBundleListV2", listOfHearingCourtBundles);
         }
     }
 }

@@ -42,7 +42,7 @@ public class AmendedReturnedCaseEventHandler {
     public void notifyCafcass(AmendedReturnedCaseEvent event) {
         final CaseData caseData = event.getCaseData();
 
-        final String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
+        final String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLaOrRelatingLa()).getEmail();
         final NotifyData notifyData = contentProvider.parametersWithApplicationLink(caseData);
 
         notificationService
