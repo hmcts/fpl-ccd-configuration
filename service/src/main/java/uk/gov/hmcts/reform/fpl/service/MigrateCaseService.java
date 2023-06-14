@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
@@ -54,6 +55,32 @@ public class MigrateCaseService {
     private final CaseNoteService caseNoteService;
     private final CourtService courtService;
     private final DocumentListService documentListService;
+
+    public Map<String, Object> migrateCourtBundle(CaseData caseData, String migrationId) {
+        List<Element<CourtBundle>> courtBundleListLA = caseData.getHearingDocuments()
+            .getCourtBundleListV2().stream()
+            .flatMap(rs -> rs.getValue().getCourtBundle().stream())
+            .filter(cs -> !cs.getValue().isUploadedByHMCTS() && cs.getValue().isConfidentialDocument())
+            .collect(toList());
+
+        List<Element<CourtBundle>> courtBundleListCTSC = caseData.getHearingDocuments()
+            .getCourtBundleListV2().stream()
+            .flatMap(rs -> rs.getValue().getCourtBundle().stream())
+            .filter(cs -> cs.getValue().isUploadedByHMCTS() && cs.getValue().isConfidentialDocument())
+            .collect(toList());
+
+        List<Element<CourtBundle>> newCourtBundleList = caseData.getHearingDocuments()
+            .getCourtBundleListV2().stream()
+            .flatMap(rs -> rs.getValue().getCourtBundle().stream())
+            .filter(cs -> !cs.getValue().isConfidentialDocument())
+            .collect(toList());
+
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("courtBundleListV2", newCourtBundleList);
+        ret.put("courtBundleListLA", courtBundleListLA);
+        ret.put("courtBundleListCTSC", courtBundleListCTSC);
+        return ret;
+    }
 
     public Map<String, Object> removeHearingOrderBundleDraft(CaseData caseData, String migrationId, UUID bundleId,
                                                              UUID orderId) {
