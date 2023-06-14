@@ -65,6 +65,10 @@ public class CaseDataParent {
     protected final List<Element<ManagedDocument>> respWitnessStmtListLA;
     protected final List<Element<ManagedDocument>> respWitnessStmtListCTSC;
     protected final List<Element<ManagedDocument>> respWitnessStmtListRemoved;
+    protected final List<Element<ManagedDocument>> previousProceedingList;
+    protected final List<Element<ManagedDocument>> previousProceedingListLA;
+    protected final List<Element<ManagedDocument>> previousProceedingListCTSC;
+    protected final List<Element<ManagedDocument>> previousProceedingListRemoved;
 
     @NotNull(message = "Add the grounds for the application", groups = SecureAccommodationGroup.class)
     @Valid

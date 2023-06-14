@@ -276,5 +276,45 @@
     "Label": "Skeleton argument",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "previousProceedingList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PreviousProceeding",
+    "Label": "Previous Proceedings",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "previousProceedingListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PreviousProceeding",
+    "Label": "Previous Proceedings",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "previousProceedingListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PreviousProceeding",
+    "Label": "Previous Proceedings",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "previousProceedingListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PreviousProceeding",
+    "Label": "Previous Proceedings",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
