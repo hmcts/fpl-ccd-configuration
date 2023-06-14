@@ -202,10 +202,12 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         givenFplService();
         when(documentDownloadService.downloadDocument(anyString()))
             .thenReturn(ORDER_BINARY);
-        when(uploadDocumentService.uploadPDF(ORDER_BINARY, ORDER.getFilename()))
+        when(uploadDocumentService.uploadPDF(eq(ORDER_BINARY), any()))
             .thenReturn(ORDER_DOCUMENT);
         when(documentConversionService.convertToPdf(ORDER))
             .thenReturn(ORDER);
+        when(documentConversionService.convertToPdfBytes(ORDER))
+            .thenReturn(ORDER_BINARY);
         when(documentService.createCoverDocuments(any(), any(), eq(REPRESENTATIVE_POST.getValue()), any()))
             .thenReturn(DocmosisDocument.builder().bytes(COVERSHEET_REPRESENTATIVE_BINARY).build());
         when(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY, COVERSHEET_PDF))
