@@ -82,6 +82,46 @@ public class MigrateCaseService {
         return ret;
     }
 
+    @SuppressWarnings("squid:CallToDeprecatedMethod")
+    public Map<String, Object> migratePositionStatementChild(CaseData caseData) {
+        List<Element<PositionStatementChild>> posStmtChildListLA = caseData.getHearingDocuments()
+            .getPositionStatementChildListV2().stream()
+            .filter(cs -> YesNo.YES.getValue().equals(cs.getValue().getHasConfidentialAddress()))
+            .collect(toList());
+
+        List<Element<PositionStatementChild>> posStmtChildList = caseData.getHearingDocuments()
+            .getPositionStatementChildListV2().stream()
+            .filter(cs -> YesNo.NO.getValue().equals(Optional.ofNullable(cs.getValue().getHasConfidentialAddress())
+                .orElse(YesNo.NO.getValue())))
+            .collect(toList());
+
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("positionStatementChildListV2", null);
+        ret.put("posStmtChildListLA", posStmtChildListLA);
+        ret.put("posStmtChildList", posStmtChildList);
+        return ret;
+    }
+
+    @SuppressWarnings("squid:CallToDeprecatedMethod")
+    public Map<String, Object> migratePositionStatementRespondent(CaseData caseData) {
+        List<Element<PositionStatementRespondent>> posStmtRespListLA = caseData.getHearingDocuments()
+            .getPositionStatementRespondentListV2().stream()
+            .filter(cs -> YesNo.YES.getValue().equals(cs.getValue().getHasConfidentialAddress()))
+            .collect(toList());
+
+        List<Element<PositionStatementRespondent>> posStmtRespList = caseData.getHearingDocuments()
+            .getPositionStatementRespondentListV2().stream()
+            .filter(cs -> YesNo.NO.getValue().equals(Optional.ofNullable(cs.getValue().getHasConfidentialAddress())
+                .orElse(YesNo.NO.getValue())))
+            .collect(toList());
+
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("positionStatementRespondentListV2", null);
+        ret.put("posStmtRespListLA", posStmtRespListLA);
+        ret.put("posStmtRespList", posStmtRespList);
+        return ret;
+    }
+
     public Map<String, Object> removeHearingOrderBundleDraft(CaseData caseData, String migrationId, UUID bundleId,
                                                              UUID orderId) {
 
