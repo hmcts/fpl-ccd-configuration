@@ -23,6 +23,7 @@ public class HearingDocuments {
     private final List<Element<HearingCourtBundle>> courtBundleListV2;
     private final List<Element<HearingCourtBundle>> courtBundleListLA;
     private final List<Element<HearingCourtBundle>> courtBundleListCTSC;
+    private final List<Element<HearingCourtBundle>> courtBundleListRemoved;
     // the element ID is the ID of the linked hearing
     private final List<Element<CourtBundle>> courtBundleList;
     // the element ID is the ID of the linked hearing
