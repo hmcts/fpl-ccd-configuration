@@ -126,7 +126,7 @@ public class MigrateCaseController extends CallbackController {
         Map<String, String> fieldNameToFilename = new HashMap<>();
         fieldNameToFilename.put("parentAssessmentList", "parent-assessment");
         fieldNameToFilename.put("famAndViabilityList", "family-and-viability");
-        fieldNameToFilename.put("applicantOtherDocListRemoved", "applicant-other-doc");
+        fieldNameToFilename.put("applicantOtherDocList", "applicant-other-doc");
 
         fieldNameToFilename.entrySet().stream().forEach(e -> {
             caseDetails.getData().put(e.getKey(), List.of(
