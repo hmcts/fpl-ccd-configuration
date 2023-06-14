@@ -124,7 +124,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "meetingNoteList",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "MeetingNote",
     "Label": "Meeting notes",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -134,7 +134,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "meetingNoteListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "MeetingNote",
     "Label": "Meeting notes",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -144,7 +144,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "meetingNoteListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "MeetingNote",
     "Label": "Meeting notes",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -154,7 +154,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "meetingNoteListRemoved",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "MeetingNote",
     "Label": "Meeting notes",
     "SecurityClassification": "Public",
     "Searchable": "N"
