@@ -56,29 +56,55 @@ public class MigrateCaseService {
     private final CourtService courtService;
     private final DocumentListService documentListService;
 
-    public Map<String, Object> migrateCourtBundle(CaseData caseData, String migrationId) {
-        List<Element<CourtBundle>> courtBundleListLA = caseData.getHearingDocuments()
-            .getCourtBundleListV2().stream()
-            .flatMap(rs -> rs.getValue().getCourtBundle().stream())
-            .filter(cs -> !cs.getValue().isUploadedByHMCTS() && cs.getValue().isConfidentialDocument())
-            .collect(toList());
-
-        List<Element<CourtBundle>> courtBundleListCTSC = caseData.getHearingDocuments()
-            .getCourtBundleListV2().stream()
-            .flatMap(rs -> rs.getValue().getCourtBundle().stream())
-            .filter(cs -> cs.getValue().isUploadedByHMCTS() && cs.getValue().isConfidentialDocument())
-            .collect(toList());
-
-        List<Element<CourtBundle>> newCourtBundleList = caseData.getHearingDocuments()
-            .getCourtBundleListV2().stream()
-            .flatMap(rs -> rs.getValue().getCourtBundle().stream())
-            .filter(cs -> !cs.getValue().isConfidentialDocument())
-            .collect(toList());
-
+    public Map<String, Object> migrateCourtBundle(CaseData caseData) {
         Map<String, Object> ret = new HashMap<>();
-        ret.put("courtBundleListV2", newCourtBundleList);
-        ret.put("courtBundleListLA", courtBundleListLA);
-        ret.put("courtBundleListCTSC", courtBundleListCTSC);
+        List<Element<HearingCourtBundle>> newHearingCourtBundleList = new ArrayList<>();
+        List<Element<HearingCourtBundle>> hearingCourtBundleListLA = new ArrayList<>();
+        List<Element<HearingCourtBundle>> hearingCourtBundleListCTSC = new ArrayList<>();
+
+        List<Element<HearingCourtBundle>> hearingCourtBundles = caseData.getHearingDocuments().getCourtBundleListV2();
+
+        for (Element<HearingCourtBundle> hearingCourtBundle : hearingCourtBundles) {
+            List<Element<CourtBundle>> newCourtBundleList = hearingCourtBundle.getValue().getCourtBundle().stream()
+                .filter(cs -> !cs.getValue().isConfidentialDocument())
+                .collect(toList());
+
+            List<Element<CourtBundle>> courtBundleListLA = hearingCourtBundle.getValue().getCourtBundle().stream()
+                .filter(cs -> !cs.getValue().isUploadedByHMCTS() && cs.getValue().isConfidentialDocument())
+                .collect(toList());
+
+            List<Element<CourtBundle>> courtBundleListCTSC = hearingCourtBundle.getValue().getCourtBundle().stream()
+                .filter(cs -> cs.getValue().isUploadedByHMCTS() && cs.getValue().isConfidentialDocument())
+                .collect(toList());
+
+            if (!newCourtBundleList.isEmpty()) {
+                Element<HearingCourtBundle> bundle = element(hearingCourtBundle.getId(),
+                    HearingCourtBundle.builder().build());
+                bundle.getValue().setHearing(hearingCourtBundle.getValue().getHearing());
+                bundle.getValue().setCourtBundle(newCourtBundleList);
+                newHearingCourtBundleList.add(bundle);
+            }
+
+            if (!courtBundleListLA.isEmpty()) {
+                Element<HearingCourtBundle> bundle = element(hearingCourtBundle.getId(),
+                    HearingCourtBundle.builder().build());
+                bundle.getValue().setHearing(hearingCourtBundle.getValue().getHearing());
+                bundle.getValue().setCourtBundle(courtBundleListLA);
+                hearingCourtBundleListLA.add(bundle);
+            }
+
+            if (!courtBundleListCTSC.isEmpty()) {
+                Element<HearingCourtBundle> bundle = element(hearingCourtBundle.getId(),
+                    HearingCourtBundle.builder().build());
+                bundle.getValue().setHearing(hearingCourtBundle.getValue().getHearing());
+                bundle.getValue().setCourtBundle(courtBundleListCTSC);
+                hearingCourtBundleListCTSC.add(bundle);
+            }
+        }
+
+        ret.put("courtBundleListV2", newHearingCourtBundleList);
+        ret.put("courtBundleListLA", hearingCourtBundleListLA);
+        ret.put("courtBundleListCTSC", hearingCourtBundleListCTSC);
         return ret;
     }
 
