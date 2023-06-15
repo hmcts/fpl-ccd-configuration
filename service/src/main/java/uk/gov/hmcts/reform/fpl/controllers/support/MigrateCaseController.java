@@ -38,7 +38,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1451", this::run1451,
         "DFPL-1466", this::run1466,
         "DFPL-1501", this::run1501,
-        "DFPL-1484", this::run1484
+        "DFPL-1484", this::run1484,
+        "DFPL-1489", this::run1489
     );
 
     @PostMapping("/about-to-submit")
@@ -111,5 +112,10 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
         caseDetails.getData().putAll(migrateCaseService.removeCourtBundleByBundleId(getCaseData(caseDetails),
             migrationId, hearingId, courtBundleId));
+    }
+
+    private void run1489(CaseDetails caseDetails) {
+        caseDetails.getData().putAll(migrateCaseService
+            .moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(getCaseData(caseDetails)));
     }
 }
