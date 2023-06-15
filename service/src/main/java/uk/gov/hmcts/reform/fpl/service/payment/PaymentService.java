@@ -65,7 +65,7 @@ public class PaymentService {
 
     private CreditAccountPaymentRequest getPaymentRequest(CaseData caseData, FeesData feesData) {
         final String localAuthorityName = nonNull(caseData.getCaseLocalAuthority())
-            ? localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority())
+            ? localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLaOrRelatingLa())
             : getApplicant(caseData).getName();
 
         if (isNotEmpty(caseData.getLocalAuthorities())) {
@@ -94,7 +94,7 @@ public class PaymentService {
     public void makePaymentForC2(Long caseId, CaseData caseData) {
         C2DocumentBundle c2DocumentBundle = caseData.getLastC2DocumentBundle();
         String localAuthorityName =
-            localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority());
+            localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLaOrRelatingLa());
         FeesData feesData = feeService.getFeesDataForC2(c2DocumentBundle.getType());
 
         CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
