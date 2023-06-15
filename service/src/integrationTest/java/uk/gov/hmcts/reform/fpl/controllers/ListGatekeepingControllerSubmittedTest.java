@@ -224,14 +224,12 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
         postSubmittedEvent(toCallBackRequest(caseDetails, caseDetailsBefore));
 
         verifyNoInteractions(notificationClient);
+        verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
 
-        checkUntil(() -> {
-            verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
-            verify(concurrencyHelper, timeout(10000)).submitEvent(any(), eq(CASE_ID), anyMap());
-            // start but don't finish
-            verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
-        });
+        checkUntil(() -> verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID), anyMap()));
 
+        // start but don't finish
+        verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
         verifyNoMoreInteractions(concurrencyHelper);
     }
 
@@ -252,11 +250,12 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
 
         verifyNoInteractions(notificationClient);
         verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
-        verify(concurrencyHelper, timeout(10000)).submitEvent(any(),
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(),
             eq(CASE_ID),
-            eq(caseSummary("Yes", "Case management", LocalDate.of(2050, 5, 20))));
+            eq(caseSummary("Yes", "Case management",
+                LocalDate.of(2050, 5, 20))));
         verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
-        verify(concurrencyHelper, timeout(10000)).submitEvent(any(), eq(CASE_ID), anyMap());
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID), anyMap());
 
         verifyNoMoreInteractions(concurrencyHelper);
     }

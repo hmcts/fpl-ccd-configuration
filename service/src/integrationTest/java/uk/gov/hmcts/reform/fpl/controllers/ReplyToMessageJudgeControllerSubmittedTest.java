@@ -42,6 +42,7 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
     private static final String MESSAGE = "Some note";
     private static final String REPLY = "Reply";
     private static final String LAST_NAME = "Davidson";
+    private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -110,7 +111,7 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
 
         verify(notificationClient).sendEmail(
             JUDICIAL_MESSAGE_REPLY_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, notificationReference(CASE_ID));
-        verify(concurrencyHelper, timeout(10000)).submitEvent(any(),
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(),
             eq(CASE_ID),
             eq(caseSummary()));
     }
@@ -162,7 +163,7 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(asCaseDetails(caseData));
 
         verifyNoInteractions(notificationClient);
-        verify(concurrencyHelper, timeout(10000)).submitEvent(any(),
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(),
             eq(CASE_ID),
             eq(caseSummary()));
     }

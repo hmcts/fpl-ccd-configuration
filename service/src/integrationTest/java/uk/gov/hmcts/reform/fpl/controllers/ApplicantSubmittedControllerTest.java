@@ -20,6 +20,7 @@ import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 class ApplicantSubmittedControllerTest extends AbstractCallbackTest {
 
     private static final long CASE_ID = 12323L;
+    private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
@@ -42,10 +43,10 @@ class ApplicantSubmittedControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(caseData);
 
-        verify(coreCaseDataService, timeout(10000)).performPostSubmitCallback(eq(CASE_ID),
+        verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).performPostSubmitCallback(eq(CASE_ID),
             eq("internal-update-task-list"), any());
 
-        verify(coreCaseDataService, timeout(10000)).performPostSubmitCallback(eq(CASE_ID),
+        verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).performPostSubmitCallback(eq(CASE_ID),
             eq("internal-update-case-summary"), any());
 
     }
