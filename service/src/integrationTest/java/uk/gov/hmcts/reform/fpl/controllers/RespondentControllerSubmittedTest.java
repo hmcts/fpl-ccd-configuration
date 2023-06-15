@@ -43,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -395,17 +396,6 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
             .state(OPEN)
             .respondents1(updatedRespondents)
             .build();
-
-        when(concurrencyHelper.startEvent(any(), any()))
-            .thenReturn(StartEventResponse.builder()
-                .caseDetails(asCaseDetails(caseData))
-                .eventId(UPDATE_CASE_EVENT)
-                .build());
-        when(concurrencyHelper.startEvent(any(), eq("internal-update-case-summary")))
-            .thenReturn(StartEventResponse.builder()
-                .caseDetails(asCaseDetails(caseData))
-                .eventId("internal-update-case-summary")
-                .build());
 
         postSubmittedEvent(toCallBackRequest(caseData, nocCaseDataBefore));
 
