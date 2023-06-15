@@ -239,15 +239,15 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         postSubmittedEvent(toCallBackRequest(caseDetails, caseDetailsBefore));
 
         checkUntil(() -> {
-                verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).startEvent(
-                    eq(CASE_ID),
-                    eq("populateSDO"));
+            verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).startEvent(
+                eq(CASE_ID),
+                eq("populateSDO"));
 
-                verify(concurrencyHelper, times(2)).submitEvent(
-                    any(),
-                    eq(CASE_ID),
-                    anyMap());
-            });
+            verify(concurrencyHelper, times(2)).submitEvent(
+                any(),
+                eq(CASE_ID),
+                anyMap());
+        });
 
         verifyNoInteractions(notificationClient);
 
@@ -310,11 +310,12 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         verifyNoInteractions(notificationClient);
         checkUntil(() -> {
-                verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
-                verify(concurrencyHelper, timeout(10000)).submitEvent(any(),
-                    eq(CASE_ID),
-                    eq(caseSummary("Yes", "Case management", LocalDate.of(2050, 5, 20))));
-            });
+            verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
+            verify(concurrencyHelper, timeout(10000)).submitEvent(any(),
+                eq(CASE_ID),
+                eq(caseSummary("Yes", "Case management",
+                    LocalDate.of(2050, 5, 20))));
+        });
         verifyNoMoreInteractions(concurrencyHelper);
     }
 
