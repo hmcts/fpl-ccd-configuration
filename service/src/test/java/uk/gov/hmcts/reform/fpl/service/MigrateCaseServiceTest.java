@@ -1750,6 +1750,52 @@ class MigrateCaseServiceTest {
             assertThat(updatedFields).extracting("posStmtRespList").asList()
                 .contains(positionStatementRespoondentElement);
         }
+
+        @Test
+        void shouldMoveSingleCaseSummaryWithConfidentialAddressToCaseSummaryListLA() {
+            Element<CaseSummary> caseSummaryListElement = element(UUID.randomUUID(), CaseSummary.builder()
+                .hasConfidentialAddress(YesNo.YES.getValue())
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .caseSummaryList(List.of(caseSummaryListElement))
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(
+                caseData);
+            assertThat(updatedFields).extracting("caseSummaryList").asList().isEmpty();
+            assertThat(updatedFields).extracting("caseSummaryListLA").asList()
+                .containsExactly(caseSummaryListElement);
+        }
+
+        @Test
+        void shouldMoveOneOfCaseSummariesWithConfidentialAddressToCaseSummaryListLA() {
+            Element<CaseSummary> caseSummaryListElementWithConfidentialAddress = element(UUID.randomUUID(),
+                CaseSummary.builder().hasConfidentialAddress(YesNo.YES.getValue()).build());
+            Element<CaseSummary> caseSummaryListElement = element(UUID.randomUUID(), CaseSummary.builder()
+                .hasConfidentialAddress(YesNo.NO.getValue())
+                .build());
+            Element<CaseSummary> caseSummaryListElementTwo = element(UUID.randomUUID(), CaseSummary.builder()
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .caseSummaryList(List.of(caseSummaryListElement, caseSummaryListElementWithConfidentialAddress,
+                        caseSummaryListElementTwo))
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(
+                caseData);
+            assertThat(updatedFields).extracting("caseSummaryList").asList()
+                .containsExactly(caseSummaryListElement, caseSummaryListElementTwo);
+            assertThat(updatedFields).extracting("caseSummaryListLA").asList()
+                .containsExactly(caseSummaryListElementWithConfidentialAddress);
+        }
     }
 
 }
