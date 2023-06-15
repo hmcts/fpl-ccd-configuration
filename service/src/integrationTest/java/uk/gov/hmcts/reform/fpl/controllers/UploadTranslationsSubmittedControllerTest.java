@@ -165,11 +165,15 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
         givenFplService();
         when(documentConversionService.convertToPdf(any()))
             .thenAnswer(returnsFirstArg());
+        when(documentConversionService.convertToPdfBytes(TRANSLATED_ORDER))
+            .thenReturn(ORDER_BINARY);
+        when(documentConversionService.convertToPdfBytes(ORIGINAL_ORDER))
+            .thenReturn(ORDER_BINARY);
         when(documentDownloadService.downloadDocument(anyString()))
             .thenReturn(ORDER_BINARY);
-        when(uploadDocumentService.uploadPDF(ORDER_BINARY, TRANSLATED_ORDER.getFilename()))
+        when(uploadDocumentService.uploadPDF(ORDER_BINARY, TRANSLATED_ORDER.getFilename() + ".pdf"))
             .thenReturn(ORDER_DOCUMENT);
-        when(uploadDocumentService.uploadPDF(ORDER_BINARY, ORIGINAL_ORDER.getFilename()))
+        when(uploadDocumentService.uploadPDF(ORDER_BINARY, ORIGINAL_ORDER.getFilename() + ".pdf"))
             .thenReturn(ORDER_DOCUMENT_ORIGINAL);
 
         when(documentService.createCoverDocuments(any(), any(), eq(REPRESENTATIVE_POST.getValue()), eq(WELSH)))
