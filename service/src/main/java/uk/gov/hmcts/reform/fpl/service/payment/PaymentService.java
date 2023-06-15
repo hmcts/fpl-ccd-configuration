@@ -111,7 +111,7 @@ public class PaymentService {
         final PBAPayment pbaPayment = caseData.getAdditionalApplicationsBundle().get(0).getValue().getPbaPayment();
 
         String localAuthorityName =
-            localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority());
+            localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLaOrRelatingLa());
 
         CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
             pbaPayment.getPbaNumber(),
