@@ -353,6 +353,8 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         given(documentConversionService.convertToPdf(noticeOfHearing))
             .willReturn(noticeOfHearing);
+        given(documentConversionService.convertToPdfBytes(noticeOfHearing))
+            .willReturn(NOTICE_OF_HEARING_BINARY);
 
         given(otherRecipientsInbox.getNonSelectedRecipients(
             EMAIL,
@@ -365,7 +367,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .willReturn(new SendLetterResponse(LETTER_1_ID))
             .willReturn(new SendLetterResponse(LETTER_2_ID));
 
-        given(uploadDocumentService.uploadPDF(NOTICE_OF_HEARING_BINARY, noticeOfHearing.getFilename()))
+        given(uploadDocumentService.uploadPDF(NOTICE_OF_HEARING_BINARY, noticeOfHearing.getFilename() + ".pdf"))
             .willReturn(NOTICE_OF_HEARING_DOCUMENT);
         given(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY, COVERSHEET_PDF))
             .willReturn(COVERSHEET_REPRESENTATIVE);

@@ -58,6 +58,23 @@ class DocumentConversionServiceTest {
     }
 
     @Test
+    void shouldReturnSameDocumentReferenceIfItIsPdfBytes() {
+        final DocumentReference inputDocumentReference = DocumentReference.builder()
+            .filename(PDF_FILE_NAME)
+            .build();
+
+        byte[] binaries = testDocumentBinaries();
+
+        when(downloadService.downloadDocument(inputDocumentReference.getBinaryUrl())).thenReturn(binaries);
+
+        byte[] converted = underTest.convertToPdfBytes(inputDocumentReference);
+
+        assertThat(converted).isEqualTo(binaries);
+        verify(downloadService).downloadDocument(inputDocumentReference.getBinaryUrl());
+        verifyNoMoreInteractions(restTemplate, downloadService, uploadService, configuration);
+    }
+
+    @Test
     void shouldConvertNonPdfDocumentReferenceToPdf() {
         final byte[] inputDocumentBinaries = testDocumentBinaries();
         final byte[] convertedDocumentBinaries = testDocumentBinaries();
@@ -82,6 +99,31 @@ class DocumentConversionServiceTest {
 
         assertThat(converted).isEqualTo(uploadedReference);
     }
+
+    @Test
+    void shouldConvertNonPdfDocumentReferenceToPdfBytes() {
+        final byte[] inputDocumentBinaries = testDocumentBinaries();
+        final byte[] convertedDocumentBinaries = testDocumentBinaries();
+        final DocumentReference originalDocument = testDocumentReference(DOCX_FILE_NAME);
+
+        when(downloadService.downloadDocument(originalDocument.getBinaryUrl())).thenReturn(inputDocumentBinaries);
+
+        when(configuration.getUrl()).thenReturn(BASE_URL);
+        when(configuration.getAccessKey()).thenReturn(ACCESS_KEY);
+
+        // exact payload is tested in shouldConvertNonPdfDocumentBinariesToPdf
+        when(restTemplate.exchange(
+            eq(String.format("%s/rs/convert", BASE_URL)), eq(HttpMethod.POST), any(), eq(byte[].class))
+        ).thenReturn(new ResponseEntity<>(convertedDocumentBinaries, HttpStatus.OK));
+
+        final Document uploadedDocument = testDocument();
+        when(uploadService.uploadPDF(convertedDocumentBinaries, PDF_FILE_NAME)).thenReturn(uploadedDocument);
+
+        final byte[] converted = underTest.convertToPdfBytes(originalDocument);
+
+        assertThat(converted).isEqualTo(convertedDocumentBinaries);
+    }
+
 
     @Test
     void shouldReturnSameDocumentBinariesIfItIsPdf() {
