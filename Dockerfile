@@ -5,6 +5,5 @@ FROM hmctspublic.azurecr.io/base/java:17-distroless
 EXPOSE 4000
 
 COPY build/libs/service.jar /opt/app/
-COPY lib/applicationinsights.json /opt/app/
 
 CMD ["service.jar"]
