@@ -56,8 +56,7 @@ public class MigrateCaseService {
     private final CourtService courtService;
     private final DocumentListService documentListService;
 
-    public Map<String, Object> moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(CaseData caseData,
-                                                                                         String migrationId) {
+    public Map<String, Object> moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(CaseData caseData) {
         List<Element<CaseSummary>> caseSummaryListLA = caseData.getHearingDocuments().getCaseSummaryList().stream()
             .filter(cs -> YesNo.YES.getValue().equals(cs.getValue().getHasConfidentialAddress()))
             .collect(toList());
