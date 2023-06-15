@@ -1765,7 +1765,7 @@ class MigrateCaseServiceTest {
                 .build();
 
             Map<String, Object> updatedFields = underTest.moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(
-                caseData, MIGRATION_ID);
+                caseData);
             assertThat(updatedFields).extracting("caseSummaryList").asList().isEmpty();
             assertThat(updatedFields).extracting("caseSummaryListLA").asList()
                 .containsExactly(caseSummaryListElement);
