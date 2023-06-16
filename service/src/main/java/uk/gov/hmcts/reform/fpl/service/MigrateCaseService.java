@@ -54,6 +54,7 @@ public class MigrateCaseService {
     private final CaseNoteService caseNoteService;
     private final CourtService courtService;
     private final DocumentListService documentListService;
+    public final MigrateRelatingLAService migrateRelatingLAService;
 
     public Map<String, Object> removeHearingOrderBundleDraft(CaseData caseData, String migrationId, UUID bundleId,
                                                              UUID orderId) {
@@ -670,5 +671,18 @@ public class MigrateCaseService {
         } else {
             return Map.of("courtBundleListV2", listOfHearingCourtBundles);
         }
+    }
+
+    public Map<String, Object> addRelatingLA(String migrationId, Long caseId) {
+        // lookup in map
+        Optional<String> relatingLA = migrateRelatingLAService.getRelatingLAString(caseId.toString());
+
+        if (relatingLA.isEmpty()) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, case not found in migration list",
+                migrationId, caseId));
+        }
+
+        return Map.of("relatingLA", relatingLA.get());
     }
 }
