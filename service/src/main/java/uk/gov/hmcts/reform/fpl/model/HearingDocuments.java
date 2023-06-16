@@ -98,6 +98,10 @@ public class HearingDocuments {
         return defaultIfNull(courtBundleListCTSC, new ArrayList<>());
     }
 
+    public List<Element<HearingCourtBundle>> getCourtBundleListRemoved() {
+        return defaultIfNull(courtBundleListRemoved, new ArrayList<>());
+    }
+
     public List<Element<CaseSummary>> getCaseSummaryList() {
         return defaultIfNull(caseSummaryList, new ArrayList<>());
     }
