@@ -30,6 +30,9 @@ public class HearingDocuments {
     private final List<Element<CourtBundle>> courtBundleList;
     // the element ID is the ID of the linked hearing
     private final List<Element<CaseSummary>> caseSummaryList;
+    private final List<Element<CaseSummary>> caseSummaryListLA;
+    private final List<Element<CaseSummary>> caseSummaryListCTSC;
+    private final List<Element<CaseSummary>> caseSummaryListRemoved;
 
     // the element ID of each position statement is unique
     /**
@@ -104,6 +107,14 @@ public class HearingDocuments {
 
     public List<Element<CaseSummary>> getCaseSummaryList() {
         return defaultIfNull(caseSummaryList, new ArrayList<>());
+    }
+
+    public List<Element<CaseSummary>> getCaseSummaryListLA() {
+        return defaultIfNull(caseSummaryListLA, new ArrayList<>());
+    }
+
+    public List<Element<CaseSummary>> getCaseSummaryListCTSC() {
+        return defaultIfNull(caseSummaryListCTSC, new ArrayList<>());
     }
 
     /**

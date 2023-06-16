@@ -108,6 +108,22 @@ public class MigrateCaseService {
         return ret;
     }
 
+    public Map<String, Object> moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(CaseData caseData) {
+        List<Element<CaseSummary>> caseSummaryListLA = caseData.getHearingDocuments().getCaseSummaryList().stream()
+            .filter(cs -> YesNo.YES.getValue().equals(cs.getValue().getHasConfidentialAddress()))
+            .collect(toList());
+
+        List<Element<CaseSummary>> newCaseSummaryList = caseData.getHearingDocuments().getCaseSummaryList().stream()
+            .filter(cs -> YesNo.NO.getValue().equals(Optional.ofNullable(cs.getValue().getHasConfidentialAddress())
+                .orElse(YesNo.NO.getValue())))
+            .collect(toList());
+
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("caseSummaryListLA", caseSummaryListLA);
+        ret.put("caseSummaryList", newCaseSummaryList);
+        return ret;
+    }
+
     @SuppressWarnings("squid:CallToDeprecatedMethod")
     public Map<String, Object> migratePositionStatementChild(CaseData caseData) {
         List<Element<PositionStatementChild>> posStmtChildListLA = caseData.getHearingDocuments()
