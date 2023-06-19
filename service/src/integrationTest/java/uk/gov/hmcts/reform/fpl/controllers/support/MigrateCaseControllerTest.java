@@ -114,7 +114,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             // court code (344) is defined by application-integration-test.yaml (by LOCAL_AUTHORITY_3_USER_EMAIL)
             // epimms id is defined in courts.json by looking up court code 344
             @SuppressWarnings("unchecked")
-            Map<String,  String> caseManagementLocation = (Map<String, String>)
+            Map<String, String> caseManagementLocation = (Map<String, String>)
                 caseDetails.get("caseManagementLocation");
             assertThat(caseManagementLocation).containsEntry("baseLocation", "234946");
             assertThat(caseManagementLocation).containsEntry("region", "7");
@@ -122,7 +122,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             Map<String, Map<String, String>> caseManagementCategory = (Map<String, Map<String, String>>)
                 caseDetails.get("caseManagementCategory");
             assertThat(caseManagementCategory).containsKey("value");
-            Map<String, String> caseManagementCategoryValue =  caseManagementCategory.get("value");
+            Map<String, String> caseManagementCategoryValue = caseManagementCategory.get("value");
             assertThat(caseManagementCategoryValue).containsEntry("code", "FPL");
             assertThat(caseManagementCategoryValue).containsEntry("label", "Family Public Law");
 
@@ -161,7 +161,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             // court code (344) is defined by application-integration-test.yaml (by LOCAL_AUTHORITY_3_USER_EMAIL)
             // epimms id is defined in courts.json by looking up court code 344
             @SuppressWarnings("unchecked")
-            Map<String,  String> caseManagementLocation = (Map<String, String>)
+            Map<String, String> caseManagementLocation = (Map<String, String>)
                 caseDetails.get("caseManagementLocation");
             assertThat(caseManagementLocation).containsEntry("baseLocation", "234946");
             assertThat(caseManagementLocation).containsEntry("region", "7");
@@ -169,7 +169,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             Map<String, Map<String, String>> caseManagementCategory = (Map<String, Map<String, String>>)
                 caseDetails.get("caseManagementCategory");
             assertThat(caseManagementCategory).containsKey("value");
-            Map<String, String> caseManagementCategoryValue =  caseManagementCategory.get("value");
+            Map<String, String> caseManagementCategoryValue = caseManagementCategory.get("value");
             assertThat(caseManagementCategoryValue).containsEntry("code", "FPL");
             assertThat(caseManagementCategoryValue).containsEntry("label", "Family Public Law");
 
@@ -200,6 +200,42 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             verify(coreCaseDataApi).submitSupplementaryData(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN,
                 caseData.getId().toString(), supplementaryData);
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl1401 {
+
+        private final String migrationId = "DFPL-1401";
+        private final long validCaseId = 1666959378667166L;
+        private final long invalidCaseId = 1643728359986136L;
+
+        @Test
+        void shouldAddRelatingLA() {
+            CaseData caseData = CaseData.builder()
+                .id(validCaseId)
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getRelatingLA()).isEqualTo("NCC");
+        }
+
+        @Test
+        void shouldThrowExceptionIfWrongCaseId() {
+            CaseData caseData = CaseData.builder()
+                .id(invalidCaseId)
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(String.format(
+                    "Migration {id = %s, case reference = %s}, case id not one of the expected options",
+                    migrationId, invalidCaseId));
         }
     }
 }

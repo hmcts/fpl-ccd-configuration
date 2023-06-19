@@ -140,6 +140,7 @@ public class CourtService {
             return highCourtAdminEmailLookupConfiguration.getEmail();
         }
 
-        return court.map(Court::getEmail).orElse(null);
+        // If the case has a court specific email use that, otherwise default to CTSC so no emails are missed
+        return court.map(Court::getEmail).orElse(ctscLookup.getEmail());
     }
 }

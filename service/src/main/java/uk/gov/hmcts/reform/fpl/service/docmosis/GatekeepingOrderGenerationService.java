@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
@@ -31,7 +32,6 @@ import static java.lang.String.format;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -44,6 +44,8 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelect
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GatekeepingOrderGenerationService extends
     DocmosisTemplateDataGeneration<DocmosisStandardDirectionOrder> {
+    private static final String STANDARD_DIRECTIONS_ORDER = "Standard Directions Order";
+    private static final String URGENT_DIRECTIONS_ORDER = "Urgent Directions Order";
     private final CaseDataExtractionService dataService;
     private final OrdersLookupService ordersConfig;
     private final CourtService courtService;
@@ -60,6 +62,9 @@ public class GatekeepingOrderGenerationService extends
             eventData.getGatekeepingOrderIssuingJudge(), caseData.getAllocatedJudge()
         );
 
+        String orderDocumentTitle = Objects.nonNull(caseData.getGatekeepingOrderRouter())
+            ? STANDARD_DIRECTIONS_ORDER : URGENT_DIRECTIONS_ORDER;
+
         DocmosisStandardDirectionOrder.DocmosisStandardDirectionOrderBuilder<?, ?> orderBuilder =
             DocmosisStandardDirectionOrder.builder()
                 .judgeAndLegalAdvisor(dataService.getJudgeAndLegalAdvisor((judgeAndLegalAdvisor)))
@@ -73,6 +78,8 @@ public class GatekeepingOrderGenerationService extends
                 .applicantName(dataService.getApplicantName(caseData))
                 .directions(buildDirections(caseData))
                 .hearingBooking(dataService.getHearingBookingData(firstHearing))
+                .orderDocumentTitle(orderDocumentTitle)
+                .isUrgentOrder(Objects.nonNull(caseData.getUrgentDirectionsRouter()))
                 .crest(getCrestData());
 
         if (SEALED.equals(gatekeepingOrderSealDecision.getOrderStatus())) {
@@ -115,7 +122,7 @@ public class GatekeepingOrderGenerationService extends
         final DirectionDueDateType dueDateType = direction.getDueDateType();
         final Display display = directionConf.getDisplay();
 
-        if (DAYS == dueDateType) {
+        if (DirectionDueDateType.DAYS.equals(dueDateType)) {
 
             if (direction.getDaysBeforeHearing() == 0) {
                 return format("%d. %s by the day of the hearing", index, direction.getTitle());
@@ -128,13 +135,15 @@ public class GatekeepingOrderGenerationService extends
             return format("%d. %s %d working days before the hearing", index, direction.getTitle(),
                 direction.getDaysBeforeHearing());
 
-        } else {
+        } else if (DirectionDueDateType.DATE.equals(dueDateType)) {
             LocalDateTime dueDate = direction.getDateToBeCompletedBy();
 
             String formattedDate = formatLocalDateTimeBaseUsingFormat(dueDate, display.getTemplateDateFormat());
 
             return format("%d. %s %s %s", index, direction.getTitle(), display.getDue().toString().toLowerCase(),
                 formattedDate);
+        } else {
+            return format("%d. %s immediately", index, direction.getTitle());
         }
     }
 }

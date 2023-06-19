@@ -1,0 +1,63 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "addGatekeepingOrder",
+    "Name": "Judicial Gatekeeping",
+    "Description": "Judicial Gatekeeping",
+    "DisplayOrder": 1,
+    "PreConditionState(s)": "Gatekeeping;PREPARE_FOR_HEARING",
+    "PostConditionState": "GATEKEEPING_LISTING",
+    "SecurityClassification": "Public",
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/about-to-start",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/about-to-submit",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/submitted",
+    "EndButtonLabel": "Save and continue",
+    "ShowEventNotes": "Y",
+    "ShowSummary": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "addUrgentDirections",
+    "Name": "Add urgent directions",
+    "Description": "Add urgent directions",
+    "DisplayOrder": 1,
+    "PreConditionState(s)": "Gatekeeping",
+    "PostConditionState": "GATEKEEPING_LISTING",
+    "SecurityClassification": "Public",
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/about-to-start",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/about-to-submit",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/submitted",
+    "EndButtonLabel": "Save and continue",
+    "ShowEventNotes": "Y",
+    "ShowSummary": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "listGatekeepingHearing",
+    "Name": "List Gatekeeping Hearing",
+    "Description": "Manage hearing booking details and add allocated judge to a case",
+    "DisplayOrder": 1,
+    "PreConditionState(s)": "GATEKEEPING_LISTING",
+    "PostConditionState": "*",
+    "SecurityClassification": "Public",
+    "ShowSummary": "Y",
+    "ShowEventNotes": "Y",
+    "EndButtonLabel": "Save and continue",
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/list-gatekeeping-hearing/about-to-start",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/list-gatekeeping-hearing/about-to-submit",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/list-gatekeeping-hearing/submitted"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "internal-change-add-gatekeeping",
+    "Name": "Post-process gatekeeping order",
+    "PreConditionState(s)": "*",
+    "PostConditionState": "*",
+    "SecurityClassification": "Public",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/list-gatekeeping-hearing/post-submit-callback/about-to-submit"
+  }
+]

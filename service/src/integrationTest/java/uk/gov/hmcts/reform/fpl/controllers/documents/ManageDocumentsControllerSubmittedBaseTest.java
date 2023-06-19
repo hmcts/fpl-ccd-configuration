@@ -33,7 +33,7 @@ import java.util.Map;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
@@ -45,6 +45,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 
 abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallbackTest {
     protected static final String CONFIDENTIAL_MARKER = "CONFIDENTIAL";
@@ -191,7 +192,7 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
     protected static RespondentStatement buildRespondentStatement(boolean confidential, boolean isUploadedByHMCTS) {
         RespondentStatement.RespondentStatementBuilder builder
             = RespondentStatement.builder().respondentName("Timothy Jones")
-            .supportingEvidenceBundle(wrapElements(buildEvidenceBundle(confidential, isUploadedByHMCTS)));
+            .supportingEvidenceBundle(wrapElementsWithUUIDs(buildEvidenceBundle(confidential, isUploadedByHMCTS)));
         return builder.build();
     }
 
@@ -199,7 +200,7 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
                                                                                     boolean isUploadedByHMCTS) {
         HearingFurtherEvidenceBundle.HearingFurtherEvidenceBundleBuilder builder
             = HearingFurtherEvidenceBundle.builder().hearingName("Hearing1")
-            .supportingEvidenceBundle(wrapElements(buildEvidenceBundle(confidential, isUploadedByHMCTS)));
+            .supportingEvidenceBundle(wrapElementsWithUUIDs(buildEvidenceBundle(confidential, isUploadedByHMCTS)));
         return builder.build();
     }
 
@@ -235,7 +236,7 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
             "representatives", buildRepresentatives(),
             "children1", buildChildren1(),
             "respondents1", buildRespondents1(),
-            "applicationDocuments", wrapElements(applicationDocument)
+            "applicationDocuments", wrapElementsWithUUIDs(applicationDocument)
         );
     }
 
@@ -254,7 +255,7 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
             "representatives", buildRepresentatives(),
             "children1", buildChildren1(),
             "respondents1", buildRespondents1(),
-            bundleName, wrapElements(supportingEvidenceBundle)
+            bundleName, wrapElementsWithUUIDs(supportingEvidenceBundle)
         );
     }
 
@@ -328,33 +329,38 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
 
     protected void verifySendingNotification(NotificationClient notificationClient, String templateId, long caseId,
                                              List<String> targets) throws NotificationClientException {
-        verify(notificationClient, times(targets.contains(RESPONDENT_REP_1_EMAIL) ? 1 : 0)).sendEmail(
-            eq(templateId),
-            eq(RESPONDENT_REP_1_EMAIL),
-            anyMap(),
-            eq(notificationReference(caseId)));
+        verify(notificationClient, timeout(1000).times(targets.contains(RESPONDENT_REP_1_EMAIL) ? 1 : 0))
+            .sendEmail(
+                eq(templateId),
+                eq(RESPONDENT_REP_1_EMAIL),
+                anyMap(),
+                eq(notificationReference(caseId)));
 
-        verify(notificationClient, times(targets.contains(LOCAL_AUTHORITY_1_INBOX) ? 1 : 0)).sendEmail(
-            eq(templateId),
-            eq(LOCAL_AUTHORITY_1_INBOX),
-            anyMap(),
-            eq(notificationReference(caseId)));
+        verify(notificationClient, timeout(1000).times(targets.contains(LOCAL_AUTHORITY_1_INBOX) ? 1 : 0))
+            .sendEmail(
+                eq(templateId),
+                eq(LOCAL_AUTHORITY_1_INBOX),
+                anyMap(),
+                eq(notificationReference(caseId)));
 
-        verify(notificationClient, times(targets.contains(LOCAL_AUTHORITY_2_INBOX) ? 1 : 0)).sendEmail(
-            eq(templateId),
-            eq(LOCAL_AUTHORITY_2_INBOX),
-            anyMap(),
-            eq(notificationReference(caseId)));
+        verify(notificationClient, timeout(1000).times(targets.contains(LOCAL_AUTHORITY_2_INBOX) ? 1 : 0))
+            .sendEmail(
+                eq(templateId),
+                eq(LOCAL_AUTHORITY_2_INBOX),
+                anyMap(),
+                eq(notificationReference(caseId)));
 
         // registered respondent solicitor
-        verify(notificationClient, times(targets.contains(RESPONDENT_SOLICITOR_1_EMAIL) ? 1 : 0)).sendEmail(
-            eq(templateId),
-            eq(RESPONDENT_SOLICITOR_1_EMAIL),
-            anyMap(),
-            eq(notificationReference(caseId)));
+        verify(notificationClient, timeout(1000).times(targets.contains(RESPONDENT_SOLICITOR_1_EMAIL) ? 1 : 0))
+            .sendEmail(
+                eq(templateId),
+                eq(RESPONDENT_SOLICITOR_1_EMAIL),
+                anyMap(),
+                eq(notificationReference(caseId)));
 
         // unregistered respondent solicitor
-        verify(notificationClient, times(targets.contains(UNREGISTERED_RESPONDENT_SOLICITOR_2_EMAIL) ? 1 : 0))
+        verify(notificationClient,
+            timeout(1000).times(targets.contains(UNREGISTERED_RESPONDENT_SOLICITOR_2_EMAIL) ? 1 : 0))
             .sendEmail(
                 eq(templateId),
                 eq(UNREGISTERED_RESPONDENT_SOLICITOR_2_EMAIL),
@@ -362,14 +368,16 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
                 eq(notificationReference(caseId)));
 
         // registered child solicitor
-        verify(notificationClient, times(targets.contains(CHILD_SOLICITOR_1_EMAIL) ? 1 : 0)).sendEmail(
-            eq(templateId),
-            eq(CHILD_SOLICITOR_1_EMAIL),
-            anyMap(),
-            eq(notificationReference(caseId)));
+        verify(notificationClient, timeout(1000).times(targets.contains(CHILD_SOLICITOR_1_EMAIL) ? 1 : 0))
+            .sendEmail(
+                eq(templateId),
+                eq(CHILD_SOLICITOR_1_EMAIL),
+                anyMap(),
+                eq(notificationReference(caseId)));
 
         // unregistered child solicitor
-        verify(notificationClient, times(targets.contains(UNREGISTERED_CHILD_SOLICITOR_2_EMAIL) ? 1 : 0))
+        verify(notificationClient,
+            timeout(1000).times(targets.contains(UNREGISTERED_CHILD_SOLICITOR_2_EMAIL) ? 1 : 0))
             .sendEmail(
                 eq(templateId),
                 eq(UNREGISTERED_CHILD_SOLICITOR_2_EMAIL),

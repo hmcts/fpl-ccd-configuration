@@ -21,7 +21,9 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.Cardinality.ZERO;
 import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.PLACEMENT_GROUP;
@@ -144,32 +146,36 @@ public class PlacementController extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
 
-        CaseData caseData = getCaseData(request);
+        CaseData oldCaseData = getCaseData(request);
         final CaseData caseDataBefore = getCaseDataBefore(request);
 
-        final PlacementEventData sealedEventData = placementService
-            .sealPlacementApplicationAfterEventSubmitted(caseData);
+        final UUID placementIdToSeal = oldCaseData.getPlacementEventData().getPlacementIdToBeSealed();
 
-        Map<String, Object> updates = new HashMap<>();
-        if (sealedEventData != null) {
-            if (isNotEmpty(sealedEventData.getPlacements())) {
-                updates.put("placements", sealedEventData.getPlacements());
-            }
-            if (isNotEmpty(sealedEventData.getPlacement())) {
-                updates.put("placement", sealedEventData.getPlacement());
-            }
+        CaseDetails updatedCaseDetails = coreCaseDataService.performPostSubmitCallback(oldCaseData.getId(),
+            "internal-change-placement",
+            caseDetails -> {
+                CaseData current = getCaseData(caseDetails);
+                final PlacementEventData sealedEventData = placementService
+                    .sealPlacementApplicationAfterEventSubmitted(current, placementIdToSeal);
+
+                Map<String, Object> updates = new HashMap<>();
+                if (sealedEventData != null) {
+                    if (isNotEmpty(sealedEventData.getPlacements())) {
+                        updates.put("placements", sealedEventData.getPlacements());
+                    }
+                    if (isNotEmpty(sealedEventData.getPlacement())) {
+                        updates.put("placement", sealedEventData.getPlacement());
+                    }
+                }
+                return updates;
+            });
+
+        if (isEmpty(updatedCaseDetails)) {
+            // if our callback has failed 3 times, all we have is the prior caseData to send notifications based on
+            updatedCaseDetails = request.getCaseDetails();
         }
 
-        if (!updates.isEmpty()) {
-            coreCaseDataService.triggerEvent(caseData.getId(),
-                "internal-change-placement",
-                updates);
-
-            final CaseDetails caseDetails = request.getCaseDetails();
-            caseDetails.getData().putAll(updates);
-
-            caseData = getCaseData(caseDetails);
-        }
+        CaseData caseData = getCaseData(updatedCaseDetails);
 
         publishEvents(placementService.getEvents(caseData, caseDataBefore));
     }

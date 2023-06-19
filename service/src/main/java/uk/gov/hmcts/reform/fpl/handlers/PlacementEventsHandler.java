@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.cafcass.PlacementApplicationCafcassData;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
@@ -34,6 +36,7 @@ import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementContentProvider;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.util.Collection;
 import java.util.List;
@@ -53,6 +56,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.PLACEMENT_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.PLACEMENT_NOTICE;
+import static uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService.UPDATE_CASE_EVENT;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.nullifyTemporaryFields;
 
 @Slf4j
@@ -103,18 +107,19 @@ public class PlacementEventsHandler {
     @EventListener
     public void notifyCafcassOfNewApplicationSendGrid(final PlacementApplicationSubmitted event) {
         final CaseData caseData = event.getCaseData();
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-            cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
 
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             PlacementApplicationCafcassData placementApplicationCafcassData =
                 contentProvider.buildNewPlacementApplicationNotificationCafcassData(
                     caseData,
                     event.getPlacement()
                 );
 
+            Set<DocumentReference> docsToSend = of(event.getPlacement().getApplication());
+            docsToSend.forEach(el -> el.setType(PLACEMENT_APPLICATION.getLabel()));
+
             cafcassNotificationService.sendEmail(caseData,
-                of(event.getPlacement().getApplication()),
+                docsToSend,
                 PLACEMENT_APPLICATION,
                 placementApplicationCafcassData);
         }
@@ -126,16 +131,16 @@ public class PlacementEventsHandler {
         final CaseData caseData = event.getCaseData();
         final Placement placement = event.getPlacement();
 
-        Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
-            .map(CafcassLookupConfiguration.Cafcass::getEmail);
+        if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
+            Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData
+                .getCaseLocalAuthority()).map(CafcassLookupConfiguration.Cafcass::getEmail);
+            if (recipientIsWelsh.isPresent()) {
+                log.info("Send email to cafcass about {} new placement application", placement.getChildName());
 
-        if (recipientIsWelsh.isPresent()) {
-            log.info("Send email to cafcass about {} new placement application", placement.getChildName());
-
-            final NotifyData notifyData = contentProvider.getApplicationChangedCourtData(caseData, placement);
-
-            notificationService.sendEmail(PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE, recipientIsWelsh.get(),
-                notifyData, caseData.getId());
+                final NotifyData notifyData = contentProvider.getApplicationChangedCourtData(caseData, placement);
+                notificationService.sendEmail(PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE,
+                    recipientIsWelsh.get(), notifyData, caseData.getId());
+            }
         }
     }
 
@@ -165,17 +170,17 @@ public class PlacementEventsHandler {
         final CaseData caseData = event.getCaseData();
         final Placement placement = event.getPlacement();
 
-        Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
-            .map(CafcassLookupConfiguration.Cafcass::getEmail);
+        if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
+            Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData
+                .getCaseLocalAuthority()).map(CafcassLookupConfiguration.Cafcass::getEmail);
+            if (recipientIsWelsh.isPresent()) {
+                log.info("Send email to cafcass about {} child placement notice", placement.getChildName());
 
-        if (recipientIsWelsh.isPresent()) {
+                final NotifyData notifyData = contentProvider.getNoticeChangedCafcassData(caseData, placement);
 
-            log.info("Send email to cafcass about {} child placement notice", placement.getChildName());
-
-            final NotifyData notifyData = contentProvider.getNoticeChangedCafcassData(caseData, placement);
-
-            notificationService.sendEmail(PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE, recipientIsWelsh.get(),
-                notifyData, caseData.getId());
+                notificationService.sendEmail(PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE, recipientIsWelsh.get(),
+                    notifyData, caseData.getId());
+            }
         }
     }
 
@@ -184,18 +189,18 @@ public class PlacementEventsHandler {
     public void notifyCafcassOfNewNoticeSendGrid(PlacementNoticeAdded event) {
         final CaseData caseData = event.getCaseData();
 
-        final Optional<CafcassLookupConfiguration.Cafcass> recipientIsEngland =
-            cafcassLookupConfiguration.getCafcassEngland(caseData.getCaseLocalAuthority());
-
-        if (recipientIsEngland.isPresent()) {
+        if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             PlacementApplicationCafcassData placementApplicationCafcassData =
                 contentProvider.buildNewPlacementApplicationNotificationCafcassData(
                     caseData,
                     event.getPlacement()
                 );
 
+            Set<DocumentReference> docsToSend = of(event.getPlacement().getPlacementNotice());
+            docsToSend.forEach(e -> e.setType(PLACEMENT_NOTICE.getLabel()));
+
             cafcassNotificationService.sendEmail(caseData,
-                of(event.getPlacement().getPlacementNotice()),
+                docsToSend,
                 PLACEMENT_NOTICE,
                 placementApplicationCafcassData);
         }
@@ -281,9 +286,12 @@ public class PlacementEventsHandler {
     }
 
     private void updateCase(CaseData caseData) {
-        final Map<String, Object> updates = Map.of("placementLastPaymentTime", time.now());
+        coreCaseDataService.performPostSubmitCallback(caseData.getId(), UPDATE_CASE_EVENT, this::getUpdates);
+    }
 
-        coreCaseDataService.updateCase(caseData.getId(), nullifyTemporaryFields(updates, PlacementEventData.class));
+    public Map<String, Object> getUpdates(CaseDetails caseDetails) {
+        final Map<String, Object> updates = Map.of("placementLastPaymentTime", time.now());
+        return nullifyTemporaryFields(updates, PlacementEventData.class);
     }
 
     private void handlePaymentNotTaken(CaseData caseData, OrderApplicant applicant) {

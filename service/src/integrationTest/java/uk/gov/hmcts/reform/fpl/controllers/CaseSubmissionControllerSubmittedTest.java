@@ -65,8 +65,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.CAFCASS_WELSH_COURT;
 import static uk.gov.hmcts.reform.fpl.Constants.COURT_1;
 import static uk.gov.hmcts.reform.fpl.Constants.COURT_3A;
@@ -202,8 +200,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         checkThat(() -> verifyNoMoreInteractions(notificationClient));
         verifyTaskListUpdated();
 
-        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
-            eq("internal-update-case-summary"), anyMap());
+        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID),
+            eq("internal-update-case-summary"), any());
         verify(cafcassNotificationService, never()).sendEmail(
                 isA(CaseData.class), any(), any(), any()
         );
@@ -241,8 +239,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         checkThat(() -> verifyNoMoreInteractions(notificationClient));
         verifyTaskListUpdated();
 
-        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
-                eq("internal-update-case-summary"), anyMap());
+        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID),
+                eq("internal-update-case-summary"), any());
         verifyCafcassOrderNotification();
     }
 
@@ -350,8 +348,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
         postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
 
-        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
-            eq("internal-update-case-summary"), anyMap());
+        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID),
+            eq("internal-update-case-summary"), any());
     }
 
     @Test
@@ -825,12 +823,10 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     }
 
     private void verifyTaskListUpdated() {
-        verify(coreCaseDataService).triggerEvent(
-            eq(JURISDICTION),
-            eq(CASE_TYPE),
+        verify(coreCaseDataService).performPostSubmitCallback(
             eq(CASE_ID),
             eq("internal-update-task-list"),
-            anyMap());
+            any());
     }
 
     private void verifyEmailSentToTranslation() {

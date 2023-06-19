@@ -25,7 +25,7 @@ import uk.gov.hmcts.reform.fpl.utils.extension.TestLogs;
 import uk.gov.hmcts.reform.fpl.utils.extension.TestLogsExtension;
 
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,6 +41,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Language.ENGLISH;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Language.WELSH;
+import static uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService.UPDATE_CASE_EVENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
@@ -143,17 +144,13 @@ class SendDocumentServiceTest {
             when(sendLetters.send(any(), any(), any(), any(), eq(ENGLISH)))
                 .thenReturn(sentDocuments);
 
-            when(sentDocumentsService.addToHistory(caseData.getDocumentsSentToParties(), sentDocuments))
-                .thenReturn(sentDocumentsHistory);
-
             underTest.sendDocuments(caseData, List.of(document), List.of(recipient1, recipient2, recipient3));
 
             verify(sendLetters)
                 .send(document, List.of(recipient3), caseData.getId(), caseData.getFamilyManCaseNumber(),
                     ENGLISH);
 
-            verify(caseService)
-                .updateCase(caseData.getId(), Map.of("documentsSentToParties", sentDocumentsHistory));
+            verify(caseService).performPostSubmitCallback(eq(caseData.getId()), eq(UPDATE_CASE_EVENT), any());
 
             assertThat(logs.getErrors())
                 .containsExactly("Case 100 has 2 recipients with incomplete postal information");
@@ -186,14 +183,6 @@ class SendDocumentServiceTest {
             when(sendLetters.send(eq(document2), any(), any(), any(), eq(ENGLISH)))
                 .thenReturn(List.of(sentDocument2ForRecipient1, sentDocument2ForRecipient2));
 
-            when(sentDocumentsService.addToHistory(caseData.getDocumentsSentToParties(),
-                List.of(
-                    sentDocument1ForRecipient1,
-                    sentDocument1ForRecipient2,
-                    sentDocument2ForRecipient1,
-                    sentDocument2ForRecipient2)))
-                .thenReturn(sentDocumentsHistory);
-
             underTest.sendDocuments(caseData, List.of(document1, document2), List.of(recipient1, recipient2));
 
             verify(sendLetters)
@@ -204,8 +193,7 @@ class SendDocumentServiceTest {
                 .send(document2, List.of(recipient1, recipient2), caseData.getId(), caseData.getFamilyManCaseNumber(),
                     ENGLISH);
 
-            verify(caseService)
-                .updateCase(caseData.getId(), Map.of("documentsSentToParties", sentDocumentsHistory));
+            verify(caseService).performPostSubmitCallback(eq(caseData.getId()), eq(UPDATE_CASE_EVENT), any());
 
             assertThat(logs.getErrors()).isEmpty();
         }
@@ -237,14 +225,6 @@ class SendDocumentServiceTest {
             when(sendLetters.send(eq(document2), any(), any(), any(), eq(ENGLISH)))
                 .thenReturn(List.of(sentDocument2ForRecipient1, sentDocument2ForRecipient2));
 
-            when(sentDocumentsService.addToHistory(caseData.getDocumentsSentToParties(),
-                List.of(
-                    sentDocument1ForRecipient1,
-                    sentDocument1ForRecipient2,
-                    sentDocument2ForRecipient1,
-                    sentDocument2ForRecipient2)))
-                .thenReturn(sentDocumentsHistory);
-
             underTest.sendDocuments(
                 new SendDocumentRequest(
                     caseData, List.of(
@@ -266,8 +246,7 @@ class SendDocumentServiceTest {
                 .send(document2, List.of(recipient1, recipient2), caseData.getId(), caseData.getFamilyManCaseNumber(),
                     ENGLISH);
 
-            verify(caseService)
-                .updateCase(caseData.getId(), Map.of("documentsSentToParties", sentDocumentsHistory));
+            verify(caseService).performPostSubmitCallback(eq(caseData.getId()), eq(UPDATE_CASE_EVENT), any());
 
             assertThat(logs.getErrors()).isEmpty();
         }
@@ -283,6 +262,64 @@ class SendDocumentServiceTest {
             final List<Recipient> actualRecipients = underTest.getStandardRecipients(caseData);
 
             assertThat(actualRecipients).isEmpty();
+        }
+
+        @Test
+        void shouldReturnNotRepresentedRespondentsWithConfidentialAddressByPost() {
+
+            final UUID confidentialAddressRespondentId = UUID.randomUUID();
+
+            final Element<Representative> representativeServedByPost = element(Representative.builder()
+                .fullName("Representative 1")
+                .servingPreferences(POST)
+                .build());
+
+            final Element<Respondent> representedRespondent = element(UUID.randomUUID(), Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Represented")
+                    .lastName("Respondent")
+                    .build())
+                .representedBy(wrapElements(representativeServedByPost.getId()))
+                .build());
+
+            final Element<Respondent> notRepresentedRespondent = element(confidentialAddressRespondentId,
+                Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .firstName("Not Represented")
+                        .lastName("Respondent")
+                        .contactDetailsHidden("YES")
+                    .build())
+                .build());
+
+            Address confidentialAddress = Address.builder()
+                .postcode("SL11GF")
+                .addressLine1("11 Test Lane")
+                .addressLine2("Testington")
+                .build();
+
+            final Element<Respondent> confidentialNotRepresentedRespondent = element(confidentialAddressRespondentId,
+                Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .firstName("Not Represented")
+                        .lastName("Respondent")
+                        .contactDetailsHidden("YES")
+                        .address(confidentialAddress)
+                    .build())
+                .build());
+
+            final CaseData caseData = CaseData.builder()
+                .representatives(List.of(
+                    representativeServedByPost))
+                .respondents1(List.of(notRepresentedRespondent, representedRespondent))
+                .confidentialRespondents(List.of(confidentialNotRepresentedRespondent))
+                .build();
+
+            final List<Recipient> actualRecipients = underTest.getStandardRecipients(caseData);
+
+            assertThat(actualRecipients)
+                .containsExactlyInAnyOrder(representativeServedByPost.getValue(),
+                    confidentialNotRepresentedRespondent.getValue().getParty());
+            assertThat(actualRecipients.get(1).getAddress()).isEqualTo(confidentialAddress);
         }
 
         @Test

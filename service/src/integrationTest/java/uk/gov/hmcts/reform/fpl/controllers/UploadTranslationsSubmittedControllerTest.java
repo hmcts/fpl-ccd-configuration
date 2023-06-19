@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -23,7 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
@@ -141,7 +142,7 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
     private NotificationClient notificationClient;
 
     @MockBean
-    private CoreCaseDataService coreCaseDataService;
+    private CCDConcurrencyHelper concurrencyHelper;
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
@@ -164,11 +165,15 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
         givenFplService();
         when(documentConversionService.convertToPdf(any()))
             .thenAnswer(returnsFirstArg());
+        when(documentConversionService.convertToPdfBytes(TRANSLATED_ORDER))
+            .thenReturn(ORDER_BINARY);
+        when(documentConversionService.convertToPdfBytes(ORIGINAL_ORDER))
+            .thenReturn(ORDER_BINARY);
         when(documentDownloadService.downloadDocument(anyString()))
             .thenReturn(ORDER_BINARY);
-        when(uploadDocumentService.uploadPDF(ORDER_BINARY, TRANSLATED_ORDER.getFilename()))
+        when(uploadDocumentService.uploadPDF(ORDER_BINARY, TRANSLATED_ORDER.getFilename() + ".pdf"))
             .thenReturn(ORDER_DOCUMENT);
-        when(uploadDocumentService.uploadPDF(ORDER_BINARY, ORIGINAL_ORDER.getFilename()))
+        when(uploadDocumentService.uploadPDF(ORDER_BINARY, ORIGINAL_ORDER.getFilename() + ".pdf"))
             .thenReturn(ORDER_DOCUMENT_ORIGINAL);
 
         when(documentService.createCoverDocuments(any(), any(), eq(REPRESENTATIVE_POST.getValue()), eq(WELSH)))
@@ -203,6 +208,12 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
     @Test
     void shouldSendTranslatedNotificationToLocalAuthorityWhenTranslatedOrder() {
         CaseData caseData = caseData();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(asCaseDetails(caseData))
             .build();
@@ -219,21 +230,31 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
     @Test
     void shouldSendOrdersByPostWhenOrderTranslated() {
+        final CaseData caseData = caseData();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
 
-        postSubmittedEvent(caseData());
+        postSubmittedEvent(caseData);
 
         checkUntil(() -> {
             verify(sendLetterApi, times(4)).sendLetter(eq(SERVICE_AUTH_TOKEN),
                 printRequest.capture());
-            verify(coreCaseDataService).updateCase(eq(CASE_ID), caseDataDelta.capture());
+            verify(concurrencyHelper).submitEvent(any(), eq(CASE_ID), caseDataDelta.capture());
         });
 
         assertThat(printRequest.getAllValues()).usingRecursiveComparison()
             .isEqualTo(List.of(
-                printRequest(CASE_ID, ORIGINAL_ORDER, COVERSHEET_REPRESENTATIVE_BINARY_ENGLISH, ORDER_BINARY),
-                printRequest(CASE_ID, ORIGINAL_ORDER, COVERSHEET_RESPONDENT_BINARY_ENGLISH, ORDER_BINARY),
-                printRequest(CASE_ID, TRANSLATED_ORDER, COVERSHEET_REPRESENTATIVE_BINARY, ORDER_BINARY),
-                printRequest(CASE_ID, TRANSLATED_ORDER, COVERSHEET_RESPONDENT_BINARY, ORDER_BINARY)
+                printRequest(CASE_ID, ORIGINAL_ORDER, REPRESENTATIVE_POST.getValue(),
+                    COVERSHEET_REPRESENTATIVE_BINARY_ENGLISH, ORDER_BINARY),
+                printRequest(CASE_ID, ORIGINAL_ORDER, RESPONDENT_NOT_REPRESENTED.getParty(),
+                    COVERSHEET_RESPONDENT_BINARY_ENGLISH, ORDER_BINARY),
+                printRequest(CASE_ID, TRANSLATED_ORDER, REPRESENTATIVE_POST.getValue(),
+                    COVERSHEET_REPRESENTATIVE_BINARY, ORDER_BINARY),
+                printRequest(CASE_ID, TRANSLATED_ORDER, RESPONDENT_NOT_REPRESENTED.getParty(),
+                    COVERSHEET_RESPONDENT_BINARY, ORDER_BINARY)
             ));
 
         List<Element<SentDocuments>> documentsSent = mapper.convertValue(
@@ -270,8 +291,14 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
     @Test
     void shouldNotifyRepresentativesServedDigitallyWhenOrderTranslated() {
+        final CaseData caseData = caseData();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
 
-        postSubmittedEvent(caseData());
+        postSubmittedEvent(caseData);
 
         checkUntil(() ->
             verify(notificationClient).sendEmail(
@@ -285,8 +312,14 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
     @Test
     void shouldNotifyRepresentativesServedByEmailWhenOrderTranslated() {
+        final CaseData caseData = caseData();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
 
-        postSubmittedEvent(caseData());
+        postSubmittedEvent(caseData);
 
         checkUntil(() ->
             verify(notificationClient).sendEmail(

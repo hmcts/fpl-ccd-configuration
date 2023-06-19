@@ -100,7 +100,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageOrdersUploadType",
-    "ListElementCode": "C34B_REFUSAL_OF_CONTACT_WITH_A_CHILD_IN_CARE",
+    "ListElementCode": "C34B_AUTHORITY_TO_REFUSE_CONTACT",
     "ListElement": "Refusal of contact with a child in care (C34B)",
     "DisplayOrder": 190
   },

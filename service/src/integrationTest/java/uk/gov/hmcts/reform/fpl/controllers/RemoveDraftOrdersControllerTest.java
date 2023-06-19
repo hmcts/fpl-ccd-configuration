@@ -180,14 +180,22 @@ public class RemoveDraftOrdersControllerTest extends AbstractCallbackTest {
             UUID additionalOrderId = UUID.randomUUID();
             UUID hearingOrderBundleId = UUID.randomUUID();
 
-            Element<HearingOrder> orderToBeRemoved = element(removedOrderId, HearingOrder.builder()
+            HearingOrder orderToBeRemoved = HearingOrder.builder()
                 .status(DRAFT)
                 .type(HearingOrderType.DRAFT_CMO)
-                .build());
+                .build();
+
+            HearingOrder additionalOrder = HearingOrder.builder()
+                    .status(SEND_TO_JUDGE)
+                    .type(AGREED_CMO)
+                    .build();
+
+
+            List<Element<HearingOrder>> caseManagementOrdersDraft = newArrayList(
+                    element(removedOrderId,orderToBeRemoved));
 
             List<Element<HearingOrder>> caseManagementOrders = newArrayList(
-                orderToBeRemoved,
-                element(additionalOrderId, HearingOrder.builder().type(HearingOrderType.DRAFT_CMO).build()));
+                element(additionalOrderId, additionalOrder));
 
             List<Element<HearingBooking>> hearingBookings = List.of(
                 element(HearingBooking.builder()
@@ -195,13 +203,22 @@ public class RemoveDraftOrdersControllerTest extends AbstractCallbackTest {
                     .build()));
 
             CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDraftReview(newArrayList(
+                    element(hearingOrderBundleId,
+                        HearingOrdersBundle.builder().orders(caseManagementOrdersDraft).build())
+                ))
                 .hearingOrdersBundlesDrafts(newArrayList(
-                    element(hearingOrderBundleId, HearingOrdersBundle.builder().orders(caseManagementOrders).build())
+                    element(hearingOrderBundleId,
+                        HearingOrdersBundle.builder().orders(caseManagementOrders).build())
                 ))
                 .hearingDetails(hearingBookings)
                 .removalToolData(RemovalToolData.builder().removableOrderList(DynamicList.builder()
                     .value(buildListElement(removedOrderId, "Draft case management order - 15 June 2020"))
                     .build()).build())
+                .draftUploadedCMOs(newArrayList(
+                        element(removedOrderId, orderToBeRemoved),
+                        element(additionalOrderId, additionalOrder))
+                )
                 .build();
 
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
@@ -210,12 +227,16 @@ public class RemoveDraftOrdersControllerTest extends AbstractCallbackTest {
             HearingBooking unlinkedHearing = responseData.getHearingDetails().get(0).getValue();
 
             assertThat(responseData.getHearingOrdersBundlesDrafts()).isEqualTo(newArrayList(
-                element(hearingOrderBundleId, HearingOrdersBundle.builder().orders(newArrayList(
-                    element(additionalOrderId, HearingOrder.builder().type(HearingOrderType.DRAFT_CMO).build())
-                )).build())
+                    element(hearingOrderBundleId, HearingOrdersBundle.builder().orders(newArrayList(
+                            element(additionalOrderId, HearingOrder.builder()
+                                    .type(HearingOrderType.AGREED_CMO)
+                                    .status(SEND_TO_JUDGE)
+                                    .build())
+                    )).build())
             ));
 
             assertNull(unlinkedHearing.getCaseManagementOrderId());
+            assertThat(responseData.getHearingOrdersBundlesDraftReview()).isNull();
 
             assertThat(response.getData()).doesNotContainKeys(
                 "orderTitleToBeRemoved",
