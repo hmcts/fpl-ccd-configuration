@@ -524,7 +524,8 @@
     "Label": "Application Form",
     "FieldType": "Document",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "CategoryID": "originalApplications"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -533,7 +534,8 @@
     "Label": "Application Supplement",
     "FieldType": "Document",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "CategoryID": "originalApplications"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -542,7 +544,8 @@
     "Label": "Translated document",
     "FieldType": "Document",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "CategoryID": "originalApplications"
   },
   {
     "LiveFrom": "01/01/2017",
