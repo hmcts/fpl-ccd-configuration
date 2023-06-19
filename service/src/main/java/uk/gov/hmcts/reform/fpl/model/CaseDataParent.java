@@ -20,6 +20,10 @@ import javax.validation.constraints.NotNull;
 @Data
 public class CaseDataParent {
 
+    protected final List<Element<RespondentStatementV2>> respStmtList;
+    protected final List<Element<RespondentStatementV2>> respStmtListLA;
+    protected final List<Element<RespondentStatementV2>> respStmtListCTSC;
+    protected final List<Element<RespondentStatementV2>> respStmtListRemoved;
     protected final List<Element<Direction>> allParties;
     protected final List<Element<Direction>> allPartiesCustom;
     protected final List<Element<Direction>> localAuthorityDirections;
