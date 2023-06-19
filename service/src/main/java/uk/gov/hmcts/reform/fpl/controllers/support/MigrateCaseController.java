@@ -33,6 +33,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import static java.lang.String.format;
+
 @Api
 @Slf4j
 @RestController
@@ -84,17 +86,14 @@ public class MigrateCaseController extends CallbackController {
         final CaseData caseData = getCaseData(callbackRequest);
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        String migrationId = (String) caseDetails.getData().get(MIGRATION_ID_KEY);
+        // update supplementary data
+        String caseId = caseData.getId().toString();
+        Map<String, Map<String, Map<String, Object>>> supplementaryData = new HashMap<>();
+        supplementaryData.put("supplementary_data_updates",
+            Map.of("$set", Map.of("HMCTSServiceId", "ABA3")));
+        coreCaseDataApi.submitSupplementaryData(requestData.authorisation(),
+            authToken.generate(), caseId, supplementaryData);
 
-        if ("DFPL-702".equals(migrationId)) {
-            // update supplementary data
-            String caseId = caseData.getId().toString();
-            Map<String, Map<String, Map<String, Object>>> supplementaryData = new HashMap<>();
-            supplementaryData.put("supplementary_data_updates",
-                Map.of("$set", Map.of("HMCTSServiceId", "ABA3")));
-            coreCaseDataApi.submitSupplementaryData(requestData.authorisation(),
-                authToken.generate(), caseId, supplementaryData);
-        }
         caseDetails.getData().remove(MIGRATION_ID_KEY);
     }
 
@@ -110,10 +109,9 @@ public class MigrateCaseController extends CallbackController {
             courtCode = caseData.getCourt().getCode();
         }
         if (courtCode == null) {
-            log.warn("Migration {id = DFPL-702, case reference = {}, case state = {}} doesn't have court info "
-                    + "therefore unable to set caseManagementLocation which is mandatory in global search.",
-                caseId, caseData.getState().getValue());
-            return;
+            throw new AssertionError(format("Migration {id = DFPL-702, case reference = {}, case state = {}} "
+                + "doesn't have court info so unable to set caseManagementLocation "
+                + "which is mandatory in global search.", caseId, caseData.getState().getValue()));
         }
 
         // migrating top level fields: case names
@@ -132,8 +130,8 @@ public class MigrateCaseController extends CallbackController {
                 ))
                 .build());
         } else {
-            log.warn("Migration {id = DFPL-702, case reference = {}, case state = {}} fail to lookup ePIMMS ID "
-                + "for court {}", caseId, caseData.getState().getValue(), courtCode);
+            throw new AssertionError(format("Migration {id = DFPL-702, case reference = {}, case state = {}} fail to "
+                + "lookup ePIMMS ID for court {}", caseId, caseData.getState().getValue(), courtCode));
         }
     }
 
