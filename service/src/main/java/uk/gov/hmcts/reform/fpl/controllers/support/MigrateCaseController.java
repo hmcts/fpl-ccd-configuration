@@ -55,7 +55,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1466", this::run1466,
         "DFPL-1501", this::run1501,
         "DFPL-1484", this::run1484,
-        "DFPL-702", this::run702
+        "DFPL-702", this::run702,
+        "DFPL-702rollback", this::run702rollback
     );
 
     @PostMapping("/about-to-submit")
@@ -134,6 +135,12 @@ public class MigrateCaseController extends CallbackController {
             log.warn("Migration {id = DFPL-702, case reference = {}, case state = {}} fail to lookup ePIMMS ID "
                 + "for court {}", caseId, caseData.getState().getValue(), courtCode);
         }
+    }
+
+    private void run702rollback(CaseDetails caseDetails) {
+        caseDetails.getData().put("caseManagementLocation", null);
+        caseDetails.getData().put("caseNameHmctsInternal", null);
+        caseDetails.getData().put("caseManagementCategory", null);
     }
 
     private void run1359(CaseDetails caseDetails) {
