@@ -41,6 +41,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.trim;
 import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DAYS;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
@@ -213,6 +214,11 @@ public class CaseDataExtractionService {
     }
 
     private String buildHearingVenue(HearingBooking hearing) {
+        if (hearing != null && hearing.getPreviousHearingVenue() != null
+            && YES.getValue().equals(hearing.getPreviousHearingVenue().getUsePreviousVenue())){
+            String venueAddress = hearing.getPreviousHearingVenue().getPreviousVenue();
+            return (hearing.isRemote()) ? String.format(REMOTE_HEARING_VENUE, venueAddress) : venueAddress;
+        }
         HearingVenue venue = hearingVenueLookUpService.getHearingVenue(hearing);
         if (venue.getAddress() != null) {
             String venueAddress = hearingVenueLookUpService.buildHearingVenue(venue);
