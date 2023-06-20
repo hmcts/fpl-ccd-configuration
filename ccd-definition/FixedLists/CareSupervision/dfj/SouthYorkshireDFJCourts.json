@@ -2,8 +2,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "SouthYorkshireDFJCourts",
+    "ListElementCode": "118",
+    "ListElement": "Barnsley",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SouthYorkshireDFJCourts",
     "ListElementCode": "320",
     "ListElement": "Sheffield",
-    "DisplayOrder": 1
+    "DisplayOrder": 2
   }
 ]
