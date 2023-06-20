@@ -116,6 +116,6 @@ public class MigrateCaseController extends CallbackController {
 
     private void run1490(CaseDetails caseDetails) {
         var migrationId = "DFPL-1490";
-        migrateCaseService.migrateCourtBundle(getCaseData(caseDetails));
+        caseDetails.getData().putAll(migrateCaseService.migrateCourtBundle(getCaseData(caseDetails)));
     }
 }
