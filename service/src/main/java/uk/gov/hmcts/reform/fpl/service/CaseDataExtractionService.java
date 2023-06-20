@@ -214,7 +214,7 @@ public class CaseDataExtractionService {
     }
 
     private String buildHearingVenue(HearingBooking hearing) {
-        if (hearing != null && hearing.getPreviousHearingVenue() != null
+        if (hearing.getPreviousHearingVenue() != null
             && YES.getValue().equals(hearing.getPreviousHearingVenue().getUsePreviousVenue())) {
             String venueAddress = hearing.getPreviousHearingVenue().getPreviousVenue();
             return (hearing.isRemote()) ? String.format(REMOTE_HEARING_VENUE, venueAddress) : venueAddress;
