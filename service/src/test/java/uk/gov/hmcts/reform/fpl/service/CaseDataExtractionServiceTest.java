@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
+import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -224,6 +226,30 @@ class CaseDataExtractionServiceTest {
                 .build();
 
             assertThat(service.getApplicantName(caseData)).isEqualTo(StringUtils.EMPTY);
+        }
+
+        @Test
+        void shouldGetApplicantNameIfC1ApplicationAndApplicantIsNotLA() {
+
+            final LocalAuthority solicitorApplicant = LocalAuthority.builder()
+                .designated("No")
+                .name("Private Solicitor")
+                .build();
+
+            final LocalAuthority localAuthority = LocalAuthority.builder()
+                .designated("NO")
+                .name("Local authority organisation")
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .orders(Orders.builder().orderType(List.of(OrderType.CONTACT_WITH_CHILD_IN_CARE)).build())
+                .localAuthorities(wrapElements(solicitorApplicant, localAuthority))
+                .applicants(wrapElements(Applicant.builder()
+                    .party(ApplicantParty.builder().organisationName("Applicant organisation").build())
+                    .build()))
+                .build();
+
+            assertThat(service.getApplicantName(caseData)).isEqualTo("Private Solicitor");
         }
     }
 

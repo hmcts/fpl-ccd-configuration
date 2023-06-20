@@ -85,6 +85,7 @@ class SendDocumentControllerTest extends AbstractCallbackTest {
     void setup() {
         givenFplService();
         given(documentConversionService.convertToPdf(DOCUMENT_TO_BE_SENT)).willReturn(DOCUMENT_TO_BE_SENT);
+        given(documentConversionService.convertToPdfBytes(DOCUMENT_TO_BE_SENT)).willReturn(MAIN_DOCUMENT_BINARIES);
         given(documentDownloadService.downloadDocument(anyString())).willReturn(MAIN_DOCUMENT_BINARIES);
         given(docmosisCoverDocumentsService.createCoverDocuments(any(), any(), any(), any()))
             .willReturn(testDocmosisDocument(COVERSHEET_BINARIES));
@@ -107,7 +108,6 @@ class SendDocumentControllerTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
-        verify(documentDownloadService).downloadDocument(DOCUMENT_TO_BE_SENT.getBinaryUrl());
         verify(sendLetterApi).sendLetter(anyString(), any(LetterWithPdfsRequest.class));
         verify(uploadDocumentService).uploadPDF(COVERSHEET_BINARIES, COVERSHEET_PDF);
         verify(docmosisCoverDocumentsService).createCoverDocuments(FAMILY_MAN_NO, caseDetails.getId(), representative1,
