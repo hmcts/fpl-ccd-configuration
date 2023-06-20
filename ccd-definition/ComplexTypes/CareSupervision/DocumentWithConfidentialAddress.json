@@ -13,6 +13,7 @@
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "File",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "CategoryID": "confidentialDocuments"
   }
 ]
