@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "Supplement",
+    "ID": "C2Supplement",
     "ListElementCode": "name",
     "FieldType": "FixedList",
     "ElementLabel": "Document name",
@@ -10,7 +10,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "Supplement",
+    "ID": "C2Supplement",
     "ListElementCode": "secureAccommodationType",
     "FieldType": "FixedRadioList",
     "ElementLabel": "Which jurisdiction?",
@@ -19,7 +19,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "Supplement",
+    "ID": "C2Supplement",
     "ListElementCode": "notes",
     "FieldType": "TextArea",
     "ElementLabel": "Notes",
@@ -27,7 +27,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "Supplement",
+    "ID": "C2Supplement",
     "ListElementCode": "dateTimeUploaded",
     "FieldType": "DateTime",
     "ElementLabel": "Date and time uploaded",
@@ -35,15 +35,16 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "Supplement",
+    "ID": "C2Supplement",
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "File",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "CategoryID": "c2Applications"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "Supplement",
+    "ID": "C2Supplement",
     "ListElementCode": "uploadedBy",
     "FieldType": "Text",
     "ElementLabel": "Uploaded by",
@@ -51,7 +52,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "Supplement",
+    "ID": "C2Supplement",
     "ListElementCode": "documentAcknowledgeLabel",
     "FieldType": "Label",
     "ElementLabel": " ",
@@ -61,7 +62,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "Supplement",
+    "ID": "C2Supplement",
     "ListElementCode": "documentAcknowledgeLabelForCYA",
     "FieldType": "Label",
     "ElementLabel": " ",
@@ -71,7 +72,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "Supplement",
+    "ID": "C2Supplement",
     "ListElementCode": "documentAcknowledge",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "DocumentAcknowledge",

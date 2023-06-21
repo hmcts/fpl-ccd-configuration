@@ -71,7 +71,7 @@
     "ListElementCode": "supplementsBundle",
     "ElementLabel": "Supplements",
     "FieldType": "Collection",
-    "FieldTypeParameter": "Supplement",
+    "FieldTypeParameter": "OtherApplicationSupplement",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
