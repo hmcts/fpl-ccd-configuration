@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fnp.exception.RetryablePaymentException;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
-import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -117,8 +116,6 @@ class SubmittedCaseEventHandlerTest {
         final SubmitCaseCafcassTemplate parameters = mock(SubmitCaseCafcassTemplate.class);
 
         when(caseData.getCaseLaOrRelatingLa()).thenReturn(LOCAL_AUTHORITY_CODE);
-        when(caseData.getCaseLocalAuthority()).thenReturn(LOCAL_AUTHORITY_CODE);
-        when(caseData.getRepresentativeType()).thenReturn(RepresentativeType.LOCAL_AUTHORITY);
         when(caseData.getId()).thenReturn(CASE_ID);
         when(cafcassLookupConfiguration.getCafcassWelsh(LOCAL_AUTHORITY_CODE))
             .thenReturn(Optional.of(new Cafcass(LOCAL_AUTHORITY_CODE, EMAIL)));
@@ -147,7 +144,6 @@ class SubmittedCaseEventHandlerTest {
         when(caseData.getC110A()).thenReturn(c110A);
         when(cafcassLookupConfiguration.getCafcassEngland(LOCAL_AUTHORITY_CODE))
                 .thenReturn(Optional.of(new Cafcass(LOCAL_AUTHORITY_CODE, EMAIL)));
-        when(caseData.getRepresentativeType()).thenReturn(RepresentativeType.LOCAL_AUTHORITY);
 
         submittedCaseEventHandler.notifyCafcassSendGrid(new SubmittedCaseEvent(caseData, caseDataBefore));
 
@@ -165,8 +161,6 @@ class SubmittedCaseEventHandlerTest {
                 .build();
 
         final NewApplicationCafcassData parameters = mock(NewApplicationCafcassData.class);
-
-        when(caseData.getRepresentativeType()).thenReturn(RepresentativeType.CHILD_SOLICITOR);
 
         submittedCaseEventHandler.notifyCafcassSendGrid(new SubmittedCaseEvent(caseData, caseDataBefore));
 
