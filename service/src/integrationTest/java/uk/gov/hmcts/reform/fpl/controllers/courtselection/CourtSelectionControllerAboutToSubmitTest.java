@@ -22,6 +22,7 @@ import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_3_COURT_B_NAME;
 @OverrideAutoConfiguration(enabled = true)
 class CourtSelectionControllerAboutToSubmitTest extends AbstractCallbackTest {
 
+
     CourtSelectionControllerAboutToSubmitTest() {
         super("select-court");
     }
@@ -48,6 +49,8 @@ class CourtSelectionControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         assertThat(updatedCaseData.getCourt()).isEqualTo(expectedCourt);
         assertThat(updatedCaseData.getCourtsList()).isNull();
+        assertThat(updatedCaseData.getDfjArea()).isEqualTo("CENTRAL_LONDON");
+        assertThat(updatedCaseData.getCourtField()).isNull();
     }
 
     @Test

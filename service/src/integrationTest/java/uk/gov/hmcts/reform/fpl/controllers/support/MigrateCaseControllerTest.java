@@ -9,7 +9,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
@@ -87,6 +89,46 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .hasMessage(String.format(
                     "Migration {id = %s, case reference = %s}, case id not one of the expected options",
                     migrationId, invalidCaseId));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl1124Rollback {
+        final String migrationId = "DFPL-1124Rollback";
+        final Long caseId = 1660300177298257L;
+
+        @Test
+        void shouldAddDfjAreaAndCourtFiledWhenCourtPresent() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .state(State.CASE_MANAGEMENT)
+                .court(Court.builder().code("11").build())
+                .dfjArea("SWANSEA")
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData updatedCaseData = extractCaseData(response);
+            assertThat(updatedCaseData.getDfjArea()).isNull();
+            assertThat(response.getData().get("swanseaDFJCourt")).isNull();
+        }
+
+        @Test
+        void shouldNotFailRollbackWhenDfjAreaNotPresent() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .state(State.CASE_MANAGEMENT)
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId)
+            );
+
+            CaseData updatedCaseData = extractCaseData(response);
+            assertThat(updatedCaseData.getDfjArea()).isNull();
         }
     }
 }
