@@ -179,6 +179,9 @@ public class CaseData extends CaseDataParent {
     private String relatingLA;
     private Court court;
     private List<Element<Court>> pastCourtList;
+    @JsonIgnore
+    private String courtField;
+    private String dfjArea;
 
     public List<Element<Court>> getPastCourtList() {
         return defaultIfNull(pastCourtList, new ArrayList<>());
@@ -705,6 +708,13 @@ public class CaseData extends CaseDataParent {
     private final List<Element<CourtAdminDocument>> otherCourtAdminDocuments;
     private final List<Element<ScannedDocument>> scannedDocuments;
 
+    /**
+     * Collection field for storing respondent statements.
+     *
+     * @deprecated Data restructure due to CaseFileView change. Making use of respStmtList, respStmtListLA and
+     *     respStmtListCTSC in the future which are defined in CaseDataParent
+     */
+    @Deprecated(since = "DFPL-1438")
     private final List<Element<RespondentStatement>> respondentStatements;
     private final Object manageDocumentsHearingList;
     private final Object manageDocumentsSupportingC2List;
