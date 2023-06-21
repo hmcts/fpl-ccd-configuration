@@ -12,9 +12,9 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.DfjAreaLookUpService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
@@ -159,7 +159,7 @@ public class MigrateCaseController extends CallbackController {
         fieldNameToFilename.entrySet().stream().forEach(e -> {
             caseDetails.getData().put(e.getKey(), List.of(
                 element(UUID.randomUUID(), ManagedDocument.builder()
-                    .document(DocumentReference.builder()
+                    .document(DocumentReference.builder().build().builder()
                         .url(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s",
                             "6e4efc77-1906-4906-b0ca-5154155db1a6"))
                         .binaryUrl(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s/binary",
