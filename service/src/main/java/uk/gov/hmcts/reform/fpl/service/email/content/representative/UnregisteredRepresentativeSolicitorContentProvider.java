@@ -33,7 +33,9 @@ public class UnregisteredRepresentativeSolicitorContentProvider {
 
         return UnregisteredRepresentativeSolicitorTemplate.builder()
             .ccdNumber(formatCCDCaseNumber(caseData.getId()))
-            .localAuthority(laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
+            // use the name of the first applicant as entered on the case data (it might not be an LA, so we cannot use
+            // the onboarding config lookup otherwise the email implies that the LA made the case)
+            .localAuthority(caseData.getLocalAuthorities().get(0).getValue().getName())
             .clientFullName(clientNames(representables))
             .caseName(caseData.getCaseName())
             .childLastName(helper.getEldestChildLastName(caseData.getAllChildren()))
