@@ -42,7 +42,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1451", this::run1451,
         "DFPL-1466", this::run1466,
         "DFPL-1501", this::run1501,
-        "DFPL-1486", this::run1486
+        "DFPL-1486", this::run1486,
         "DFPL-1584", this::run1584,
         "DFPL-1124", this::run1124,
         "DFPL-1124Rollback", this::run1124Rollback
