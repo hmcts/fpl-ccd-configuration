@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -64,6 +65,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.APPLICANT_STATEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith({MockitoExtension.class})
@@ -1668,6 +1671,203 @@ class MigrateCaseServiceTest {
 
     @Nested
     class CaseFileViewMigrations {
+
+        @Test
+        void shouldMigrateApplicantWitnessStatementUploadedByCTSC() {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .type(APPLICANT_STATEMENT)
+                .document(document1)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocuments(List.of(element(doc1Id, sebOne)))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateApplicantWitnessStatements(caseData);
+
+            assertThat(updatedFields).extracting("applicantWitnessStmtListLA").asList().isEmpty();
+            assertThat(updatedFields).extracting("applicantWitnessStmtListCTSC").asList().isEmpty();
+            assertThat(updatedFields).extracting("applicantWitnessStmtList").asList().contains(
+                element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @Test
+        void shouldMigrateConfidentialApplicantWitnessStatementUploadedByCTSC() {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .type(APPLICANT_STATEMENT)
+                .document(document1)
+                .confidential(List.of("CONFIDENTIAL"))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocuments(List.of(element(doc1Id, sebOne)))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateApplicantWitnessStatements(caseData);
+
+            assertThat(updatedFields).extracting("applicantWitnessStmtListLA").asList().isEmpty();
+            assertThat(updatedFields).extracting("applicantWitnessStmtList").asList().isEmpty();
+            assertThat(updatedFields).extracting("applicantWitnessStmtListCTSC").asList().contains(
+                element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @Test
+        void shouldMigrateApplicantWitnessStatementUploadedByLA() {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .type(APPLICANT_STATEMENT)
+                .document(document1)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocumentsLA(List.of(element(doc1Id, sebOne)))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateApplicantWitnessStatements(caseData);
+
+            assertThat(updatedFields).extracting("applicantWitnessStmtListCTSC").asList().isEmpty();
+            assertThat(updatedFields).extracting("applicantWitnessStmtListLA").asList().isEmpty();
+            assertThat(updatedFields).extracting("applicantWitnessStmtList").asList().contains(
+                element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @Test
+        void shouldMigrateConfidentialApplicantWitnessStatementUploadedByLA() {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .type(APPLICANT_STATEMENT)
+                .document(document1)
+                .confidential(List.of("CONFIDENTIAL"))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocumentsLA(List.of(element(doc1Id, sebOne)))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateApplicantWitnessStatements(caseData);
+
+            assertThat(updatedFields).extracting("applicantWitnessStmtListCTSC").asList().isEmpty();
+            assertThat(updatedFields).extracting("applicantWitnessStmtList").asList().isEmpty();
+            assertThat(updatedFields).extracting("applicantWitnessStmtListLA").asList().contains(
+                element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @Test
+        void shouldMigrateApplicantWitnessStatementUploadedBySolicitor() {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .type(APPLICANT_STATEMENT)
+                .document(document1)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocumentsSolicitor(List.of(element(doc1Id, sebOne)))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateApplicantWitnessStatements(caseData);
+
+            assertThat(updatedFields).extracting("applicantWitnessStmtListCTSC").asList().isEmpty();
+            assertThat(updatedFields).extracting("applicantWitnessStmtListLA").asList().isEmpty();
+            assertThat(updatedFields).extracting("applicantWitnessStmtList").asList().contains(
+                element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @Test
+        void shouldMigrateMixedApplicantWitnessStatement() {
+            UUID doc1Id = UUID.randomUUID();
+            UUID doc2Id = UUID.randomUUID();
+            UUID doc3Id = UUID.randomUUID();
+            UUID doc4Id = UUID.randomUUID();
+            UUID doc5Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document2 = DocumentReference.builder().build();
+            DocumentReference document3 = DocumentReference.builder().build();
+            DocumentReference document4 = DocumentReference.builder().build();
+            DocumentReference document5 = DocumentReference.builder().build();
+
+            SupportingEvidenceBundle seb1 = SupportingEvidenceBundle.builder()
+                .type(APPLICANT_STATEMENT)
+                .document(document1)
+                .confidential(List.of("CONFIDENTIAL"))
+                .build();
+            SupportingEvidenceBundle seb2 = SupportingEvidenceBundle.builder()
+                .type(APPLICANT_STATEMENT)
+                .document(document2)
+                .build();
+            SupportingEvidenceBundle seb3 = SupportingEvidenceBundle.builder()
+                .type(APPLICANT_STATEMENT)
+                .document(document3)
+                .build();
+            SupportingEvidenceBundle seb4 = SupportingEvidenceBundle.builder()
+                .type(APPLICANT_STATEMENT)
+                .document(document4)
+                .confidential(List.of("CONFIDENTIAL"))
+                .build();
+            SupportingEvidenceBundle seb5 = SupportingEvidenceBundle.builder()
+                .type(APPLICANT_STATEMENT)
+                .document(document5)
+                .build();
+            SupportingEvidenceBundle seb6 = SupportingEvidenceBundle.builder()
+                .type(GUARDIAN_REPORTS)
+                .document(DocumentReference.builder().build())
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocumentsLA(List.of(element(doc1Id, seb1), element(doc2Id, seb2)))
+                .furtherEvidenceDocuments(List.of(element(doc3Id, seb3), element(doc4Id, seb4),
+                    element(UUID.randomUUID(), seb6)))
+                .furtherEvidenceDocumentsSolicitor(List.of(element(doc5Id, seb5)))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateApplicantWitnessStatements(caseData);
+
+            assertThat(updatedFields).extracting("applicantWitnessStmtList").asList().contains(
+                element(doc2Id, ManagedDocument.builder().document(document2).build()),
+                element(doc3Id, ManagedDocument.builder().document(document3).build()),
+                element(doc5Id, ManagedDocument.builder().document(document5).build()));
+            assertThat(updatedFields).extracting("applicantWitnessStmtListLA").asList().contains(
+                element(doc1Id, ManagedDocument.builder().document(document1).build()));
+            assertThat(updatedFields).extracting("applicantWitnessStmtListCTSC").asList().contains(
+                element(doc4Id, ManagedDocument.builder().document(document4).build()));
+        }
+
+        @Test
+        void shouldRollbackMigrateApplicantWitnessStatement() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .applicantWitnessStmtList(List.of(element(ManagedDocument.builder().document(
+                    DocumentReference.builder().build()).build())))
+                .applicantWitnessStmtListLA(List.of(element(ManagedDocument.builder().document(
+                    DocumentReference.builder().build()).build())))
+                .applicantWitnessStmtListCTSC(List.of(element(ManagedDocument.builder().document(
+                    DocumentReference.builder().build()).build())))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.rollbackMigrateApplicantWitnessStatements(caseData);
+
+            assertThat(updatedFields).extracting("applicantWitnessStmtListCTSC").isNull();
+            assertThat(updatedFields).extracting("applicantWitnessStmtListLA").isNull();
+            assertThat(updatedFields).extracting("applicantWitnessStmtList").isNull();
+        }
 
         @Test
         void shouldMigratePositionStatementChild() {

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
+import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
+import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -794,6 +796,71 @@ public class MigrateCaseService {
         ret.put("respStmtListLA", respStmtListLA);
         ret.put("respStmtListCTSC", respStmtListCTSC);
         ret.put("respondentStatements", null);
+        return ret;
+    }
+
+    public Map<String, Object> migrateApplicantWitnessStatements(CaseData caseData) {
+        FurtherEvidenceType furtherEvidenceType = FurtherEvidenceType.APPLICANT_STATEMENT;
+
+        // uploaded by LA
+        final List<Element<ManagedDocument>> applicantWitnessStmtListLA =
+            Optional.ofNullable(caseData.getFurtherEvidenceDocumentsLA()).orElse(List.of()).stream()
+                .filter(fed -> furtherEvidenceType.equals(fed.getValue().getType()))
+                .filter(fed -> fed.getValue().isConfidentialDocument())
+                .map(fed -> element(fed.getId(), ManagedDocument.builder()
+                    .document(fed.getValue().getDocument())
+                    .build()))
+                .collect(toList());
+
+        final List<Element<ManagedDocument>> applicantWitnessStmtList = new ArrayList<>(
+            Optional.ofNullable(caseData.getFurtherEvidenceDocumentsLA()).orElse(List.of()).stream()
+                .filter(fed -> furtherEvidenceType.equals(fed.getValue().getType()))
+                .filter(fed -> !fed.getValue().isConfidentialDocument())
+                .map(fed -> element(fed.getId(), ManagedDocument.builder()
+                    .document(fed.getValue().getDocument())
+                    .build()))
+                .collect(toList()));
+
+        // uploaded by admin
+        final List<Element<ManagedDocument>> applicantWitnessStmtListCTSC =
+            Optional.ofNullable(caseData.getFurtherEvidenceDocuments()).orElse(List.of()).stream()
+                .filter(fed -> furtherEvidenceType.equals(fed.getValue().getType()))
+                .filter(fed -> fed.getValue().isConfidentialDocument())
+                .map(fed -> element(fed.getId(), ManagedDocument.builder()
+                    .document(fed.getValue().getDocument())
+                    .build()))
+                .collect(toList());
+
+        applicantWitnessStmtList.addAll(
+            Optional.ofNullable(caseData.getFurtherEvidenceDocuments()).orElse(List.of()).stream()
+                .filter(fed -> furtherEvidenceType.equals(fed.getValue().getType()))
+                .filter(fed -> !fed.getValue().isConfidentialDocument())
+                .map(fed -> element(fed.getId(), ManagedDocument.builder()
+                    .document(fed.getValue().getDocument())
+                    .build()))
+                .collect(toList()));
+
+        applicantWitnessStmtList.addAll(
+            Optional.ofNullable(caseData.getFurtherEvidenceDocumentsSolicitor()).orElse(List.of()).stream()
+                .filter(fed -> furtherEvidenceType.equals(fed.getValue().getType()))
+                .map(fed -> element(fed.getId(), ManagedDocument.builder()
+                    .document(fed.getValue().getDocument())
+                    .build()))
+                .collect(toList()));
+
+
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("applicantWitnessStmtList", applicantWitnessStmtList);
+        ret.put("applicantWitnessStmtListLA", applicantWitnessStmtListLA);
+        ret.put("applicantWitnessStmtListCTSC", applicantWitnessStmtListCTSC);
+        return ret;
+    }
+
+    public Map<String, Object> rollbackMigrateApplicantWitnessStatements(CaseData caseData) {
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("applicantWitnessStmtList", null);
+        ret.put("applicantWitnessStmtListLA", null);
+        ret.put("applicantWitnessStmtListCTSC", null);
         return ret;
     }
 }
