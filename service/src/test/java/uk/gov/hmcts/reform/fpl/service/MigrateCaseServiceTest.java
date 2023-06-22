@@ -1688,7 +1688,6 @@ class MigrateCaseServiceTest {
 
             Map<String, Object> updatedFields = underTest.addRelatingLA(MIGRATION_ID, caseData.getId());
 
-
             assertThat(updatedFields).extracting("relatingLA").isEqualTo("ABC");
         }
 

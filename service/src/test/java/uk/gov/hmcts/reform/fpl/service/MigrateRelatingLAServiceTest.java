@@ -32,5 +32,4 @@ class MigrateRelatingLAServiceTest {
         assertThat(migrateRelatingLAService.getRelatingLAString(caseId)).isEqualTo(Optional.of("ABC"));
     }
 
-
 }

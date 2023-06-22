@@ -27,12 +27,10 @@ public class MigrateRelatingLAService {
         } catch (IOException e) {
             log.error("Unable to parse casesToMapRelatingLA.json file.", e);
         }
-
     }
 
     public Optional<String> getRelatingLAString(String caseId) {
         return Optional.ofNullable(casesToMap.getOrDefault(caseId, null));
     }
-
 
 }
