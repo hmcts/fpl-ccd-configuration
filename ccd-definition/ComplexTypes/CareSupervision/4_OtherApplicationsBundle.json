@@ -71,7 +71,7 @@
     "ListElementCode": "supplementsBundle",
     "ElementLabel": "Supplements",
     "FieldType": "Collection",
-    "FieldTypeParameter": "OtherApplicationSupplement",
+    "FieldTypeParameter": "C1Supplement",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -81,7 +81,7 @@
     "ListElementCode": "supportingEvidenceBundle",
     "ElementLabel": "Supporting documents",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "C1SupportingEvidenceBundle",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -91,7 +91,7 @@
     "ListElementCode": "supportingEvidenceLA",
     "ElementLabel": "Supporting documents",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "C1SupportingEvidenceBundle",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -101,7 +101,7 @@
     "ListElementCode": "supportingEvidenceNC",
     "ElementLabel": "Supporting documents",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "C1SupportingEvidenceBundle",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
