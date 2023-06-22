@@ -12,12 +12,15 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.DfjAreaLookUpService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -31,6 +34,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final MigrateCaseService migrateCaseService;
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
+    private final DfjAreaLookUpService dfjAreaLookUpService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-1359", this::run1359,
@@ -38,8 +42,10 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1451", this::run1451,
         "DFPL-1466", this::run1466,
         "DFPL-1501", this::run1501,
-        "DFPL-1484", this::run1484,
         "DFPL-1486", this::run1486
+        "DFPL-1584", this::run1584,
+        "DFPL-1124", this::run1124,
+        "DFPL-1124Rollback", this::run1124Rollback
     );
 
     @PostMapping("/about-to-submit")
@@ -104,14 +110,31 @@ public class MigrateCaseController extends CallbackController {
             getCaseData(caseDetails), migrationId, UUID.fromString("43a9287c-f840-4104-958f-cbd98d28aea3")));
     }
 
-    private void run1484(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1484";
-        var possibleCaseIds = List.of(1681381038761399L);
-        final UUID hearingId = UUID.fromString("1a41582a-57f5-4802-90b6-949f15ee5875");
-        final UUID courtBundleId = UUID.fromString("edc59f83-5e96-4fa2-809a-f34ba71a1204");
+    private void run1584(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1584";
+        var possibleCaseIds = List.of(1666625563479804L);
+        final UUID hearingId = UUID.fromString("a9b66732-f85e-490e-a980-01dd7c5f7b36");
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        caseDetails.getData().putAll(migrateCaseService.removeCourtBundleByBundleId(getCaseData(caseDetails),
-            migrationId, hearingId, courtBundleId));
+        caseDetails.getData().putAll(migrateCaseService.removeCaseSummaryByHearingId(getCaseData(caseDetails),
+            migrationId, hearingId));
+    }
+
+    private void run1124(CaseDetails caseDetails) {
+        log.info("Migrating case {}", caseDetails.getId());
+    }
+
+    private void run1124Rollback(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        var caseId = caseData.getId();
+        if (Objects.nonNull(caseData.getDfjArea())) {
+            caseDetails.getData().remove("dfjArea");
+            caseDetails.getData().keySet().removeAll(dfjAreaLookUpService.getAllCourtFields());
+            log.info("Rollback {id = DFPL-1124, case reference = {}} removed dfj area and relevant court field",
+                caseId);
+        } else {
+            log.warn("Rollback {id = DFPL-1124, case reference = {}} doesn't have dfj area and relevant court field",
+                caseId);
+        }
     }
 
     private void run1486(CaseDetails caseDetails) {
