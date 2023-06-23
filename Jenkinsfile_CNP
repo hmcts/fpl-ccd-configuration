@@ -160,11 +160,13 @@ withPipeline(type, product, component) {
 
   onMaster() {
     env.ENV = 'aat'
-    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER,
+                  AppPipelineDsl.PactRoles.CONSUMER_DEPLOY_CHECK])
   }
   onPR() {
     env.ENV = 'preview'
-    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER,
+                  AppPipelineDsl.PactRoles.CONSUMER_DEPLOY_CHECK])
   }
   onDemo {
     env.ENV = 'demo'
@@ -306,6 +308,6 @@ withPipeline(type, product, component) {
   }
 
   //def branchesToSync = ['demo', 'perftest', 'ithc'] TODO: uncomment this once testing in demo for WA completed
-  def branchesToSync = ['perftest', 'ithc']
+  def branchesToSync = ['ithc']
   syncBranchesWithMaster(branchesToSync)
 }
