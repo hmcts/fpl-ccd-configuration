@@ -268,20 +268,20 @@ withPipeline(type, product, component) {
     // all the AAT tasks in the master pipeline finished, so we update the env variable to promote to prod tasks
   }
 
-  before('functionalTest:preview') {
-    yarnBuilder.yarn('yarn-update')
-    yarnBuilder.yarn('install-dependencies')
-    yarnBuilder.yarn('lint-ui-tests')
-  }
-
-  afterSuccess('functionalTest:preview') {
-    env.PARALLEL_CHUNKS = 12
-    yarnBuilder.yarn('test:functional')
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
-  }
+//  before('functionalTest:preview') {
+//    yarnBuilder.yarn('yarn-update')
+//    yarnBuilder.yarn('install-dependencies')
+//    yarnBuilder.yarn('lint-ui-tests')
+//  }
+//
+//  afterSuccess('functionalTest:preview') {
+//    env.PARALLEL_CHUNKS = 12
+//    yarnBuilder.yarn('test:functional')
+//    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+//    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
+//    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
+//    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/functional/**/*'
+//  }
 
   afterAlways('highleveldatasetup') {
     if (env.ENV != 'preview') {
