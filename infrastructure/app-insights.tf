@@ -1,5 +1,5 @@
 data "azurerm_application_insights" "ai" {
-  name                = "${var.product}-appinsights-${var.env}"
+  name                = "${var.product}-case-service-appinsights-${var.env}"
   resource_group_name = "${var.product}-case-service-${var.env}"
 }
 
