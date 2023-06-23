@@ -135,5 +135,4 @@ public class MigrateCaseController extends CallbackController {
                 caseId);
         }
     }
-
 }
