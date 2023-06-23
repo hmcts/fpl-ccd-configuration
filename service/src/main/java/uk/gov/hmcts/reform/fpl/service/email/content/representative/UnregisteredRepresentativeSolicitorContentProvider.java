@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
@@ -30,12 +31,13 @@ public class UnregisteredRepresentativeSolicitorContentProvider {
 
     public <R extends WithSolicitor> UnregisteredRepresentativeSolicitorTemplate buildContent(CaseData caseData,
                                                                                               List<R> representables) {
+        Optional<String> applicantName = caseData.getApplicantName();
 
         return UnregisteredRepresentativeSolicitorTemplate.builder()
             .ccdNumber(formatCCDCaseNumber(caseData.getId()))
-            // use the name of the first applicant as entered on the case data (it might not be an LA, so we cannot use
-            // the onboarding config lookup otherwise the email implies that the LA made the case)
-            .localAuthority(caseData.getLocalAuthorities().get(0).getValue().getName())
+            // use the name of the first applicant as entered on the case data, falling back to the caseLA/relatingLA
+            .localAuthority(applicantName.orElse(
+                laNameLookup.getLocalAuthorityName(caseData.getCaseLaOrRelatingLa())))
             .clientFullName(clientNames(representables))
             .caseName(caseData.getCaseName())
             .childLastName(helper.getEldestChildLastName(caseData.getAllChildren()))

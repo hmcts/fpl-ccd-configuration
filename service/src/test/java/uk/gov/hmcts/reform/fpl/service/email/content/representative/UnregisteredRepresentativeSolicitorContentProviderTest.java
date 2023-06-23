@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.AbstractEmailContentProvide
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -60,6 +61,7 @@ class UnregisteredRepresentativeSolicitorContentProviderTest extends AbstractEma
         when(caseData.getId()).thenReturn(CCD_NUMBER);
         when(caseData.getCaseName()).thenReturn(CASE_NAME);
         when(caseData.getCaseLocalAuthority()).thenReturn(LOCAL_AUTHORITY_CODE);
+        when(caseData.getApplicantName()).thenReturn(Optional.of(LOCAL_AUTHORITY_NAME));
         when(caseData.getLocalAuthorities()).thenReturn(APPLICANTS);
         when(caseData.getAllChildren()).thenReturn(children);
 
