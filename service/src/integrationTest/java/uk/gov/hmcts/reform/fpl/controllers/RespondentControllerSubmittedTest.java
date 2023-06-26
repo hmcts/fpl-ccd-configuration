@@ -2,7 +2,10 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.AdditionalAnswers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -68,6 +71,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.caseRoleDynamicList;
 
 @WebMvcTest(RespondentController.class)
 @OverrideAutoConfiguration(enabled = true)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class RespondentControllerSubmittedTest extends AbstractCallbackTest {
 
     private static final State NON_RESTRICTED_STATE = SUBMITTED;
@@ -390,6 +394,7 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
     }
 
     @Test
+    @Order(1)
     void shouldNotUpdateRepresentativesAccessWhenCaseNotSubmitted() {
         final CaseData caseData = nocCaseDataBefore.toBuilder()
             .state(OPEN)

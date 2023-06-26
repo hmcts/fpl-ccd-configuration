@@ -249,20 +249,17 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
 
         postSubmittedEvent(caseDetails);
 
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).startEvent(CASE_ID,
+            "internal-update-case-summary");
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(),
+            eq(CASE_ID),
+            eq(caseSummary("Yes", "Case management",
+                LocalDate.of(2050, 5, 20))));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .startEvent(CASE_ID, "internal-change-add-gatekeeping");
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID), anyMap());
+
         verifyNoInteractions(notificationClient);
-
-        checkUntil(() -> {
-            verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).startEvent(eq(CASE_ID),
-                eq("internal-update-case-summary"));
-            verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(),
-                eq(CASE_ID),
-                eq(caseSummary("Yes", "Case management",
-                    LocalDate.of(2050, 5, 20))));
-            verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).startEvent(eq(CASE_ID),
-                eq("internal-change-add-gatekeeping"));
-            verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID), anyMap());
-        });
-
         verifyNoMoreInteractions(concurrencyHelper);
     }
 
