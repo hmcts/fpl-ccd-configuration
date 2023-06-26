@@ -799,11 +799,11 @@ public class MigrateCaseService {
         return ret;
     }
 
-    public Map<String, Object> migrateApplicantWitnessStatements(CaseData caseData) {
-        FurtherEvidenceType furtherEvidenceType = FurtherEvidenceType.APPLICANT_STATEMENT;
-
+    private Map<String, Object> migrateFurtherEvidenceDocuments(CaseData caseData,
+                                                                FurtherEvidenceType furtherEvidenceType,
+                                                                String newFieldName) {
         // uploaded by LA
-        final List<Element<ManagedDocument>> applicantWitnessStmtListLA =
+        final List<Element<ManagedDocument>> newDocListLA =
             Optional.ofNullable(caseData.getFurtherEvidenceDocumentsLA()).orElse(List.of()).stream()
                 .filter(fed -> furtherEvidenceType.equals(fed.getValue().getType()))
                 .filter(fed -> fed.getValue().isConfidentialDocument())
@@ -812,7 +812,7 @@ public class MigrateCaseService {
                     .build()))
                 .collect(toList());
 
-        final List<Element<ManagedDocument>> applicantWitnessStmtList = new ArrayList<>(
+        final List<Element<ManagedDocument>> newDocList = new ArrayList<>(
             Optional.ofNullable(caseData.getFurtherEvidenceDocumentsLA()).orElse(List.of()).stream()
                 .filter(fed -> furtherEvidenceType.equals(fed.getValue().getType()))
                 .filter(fed -> !fed.getValue().isConfidentialDocument())
@@ -822,7 +822,7 @@ public class MigrateCaseService {
                 .collect(toList()));
 
         // uploaded by admin
-        final List<Element<ManagedDocument>> applicantWitnessStmtListCTSC =
+        final List<Element<ManagedDocument>> newDocListCTSC =
             Optional.ofNullable(caseData.getFurtherEvidenceDocuments()).orElse(List.of()).stream()
                 .filter(fed -> furtherEvidenceType.equals(fed.getValue().getType()))
                 .filter(fed -> fed.getValue().isConfidentialDocument())
@@ -831,7 +831,7 @@ public class MigrateCaseService {
                     .build()))
                 .collect(toList());
 
-        applicantWitnessStmtList.addAll(
+        newDocList.addAll(
             Optional.ofNullable(caseData.getFurtherEvidenceDocuments()).orElse(List.of()).stream()
                 .filter(fed -> furtherEvidenceType.equals(fed.getValue().getType()))
                 .filter(fed -> !fed.getValue().isConfidentialDocument())
@@ -840,7 +840,7 @@ public class MigrateCaseService {
                     .build()))
                 .collect(toList()));
 
-        applicantWitnessStmtList.addAll(
+        newDocList.addAll(
             Optional.ofNullable(caseData.getFurtherEvidenceDocumentsSolicitor()).orElse(List.of()).stream()
                 .filter(fed -> furtherEvidenceType.equals(fed.getValue().getType()))
                 .map(fed -> element(fed.getId(), ManagedDocument.builder()
@@ -850,10 +850,20 @@ public class MigrateCaseService {
 
 
         Map<String, Object> ret = new HashMap<>();
-        ret.put("applicantWitnessStmtList", applicantWitnessStmtList);
-        ret.put("applicantWitnessStmtListLA", applicantWitnessStmtListLA);
-        ret.put("applicantWitnessStmtListCTSC", applicantWitnessStmtListCTSC);
+        ret.put(newFieldName, newDocList);
+        ret.put(newFieldName + "LA", newDocListLA);
+        ret.put(newFieldName + "CTSC", newDocListCTSC);
         return ret;
+    }
+
+    public Map<String, Object> migrateApplicantWitnessStatements(CaseData caseData) {
+        FurtherEvidenceType furtherEvidenceType = FurtherEvidenceType.APPLICANT_STATEMENT;
+        return migrateFurtherEvidenceDocuments(caseData, furtherEvidenceType, "applicantWitnessStmtList");
+    }
+
+    public Map<String, Object> migrateGuardianReports(CaseData caseData) {
+        FurtherEvidenceType furtherEvidenceType = FurtherEvidenceType.GUARDIAN_REPORTS;
+        return migrateFurtherEvidenceDocuments(caseData, furtherEvidenceType, "guardianEvidenceList");
     }
 
     public Map<String, Object> rollbackMigrateApplicantWitnessStatements(CaseData caseData) {
@@ -861,6 +871,14 @@ public class MigrateCaseService {
         ret.put("applicantWitnessStmtList", null);
         ret.put("applicantWitnessStmtListLA", null);
         ret.put("applicantWitnessStmtListCTSC", null);
+        return ret;
+    }
+
+    public Map<String, Object> rollbackMigrateGuardianReports(CaseData caseData) {
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("guardianEvidenceList", null);
+        ret.put("guardianEvidenceListLA", null);
+        ret.put("guardianEvidenceListCTSC", null);
         return ret;
     }
 }

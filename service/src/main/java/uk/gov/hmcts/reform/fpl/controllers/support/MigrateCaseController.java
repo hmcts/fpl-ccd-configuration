@@ -140,10 +140,13 @@ public class MigrateCaseController extends CallbackController {
 
     private void run1505(CaseDetails caseDetails) {
         caseDetails.getData().putAll(migrateCaseService.migrateApplicantWitnessStatements(getCaseData(caseDetails)));
+        caseDetails.getData().putAll(migrateCaseService.migrateGuardianReports(getCaseData(caseDetails)));
     }
 
     private void run1505Rollback(CaseDetails caseDetails) {
         caseDetails.getData().putAll(migrateCaseService
             .rollbackMigrateApplicantWitnessStatements(getCaseData(caseDetails)));
+        caseDetails.getData().putAll(migrateCaseService
+            .rollbackMigrateGuardianReports(getCaseData(caseDetails)));
     }
 }
