@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
@@ -104,6 +107,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinary;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTest {
 
     private static final long CASE_ID = 12345L;
@@ -205,6 +209,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
     }
 
     @Test
+    @Order(2)
     void shouldNotTriggerPopulateDatesEventWhenCaseNotInGatekeeping() {
         CaseDetails caseDetails = CaseDetails.builder()
             .jurisdiction(JURISDICTION)
@@ -235,6 +240,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
     }
 
     @Test
+    @Order(1)
     void shouldDoNothingWhenNoHearingAddedOrUpdated() {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(CASE_ID)
