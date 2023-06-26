@@ -44,7 +44,9 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1501", this::run1501,
         "DFPL-1584", this::run1584,
         "DFPL-1124", this::run1124,
-        "DFPL-1124Rollback", this::run1124Rollback
+        "DFPL-1124Rollback", this::run1124Rollback,
+        "DFPL-1505", this::run1505,
+        "DFPL-1505Rollback", this::run1505Rollback
     );
 
     @PostMapping("/about-to-submit")
@@ -134,5 +136,14 @@ public class MigrateCaseController extends CallbackController {
             log.warn("Rollback {id = DFPL-1124, case reference = {}} doesn't have dfj area and relevant court field",
                 caseId);
         }
+    }
+
+    private void run1505(CaseDetails caseDetails) {
+        caseDetails.getData().putAll(migrateCaseService.migrateApplicantWitnessStatements(getCaseData(caseDetails)));
+    }
+
+    private void run1505Rollback(CaseDetails caseDetails) {
+        caseDetails.getData().putAll(migrateCaseService
+            .rollbackMigrateApplicantWitnessStatements(getCaseData(caseDetails)));
     }
 }
