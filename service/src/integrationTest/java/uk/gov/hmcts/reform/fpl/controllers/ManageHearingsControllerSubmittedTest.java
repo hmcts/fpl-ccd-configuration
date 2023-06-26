@@ -182,6 +182,12 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
     @Captor
     private ArgumentCaptor<NoticeOfHearingCafcassData> noticeOfHearingCafcassDataCaptor;
 
+    @Captor
+    private ArgumentCaptor<StartEventResponse> startEventResponseArgumentCaptor;
+
+    @Captor
+    private ArgumentCaptor<Map<String, Object>> eventDataCaptor;
+
     @MockBean
     private BankHolidaysApi bankHolidaysApi;
 
@@ -237,20 +243,25 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .build());
 
         postSubmittedEvent(toCallBackRequest(caseDetails, caseDetailsBefore));
-        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).startEvent(eq(CASE_ID), eq("populateSDO"));
 
-        checkUntil(() ->  verify(concurrencyHelper, times(2)).submitEvent(
-            any(), eq(CASE_ID), anyMap())
-        );
+        // check each post-submit is started
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).startEvent(CASE_ID, "populateSDO");
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .startEvent(CASE_ID, "internal-update-case-summary");
+
+        // check two post-submits are submitted
+        verify(concurrencyHelper, times(2))
+            .submitEvent(startEventResponseArgumentCaptor.capture(), eq(CASE_ID), eventDataCaptor.capture());
+
+        // make sure that both finished (one of each)
+        assertThat(startEventResponseArgumentCaptor.getAllValues().stream().map(StartEventResponse::getEventId))
+            .containsExactlyInAnyOrder("populateSDO", "internal-update-case-summary");
+
+        // and one of them was submitted with the case summary payload
+        assertThat(eventDataCaptor.getAllValues())
+            .contains(caseSummary("Yes", "Case management", LocalDate.of(2050, 5, 20)));
 
         verifyNoInteractions(notificationClient);
-        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).startEvent(eq(CASE_ID),
-            eq("internal-update-case-summary"));
-
-        checkUntil(() -> verify(concurrencyHelper).submitEvent(any(), eq(CASE_ID),
-            eq(caseSummary("Yes", "Case management",
-                LocalDate.of(2050, 5, 20)))));
-
         verifyNoMoreInteractions(concurrencyHelper);
     }
 
