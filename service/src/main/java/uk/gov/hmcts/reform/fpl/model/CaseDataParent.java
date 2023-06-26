@@ -44,6 +44,22 @@ public class CaseDataParent {
     protected final List<Element<ManagedDocument>> guardianEvidenceListLA;
     protected final List<Element<ManagedDocument>> guardianEvidenceListCTSC;
     protected final List<Element<ManagedDocument>> guardianEvidenceListRemoved;
+    protected final List<Element<ManagedDocument>> drugAndAlcoholReportList;
+    protected final List<Element<ManagedDocument>> drugAndAlcoholReportListLA;
+    protected final List<Element<ManagedDocument>> drugAndAlcoholReportListCTSC;
+    protected final List<Element<ManagedDocument>> drugAndAlcoholReportListRemoved;
+    protected final List<Element<ManagedDocument>> lettersOfInstructionList;
+    protected final List<Element<ManagedDocument>> lettersOfInstructionListLA;
+    protected final List<Element<ManagedDocument>> lettersOfInstructionListCTSC;
+    protected final List<Element<ManagedDocument>> lettersOfInstructionListRemoved;
+    protected final List<Element<ManagedDocument>> expertReportList;
+    protected final List<Element<ManagedDocument>> expertReportListLA;
+    protected final List<Element<ManagedDocument>> expertReportListCTSC;
+    protected final List<Element<ManagedDocument>> expertReportListRemoved;
+    protected final List<Element<ManagedDocument>> noticeOfActingOrIssueList;
+    protected final List<Element<ManagedDocument>> noticeOfActingOrIssueListLA;
+    protected final List<Element<ManagedDocument>> noticeOfActingOrIssueListCTSC;
+    protected final List<Element<ManagedDocument>> noticeOfActingOrIssueListRemoved;
 
     @NotNull(message = "Add the grounds for the application", groups = SecureAccommodationGroup.class)
     @Valid

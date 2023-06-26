@@ -78,5 +78,165 @@
     "Label": "Guardian's evidence",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "drugAndAlcoholReportList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DrugAndAlcoholReport",
+    "Label": "Drug and alcohol reports",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "drugAndAlcoholReportListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DrugAndAlcoholReport",
+    "Label": "Drug and alcohol reports",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "drugAndAlcoholReportListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DrugAndAlcoholReport",
+    "Label": "Drug and alcohol reports",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "drugAndAlcoholReportListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DrugAndAlcoholReport",
+    "Label": "Drug and alcohol reports",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "lettersOfInstructionList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "LettersOfInstruction",
+    "Label": "Letters of instructions/referrals",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "lettersOfInstructionListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "LettersOfInstruction",
+    "Label": "Letters of instructions/referrals",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "lettersOfInstructionListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "LettersOfInstruction",
+    "Label": "Letters of instructions/referrals",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "lettersOfInstructionListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "LettersOfInstruction",
+    "Label": "Letters of instructions/referrals",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "expertReportList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ExpertReport",
+    "Label": "Expert reports",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "expertReportListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ExpertReport",
+    "Label": "Expert reports",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "expertReportListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ExpertReport",
+    "Label": "Expert reports",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "expertReportListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ExpertReport",
+    "Label": "Expert reports",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "noticeOfActingOrIssueList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "NoticeOfActingOrIssue",
+    "Label": "Notice of acting / Notice of issue",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "noticeOfActingOrIssueListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "NoticeOfActingOrIssue",
+    "Label": "Notice of acting / Notice of issue",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "noticeOfActingOrIssueListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "NoticeOfActingOrIssue",
+    "Label": "Notice of acting / Notice of issue",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "noticeOfActingOrIssueListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "NoticeOfActingOrIssue",
+    "Label": "Notice of acting / Notice of issue",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

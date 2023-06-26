@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ExpertReportType;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
@@ -34,11 +35,13 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -46,6 +49,11 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.springframework.util.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.APPLICANT_STATEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.EXPERT_REPORTS;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
@@ -802,10 +810,30 @@ public class MigrateCaseService {
     private Map<String, Object> migrateFurtherEvidenceDocuments(CaseData caseData,
                                                                 FurtherEvidenceType furtherEvidenceType,
                                                                 String newFieldName) {
+        final List<ExpertReportType> drugAndAlcoholReportTypes = List.of(ExpertReportType.PROFESSIONAL_DRUG,
+            ExpertReportType.PROFESSIONAL_HAIR,
+            ExpertReportType.TOXICOLOGY_REPORT);
+
+        Predicate<Element<SupportingEvidenceBundle>> expertReportTypePredicate = a -> {
+            if (EXPERT_REPORTS.equals(furtherEvidenceType)) {
+                switch (newFieldName) {
+                    case "expertReportList":
+                        return !drugAndAlcoholReportTypes.contains(a.getValue().getExpertReportType());
+                    case "drugAndAlcoholReportList":
+                        return drugAndAlcoholReportTypes.contains(a.getValue().getExpertReportType());
+                    default:
+                        return true;
+                }
+            } else {
+                return true;
+            }
+        };
+
         // uploaded by LA
         final List<Element<ManagedDocument>> newDocListLA =
             Optional.ofNullable(caseData.getFurtherEvidenceDocumentsLA()).orElse(List.of()).stream()
                 .filter(fed -> furtherEvidenceType.equals(fed.getValue().getType()))
+                .filter(expertReportTypePredicate)
                 .filter(fed -> fed.getValue().isConfidentialDocument())
                 .map(fed -> element(fed.getId(), ManagedDocument.builder()
                     .document(fed.getValue().getDocument())
@@ -815,6 +843,7 @@ public class MigrateCaseService {
         final List<Element<ManagedDocument>> newDocList = new ArrayList<>(
             Optional.ofNullable(caseData.getFurtherEvidenceDocumentsLA()).orElse(List.of()).stream()
                 .filter(fed -> furtherEvidenceType.equals(fed.getValue().getType()))
+                .filter(expertReportTypePredicate)
                 .filter(fed -> !fed.getValue().isConfidentialDocument())
                 .map(fed -> element(fed.getId(), ManagedDocument.builder()
                     .document(fed.getValue().getDocument())
@@ -825,6 +854,7 @@ public class MigrateCaseService {
         final List<Element<ManagedDocument>> newDocListCTSC =
             Optional.ofNullable(caseData.getFurtherEvidenceDocuments()).orElse(List.of()).stream()
                 .filter(fed -> furtherEvidenceType.equals(fed.getValue().getType()))
+                .filter(expertReportTypePredicate)
                 .filter(fed -> fed.getValue().isConfidentialDocument())
                 .map(fed -> element(fed.getId(), ManagedDocument.builder()
                     .document(fed.getValue().getDocument())
@@ -834,6 +864,7 @@ public class MigrateCaseService {
         newDocList.addAll(
             Optional.ofNullable(caseData.getFurtherEvidenceDocuments()).orElse(List.of()).stream()
                 .filter(fed -> furtherEvidenceType.equals(fed.getValue().getType()))
+                .filter(expertReportTypePredicate)
                 .filter(fed -> !fed.getValue().isConfidentialDocument())
                 .map(fed -> element(fed.getId(), ManagedDocument.builder()
                     .document(fed.getValue().getDocument())
@@ -843,6 +874,7 @@ public class MigrateCaseService {
         newDocList.addAll(
             Optional.ofNullable(caseData.getFurtherEvidenceDocumentsSolicitor()).orElse(List.of()).stream()
                 .filter(fed -> furtherEvidenceType.equals(fed.getValue().getType()))
+                .filter(expertReportTypePredicate)
                 .map(fed -> element(fed.getId(), ManagedDocument.builder()
                     .document(fed.getValue().getDocument())
                     .build()))
@@ -857,28 +889,61 @@ public class MigrateCaseService {
     }
 
     public Map<String, Object> migrateApplicantWitnessStatements(CaseData caseData) {
-        FurtherEvidenceType furtherEvidenceType = FurtherEvidenceType.APPLICANT_STATEMENT;
+        FurtherEvidenceType furtherEvidenceType = APPLICANT_STATEMENT;
         return migrateFurtherEvidenceDocuments(caseData, furtherEvidenceType, "applicantWitnessStmtList");
     }
 
     public Map<String, Object> migrateGuardianReports(CaseData caseData) {
-        FurtherEvidenceType furtherEvidenceType = FurtherEvidenceType.GUARDIAN_REPORTS;
+        FurtherEvidenceType furtherEvidenceType = GUARDIAN_REPORTS;
         return migrateFurtherEvidenceDocuments(caseData, furtherEvidenceType, "guardianEvidenceList");
     }
 
-    public Map<String, Object> rollbackMigrateApplicantWitnessStatements(CaseData caseData) {
+    public Map<String, Object> migrateNoticeOfActingOrIssue(CaseData caseData) {
+        FurtherEvidenceType furtherEvidenceType = NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE;
+        return migrateFurtherEvidenceDocuments(caseData, furtherEvidenceType, "noticeOfActingOrIssueList");
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> migrateExpertReports(CaseData caseData) {
         Map<String, Object> ret = new HashMap<>();
-        ret.put("applicantWitnessStmtList", null);
-        ret.put("applicantWitnessStmtListLA", null);
-        ret.put("applicantWitnessStmtListCTSC", null);
+        migrateFurtherEvidenceDocuments(caseData, OTHER_REPORTS, "expertReportList").entrySet().stream();
+
+        Map<String, Object> mergedMap = new HashMap<>(migrateFurtherEvidenceDocuments(caseData, OTHER_REPORTS,
+            "expertReportList"));
+        migrateFurtherEvidenceDocuments(caseData, EXPERT_REPORTS, "expertReportList").forEach((key, value) ->
+            mergedMap.merge(key, value, (v1, v2) -> {
+                Collection<Element<ManagedDocument>> mergedCollection = new ArrayList<>();
+                mergedCollection.addAll((Collection<Element<ManagedDocument>>) v1);
+                mergedCollection.addAll((Collection<Element<ManagedDocument>>) v2);
+                return mergedCollection;
+            }));
+
+        ret.putAll(mergedMap);
+        ret.putAll(migrateFurtherEvidenceDocuments(caseData, EXPERT_REPORTS, "drugAndAlcoholReportList"));
         return ret;
     }
 
-    public Map<String, Object> rollbackMigrateGuardianReports(CaseData caseData) {
-        Map<String, Object> ret = new HashMap<>();
-        ret.put("guardianEvidenceList", null);
-        ret.put("guardianEvidenceListLA", null);
-        ret.put("guardianEvidenceListCTSC", null);
-        return ret;
+    public void rollbackMigrateApplicantWitnessStatements(CaseDetails caseDetails) {
+        caseDetails.getData().remove("applicantWitnessStmtList");
+        caseDetails.getData().remove("applicantWitnessStmtListLA");
+        caseDetails.getData().remove("applicantWitnessStmtListCTSC");
+    }
+
+    public void rollbackMigrateGuardianReports(CaseDetails caseDetails) {
+        caseDetails.getData().remove("guardianEvidenceList");
+        caseDetails.getData().remove("guardianEvidenceListLA");
+        caseDetails.getData().remove("guardianEvidenceListCTSC");
+    }
+
+    public void rollbackMigrateExpertReports(CaseDetails caseDetails) {
+        caseDetails.getData().remove("drugAndAlcoholReportList");
+        caseDetails.getData().remove("drugAndAlcoholReportListLA");
+        caseDetails.getData().remove("drugAndAlcoholReportListCTSC");
+        caseDetails.getData().remove("lettersOfInstructionList");
+        caseDetails.getData().remove("lettersOfInstructionListLA");
+        caseDetails.getData().remove("lettersOfInstructionListCTSC");
+        caseDetails.getData().remove("expertReportList");
+        caseDetails.getData().remove("expertReportListLA");
+        caseDetails.getData().remove("expertReportListCTSC");
     }
 }
