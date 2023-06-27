@@ -54,6 +54,9 @@ import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.EXPERT_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ExpertReportType.PROFESSIONAL_DRUG;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ExpertReportType.PROFESSIONAL_HAIR;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ExpertReportType.TOXICOLOGY_REPORT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
@@ -810,9 +813,9 @@ public class MigrateCaseService {
     private Map<String, Object> migrateFurtherEvidenceDocuments(CaseData caseData,
                                                                 FurtherEvidenceType furtherEvidenceType,
                                                                 String newFieldName) {
-        final List<ExpertReportType> drugAndAlcoholReportTypes = List.of(ExpertReportType.PROFESSIONAL_DRUG,
-            ExpertReportType.PROFESSIONAL_HAIR,
-            ExpertReportType.TOXICOLOGY_REPORT);
+        final List<ExpertReportType> drugAndAlcoholReportTypes = List.of(PROFESSIONAL_DRUG,
+            PROFESSIONAL_HAIR,
+            TOXICOLOGY_REPORT);
 
         Predicate<Element<SupportingEvidenceBundle>> expertReportTypePredicate = a -> {
             if (EXPERT_REPORTS.equals(furtherEvidenceType)) {

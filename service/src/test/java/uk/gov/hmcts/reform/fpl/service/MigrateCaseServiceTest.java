@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ExpertReportType;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
@@ -69,9 +70,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.APPLICANT_STATEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.EXPERT_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ExpertReportType.PROFESSIONAL_DRUG;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ExpertReportType.PROFESSIONAL_HAIR;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ExpertReportType.TOXICOLOGY_REPORT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith({MockitoExtension.class})
@@ -1863,6 +1868,162 @@ class MigrateCaseServiceTest {
                 .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
         }
 
+        private final Map<ExpertReportType, String> expertReportTypeToFieldNameMap = Map.of(
+            PROFESSIONAL_DRUG, "drugAndAlcoholReportList",
+            PROFESSIONAL_HAIR,"drugAndAlcoholReportList",
+            TOXICOLOGY_REPORT, "drugAndAlcoholReportList"
+        );
+
+        private String getExpertReportFieldName(ExpertReportType type) {
+            if (expertReportTypeToFieldNameMap.containsKey(type)) {
+                return expertReportTypeToFieldNameMap.get(type);
+            } else {
+                return "expertReportList";
+            }
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = ExpertReportType.class, names = {
+            "PROFESSIONAL_DRUG", "PROFESSIONAL_HAIR", "TOXICOLOGY_REPORT", "NEUROSURGEON"})
+        void shouldMigrateExpertReportUploadedByCTSC(ExpertReportType type) {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .type(EXPERT_REPORTS)
+                .expertReportType(type)
+                .document(document1)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocuments(List.of(element(doc1Id, sebOne)))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateExpertReports(caseData);
+
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type) + "LA").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type) + "CTSC").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type)).asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = ExpertReportType.class, names = {
+            "PROFESSIONAL_DRUG", "PROFESSIONAL_HAIR", "TOXICOLOGY_REPORT", "NEUROSURGEON"})
+        void shouldMigrateConfidentialExpertReportUploadedByCTSC(ExpertReportType type) {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .type(EXPERT_REPORTS)
+                .expertReportType(type)
+                .document(document1)
+                .confidential(List.of("CONFIDENTIAL"))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocuments(List.of(element(doc1Id, sebOne)))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateExpertReports(caseData);
+
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type) + "LA").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type)).asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type) + "CTSC").asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = ExpertReportType.class, names = {
+            "PROFESSIONAL_DRUG", "PROFESSIONAL_HAIR", "TOXICOLOGY_REPORT", "NEUROSURGEON"})
+        void shouldMigrateExpertReportsUploadedByLA(ExpertReportType type) {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .type(EXPERT_REPORTS)
+                .expertReportType(type)
+                .document(document1)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocumentsLA(List.of(element(doc1Id, sebOne)))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateExpertReports(caseData);
+
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type) + "CTSC").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type) + "LA").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type)).asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = ExpertReportType.class, names = {
+            "PROFESSIONAL_DRUG", "PROFESSIONAL_HAIR", "TOXICOLOGY_REPORT", "NEUROSURGEON"})
+        void shouldMigrateConfidentialExpertReportsUploadedByLA(ExpertReportType type) {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .type(EXPERT_REPORTS)
+                .expertReportType(type)
+                .document(document1)
+                .confidential(List.of("CONFIDENTIAL"))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocumentsLA(List.of(element(doc1Id, sebOne)))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateExpertReports(caseData);
+
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type) + "CTSC").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type)).asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type) + "LA").asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = ExpertReportType.class, names = {
+            "PROFESSIONAL_DRUG", "PROFESSIONAL_HAIR", "TOXICOLOGY_REPORT", "NEUROSURGEON"})
+        void shouldMigrateExpertReportUploadedBySolicitor(ExpertReportType type) {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .type(EXPERT_REPORTS)
+                .expertReportType(type)
+                .document(document1)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocumentsSolicitor(List.of(element(doc1Id, sebOne)))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateExpertReports(caseData);
+
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type) + "CTSC").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type) + "LA").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type)).asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
         @Test
         void shouldMigrateMixedAnyOtherDocuments() {
             UUID doc1Id = UUID.randomUUID();
@@ -1873,6 +2034,7 @@ class MigrateCaseServiceTest {
             UUID doc6Id = UUID.randomUUID();
             UUID doc7Id = UUID.randomUUID();
             UUID doc8Id = UUID.randomUUID();
+            UUID doc9Id = UUID.randomUUID();
 
             DocumentReference document1 = DocumentReference.builder().build();
             DocumentReference document2 = DocumentReference.builder().build();
@@ -1882,6 +2044,7 @@ class MigrateCaseServiceTest {
             DocumentReference document6 = DocumentReference.builder().build();
             DocumentReference document7 = DocumentReference.builder().build();
             DocumentReference document8 = DocumentReference.builder().build();
+            DocumentReference document9 = DocumentReference.builder().build();
 
             SupportingEvidenceBundle seb1 = SupportingEvidenceBundle.builder()
                 .type(APPLICANT_STATEMENT)
@@ -1919,12 +2082,18 @@ class MigrateCaseServiceTest {
                 .document(document8)
                 .confidential(List.of("CONFIDENTIAL"))
                 .build();
+            SupportingEvidenceBundle seb9 = SupportingEvidenceBundle.builder()
+                .type(EXPERT_REPORTS)
+                .expertReportType(TOXICOLOGY_REPORT)
+                .document(document9)
+                .build();
 
             CaseData caseData = CaseData.builder()
                 .id(1L)
                 .furtherEvidenceDocumentsLA(List.of(element(doc1Id, seb1),
                     element(doc2Id, seb2),
-                    element(doc7Id, seb7)))
+                    element(doc7Id, seb7),
+                    element(doc9Id, seb9)))
                 .furtherEvidenceDocuments(List.of(element(doc3Id, seb3),
                     element(doc4Id, seb4),
                     element(doc6Id, seb6),
@@ -1966,6 +2135,13 @@ class MigrateCaseServiceTest {
                 .isEmpty();
             assertThat(updatedFields).extracting("expertReportListCTSC").asList()
                 .contains(element(doc8Id, ManagedDocument.builder().document(document8).build()));
+
+            assertThat(updatedFields).extracting("drugAndAlcoholReportList").asList()
+                .contains(element(doc9Id, ManagedDocument.builder().document(document9).build()));
+            assertThat(updatedFields).extracting("drugAndAlcoholReportListLA").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting("drugAndAlcoholReportListCTSC").asList()
+                .isEmpty();
         }
 
         @Test
