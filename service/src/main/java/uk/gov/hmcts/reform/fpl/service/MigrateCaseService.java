@@ -59,13 +59,13 @@ public class MigrateCaseService {
     private final DocumentListService documentListService;
 
     public Map<String, Object> rollbackCourtBundleMigration(CaseData caseData) {
-        Map<String, Object> ret = new HashMap<>();
         List<Element<HearingCourtBundle>> newHearingCourtBundleList = new ArrayList<>();
 
         newHearingCourtBundleList.addAll(caseData.getHearingDocuments().getCourtBundleListV2());
         newHearingCourtBundleList.addAll(caseData.getHearingDocuments().getCourtBundleListLA());
         newHearingCourtBundleList.addAll(caseData.getHearingDocuments().getCourtBundleListCTSC());
 
+        Map<String, Object> ret = new HashMap<>();
         ret.put("courtBundleListV2", newHearingCourtBundleList);
         ret.put("courtBundleListLA", emptyList());
         ret.put("courtBundleListCTSC", emptyList());
@@ -73,7 +73,6 @@ public class MigrateCaseService {
     }
 
     public Map<String, Object> migrateCourtBundle(CaseData caseData) {
-        Map<String, Object> ret = new HashMap<>();
         List<Element<HearingCourtBundle>> newHearingCourtBundleList = new ArrayList<>();
         List<Element<HearingCourtBundle>> hearingCourtBundleListLA = new ArrayList<>();
         List<Element<HearingCourtBundle>> hearingCourtBundleListCTSC = new ArrayList<>();
@@ -118,6 +117,7 @@ public class MigrateCaseService {
             }
         }
 
+        Map<String, Object> ret = new HashMap<>();
         ret.put("courtBundleListV2", newHearingCourtBundleList);
         ret.put("courtBundleListLA", hearingCourtBundleListLA);
         ret.put("courtBundleListCTSC", hearingCourtBundleListCTSC);
