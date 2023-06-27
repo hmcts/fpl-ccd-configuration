@@ -190,6 +190,6 @@
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "orders.orderType CONTAINS \"EDUCATION_SUPERVISION__ORDER\""
+    "FieldShowCondition": "orders.orderType CONTAINS \"EDUCATION_SUPERVISION_ORDER\""
   }
 ]

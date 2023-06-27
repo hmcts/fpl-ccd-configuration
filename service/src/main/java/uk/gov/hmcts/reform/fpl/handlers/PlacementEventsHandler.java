@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.cafcass.PlacementApplicationCafcassData;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
@@ -54,6 +56,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.PLACEMENT_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.PLACEMENT_NOTICE;
+import static uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService.UPDATE_CASE_EVENT;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.nullifyTemporaryFields;
 
 @Slf4j
@@ -112,8 +115,11 @@ public class PlacementEventsHandler {
                     event.getPlacement()
                 );
 
+            Set<DocumentReference> docsToSend = of(event.getPlacement().getApplication());
+            docsToSend.forEach(el -> el.setType(PLACEMENT_APPLICATION.getLabel()));
+
             cafcassNotificationService.sendEmail(caseData,
-                of(event.getPlacement().getApplication()),
+                docsToSend,
                 PLACEMENT_APPLICATION,
                 placementApplicationCafcassData);
         }
@@ -190,8 +196,11 @@ public class PlacementEventsHandler {
                     event.getPlacement()
                 );
 
+            Set<DocumentReference> docsToSend = of(event.getPlacement().getPlacementNotice());
+            docsToSend.forEach(e -> e.setType(PLACEMENT_NOTICE.getLabel()));
+
             cafcassNotificationService.sendEmail(caseData,
-                of(event.getPlacement().getPlacementNotice()),
+                docsToSend,
                 PLACEMENT_NOTICE,
                 placementApplicationCafcassData);
         }
@@ -277,9 +286,12 @@ public class PlacementEventsHandler {
     }
 
     private void updateCase(CaseData caseData) {
-        final Map<String, Object> updates = Map.of("placementLastPaymentTime", time.now());
+        coreCaseDataService.performPostSubmitCallback(caseData.getId(), UPDATE_CASE_EVENT, this::getUpdates);
+    }
 
-        coreCaseDataService.updateCase(caseData.getId(), nullifyTemporaryFields(updates, PlacementEventData.class));
+    public Map<String, Object> getUpdates(CaseDetails caseDetails) {
+        final Map<String, Object> updates = Map.of("placementLastPaymentTime", time.now());
+        return nullifyTemporaryFields(updates, PlacementEventData.class);
     }
 
     private void handlePaymentNotTaken(CaseData caseData, OrderApplicant applicant) {

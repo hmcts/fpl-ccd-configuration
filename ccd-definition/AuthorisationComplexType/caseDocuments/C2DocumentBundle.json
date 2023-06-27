@@ -658,6 +658,8 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[LASHARED]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]",
           "[LABARRISTER]"
         ],
         "CRUD": "CRU"

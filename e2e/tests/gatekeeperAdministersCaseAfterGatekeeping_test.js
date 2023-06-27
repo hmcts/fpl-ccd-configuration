@@ -17,7 +17,7 @@ Scenario('Gatekeeper notifies another gatekeeper with a link to the case', async
   await I.completeEvent('Save and continue');
 });
 
-Scenario('Gatekeeper adds allocated judge', async ({I, caseViewPage, allocatedJudgeEventPage}) => {
+Scenario('Gatekeeper adds allocated judge @nightlyOnly', async ({I, caseViewPage, allocatedJudgeEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
   await allocatedJudgeEventPage.enterAllocatedJudge('Moley', 'moley@example.com');

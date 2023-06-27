@@ -32,7 +32,7 @@ public class C21BlankOrderDocumentParameterGenerator implements DocmosisParamete
     public DocmosisParameters generate(CaseData caseData) {
         ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
 
-        String localAuthorityCode = caseData.getCaseLocalAuthority();
+        String localAuthorityCode = caseData.getCaseLaOrRelatingLa();
         String localAuthorityName = isEmpty(localAuthorityCode) ? null : laNameLookup
             .getLocalAuthorityName(localAuthorityCode);
 
