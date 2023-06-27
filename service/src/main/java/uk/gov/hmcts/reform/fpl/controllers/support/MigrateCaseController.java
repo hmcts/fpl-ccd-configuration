@@ -142,9 +142,9 @@ public class MigrateCaseController extends CallbackController {
     }
 
     private void run702rollback(CaseDetails caseDetails) {
-        caseDetails.getData().put("caseManagementLocation", null);
-        caseDetails.getData().put("caseNameHmctsInternal", null);
-        caseDetails.getData().put("caseManagementCategory", null);
+        caseDetails.getData().remove("caseManagementLocation");
+        caseDetails.getData().remove("caseNameHmctsInternal");
+        caseDetails.getData().remove("caseManagementCategory");
     }
 
     private void run1359(CaseDetails caseDetails) {
