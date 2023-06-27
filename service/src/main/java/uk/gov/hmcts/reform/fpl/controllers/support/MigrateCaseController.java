@@ -142,11 +142,13 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.migrateApplicantWitnessStatements(getCaseData(caseDetails)));
         caseDetails.getData().putAll(migrateCaseService.migrateGuardianReports(getCaseData(caseDetails)));
         caseDetails.getData().putAll(migrateCaseService.migrateExpertReports(getCaseData(caseDetails)));
+        caseDetails.getData().putAll(migrateCaseService.migrateNoticeOfActingOrIssue(getCaseData(caseDetails)));
     }
 
     private void run1505Rollback(CaseDetails caseDetails) {
         migrateCaseService.rollbackMigrateApplicantWitnessStatements(caseDetails);
         migrateCaseService.rollbackMigrateGuardianReports(caseDetails);
         migrateCaseService.rollbackMigrateExpertReports(caseDetails);
+        migrateCaseService.rollbackMigrateNoticeOfActingOrIssue(caseDetails);
     }
 }

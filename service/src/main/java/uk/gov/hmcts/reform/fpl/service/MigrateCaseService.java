@@ -946,4 +946,11 @@ public class MigrateCaseService {
         caseDetails.getData().remove("expertReportListLA");
         caseDetails.getData().remove("expertReportListCTSC");
     }
+
+    public void rollbackMigrateNoticeOfActingOrIssue(CaseDetails caseDetails) {
+        caseDetails.getData().remove("noticeOfActingOrIssueList");
+        caseDetails.getData().remove("noticeOfActingOrIssueListLA");
+        caseDetails.getData().remove("noticeOfActingOrIssueListCTSC");
+        caseDetails.getData().remove("noticeOfActingOrIssueListRemoved");
+    }
 }
