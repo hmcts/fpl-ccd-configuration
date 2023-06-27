@@ -1747,7 +1747,6 @@ class MigrateCaseServiceTest {
                 .furtherEvidenceDocuments(List.of(element(doc1Id, sebOne)))
                 .build();
 
-
             Map<String, Object> updatedFields = (Map<String, Object>) stream(MigrateCaseService.class.getMethods())
                 .filter(m -> furtherEvidenceTypeToMigrateMethodMap.get(type).equals(m.getName()))
                 .findFirst().get()
@@ -1761,13 +1760,19 @@ class MigrateCaseServiceTest {
                 .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
         }
 
-        @Test
-        void shouldMigrateApplicantWitnessStatementUploadedByLA() {
+        @SuppressWarnings("unchecked")
+        @ParameterizedTest
+        @EnumSource(value = FurtherEvidenceType.class, names = {
+            "APPLICANT_STATEMENT",
+            "GUARDIAN_REPORTS",
+            "OTHER_REPORTS",
+            "NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE"})
+        void shouldMigrateAnyOtherDocumentUploadedByLA(FurtherEvidenceType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
             DocumentReference document1 = DocumentReference.builder().build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
-                .type(APPLICANT_STATEMENT)
+                .type(type)
                 .document(document1)
                 .build();
 
@@ -1776,21 +1781,32 @@ class MigrateCaseServiceTest {
                 .furtherEvidenceDocumentsLA(List.of(element(doc1Id, sebOne)))
                 .build();
 
-            Map<String, Object> updatedFields = underTest.migrateApplicantWitnessStatements(caseData);
+            Map<String, Object> updatedFields = (Map<String, Object>) stream(MigrateCaseService.class.getMethods())
+                .filter(m -> furtherEvidenceTypeToMigrateMethodMap.get(type).equals(m.getName()))
+                .findFirst().get()
+                .invoke(underTest, caseData);
 
-            assertThat(updatedFields).extracting("applicantWitnessStmtListCTSC").asList().isEmpty();
-            assertThat(updatedFields).extracting("applicantWitnessStmtListLA").asList().isEmpty();
-            assertThat(updatedFields).extracting("applicantWitnessStmtList").asList().contains(
-                element(doc1Id, ManagedDocument.builder().document(document1).build()));
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type) + "CTSC").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type) + "LA").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type)).asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
         }
 
-        @Test
-        void shouldMigrateConfidentialApplicantWitnessStatementUploadedByLA() {
+        @SuppressWarnings("unchecked")
+        @ParameterizedTest
+        @EnumSource(value = FurtherEvidenceType.class, names = {
+            "APPLICANT_STATEMENT",
+            "GUARDIAN_REPORTS",
+            "OTHER_REPORTS",
+            "NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE"})
+        void shouldMigrateConfidentialAnyOtherDocumentsUploadedByLA(FurtherEvidenceType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
             DocumentReference document1 = DocumentReference.builder().build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
-                .type(APPLICANT_STATEMENT)
+                .type(type)
                 .document(document1)
                 .confidential(List.of("CONFIDENTIAL"))
                 .build();
@@ -1800,12 +1816,17 @@ class MigrateCaseServiceTest {
                 .furtherEvidenceDocumentsLA(List.of(element(doc1Id, sebOne)))
                 .build();
 
-            Map<String, Object> updatedFields = underTest.migrateApplicantWitnessStatements(caseData);
+            Map<String, Object> updatedFields = (Map<String, Object>) stream(MigrateCaseService.class.getMethods())
+                .filter(m -> furtherEvidenceTypeToMigrateMethodMap.get(type).equals(m.getName()))
+                .findFirst().get()
+                .invoke(underTest, caseData);
 
-            assertThat(updatedFields).extracting("applicantWitnessStmtListCTSC").asList().isEmpty();
-            assertThat(updatedFields).extracting("applicantWitnessStmtList").asList().isEmpty();
-            assertThat(updatedFields).extracting("applicantWitnessStmtListLA").asList().contains(
-                element(doc1Id, ManagedDocument.builder().document(document1).build()));
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type) + "CTSC").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type)).asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type) + "LA").asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
         }
 
         @Test
