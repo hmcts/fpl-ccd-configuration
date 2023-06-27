@@ -61,6 +61,43 @@ public class CaseDataParent {
     protected final List<Element<ManagedDocument>> noticeOfActingOrIssueListCTSC;
     protected final List<Element<ManagedDocument>> noticeOfActingOrIssueListRemoved;
 
+    protected final List<Element<ManagedDocument>> parentAssessmentList;
+    protected final List<Element<ManagedDocument>> parentAssessmentListLA;
+    protected final List<Element<ManagedDocument>> parentAssessmentListCTSC;
+    protected final List<Element<ManagedDocument>> parentAssessmentListRemoved;
+    protected final List<Element<ManagedDocument>> famAndViabilityList;
+    protected final List<Element<ManagedDocument>> famAndViabilityListLA;
+    protected final List<Element<ManagedDocument>> famAndViabilityListCTSC;
+    protected final List<Element<ManagedDocument>> famAndViabilityListRemoved;
+    protected final List<Element<ManagedDocument>> applicantOtherDocList;
+    protected final List<Element<ManagedDocument>> applicantOtherDocListLA;
+    protected final List<Element<ManagedDocument>> applicantOtherDocListCTSC;
+    protected final List<Element<ManagedDocument>> applicantOtherDocListRemoved;
+    protected final List<Element<ManagedDocument>> meetingNoteList;
+    protected final List<Element<ManagedDocument>> meetingNoteListLA;
+    protected final List<Element<ManagedDocument>> meetingNoteListCTSC;
+    protected final List<Element<ManagedDocument>> meetingNoteListRemoved;
+    protected final List<Element<ManagedDocument>> contactNoteList;
+    protected final List<Element<ManagedDocument>> contactNoteListLA;
+    protected final List<Element<ManagedDocument>> contactNoteListCTSC;
+    protected final List<Element<ManagedDocument>> contactNoteListRemoved;
+    protected final List<Element<ManagedDocument>> judgementList;
+    protected final List<Element<ManagedDocument>> judgementListLA;
+    protected final List<Element<ManagedDocument>> judgementListCTSC;
+    protected final List<Element<ManagedDocument>> judgementListRemoved;
+    protected final List<Element<ManagedDocument>> transcriptList;
+    protected final List<Element<ManagedDocument>> transcriptListLA;
+    protected final List<Element<ManagedDocument>> transcriptListCTSC;
+    protected final List<Element<ManagedDocument>> transcriptListRemoved;
+    protected final List<Element<ManagedDocument>> respWitnessStmtList;
+    protected final List<Element<ManagedDocument>> respWitnessStmtListLA;
+    protected final List<Element<ManagedDocument>> respWitnessStmtListCTSC;
+    protected final List<Element<ManagedDocument>> respWitnessStmtListRemoved;
+    protected final List<Element<ManagedDocument>> previousProceedingList;
+    protected final List<Element<ManagedDocument>> previousProceedingListLA;
+    protected final List<Element<ManagedDocument>> previousProceedingListCTSC;
+    protected final List<Element<ManagedDocument>> previousProceedingListRemoved;
+
     @NotNull(message = "Add the grounds for the application", groups = SecureAccommodationGroup.class)
     @Valid
     protected final GroundsForSecureAccommodationOrder groundsForSecureAccommodationOrder;
