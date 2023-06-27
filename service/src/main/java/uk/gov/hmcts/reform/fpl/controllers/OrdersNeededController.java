@@ -19,7 +19,9 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.model.DfjAreaCourtMapping;
 import uk.gov.hmcts.reform.fpl.service.CourtLookUpService;
+import uk.gov.hmcts.reform.fpl.service.DfjAreaLookUpService;
 
 import java.util.List;
 import java.util.Map;
@@ -46,6 +48,7 @@ public class OrdersNeededController extends CallbackController {
         .collect(Collectors.toList());
     private final HmctsCourtLookupConfiguration courtLookup;
     private final CourtLookUpService courtLookUpService;
+    private final DfjAreaLookUpService dfjAreaLookUpService;
 
     @PostMapping("/mid-event")
     @SuppressWarnings("unchecked")
@@ -159,6 +162,10 @@ public class OrdersNeededController extends CallbackController {
 
         if (Objects.nonNull(selectedCourt)) {
             data.put("court", selectedCourt);
+            DfjAreaCourtMapping dfjArea = dfjAreaLookUpService.getDfjArea(selectedCourt.getCode());
+            data.keySet().removeAll(dfjAreaLookUpService.getAllCourtFields());
+            data.put("dfjArea", dfjArea.getDfjArea());
+            data.put(dfjArea.getCourtField(), selectedCourt.getCode());
         }
 
         if (ordersFieldName.equals("ordersSolicitor")) {
