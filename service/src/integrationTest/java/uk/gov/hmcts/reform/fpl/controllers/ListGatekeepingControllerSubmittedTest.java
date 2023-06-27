@@ -229,13 +229,15 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
         postSubmittedEvent(toCallBackRequest(caseDetails, caseDetailsBefore));
 
         verifyNoInteractions(notificationClient);
-        verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
 
         checkUntil(() -> verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .submitEvent(any(), eq(CASE_ID), anyMap()));
 
         // start but don't finish
-        verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
         verifyNoMoreInteractions(concurrencyHelper);
     }
 

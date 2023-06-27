@@ -288,7 +288,8 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         postSubmittedEvent(toCallBackRequest(caseDetails, caseDetailsBefore));
 
-        verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID), anyMap());
 
         verifyNoInteractions(notificationClient);
