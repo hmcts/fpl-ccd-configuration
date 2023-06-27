@@ -511,6 +511,22 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         givenFplService();
 
+        given(uploadDocumentService.uploadPDF(eq(NOTICE_OF_HEARING_BINARY), any()))
+            .willReturn(NOTICE_OF_HEARING_DOCUMENT);
+        given(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY, COVERSHEET_PDF))
+            .willReturn(COVERSHEET_REPRESENTATIVE);
+        given(uploadDocumentService.uploadPDF(COVERSHEET_RESPONDENT_BINARY, COVERSHEET_PDF))
+            .willReturn(COVERSHEET_RESPONDENT);
+
+        given(documentService.createCoverDocuments(FAMILY_MAN_NUMBER, CASE_ID, REPRESENTATIVE_POST.getValue(),
+            Language.ENGLISH))
+            .willReturn(testDocmosisDocument(COVERSHEET_REPRESENTATIVE_BINARY));
+        given(documentService.createCoverDocuments(FAMILY_MAN_NUMBER, CASE_ID, RESPONDENT_NOT_REPRESENTED.getParty(),
+            Language.ENGLISH))
+            .willReturn(testDocmosisDocument(COVERSHEET_RESPONDENT_BINARY));
+
+        given(documentConversionService.convertToPdfBytes(any())).willReturn(NOTICE_OF_HEARING_BINARY);
+
         given(documentDownloadService.downloadDocument(noticeOfHearing.getBinaryUrl()))
             .willReturn(NOTICE_OF_HEARING_BINARY);
 
@@ -541,6 +557,11 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             same(NOTICE_OF_HEARING),
             noticeOfHearingCafcassDataCaptor.capture()
         );
+
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2))
+            .startEvent(eq(CASE_ID), any());
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2))
+            .submitEvent(any(), eq(CASE_ID), anyMap());
 
         NoticeOfHearingCafcassData noticeOfHearingCafcassData = noticeOfHearingCafcassDataCaptor.getValue();
 

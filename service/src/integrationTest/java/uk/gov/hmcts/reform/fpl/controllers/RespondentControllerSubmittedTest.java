@@ -46,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -82,7 +83,9 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
     private static final String SOLICITOR_ORG_ID = "Organisation ID";
     private static final String SOLICITOR_EMAIL = "solicitor@email.com";
     private static final String CASE_ID = "1234567890123456";
+    private static final long CASE_ID_LONG = 1234567890123456L;
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
+    private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
 
     private final Organisation organisation1 = organisation("ORG_1");
     private final Organisation organisation2 = organisation("ORG_2");
@@ -206,6 +209,8 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
             eq(NOTIFICATION_REFERENCE)
         ));
 
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).startEvent(eq(CASE_ID_LONG), any());
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID_LONG), anyMap());
         verifyNoMoreInteractions(concurrencyHelper);
     }
 
@@ -332,6 +337,10 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
         verify(notificationClient).sendEmail(
             LEGAL_COUNSELLOR_REMOVED_EMAIL_TEMPLATE, legalCounsellorEmail, notifyData, "localhost/" + CASE_ID
         );
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(3))
+            .startEvent(eq(CASE_ID_LONG), any());
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(3))
+            .submitEvent(any(), eq(CASE_ID_LONG), anyMap());
 
         verifyNoMoreInteractions(concurrencyHelper);
     }
@@ -380,6 +389,9 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
 
         final List<String> expectedCaseEvents = List.of("internal-update-case-summary",
             "internal-change-UPDATE_CASE", "updateRepresentation");
+
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(5))
+            .startEvent(eq(caseData.getId()), any());
 
         // setup change field, submit to aac (org1), setup change field, submit to aac (org2), update case-summary
         checkThat(() -> {
