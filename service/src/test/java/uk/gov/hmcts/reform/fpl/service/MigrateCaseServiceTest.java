@@ -2143,5 +2143,33 @@ class MigrateCaseServiceTest {
             assertThat(updatedFields).extracting("courtBundleListCTSC").asList().contains(confidentialBundleCTSC);
             assertThat(updatedFields).extracting("courtBundleListV2").asList().contains(nonConfidentialBundle);
         }
+
+        @Test
+        void courtBundlesShouldBeInSameListAfterRollback() {
+            UUID hearingId = UUID.randomUUID();
+
+            Element<HearingCourtBundle> confidentialBundleLA = element(hearingId, HearingCourtBundle.builder()
+                .courtBundle(List.of(buildLACourtBundle())).build());
+
+            Element<HearingCourtBundle> confidentialBundleCTSC = element(hearingId, HearingCourtBundle.builder()
+                .courtBundle(List.of(buildCTSCCourtBundle())).build());
+
+            Element<HearingCourtBundle> nonConfidentialBundle = element(hearingId, HearingCourtBundle.builder()
+                .courtBundle(List.of(buildCourtBundle())).build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(List.of(nonConfidentialBundle))
+                    .courtBundleListLA(List.of(confidentialBundleLA))
+                    .courtBundleListCTSC(List.of(confidentialBundleCTSC)).build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.rollbackCourtBundleMigration(caseData);
+            assertThat(updatedFields).extracting("courtBundleListLA").asList().isEmpty();
+            assertThat(updatedFields).extracting("courtBundleListCTSC").asList().isEmpty();
+            assertThat(updatedFields).extracting("courtBundleListV2").asList().contains(nonConfidentialBundle,
+                confidentialBundleLA, confidentialBundleCTSC);
+        }
     }
 }
