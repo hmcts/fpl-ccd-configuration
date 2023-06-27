@@ -49,6 +49,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APPROVED;
 import static uk.gov.hmcts.reform.ccd.model.Organisation.organisation;
@@ -204,6 +205,8 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
         ));
+
+        verifyNoMoreInteractions(concurrencyHelper);
     }
 
     @Test
@@ -329,6 +332,8 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
         verify(notificationClient).sendEmail(
             LEGAL_COUNSELLOR_REMOVED_EMAIL_TEMPLATE, legalCounsellorEmail, notifyData, "localhost/" + CASE_ID
         );
+
+        verifyNoMoreInteractions(concurrencyHelper);
     }
 
     @Test
@@ -391,6 +396,8 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
         assertThat(caseCaptor.getAllValues())
             .asList()
             .containsAll(update);
+
+        verifyNoMoreInteractions(concurrencyHelper);
     }
 
     @Test

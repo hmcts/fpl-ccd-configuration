@@ -524,6 +524,8 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             .isEqualTo("1 hour before the hearing");
         assertThat(noticeOfHearingCafcassData.getHearingTime())
             .isEqualTo("1:00pm - 2:00pm");
+
+        verifyNoMoreInteractions(concurrencyHelper);
     }
 
     @Test

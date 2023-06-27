@@ -253,7 +253,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .startEvent(CASE_ID, "internal-update-case-summary");
 
         // check two post-submits are submitted
-        verify(concurrencyHelper, times(2))
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2))
             .submitEvent(startEventResponseArgumentCaptor.capture(), eq(CASE_ID), eventDataCaptor.capture());
 
         // make sure that both finished (one of each)
@@ -529,7 +529,6 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         postSubmittedEvent(toCallBackRequest(cd, cdb));
 
-
         verify(notificationClient, never()).sendEmail(
             eq(NOTICE_OF_NEW_HEARING),
             eq(CAFCASS_EMAIL),
@@ -559,6 +558,8 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .isEqualTo("1 hour before the hearing");
         assertThat(noticeOfHearingCafcassData.getHearingTime())
             .isEqualTo("1:00pm - 2:00pm");
+
+        verifyNoMoreInteractions(concurrencyHelper);
     }
 
     @Test
