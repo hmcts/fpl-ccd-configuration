@@ -50,8 +50,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1501", this::run1501,
         "DFPL-1584", this::run1584,
         "DFPL-1124", this::run1124,
-        "DFPL-1124Rollback", this::run1124Rollback,
-        "DFPL-1500", this::run1500
+        "DFPL-1124Rollback", this::run1124Rollback
     );
 
     @PostMapping("/about-to-submit")
@@ -141,61 +140,5 @@ public class MigrateCaseController extends CallbackController {
             log.warn("Rollback {id = DFPL-1124, case reference = {}} doesn't have dfj area and relevant court field",
                 caseId);
         }
-    }
-
-    private void run1500(CaseDetails caseDetails) {
-        // for QA testing purpose
-        Map<String, String> fieldNameToFilename = new HashMap<>();
-        fieldNameToFilename.put("parentAssessmentList", "parent-assessment");
-        fieldNameToFilename.put("famAndViabilityList", "family-and-viability");
-        fieldNameToFilename.put("applicantOtherDocList", "applicant-other-doc");
-        fieldNameToFilename.put("meetingNoteList", "meeting-note");
-        fieldNameToFilename.put("contactNoteList", "contact-note");
-        fieldNameToFilename.put("judgementList", "judgement");
-        fieldNameToFilename.put("transcriptList", "transcript");
-        fieldNameToFilename.put("respWitnessStmtList", "respondent-witness-statement");
-        fieldNameToFilename.put("previousProceedingList", "previous-proceedings");
-
-        fieldNameToFilename.entrySet().stream().forEach(e -> {
-            caseDetails.getData().put(e.getKey(), List.of(
-                element(UUID.randomUUID(), ManagedDocument.builder()
-                    .document(DocumentReference.builder().build().builder()
-                        .url(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s",
-                            "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                        .binaryUrl(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s/binary",
-                            "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                        .filename(format("non-confidential-%s.pdf", e.getValue())).build())
-                    .build())));
-
-            caseDetails.getData().put(e.getKey() + "LA", List.of(
-                element(UUID.randomUUID(), ManagedDocument.builder()
-                    .document(DocumentReference.builder()
-                        .url(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s",
-                            "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                        .binaryUrl(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s/binary",
-                            "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                        .filename(format("la-confidential-%s.pdf", e.getValue())).build())
-                    .build())));
-
-            caseDetails.getData().put(e.getKey() + "CTSC", List.of(
-                element(UUID.randomUUID(), ManagedDocument.builder()
-                    .document(DocumentReference.builder()
-                        .url(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s",
-                            "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                        .binaryUrl(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s/binary",
-                            "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                        .filename(format("ctsc-confidential-%s.pdf", e.getValue())).build())
-                    .build())));
-
-            caseDetails.getData().put(e.getKey() + "Removed", List.of(
-                element(UUID.randomUUID(), ManagedDocument.builder()
-                    .document(DocumentReference.builder()
-                        .url(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s",
-                            "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                        .binaryUrl(format("http://dm-store-aat.service.core-compute-aat.internal/documents/%s/binary",
-                            "6e4efc77-1906-4906-b0ca-5154155db1a6"))
-                        .filename(format("removed-%s.pdf", e.getValue())).build())
-                    .build())));
-        });
     }
 }
