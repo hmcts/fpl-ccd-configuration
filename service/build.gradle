@@ -98,11 +98,9 @@ tasks.withType(JavaCompile) {
 task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
-  test {
-    testLogging {
-      events "failed"
-      exceptionFormat "full"
-    }
+  testLogging {
+    events "failed"
+    exceptionFormat "full"
   }
   // set your environment variables here
   // environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
