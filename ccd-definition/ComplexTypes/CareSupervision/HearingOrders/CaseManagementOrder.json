@@ -23,7 +23,8 @@
     "ListElementCode": "order",
     "FieldType": "Document",
     "ElementLabel": "Order",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "RegularExpression": ".doc,.docx"
   },
   {
     "LiveFrom": "01/01/2017",
