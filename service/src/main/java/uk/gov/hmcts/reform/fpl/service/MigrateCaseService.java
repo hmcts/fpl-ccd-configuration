@@ -796,4 +796,23 @@ public class MigrateCaseService {
         ret.put("respondentStatements", null);
         return ret;
     }
+
+    public Map<String, Object> migrateSkeletonArgumentList(CaseData caseData) {
+        List<Element<SkeletonArgument>> skeletonArgumentList =
+            caseData.getHearingDocuments().getSkeletonArgumentList().stream()
+                .filter(skeletonArgument ->
+                    YesNo.NO.getValue().equals(skeletonArgument.getValue().getHasConfidentialAddress()))
+                .collect(toList());
+
+        List<Element<SkeletonArgument>> skeletonArgumentListLA =
+            caseData.getHearingDocuments().getSkeletonArgumentList().stream()
+                .filter(skeletonArgument ->
+                    YesNo.YES.getValue().equals(skeletonArgument.getValue().getHasConfidentialAddress()))
+                .collect(toList());
+
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("skeletonArgumentList", skeletonArgumentList);
+        ret.put("skeletonArgumentListLA", skeletonArgumentListLA);
+        return ret;
+    }
 }

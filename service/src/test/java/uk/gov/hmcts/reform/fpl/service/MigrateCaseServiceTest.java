@@ -1295,7 +1295,7 @@ class MigrateCaseServiceTest {
                     + "or missing target invalid order type [EDUCATION_SUPERVISION__ORDER]");
         }
     }
-    
+
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class RemoveJudicialMessage {
@@ -2038,4 +2038,38 @@ class MigrateCaseServiceTest {
         }
     }
 
+    @Nested
+    class MigrateSkeletonArgumentList {
+        @Test
+        void shouldMigrateSkeletonArgumentList() {
+            Element<SkeletonArgument> skeletonArgumentNC = element(SkeletonArgument.builder()
+                .hasConfidentialAddress(YesNo.NO.getValue()).build());
+            Element<SkeletonArgument> skeletonArgumentConf = element(SkeletonArgument.builder()
+                .hasConfidentialAddress(YesNo.YES.getValue())
+                .build());
+
+            List<Element<SkeletonArgument>> skeletonArgument = List.of(skeletonArgumentNC, skeletonArgumentConf);
+
+            CaseData caseData = CaseData.builder()
+                .hearingDocuments(HearingDocuments.builder()
+                    .skeletonArgumentList(skeletonArgument).build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateSkeletonArgumentList(caseData);
+            assertThat(updatedFields).extracting("skeletonArgumentList").asList()
+                .containsExactly(skeletonArgumentNC);
+            assertThat(updatedFields).extracting("skeletonArgumentListLA").asList()
+                .containsExactly(skeletonArgumentConf);
+        }
+
+        @Test
+        void shouldDoNothingWhenNoSkeletonArgument() {
+            CaseData caseData = CaseData.builder().build();
+
+            Map<String, Object> updatedFields = underTest.migrateSkeletonArgumentList(caseData);
+
+            assertThat(updatedFields).extracting("skeletonArgumentList").asList().isEmpty();
+            assertThat(updatedFields).extracting("skeletonArgumentListLA").asList().isEmpty();
+        }
+    }
 }
