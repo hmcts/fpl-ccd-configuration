@@ -2240,15 +2240,6 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "SearchCriteria",
-    "Label": " ",
-    "FieldType": "SearchCriteria",
-    "SecurityClassification": "Public",
-    "Searchable": "Y"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseNameHmctsInternal",
     "Label": " ",
     "FieldType": "Text",
