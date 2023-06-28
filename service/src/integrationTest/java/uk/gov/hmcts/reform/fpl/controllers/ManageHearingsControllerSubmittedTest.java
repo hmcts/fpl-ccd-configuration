@@ -285,7 +285,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .eventId(i.getArgument(1))
             .token("token")
             .build());
-
+        //test
         postSubmittedEvent(toCallBackRequest(caseDetails, caseDetailsBefore));
 
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
