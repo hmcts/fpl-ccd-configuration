@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.fpl.service.DfjAreaLookUpService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -84,22 +83,6 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
-    }
-
-    @PostMapping("/submitted")
-    public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
-        final CaseData caseData = getCaseData(callbackRequest);
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-
-        // update supplementary data
-        String caseId = caseData.getId().toString();
-        Map<String, Map<String, Map<String, Object>>> supplementaryData = new HashMap<>();
-        supplementaryData.put("supplementary_data_updates",
-            Map.of("$set", Map.of("HMCTSServiceId", "ABA3")));
-        coreCaseDataApi.submitSupplementaryData(requestData.authorisation(),
-            authToken.generate(), caseId, supplementaryData);
-
-        caseDetails.getData().remove(MIGRATION_ID_KEY);
     }
 
     private void run702(CaseDetails caseDetails) {
