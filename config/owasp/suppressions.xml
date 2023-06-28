@@ -272,4 +272,7 @@
   <suppress>
     <vulnerabilityName>CVE-2023-20883</vulnerabilityName>
   </suppress>
+  <suppress>
+    <vulnerabilityName>CVE-2023-35116</vulnerabilityName>
+  </suppress>
 </suppressions>
