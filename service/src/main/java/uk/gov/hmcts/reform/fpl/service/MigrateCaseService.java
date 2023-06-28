@@ -40,7 +40,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-import static java.util.Collections.emptyList;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -67,8 +66,8 @@ public class MigrateCaseService {
 
         Map<String, Object> ret = new HashMap<>();
         ret.put("courtBundleListV2", newHearingCourtBundleList);
-        ret.put("courtBundleListLA", emptyList());
-        ret.put("courtBundleListCTSC", emptyList());
+        ret.put("courtBundleListLA", null);
+        ret.put("courtBundleListCTSC", null);
         return ret;
     }
 

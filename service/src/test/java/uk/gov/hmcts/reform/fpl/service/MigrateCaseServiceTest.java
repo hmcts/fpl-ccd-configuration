@@ -1296,7 +1296,7 @@ class MigrateCaseServiceTest {
                     + "or missing target invalid order type [EDUCATION_SUPERVISION__ORDER]");
         }
     }
-    
+
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class RemoveJudicialMessage {
@@ -2166,8 +2166,8 @@ class MigrateCaseServiceTest {
                 .build();
 
             Map<String, Object> updatedFields = underTest.rollbackCourtBundleMigration(caseData);
-            assertThat(updatedFields).extracting("courtBundleListLA").asList().isEmpty();
-            assertThat(updatedFields).extracting("courtBundleListCTSC").asList().isEmpty();
+            assertThat(updatedFields).extracting("courtBundleListLA").isNull();
+            assertThat(updatedFields).extracting("courtBundleListCTSC").isNull();
             assertThat(updatedFields).extracting("courtBundleListV2").asList().contains(nonConfidentialBundle,
                 confidentialBundleLA, confidentialBundleCTSC);
         }
