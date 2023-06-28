@@ -39,6 +39,7 @@
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "File",
+    "RegularExpression": ".doc,.docx,.pdf",
     "SecurityClassification": "Public"
   },
   {
