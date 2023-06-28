@@ -36,11 +36,11 @@ public class NotificationService {
     public void sendEmail(String templateId, String recipient, NotifyData data, String reference) {
         Map<String, Object> personalisation = mapper.convertValue(data, new TypeReference<>() {
         });
-        log.debug("Sending email (with template id: {}) to {}", templateId, maskEmail(recipient));
+        log.debug("Sending email on case {} (with template id: {}) to {}", reference, templateId, maskEmail(recipient));
         try {
             notificationClient.sendEmail(templateId, recipient, personalisation, environment + SEPARATOR + reference);
         } catch (NotificationClientException e) {
-            log.error("Failed to send email (with template id: {}) to {}", templateId, maskEmail(recipient), e);
+            log.error("Failed to send email on case {} (with template id: {}) to {}", reference, templateId, maskEmail(recipient), e);
         }
     }
 
