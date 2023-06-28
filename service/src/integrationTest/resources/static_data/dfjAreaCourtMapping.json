@@ -5,6 +5,11 @@
     "dfjArea": "SWANSEA"
   },
   {
+    "courtCode": "344",
+    "courtField": "swanseaDFJCourt",
+    "dfjArea": "SWANSEA"
+  },
+  {
     "courtCode": "32",
     "courtField": "centralLondonDFJCourt",
     "dfjArea": "CENTRAL_LONDON"
@@ -13,5 +18,10 @@
     "courtCode": "22",
     "courtField": "liverpoolDFJCourt",
     "dfjArea": "LIVERPOOL"
+  },
+  {
+    "courtCode": "117",
+    "courtField": "westLondonDFJCourt",
+    "dfjArea": "WEST_LONDON"
   }
 ]
