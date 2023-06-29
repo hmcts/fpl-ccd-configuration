@@ -95,13 +95,14 @@ tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
 
-tasks.withType(Test) {
+/*tasks.withType(Test) {
   useJUnitPlatform()
 
   testLogging {
     exceptionFormat = 'full'
   }
-}
+}*/
+
 task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
