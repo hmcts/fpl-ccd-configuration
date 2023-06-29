@@ -95,7 +95,6 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NOTICE_OF_HEARING;
 import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.CAFCASS_EMAIL;
 import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.COVERSHEET_PDF;
-import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -232,8 +231,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
 
-        checkUntil(() -> verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
-            .submitEvent(any(), eq(CASE_ID), anyMap()));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID), anyMap());
 
         // start but don't finish
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
@@ -693,8 +691,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
         verifyNoInteractions(notificationClient);
 
         verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
-        checkUntil(() -> verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
-            .submitEvent(any(), eq(CASE_ID), anyMap()));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID), anyMap());
         verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
 
         verifyNoMoreInteractions(concurrencyHelper);
@@ -738,11 +735,12 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
 
         verifyNoInteractions(notificationClient);
 
-        verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
-        checkUntil(() -> verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
-            .submitEvent(any(), eq(CASE_ID), anyMap()));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID), anyMap());
         // start but no updates
-        verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
         verifyNoMoreInteractions(concurrencyHelper);
     }
 
