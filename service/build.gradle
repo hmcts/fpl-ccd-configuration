@@ -115,7 +115,7 @@ task lintUserInterfaceTests(type: Exec, description: 'Runs linting of E2E tests.
 }
 
 task runSmokeTests(type: Exec, description: 'Runs smoke tests.') {
-  commandLine '/usr/bin/yarn', 'test:smoke'
+  commandLine '/usr/bin/yarn', '--silent', 'test:smoke'
 }
 
 task runApiTests(type: Test, description: 'Runs api tests.', group: 'Verification') {
