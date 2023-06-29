@@ -2076,21 +2076,18 @@ class MigrateCaseServiceTest {
         void shouldRollbackMigratedSkeletonArgumentList() {
             Element<SkeletonArgument> skeletonArgument = element(SkeletonArgument.builder().build());
             Element<SkeletonArgument> skeletonArgumentLA = element(SkeletonArgument.builder().build());
-            Element<SkeletonArgument> skeletonArgumentCTSC = element(SkeletonArgument.builder().build());
 
             Map<String, Object> caseDataMap = new HashMap<String, Object>();
             caseDataMap.put("skeletonArgumentList", List.of(skeletonArgument));
             caseDataMap.put("skeletonArgumentListLA", List.of(skeletonArgumentLA));
-            caseDataMap.put("skeletonArgumentListCTSC", List.of(skeletonArgumentCTSC));
 
             CaseDetails caseDetails = CaseDetails.builder().data(caseDataMap).build();
 
             underTest.rollbackMigratedSkeletonArgumentList(caseDetails);
 
             assertThat(caseDetails.getData()).extracting("skeletonArgumentList").asList()
-                .containsExactlyInAnyOrder(skeletonArgument, skeletonArgumentLA, skeletonArgumentCTSC);
+                .containsExactlyInAnyOrder(skeletonArgument, skeletonArgumentLA);
             assertThat(caseDetails.getData()).extracting("skeletonArgumentListLA").isNull();
-            assertThat(caseDetails.getData()).extracting("skeletonArgumentListCTSC").isNull();
         }
     }
 }

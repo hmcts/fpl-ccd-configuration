@@ -827,12 +827,8 @@ public class MigrateCaseService {
         if (caseDataMap.get("skeletonArgumentListLA") != null) {
             skeletonArgumentList.addAll((List) caseDataMap.get("skeletonArgumentListLA"));
         }
-        if (caseDataMap.get("skeletonArgumentListCTSC") != null) {
-            skeletonArgumentList.addAll((List) caseDataMap.get("skeletonArgumentListCTSC"));
-        }
 
         caseDataMap.put("skeletonArgumentList", skeletonArgumentList);
         caseDataMap.remove("skeletonArgumentListLA");
-        caseDataMap.remove("skeletonArgumentListCTSC");
     }
 }
