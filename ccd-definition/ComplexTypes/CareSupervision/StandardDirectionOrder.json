@@ -5,7 +5,8 @@
     "ListElementCode": "orderDoc",
     "FieldType": "Document",
     "ElementLabel": "File",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "CategoryID": "orders"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -13,7 +14,8 @@
     "ListElementCode": "translatedOrderDoc",
     "FieldType": "Document",
     "ElementLabel": "Translated document",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "CategoryID": "orders"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -49,7 +51,8 @@
     "FieldType": "Document",
     "ElementLabel": "File",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "orderStatus=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "orderStatus=\"DO_NOT_SHOW\"",
+    "CategoryID": "orders"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -144,7 +147,8 @@
     "FieldType": "Document",
     "ElementLabel": "Unsealed copy",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "orderStatus=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "orderStatus=\"DO_NOT_SHOW\"",
+    "CategoryID": "orders"
   },
   {
     "LiveFrom": "01/01/2017",
