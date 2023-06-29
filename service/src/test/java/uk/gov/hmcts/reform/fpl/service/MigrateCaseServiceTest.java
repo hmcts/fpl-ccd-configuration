@@ -2171,5 +2171,18 @@ class MigrateCaseServiceTest {
             assertThat(updatedFields).extracting("courtBundleListV2").asList().contains(nonConfidentialBundle,
                 confidentialBundleLA, confidentialBundleCTSC);
         }
+
+        @Test
+        void unusedCourtBundlesShouldBeRemovedAfterRollback() {
+            Map<String, Object> map = new HashMap<>();
+            map.put("courtBundleListLA", List.of());
+            map.put("courtBundleListCTSC", List.of());
+
+            CaseDetails caseDetails = CaseDetails.builder().data(map).build();
+
+            underTest.removeUnusedCourtBundleFields(caseDetails);
+            assertThat(caseDetails.getData()).doesNotContainKey("courtBundleListLA");
+            assertThat(caseDetails.getData()).doesNotContainKey("courtBundleListCTSC");
+        }
     }
 }

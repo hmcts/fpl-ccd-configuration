@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -46,6 +47,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MigrateCaseService {
@@ -69,6 +71,11 @@ public class MigrateCaseService {
         ret.put("courtBundleListLA", null);
         ret.put("courtBundleListCTSC", null);
         return ret;
+    }
+
+    public void removeUnusedCourtBundleFields(CaseDetails caseDetails) {
+        caseDetails.getData().remove("courtBundleListLA");
+        caseDetails.getData().remove("courtBundleListCTSC");
     }
 
     public Map<String, Object> migrateCourtBundle(CaseData caseData) {
