@@ -221,7 +221,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
         CaseDetails caseDetailsBefore = CaseDetails.builder().data(Map.of()).build();
 
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
-            .caseDetails(caseDetails)
+            .caseDetails(caseDetails.toBuilder().build())
             .eventId(i.getArgument(1))
             .token("token")
             .build());
@@ -250,7 +250,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             .build();
 
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
-            .caseDetails(caseDetails)
+            .caseDetails(caseDetails.toBuilder().build())
             .eventId(i.getArgument(1))
             .token("token")
             .build());
@@ -577,7 +577,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             .build();
 
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
-            .caseDetails(caseDetails)
+            .caseDetails(caseDetails.toBuilder().build())
             .eventId(i.getArgument(1))
             .token("token")
             .build());
@@ -631,7 +631,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             .build();
 
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
-            .caseDetails(caseDetails)
+            .caseDetails(caseDetails.toBuilder().build())
             .eventId(i.getArgument(1))
             .token("token")
             .build());
@@ -683,7 +683,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             .build();
 
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
-            .caseDetails(caseDetails)
+            .caseDetails(caseDetails.toBuilder().build())
             .eventId(i.getArgument(1))
             .token("token")
             .build());
@@ -729,7 +729,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             .build();
 
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
-            .caseDetails(caseDetails)
+            .caseDetails(caseDetails.toBuilder().build())
             .eventId(i.getArgument(1))
             .token("token")
             .build());
