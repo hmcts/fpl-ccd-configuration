@@ -760,14 +760,14 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .build();
 
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
-            .caseDetails(caseDetails)
+            .caseDetails(caseDetails.toBuilder().build())
             .eventId(i.getArgument(1))
             .token("token")
             .build());
 
         postSubmittedEvent(caseDetails);
 
-        verify(concurrencyHelper).startEvent(eq(CASE_ID), any());
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).startEvent(eq(CASE_ID), any());
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID), anyMap());
 
         verifyNoInteractions(notificationClient);
