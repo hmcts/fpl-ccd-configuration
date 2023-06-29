@@ -179,29 +179,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             List<Map<String, String>> listItems = (List<Map<String, String>>) caseManagementCategory.get("list_items");
             assertThat(listItems).contains(Map.of("code", "FPL", "label", "Family Public Law"));
         }
-
-        @Test
-        void shouldInvokeSubmitSupplementaryData() {
-            final Organisation organisation = testOrganisation();
-
-            final CaseData caseData = CaseData.builder()
-                .id(nextLong())
-                .state(OPEN)
-                .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
-                .outsourcingPolicy(organisationPolicy(
-                    organisation.getOrganisationIdentifier(), organisation.getName(), LASOLICITOR))
-                .build();
-
-            postSubmittedEvent(
-                buildCaseDetails(caseData, migrationId));
-
-            Map<String, Map<String, Map<String, Object>>> supplementaryData = new HashMap<>();
-            supplementaryData.put("supplementary_data_updates",
-                Map.of("$set", Map.of("HMCTSServiceId", "ABA3")));
-
-            verify(coreCaseDataApi).submitSupplementaryData(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN,
-                caseData.getId().toString(), supplementaryData);
-        }
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
