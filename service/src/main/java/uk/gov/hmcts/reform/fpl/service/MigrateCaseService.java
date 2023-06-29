@@ -815,4 +815,24 @@ public class MigrateCaseService {
         ret.put("skeletonArgumentListLA", skeletonArgumentListLA);
         return ret;
     }
+
+    @SuppressWarnings("unchecked")
+    public void rollbackMigratedSkeletonArgumentList(CaseDetails caseDetails) {
+        Map<String, Object> caseDataMap = caseDetails.getData();
+
+        List<Element<SkeletonArgument>> skeletonArgumentList = new ArrayList<>();
+        if (caseDataMap.get("skeletonArgumentList") != null) {
+            skeletonArgumentList.addAll((List) caseDataMap.get("skeletonArgumentList"));
+        }
+        if (caseDataMap.get("skeletonArgumentListLA") != null) {
+            skeletonArgumentList.addAll((List) caseDataMap.get("skeletonArgumentListLA"));
+        }
+        if (caseDataMap.get("skeletonArgumentListCTSC") != null) {
+            skeletonArgumentList.addAll((List) caseDataMap.get("skeletonArgumentListCTSC"));
+        }
+
+        caseDataMap.put("skeletonArgumentList", skeletonArgumentList);
+        caseDataMap.remove("skeletonArgumentListLA");
+        caseDataMap.remove("skeletonArgumentListCTSC");
+    }
 }

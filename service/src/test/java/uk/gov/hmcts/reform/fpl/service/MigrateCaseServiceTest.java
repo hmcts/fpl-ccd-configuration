@@ -2071,5 +2071,26 @@ class MigrateCaseServiceTest {
             assertThat(updatedFields).extracting("skeletonArgumentList").asList().isEmpty();
             assertThat(updatedFields).extracting("skeletonArgumentListLA").asList().isEmpty();
         }
+
+        @Test
+        void shouldRollbackMigratedSkeletonArgumentList() {
+            Element<SkeletonArgument> skeletonArgument = element(SkeletonArgument.builder().build());
+            Element<SkeletonArgument> skeletonArgumentLA = element(SkeletonArgument.builder().build());
+            Element<SkeletonArgument> skeletonArgumentCTSC = element(SkeletonArgument.builder().build());
+
+            Map<String, Object> caseDataMap = new HashMap<String, Object>();
+            caseDataMap.put("skeletonArgumentList", List.of(skeletonArgument));
+            caseDataMap.put("skeletonArgumentListLA", List.of(skeletonArgumentLA));
+            caseDataMap.put("skeletonArgumentListCTSC", List.of(skeletonArgumentCTSC));
+
+            CaseDetails caseDetails = CaseDetails.builder().data(caseDataMap).build();
+
+            underTest.rollbackMigratedSkeletonArgumentList(caseDetails);
+
+            assertThat(caseDetails.getData()).extracting("skeletonArgumentList").asList()
+                .containsExactlyInAnyOrder(skeletonArgument, skeletonArgumentLA, skeletonArgumentCTSC);
+            assertThat(caseDetails.getData()).extracting("skeletonArgumentListLA").isNull();
+            assertThat(caseDetails.getData()).extracting("skeletonArgumentListCTSC").isNull();
+        }
     }
 }
