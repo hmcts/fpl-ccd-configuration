@@ -22,24 +22,15 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
-import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
-import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
-import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOrganisation;
 
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
