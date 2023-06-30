@@ -176,6 +176,12 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
     @Captor
     private ArgumentCaptor<NoticeOfHearingCafcassData> noticeOfHearingCafcassDataCaptor;
 
+    @Captor
+    private ArgumentCaptor<StartEventResponse> startEventResponseArgumentCaptor;
+
+    @Captor
+    private ArgumentCaptor<Map<String, Object>> eventDataCaptor;
+
     @MockBean
     private CCDConcurrencyHelper concurrencyHelper;
 
@@ -228,14 +234,17 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
         postSubmittedEvent(toCallBackRequest(caseDetails, caseDetailsBefore));
 
         verifyNoInteractions(notificationClient);
+
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
-
-        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID), anyMap());
-
-        // start but don't finish
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .submitEvent(startEventResponseArgumentCaptor.capture(), eq(CASE_ID), eventDataCaptor.capture());
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
+
+        assertThat(startEventResponseArgumentCaptor.getAllValues().stream().map(StartEventResponse::getEventId))
+            .containsExactly("internal-update-case-summary");
+
         verifyNoMoreInteractions(concurrencyHelper);
     }
 
@@ -691,8 +700,12 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
         verifyNoInteractions(notificationClient);
 
         verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
-        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID), anyMap());
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .submitEvent(startEventResponseArgumentCaptor.capture(), eq(CASE_ID), eventDataCaptor.capture());
         verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
+
+        assertThat(startEventResponseArgumentCaptor.getAllValues().stream().map(StartEventResponse::getEventId))
+            .containsExactly("internal-update-case-summary");
 
         verifyNoMoreInteractions(concurrencyHelper);
     }
@@ -737,10 +750,14 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
 
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
-        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID), anyMap());
-        // start but no updates
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .submitEvent(startEventResponseArgumentCaptor.capture(), eq(CASE_ID), eventDataCaptor.capture());
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
+
+        assertThat(startEventResponseArgumentCaptor.getAllValues().stream().map(StartEventResponse::getEventId))
+            .containsExactly("internal-update-case-summary");
+
         verifyNoMoreInteractions(concurrencyHelper);
     }
 

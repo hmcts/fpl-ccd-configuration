@@ -290,7 +290,11 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
-        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID), anyMap());
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .submitEvent(startEventResponseArgumentCaptor.capture(), eq(CASE_ID), eventDataCaptor.capture());
+
+        assertThat(startEventResponseArgumentCaptor.getAllValues().stream().map(StartEventResponse::getEventId))
+            .containsExactly("internal-update-case-summary");
 
         verifyNoInteractions(notificationClient);
         verifyNoMoreInteractions(concurrencyHelper);
@@ -725,7 +729,11 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         verifyNoInteractions(notificationClient);
 
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).startEvent(eq(CASE_ID), any());
-        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID), anyMap());
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .submitEvent(startEventResponseArgumentCaptor.capture(), eq(CASE_ID), eventDataCaptor.capture());
+
+        assertThat(startEventResponseArgumentCaptor.getAllValues().stream().map(StartEventResponse::getEventId))
+            .containsExactly("internal-update-case-summary");
 
         verifyNoMoreInteractions(concurrencyHelper);
     }
@@ -768,7 +776,11 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         postSubmittedEvent(caseDetails);
 
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).startEvent(eq(CASE_ID), any());
-        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID), anyMap());
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .submitEvent(startEventResponseArgumentCaptor.capture(), eq(CASE_ID), eventDataCaptor.capture());
+
+        assertThat(startEventResponseArgumentCaptor.getAllValues().stream().map(StartEventResponse::getEventId))
+            .containsExactly("internal-update-case-summary");
 
         verifyNoInteractions(notificationClient);
         verifyNoMoreInteractions(concurrencyHelper);
