@@ -509,13 +509,14 @@ class MigrateCaseServiceTest {
         }
 
         @Test
-        void ShouldThrowExceptionIfFileNameNotFound() {
+        void ShouldThrowExceptionIfSdoNotFound() {
+            UUID documentId = UUID.randomUUID();
             CaseData caseData = CaseData.builder()
                 .id(caseId)
                 .build();
 
             assertThrows(AssertionError.class, () -> underTest
-                .verifyUrgentDirectionsOrderExistsWithFilename(caseData, MIGRATION_ID, fileName));
+                .verifyUrgentDirectionsOrderExists(caseData, MIGRATION_ID, documentId));
         }
 
         @Test

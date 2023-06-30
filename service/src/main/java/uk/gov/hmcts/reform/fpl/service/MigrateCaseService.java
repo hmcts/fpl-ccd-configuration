@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -318,12 +319,18 @@ public class MigrateCaseService {
         }
     }
 
-    public void verifyUrgentDirectionsOrderExistsWithFilename(CaseData caseData, String migrationId, String fileName) {
-        if(caseData.getUrgentDirectionsOrder() == null ||
-            !fileName.equals(caseData.getUrgentDirectionsOrder().getOrderDoc().getFilename())) {
+    public void verifyUrgentDirectionsOrderExists(CaseData caseData, String migrationId, UUID documentId) {
+        if(caseData.getUrgentDirectionsOrder() == null || isEmpty(caseData.getUrgentDirectionsOrder())) {
             throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, GateKeeping order - Urgent directions order %s not found",
-                migrationId, caseData.getId(), fileName));
+                "Migration {id = %s, case reference = %s}, GateKeeping order - Urgent directions order not found",
+                migrationId, caseData.getId()));
+        }
+
+        if(!documentId.toString()
+            .equals(StringUtils.right(caseData.getUrgentDirectionsOrder().getOrderDoc().getUrl(), 16))) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, GateKeeping order - Urgent directions order document with Id %s not found",
+                migrationId, caseData.getId(), documentId));
         }
     }
 

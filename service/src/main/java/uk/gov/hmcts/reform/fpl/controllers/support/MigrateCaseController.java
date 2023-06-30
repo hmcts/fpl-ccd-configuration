@@ -112,10 +112,10 @@ public class MigrateCaseController extends CallbackController {
     private void run1612(CaseDetails caseDetails) {
         var migrationId = "DFPL-1612";
         var possibleCaseIds = List.of(1687780363265112L);
-        final String fileName = "Derby County v Hall  Ellis 1.pdf";
+        UUID documentId = UUID.fromString("db163749-7c8a-45fe-88dd-63641560a9d9");
         CaseData caseData = getCaseData(caseDetails);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        migrateCaseService.verifyUrgentDirectionsOrderExistsWithFilename(caseData ,migrationId, fileName);
+        migrateCaseService.verifyUrgentDirectionsOrderExists(caseData ,migrationId, documentId);
         caseDetails.getData().put("urgentDirectionsOrder", "");
     }
 
