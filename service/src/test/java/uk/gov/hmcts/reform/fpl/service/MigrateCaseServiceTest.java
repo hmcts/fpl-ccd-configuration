@@ -495,6 +495,7 @@ class MigrateCaseServiceTest {
     class RemoveGatekeepingOrderUrgentHearingOrder {
 
         private final long caseId = 1L;
+        private final String fileName = "Test Filname.pdf";
 
         @Test
         void shouldThrowAssertionIfOrderNotFound() {
@@ -504,7 +505,17 @@ class MigrateCaseServiceTest {
 
             assertThrows(AssertionError.class, () ->
                 underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
-                    "test.pdf"));
+                    fileName));
+        }
+
+        @Test
+        void ShouldThrowExceptionIfFileNameNotFound() {
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest
+                .verifyUrgentDirectionsOrderExistsWithFilename(caseData, MIGRATION_ID, fileName));
         }
 
         @Test
@@ -518,7 +529,7 @@ class MigrateCaseServiceTest {
 
             assertThrows(AssertionError.class, () ->
                 underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
-                    "test.pdf"));
+                    fileName));
         }
 
         @Test
@@ -1292,7 +1303,7 @@ class MigrateCaseServiceTest {
                     + "or missing target invalid order type [EDUCATION_SUPERVISION__ORDER]");
         }
     }
-    
+
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class RemoveJudicialMessage {

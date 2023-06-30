@@ -42,7 +42,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1451", this::run1451,
         "DFPL-1466", this::run1466,
         "DFPL-1501", this::run1501,
-        "DFPL-1584", this::run1584,
+        "DFPL-1584", this::run1612,
         "DFPL-1124", this::run1124,
         "DFPL-1124Rollback", this::run1124Rollback
     );
@@ -109,13 +109,14 @@ public class MigrateCaseController extends CallbackController {
             getCaseData(caseDetails), migrationId, UUID.fromString("43a9287c-f840-4104-958f-cbd98d28aea3")));
     }
 
-    private void run1584(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1584";
-        var possibleCaseIds = List.of(1666625563479804L);
-        final UUID hearingId = UUID.fromString("a9b66732-f85e-490e-a980-01dd7c5f7b36");
+    private void run1612(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1612";
+        var possibleCaseIds = List.of(1687780363265112L);
+        final String fileName = "Derby County v Hall  Ellis 1.pdf";
+        CaseData caseData = getCaseData(caseDetails);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        caseDetails.getData().putAll(migrateCaseService.removeCaseSummaryByHearingId(getCaseData(caseDetails),
-            migrationId, hearingId));
+        migrateCaseService.verifyUrgentDirectionsOrderExistsWithFilename(caseData ,migrationId, fileName);
+        caseDetails.getData().put("urgentDirectionsOrder", "");
     }
 
     private void run1124(CaseDetails caseDetails) {
