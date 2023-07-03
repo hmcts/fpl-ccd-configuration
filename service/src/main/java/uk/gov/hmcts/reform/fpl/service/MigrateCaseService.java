@@ -59,23 +59,25 @@ public class MigrateCaseService {
     private final CourtService courtService;
     private final DocumentListService documentListService;
 
-    public Map<String, Object> rollbackCourtBundleMigration(CaseData caseData) {
+    @SuppressWarnings("unchecked")
+    public void rollbackCourtBundleMigration(CaseDetails caseDetails) {
+        Map<String, Object> caseDataMap = caseDetails.getData();
+
         List<Element<HearingCourtBundle>> newHearingCourtBundleList = new ArrayList<>();
 
-        newHearingCourtBundleList.addAll(caseData.getHearingDocuments().getCourtBundleListV2());
-        newHearingCourtBundleList.addAll(caseData.getHearingDocuments().getCourtBundleListLA());
-        newHearingCourtBundleList.addAll(caseData.getHearingDocuments().getCourtBundleListCTSC());
+        if (caseDataMap.get("courtBundleListV2") != null) {
+            newHearingCourtBundleList.addAll((List) caseDataMap.get("courtBundleListV2"));
+        }
+        if (caseDataMap.get("courtBundleListLA") != null) {
+            newHearingCourtBundleList.addAll((List) caseDataMap.get("courtBundleListLA"));
+        }
+        if (caseDataMap.get("courtBundleListCTSC") != null) {
+            newHearingCourtBundleList.addAll((List) caseDataMap.get("courtBundleListCTSC"));
+        }
 
-        Map<String, Object> ret = new HashMap<>();
-        ret.put("courtBundleListV2", newHearingCourtBundleList);
-        ret.put("courtBundleListLA", null);
-        ret.put("courtBundleListCTSC", null);
-        return ret;
-    }
-
-    public void removeUnusedCourtBundleFields(CaseDetails caseDetails) {
-        caseDetails.getData().remove("courtBundleListLA");
-        caseDetails.getData().remove("courtBundleListCTSC");
+        caseDataMap.put("courtBundleListV2", newHearingCourtBundleList);
+        caseDataMap.remove("courtBundleListLA");
+        caseDataMap.remove("courtBundleListCTSC");
     }
 
     public Map<String, Object> migrateCourtBundle(CaseData caseData) {
