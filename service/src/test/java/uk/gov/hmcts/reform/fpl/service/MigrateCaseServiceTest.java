@@ -509,7 +509,7 @@ class MigrateCaseServiceTest {
         }
 
         @Test
-        void ShouldThrowExceptionIfStandardDirectionNotFound() {
+        void shouldThrowExceptionIfStandardDirectionNotFound() {
             UUID documentId = UUID.randomUUID();
             CaseData caseData = CaseData.builder()
                 .id(caseId)
