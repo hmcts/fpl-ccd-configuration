@@ -510,7 +510,7 @@ class MigrateCaseServiceTest {
         }
 
         @Test
-        void shouldThrowExceptionIfStandardDirectionIsNullOrEmpty() {
+        void shouldThrowExceptionIfUrgentDirectionIsNullOrEmpty() {
             UUID documentId = UUID.randomUUID();
             CaseData caseData = CaseData.builder()
                 .id(caseId)
@@ -532,7 +532,7 @@ class MigrateCaseServiceTest {
 
             CaseData caseData = CaseData.builder()
                 .id(caseId)
-                .standardDirectionOrder(
+                .urgentDirectionsOrder(
                     StandardDirectionOrder.builder()
                         .orderDoc(documentReference)
                         .build())
