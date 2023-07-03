@@ -115,7 +115,7 @@ public class MigrateCaseController extends CallbackController {
         UUID documentId = UUID.fromString("db163749-7c8a-45fe-88dd-63641560a9d9");
         CaseData caseData = getCaseData(caseDetails);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        migrateCaseService.verifyUrgentDirectionsOrderExists(caseData ,migrationId, documentId);
+        migrateCaseService.verifyUrgentDirectionsOrderExists(caseData, migrationId, documentId);
         caseDetails.getData().put("urgentDirectionsOrder", "");
     }
 
