@@ -329,8 +329,8 @@ public class MigrateCaseService {
         if (!documentId
             .equals(UUID.fromString(caseDocumentUrl.substring(caseDocumentUrl.length() - 36)))) {
             throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}," +
-                    " GateKeeping order - Urgent directions order document with Id %s not found",
+                "Migration {id = %s, case reference = %s},"
+                + " GateKeeping order - Urgent directions order document with Id %s not found",
                 migrationId, caseData.getId(), documentId));
         }
     }
