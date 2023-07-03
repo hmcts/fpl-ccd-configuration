@@ -1296,7 +1296,7 @@ class MigrateCaseServiceTest {
                     + "or missing target invalid order type [EDUCATION_SUPERVISION__ORDER]");
         }
     }
-    
+
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class RemoveJudicialMessage {
@@ -2157,32 +2157,18 @@ class MigrateCaseServiceTest {
             Element<HearingCourtBundle> nonConfidentialBundle = element(hearingId, HearingCourtBundle.builder()
                 .courtBundle(List.of(buildCourtBundle())).build());
 
-            CaseData caseData = CaseData.builder()
-                .id(1L)
-                .hearingDocuments(HearingDocuments.builder()
-                    .courtBundleListV2(List.of(nonConfidentialBundle))
-                    .courtBundleListLA(List.of(confidentialBundleLA))
-                    .courtBundleListCTSC(List.of(confidentialBundleCTSC)).build())
-                .build();
+            Map<String, Object> caseDataMap = new HashMap<String, Object>();
+            caseDataMap.put("courtBundleListV2", List.of(nonConfidentialBundle));
+            caseDataMap.put("courtBundleListLA", List.of(confidentialBundleLA));
+            caseDataMap.put("courtBundleListCTSC", List.of(confidentialBundleCTSC));
 
-            Map<String, Object> updatedFields = underTest.rollbackCourtBundleMigration(caseData);
-            assertThat(updatedFields).extracting("courtBundleListLA").isNull();
-            assertThat(updatedFields).extracting("courtBundleListCTSC").isNull();
-            assertThat(updatedFields).extracting("courtBundleListV2").asList().contains(nonConfidentialBundle,
-                confidentialBundleLA, confidentialBundleCTSC);
-        }
+            CaseDetails caseDetails = CaseDetails.builder().data(caseDataMap).build();
 
-        @Test
-        void unusedCourtBundlesShouldBeRemovedAfterRollback() {
-            Map<String, Object> map = new HashMap<>();
-            map.put("courtBundleListLA", List.of());
-            map.put("courtBundleListCTSC", List.of());
-
-            CaseDetails caseDetails = CaseDetails.builder().data(map).build();
-
-            underTest.removeUnusedCourtBundleFields(caseDetails);
+            underTest.rollbackCourtBundleMigration(caseDetails);
             assertThat(caseDetails.getData()).doesNotContainKey("courtBundleListLA");
             assertThat(caseDetails.getData()).doesNotContainKey("courtBundleListCTSC");
+            assertThat(caseDetails.getData()).extracting("courtBundleListV2").asList()
+                .containsExactlyInAnyOrder(nonConfidentialBundle, confidentialBundleLA, confidentialBundleCTSC);
         }
     }
 }
