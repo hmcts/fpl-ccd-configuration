@@ -308,6 +308,6 @@ withPipeline(type, product, component) {
   }
 
   //def branchesToSync = ['demo', 'perftest', 'ithc'] TODO: uncomment this once testing in demo for WA completed
-  def branchesToSync = ['ithc']
+  def branchesToSync = []
   syncBranchesWithMaster(branchesToSync)
 }
