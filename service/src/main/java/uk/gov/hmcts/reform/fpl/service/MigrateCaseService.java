@@ -956,4 +956,39 @@ public class MigrateCaseService {
         caseDetails.getData().remove("noticeOfActingOrIssueListCTSC");
         caseDetails.getData().remove("noticeOfActingOrIssueListRemoved");
     }
+
+    public Map<String, Object> migrateSkeletonArgumentList(CaseData caseData) {
+        List<Element<SkeletonArgument>> skeletonArgumentList =
+            caseData.getHearingDocuments().getSkeletonArgumentList().stream()
+                .filter(skeletonArgument ->
+                    YesNo.NO.getValue().equals(skeletonArgument.getValue().getHasConfidentialAddress()))
+                .collect(toList());
+
+        List<Element<SkeletonArgument>> skeletonArgumentListLA =
+            caseData.getHearingDocuments().getSkeletonArgumentList().stream()
+                .filter(skeletonArgument ->
+                    YesNo.YES.getValue().equals(skeletonArgument.getValue().getHasConfidentialAddress()))
+                .collect(toList());
+
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("skeletonArgumentList", skeletonArgumentList);
+        ret.put("skeletonArgumentListLA", skeletonArgumentListLA);
+        return ret;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void rollbackMigratedSkeletonArgumentList(CaseDetails caseDetails) {
+        Map<String, Object> caseDataMap = caseDetails.getData();
+
+        List<Element<SkeletonArgument>> skeletonArgumentList = new ArrayList<>();
+        if (caseDataMap.get("skeletonArgumentList") != null) {
+            skeletonArgumentList.addAll((List) caseDataMap.get("skeletonArgumentList"));
+        }
+        if (caseDataMap.get("skeletonArgumentListLA") != null) {
+            skeletonArgumentList.addAll((List) caseDataMap.get("skeletonArgumentListLA"));
+        }
+
+        caseDataMap.put("skeletonArgumentList", skeletonArgumentList);
+        caseDataMap.remove("skeletonArgumentListLA");
+    }
 }

@@ -2264,5 +2264,19 @@
     "CaseFieldID": "previousProceedingListLA",
     "UserRole": "[LASHARED]",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "skeletonArgumentList",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "skeletonArgumentListLA",
+    "UserRole": "[LASHARED]",
+    "CRUD": "CRU"
   }
 ]
