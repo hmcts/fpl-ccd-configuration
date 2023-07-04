@@ -62,6 +62,9 @@ public class HearingDocuments {
     private final List<Element<PositionStatementRespondent>> posStmtRespListRemoved;
     // the element ID of each Skeleton argument is unique
     private final List<Element<SkeletonArgument>> skeletonArgumentList;
+    private final List<Element<SkeletonArgument>> skeletonArgumentListLA;
+    private final List<Element<SkeletonArgument>> skeletonArgumentListCTSC;
+    private final List<Element<SkeletonArgument>> skeletonArgumentListRemoved;
 
     public static class HearingDocumentsBuilder {
         @Deprecated
@@ -170,5 +173,13 @@ public class HearingDocuments {
 
     public List<Element<SkeletonArgument>> getSkeletonArgumentList() {
         return defaultIfNull(skeletonArgumentList, new ArrayList<>());
+    }
+
+    public List<Element<SkeletonArgument>> getSkeletonArgumentListLA() {
+        return defaultIfNull(skeletonArgumentListLA, new ArrayList<>());
+    }
+
+    public List<Element<SkeletonArgument>> getSkeletonArgumentListCTSC() {
+        return defaultIfNull(skeletonArgumentListCTSC, new ArrayList<>());
     }
 }

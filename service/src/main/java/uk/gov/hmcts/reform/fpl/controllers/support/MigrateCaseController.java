@@ -24,6 +24,9 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import static java.lang.String.format;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
+
 @Api
 @RestController
 @RequestMapping("/callback/migrate-case")
@@ -45,6 +48,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1584", this::run1584,
         "DFPL-1124", this::run1124,
         "DFPL-1124Rollback", this::run1124Rollback,
+        "DFPL-1352", this::run1352,
         "DFPL-1490", this::run1490
     );
 
@@ -140,5 +144,25 @@ public class MigrateCaseController extends CallbackController {
     private void run1490(CaseDetails caseDetails) {
         var migrationId = "DFPL-1490";
         caseDetails.getData().putAll(migrateCaseService.migrateCourtBundle(getCaseData(caseDetails)));
+    }
+
+    private void run1352(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1352";
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (caseData.getCourt().getCode().equals(RCJ_HIGH_COURT_CODE)) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, Skipping migration as case is in the High Court",
+                migrationId, caseData.getId()
+            ));
+        }
+        if (caseData.getSendToCtsc().equals("Yes")) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, Skipping migration as case is already sending to the CTSC",
+                migrationId, caseData.getId()
+            ));
+        }
+        caseDetails.getData().put("sendToCtsc", "Yes");
     }
 }
