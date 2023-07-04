@@ -106,7 +106,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "DocumentSentToParty",
+    "ID": "Documents",
     "ListElementCode": "removalReason",
     "FieldType": "Text",
     "ElementLabel": "Reason for removal",
