@@ -56,7 +56,7 @@
       "caseworker-caa",
       "caseworker-approver"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -66,7 +66,7 @@
       "caseworker-caa",
       "caseworker-approver"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -76,7 +76,7 @@
       "caseworker-caa",
       "caseworker-approver"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -86,7 +86,7 @@
       "caseworker-caa",
       "caseworker-approver"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -96,7 +96,7 @@
       "caseworker-caa",
       "caseworker-approver"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -106,7 +106,7 @@
       "caseworker-caa",
       "caseworker-approver"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -116,7 +116,7 @@
       "caseworker-caa",
       "caseworker-approver"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -126,7 +126,7 @@
       "caseworker-caa",
       "caseworker-approver"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -136,7 +136,7 @@
       "caseworker-caa",
       "caseworker-approver"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -146,7 +146,7 @@
       "caseworker-caa",
       "caseworker-approver"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -154,9 +154,10 @@
     "CaseFieldID": "childPolicy0",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-publiclaw-systemupdate"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -164,9 +165,10 @@
     "CaseFieldID": "childPolicy1",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-publiclaw-systemupdate"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -174,9 +176,10 @@
     "CaseFieldID": "childPolicy2",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-publiclaw-systemupdate"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -184,9 +187,10 @@
     "CaseFieldID": "childPolicy3",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-publiclaw-systemupdate"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -194,9 +198,10 @@
     "CaseFieldID": "childPolicy4",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-publiclaw-systemupdate"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -204,9 +209,10 @@
     "CaseFieldID": "childPolicy5",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-publiclaw-systemupdate"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -214,9 +220,10 @@
     "CaseFieldID": "childPolicy6",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-publiclaw-systemupdate"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -224,9 +231,10 @@
     "CaseFieldID": "childPolicy7",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-publiclaw-systemupdate"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -234,9 +242,10 @@
     "CaseFieldID": "childPolicy8",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-publiclaw-systemupdate"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -244,9 +253,10 @@
     "CaseFieldID": "childPolicy9",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-publiclaw-systemupdate"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -254,9 +264,10 @@
     "CaseFieldID": "childPolicy10",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-publiclaw-systemupdate"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -264,9 +275,10 @@
     "CaseFieldID": "childPolicy11",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-publiclaw-systemupdate"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -274,9 +286,10 @@
     "CaseFieldID": "childPolicy12",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-publiclaw-systemupdate"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -284,9 +297,10 @@
     "CaseFieldID": "childPolicy13",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-publiclaw-systemupdate"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -294,9 +308,10 @@
     "CaseFieldID": "childPolicy14",
     "UserRoles": [
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-publiclaw-systemupdate"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",

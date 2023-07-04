@@ -214,48 +214,58 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmittedEvent(
         @RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
+        CaseDetails oldCaseDetails = callbackRequest.getCaseDetails();
+        CaseData oldCaseData = getCaseData(oldCaseDetails);
         final CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
-        final AdditionalApplicationsBundle lastBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
-        final UUID lastBundleId = caseData.getAdditionalApplicationsBundle().get(0).getId();
+        final UUID lastBundleId = oldCaseData.getAdditionalApplicationsBundle().get(0).getId();
 
-        AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder bundleBuilder = lastBundle.toBuilder();
-
-        // If we have a C2 application, do the conversion if needed
-        if (!isEmpty(lastBundle.getC2DocumentBundle())) {
-            bundleBuilder.c2DocumentBundle(
-                uploadAdditionalApplicationsService.convertC2Bundle(lastBundle.getC2DocumentBundle())
-            );
-        }
-
-        // If we have a other application, do conversion if needed
-        if (!isEmpty(lastBundle.getOtherApplicationsBundle())) {
-            bundleBuilder.otherApplicationsBundle(
-                uploadAdditionalApplicationsService.convertOtherBundle(lastBundle.getOtherApplicationsBundle())
-            );
-        }
-
-        // update with our newly converted bundles (may not have changed at all, but we can't tell easily as it could be
-        // a supplement
-        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle
-            = caseData.getAdditionalApplicationsBundle().stream()
-            .filter(bundle -> !bundle.getId().equals(lastBundleId))
-            .collect(Collectors.toList());
-
-        additionalApplicationsBundle.add(0, element(lastBundleId, bundleBuilder.build()));
-
-        Map<String, Object> updates = Map.of(
-            "additionalApplicationsBundle", additionalApplicationsBundle
-        );
-
-        caseDetails.getData().putAll(updates);
-        caseData = getCaseData(caseDetails);
-
-        coreCaseDataService.triggerEvent(caseData.getId(),
+        CaseDetails caseDetails = coreCaseDataService.performPostSubmitCallback(oldCaseDetails.getId(),
             "internal-change-upload-add-apps",
-            updates);
+            caseDetailsCurrent -> {
+                CaseData caseDataCurrent = getCaseData(caseDetailsCurrent);
+                final AdditionalApplicationsBundle lastBundle = ElementUtils.findElement(lastBundleId,
+                    caseDataCurrent.getAdditionalApplicationsBundle()).map(Element::getValue)
+                    .orElseGet(() -> AdditionalApplicationsBundle.builder().build());
+                AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder bundleBuilder = lastBundle.toBuilder();
+
+                // If we have a C2 application, do the conversion if needed
+                if (!isEmpty(lastBundle.getC2DocumentBundle())) {
+                    bundleBuilder.c2DocumentBundle(
+                        uploadAdditionalApplicationsService.convertC2Bundle(lastBundle.getC2DocumentBundle())
+                    );
+                }
+
+                // If we have a other application, do conversion if needed
+                if (!isEmpty(lastBundle.getOtherApplicationsBundle())) {
+                    bundleBuilder.otherApplicationsBundle(
+                        uploadAdditionalApplicationsService.convertOtherBundle(lastBundle.getOtherApplicationsBundle())
+                    );
+                }
+
+                // update with our newly converted bundles (may not have changed at all, but we can't tell easily as it
+                // could be a supplement
+                List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle
+                    = caseDataCurrent.getAdditionalApplicationsBundle().stream()
+                    .filter(bundle -> !bundle.getId().equals(lastBundleId))
+                    .collect(Collectors.toList());
+
+                additionalApplicationsBundle.add(0, element(lastBundleId, bundleBuilder.build()));
+
+                return Map.of(
+                    "additionalApplicationsBundle", additionalApplicationsBundle
+                );
+            });
+
+        if (isEmpty(caseDetails)) {
+            // if our callback has failed 3 times, all we have is the prior caseData to send notifications based on
+            caseDetails = oldCaseDetails;
+        }
+
+        CaseData caseData = getCaseData(caseDetails);
+        final AdditionalApplicationsBundle lastBundle = ElementUtils.findElement(lastBundleId,
+                caseData.getAdditionalApplicationsBundle()).map(Element::getValue)
+            .orElseGet(() -> AdditionalApplicationsBundle.builder().build());
 
         final PBAPayment pbaPayment = lastBundle.getPbaPayment();
 

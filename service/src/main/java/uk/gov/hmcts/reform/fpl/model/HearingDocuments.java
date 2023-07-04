@@ -40,7 +40,7 @@ public class HearingDocuments {
                 List<Element<PositionStatementChild>> positionStatementChildList) {
             if (isEmpty(this.positionStatementChildListV2)) {
                 this.positionStatementChildListV2 = positionStatementChildList.stream()
-                    .map(doc -> element(doc.getValue().toBuilder().hearingId(doc.getId()).build()))
+                    .map(doc -> element(doc.getId(), doc.getValue().toBuilder().hearingId(doc.getId()).build()))
                     .collect(Collectors.toList());
             }
             return this;
@@ -52,7 +52,7 @@ public class HearingDocuments {
             List<Element<PositionStatementRespondent>> positionStatementChildList) {
             if (isEmpty(this.positionStatementRespondentListV2)) {
                 this.positionStatementRespondentListV2 = positionStatementChildList.stream()
-                    .map(doc -> element(doc.getValue().toBuilder().hearingId(doc.getId()).build()))
+                    .map(doc -> element(doc.getId(), doc.getValue().toBuilder().hearingId(doc.getId()).build()))
                     .collect(Collectors.toList());
             }
             return this;

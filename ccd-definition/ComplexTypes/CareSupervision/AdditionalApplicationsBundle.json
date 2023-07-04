@@ -64,5 +64,14 @@
     "SecurityClassification": "Public",
     "FieldShowCondition": "c2DocumentBundle=\"DO NOT SHOW\"",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "applicationReviewed",
+    "ElementLabel": "Application Reviewed by Judge",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

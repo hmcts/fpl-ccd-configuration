@@ -45,7 +45,7 @@ public class C34aContactWithAChildInCareOrderDocumentParameterGenerator implemen
             return dle.getLabel() + "\n";
         }
     }
-    
+
     @Override
     public DocmosisParameters generate(CaseData caseData) {
         ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
@@ -57,7 +57,7 @@ public class C34aContactWithAChildInCareOrderDocumentParameterGenerator implemen
 
         List<Element<Child>> selectedChildren = childrenSmartSelector.getSelectedChildren(caseData);
 
-        String localAuthorityCode = caseData.getCaseLocalAuthority();
+        String localAuthorityCode = caseData.getCaseLaOrRelatingLa();
         String localAuthorityName = laNameLookup.getLocalAuthorityName(localAuthorityCode);
 
         return C34aContactWithAChildInCareOrderDocmosisParameters.builder()

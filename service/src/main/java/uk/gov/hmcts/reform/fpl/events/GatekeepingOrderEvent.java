@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.events;
 
 import lombok.Builder;
 import lombok.Value;
+import uk.gov.hmcts.reform.fpl.enums.DirectionsOrderType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -17,6 +18,8 @@ public class GatekeepingOrderEvent {
     GatekeepingOrderNotificationGroup notificationGroup;
     LanguageTranslationRequirement languageTranslationRequirement;
     String orderTitle;
+    DirectionsOrderType directionsOrderType;
+
 
     public Optional<LanguageTranslationRequirement> getLanguageTranslationRequirement() {
         return Optional.ofNullable(languageTranslationRequirement);

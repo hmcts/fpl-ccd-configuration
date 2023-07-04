@@ -2571,15 +2571,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
-    "ListElementCode": "404",
-    "ListElement": "Watford County Court and Family Court",
-    "DisplayOrder": 367
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingVenue",
     "ListElementCode": "436",
-    "ListElement": "Watford County Court and Family Court (New address after 19 Sep 2022)",
+    "ListElement": "Watford County Court and Family Court",
     "DisplayOrder": 368
   },
   {

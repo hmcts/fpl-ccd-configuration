@@ -1,0 +1,452 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "dfjArea",
+    "Label": "DFJ Area :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "DFJArea",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "highCourtDFJCourt",
+    "Label": "highCourtDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "HighCourtDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "centralLondonDFJCourt",
+    "Label": "centralLondonDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "CentralLondonDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+  "LiveFrom": "01/01/2017",
+  "CaseTypeID": "CARE_SUPERVISION_EPO",
+  "ID": "eastLondonDFJCourt",
+  "Label": "eastLondonDFJCourt :",
+  "FieldType": "FixedList",
+  "FieldTypeParameter": "EastLondonDFJCourts",
+  "SecurityClassification": "Public",
+  "Searchable": "Y"
+  },
+  {
+  "LiveFrom": "01/01/2017",
+  "CaseTypeID": "CARE_SUPERVISION_EPO",
+  "ID": "westLondonDFJCourt",
+  "Label": "westLondonDFJCourt :",
+  "FieldType": "FixedList",
+  "FieldTypeParameter": "WestLondonDFJCourts",
+  "SecurityClassification": "Public",
+  "Searchable": "Y"
+  },
+  {
+  "LiveFrom": "01/01/2017",
+  "CaseTypeID": "CARE_SUPERVISION_EPO",
+  "ID": "birminghamDFJCourt",
+  "Label": "birminghamDFJCourt :",
+  "FieldType": "FixedList",
+  "FieldTypeParameter": "BirminghamDFJCourts",
+  "SecurityClassification": "Public",
+  "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "coventryDFJCourt",
+    "Label": "coventryDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "CoventryDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "derbyDFJCourt",
+    "Label": "derbyDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "DerbyDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "leicesterDFJCourt",
+    "Label": "leicesterDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "LeicesterDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "lincolnDFJCourt",
+    "Label": "lincolnDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "LincolnDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "northamptonDFJCourt",
+    "Label": "northamptonDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "NorthamptonDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "nottinghamDFJCourt",
+    "Label": "nottinghamDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "NottinghamDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "stoke-on-TrentDFJCourt",
+    "Label": "stoke-on-TrentDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "Stoke-on-TrentDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "wolverhamptonDFJCourt",
+    "Label": "wolverhamptonDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "WolverhamptonDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "worcesterDFJCourt",
+    "Label": "worcesterDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "WorcesterDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "clevelandAndSouthDurhamDFJCourt",
+    "Label": "clevelandAndSouthDurhamDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "ClevelandAndSouthDurhamDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "humbersideDFJCourt",
+    "Label": "humbersideDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "HumbersideDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "northYorkshireDFJCourt",
+    "Label": "northYorkshireDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "NorthYorkshireDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "northumbriaAndNorthDurhamDFJCourt",
+    "Label": "northumbriaAndNorthDurhamDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "NorthumbriaAndNorthDurhamDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "southYorkshireDFJCourt",
+    "Label": "southYorkshireDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "SouthYorkshireDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "westYorkshireDFJCourt",
+    "Label": "westYorkshireDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "WestYorkshireDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "blackburnLancasterDFJCourt",
+    "Label": "blackburnLancasterDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "BlackburnLancasterDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "carlisleDFJCourt",
+    "Label": "carlisleDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "CarlisleDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "liverpoolDFJCourt",
+    "Label": "liverpoolDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "LiverpoolDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manchesterDFJCourt",
+    "Label": "manchesterDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "ManchesterDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "brightonDFJCourt",
+    "Label": "brightonDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "BrightonDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "essexAndSuffolkDFJCourt",
+    "Label": "essexAndSuffolkDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "EssexAndSuffolkDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "guildfordDFJCourt",
+    "Label": "guildfordDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "GuildfordDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "lutonDFJCourt",
+    "Label": "lutonDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "LutonDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "medwayDFJCourt",
+    "Label": "medwayDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "MedwayDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "miltonKeynesDFJCourt",
+    "Label": "miltonKeynesDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "MiltonKeynesDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "norwichDFJCourt",
+    "Label": "norwichDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "NorwichDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "peterboroughDFJCourt",
+    "Label": "peterboroughDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "PeterboroughDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "readingDFJCourt",
+    "Label": "readingDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "ReadingDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "watfordDFJCourt",
+    "Label": "watfordDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "WatfordDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "bournemouthAndDorsetDFJCourt",
+    "Label": "bournemouthAndDorsetDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "BournemouthAndDorsetDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "bristolDFJCourt",
+    "Label": "bristolDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "BristolDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "devonDFJCourt",
+    "Label": "devonDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "DevonDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "portsmouthDFJCourt",
+    "Label": "portsmouthDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "PortsmouthDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "swindonDFJCourt",
+    "Label": "swindonDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "SwindonDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "tauntonDFJCourt",
+    "Label": "tauntonDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "TauntonDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "truroDFJCourt",
+    "Label": "truroDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "TruroDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "northWalesDFJCourt",
+    "Label": "northWalesDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "NorthWalesDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "southEastWalesDFJCourt",
+    "Label": "southEastWalesDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "SouthEastWalesDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "swanseaDFJCourt",
+    "Label": "swanseaDFJCourt :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "SwanseaDFJCourts",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  }
+]

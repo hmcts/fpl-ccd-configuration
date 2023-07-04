@@ -71,6 +71,7 @@ public enum Order {
         IsFinalOrder.MAYBE,
         List.of(CHILD_PLACEMENT_APPLICATIONS, APPROVER, APPROVAL_DATE,
             CHILD_PLACEMENT,
+            CLOSE_CASE,
             REVIEW_DRAFT_ORDER)
     ),
     C21_BLANK_ORDER(
@@ -87,10 +88,10 @@ public enum Order {
         "Emergency protection order",
         "Section 44 Children Act 1989",
         "Emergency protection order (C23)",
-        IsFinalOrder.NO,
+        IsFinalOrder.MAYBE,
         List.of(LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE_TIME, WHICH_CHILDREN,
             EPO_TYPE_AND_PREVENT_REMOVAL, EPO_INCLUDE_PHRASE, EPO_CHILDREN_DESCRIPTION, EPO_EXPIRY_DATE,
-            FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER, WHICH_OTHERS)
+            FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER, CLOSE_CASE, WHICH_OTHERS)
     ),
     C26_SECURE_ACCOMMODATION_ORDER(
         DIGITAL,
@@ -157,7 +158,7 @@ public enum Order {
         "Child assessment order",
         "Section 43 Children Act 1989",
         "Child assessment order (C39)",
-        IsFinalOrder.YES,
+        IsFinalOrder.MAYBE,
         List.of(
             APPROVER,
             APPROVAL_DATE,
@@ -222,6 +223,7 @@ public enum Order {
             APPOINTED_GUARDIAN,
             FURTHER_DIRECTIONS,
             REVIEW_DRAFT_ORDER,
+            CLOSE_CASE,
             WHICH_OTHERS
         )
     ),
@@ -310,7 +312,7 @@ public enum Order {
         "Contact with a child in care (C34A)",
         "Sections 34(2) and (3) Children Act 1989",
         "Contact with a child in care (C34A)",
-        IsFinalOrder.YES,
+        IsFinalOrder.MAYBE,
         List.of(
             LINKED_TO_HEARING,
             LINK_APPLICATION,
@@ -319,6 +321,7 @@ public enum Order {
             WHICH_CHILDREN,
             PARTY_ALLOWED_CONTACTS_AND_CONDITIONS,
             ORDER_BY_CONSENT,
+            CLOSE_CASE,
             REVIEW_DRAFT_ORDER
         )
     ),
@@ -329,7 +332,7 @@ public enum Order {
         "Authority to refuse contact with a child in care (C34B)",
         IsFinalOrder.MAYBE,
         List.of(ORDER_BY_CONSENT, REFUSE_CONTACT_ORDER, RESPONDENTS_REFUSED,
-            APPROVER, APPROVAL_DATE, WHICH_CHILDREN, WHICH_OTHERS, REVIEW_DRAFT_ORDER)
+            APPROVER, APPROVAL_DATE, WHICH_CHILDREN, WHICH_OTHERS, CLOSE_CASE, REVIEW_DRAFT_ORDER)
     ),
     C36_VARIATION_EXTENSION_OF_EDUCATION_SUPERVISION_ORDER(
         MANUAL_UPLOAD,
@@ -384,7 +387,7 @@ public enum Order {
         "Family assistance order (C42)",
         "Section 16 Children Act 1989",
         "Family assistance order (C42)",
-        IsFinalOrder.YES,
+        IsFinalOrder.MAYBE,
         List.of(
             APPROVER,
             APPROVAL_DATE,
@@ -517,7 +520,7 @@ public enum Order {
         "Declaration of parentage (C63A)",
         "Section 55A of the Family Law Act 1986",
         "Declaration of parentage (C63A)",
-        IsFinalOrder.YES,
+        IsFinalOrder.MAYBE,
         List.of(
             LINKED_TO_HEARING,
             LINK_APPLICATION,
@@ -525,6 +528,7 @@ public enum Order {
             APPROVAL_DATE,
             SELECT_SINGLE_CHILD,
             DECLARATION_OF_PARENTAGE,
+            CLOSE_CASE,
             REVIEW_DRAFT_ORDER
         )
     ),
