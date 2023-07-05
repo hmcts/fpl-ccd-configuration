@@ -73,6 +73,14 @@ public class CaseDataParent {
     protected final List<Element<ManagedDocument>> previousProceedingListLA;
     protected final List<Element<ManagedDocument>> previousProceedingListCTSC;
     protected final List<Element<ManagedDocument>> previousProceedingListRemoved;
+    protected final List<Element<ManagedDocument>> thresholdList;
+    protected final List<Element<ManagedDocument>> thresholdListLA;
+    protected final List<Element<ManagedDocument>> thresholdListCTSC;
+    protected final List<Element<ManagedDocument>> thresholdListRemoved;
+    protected final List<Element<ManagedDocument>> documentsFiledOnIssueList;
+    protected final List<Element<ManagedDocument>> documentsFiledOnIssueListLA;
+    protected final List<Element<ManagedDocument>> documentsFiledOnIssueListCTSC;
+    protected final List<Element<ManagedDocument>> documentsFiledOnIssueListRemoved;
 
     @NotNull(message = "Add the grounds for the application", groups = SecureAccommodationGroup.class)
     @Valid

@@ -1,0 +1,19 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentsFiledOnIssue",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "File",
+    "SecurityClassification": "Public",
+    "CategoryID": "documentsFiledOnIssue"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentsFiledOnIssue",
+    "ListElementCode": "removalReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Reason for removal",
+    "SecurityClassification": "Public"
+  }
+]
