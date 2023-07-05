@@ -953,4 +953,13 @@ public class MigrateCaseService {
     public Map<String, Object> migrateApplicationDocumentsToCarePlanList(CaseData caseData) {
         return migrateApplicationDocuments(caseData, List.of(CARE_PLAN), "carePlanList");
     }
+
+    public void rollbackApplicationDocuments(CaseDetails caseDetails) {
+        caseDetails.getData().remove("thresholdList");
+        caseDetails.getData().remove("thresholdListLA");
+        caseDetails.getData().remove("documentsFiledOnIssueList");
+        caseDetails.getData().remove("documentsFiledOnIssueListLA");
+        caseDetails.getData().remove("carePlanList");
+        caseDetails.getData().remove("carePlanListLA");
+    }
 }

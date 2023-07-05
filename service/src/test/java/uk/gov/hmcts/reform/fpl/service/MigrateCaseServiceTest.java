@@ -2340,6 +2340,37 @@ class MigrateCaseServiceTest {
                 .contains(element(doc11Id, ManagedDocument.builder().document(document11).build()));
         }
 
+        @Test
+        void shouldRollbackMigratedApplicationDocuments() {
+            UUID doc1Id = UUID.randomUUID();
+            DocumentReference document1 = DocumentReference.builder().build();
+            Element<ApplicationDocument> element = element(doc1Id,
+                ApplicationDocument.builder().document(document1).build());
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("applicationDocuments", List.of(element));
+            map.put("carePlanList", List.of());
+            map.put("carePlanListLA", List.of());
+            map.put("documentsFiledOnIssueList", List.of());
+            map.put("documentsFiledOnIssueListLA", List.of());
+            map.put("thresholdList", List.of());
+            map.put("thresholdListLA", List.of());
+
+            CaseDetails caseDetails = CaseDetails.builder().data(map).build();
+
+            underTest.rollbackApplicationDocuments(caseDetails);
+
+            assertThat(caseDetails.getData()).extracting("applicationDocuments").asList()
+                .containsExactly(element);
+            assertThat(caseDetails.getData()).doesNotContainKey("carePlanList");
+            assertThat(caseDetails.getData()).doesNotContainKey("carePlanListLA");
+            assertThat(caseDetails.getData()).doesNotContainKey("documentsFiledOnIssueList");
+            assertThat(caseDetails.getData()).doesNotContainKey("documentsFiledOnIssueListLA");
+            assertThat(caseDetails.getData()).doesNotContainKey("thresholdList");
+            assertThat(caseDetails.getData()).doesNotContainKey("thresholdListLA");
+        }
+    }
+
     @Nested
     class MigrateSkeletonArgumentList {
         @Test
