@@ -48,9 +48,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1584", this::run1612,
         "DFPL-1124", this::run1124,
         "DFPL-1124Rollback", this::run1124Rollback,
-        "DFPL-1352", this::run1352,
-        "DFPL-1490", this::run1490
-    );
+        "DFPL-1352", this::run1352
+        );
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -143,11 +142,6 @@ public class MigrateCaseController extends CallbackController {
         }
     }
 
-    private void run1490(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1490";
-        caseDetails.getData().putAll(migrateCaseService.migrateCourtBundle(getCaseData(caseDetails)));
-    }
-
     private void run1352(CaseDetails caseDetails) {
         var migrationId = "DFPL-1352";
 
@@ -167,4 +161,5 @@ public class MigrateCaseController extends CallbackController {
         }
         caseDetails.getData().put("sendToCtsc", "Yes");
     }
+
 }
