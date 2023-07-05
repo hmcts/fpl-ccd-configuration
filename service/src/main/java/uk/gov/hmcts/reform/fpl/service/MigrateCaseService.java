@@ -132,6 +132,22 @@ public class MigrateCaseService {
         return ret;
     }
 
+    @SuppressWarnings("unchecked")
+    public void rollbackCaseSummaryMigration(CaseDetails caseDetails) {
+        Map<String, Object> caseDataMap = caseDetails.getData();
+        List<Element<CaseSummary>> newCaseSummaryList = new ArrayList<>();
+
+        if (caseDataMap.get("caseSummaryListLA") != null) {
+            newCaseSummaryList.addAll((List) caseDataMap.get("caseSummaryListLA"));
+        }
+        if (caseDataMap.get("caseSummaryList") != null) {
+            newCaseSummaryList.addAll((List) caseDataMap.get("caseSummaryList"));
+        }
+
+        caseDataMap.put("caseSummaryList", newCaseSummaryList);
+        caseDataMap.remove("caseSummaryListLA");
+    }
+
     public Map<String, Object> moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(CaseData caseData) {
         List<Element<CaseSummary>> caseSummaryListLA = caseData.getHearingDocuments().getCaseSummaryList().stream()
             .filter(cs -> YesNo.YES.getValue().equals(cs.getValue().getHasConfidentialAddress()))
@@ -146,6 +162,42 @@ public class MigrateCaseService {
         ret.put("caseSummaryListLA", caseSummaryListLA);
         ret.put("caseSummaryList", newCaseSummaryList);
         return ret;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void rollbackMigratePositionStatementChild(CaseDetails caseDetails) {
+        Map<String, Object> caseDataMap = caseDetails.getData();
+
+        List<Element<PositionStatementChild>> newPositionStatementChilds = new ArrayList<>();
+
+        if (caseDataMap.get("posStmtChildListLA") != null) {
+            newPositionStatementChilds.addAll((List) caseDataMap.get("posStmtChildListLA"));
+        }
+        if (caseDataMap.get("posStmtChildList") != null) {
+            newPositionStatementChilds.addAll((List) caseDataMap.get("posStmtChildList"));
+        }
+
+        caseDetails.getData().put("positionStatementChildListV2", newPositionStatementChilds);
+        caseDetails.getData().remove("posStmtChildListLA");
+        caseDetails.getData().remove("posStmtChildList");
+    }
+
+    @SuppressWarnings("unchecked")
+    public void rollbackMigratePositionStatementRespondent(CaseDetails caseDetails) {
+        Map<String, Object> caseDataMap = caseDetails.getData();
+
+        List<Element<PositionStatementRespondent>> newPositionStatementRespondents = new ArrayList<>();
+
+        if (caseDataMap.get("posStmtRespListLA") != null) {
+            newPositionStatementRespondents.addAll((List) caseDataMap.get("posStmtRespListLA"));
+        }
+        if (caseDataMap.get("posStmtRespList") != null) {
+            newPositionStatementRespondents.addAll((List) caseDataMap.get("posStmtRespList"));
+        }
+
+        caseDetails.getData().put("positionStatementRespondentListV2", newPositionStatementRespondents);
+        caseDetails.getData().remove("posStmtRespListLA");
+        caseDetails.getData().remove("posStmtRespList");
     }
 
     @SuppressWarnings("squid:CallToDeprecatedMethod")

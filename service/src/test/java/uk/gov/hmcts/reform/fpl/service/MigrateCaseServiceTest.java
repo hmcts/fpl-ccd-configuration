@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.Placement;
@@ -2069,6 +2071,29 @@ class MigrateCaseServiceTest {
         }
 
         @Test
+        void shouldRollbackMigratedCaseSummaryList() {
+            Element<CaseSummary> caseSummaryListElementWithConfidentialAddress = element(UUID.randomUUID(),
+                CaseSummary.builder().hasConfidentialAddress(YesNo.YES.getValue()).build());
+            Element<CaseSummary> caseSummaryListElement = element(UUID.randomUUID(), CaseSummary.builder()
+                .hasConfidentialAddress(YesNo.NO.getValue())
+                .build());
+            Element<CaseSummary> caseSummaryListElementTwo = element(UUID.randomUUID(), CaseSummary.builder()
+                .build());
+
+            Map<String, Object> caseDataMap = new HashMap<String, Object>();
+            caseDataMap.put("caseSummaryListLA", List.of(caseSummaryListElementWithConfidentialAddress));
+            caseDataMap.put("caseSummaryList", List.of(caseSummaryListElement, caseSummaryListElementTwo));
+
+            CaseDetails caseDetails = CaseDetails.builder().data(caseDataMap).build();
+
+            underTest.rollbackCaseSummaryMigration(caseDetails);
+            assertThat(caseDetails.getData()).doesNotContainKey("caseSummaryListLA");
+            assertThat(caseDetails.getData()).extracting("caseSummaryList").asList()
+                .containsExactlyInAnyOrder(caseSummaryListElementWithConfidentialAddress, caseSummaryListElement,
+                    caseSummaryListElementTwo);
+        }
+
+        @Test
         void nonConfidentialCourtBundlesShouldRemainInCourtBundleList() {
             UUID hearingId = UUID.randomUUID();
 
@@ -2222,6 +2247,37 @@ class MigrateCaseServiceTest {
             assertThat(caseDetails.getData()).extracting("skeletonArgumentList").asList()
                 .containsExactlyInAnyOrder(skeletonArgument, skeletonArgumentLA);
             assertThat(caseDetails.getData()).extracting("skeletonArgumentListLA").isNull();
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldRollbackMigratedPositionStatementChildList(boolean isChild) {
+            Element<? extends HearingDocument> positionStatementElement = element(
+                isChild ? PositionStatementChild.builder().build() :
+                    PositionStatementRespondent.builder().build());
+            Element<? extends HearingDocument> positionStatementElementLA = element(
+                isChild ? PositionStatementChild.builder().build() :
+                    PositionStatementRespondent.builder().build());
+
+            Map<String, Object> caseDataMap = new HashMap<String, Object>();
+            caseDataMap.put(format("posStmt%sList", isChild ? "Child" : "Resp"), List.of(positionStatementElement));
+            caseDataMap.put(format("posStmt%sListLA", isChild ? "Child" : "Resp"), List.of(positionStatementElementLA));
+
+            CaseDetails caseDetails = CaseDetails.builder().data(caseDataMap).build();
+
+            if (isChild) {
+                underTest.rollbackMigratePositionStatementChild(caseDetails);
+            } else {
+                underTest.rollbackMigratePositionStatementRespondent(caseDetails);
+            }
+
+            assertThat(caseDetails.getData()).extracting(format("positionStatement%sListV2",
+                    isChild ? "Child" : "Respondent")).asList()
+                .containsExactlyInAnyOrder(positionStatementElement, positionStatementElementLA);
+            assertThat(caseDetails.getData()).extracting(format("posStmt%sList", isChild ? "Child" : "Resp"))
+                .isNull();
+            assertThat(caseDetails.getData()).extracting(format("posStmt%sListLA", isChild ? "Child" : "Resp"))
+                .isNull();
         }
     }
 }
