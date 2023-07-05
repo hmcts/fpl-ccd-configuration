@@ -6,6 +6,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
@@ -16,6 +17,7 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -32,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -61,12 +64,22 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
+import static java.util.Arrays.stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.BIRTH_CERTIFICATE;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.CARE_PLAN;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.CHECKLIST_DOCUMENT;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.GENOGRAM;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SOCIAL_WORK_CHRONOLOGY;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SOCIAL_WORK_STATEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.THRESHOLD;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith({MockitoExtension.class})
@@ -2129,6 +2142,94 @@ class MigrateCaseServiceTest {
         }
     }
 
+    @Nested
+    class MigrateApplicationDocuments {
+        private final Map<ApplicationDocumentType, String> applicationDocumentTypeFieldNameMap = Map.of(
+            THRESHOLD, "thresholdList",
+            SWET, "documentsFiledOnIssueList",
+            CARE_PLAN, "carePlanList",
+            SOCIAL_WORK_CHRONOLOGY, "documentsFiledOnIssueList",
+            SOCIAL_WORK_STATEMENT, "documentsFiledOnIssueList",
+            GENOGRAM, "documentsFiledOnIssueList",
+            CHECKLIST_DOCUMENT, "documentsFiledOnIssueList",
+            BIRTH_CERTIFICATE, "documentsFiledOnIssueList",
+            OTHER, "documentsFiledOnIssueList"
+        );
+
+        private final Map<ApplicationDocumentType, String> applicationDocumentTypeMethodMap = Map.of(
+            THRESHOLD, "migrateApplicationDocumentsToThresholdList",
+            SWET, "migrateApplicationDocumentsToDocumentsFiledOnIssueList",
+            CARE_PLAN, "migrateApplicationDocumentsToCarePlanList",
+            SOCIAL_WORK_CHRONOLOGY, "migrateApplicationDocumentsToDocumentsFiledOnIssueList",
+            SOCIAL_WORK_STATEMENT, "migrateApplicationDocumentsToDocumentsFiledOnIssueList",
+            GENOGRAM, "migrateApplicationDocumentsToDocumentsFiledOnIssueList",
+            CHECKLIST_DOCUMENT, "migrateApplicationDocumentsToDocumentsFiledOnIssueList",
+            BIRTH_CERTIFICATE, "migrateApplicationDocumentsToDocumentsFiledOnIssueList",
+            OTHER, "migrateApplicationDocumentsToDocumentsFiledOnIssueList"
+        );
+
+        @SuppressWarnings("unchecked")
+        @ParameterizedTest
+        @EnumSource(value = ApplicationDocumentType.class, names = {
+            "THRESHOLD", "SWET", "CARE_PLAN",
+            "SOCIAL_WORK_CHRONOLOGY", "SOCIAL_WORK_STATEMENT",
+            "GENOGRAM", "CHECKLIST_DOCUMENT", "BIRTH_CERTIFICATE", "OTHER"})
+        void shouldMigrateApplicationDocumentUploaded(ApplicationDocumentType type) throws Exception {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            ApplicationDocument ad1 = ApplicationDocument.builder()
+                .documentType(type)
+                .document(document1)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .applicationDocuments(List.of(element(doc1Id, ad1)))
+                .build();
+
+            Map<String, Object> updatedFields = (Map<String, Object>) stream(MigrateCaseService.class.getMethods())
+                .filter(m -> applicationDocumentTypeMethodMap.get(type).equals(m.getName()))
+                .findFirst().get()
+                .invoke(underTest, caseData);
+
+            assertThat(updatedFields).extracting(applicationDocumentTypeFieldNameMap.get(type) + "LA").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(applicationDocumentTypeFieldNameMap.get(type)).asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @SuppressWarnings("unchecked")
+        @ParameterizedTest
+        @EnumSource(value = ApplicationDocumentType.class, names = {
+            "THRESHOLD", "SWET", "CARE_PLAN",
+            "SOCIAL_WORK_CHRONOLOGY", "SOCIAL_WORK_STATEMENT",
+            "GENOGRAM", "CHECKLIST_DOCUMENT", "BIRTH_CERTIFICATE", "OTHER"})
+        void shouldMigrateConfidentialApplicationDocumentUploaded(ApplicationDocumentType type) throws Exception {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            ApplicationDocument ad1 = ApplicationDocument.builder()
+                .documentType(type)
+                .document(document1)
+                .confidential(List.of("CONFIDENTIAL"))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .applicationDocuments(List.of(element(doc1Id, ad1)))
+                .build();
+
+            Map<String, Object> updatedFields = (Map<String, Object>) stream(MigrateCaseService.class.getMethods())
+                .filter(m -> applicationDocumentTypeMethodMap.get(type).equals(m.getName()))
+                .findFirst().get()
+                .invoke(underTest, caseData);
+
+            assertThat(updatedFields).extracting(applicationDocumentTypeFieldNameMap.get(type)).asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(applicationDocumentTypeFieldNameMap.get(type) + "LA").asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
     @Nested
     class MigrateSkeletonArgumentList {
         @Test
