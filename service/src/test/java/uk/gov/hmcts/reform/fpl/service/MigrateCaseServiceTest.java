@@ -44,6 +44,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentStatementV2;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -513,6 +514,7 @@ class MigrateCaseServiceTest {
     class RemoveGatekeepingOrderUrgentHearingOrder {
 
         private final long caseId = 1L;
+        private final String fileName = "Test Filname.pdf";
 
         @Test
         void shouldThrowAssertionIfOrderNotFound() {
@@ -522,7 +524,40 @@ class MigrateCaseServiceTest {
 
             assertThrows(AssertionError.class, () ->
                 underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
-                    "test.pdf"));
+                    fileName));
+        }
+
+        @Test
+        void shouldThrowExceptionIfUrgentDirectionIsNullOrEmpty() {
+            UUID documentId = UUID.randomUUID();
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest
+                .verifyUrgentDirectionsOrderExists(caseData, MIGRATION_ID, documentId));
+        }
+
+        @Test
+        void shouldThrowExceptionIfStandardDirectionNotMatching() {
+            UUID document1Id = UUID.randomUUID();
+            String document2Url = "http://dm-store-prod.service.core-compute-prod.internal/documents/"
+                + UUID.randomUUID();
+            DocumentReference documentReference = DocumentReference.builder()
+                .url(document2Url)
+                .filename("Test Document")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .urgentDirectionsOrder(
+                    StandardDirectionOrder.builder()
+                        .orderDoc(documentReference)
+                        .build())
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest
+                .verifyUrgentDirectionsOrderExists(caseData, MIGRATION_ID, document1Id));
         }
 
         @Test
@@ -536,7 +571,7 @@ class MigrateCaseServiceTest {
 
             assertThrows(AssertionError.class, () ->
                 underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
-                    "test.pdf"));
+                    fileName));
         }
 
         @Test
@@ -2585,6 +2620,37 @@ class MigrateCaseServiceTest {
                 .containsExactlyInAnyOrder(caseSummaryListElementWithConfidentialAddress, caseSummaryListElement,
                     caseSummaryListElementTwo);
         }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldRollbackMigratedPositionStatementChildList(boolean isChild) {
+            Element<? extends HearingDocument> positionStatementElement = element(
+                isChild ? PositionStatementChild.builder().build() :
+                    PositionStatementRespondent.builder().build());
+            Element<? extends HearingDocument> positionStatementElementLA = element(
+                isChild ? PositionStatementChild.builder().build() :
+                    PositionStatementRespondent.builder().build());
+
+            Map<String, Object> caseDataMap = new HashMap<String, Object>();
+            caseDataMap.put(format("posStmt%sList", isChild ? "Child" : "Resp"), List.of(positionStatementElement));
+            caseDataMap.put(format("posStmt%sListLA", isChild ? "Child" : "Resp"), List.of(positionStatementElementLA));
+
+            CaseDetails caseDetails = CaseDetails.builder().data(caseDataMap).build();
+
+            if (isChild) {
+                underTest.rollbackMigratePositionStatementChild(caseDetails);
+            } else {
+                underTest.rollbackMigratePositionStatementRespondent(caseDetails);
+            }
+
+            assertThat(caseDetails.getData()).extracting(format("positionStatement%sListV2",
+                    isChild ? "Child" : "Respondent")).asList()
+                .containsExactlyInAnyOrder(positionStatementElement, positionStatementElementLA);
+            assertThat(caseDetails.getData()).extracting(format("posStmt%sList", isChild ? "Child" : "Resp"))
+                .isNull();
+            assertThat(caseDetails.getData()).extracting(format("posStmt%sListLA", isChild ? "Child" : "Resp"))
+                .isNull();
+        }
     }
 
     @Nested
@@ -2637,37 +2703,6 @@ class MigrateCaseServiceTest {
             assertThat(caseDetails.getData()).extracting("skeletonArgumentList").asList()
                 .containsExactlyInAnyOrder(skeletonArgument, skeletonArgumentLA);
             assertThat(caseDetails.getData()).extracting("skeletonArgumentListLA").isNull();
-        }
-
-        @ParameterizedTest
-        @ValueSource(booleans = {true, false})
-        void shouldRollbackMigratedPositionStatementChildList(boolean isChild) {
-            Element<? extends HearingDocument> positionStatementElement = element(
-                isChild ? PositionStatementChild.builder().build() :
-                    PositionStatementRespondent.builder().build());
-            Element<? extends HearingDocument> positionStatementElementLA = element(
-                isChild ? PositionStatementChild.builder().build() :
-                    PositionStatementRespondent.builder().build());
-
-            Map<String, Object> caseDataMap = new HashMap<String, Object>();
-            caseDataMap.put(format("posStmt%sList", isChild ? "Child" : "Resp"), List.of(positionStatementElement));
-            caseDataMap.put(format("posStmt%sListLA", isChild ? "Child" : "Resp"), List.of(positionStatementElementLA));
-
-            CaseDetails caseDetails = CaseDetails.builder().data(caseDataMap).build();
-
-            if (isChild) {
-                underTest.rollbackMigratePositionStatementChild(caseDetails);
-            } else {
-                underTest.rollbackMigratePositionStatementRespondent(caseDetails);
-            }
-
-            assertThat(caseDetails.getData()).extracting(format("positionStatement%sListV2",
-                    isChild ? "Child" : "Respondent")).asList()
-                .containsExactlyInAnyOrder(positionStatementElement, positionStatementElementLA);
-            assertThat(caseDetails.getData()).extracting(format("posStmt%sList", isChild ? "Child" : "Resp"))
-                .isNull();
-            assertThat(caseDetails.getData()).extracting(format("posStmt%sListLA", isChild ? "Child" : "Resp"))
-                .isNull();
         }
     }
 }
