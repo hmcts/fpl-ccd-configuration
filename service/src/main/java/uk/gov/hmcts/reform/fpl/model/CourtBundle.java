@@ -37,4 +37,9 @@ public class CourtBundle extends HearingDocument {
         return (confidential != null && confidential.contains("CONFIDENTIAL"))
                || (YesNo.YES.getValue().equalsIgnoreCase(getHasConfidentialAddress()));
     }
+
+    @JsonIgnore
+    public boolean isUploadedByHMCTS() {
+        return "HMCTS".equals(uploadedBy);
+    }
 }
