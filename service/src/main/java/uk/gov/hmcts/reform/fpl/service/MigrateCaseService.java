@@ -904,8 +904,8 @@ public class MigrateCaseService {
         caseDataMap.put("skeletonArgumentList", skeletonArgumentList);
         caseDataMap.remove("skeletonArgumentListLA");
     }
-  
-      public Map<String, Object> migrateCorrespondenceDocuments(CaseData caseData) {
+
+    public Map<String, Object> migrateCorrespondenceDocuments(CaseData caseData) {
         List<Element<ManagedDocument>> correspondenceDocList =
             Stream.of(caseData.getCorrespondenceDocuments(),
                     caseData.getCorrespondenceDocumentsLA(),
