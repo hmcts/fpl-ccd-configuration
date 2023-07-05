@@ -57,6 +57,22 @@ public class MigrateCaseService {
     private final CourtService courtService;
     private final DocumentListService documentListService;
 
+    @SuppressWarnings("unchecked")
+    public void rollbackCaseSummaryMigration(CaseDetails caseDetails) {
+        Map<String, Object> caseDataMap = caseDetails.getData();
+        List<Element<CaseSummary>> newCaseSummaryList = new ArrayList<>();
+
+        if (caseDataMap.get("caseSummaryListLA") != null) {
+            newCaseSummaryList.addAll((List) caseDataMap.get("caseSummaryListLA"));
+        }
+        if (caseDataMap.get("caseSummaryList") != null) {
+            newCaseSummaryList.addAll((List) caseDataMap.get("caseSummaryList"));
+        }
+
+        caseDataMap.put("caseSummaryList", newCaseSummaryList);
+        caseDataMap.remove("caseSummaryListLA");
+    }
+
     public Map<String, Object> moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(CaseData caseData) {
         List<Element<CaseSummary>> caseSummaryListLA = caseData.getHearingDocuments().getCaseSummaryList().stream()
             .filter(cs -> YesNo.YES.getValue().equals(cs.getValue().getHasConfidentialAddress()))

@@ -2038,6 +2038,29 @@ class MigrateCaseServiceTest {
             assertThat(updatedFields).extracting("caseSummaryListLA").asList()
                 .containsExactly(caseSummaryListElementWithConfidentialAddress);
         }
+
+        @Test
+        void shouldRollbackMigratedCaseSummaryList() {
+            Element<CaseSummary> caseSummaryListElementWithConfidentialAddress = element(UUID.randomUUID(),
+                CaseSummary.builder().hasConfidentialAddress(YesNo.YES.getValue()).build());
+            Element<CaseSummary> caseSummaryListElement = element(UUID.randomUUID(), CaseSummary.builder()
+                .hasConfidentialAddress(YesNo.NO.getValue())
+                .build());
+            Element<CaseSummary> caseSummaryListElementTwo = element(UUID.randomUUID(), CaseSummary.builder()
+                .build());
+
+            Map<String, Object> caseDataMap = new HashMap<String, Object>();
+            caseDataMap.put("caseSummaryListLA", List.of(caseSummaryListElementWithConfidentialAddress));
+            caseDataMap.put("caseSummaryList", List.of(caseSummaryListElement, caseSummaryListElementTwo));
+
+            CaseDetails caseDetails = CaseDetails.builder().data(caseDataMap).build();
+
+            underTest.rollbackCaseSummaryMigration(caseDetails);
+            assertThat(caseDetails.getData()).doesNotContainKey("caseSummaryListLA");
+            assertThat(caseDetails.getData()).extracting("caseSummaryList").asList()
+                .containsExactlyInAnyOrder(caseSummaryListElementWithConfidentialAddress, caseSummaryListElement,
+                    caseSummaryListElementTwo);
+        }
     }
 
     @Nested
