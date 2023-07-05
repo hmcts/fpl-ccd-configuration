@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
@@ -39,6 +41,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentStatementV2;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -500,6 +503,7 @@ class MigrateCaseServiceTest {
     class RemoveGatekeepingOrderUrgentHearingOrder {
 
         private final long caseId = 1L;
+        private final String fileName = "Test Filname.pdf";
 
         @Test
         void shouldThrowAssertionIfOrderNotFound() {
@@ -509,7 +513,40 @@ class MigrateCaseServiceTest {
 
             assertThrows(AssertionError.class, () ->
                 underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
-                    "test.pdf"));
+                    fileName));
+        }
+
+        @Test
+        void shouldThrowExceptionIfUrgentDirectionIsNullOrEmpty() {
+            UUID documentId = UUID.randomUUID();
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest
+                .verifyUrgentDirectionsOrderExists(caseData, MIGRATION_ID, documentId));
+        }
+
+        @Test
+        void shouldThrowExceptionIfStandardDirectionNotMatching() {
+            UUID document1Id = UUID.randomUUID();
+            String document2Url = "http://dm-store-prod.service.core-compute-prod.internal/documents/"
+                + UUID.randomUUID();
+            DocumentReference documentReference = DocumentReference.builder()
+                .url(document2Url)
+                .filename("Test Document")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .urgentDirectionsOrder(
+                    StandardDirectionOrder.builder()
+                        .orderDoc(documentReference)
+                        .build())
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest
+                .verifyUrgentDirectionsOrderExists(caseData, MIGRATION_ID, document1Id));
         }
 
         @Test
@@ -523,7 +560,7 @@ class MigrateCaseServiceTest {
 
             assertThrows(AssertionError.class, () ->
                 underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
-                    "test.pdf"));
+                    fileName));
         }
 
         @Test
@@ -2040,6 +2077,116 @@ class MigrateCaseServiceTest {
         }
 
         @Test
+        void shouldRollbackMigratedCaseSummaryList() {
+            Element<CaseSummary> caseSummaryListElementWithConfidentialAddress = element(UUID.randomUUID(),
+                CaseSummary.builder().hasConfidentialAddress(YesNo.YES.getValue()).build());
+            Element<CaseSummary> caseSummaryListElement = element(UUID.randomUUID(), CaseSummary.builder()
+                .hasConfidentialAddress(YesNo.NO.getValue())
+                .build());
+            Element<CaseSummary> caseSummaryListElementTwo = element(UUID.randomUUID(), CaseSummary.builder()
+                .build());
+
+            Map<String, Object> caseDataMap = new HashMap<String, Object>();
+            caseDataMap.put("caseSummaryListLA", List.of(caseSummaryListElementWithConfidentialAddress));
+            caseDataMap.put("caseSummaryList", List.of(caseSummaryListElement, caseSummaryListElementTwo));
+
+            CaseDetails caseDetails = CaseDetails.builder().data(caseDataMap).build();
+
+            underTest.rollbackCaseSummaryMigration(caseDetails);
+            assertThat(caseDetails.getData()).doesNotContainKey("caseSummaryListLA");
+            assertThat(caseDetails.getData()).extracting("caseSummaryList").asList()
+                .containsExactlyInAnyOrder(caseSummaryListElementWithConfidentialAddress, caseSummaryListElement,
+                    caseSummaryListElementTwo);
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldRollbackMigratedPositionStatementChildList(boolean isChild) {
+            Element<? extends HearingDocument> positionStatementElement = element(
+                isChild ? PositionStatementChild.builder().build() :
+                    PositionStatementRespondent.builder().build());
+            Element<? extends HearingDocument> positionStatementElementLA = element(
+                isChild ? PositionStatementChild.builder().build() :
+                    PositionStatementRespondent.builder().build());
+
+            Map<String, Object> caseDataMap = new HashMap<String, Object>();
+            caseDataMap.put(format("posStmt%sList", isChild ? "Child" : "Resp"), List.of(positionStatementElement));
+            caseDataMap.put(format("posStmt%sListLA", isChild ? "Child" : "Resp"), List.of(positionStatementElementLA));
+
+            CaseDetails caseDetails = CaseDetails.builder().data(caseDataMap).build();
+
+            if (isChild) {
+                underTest.rollbackMigratePositionStatementChild(caseDetails);
+            } else {
+                underTest.rollbackMigratePositionStatementRespondent(caseDetails);
+            }
+
+            assertThat(caseDetails.getData()).extracting(format("positionStatement%sListV2",
+                    isChild ? "Child" : "Respondent")).asList()
+                .containsExactlyInAnyOrder(positionStatementElement, positionStatementElementLA);
+            assertThat(caseDetails.getData()).extracting(format("posStmt%sList", isChild ? "Child" : "Resp"))
+                .isNull();
+            assertThat(caseDetails.getData()).extracting(format("posStmt%sListLA", isChild ? "Child" : "Resp"))
+                .isNull();
+        }
+    }
+
+    @Nested
+    class MigrateSkeletonArgumentList {
+        @Test
+        void shouldMigrateSkeletonArgumentList() {
+            Element<SkeletonArgument> skeletonArgumentNC = element(SkeletonArgument.builder()
+                .hasConfidentialAddress(YesNo.NO.getValue()).build());
+            Element<SkeletonArgument> skeletonArgumentConf = element(SkeletonArgument.builder()
+                .hasConfidentialAddress(YesNo.YES.getValue())
+                .build());
+
+            List<Element<SkeletonArgument>> skeletonArgument = List.of(skeletonArgumentNC, skeletonArgumentConf);
+
+            CaseData caseData = CaseData.builder()
+                .hearingDocuments(HearingDocuments.builder()
+                    .skeletonArgumentList(skeletonArgument).build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateSkeletonArgumentList(caseData);
+            assertThat(updatedFields).extracting("skeletonArgumentList").asList()
+                .containsExactly(skeletonArgumentNC);
+            assertThat(updatedFields).extracting("skeletonArgumentListLA").asList()
+                .containsExactly(skeletonArgumentConf);
+        }
+
+        @Test
+        void shouldDoNothingWhenNoSkeletonArgument() {
+            CaseData caseData = CaseData.builder().build();
+
+            Map<String, Object> updatedFields = underTest.migrateSkeletonArgumentList(caseData);
+
+            assertThat(updatedFields).extracting("skeletonArgumentList").asList().isEmpty();
+            assertThat(updatedFields).extracting("skeletonArgumentListLA").asList().isEmpty();
+        }
+
+        @Test
+        void shouldRollbackMigratedSkeletonArgumentList() {
+            Element<SkeletonArgument> skeletonArgument = element(SkeletonArgument.builder().build());
+            Element<SkeletonArgument> skeletonArgumentLA = element(SkeletonArgument.builder().build());
+
+            Map<String, Object> caseDataMap = new HashMap<String, Object>();
+            caseDataMap.put("skeletonArgumentList", List.of(skeletonArgument));
+            caseDataMap.put("skeletonArgumentListLA", List.of(skeletonArgumentLA));
+
+            CaseDetails caseDetails = CaseDetails.builder().data(caseDataMap).build();
+
+            underTest.rollbackMigratedSkeletonArgumentList(caseDetails);
+
+            assertThat(caseDetails.getData()).extracting("skeletonArgumentList").asList()
+                .containsExactlyInAnyOrder(skeletonArgument, skeletonArgumentLA);
+            assertThat(caseDetails.getData()).extracting("skeletonArgumentListLA").isNull();
+        }
+    }
+  
+    @Nested
+    class MigrateCorrespondence {
+        @Test
         void shouldMigrateCorrespondenceDocuments() {
             Element<SupportingEvidenceBundle> correspondenceAdmin = element(SupportingEvidenceBundle.builder()
                 .document(DocumentReference.builder().build()).confidential(List.of("CONFIDENTIAL"))
@@ -2113,5 +2260,4 @@ class MigrateCaseServiceTest {
             assertThat(caseDetailsMap).extracting("correspondenceDocListCTSC").isNull();
         }
     }
-
 }

@@ -60,6 +60,22 @@ public class MigrateCaseService {
     private final CourtService courtService;
     private final DocumentListService documentListService;
 
+    @SuppressWarnings("unchecked")
+    public void rollbackCaseSummaryMigration(CaseDetails caseDetails) {
+        Map<String, Object> caseDataMap = caseDetails.getData();
+        List<Element<CaseSummary>> newCaseSummaryList = new ArrayList<>();
+
+        if (caseDataMap.get("caseSummaryListLA") != null) {
+            newCaseSummaryList.addAll((List) caseDataMap.get("caseSummaryListLA"));
+        }
+        if (caseDataMap.get("caseSummaryList") != null) {
+            newCaseSummaryList.addAll((List) caseDataMap.get("caseSummaryList"));
+        }
+
+        caseDataMap.put("caseSummaryList", newCaseSummaryList);
+        caseDataMap.remove("caseSummaryListLA");
+    }
+
     public Map<String, Object> moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(CaseData caseData) {
         List<Element<CaseSummary>> caseSummaryListLA = caseData.getHearingDocuments().getCaseSummaryList().stream()
             .filter(cs -> YesNo.YES.getValue().equals(cs.getValue().getHasConfidentialAddress()))
@@ -74,6 +90,42 @@ public class MigrateCaseService {
         ret.put("caseSummaryListLA", caseSummaryListLA);
         ret.put("caseSummaryList", newCaseSummaryList);
         return ret;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void rollbackMigratePositionStatementChild(CaseDetails caseDetails) {
+        Map<String, Object> caseDataMap = caseDetails.getData();
+
+        List<Element<PositionStatementChild>> newPositionStatementChilds = new ArrayList<>();
+
+        if (caseDataMap.get("posStmtChildListLA") != null) {
+            newPositionStatementChilds.addAll((List) caseDataMap.get("posStmtChildListLA"));
+        }
+        if (caseDataMap.get("posStmtChildList") != null) {
+            newPositionStatementChilds.addAll((List) caseDataMap.get("posStmtChildList"));
+        }
+
+        caseDetails.getData().put("positionStatementChildListV2", newPositionStatementChilds);
+        caseDetails.getData().remove("posStmtChildListLA");
+        caseDetails.getData().remove("posStmtChildList");
+    }
+
+    @SuppressWarnings("unchecked")
+    public void rollbackMigratePositionStatementRespondent(CaseDetails caseDetails) {
+        Map<String, Object> caseDataMap = caseDetails.getData();
+
+        List<Element<PositionStatementRespondent>> newPositionStatementRespondents = new ArrayList<>();
+
+        if (caseDataMap.get("posStmtRespListLA") != null) {
+            newPositionStatementRespondents.addAll((List) caseDataMap.get("posStmtRespListLA"));
+        }
+        if (caseDataMap.get("posStmtRespList") != null) {
+            newPositionStatementRespondents.addAll((List) caseDataMap.get("posStmtRespList"));
+        }
+
+        caseDetails.getData().put("positionStatementRespondentListV2", newPositionStatementRespondents);
+        caseDetails.getData().remove("posStmtRespListLA");
+        caseDetails.getData().remove("posStmtRespList");
     }
 
     @SuppressWarnings("squid:CallToDeprecatedMethod")
@@ -375,6 +427,24 @@ public class MigrateCaseService {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, GateKeeping order - Urgent hearing order %s not found",
                 migrationId, caseData.getId(), fileName));
+        }
+    }
+
+    public void verifyUrgentDirectionsOrderExists(CaseData caseData, String migrationId, UUID documentId) {
+        if (caseData.getUrgentDirectionsOrder() == null || isEmpty(caseData.getUrgentDirectionsOrder())) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, GateKeeping order - Urgent directions order not found",
+                migrationId, caseData.getId()));
+        }
+
+        String caseDocumentUrl = caseData.getUrgentDirectionsOrder().getDocument().getUrl();
+
+        if (!documentId
+            .equals(UUID.fromString(caseDocumentUrl.substring(caseDocumentUrl.length() - 36)))) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s},"
+                + " GateKeeping order - Urgent directions order document with Id %s not found",
+                migrationId, caseData.getId(), documentId));
         }
     }
 
@@ -800,7 +870,42 @@ public class MigrateCaseService {
         return ret;
     }
 
-    public Map<String, Object> migrateCorrespondenceDocuments(CaseData caseData) {
+    public Map<String, Object> migrateSkeletonArgumentList(CaseData caseData) {
+        List<Element<SkeletonArgument>> skeletonArgumentList =
+            caseData.getHearingDocuments().getSkeletonArgumentList().stream()
+                .filter(skeletonArgument ->
+                    YesNo.NO.getValue().equals(skeletonArgument.getValue().getHasConfidentialAddress()))
+                .collect(toList());
+
+        List<Element<SkeletonArgument>> skeletonArgumentListLA =
+            caseData.getHearingDocuments().getSkeletonArgumentList().stream()
+                .filter(skeletonArgument ->
+                    YesNo.YES.getValue().equals(skeletonArgument.getValue().getHasConfidentialAddress()))
+                .collect(toList());
+
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("skeletonArgumentList", skeletonArgumentList);
+        ret.put("skeletonArgumentListLA", skeletonArgumentListLA);
+        return ret;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void rollbackMigratedSkeletonArgumentList(CaseDetails caseDetails) {
+        Map<String, Object> caseDataMap = caseDetails.getData();
+
+        List<Element<SkeletonArgument>> skeletonArgumentList = new ArrayList<>();
+        if (caseDataMap.get("skeletonArgumentList") != null) {
+            skeletonArgumentList.addAll((List) caseDataMap.get("skeletonArgumentList"));
+        }
+        if (caseDataMap.get("skeletonArgumentListLA") != null) {
+            skeletonArgumentList.addAll((List) caseDataMap.get("skeletonArgumentListLA"));
+        }
+
+        caseDataMap.put("skeletonArgumentList", skeletonArgumentList);
+        caseDataMap.remove("skeletonArgumentListLA");
+    }
+  
+      public Map<String, Object> migrateCorrespondenceDocuments(CaseData caseData) {
         List<Element<ManagedDocument>> correspondenceDocList =
             Stream.of(caseData.getCorrespondenceDocuments(),
                     caseData.getCorrespondenceDocumentsLA(),
