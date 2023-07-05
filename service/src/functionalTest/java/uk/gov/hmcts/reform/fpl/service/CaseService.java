@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.RestAssured;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.rest.SerenityRest;
@@ -32,7 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseService {
-    private final String previewFpl = "https://fpl-case-service-pr-3784.service.core-compute-preview.internal";
+    private final String previewFpl = "https://fpl-case-service-pr-3784.preview.platform.hmcts.net";
     private final String aatFpl = "http://fpl-case-service-aat.service.core-compute-aat.internal";
     private final ObjectMapper objectMapper;
     private final CaseConverter caseConverter;

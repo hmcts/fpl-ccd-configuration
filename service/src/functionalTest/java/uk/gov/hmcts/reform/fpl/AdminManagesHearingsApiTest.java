@@ -4,6 +4,8 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.fpl.enums.C29ActionsPermitted;
 import uk.gov.hmcts.reform.fpl.enums.EnglandOffices;
+import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.PlacedUnderOrder;
 import uk.gov.hmcts.reform.fpl.model.CallbackResponse;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -54,35 +56,19 @@ public class AdminManagesHearingsApiTest extends AbstractApiTest {
 
     public void parametrizedTests(String inputFileDirectory) {
         startingCaseData = createCase(INPUT_FILE, LA_SWANSEA_USER_1);
-        CaseData caseData = callAboutToSubmit(startingCaseData);
+        callAboutToSubmit(startingCaseData);
     }
 
-    private CaseData callAboutToSubmit(CaseData caseData) {
+    private void callAboutToSubmit(CaseData caseData) {
         CaseData updatedCase = caseData.toBuilder()
+            .hearingOption(HearingOptions.NEW_HEARING)
+            .hearingType(HearingType.CASE_MANAGEMENT)
             .build();
 
         CallbackResponse response = callback(updatedCase, COURT_ADMIN, "manage-hearings/about-to-submit");
-/*
-        GeneratedOrder order = unwrapElements(response.getCaseData().getOrderCollection()).get(0);
 
-        String actualOrderContent = documentService.getPdfContent(order.getDocument(), COURT_ADMIN);
+        assertThat(response.getCaseData().getHearingDetails()).doesNotContainNull();
 
-        String ordinalSuffix = getDayOfMonthSuffix(todaysDate.getDayOfMonth());
-
-        String expectedOrderContent = readString(outputFilePath,
-            Map.of(
-                "id", formatCCDCaseNumber(caseData.getId()),
-                "issueDate", formatLocalDateToString(todaysDate, DATE),
-                "dateSuffix", formatLocalDateBaseUsingFormat(todaysDate,
-                    format(DATE_WITH_ORDINAL_SUFFIX, ordinalSuffix)),
-                "oneYearLaterTodaySuffix", formatLocalDateBaseUsingFormat(todaysDate.plusYears(1),
-                    format(DATE_WITH_ORDINAL_SUFFIX, ordinalSuffix)),
-                "dateTimeAt", formatLocalDateTimeBaseUsingFormat(currentDateTime, DATE_TIME_AT),
-                "dateTimeComma", formatLocalDateTimeBaseUsingFormat(currentDateTime, DATE_TIME)
-            ));
-
-        assertThat(actualOrderContent).isEqualToNormalizingWhitespace(expectedOrderContent);
-*/
-        return response.getCaseData();
+        var test = response.getCaseData();
     }
 }

@@ -267,8 +267,6 @@ public class ManageHearingsController extends CallbackController {
         return respond(caseDetails);
     }
 
-
-
     @PostMapping("/validate-hearing-dates/mid-event")
     public CallbackResponse validateHearingDatesMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
