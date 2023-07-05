@@ -40,8 +40,8 @@ public class MigrateCaseController extends CallbackController {
     private final DfjAreaLookUpService dfjAreaLookUpService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1359", this::run1359,
-        "DFPL-1401", this::run1401,
+        "DFPL-1493", this::run1493,
+        "DFPL-1493Rollback", this::run1493Rollback,
         "DFPL-1451", this::run1451,
         "DFPL-1466", this::run1466,
         "DFPL-1501", this::run1616,
@@ -69,18 +69,6 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
-    }
-
-    private void run1359(CaseDetails caseDetails) {
-        migrateCaseService.doDocumentViewNCCheck(caseDetails.getId(), "DFPL-1359", caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(getCaseData(caseDetails)));
-    }
-
-    private void run1401(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1401";
-        var possibleCaseIds = List.of(1666959378667166L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        caseDetails.getData().put("relatingLA", "NCC");
     }
 
     private void run1451(CaseDetails caseDetails) {
@@ -162,4 +150,16 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put("sendToCtsc", "Yes");
     }
 
+    private void run1493(CaseDetails caseDetails) {
+        caseDetails.getData().putAll(migrateCaseService.migrateApplicationDocumentsToCarePlanList(
+            getCaseData(caseDetails)));
+        caseDetails.getData().putAll(migrateCaseService.migrateApplicationDocumentsToDocumentsFiledOnIssueList(
+            getCaseData(caseDetails)));
+        caseDetails.getData().putAll(migrateCaseService.migrateApplicationDocumentsToThresholdList(
+            getCaseData(caseDetails)));
+    }
+
+    private void run1493Rollback(CaseDetails caseDetails) {
+        migrateCaseService.rollbackApplicationDocuments(caseDetails);
+    }
 }
