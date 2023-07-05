@@ -89,6 +89,42 @@ public class MigrateCaseService {
         return ret;
     }
 
+    @SuppressWarnings("unchecked")
+    public void rollbackMigratePositionStatementChild(CaseDetails caseDetails) {
+        Map<String, Object> caseDataMap = caseDetails.getData();
+
+        List<Element<PositionStatementChild>> newPositionStatementChilds = new ArrayList<>();
+
+        if (caseDataMap.get("posStmtChildListLA") != null) {
+            newPositionStatementChilds.addAll((List) caseDataMap.get("posStmtChildListLA"));
+        }
+        if (caseDataMap.get("posStmtChildList") != null) {
+            newPositionStatementChilds.addAll((List) caseDataMap.get("posStmtChildList"));
+        }
+
+        caseDetails.getData().put("positionStatementChildListV2", newPositionStatementChilds);
+        caseDetails.getData().remove("posStmtChildListLA");
+        caseDetails.getData().remove("posStmtChildList");
+    }
+
+    @SuppressWarnings("unchecked")
+    public void rollbackMigratePositionStatementRespondent(CaseDetails caseDetails) {
+        Map<String, Object> caseDataMap = caseDetails.getData();
+
+        List<Element<PositionStatementRespondent>> newPositionStatementRespondents = new ArrayList<>();
+
+        if (caseDataMap.get("posStmtRespListLA") != null) {
+            newPositionStatementRespondents.addAll((List) caseDataMap.get("posStmtRespListLA"));
+        }
+        if (caseDataMap.get("posStmtRespList") != null) {
+            newPositionStatementRespondents.addAll((List) caseDataMap.get("posStmtRespList"));
+        }
+
+        caseDetails.getData().put("positionStatementRespondentListV2", newPositionStatementRespondents);
+        caseDetails.getData().remove("posStmtRespListLA");
+        caseDetails.getData().remove("posStmtRespList");
+    }
+
     @SuppressWarnings("squid:CallToDeprecatedMethod")
     public Map<String, Object> migratePositionStatementChild(CaseData caseData) {
         List<Element<PositionStatementChild>> posStmtChildListLA = caseData.getHearingDocuments()
@@ -388,6 +424,24 @@ public class MigrateCaseService {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, GateKeeping order - Urgent hearing order %s not found",
                 migrationId, caseData.getId(), fileName));
+        }
+    }
+
+    public void verifyUrgentDirectionsOrderExists(CaseData caseData, String migrationId, UUID documentId) {
+        if (caseData.getUrgentDirectionsOrder() == null || isEmpty(caseData.getUrgentDirectionsOrder())) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, GateKeeping order - Urgent directions order not found",
+                migrationId, caseData.getId()));
+        }
+
+        String caseDocumentUrl = caseData.getUrgentDirectionsOrder().getDocument().getUrl();
+
+        if (!documentId
+            .equals(UUID.fromString(caseDocumentUrl.substring(caseDocumentUrl.length() - 36)))) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s},"
+                + " GateKeeping order - Urgent directions order document with Id %s not found",
+                migrationId, caseData.getId(), documentId));
         }
     }
 
