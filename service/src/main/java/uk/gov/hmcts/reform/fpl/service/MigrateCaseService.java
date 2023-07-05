@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
+import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -32,12 +33,14 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
@@ -795,5 +798,49 @@ public class MigrateCaseService {
         ret.put("respStmtListCTSC", respStmtListCTSC);
         ret.put("respondentStatements", null);
         return ret;
+    }
+
+    public Map<String, Object> migrateCorrespondenceDocuments(CaseData caseData) {
+        List<Element<ManagedDocument>> correspondenceDocList =
+            Stream.of(caseData.getCorrespondenceDocuments(),
+                    caseData.getCorrespondenceDocumentsLA(),
+                    caseData.getCorrespondenceDocumentsSolicitor())
+                .flatMap(Collection::stream)
+                .filter(bundleElement -> !bundleElement.getValue().isConfidentialDocument())
+                .map(bundleElement ->
+                    element(bundleElement.getId(),
+                        ManagedDocument.builder().document(bundleElement.getValue().getDocument()).build()))
+                .collect(toList());
+
+        List<Element<ManagedDocument>> correspondenceDocListLA =
+            Stream.of(caseData.getCorrespondenceDocumentsLA(),
+                    caseData.getCorrespondenceDocumentsSolicitor())
+                .flatMap(Collection::stream)
+                .filter(bundleElement -> bundleElement.getValue().isConfidentialDocument())
+                .map(bundleElement ->
+                    element(bundleElement.getId(),
+                        ManagedDocument.builder().document(bundleElement.getValue().getDocument()).build()))
+                .collect(toList());
+
+
+        List<Element<ManagedDocument>> correspondenceDocListCTSC =
+            caseData.getCorrespondenceDocuments().stream()
+                .filter(bundleElement -> bundleElement.getValue().isConfidentialDocument())
+                .map(bundleElement ->
+                    element(bundleElement.getId(),
+                        ManagedDocument.builder().document(bundleElement.getValue().getDocument()).build()))
+                .collect(toList());
+
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("correspondenceDocList", correspondenceDocList);
+        ret.put("correspondenceDocListLA", correspondenceDocListLA);
+        ret.put("correspondenceDocListCTSC", correspondenceDocListCTSC);
+        return ret;
+    }
+
+    public void rollbackMigrateCorrespondenceDocuments(CaseDetails caseDetails) {
+        caseDetails.getData().remove("correspondenceDocList");
+        caseDetails.getData().remove("correspondenceDocListLA");
+        caseDetails.getData().remove("correspondenceDocListCTSC");
     }
 }

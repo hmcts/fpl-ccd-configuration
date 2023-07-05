@@ -701,8 +701,11 @@ public class CaseData extends CaseDataParent {
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA; //general evidence
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsSolicitor; //general evidence
     private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
+    @Deprecated(since = "DFPL-1438")
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
+    @Deprecated(since = "DFPL-1438")
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA;
+    @Deprecated(since = "DFPL-1438")
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsSolicitor;
     private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
     private final List<Element<CourtAdminDocument>> otherCourtAdminDocuments;
@@ -756,10 +759,12 @@ public class CaseData extends CaseDataParent {
         return defaultIfNull(manageDocumentsCourtBundle, new ArrayList<>());
     }
 
+    @Deprecated(since = "DFPL-1438")
     public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocuments() {
         return defaultIfNull(correspondenceDocuments, new ArrayList<>());
     }
 
+    @Deprecated(since = "DFPL-1438")
     public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocumentsSolicitor() {
         return defaultIfNull(correspondenceDocumentsSolicitor, new ArrayList<>());
     }
