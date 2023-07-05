@@ -107,7 +107,7 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
         migrateCaseService.verifyUrgentDirectionsOrderExists(caseData, migrationId, documentId);
-        caseDetails.getData().put("urgentDirectionsOrder", "");
+        caseDetails.getData().remove("urgentDirectionsOrder");
     }
 
     private void run1616(CaseDetails caseDetails) {
@@ -117,7 +117,7 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
         migrateCaseService.verifyUrgentDirectionsOrderExists(caseData, migrationId, documentId);
-        caseDetails.getData().put("urgentDirectionsOrder", "");
+        caseDetails.getData().remove("urgentDirectionsOrder");
     }
 
     private void run1124(CaseDetails caseDetails) {
