@@ -464,5 +464,15 @@
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "applicationDocuments",
+    "Label": "Documents",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Documents",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
