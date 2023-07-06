@@ -144,4 +144,19 @@ class OrdersNeededControllerTest extends AbstractCallbackTest {
 
         assertThat((Map<String, Object>) response.getData().get("groundsForEducationSupervisionOrder")).isNullOrEmpty();
     }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldSetCaseManagementLocation() {
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent("fixtures/case.json");
+        //assertThat(response.getData().get("caseManagementLocation")).isEqualTo("NO");
+
+        // court code (344) is defined by application-integration-test.yaml (by LOCAL_AUTHORITY_3_USER_EMAIL)
+        // epimms id is defined in courts.json by looking up court code 344
+        @SuppressWarnings("unchecked")
+        Map<String, String> caseManagementLocation = (Map<String, String>)
+            response.getData().get("caseManagementLocation");
+        assertThat(caseManagementLocation).containsEntry("baseLocation", "234946");
+        assertThat(caseManagementLocation).containsEntry("region", "7");
+    }
 }
