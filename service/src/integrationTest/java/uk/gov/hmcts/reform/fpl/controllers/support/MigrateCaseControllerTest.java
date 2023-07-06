@@ -145,7 +145,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             CaseData caseData = CaseData.builder()
                 .id(12345L)
                 .court(new Court(RCJ_HIGH_COURT_NAME, "highcourt@email.com", RCJ_HIGH_COURT_CODE,
-                    RCJ_HIGH_COURT_REGION, null))
+                    RCJ_HIGH_COURT_REGION, null, null, null))
                 .sendToCtsc("No")
                 .build();
 
@@ -160,7 +160,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         void shouldThrowExceptionWhenAlreadySendingToCtsc() {
             CaseData caseData = CaseData.builder()
                 .id(12345L)
-                .court(new Court("Name", "court@email.com", "001", "Region", null))
+                .court(new Court("Name", "court@email.com", "001", "Region", null, null, null))
                 .sendToCtsc("Yes")
                 .build();
 
@@ -175,7 +175,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         void shouldMigrateCaseIfInNormalCourtAndNotSendingToCtsc() {
             CaseData caseData = CaseData.builder()
                 .id(12345L)
-                .court(new Court("Name", "court@email.com", "001", "Region", null))
+                .court(new Court("Name", "court@email.com", "001", "Region", null, null, null))
                 .sendToCtsc("No")
                 .build();
 
