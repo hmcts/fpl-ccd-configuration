@@ -1007,7 +1007,6 @@ public class MigrateCaseService {
                     .build()))
                 .collect(toList());
 
-
         Map<String, Object> ret = new HashMap<>();
         ret.put(newFieldName, newDocList);
         ret.put(newFieldName + "LA", newDocListLA);
