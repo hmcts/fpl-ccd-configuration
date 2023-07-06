@@ -1059,6 +1059,7 @@ public class CaseData extends CaseDataParent {
         return hearingEndDate.isBefore(LocalDateTime.now()) || hearingStartDate.isBefore(LocalDateTime.now());
     }
 
+    @Deprecated(since = "DFPL-1438")
     private final List<Element<ApplicationDocument>> applicationDocuments;
     private final String applicationDocumentsToFollowReason;
 
