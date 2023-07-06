@@ -927,7 +927,6 @@ public class MigrateCaseService {
                         ManagedDocument.builder().document(bundleElement.getValue().getDocument()).build()))
                 .collect(toList());
 
-
         List<Element<ManagedDocument>> correspondenceDocListCTSC =
             caseData.getCorrespondenceDocuments().stream()
                 .filter(bundleElement -> bundleElement.getValue().isConfidentialDocument())

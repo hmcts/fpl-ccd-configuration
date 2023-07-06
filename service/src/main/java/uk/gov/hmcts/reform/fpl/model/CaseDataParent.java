@@ -78,7 +78,6 @@ public class CaseDataParent {
     protected final List<Element<ManagedDocument>> correspondenceDocListLA;
     protected final List<Element<ManagedDocument>> correspondenceDocListCTSC;
 
-
     @NotNull(message = "Add the grounds for the application", groups = SecureAccommodationGroup.class)
     @Valid
     protected final GroundsForSecureAccommodationOrder groundsForSecureAccommodationOrder;
