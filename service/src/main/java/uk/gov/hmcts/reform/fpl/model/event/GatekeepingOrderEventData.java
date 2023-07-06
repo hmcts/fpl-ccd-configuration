@@ -101,6 +101,7 @@ public class GatekeepingOrderEventData {
         return standardDirections;
     }
 
+    @JsonIgnore
     public boolean isSentToAdmin() {
         return Optional.ofNullable(gatekeepingOrderListOrSendToAdmin)
             .map(value -> value.equals("NO"))
