@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
-import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -38,6 +37,9 @@ import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolic
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_NAME;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_REGION;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOrganisation;
 
@@ -240,43 +242,56 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
     }
 
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Dfpl1124Rollback {
-        final String migrationId = "DFPL-1124Rollback";
-        final Long caseId = 1660300177298257L;
+    class Dfpl1352 {
+
+        private final String migrationId = "DFPL-1352";
 
         @Test
-        void shouldAddDfjAreaAndCourtFiledWhenCourtPresent() {
+        void shouldThrowExceptionWhenInHighCourt() {
             CaseData caseData = CaseData.builder()
-                .id(caseId)
-                .state(State.CASE_MANAGEMENT)
-                .court(Court.builder().code("11").build())
-                .dfjArea("SWANSEA")
+                .id(12345L)
+                .court(new Court(RCJ_HIGH_COURT_NAME, "highcourt@email.com", RCJ_HIGH_COURT_CODE,
+                    RCJ_HIGH_COURT_REGION, null, null, null))
+                .sendToCtsc("No")
                 .build();
 
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId)
-            );
-
-            CaseData updatedCaseData = extractCaseData(response);
-            assertThat(updatedCaseData.getDfjArea()).isNull();
-            assertThat(response.getData().get("swanseaDFJCourt")).isNull();
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-1352, case reference = 12345}, "
+                    + "Skipping migration as case is in the High Court");
         }
 
         @Test
-        void shouldNotFailRollbackWhenDfjAreaNotPresent() {
+        void shouldThrowExceptionWhenAlreadySendingToCtsc() {
             CaseData caseData = CaseData.builder()
-                .id(caseId)
-                .state(State.CASE_MANAGEMENT)
+                .id(12345L)
+                .court(new Court("Name", "court@email.com", "001", "Region", null, null, null))
+                .sendToCtsc("Yes")
+                .build();
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(buildCaseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = DFPL-1352, case reference = 12345}, "
+                    + "Skipping migration as case is already sending to the CTSC");
+        }
+
+        @Test
+        void shouldMigrateCaseIfInNormalCourtAndNotSendingToCtsc() {
+            CaseData caseData = CaseData.builder()
+                .id(12345L)
+                .court(new Court("Name", "court@email.com", "001", "Region", null, null, null))
+                .sendToCtsc("No")
                 .build();
 
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId)
-            );
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
 
-            CaseData updatedCaseData = extractCaseData(response);
-            assertThat(updatedCaseData.getDfjArea()).isNull();
+            assertThat(responseData.getSendToCtsc()).isEqualTo("Yes");
         }
+
     }
 }
