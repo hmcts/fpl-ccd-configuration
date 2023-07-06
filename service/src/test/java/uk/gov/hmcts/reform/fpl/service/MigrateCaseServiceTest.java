@@ -35,6 +35,7 @@ import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -495,6 +496,7 @@ class MigrateCaseServiceTest {
     class RemoveGatekeepingOrderUrgentHearingOrder {
 
         private final long caseId = 1L;
+        private final String fileName = "Test Filname.pdf";
 
         @Test
         void shouldThrowAssertionIfOrderNotFound() {
@@ -504,7 +506,40 @@ class MigrateCaseServiceTest {
 
             assertThrows(AssertionError.class, () ->
                 underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
-                    "test.pdf"));
+                    fileName));
+        }
+
+        @Test
+        void shouldThrowExceptionIfUrgentDirectionIsNullOrEmpty() {
+            UUID documentId = UUID.randomUUID();
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest
+                .verifyUrgentDirectionsOrderExists(caseData, MIGRATION_ID, documentId));
+        }
+
+        @Test
+        void shouldThrowExceptionIfStandardDirectionNotMatching() {
+            UUID document1Id = UUID.randomUUID();
+            String document2Url = "http://dm-store-prod.service.core-compute-prod.internal/documents/"
+                + UUID.randomUUID();
+            DocumentReference documentReference = DocumentReference.builder()
+                .url(document2Url)
+                .filename("Test Document")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .urgentDirectionsOrder(
+                    StandardDirectionOrder.builder()
+                        .orderDoc(documentReference)
+                        .build())
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest
+                .verifyUrgentDirectionsOrderExists(caseData, MIGRATION_ID, document1Id));
         }
 
         @Test
@@ -518,7 +553,7 @@ class MigrateCaseServiceTest {
 
             assertThrows(AssertionError.class, () ->
                 underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
-                    "test.pdf"));
+                    fileName));
         }
 
         @Test
@@ -1292,7 +1327,7 @@ class MigrateCaseServiceTest {
                     + "or missing target invalid order type [EDUCATION_SUPERVISION__ORDER]");
         }
     }
-    
+
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class RemoveJudicialMessage {
