@@ -68,6 +68,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith({MockitoExtension.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -1332,7 +1333,7 @@ class MigrateCaseServiceTest {
                     + "or missing target invalid order type [EDUCATION_SUPERVISION__ORDER]");
         }
     }
-
+    
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class RemoveJudicialMessage {
@@ -1705,6 +1706,36 @@ class MigrateCaseServiceTest {
 
     @Nested
     class CaseFileViewMigrations {
+
+        private Element<CourtBundle> buildCourtBundle() {
+            return element(
+                    CourtBundle.builder()
+                        .document(testDocumentReference())
+                        .confidential(List.of(""))
+                        .hasConfidentialAddress(YesNo.NO.getValue())
+                        .uploadedBy("LA")
+                        .build());
+        }
+
+        private Element<CourtBundle> buildCTSCCourtBundle() {
+            return element(
+                CourtBundle.builder()
+                    .document(testDocumentReference())
+                    .confidential(List.of("CONFIDENTIAL"))
+                    .hasConfidentialAddress(YesNo.YES.getValue())
+                    .uploadedBy("HMCTS")
+                    .build());
+        }
+
+        private Element<CourtBundle> buildLACourtBundle() {
+            return element(
+                CourtBundle.builder()
+                    .document(testDocumentReference())
+                    .confidential(List.of("CONFIDENTIAL"))
+                    .hasConfidentialAddress(YesNo.YES.getValue())
+                    .uploadedBy("LA")
+                    .build());
+        }
 
         @Test
         void shouldMigratePositionStatementChild() {
@@ -2126,6 +2157,109 @@ class MigrateCaseServiceTest {
                 .isNull();
             assertThat(caseDetails.getData()).extracting(format("posStmt%sListLA", isChild ? "Child" : "Resp"))
                 .isNull();
+        }
+
+        @Test
+        void nonConfidentialCourtBundlesShouldRemainInCourtBundleList() {
+            UUID hearingId = UUID.randomUUID();
+
+            Element<HearingCourtBundle> courtBundleOne = element(hearingId, HearingCourtBundle.builder()
+                    .courtBundle(List.of(buildCourtBundle())).build());
+
+            Element<HearingCourtBundle> courtBundleTwo = element(hearingId, HearingCourtBundle.builder()
+                .courtBundle(List.of(buildCourtBundle())).build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(List.of(courtBundleOne, courtBundleTwo)).build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateCourtBundle(caseData);
+            assertThat(updatedFields).extracting("courtBundleListLA").asList().isEmpty();
+            assertThat(updatedFields).extracting("courtBundleListCTSC").asList().isEmpty();
+            assertThat(updatedFields).extracting("courtBundleListV2").asList().size().isEqualTo(2);
+            assertThat(updatedFields).extracting("courtBundleListV2").asList().contains(courtBundleOne, courtBundleTwo);
+        }
+
+        @Test
+        void confidentialCourtBundlesUploadedByCTSCShouldGoIntoCourtBundleListCTSC() {
+            UUID hearingId = UUID.randomUUID();
+
+            Element<HearingCourtBundle> confidentialBundle = element(hearingId, HearingCourtBundle.builder()
+                .courtBundle(List.of(buildCTSCCourtBundle())).build());
+
+            Element<HearingCourtBundle> confidentialBundleTwo = element(hearingId, HearingCourtBundle.builder()
+                .courtBundle(List.of(buildCTSCCourtBundle())).build());
+
+            Element<HearingCourtBundle> nonConfidentialBundle = element(hearingId, HearingCourtBundle.builder()
+                .courtBundle(List.of(buildCourtBundle())).build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(List.of(confidentialBundle,
+                        confidentialBundleTwo, nonConfidentialBundle)).build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateCourtBundle(caseData);
+            assertThat(updatedFields).extracting("courtBundleListLA").asList().isEmpty();
+            assertThat(updatedFields).extracting("courtBundleListCTSC").asList().contains(confidentialBundle,
+                confidentialBundleTwo);
+            assertThat(updatedFields).extracting("courtBundleListV2").asList().contains(nonConfidentialBundle);
+        }
+
+        @Test
+        void confidentialCourtBundlesUploadedByLAShouldGoIntoCourtBundleListLA() {
+            UUID hearingId = UUID.randomUUID();
+
+            Element<HearingCourtBundle> confidentialBundleLA = element(hearingId, HearingCourtBundle.builder()
+                .courtBundle(List.of(buildLACourtBundle())).build());
+
+            Element<HearingCourtBundle> confidentialBundleCTSC = element(hearingId, HearingCourtBundle.builder()
+                .courtBundle(List.of(buildCTSCCourtBundle())).build());
+
+            Element<HearingCourtBundle> nonConfidentialBundle = element(hearingId, HearingCourtBundle.builder()
+                .courtBundle(List.of(buildCourtBundle())).build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(List.of(confidentialBundleLA,
+                        confidentialBundleCTSC, nonConfidentialBundle)).build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateCourtBundle(caseData);
+            assertThat(updatedFields).extracting("courtBundleListLA").asList().contains(confidentialBundleLA);
+            assertThat(updatedFields).extracting("courtBundleListCTSC").asList().contains(confidentialBundleCTSC);
+            assertThat(updatedFields).extracting("courtBundleListV2").asList().contains(nonConfidentialBundle);
+        }
+
+        @Test
+        void courtBundlesShouldBeInSameListAfterRollback() {
+            UUID hearingId = UUID.randomUUID();
+
+            Element<HearingCourtBundle> confidentialBundleLA = element(hearingId, HearingCourtBundle.builder()
+                .courtBundle(List.of(buildLACourtBundle())).build());
+
+            Element<HearingCourtBundle> confidentialBundleCTSC = element(hearingId, HearingCourtBundle.builder()
+                .courtBundle(List.of(buildCTSCCourtBundle())).build());
+
+            Element<HearingCourtBundle> nonConfidentialBundle = element(hearingId, HearingCourtBundle.builder()
+                .courtBundle(List.of(buildCourtBundle())).build());
+
+            Map<String, Object> caseDataMap = new HashMap<String, Object>();
+            caseDataMap.put("courtBundleListV2", List.of(nonConfidentialBundle));
+            caseDataMap.put("courtBundleListLA", List.of(confidentialBundleLA));
+            caseDataMap.put("courtBundleListCTSC", List.of(confidentialBundleCTSC));
+
+            CaseDetails caseDetails = CaseDetails.builder().data(caseDataMap).build();
+
+            underTest.rollbackCourtBundleMigration(caseDetails);
+            assertThat(caseDetails.getData()).doesNotContainKey("courtBundleListLA");
+            assertThat(caseDetails.getData()).doesNotContainKey("courtBundleListCTSC");
+            assertThat(caseDetails.getData()).extracting("courtBundleListV2").asList()
+                .containsExactlyInAnyOrder(nonConfidentialBundle, confidentialBundleLA, confidentialBundleCTSC);
         }
     }
 
