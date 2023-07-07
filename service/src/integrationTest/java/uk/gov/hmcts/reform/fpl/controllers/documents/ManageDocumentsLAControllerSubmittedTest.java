@@ -33,6 +33,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CAFCASS_EMAIL;
@@ -74,6 +75,7 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     @BeforeEach
     void init() {
         givenFplService();
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
     }
 
     // Uploaded by Designated LA
@@ -82,7 +84,6 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     void shouldSendEmailsWhenApplicationDocumentUploadedByDesignatedLA()
         throws NotificationClientException {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
-        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
         postSubmittedEvent(buildCallbackRequestForAddingApplicationDocument());
         verifySendingNotification(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
@@ -101,7 +102,6 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     void shouldSendEmailsWhenConfidentialRespondentStatementUploadedByDesignatedLA()
         throws NotificationClientException {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
-        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
         postSubmittedEvent(buildCallbackRequestForAddingRespondentStatement(true));
         verifySendingNotification(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
@@ -115,7 +115,6 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     void shouldSendEmailsWhenNonConfidentialRespondentStatementUploadedByDesignatedLA()
         throws NotificationClientException {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
-        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
         postSubmittedEvent(buildCallbackRequestForAddingRespondentStatement(false));
         verifySendingNotificationToAllParties(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
@@ -127,7 +126,6 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     void shouldSendEmailsWhenConfidentialAnyOtherDocumentUploadedByDesignatedLA()
         throws NotificationClientException {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
-        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
         postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME, true));
         verifySendingNotification(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
@@ -141,7 +139,6 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     void shouldSendEmailsWhenNonConfidentialAnyOtherDocumentUploadedByDesignatedLA()
         throws NotificationClientException {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
-        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
         postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME, false));
         verifySendingNotificationToAllParties(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
@@ -153,7 +150,6 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     void shouldSendEmailsWhenConfidentialAnyOtherDocumentFromHearingsUploadedByDesignatedLA()
         throws NotificationClientException {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
-        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
         postSubmittedEvent(buildCallbackRequestForAddingHearingFurtherEvidenceBundle(true));
         verifySendingNotification(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
@@ -167,7 +163,6 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     void shouldSendEmailsWhenNonConfidentialAnyOtherDocumentFromHearingsUploadedByDesignatedLA()
         throws NotificationClientException {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
-        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
         postSubmittedEvent(buildCallbackRequestForAddingHearingFurtherEvidenceBundle(false));
         verifySendingNotificationToAllParties(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
@@ -190,7 +185,7 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
         postSubmittedEvent(buildCallbackRequestForAddingCourtBundle());
 
-        verify(cafcassNotificationService).sendEmail(isA(CaseData.class),
+        verify(cafcassNotificationService, timeout(1000)).sendEmail(isA(CaseData.class),
             documentReferences.capture(),
             eq(COURT_BUNDLE),
             isA(CourtBundleData.class));
@@ -207,7 +202,6 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     void shouldSendEmailsWhenApplicationDocumentUploadedBySecondaryLA()
         throws NotificationClientException {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
-        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
         postSubmittedEvent(buildCallbackRequestForAddingApplicationDocument());
         verifySendingNotification(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
@@ -245,7 +239,7 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
             .caseDetailsBefore(caseDetailsBefore)
             .build());
 
-        verify(cafcassNotificationService).sendEmail(isA(CaseData.class),
+        verify(cafcassNotificationService, timeout(1000)).sendEmail(isA(CaseData.class),
             documentReferences.capture(),
             eq(COURT_BUNDLE),
             isA(CourtBundleData.class));
@@ -260,7 +254,6 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     void shouldSendEmailsWhenConfidentialRespondentStatementUploadedBySecondaryLA()
         throws NotificationClientException {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
-        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
         postSubmittedEvent(buildCallbackRequestForAddingRespondentStatement(true));
         verifySendingNotification(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
@@ -274,7 +267,6 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     void shouldSendEmailsWhenNonConfidentialRespondentStatementUploadedBySecondaryLA()
         throws NotificationClientException {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
-        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
         postSubmittedEvent(buildCallbackRequestForAddingRespondentStatement(false));
         verifySendingNotificationToAllParties(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
@@ -286,7 +278,6 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     void shouldSendEmailsWhenConfidentialAnyOtherDocumentUploadedBySecondaryLA()
         throws NotificationClientException {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
-        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
         postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME, true));
         verifySendingNotification(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
@@ -300,7 +291,6 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     void shouldSendEmailsWhenNonConfidentialAnyOtherDocumentUploadedBySecondaryLA()
         throws NotificationClientException {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
-        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
         postSubmittedEvent(buildCallbackRequestForAddingAnyOtherDocuments(ANY_OTHER_DOCUMENTS_BUNDLE_NAME, false));
         verifySendingNotificationToAllParties(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
@@ -312,7 +302,6 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     void shouldSendEmailsWhenConfidentialAnyOtherDocumentFromHearingsUploadedBySecondaryLA()
         throws NotificationClientException {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
-        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
         postSubmittedEvent(buildCallbackRequestForAddingHearingFurtherEvidenceBundle(true));
         verifySendingNotification(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
@@ -326,7 +315,6 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
     void shouldSendEmailsWhenNonConfidentialAnyOtherDocumentFromHearingsUploadedBySecondaryLA()
         throws NotificationClientException {
         given(idamClient.getUserDetails(any())).willReturn(UserDetails.builder().build());
-        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
         postSubmittedEvent(buildCallbackRequestForAddingHearingFurtherEvidenceBundle(false));
         verifySendingNotificationToAllParties(notificationClient, DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE,
@@ -349,7 +337,7 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
         postSubmittedEvent(buildCallbackRequestForAddingCourtBundle());
 
-        verify(cafcassNotificationService).sendEmail(isA(CaseData.class),
+        verify(cafcassNotificationService, timeout(1000)).sendEmail(isA(CaseData.class),
             documentReferences.capture(),
             eq(COURT_BUNDLE),
             isA(CourtBundleData.class));

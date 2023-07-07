@@ -24,13 +24,13 @@ import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Must;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MustNot;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.RangeQuery;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static java.math.RoundingMode.UP;
 import static uk.gov.hmcts.reform.fpl.service.search.SearchService.ES_DEFAULT_SIZE;
+import static uk.gov.hmcts.reform.fpl.utils.JobHelper.buildStats;
+import static uk.gov.hmcts.reform.fpl.utils.JobHelper.paginate;
 
 @Slf4j
 @Component
@@ -107,7 +107,7 @@ public class UpdateSummaryCaseDetails implements Job {
             }
         }
 
-        log.info("Job '{}' finished. {}", jobName, buildStats(total, updated, failed));
+        log.info("Job '{}' finished. {}", jobName, buildStats(total, 0, updated, failed));
     }
 
     private boolean shouldUpdate(Map<String, Object> updatedData, CaseData oldData) {
@@ -143,21 +143,5 @@ public class UpdateSummaryCaseDetails implements Job {
             .must(must)
             .mustNot(mustNot.build())
             .build();
-    }
-
-    private int paginate(int total) {
-        return new BigDecimal(total).divide(new BigDecimal(ES_DEFAULT_SIZE), UP).intValue();
-    }
-
-
-    private String buildStats(int total, int updated, int failed) {
-        double percentUpdated = updated * 100.0 / total;
-        double percentFailed = failed * 100.0 / total;
-
-        return String.format("total cases: %1$d, "
-                + "updated cases: %2$d/%1$d (%4$.0f%%), "
-                + "failed cases: %3$d/%1$d (%5$.0f%%)",
-            total, updated, failed, percentUpdated, percentFailed
-        );
     }
 }

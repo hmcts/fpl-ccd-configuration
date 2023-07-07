@@ -45,6 +45,7 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -241,7 +242,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             eq(CASE_ID),
             eq("populateSDO"));
 
-        verify(concurrencyHelper, times(2)).submitEvent(
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2)).submitEvent(
             any(),
             eq(CASE_ID),
             anyMap());
@@ -252,7 +253,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             eq(CASE_ID),
             eq("internal-update-case-summary"));
 
-        verify(concurrencyHelper).submitEvent(
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(
             any(),
             eq(CASE_ID),
             eq(caseSummary("Yes", "Case management", LocalDate.of(2050, 5, 20))));
@@ -353,6 +354,8 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         given(documentConversionService.convertToPdf(noticeOfHearing))
             .willReturn(noticeOfHearing);
+        given(documentConversionService.convertToPdfBytes(noticeOfHearing))
+            .willReturn(NOTICE_OF_HEARING_BINARY);
 
         given(otherRecipientsInbox.getNonSelectedRecipients(
             EMAIL,
@@ -365,7 +368,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .willReturn(new SendLetterResponse(LETTER_1_ID))
             .willReturn(new SendLetterResponse(LETTER_2_ID));
 
-        given(uploadDocumentService.uploadPDF(NOTICE_OF_HEARING_BINARY, noticeOfHearing.getFilename()))
+        given(uploadDocumentService.uploadPDF(NOTICE_OF_HEARING_BINARY, noticeOfHearing.getFilename() + ".pdf"))
             .willReturn(NOTICE_OF_HEARING_DOCUMENT);
         given(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY, COVERSHEET_PDF))
             .willReturn(COVERSHEET_REPRESENTATIVE);
@@ -424,10 +427,10 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             eq(CASE_ID), caseCaptor.capture());
 
         LetterWithPdfsRequest expectedPrintRequest1 = printRequest(CASE_ID, noticeOfHearing,
-            COVERSHEET_REPRESENTATIVE_BINARY, NOTICE_OF_HEARING_BINARY);
+            REPRESENTATIVE_POST.getValue(), COVERSHEET_REPRESENTATIVE_BINARY, NOTICE_OF_HEARING_BINARY);
 
         LetterWithPdfsRequest expectedPrintRequest2 = printRequest(CASE_ID, noticeOfHearing,
-            COVERSHEET_RESPONDENT_BINARY, NOTICE_OF_HEARING_BINARY);
+            RESPONDENT_NOT_REPRESENTED.getParty(), COVERSHEET_RESPONDENT_BINARY, NOTICE_OF_HEARING_BINARY);
 
         SentDocument expectedDocumentSentToRepresentative = documentSent(REPRESENTATIVE_POST.getValue(),
             COVERSHEET_REPRESENTATIVE, NOTICE_OF_HEARING_DOCUMENT, LETTER_1_ID, now());
@@ -782,6 +785,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .caseSummaryHasNextHearing(hasNextHearing)
             .caseSummaryNextHearingType(hearingType)
             .caseSummaryNextHearingDate(hearingDate)
+            .caseSummaryNextHearingDateTime(LocalDateTime.of(hearingDate, LocalTime.of(13, 0, 0)))
             .caseSummaryCourtName(COURT_NAME)
             .caseSummaryLanguageRequirement("No")
             .caseSummaryLALanguageRequirement("No")

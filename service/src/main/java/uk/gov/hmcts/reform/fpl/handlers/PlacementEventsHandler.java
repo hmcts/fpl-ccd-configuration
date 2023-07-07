@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.cafcass.PlacementApplicationCafcassData;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
@@ -114,8 +115,11 @@ public class PlacementEventsHandler {
                     event.getPlacement()
                 );
 
+            Set<DocumentReference> docsToSend = of(event.getPlacement().getApplication());
+            docsToSend.forEach(el -> el.setType(PLACEMENT_APPLICATION.getLabel()));
+
             cafcassNotificationService.sendEmail(caseData,
-                of(event.getPlacement().getApplication()),
+                docsToSend,
                 PLACEMENT_APPLICATION,
                 placementApplicationCafcassData);
         }
@@ -192,8 +196,11 @@ public class PlacementEventsHandler {
                     event.getPlacement()
                 );
 
+            Set<DocumentReference> docsToSend = of(event.getPlacement().getPlacementNotice());
+            docsToSend.forEach(e -> e.setType(PLACEMENT_NOTICE.getLabel()));
+
             cafcassNotificationService.sendEmail(caseData,
-                of(event.getPlacement().getPlacementNotice()),
+                docsToSend,
                 PLACEMENT_NOTICE,
                 placementApplicationCafcassData);
         }

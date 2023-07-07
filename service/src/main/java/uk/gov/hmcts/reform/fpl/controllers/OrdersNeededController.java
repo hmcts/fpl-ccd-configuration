@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,12 +12,16 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.model.DfjAreaCourtMapping;
+import uk.gov.hmcts.reform.fpl.service.CourtLookUpService;
+import uk.gov.hmcts.reform.fpl.service.DfjAreaLookUpService;
 
 import java.util.List;
 import java.util.Map;
@@ -25,6 +30,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Api
+@Slf4j
 @RestController
 @RequestMapping("/callback/orders-needed")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -37,10 +43,12 @@ public class OrdersNeededController extends CallbackController {
         OrderType.CHILD_RECOVERY_ORDER,
         OrderType.REFUSE_CONTACT_WITH_CHILD,
         OrderType.SECURE_ACCOMMODATION_ORDER,
-        OrderType.EDUCATION_SUPERVISION__ORDER);
+        OrderType.EDUCATION_SUPERVISION_ORDER);
     public static final List<String> STANDALONE_ORDER_TYPE_NAME = STANDALONE_ORDER_TYPE.stream().map(OrderType::name)
         .collect(Collectors.toList());
     private final HmctsCourtLookupConfiguration courtLookup;
+    private final CourtLookUpService courtLookUpService;
+    private final DfjAreaLookUpService dfjAreaLookUpService;
 
     @PostMapping("/mid-event")
     @SuppressWarnings("unchecked")
@@ -101,7 +109,7 @@ public class OrdersNeededController extends CallbackController {
                     data.remove("groundsForChildRecoveryOrder");
                 }
 
-                if (!orderTypes.contains(OrderType.EDUCATION_SUPERVISION__ORDER.name())) {
+                if (!orderTypes.contains(OrderType.EDUCATION_SUPERVISION_ORDER.name())) {
                     data.remove("groundsForEducationSupervisionOrder");
                 }
             });
@@ -132,6 +140,19 @@ public class OrdersNeededController extends CallbackController {
             data.put("otherOrderType", "NO");
         }
 
+        if (caseData.getOrders() != null) {
+            String courtCode = caseData.getOrders().getCourt();
+            Optional<Court> lookedUpCourt = courtLookUpService.getCourtByCode(courtCode);
+            if (lookedUpCourt.isPresent()) {
+                data.put("caseManagementLocation", CaseLocation.builder()
+                    .baseLocation(lookedUpCourt.get().getEpimmsId())
+                    .region(lookedUpCourt.get().getRegionId())
+                    .build());
+            } else {
+                log.error("Fail to lookup ePIMMS ID for code: " + courtCode);
+            }
+        }
+
         String courtID = Optional.ofNullable((Map<String, Object>) data.get(ordersFieldName))
             .map(orders -> (String) orders.get("court"))
             .map(Object::toString)
@@ -141,6 +162,10 @@ public class OrdersNeededController extends CallbackController {
 
         if (Objects.nonNull(selectedCourt)) {
             data.put("court", selectedCourt);
+            DfjAreaCourtMapping dfjArea = dfjAreaLookUpService.getDfjArea(selectedCourt.getCode());
+            data.keySet().removeAll(dfjAreaLookUpService.getAllCourtFields());
+            data.put("dfjArea", dfjArea.getDfjArea());
+            data.put(dfjArea.getCourtField(), selectedCourt.getCode());
         }
 
         if (ordersFieldName.equals("ordersSolicitor")) {
@@ -161,6 +186,11 @@ public class OrdersNeededController extends CallbackController {
     }
 
     private Court getCourtSelection(String courtID) {
-        return courtLookup.getCourtByCode(courtID).orElse(null);
+        // This needs to get the court out of the NEW list of courts, the old onboarding way might not have all courts
+        // especially in the lower environments, we should also match the 'Family Court sitting at XYZ' pattern.
+        Optional<Court> court = Optional.ofNullable(courtLookUpService.getCourtByCode(courtID).orElse(null));
+        return court.map(c -> c.toBuilder()
+            .name("Family Court sitting at " + c.getName())
+            .build()).orElse(null);
     }
 }

@@ -165,11 +165,15 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
         givenFplService();
         when(documentConversionService.convertToPdf(any()))
             .thenAnswer(returnsFirstArg());
+        when(documentConversionService.convertToPdfBytes(TRANSLATED_ORDER))
+            .thenReturn(ORDER_BINARY);
+        when(documentConversionService.convertToPdfBytes(ORIGINAL_ORDER))
+            .thenReturn(ORDER_BINARY);
         when(documentDownloadService.downloadDocument(anyString()))
             .thenReturn(ORDER_BINARY);
-        when(uploadDocumentService.uploadPDF(ORDER_BINARY, TRANSLATED_ORDER.getFilename()))
+        when(uploadDocumentService.uploadPDF(ORDER_BINARY, TRANSLATED_ORDER.getFilename() + ".pdf"))
             .thenReturn(ORDER_DOCUMENT);
-        when(uploadDocumentService.uploadPDF(ORDER_BINARY, ORIGINAL_ORDER.getFilename()))
+        when(uploadDocumentService.uploadPDF(ORDER_BINARY, ORIGINAL_ORDER.getFilename() + ".pdf"))
             .thenReturn(ORDER_DOCUMENT_ORIGINAL);
 
         when(documentService.createCoverDocuments(any(), any(), eq(REPRESENTATIVE_POST.getValue()), eq(WELSH)))
@@ -243,10 +247,14 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
         assertThat(printRequest.getAllValues()).usingRecursiveComparison()
             .isEqualTo(List.of(
-                printRequest(CASE_ID, ORIGINAL_ORDER, COVERSHEET_REPRESENTATIVE_BINARY_ENGLISH, ORDER_BINARY),
-                printRequest(CASE_ID, ORIGINAL_ORDER, COVERSHEET_RESPONDENT_BINARY_ENGLISH, ORDER_BINARY),
-                printRequest(CASE_ID, TRANSLATED_ORDER, COVERSHEET_REPRESENTATIVE_BINARY, ORDER_BINARY),
-                printRequest(CASE_ID, TRANSLATED_ORDER, COVERSHEET_RESPONDENT_BINARY, ORDER_BINARY)
+                printRequest(CASE_ID, ORIGINAL_ORDER, REPRESENTATIVE_POST.getValue(),
+                    COVERSHEET_REPRESENTATIVE_BINARY_ENGLISH, ORDER_BINARY),
+                printRequest(CASE_ID, ORIGINAL_ORDER, RESPONDENT_NOT_REPRESENTED.getParty(),
+                    COVERSHEET_RESPONDENT_BINARY_ENGLISH, ORDER_BINARY),
+                printRequest(CASE_ID, TRANSLATED_ORDER, REPRESENTATIVE_POST.getValue(),
+                    COVERSHEET_REPRESENTATIVE_BINARY, ORDER_BINARY),
+                printRequest(CASE_ID, TRANSLATED_ORDER, RESPONDENT_NOT_REPRESENTED.getParty(),
+                    COVERSHEET_RESPONDENT_BINARY, ORDER_BINARY)
             ));
 
         List<Element<SentDocuments>> documentsSent = mapper.convertValue(

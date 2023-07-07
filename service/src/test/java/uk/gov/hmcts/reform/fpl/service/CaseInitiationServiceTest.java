@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.model.DfjAreaCourtMapping;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthorityName;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
@@ -84,6 +85,8 @@ class CaseInitiationServiceTest {
     @Mock
     private HmctsCourtLookupConfiguration courtLookup;
 
+    @Mock
+    private DfjAreaLookUpService dfjAreaLookUpService;
     @Spy
     private DynamicListService dynamicListService = new DynamicListService(new ObjectMapper());
 
@@ -372,6 +375,7 @@ class CaseInitiationServiceTest {
             givenLocalAuthorityExists(userLocalAuthority);
             givenUserInLocalAuthority(userLocalAuthority);
             givenLocalAuthorityCourts(court);
+            givenDfj(court);
 
             final CaseData caseData = givenCaseNotOutsourced();
 
@@ -379,6 +383,8 @@ class CaseInitiationServiceTest {
 
             assertThat(updatedCaseData.getCourt()).isEqualTo(court);
             assertThat(updatedCaseData.getMultiCourts()).isNull();
+            assertThat(updatedCaseData.getDfjArea()).isEqualTo("SWANSEA");
+            assertThat(updatedCaseData.getCourtField()).isEqualTo("swanseaDFJCourt");
         }
 
         @Test
@@ -407,6 +413,7 @@ class CaseInitiationServiceTest {
             givenLocalAuthorityExists(outsourcingLocalAuthority);
             givenUserInLocalAuthority(userLocalAuthority);
             givenLocalAuthorityCourts(court);
+            givenDfj(court);
 
             final CaseData caseData = givenCaseOutsourced(outsourcingLocalAuthority, MLA);
 
@@ -414,6 +421,8 @@ class CaseInitiationServiceTest {
 
             assertThat(updatedCaseData.getCourt()).isEqualTo(court);
             assertThat(updatedCaseData.getMultiCourts()).isNull();
+            assertThat(updatedCaseData.getDfjArea()).isEqualTo("SWANSEA");
+            assertThat(updatedCaseData.getCourtField()).isEqualTo("swanseaDFJCourt");
         }
 
         @Test
@@ -656,6 +665,16 @@ class CaseInitiationServiceTest {
             assertThat(underTest.getOrganisationUsers()).isEqualTo("No users found");
         }
     }
+
+    private void givenDfj(Court court) {
+        given(dfjAreaLookUpService.getDfjArea(court.getCode()))
+            .willReturn(DfjAreaCourtMapping.builder()
+                .courtCode(court.getCode())
+                .courtField("swanseaDFJCourt")
+                .dfjArea("SWANSEA")
+                .build());
+    }
+
 
     private void givenLocalAuthorityCourts(Court... courts) {
         given(courtLookup.getCourts(any())).willReturn(Arrays.asList(courts));

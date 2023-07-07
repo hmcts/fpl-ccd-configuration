@@ -185,6 +185,15 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseSummaryNextHearingDateTime",
+    "Label": "Date",
+    "FieldType": "DateTime",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseSummaryNextHearingJudge",
     "Label": "Judge",
     "FieldType": "Text",

@@ -26,7 +26,8 @@
     "Name": "Update case summary",
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Publish": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -102,6 +103,7 @@
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
+    "ShowEventNotes": "Y",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/render-documents/about-to-submit"
   },
   {
@@ -134,7 +136,8 @@
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/about-to-submit",
-    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/submitted"
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/submitted",
+    "RetriesTimeoutURLSubmittedEvent": "0"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -147,6 +150,7 @@
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
+    "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-note/about-to-submit"
   },
@@ -160,6 +164,7 @@
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
+    "ShowEventNotes": "Y",
     "ShowSummary": "N",
     "EndButtonLabel": "Save and continue"
   },
@@ -176,6 +181,7 @@
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-extension/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-summary/submitted",
     "SecurityClassification": "Public",
+    "ShowEventNotes": "Y",
     "ShowSummary": "Y",
     "EndButtonLabel": "Save and continue"
   },
@@ -226,6 +232,23 @@
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-additional-applications/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-additional-applications/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-additional-applications/submitted",
+    "RetriesTimeoutURLSubmittedEvent": "0",
+    "Publish": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "reviewAdditionalApplication",
+    "Name": "Review additional application",
+    "Description": "Judges to review uploaded additional application",
+    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
+    "PostConditionState": "*",
+    "SecurityClassification": "Public",
+    "ShowSummary": "Y",
+    "ShowEventNotes": "Y",
+    "EndButtonLabel": "Save and continue",
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/review-additional-application/about-to-start",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/review-additional-application/about-to-submit",
     "RetriesTimeoutURLSubmittedEvent": "0"
   },
   {
@@ -240,6 +263,7 @@
     "SecurityClassification": "Public",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/statement-of-service/about-to-start",
     "ShowSummary": "Y",
+    "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue"
   },
   {
@@ -272,6 +296,7 @@
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
+    "Publish": "Y",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/submitted"
   },
   {
@@ -493,7 +518,9 @@
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
+    "Publish": "Y",
     "EndButtonLabel": "Save and continue",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/submitted"
   },
   {
@@ -508,6 +535,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
+    "Publish": "Y",
     "EndButtonLabel": "Save and continue"
   },
   {
@@ -526,7 +554,8 @@
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/placement/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/placement/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/placement/submitted",
-    "RetriesTimeoutURLSubmittedEvent": "0"
+    "RetriesTimeoutURLSubmittedEvent": "0",
+    "Publish": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -759,6 +788,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
     "ShowEventNotes": "Y",
+    "Publish": "Y",
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-hearings/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-hearings/about-to-submit",
@@ -777,7 +807,8 @@
     "ShowSummary": "Y",
     "ShowEventNotes": "Y",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-draft-orders/about-to-submit",
-    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-draft-orders/submitted"
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-draft-orders/submitted",
+    "Publish": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -844,6 +875,7 @@
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
+    "Publish": "Y",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/message-judge/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/message-judge/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/message-judge/submitted"
@@ -861,6 +893,7 @@
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
+    "Publish": "Y",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/reply-message-judge/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/reply-message-judge/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/reply-message-judge/submitted",
@@ -949,7 +982,8 @@
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-local-authorities/submitted",
     "EndButtonLabel": "Save and continue",
     "ShowSummary": "Y",
-    "ShowEventNotes": "N"
+    "ShowEventNotes": "N",
+    "Publish": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1045,6 +1079,38 @@
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-progression-report/about-to-submit",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
+    "EndButtonLabel": "Done"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "sendOrderReminder",
+    "Name": "Send order reminder",
+    "Description": "Lets the CTSC send a reminder to the LA to upload an order.",
+    "DisplayOrder": 31,
+    "PreConditionState(s)": "PREPARE_FOR_HEARING;FINAL_HEARING;",
+    "PostConditionState": "*",
+    "SecurityClassification": "Public",
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/send-order-reminder/about-to-start",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/send-order-reminder/about-to-submit",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/send-order-reminder/submitted",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N",
+    "EndButtonLabel": "Send reminder"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "create-work-allocation-task",
+    "Name": "Create work allocation task",
+    "Description": "Creates a task for work allocation",
+    "DisplayOrder": 1000,
+    "PreConditionState(s)": "*",
+    "PostConditionState": "*",
+    "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N",
+    "Publish": "Y",
     "EndButtonLabel": "Done"
   }
 ]

@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -135,6 +136,7 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(actual.getAuthor()).isEqualTo(HMCTS);
         assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
         assertThat(actual.getC2DocumentBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
+        assertThat(actual.getApplicationReviewed()).isEqualTo(YesNo.NO);
 
         assertC2DocumentBundle(actual.getC2DocumentBundle(), supplement, supportingEvidenceBundle);
 

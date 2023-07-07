@@ -7,6 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
+import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApiV2;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRole;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesResource;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
@@ -60,6 +61,9 @@ public abstract class AbstractTest {
 
     @MockBean
     protected CaseAccessDataStoreApi caseAccessApi;
+
+    @MockBean
+    protected CoreCaseDataApiV2 coreCaseDataApi;
 
     @Autowired
     protected DynamicListHelper dynamicLists;

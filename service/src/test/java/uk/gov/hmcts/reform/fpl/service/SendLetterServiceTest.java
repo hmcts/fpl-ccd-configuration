@@ -93,7 +93,7 @@ class SendLetterServiceTest {
 
     @BeforeEach
     void setup() {
-        given(uploadDocumentService.uploadPDF(MAIN_DOCUMENT_BYTES, MAIN_DOCUMENT_REFERENCE.getFilename()))
+        given(uploadDocumentService.uploadPDF(MAIN_DOCUMENT_BYTES, MAIN_DOCUMENT_REFERENCE.getFilename() + ".pdf"))
             .willReturn(UPLOADED_MAIN_DOCUMENT);
         given(uploadDocumentService.uploadPDF(COVER_DOCUMENTS_BYTES.get(0), COVERSHEET_NAME))
             .willReturn(COVERSHEETS.get(0));
@@ -112,6 +112,8 @@ class SendLetterServiceTest {
             .willReturn(testDocmosisDocument(COVER_DOCUMENTS_BYTES.get(1)));
         given(documentConversionService.convertToPdf(MAIN_DOCUMENT_REFERENCE))
             .willReturn(MAIN_DOCUMENT_REFERENCE);
+        given(documentConversionService.convertToPdfBytes(MAIN_DOCUMENT_REFERENCE))
+            .willReturn(MAIN_DOCUMENT_BYTES);
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
     }
 
@@ -121,8 +123,7 @@ class SendLetterServiceTest {
 
         underTest.send(MAIN_DOCUMENT_REFERENCE, RECIPIENTS, CASE_ID, familyCaseNumber, Language.ENGLISH);
 
-        verify(documentDownloadService).downloadDocument(MAIN_DOCUMENT_REFERENCE.getBinaryUrl());
-        verify(uploadDocumentService).uploadPDF(MAIN_DOCUMENT_BYTES, MAIN_DOCUMENT_REFERENCE.getFilename());
+        verify(uploadDocumentService).uploadPDF(MAIN_DOCUMENT_BYTES, MAIN_DOCUMENT_REFERENCE.getFilename() + ".pdf");
         verify(docmosisCoverDocumentsService).createCoverDocuments(familyCaseNumber, CASE_ID, RECIPIENTS.get(0),
             Language.ENGLISH);
         verify(docmosisCoverDocumentsService).createCoverDocuments(familyCaseNumber, CASE_ID, RECIPIENTS.get(1),
@@ -136,11 +137,17 @@ class SendLetterServiceTest {
         assertThat(letterWithPdfsRequestValues.get(0).getDocuments())
             .isEqualTo(List.of(COVER_DOCUMENTS_ENCODED.get(0), MAIN_DOCUMENT_ENCODED));
         assertThat(letterWithPdfsRequestValues.get(0).getAdditionalData())
-            .isEqualTo(Map.of("caseId", CASE_ID, "documentName", MAIN_DOCUMENT_REFERENCE.getFilename()));
+            .isEqualTo(Map.of(
+                "caseId", CASE_ID,
+                "documentName", MAIN_DOCUMENT_REFERENCE.getFilename(),
+                "recipients", List.of(RECIPIENTS.get(0).getFullName())));
         assertThat(letterWithPdfsRequestValues.get(1).getDocuments())
             .isEqualTo(List.of(COVER_DOCUMENTS_ENCODED.get(1), MAIN_DOCUMENT_ENCODED));
         assertThat(letterWithPdfsRequestValues.get(1).getAdditionalData())
-            .isEqualTo(Map.of("caseId", CASE_ID, "documentName", MAIN_DOCUMENT_REFERENCE.getFilename()));
+            .isEqualTo(Map.of(
+                "caseId", CASE_ID,
+                "documentName", MAIN_DOCUMENT_REFERENCE.getFilename(),
+                "recipients", List.of(RECIPIENTS.get(1).getFullName())));
     }
 
     @Test

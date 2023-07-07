@@ -202,10 +202,12 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         givenFplService();
         when(documentDownloadService.downloadDocument(anyString()))
             .thenReturn(ORDER_BINARY);
-        when(uploadDocumentService.uploadPDF(ORDER_BINARY, ORDER.getFilename()))
+        when(uploadDocumentService.uploadPDF(eq(ORDER_BINARY), any()))
             .thenReturn(ORDER_DOCUMENT);
         when(documentConversionService.convertToPdf(ORDER))
             .thenReturn(ORDER);
+        when(documentConversionService.convertToPdfBytes(ORDER))
+            .thenReturn(ORDER_BINARY);
         when(documentService.createCoverDocuments(any(), any(), eq(REPRESENTATIVE_POST.getValue()), any()))
             .thenReturn(DocmosisDocument.builder().bytes(COVERSHEET_REPRESENTATIVE_BINARY).build());
         when(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY, COVERSHEET_PDF))
@@ -242,11 +244,11 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         verify(concurrencyHelper, times(2)).submitEvent(any(), eq(CASE_ID), caseDataDelta.capture());
 
         LetterWithPdfsRequest expectedPrintRequest1 = printRequest(
-            CASE_ID, ORDER, COVERSHEET_REPRESENTATIVE_BINARY, ORDER_BINARY
+            CASE_ID, ORDER, REPRESENTATIVE_POST.getValue(), COVERSHEET_REPRESENTATIVE_BINARY, ORDER_BINARY
         );
 
         LetterWithPdfsRequest expectedPrintRequest2 = printRequest(
-            CASE_ID, ORDER, COVERSHEET_RESPONDENT_BINARY, ORDER_BINARY
+            CASE_ID, ORDER, RESPONDENT_NOT_REPRESENTED.getParty(), COVERSHEET_RESPONDENT_BINARY, ORDER_BINARY
         );
 
         assertThat(printRequest.getAllValues()).usingRecursiveComparison()
@@ -481,11 +483,11 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         }, 2);
 
         LetterWithPdfsRequest expectedPrintRequest1 = printRequest(
-            CASE_ID, ORDER, COVERSHEET_REPRESENTATIVE_BINARY, ORDER_BINARY
+            CASE_ID, ORDER, REPRESENTATIVE_POST.getValue(), COVERSHEET_REPRESENTATIVE_BINARY, ORDER_BINARY
         );
 
         LetterWithPdfsRequest expectedPrintRequest2 = printRequest(
-            CASE_ID, ORDER, COVERSHEET_RESPONDENT_BINARY, ORDER_BINARY
+            CASE_ID, ORDER, RESPONDENT_NOT_REPRESENTED.getParty(), COVERSHEET_RESPONDENT_BINARY, ORDER_BINARY
         );
 
         assertThat(printRequest.getAllValues()).usingRecursiveComparison()

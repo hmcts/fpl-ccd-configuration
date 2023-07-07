@@ -70,14 +70,14 @@ rd_professional:
 
 fees-register:
   api:
-    url: http://localhost:8765
+    url: ${FEES_REGISTER_API_URL:http://localhost:8765}
 
 send-letter:
   url: http://localhost:8765
 
 payment:
   api:
-    url: http://localhost:8765
+    url: ${PAYMENT_API_URL:http://localhost:8765}
 
 manage-case:
   ui:

@@ -23,12 +23,14 @@ import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.CourtBundleUploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
+import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -50,6 +52,7 @@ import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailCon
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 
 @ContextConfiguration(classes = {
     FurtherEvidenceUploadedEventHandler.class, FurtherEvidenceNotificationService.class,
@@ -59,6 +62,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @MockBeans(value = {
     @MockBean(FurtherEvidenceUploadDifferenceCalculator.class),
     @MockBean(TranslationRequestService.class),
+    @MockBean(WorkAllocationTaskService.class),
 })
 class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final Long CASE_ID = 12345L;
@@ -91,6 +95,9 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
 
     @MockBean
     private FeatureToggleService featureToggleService;
+
+    @MockBean
+    private UserService userService;
 
     @Test
     void sendNotificationWhenNewDocumentUploadNotificationToggledOffForLA() {
@@ -177,14 +184,14 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
     }
 
     private static List<Element<RespondentStatement>> buildRespondentStatementsList() {
-        return wrapElements(RespondentStatement.builder()
+        return wrapElementsWithUUIDs(RespondentStatement.builder()
             .respondentName("NAME")
             .respondentId(UUID.randomUUID())
             .supportingEvidenceBundle(buildSupportingEvidenceBundleForRespondentStmt("REP")).build());
     }
 
     private static List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle(String uploadedBy) {
-        return wrapElements(SupportingEvidenceBundle.builder()
+        return wrapElementsWithUUIDs(SupportingEvidenceBundle.builder()
             .name("Non-Confidential Evidence Document 1")
             .uploadedBy(uploadedBy)
             .dateTimeUploaded(LocalDateTime.now())
@@ -194,7 +201,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
 
     private static List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundleForRespondentStmt(
         String uploadedBy) {
-        return wrapElements(SupportingEvidenceBundle.builder()
+        return wrapElementsWithUUIDs(SupportingEvidenceBundle.builder()
             .name("Non-Confidential Respondent Statement")
             .uploadedBy(uploadedBy)
             .dateTimeUploaded(LocalDateTime.now())
