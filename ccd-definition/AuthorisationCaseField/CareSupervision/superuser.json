@@ -1636,5 +1636,26 @@
     "CaseFieldID": "skeletonArgumentListCTSC",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "courtBundleListV2",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "courtBundleListLA",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "courtBundleListCTSC",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRUD"
   }
 ]

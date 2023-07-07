@@ -124,6 +124,36 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "courtBundleListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingCourtBundle",
+    "Label": "Court bundle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "courtBundleListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingCourtBundle",
+    "Label": "Court bundle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "courtBundleListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingCourtBundle",
+    "Label": "Court bundle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseSummaryList",
     "FieldType": "Collection",
     "FieldTypeParameter": "CaseSummary",

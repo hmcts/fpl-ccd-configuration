@@ -71,6 +71,79 @@ public class MigrateCaseService {
     private final DocumentListService documentListService;
 
     @SuppressWarnings("unchecked")
+    public void rollbackCourtBundleMigration(CaseDetails caseDetails) {
+        Map<String, Object> caseDataMap = caseDetails.getData();
+
+        List<Element<HearingCourtBundle>> newHearingCourtBundleList = new ArrayList<>();
+
+        if (caseDataMap.get("courtBundleListV2") != null) {
+            newHearingCourtBundleList.addAll((List) caseDataMap.get("courtBundleListV2"));
+        }
+        if (caseDataMap.get("courtBundleListLA") != null) {
+            newHearingCourtBundleList.addAll((List) caseDataMap.get("courtBundleListLA"));
+        }
+        if (caseDataMap.get("courtBundleListCTSC") != null) {
+            newHearingCourtBundleList.addAll((List) caseDataMap.get("courtBundleListCTSC"));
+        }
+
+        caseDataMap.put("courtBundleListV2", newHearingCourtBundleList);
+        caseDataMap.remove("courtBundleListLA");
+        caseDataMap.remove("courtBundleListCTSC");
+    }
+
+    public Map<String, Object> migrateCourtBundle(CaseData caseData) {
+        List<Element<HearingCourtBundle>> newHearingCourtBundleList = new ArrayList<>();
+        List<Element<HearingCourtBundle>> hearingCourtBundleListLA = new ArrayList<>();
+        List<Element<HearingCourtBundle>> hearingCourtBundleListCTSC = new ArrayList<>();
+
+        List<Element<HearingCourtBundle>> hearingCourtBundles = caseData.getHearingDocuments().getCourtBundleListV2();
+
+        for (Element<HearingCourtBundle> hearingCourtBundle : hearingCourtBundles) {
+            List<Element<CourtBundle>> newCourtBundleList = hearingCourtBundle.getValue().getCourtBundle().stream()
+                .filter(cs -> !cs.getValue().isConfidentialDocument())
+                .collect(toList());
+
+            List<Element<CourtBundle>> courtBundleListLA = hearingCourtBundle.getValue().getCourtBundle().stream()
+                .filter(cs -> !cs.getValue().isUploadedByHMCTS() && cs.getValue().isConfidentialDocument())
+                .collect(toList());
+
+            List<Element<CourtBundle>> courtBundleListCTSC = hearingCourtBundle.getValue().getCourtBundle().stream()
+                .filter(cs -> cs.getValue().isUploadedByHMCTS() && cs.getValue().isConfidentialDocument())
+                .collect(toList());
+
+            if (!newCourtBundleList.isEmpty()) {
+                Element<HearingCourtBundle> bundle = element(hearingCourtBundle.getId(),
+                    HearingCourtBundle.builder().build());
+                bundle.getValue().setHearing(hearingCourtBundle.getValue().getHearing());
+                bundle.getValue().setCourtBundle(newCourtBundleList);
+                newHearingCourtBundleList.add(bundle);
+            }
+
+            if (!courtBundleListLA.isEmpty()) {
+                Element<HearingCourtBundle> bundle = element(hearingCourtBundle.getId(),
+                    HearingCourtBundle.builder().build());
+                bundle.getValue().setHearing(hearingCourtBundle.getValue().getHearing());
+                bundle.getValue().setCourtBundle(courtBundleListLA);
+                hearingCourtBundleListLA.add(bundle);
+            }
+
+            if (!courtBundleListCTSC.isEmpty()) {
+                Element<HearingCourtBundle> bundle = element(hearingCourtBundle.getId(),
+                    HearingCourtBundle.builder().build());
+                bundle.getValue().setHearing(hearingCourtBundle.getValue().getHearing());
+                bundle.getValue().setCourtBundle(courtBundleListCTSC);
+                hearingCourtBundleListCTSC.add(bundle);
+            }
+        }
+
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("courtBundleListV2", newHearingCourtBundleList);
+        ret.put("courtBundleListLA", hearingCourtBundleListLA);
+        ret.put("courtBundleListCTSC", hearingCourtBundleListCTSC);
+        return ret;
+    }
+
+    @SuppressWarnings("unchecked")
     public void rollbackCaseSummaryMigration(CaseDetails caseDetails) {
         Map<String, Object> caseDataMap = caseDetails.getData();
         List<Element<CaseSummary>> newCaseSummaryList = new ArrayList<>();

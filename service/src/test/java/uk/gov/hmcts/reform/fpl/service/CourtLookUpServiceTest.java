@@ -10,8 +10,10 @@ import uk.gov.hmcts.reform.fpl.model.Court;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_EPIMMS_ID;
 import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_REGION;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_REGION_ID;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, CourtLookUpService.class})
@@ -38,6 +40,8 @@ class CourtLookUpServiceTest {
             Court.builder().code(RCJ_HIGH_COURT_CODE)
                 .name(RCJ_HIGH_COURT_NAME)
                 .region(RCJ_HIGH_COURT_REGION)
+                .regionId(RCJ_HIGH_COURT_REGION_ID)
+                .epimmsId(RCJ_HIGH_COURT_EPIMMS_ID)
                 .build()
         );
     }
