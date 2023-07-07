@@ -318,6 +318,24 @@ public class MigrateCaseService {
         }
     }
 
+    public void verifyUrgentDirectionsOrderExists(CaseData caseData, String migrationId, UUID documentId) {
+        if (caseData.getUrgentDirectionsOrder() == null || isEmpty(caseData.getUrgentDirectionsOrder())) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, GateKeeping order - Urgent directions order not found",
+                migrationId, caseData.getId()));
+        }
+
+        String caseDocumentUrl = caseData.getUrgentDirectionsOrder().getDocument().getUrl();
+
+        if (!documentId
+            .equals(UUID.fromString(caseDocumentUrl.substring(caseDocumentUrl.length() - 36)))) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s},"
+                + " GateKeeping order - Urgent directions order document with Id %s not found",
+                migrationId, caseData.getId(), documentId));
+        }
+    }
+
     public Map<String, Object> removeApplicationDocument(CaseData caseData,
                                                                  String migrationId,
                                                                  UUID expectedApplicationDocumentId) {
