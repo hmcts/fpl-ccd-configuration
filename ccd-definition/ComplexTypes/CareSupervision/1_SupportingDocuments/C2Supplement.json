@@ -1,0 +1,84 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2Supplement",
+    "ListElementCode": "name",
+    "FieldType": "FixedList",
+    "ElementLabel": "Document name",
+    "FieldTypeParameter": "SupplementType",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2Supplement",
+    "ListElementCode": "secureAccommodationType",
+    "FieldType": "FixedRadioList",
+    "ElementLabel": "Which jurisdiction?",
+    "FieldTypeParameter": "SecureAccommodationType",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2Supplement",
+    "ListElementCode": "notes",
+    "FieldType": "TextArea",
+    "ElementLabel": "Notes",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2Supplement",
+    "ListElementCode": "dateTimeUploaded",
+    "FieldType": "DateTime",
+    "ElementLabel": "Date and time uploaded",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2Supplement",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "File",
+    "SecurityClassification": "Public",
+    "RegularExpression": ".doc,.docx,.pdf",
+    "CategoryID": "c2Applications"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2Supplement",
+    "ListElementCode": "uploadedBy",
+    "FieldType": "Text",
+    "ElementLabel": "Uploaded by",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2Supplement",
+    "ListElementCode": "documentAcknowledgeLabel",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Presentational only - used to display a warning label in the event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2Supplement",
+    "ListElementCode": "documentAcknowledgeLabelForCYA",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Presentational only - used to display a warning label in the event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2Supplement",
+    "ListElementCode": "documentAcknowledge",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DocumentAcknowledge",
+    "ElementLabel": "Tick to confirm this document is related to this case",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  }
+]
