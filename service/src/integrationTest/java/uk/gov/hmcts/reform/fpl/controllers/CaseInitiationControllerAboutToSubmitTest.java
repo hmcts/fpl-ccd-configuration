@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.apache.http.HttpStatus.SC_FORBIDDEN;
@@ -74,7 +75,7 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
             .isEqualTo(orgPolicy(organisation.getOrganisationIdentifier(), "[LASOLICITOR]"));
         assertThat(caseDetails.get("court")).isEqualTo(toMap(expectedCourt));
         assertThat(caseDetails.get("dfjArea")).isEqualTo("SWANSEA");
-        assertThat(caseDetails.get("swanseaDFJCourt")).isEqualTo("11");
+        assertThat(caseDetails.get("swanseaDFJCourt")).isEqualTo("344");
         assertThat(caseDetails.get("multiCourt")).isNull();
     }
 
@@ -111,7 +112,7 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
             .isEqualTo(orgPolicy(userOrganisationId, "[EPSMANAGING]"));
         assertThat(caseDetails.get("court")).isEqualTo(toMap(expectedCourt));
         assertThat(caseDetails.get("dfjArea")).isEqualTo("SWANSEA");
-        assertThat(caseDetails.get("swanseaDFJCourt")).isEqualTo("11");
+        assertThat(caseDetails.get("swanseaDFJCourt")).isEqualTo("344");
         assertThat(caseDetails.get("multiCourt")).isNull();
     }
 
@@ -138,7 +139,7 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(caseDetails.get("outsourcingPolicy")).isNull();
         assertThat(caseDetails.get("court")).isEqualTo(toMap(expectedCourt));
         assertThat(caseDetails.get("dfjArea")).isEqualTo("SWANSEA");
-        assertThat(caseDetails.get("swanseaDFJCourt")).isEqualTo("11");
+        assertThat(caseDetails.get("swanseaDFJCourt")).isEqualTo("344");
         assertThat(caseDetails.get("multiCourt")).isNull();
     }
 
@@ -212,4 +213,68 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
             "OrganisationName", orgName
         ), "OrgPolicyCaseAssignedRole", role);
     }
+
+    @Test
+    void shouldAddGlobalSearchTopLevelFields() {
+        givenCurrentUserWithEmail(LOCAL_AUTHORITY_1_USER_EMAIL);
+
+        CaseData caseData = CaseData.builder()
+            .caseName("GlobalSearchTest CaseName")
+            .build();
+
+        Map<String, Object> caseDetails = postAboutToSubmitEvent(caseData).getData();
+
+        // court code (344) is defined by application-integration-test.yaml (by LOCAL_AUTHORITY_3_USER_EMAIL)
+        // epimms id is defined in courts.json by looking up court code 344
+        @SuppressWarnings("unchecked")
+        Map<String,  String> caseManagementLocation = (Map<String, String>)
+            caseDetails.get("caseManagementLocation");
+        assertThat(caseManagementLocation).containsEntry("baseLocation", "234946");
+        assertThat(caseManagementLocation).containsEntry("region", "7");
+
+        @SuppressWarnings("unchecked")
+        Map<String, Map<String, String>> caseManagementCategory = (Map<String, Map<String, String>>)
+            caseDetails.get("caseManagementCategory");
+        assertThat(caseManagementCategory).containsKey("value");
+        Map<String, String> caseManagementCategoryValue =  caseManagementCategory.get("value");
+        assertThat(caseManagementCategoryValue).containsEntry("code", "FPL");
+        assertThat(caseManagementCategoryValue).containsEntry("label", "Family Public Law");
+
+        assertThat(caseManagementCategory).containsKey("list_items");
+        @SuppressWarnings("unchecked")
+        List<Map<String, String>> listItems = (List<Map<String, String>>) caseManagementCategory.get("list_items");
+        assertThat(listItems).contains(Map.of("code", "FPL", "label", "Family Public Law"));
+    }
+
+    @Test
+    void shouldAddGlobalSearchTopLevelFieldsMultiCourtsCase() {
+        givenCurrentUserWithEmail(LOCAL_AUTHORITY_3_USER_EMAIL);
+
+        CaseData caseData = CaseData.builder()
+            .caseName("GlobalSearchTest CaseName")
+            .build();
+
+        Map<String, Object> caseDetails = postAboutToSubmitEvent(caseData).getData();
+
+        // court code (344) is defined by application-integration-test.yaml (by LOCAL_AUTHORITY_3_USER_EMAIL)
+        // epimms id is defined in courts.json by looking up court code 344
+        @SuppressWarnings("unchecked")
+        Map<String,  String> caseManagementLocation = (Map<String, String>)
+            caseDetails.get("caseManagementLocation");
+        assertThat(caseManagementLocation).isNull();
+
+        @SuppressWarnings("unchecked")
+        Map<String, Map<String, String>> caseManagementCategory = (Map<String, Map<String, String>>)
+            caseDetails.get("caseManagementCategory");
+        assertThat(caseManagementCategory).containsKey("value");
+        Map<String, String> caseManagementCategoryValue =  caseManagementCategory.get("value");
+        assertThat(caseManagementCategoryValue).containsEntry("code", "FPL");
+        assertThat(caseManagementCategoryValue).containsEntry("label", "Family Public Law");
+
+        assertThat(caseManagementCategory).containsKey("list_items");
+        @SuppressWarnings("unchecked")
+        List<Map<String, String>> listItems = (List<Map<String, String>>) caseManagementCategory.get("list_items");
+        assertThat(listItems).contains(Map.of("code", "FPL", "label", "Family Public Law"));
+    }
+
 }
