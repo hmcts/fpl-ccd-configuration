@@ -1,0 +1,69 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentActionLabel",
+    "FieldType": "Label",
+    "Label": "## What do you need to do?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentAction",
+    "FieldType": "FixedRadioList",
+    "Label": " ",
+    "FieldTypeParameter": "ManageDocumentAction",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentUploadNewDocInstructionLabel",
+    "FieldType": "Label",
+    "Label": "## Choose document types",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentRequirementLabel",
+    "FieldType": "Label",
+    "Label": "Documents should be:<br /><ul><li>named with the document type, for example: applicant-name-B1-form</li><li>no more than 100MB (split and clearly name larger files)</li><li>uploaded separately, not in one large file</li></ul>",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentRemoveDocInstructionLabel",
+    "FieldType": "Label",
+    "Label": "### What type of document do you want to remove?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "uploadableDocumentBundle",
+    "Label": "Add and categorised a document",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadableDocumentBundle",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "HintText": "Upload a document to the system"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentAcknowledge",
+    "Label": "All documents are related to ${caseName}",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DocumentAcknowledge",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  }
+]

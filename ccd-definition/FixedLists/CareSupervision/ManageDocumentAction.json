@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentAction",
+    "ListElementCode": "UPLOAD_DOCUMENTS",
+    "ListElement": "Upload new documents",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentAction",
+    "ListElementCode": "REMOVE_DOCUMENTS",
+    "ListElement": "Remove documents",
+    "DisplayOrder": 2
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageDocumentsV2_UploadableDocument",
+    "CaseEventID": "manageDocumentsV2",
+    "CaseFieldID": "uploadableDocumentBundle",
+    "ListElementCode": "document",
+    "FieldDisplayOrder": "1",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageDocumentsV2_UploadableDocument",
+    "CaseEventID": "manageDocumentsV2",
+    "CaseFieldID": "uploadableDocumentBundle",
+    "ListElementCode": "documentTypeDynamicList",
+    "FieldDisplayOrder": "3",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageDocumentsV2_UploadableDocument",
+    "CaseEventID": "manageDocumentsV2",
+    "CaseFieldID": "uploadableDocumentBundle",
+    "ListElementCode": "confidential",
+    "FieldDisplayOrder": "3",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageDocumentsV2_UploadableDocument",
+    "CaseEventID": "manageDocumentsV2",
+    "CaseFieldID": "uploadableDocumentBundle",
+    "ListElementCode": "hasConfidentialAddress",
+    "FieldDisplayOrder": "4",
+    "DisplayContext": "MANDATORY"
+  }
+]

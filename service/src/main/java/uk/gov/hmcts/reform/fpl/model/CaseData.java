@@ -58,6 +58,7 @@ import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthoritiesEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
+import uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageLegalCounselEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
@@ -695,6 +696,9 @@ public class CaseData extends CaseDataParent {
     private final ManageDocumentLA manageDocumentLA;
     private final ManageDocumentSubtypeListLA manageDocumentSubtypeListLA;
     private final ManageDocumentSubtypeList manageDocumentSubtypeList;
+    @JsonUnwrapped
+    @Builder.Default
+    private final ManageDocumentEventData manageDocumentEventData = ManageDocumentEventData.builder().build();
     private final String manageDocumentsRelatedToHearing;
     private final List<Element<SupportingEvidenceBundle>> supportingEvidenceDocumentsTemp;
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments; //general evidence
