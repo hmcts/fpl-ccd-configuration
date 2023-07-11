@@ -79,7 +79,7 @@ java:
         - ctsc-team-lead-inbox
         - AppInsightsInstrumentationKey
         - name: app-insights-connection-string
-          alias: APPLICATIONINSIGHTS_CONNECTION_STRING
+          alias: app-insights-connection-string
         - scheduler-db-password
         - rcj-family-high-court-inbox
         - court-to-court-admin-mapping
