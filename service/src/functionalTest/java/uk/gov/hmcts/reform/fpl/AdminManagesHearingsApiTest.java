@@ -14,14 +14,12 @@ import uk.gov.hmcts.reform.fpl.service.DocumentService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingPresence.IN_PERSON;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 public class AdminManagesHearingsApiTest extends AbstractApiTest {
 
