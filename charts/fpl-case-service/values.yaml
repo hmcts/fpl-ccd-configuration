@@ -42,6 +42,7 @@ java:
     SPRING_CLOUD_BOOTSTRAP_ENABLED: true
     CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: /mnt/secrets/fpl/app-insights-connection-string
+    APPLICATIONINSIGHTS_CONNECTION_STRING: /mnt/secrets/fpl/app-insights-connection-string
   keyVaults:
     fpl:
       secrets:
