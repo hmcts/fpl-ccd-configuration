@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesRequest;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesResource;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.model.Organisation;
@@ -120,5 +121,27 @@ public class CaseAccessService {
         } catch (Exception e) {
             throw new GrantCaseAccessException(caseId, localAuthority, caseRole, e);
         }
+    }
+
+    public void grantJudgeCaseRole(Long caseId, String userId, JudgeCaseRole role) {
+        // todo try catch, need new exception type as not using CaseRole enum
+        // Use system update user to grant roles
+        final String userToken = systemUserService.getSysUserToken();
+        final String serviceToken = authTokenGenerator.generate();
+
+        List<CaseAssignedUserRoleWithOrganisation> caseAssignedRoles = List.of(
+            CaseAssignedUserRoleWithOrganisation.builder()
+                .caseDataId(caseId.toString())
+                .userId(userId)
+                .caseRole(role.getRoleName())
+                .build()
+        );
+
+        AddCaseAssignedUserRolesRequest addCaseAssignedUserRolesRequest =
+            AddCaseAssignedUserRolesRequest.builder()
+                .caseAssignedUserRoles(caseAssignedRoles)
+                .build();
+
+        caseAccessDataStoreApi.addCaseUserRoles(userToken, serviceToken, addCaseAssignedUserRolesRequest);
     }
 }

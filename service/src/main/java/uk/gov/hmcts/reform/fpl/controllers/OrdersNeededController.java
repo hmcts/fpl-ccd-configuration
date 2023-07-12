@@ -169,8 +169,6 @@ public class OrdersNeededController extends CallbackController {
             data.put("orders", data.get("ordersSolicitor"));
         }
 
-        judicialService.assignAllocatedJudge(caseDetails.getId(), caseData.getJudicialUser().getIdamId());
-
         return respond(caseDetails);
     }
 
