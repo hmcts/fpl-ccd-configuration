@@ -207,7 +207,7 @@ public class ManageLocalAuthoritiesController extends CallbackController {
         }
 
         if (TRANSFER_COURT == action) {
-            Court oldCourt = caseData.getCourt();
+            final Court oldCourt = caseData.getCourt();
             Court courtTransferred = service.transferCourtWithoutTransferLA(caseData);
             caseDetails.getData().put(PAST_COURT_LIST_KEY, caseData.getPastCourtList());
             caseDetails.getData().put(COURT_KEY, courtTransferred);
