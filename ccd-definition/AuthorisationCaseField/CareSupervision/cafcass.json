@@ -1166,7 +1166,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documentsWithConfidentialAddress",
     "UserRole": "caseworker-publiclaw-cafcass",
-    "CRUD": "CUD"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
