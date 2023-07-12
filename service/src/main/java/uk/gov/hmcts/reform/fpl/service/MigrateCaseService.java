@@ -980,9 +980,11 @@ public class MigrateCaseService {
 
     public Map<String, Object> migrateCorrespondenceDocuments(CaseData caseData) {
         List<Element<ManagedDocument>> correspondenceDocList =
-            Stream.of(caseData.getCorrespondenceDocuments(),
-                    caseData.getCorrespondenceDocumentsLA(),
-                    caseData.getCorrespondenceDocumentsSolicitor())
+            Stream.of(Optional.ofNullable(caseData.getCorrespondenceDocuments()),
+                Optional.ofNullable(caseData.getCorrespondenceDocumentsLA()),
+                Optional.ofNullable(caseData.getCorrespondenceDocumentsSolicitor()))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .flatMap(Collection::stream)
                 .filter(bundleElement -> !bundleElement.getValue().isConfidentialDocument())
                 .map(bundleElement ->
@@ -991,8 +993,10 @@ public class MigrateCaseService {
                 .collect(toList());
 
         List<Element<ManagedDocument>> correspondenceDocListLA =
-            Stream.of(caseData.getCorrespondenceDocumentsLA(),
-                    caseData.getCorrespondenceDocumentsSolicitor())
+            Stream.of(Optional.ofNullable(caseData.getCorrespondenceDocumentsLA()),
+                Optional.ofNullable(caseData.getCorrespondenceDocumentsSolicitor()))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .flatMap(Collection::stream)
                 .filter(bundleElement -> bundleElement.getValue().isConfidentialDocument())
                 .map(bundleElement ->
@@ -1001,7 +1005,7 @@ public class MigrateCaseService {
                 .collect(toList());
 
         List<Element<ManagedDocument>> correspondenceDocListCTSC =
-            caseData.getCorrespondenceDocuments().stream()
+            Optional.ofNullable(caseData.getCorrespondenceDocuments()).orElse(List.of()).stream()
                 .filter(bundleElement -> bundleElement.getValue().isConfidentialDocument())
                 .map(bundleElement ->
                     element(bundleElement.getId(),
