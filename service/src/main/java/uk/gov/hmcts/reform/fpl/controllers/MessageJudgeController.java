@@ -94,8 +94,5 @@ public class MessageJudgeController extends CallbackController {
             publishEvent(new NewJudicialMessageEvent(caseData, judicialMessage));
         }
 
-        publishEvent(new AfterSubmissionCaseDataUpdated(getCaseData(callbackRequest),
-            getCaseDataBefore(callbackRequest)));
-
     }
 }
