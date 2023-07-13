@@ -432,7 +432,8 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
                 .localAuthoritiesEventData(eventData)
                 .build();
 
-            final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
+            final AboutToStartOrSubmitCallbackResponse resp = postAboutToSubmitEvent(initialCaseData);
+            final CaseData updatedCaseData = extractCaseData(resp);
 
             Court currentCourt = updatedCaseData.getCourt();
             assertThat(currentCourt.getCode()).isEqualTo("384");
@@ -448,6 +449,8 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
             assertThat(lastCourt.getCode()).isEqualTo(COURT_1.getCode());
             assertThat(updatedCaseData.getDfjArea()).isEqualTo(dfjAreaCourtMapping.getDfjArea());
             assertThat(updatedCaseData.getCourtField()).isNull();
+            assertThat(resp.getData()).extracting("caseManagementLocation")
+                .extracting("baseLocation", "region").containsExactly("637145", "7");
         }
 
         @Test
