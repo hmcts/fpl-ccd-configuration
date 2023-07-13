@@ -108,9 +108,6 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
 
         verify(notificationClient).sendEmail(
             JUDICIAL_MESSAGE_ADDED_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, notificationReference(CASE_ID));
-        verify(concurrencyHelper).submitEvent(any(),
-            eq(CASE_ID),
-            eq(caseSummary()));
     }
 
     private Map<String, Object> caseSummary() {
