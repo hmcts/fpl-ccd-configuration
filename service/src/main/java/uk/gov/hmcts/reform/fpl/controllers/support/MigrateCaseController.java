@@ -22,9 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CourtLookUpService;
-import uk.gov.hmcts.reform.fpl.service.DfjAreaLookUpService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
-import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
 import java.util.HashMap;
 import java.util.List;
@@ -50,8 +48,6 @@ public class MigrateCaseController extends CallbackController {
     private final CourtLookUpService courtLookUpService;
 
     private final MigrateCaseService migrateCaseService;
-    private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
-    private final DfjAreaLookUpService dfjAreaLookUpService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-1359", this::run1359,
@@ -196,24 +192,6 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
         migrateCaseService.verifyUrgentDirectionsOrderExists(caseData, migrationId, documentId);
         caseDetails.getData().remove("urgentDirectionsOrder");
-    }
-
-    private void run1124(CaseDetails caseDetails) {
-        log.info("Migrating case {}", caseDetails.getId());
-    }
-
-    private void run1124Rollback(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-        var caseId = caseData.getId();
-        if (Objects.nonNull(caseData.getDfjArea())) {
-            caseDetails.getData().remove("dfjArea");
-            caseDetails.getData().keySet().removeAll(dfjAreaLookUpService.getAllCourtFields());
-            log.info("Rollback {id = DFPL-1124, case reference = {}} removed dfj area and relevant court field",
-                caseId);
-        } else {
-            log.warn("Rollback {id = DFPL-1124, case reference = {}} doesn't have dfj area and relevant court field",
-                caseId);
-        }
     }
 
     private void run1352(CaseDetails caseDetails) {
