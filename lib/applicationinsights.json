@@ -1,6 +1,0 @@
-{
-  "connectionString": "${file:/mnt/secrets/fpl/app-insights-connection-string}",
-  "role": {
-    "name": "fpl-ccd-configuration"
-  }
-}
