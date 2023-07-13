@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FailedPBAPaymentContentProvider;
+import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 
 import java.util.List;
 import java.util.Set;
@@ -46,6 +47,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.SECONDARY_LOCAL_AUTHOR
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType.FAILED_PAYMENT;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
@@ -54,7 +56,7 @@ import static uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest.builder;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {FailedPBAPaymentEventHandler.class, LookupTestConfig.class})
+@SpringBootTest(classes = {FailedPBAPaymentEventHandler.class, LookupTestConfig.class, WorkAllocationTaskService.class})
 class FailedPBAPaymentEventHandlerTest {
 
     @MockBean
@@ -68,6 +70,8 @@ class FailedPBAPaymentEventHandlerTest {
 
     @MockBean
     private FailedPBAPaymentContentProvider failedPBAPaymentContentProvider;
+    @MockBean
+    private WorkAllocationTaskService workAllocationTaskService;
 
     @Autowired
     private FailedPBAPaymentEventHandler failedPBAPaymentEventHandler;
@@ -366,6 +370,15 @@ class FailedPBAPaymentEventHandlerTest {
             CTSC_INBOX,
             expectedParameters,
             caseData.getId());
+    }
+
+    @Test
+    void shouldCreateWorkAllocationTaskForFailedPBAPayment() {
+        failedPBAPaymentEventHandler.createWorkAllocationTask(
+            new FailedPBAPaymentEvent(caseData, List.of(C110A_APPLICATION),
+                OrderApplicant.builder().type(LOCAL_AUTHORITY).name(caseData.getCaseLocalAuthorityName()).build()));
+
+        verify(workAllocationTaskService).createWorkAllocationTask(caseData, FAILED_PAYMENT);
     }
 
 }

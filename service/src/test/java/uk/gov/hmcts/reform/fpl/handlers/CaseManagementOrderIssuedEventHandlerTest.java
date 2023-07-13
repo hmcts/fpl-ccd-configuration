@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
+import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
 import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -32,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
+import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -94,6 +96,8 @@ class CaseManagementOrderIssuedEventHandlerTest {
     private TranslationRequestService translationRequestService;
     @Mock
     private CafcassNotificationService cafcassNotificationService;
+    @Mock
+    private WorkAllocationTaskService workAllocationTaskService;
 
 
     @InjectMocks
@@ -293,5 +297,13 @@ class CaseManagementOrderIssuedEventHandlerTest {
         verify(translationRequestService).sendRequest(CASE_DATA,
             Optional.of(LanguageTranslationRequirement.NO),
             ORDER, "Sealed case management order issued on 2 January 2020");
+    }
+
+    @Test
+    void shouldCreateWorkAllocationTaskWhenCMOApproved() {
+        underTest.createWorkAllocationTask(EVENT);
+
+        verify(workAllocationTaskService).createWorkAllocationTask(CASE_DATA,
+            WorkAllocationTaskType.CMO_REVIEWED);
     }
 }

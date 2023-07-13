@@ -164,6 +164,28 @@ public class FurtherEvidenceUploadedEventTestData {
             .build();
     }
 
+    public static CaseData buildCaseDataWithCorrespondencesByHmtcs() {
+        return commonCaseBuilder()
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .correspondenceDocuments((buildNonConfidentialPdfDocumentList(HMCTS_USER)))
+            .build();
+    }
+
+    public static CaseData buildCaseDataWithCorrespondencesByLA() {
+        return commonCaseBuilder()
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .correspondenceDocumentsLA((buildNonConfidentialPdfDocumentList(LA_USER)))
+            .build();
+    }
+
+    public static CaseData buildCaseDataWithCorrespondencesBySolicitor() {
+        return commonCaseBuilder()
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .correspondenceDocumentsSolicitor(
+                removeEvidenceBundleType((buildNonConfidentialPdfDocumentList(REP_SOLICITOR_USER_EMAIL))))
+            .build();
+    }
+
     public static CaseData buildCaseDataWithAdditionalApplicationBundle() {
         return buildCaseDataWithAdditionalApplicationBundle(LA_USER, false);
     }
@@ -253,6 +275,18 @@ public class FurtherEvidenceUploadedEventTestData {
             element(DOC_ELEMENT_4_ID,
                 createDummyEvidenceBundle(NON_CONFIDENTIAL_2, uploadedBy, false, PDF_DOCUMENT_2, type))
         );
+    }
+
+    public static List<Element<SupportingEvidenceBundle>> buildNonConfidentialPdfDocumentList(final String uploadedBy) {
+        return buildNonConfidentialPdfDocumentList(uploadedBy, DEFAULT_FURTHER_EVIDENCE_TYPE);
+    }
+
+    public static List<Element<SupportingEvidenceBundle>> buildNonConfidentialPdfDocumentList(
+        final String uploadedBy, FurtherEvidenceType type) {
+
+        return wrapElementsWithUUIDs(
+            createDummyEvidenceBundle(NON_CONFIDENTIAL_1, uploadedBy, false, PDF_DOCUMENT_1, type),
+            createDummyEvidenceBundle(NON_CONFIDENTIAL_2, uploadedBy, false, PDF_DOCUMENT_2, type));
     }
 
     public static List<Element<SupportingEvidenceBundle>> buildNonConfidentialNonPDFDocumentList(
@@ -374,9 +408,14 @@ public class FurtherEvidenceUploadedEventTestData {
     }
 
     public static CaseData.CaseDataBuilder<?,?> commonCaseBuilder() {
+        return commonCaseBuilder(false);
+    }
+
+    public static CaseData.CaseDataBuilder<?,?> commonCaseBuilder(boolean standaloneApplication) {
         return CaseData.builder()
             .id(CASE_ID)
             .familyManCaseNumber(CASE_ID.toString())
+            .caseLocalAuthority(standaloneApplication ? null : "SA")
             .hearingDetails(wrapElementsWithUUIDs(HearingBooking.builder().startDate((HEARING_DATE)).build()));
     }
 
