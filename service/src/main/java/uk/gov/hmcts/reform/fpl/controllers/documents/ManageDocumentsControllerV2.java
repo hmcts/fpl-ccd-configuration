@@ -16,13 +16,11 @@ import uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadableDocumentBundle;
 import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -31,9 +29,10 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASHARED;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.barristers;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.designatedSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
-import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction.UPLOAD_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction.REMOVE_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction.UPLOAD_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Api
 @RestController
@@ -42,6 +41,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 public class ManageDocumentsControllerV2 extends CallbackController {
 
     private final UserService userService;
+
+    private final ManageDocumentService manageDocumentService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
@@ -59,12 +60,11 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         ManageDocumentEventData eventData = caseData.getManageDocumentEventData();
 
         caseDetails.getData().put("hasConfidentialParty", YesNo.from(caseData.hasConfidentialParty()));
-        caseDetails.getData().put("uploadableDocumentBundle", List.of(ElementUtils.element(UploadableDocumentBundle.builder()
-            .documentTypeDynamicList(DynamicList.builder().listItems(
-                List.of(DynamicListElement.builder().code("THRESHOLD").label("Threshold").build())
-            ).build())
-            .build())));
-
+        caseDetails.getData().put("uploadableDocumentBundle", List.of(
+            element(UploadableDocumentBundle.builder()
+                .documentTypeDynamicList(manageDocumentService.buildDocumentTypeDynamicList(getUploaderType(caseData)))
+                .build())
+        ));
 
         return respond(caseDetails);
     }
@@ -94,7 +94,7 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         CaseData caseDataBefore = getCaseDataBefore(request);
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
-        boolean isSolicitor = DocumentUploaderType.SOLICITOR.equals(getUploaderType(caseData.getId()));
+        boolean isSolicitor = DocumentUploaderType.SOLICITOR.equals(getUploaderType(caseData));
 
         // TODO
 
@@ -119,8 +119,8 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         */
     }
 
-    private DocumentUploaderType getUploaderType(Long id) {
-        final Set<CaseRole> caseRoles = userService.getCaseRoles(id);
+    private DocumentUploaderType getUploaderType(CaseData caseData) {
+        final Set<CaseRole> caseRoles = userService.getCaseRoles(caseData.getId());
         if (caseRoles.stream().anyMatch(representativeSolicitors()::contains)) {
             return DocumentUploaderType.SOLICITOR;
         }
