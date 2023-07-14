@@ -123,8 +123,28 @@ public class ManageDocumentService {
     private static final Predicate<Element<SupportingEvidenceBundle>> SOLICITOR_FILTER =
         bundle -> bundle.getValue().isUploadedByRepresentativeSolicitor();
 
+    public boolean isUploadable(DocumentType documentType, DocumentUploaderType uploaderType) {
+        if (documentType.getBaseFieldNameResolver() == null) {
+            return false;
+        }
+        switch (uploaderType) {
+            case SOLICITOR:
+                return documentType.isUploadable();
+            case DESIGNATED_LOCAL_AUTHORITY:
+            case SECONDARY_LOCAL_AUTHORITY:
+                return documentType.isUploadable() && documentType.isUploadableByLA();
+            case HMCTS:
+                return documentType.isUploadable() && documentType.isUploadableByCTSC();
+            case BARRISTER:
+                return false;
+            default:
+                throw new IllegalStateException("unrecognised uploaderType: " + uploaderType);
+        }
+    }
+
     public DynamicList buildDocumentTypeDynamicList(DocumentUploaderType uploaderType) {
         final List<Pair<String, String>> courts = Arrays.stream(DocumentType.values())
+            .filter(documentType -> !documentType.isHidden() || isUploadable(documentType, uploaderType))
             .sorted(comparing(DocumentType::getDisplayOrder))
             .map(dt -> Pair.of(dt.name(), dt.getDescription()))
             .collect(toList());

@@ -5,25 +5,54 @@ import lombok.Getter;
 
 import java.util.function.Function;
 
+import static java.util.Objects.nonNull;
+
 @AllArgsConstructor
 public enum DocumentType {
-    BUNDLE("Bundle", courtBundleResolver(), true, true, true, 10),
-    CASE_SUMMARY("Case Summary", standardResolver("caseSummaryList"), true, true, true, 20),
-    THRESHOLD("Threshold", standardResolver("thresholdList"), true, true, true, 30),
-    SKELETON_ARGUMENTS("Skeleton arguments", standardResolver("skeletonArgumentList"), true, true, true, 40);
+    BUNDLE("Bundle", courtBundleResolver(),  false,
+        true, true,
+        10),
+    CASE_SUMMARY("Case Summary", standardResolver("caseSummaryList"), false,
+        true, true,
+        20),
+    THRESHOLD("Threshold", standardResolver("thresholdList"), false,
+        true, false,
+        30),
+    DRAFT_ORDER_FOR_REVIEW("Draft order for review prior to hearing", null, true,
+        false, false,
+        40),
+    SKELETON_ARGUMENTS("Skeleton arguments", standardResolver("skeletonArgumentList"), false,
+        true, true,
+        50),
+    APPLICATIONS("Applications", null, true,
+        false, false,
+        70),
+    APPLICANTS_DOCUMENTS("Applicant's documents", null, false,
+        true, false,
+        140),
+    DOCUMENTS_FILED_ON_ISSUE("└─ Documents filed on issue", standardResolver("documentsFiledOnIssueList"), false,
+        true,  false,
+        150),
+    CARE_PLAN("└─ Care plan", standardResolver("carePlanList"), false,
+        true, false,
+        170);
 
     @Getter
     private String description;
     @Getter
     private Function<ConfidentialLevel, String> baseFieldNameResolver;
     @Getter
-    private boolean uploadable;
+    private boolean hidden;
     @Getter
     private boolean uploadableByLA;
     @Getter
     private boolean uploadableByCTSC;
     @Getter
     private final int displayOrder;
+
+    public boolean isUploadable() {
+        return nonNull(baseFieldNameResolver);
+    }
 
     private static final Function<ConfidentialLevel, String> courtBundleResolver() {
         return confidentialLevel -> {

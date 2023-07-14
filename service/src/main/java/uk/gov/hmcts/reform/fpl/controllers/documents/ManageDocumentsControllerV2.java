@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData;
@@ -29,7 +30,6 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASHARED;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.barristers;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.designatedSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
-import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction.REMOVE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction.UPLOAD_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -47,8 +47,6 @@ public class ManageDocumentsControllerV2 extends CallbackController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
-
         return respond(caseDetails);
     }
 
@@ -57,7 +55,6 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         @RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
-        ManageDocumentEventData eventData = caseData.getManageDocumentEventData();
 
         caseDetails.getData().put("hasConfidentialParty", YesNo.from(caseData.hasConfidentialParty()));
         caseDetails.getData().put("uploadableDocumentBundle", List.of(
@@ -78,11 +75,12 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         ManageDocumentAction action = eventData.getManageDocumentAction();
 
         if (UPLOAD_DOCUMENTS.equals(action)) {
-            eventData.getUploadableDocumentBundle().stream().forEach(ud -> {
-                boolean isConfidential = YesNo.YES.getValue().equals(ud.getValue().getConfidential());
-            });
-        } else if (REMOVE_DOCUMENTS.equals(action)) {
-            // TODO
+            if (eventData.getUploadableDocumentBundle().stream().anyMatch(
+                bundle -> !manageDocumentService.isUploadable(
+                    DocumentType.valueOf(bundle.getValue().getDocumentTypeDynamicList().getValueCode()),
+                    getUploaderType(caseData)))) {
+                return respond(caseDetails, List.of("You cannot upload any document to this document type."));
+            }
         }
 
         return respond(caseDetails);
