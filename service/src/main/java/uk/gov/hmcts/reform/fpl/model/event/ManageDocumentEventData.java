@@ -21,5 +21,7 @@ public class ManageDocumentEventData {
     ManageDocumentAction manageDocumentAction;
     @Temp
     List<Element<UploadableDocumentBundle>> uploadableDocumentBundle;
+    @Temp
+    String hasConfidentialParty;
 
 }

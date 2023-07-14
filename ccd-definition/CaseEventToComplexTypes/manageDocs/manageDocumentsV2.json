@@ -33,6 +33,7 @@
     "CaseFieldID": "uploadableDocumentBundle",
     "ListElementCode": "hasConfidentialAddress",
     "FieldDisplayOrder": "4",
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "hasConfidentialParty = \"YES\""
   }
 ]

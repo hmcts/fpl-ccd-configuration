@@ -58,6 +58,7 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         ManageDocumentEventData eventData = caseData.getManageDocumentEventData();
 
+        caseDetails.getData().put("hasConfidentialParty", YesNo.from(caseData.hasConfidentialParty()));
         caseDetails.getData().put("uploadableDocumentBundle", List.of(ElementUtils.element(UploadableDocumentBundle.builder()
             .documentTypeDynamicList(DynamicList.builder().listItems(
                 List.of(DynamicListElement.builder().code("THRESHOLD").label("Threshold").build())
