@@ -28,7 +28,7 @@ public class JudgeAndLegalAdvisor extends AbstractJudge {
     private JudgeAndLegalAdvisor(JudgeOrMagistrateTitle judgeTitle, String otherTitle, String judgeLastName,
                                  String judgeFullName, String legalAdvisorName, String allocatedJudgeLabel,
                                  String useAllocatedJudge, String judgeEmailAddress) {
-        super(judgeTitle, otherTitle, judgeLastName, judgeFullName, judgeEmailAddress);
+        super(judgeTitle, otherTitle, judgeLastName, judgeFullName, judgeEmailAddress, null);
         this.judgeTitle = judgeTitle;
         this.otherTitle = otherTitle;
         this.judgeLastName = judgeLastName;

@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.GatekeepingOrderService;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.PastHearingDatesValidatorService;
@@ -34,6 +35,7 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.hearing.ManageHearingsOthersGenerator;
 import uk.gov.hmcts.reform.fpl.service.sdo.ListGatekeepingHearingDecider;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
+import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -82,6 +84,7 @@ public class ListGatekeepingHearingController extends CallbackController {
     private final NoticeOfProceedingsService nopService;
     private final ListGatekeepingHearingDecider listGatekeepingHearingDecider;
     private final CoreCaseDataService coreCaseDataService;
+    private final JudicialService judicialService;
 
     private final CaseConverter converter;
 
@@ -137,7 +140,8 @@ public class ListGatekeepingHearingController extends CallbackController {
             "gatekeepingOrderHasHearing1",
             "gatekeepingOrderHasHearing2",
             "gatekeepingOrderIssuingJudge",
-            "customDirections"
+            "customDirections",
+            "judicialUser"
         );
 
         caseData.keySet().removeAll(hearingsService.caseFieldsToBeRemoved());
@@ -153,14 +157,17 @@ public class ListGatekeepingHearingController extends CallbackController {
 
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
-        final Judge allocatedJudge = caseData.getAllocatedJudge();
 
-        final Optional<String> error = validateEmailService.validate(allocatedJudge.getJudgeEmailAddress());
+        Optional<JudicialUserProfile> judgeUser = judicialService.getJudge(
+            caseData.getJudicialUser().getPersonalCode());
 
-        if (error.isPresent()) {
-            return respond(caseDetails, List.of(error.get()));
+        if (judgeUser.isEmpty()) {
+            return respond(caseDetails, List.of("Judge could not be found in Judicial Reference Data"));
         }
 
+        Judge allocatedJudge = Judge.fromJudicialUserProfile(judgeUser.get());
+
+        caseDetails.getData().put("allocatedJudge", allocatedJudge);
         caseDetails.getData().put(
             "judgeAndLegalAdvisor",
             JudgeAndLegalAdvisor.builder()

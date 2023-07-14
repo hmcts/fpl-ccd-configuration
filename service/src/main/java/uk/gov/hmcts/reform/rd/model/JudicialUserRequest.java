@@ -20,4 +20,10 @@ public class JudicialUserRequest {
     @JsonProperty("personal_code")
     private List<String> personalCode;
 
+    public static JudicialUserRequest fromPersonalCode(String personalCode) {
+        return JudicialUserRequest.builder()
+            .personalCode(List.of(personalCode))
+            .build();
+    }
+
 }

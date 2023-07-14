@@ -79,5 +79,14 @@
     "ElementLabel": "Email Address",
     "FieldShowCondition": "judgeTitle!=\"\" AND useAllocatedJudge!=\"Yes\"",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisor",
+    "ListElementCode": "judgeJudicialUser",
+    "FieldType": "JudicialUser",
+    "ElementLabel": "Search for Judge",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "judgeEmailAddress=\"DO_NOT_SHOW\""
   }
 ]

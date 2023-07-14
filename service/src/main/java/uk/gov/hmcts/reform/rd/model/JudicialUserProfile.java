@@ -33,7 +33,5 @@ public class JudicialUserProfile {
     private String emailId;
 
     private String personalCode;
-    private String title;
-    private String initials;
 
 }

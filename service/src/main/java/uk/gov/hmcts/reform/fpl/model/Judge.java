@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.common.AbstractJudge;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import java.util.Objects;
 
@@ -18,16 +19,18 @@ public class Judge extends AbstractJudge {
     private final String judgeLastName;
     private final String judgeFullName;
     private final String judgeEmailAddress;
+    private final JudicialUser judgeJudicialUser;
 
     @Builder(toBuilder = true)
     private Judge(JudgeOrMagistrateTitle judgeTitle, String otherTitle, String judgeLastName,
-                  String judgeFullName, String judgeEmailAddress) {
-        super(judgeTitle, otherTitle, judgeLastName, judgeFullName, judgeEmailAddress);
+                  String judgeFullName, String judgeEmailAddress, JudicialUser judgeJudicialUser) {
+        super(judgeTitle, otherTitle, judgeLastName, judgeFullName, judgeEmailAddress, judgeJudicialUser);
         this.judgeTitle = judgeTitle;
         this.otherTitle = otherTitle;
         this.judgeLastName = judgeLastName;
         this.judgeFullName = judgeFullName;
         this.judgeEmailAddress = judgeEmailAddress;
+        this.judgeJudicialUser = judgeJudicialUser;
     }
 
     public boolean hasEqualJudgeFields(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
@@ -44,6 +47,20 @@ public class Judge extends AbstractJudge {
             .judgeLastName(judgeLastName)
             .judgeFullName(judgeFullName)
             .judgeEmailAddress(judgeEmailAddress)
+            .build();
+    }
+
+    public static Judge fromJudicialUserProfile(JudicialUserProfile jup) {
+        return Judge.builder()
+            .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+            .otherTitle(jup.getPostNominals())
+            .judgeLastName(jup.getSurname())
+            .judgeFullName(jup.getFullName())
+            .judgeEmailAddress(jup.getEmailId())
+            .judgeJudicialUser(JudicialUser.builder()
+                .idamId(jup.getSidamId())
+                .personalCode(jup.getPersonalCode())
+                .build())
             .build();
     }
 }

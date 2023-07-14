@@ -1,0 +1,62 @@
+[
+  {
+    "sidam_id": "f437e1f3-2688-4892-9bdb-8be6e11834d1",
+    "object_id": "1728fcc8-f3b0-4f4b-9ce7-c80916520498-test2",
+    "known_as": "Joe",
+    "surname": "Bloggs",
+    "full_name": "Joe Bloggs",
+    "post_nominals": "Her Honour Judge",
+    "email_id": "4916232EMP-@ejudiciary.net",
+    "personal_code": "4916232",
+    "appointments": [
+      {
+        "base_location_id": "859",
+        "epimms_id": "735217",
+        "court_name": "Exeter Combined Court - Crown",
+        "cft_region_id": "6",
+        "cft_region": "South West",
+        "location_id": "6",
+        "location": "South West",
+        "is_principal_appointment": "true",
+        "appointment": "Circuit Judge",
+        "appointment_type": "Salaried",
+        "service_code": null,
+        "roles": [],
+        "start_date": "2016-11-09",
+        "end_date": null
+      }
+    ],
+    "authorisations": [
+      {
+        "jurisdiction": "Authorisation Family",
+        "ticket_description": "Public Law",
+        "ticket_code": "316",
+        "service_codes": [
+          "ABA3"
+        ],
+        "start_date": "2009-01-22T00:00",
+        "end_date": null
+      },
+      {
+        "jurisdiction": "Authorisation Family",
+        "ticket_description": "Private Law",
+        "ticket_code": "315",
+        "service_codes": [
+          "ABA5"
+        ],
+        "start_date": "2008-04-01T00:00",
+        "end_date": null
+      },
+      {
+        "jurisdiction": "Authorisation Family",
+        "ticket_description": "Court of Protection",
+        "ticket_code": "313",
+        "service_codes": [
+          "ABA7"
+        ],
+        "start_date": null,
+        "end_date": null
+      }
+    ]
+  }
+]

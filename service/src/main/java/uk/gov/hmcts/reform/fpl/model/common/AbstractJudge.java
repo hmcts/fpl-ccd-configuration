@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
@@ -19,6 +20,8 @@ public abstract class AbstractJudge {
     private final String judgeLastName;
     private final String judgeFullName;
     private final String judgeEmailAddress;
+    private final JudicialUser judgeJudicialUser;
+
 
     @JsonIgnore
     public String getJudgeOrMagistrateTitle() {

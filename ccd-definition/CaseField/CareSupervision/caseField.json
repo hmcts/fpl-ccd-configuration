@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "judicialUser",
-    "Label": "Judicial User",
+    "Label": "Search for Judge",
     "FieldType": "JudicialUser",
     "SecurityClassification": "Public",
     "Searchable": "N"

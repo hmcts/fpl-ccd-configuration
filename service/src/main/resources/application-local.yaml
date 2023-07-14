@@ -68,9 +68,9 @@ rd_professional:
   api:
     url: ${RD_PROFESSIONAL_API_URL:http://localhost:8765}
 
-rd_judicial:
+judicial_ref_data:
   api:
-    url: ${RD_JUDICIAL_API_URL:http://localhost:8765}
+    url: http://localhost:8765
 
 am_role_assignment:
   api:
