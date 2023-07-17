@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
@@ -120,6 +121,10 @@ public class CaseInitiationController extends CallbackController {
             ))
             .build());
         caseDetails.putIfNotEmpty("representativeType", updatedCaseData.getRepresentativeType());
+        if (Objects.nonNull(updatedCaseData.getDfjArea())) {
+            caseDetails.putIfNotEmpty("dfjArea", updatedCaseData.getDfjArea());
+            caseDetails.putIfNotEmpty(updatedCaseData.getCourtField(), updatedCaseData.getCourt().getCode());
+        }
 
         caseDetails.removeAll("outsourcingType", "outsourcingLAs", "sharingWithUsers", "isOutsourcedCase");
 

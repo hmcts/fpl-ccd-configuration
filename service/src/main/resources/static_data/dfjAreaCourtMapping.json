@@ -1,0 +1,352 @@
+[
+  {
+    "courtCode": "100",
+    "courtField": "highCourtDFJCourt",
+    "dfjArea": "HIGH_COURT"
+  },
+  {
+    "courtCode": "102",
+    "courtField": "swanseaDFJCourt",
+    "dfjArea": "SWANSEA"
+  },
+  {
+    "courtCode": "117",
+    "courtField": "westLondonDFJCourt",
+    "dfjArea": "WEST_LONDON"
+  },
+  {
+    "courtCode": "118",
+    "courtField": "southYorkshireDFJCourt",
+    "dfjArea": "SOUTH_YORKSHIRE"
+  },
+  {
+    "courtCode": "120",
+    "courtField": "carlisleDFJCourt",
+    "dfjArea": "CARLISLE"
+  },
+  {
+    "courtCode": "123",
+    "courtField": "bristolDFJCourt",
+    "dfjArea": "BRISTOL"
+  },
+  {
+    "courtCode": "127",
+    "courtField": "birminghamDFJCourt",
+    "dfjArea": "BIRMINGHAM"
+  },
+  {
+    "courtCode": "130",
+    "courtField": "blackburnLancasterDFJCourt",
+    "dfjArea":"BLACKBURN_LANCASTER"
+  },
+  {
+    "courtCode": "131",
+    "courtField": "blackburnLancasterDFJCourt",
+    "dfjArea": "BLACKBURN_LANCASTER"
+  },
+  {
+    "courtCode": "139",
+    "courtField": "bournemouthAndDorsetDFJCourt",
+    "dfjArea": "BOURNEMOUTH_AND_DORSET"
+  },
+  {
+    "courtCode": "554",
+    "courtField": "brightonDFJCourt",
+    "dfjArea": "BRIGHTON"
+  },
+  {
+    "courtCode": "151",
+    "courtField": "bristolDFJCourt",
+    "dfjArea": "BRISTOL"
+  },
+  {
+    "courtCode": "152",
+    "courtField": "eastLondonDFJCourt",
+    "dfjArea": "EAST_LONDON"
+  },
+  {
+    "courtCode": "159",
+    "courtField": "northWalesDFJCourt",
+    "dfjArea": "NORTH_WALES"
+  },
+  {
+    "courtCode": "163",
+    "courtField": "medwayDFJCourt",
+    "dfjArea": "MEDWAY"
+  },
+  {
+    "courtCode": "164",
+    "courtField": "southEastWalesDFJCourt",
+    "dfjArea": "SOUTH_EAST_WALES"
+  },
+  {
+    "courtCode": "165",
+    "courtField": "carlisleDFJCourt",
+    "dfjArea": "CARLISLE"
+  },
+  {
+    "courtCode": "115",
+    "courtField": "centralLondonDFJCourt",
+    "dfjArea": "CENTRAL_LONDON"
+  },
+  {
+    "courtCode": "167",
+    "courtField": "essexAndSuffolkDFJCourt",
+    "dfjArea": "ESSEX_AND_SUFFOLK"
+  },
+  {
+    "courtCode": "170",
+    "courtField": "liverpoolDFJCourt",
+    "dfjArea": "LIVERPOOL"
+  },
+  {
+    "courtCode": "180",
+    "courtField": "coventryDFJCourt",
+    "dfjArea": "COVENTRY"
+  },
+  {
+    "courtCode": "181",
+    "courtField": "liverpoolDFJCourt",
+    "dfjArea": "LIVERPOOL"
+  },
+  {
+    "courtCode": "182",
+    "courtField": "eastLondonDFJCourt",
+    "dfjArea": "EAST_LONDON"
+  },
+  {
+    "courtCode": "185",
+    "courtField": "derbyDFJCourt",
+    "dfjArea": "DERBY"
+  },
+  {
+    "courtCode": "121",
+    "courtField": "eastLondonDFJCourt",
+    "dfjArea": "EAST_LONDON"
+  },
+  {
+    "courtCode": "198",
+    "courtField": "devonDFJCourt",
+    "dfjArea": "DEVON"
+  },
+  {
+    "courtCode": "203",
+    "courtField": "bristolDFJCourt",
+    "dfjArea": "BRISTOL"
+  },
+  {
+    "courtCode": "211",
+    "courtField": "guildfordDFJCourt",
+    "dfjArea": "GUILDFORD"
+  },
+  {
+    "courtCode": "217",
+    "courtField": "swanseaDFJCourt",
+    "dfjArea": "SWANSEA"
+  },
+  {
+    "courtCode": "239",
+    "courtField": "humbersideDFJCourt",
+    "dfjArea": "HUMBERSIDE"
+  },
+  {
+    "courtCode": "242",
+    "courtField": "blackburnLancasterDFJCourt",
+    "dfjArea": "BLACKBURN_LANCASTER"
+  },
+  {
+    "courtCode": "243",
+    "courtField": "westYorkshireDFJCourt",
+    "dfjArea": "WEST_YORKSHIRE"
+  },
+  {
+    "courtCode": "244",
+    "courtField": "leicesterDFJCourt",
+    "dfjArea": "LEICESTER"
+  },
+  {
+    "courtCode": "249",
+    "courtField": "lincolnDFJCourt",
+    "dfjArea": "LINCOLN"
+  },
+  {
+    "courtCode": "251",
+    "courtField": "liverpoolDFJCourt",
+    "dfjArea": "LIVERPOOL"
+  },
+  {
+    "courtCode": "253",
+    "courtField": "swanseaDFJCourt",
+    "dfjArea": "SWANSEA"
+  },
+  {
+    "courtCode": "258",
+    "courtField": "lutonDFJCourt",
+    "dfjArea": "LUTON"
+  },
+  {
+    "courtCode": "262",
+    "courtField": "manchesterDFJCourt",
+    "dfjArea": "MANCHESTER"
+  },
+  {
+    "courtCode": "267",
+    "courtField": "medwayDFJCourt",
+    "dfjArea": "MEDWAY"
+  },
+  {
+    "courtCode": "269",
+    "courtField": "southEastWalesDFJCourt",
+    "dfjArea": "SOUTH_EAST_WALES"
+  },
+  {
+    "courtCode": "270",
+    "courtField": "clevelandAndSouthDurhamDFJCourt",
+    "dfjArea": "CLEVELAND_AND_SOUTH_DURHAM"
+  },
+  {
+    "courtCode": "388",
+    "courtField": "miltonKeynesDFJCourt",
+    "dfjArea": "MILTON_KEYNES"
+  },
+  {
+    "courtCode": "278",
+    "courtField": "northumbriaAndNorthDurhamDFJCourt",
+    "dfjArea": "NORTHUMBRIA_AND_NORTH_DURHAM"
+  },
+  {
+    "courtCode": "280",
+    "courtField": "southEastWalesDFJCourt",
+    "dfjArea": "SOUTH_EAST_WALES"
+  },
+  {
+    "courtCode": "282",
+    "courtField": "northamptonDFJCourt",
+    "dfjArea": "NORTHAMPTON"
+  },
+  {
+    "courtCode": "285",
+    "courtField": "norwichDFJCourt",
+    "dfjArea": "NORWICH"
+  },
+  {
+    "courtCode": "286",
+    "courtField": "nottinghamDFJCourt",
+    "dfjArea": "NOTTINGHAM"
+  },
+  {
+    "courtCode": "305",
+    "courtField": "readingDFJCourt",
+    "dfjArea": "READING"
+  },
+  {
+    "courtCode": "291",
+    "courtField": "readingDFJCourt",
+    "dfjArea": "READING"
+  },
+  {
+    "courtCode": "294",
+    "courtField": "peterboroughDFJCourt",
+    "dfjArea": "PETERBOROUGH"
+  },
+  {
+    "courtCode": "296",
+    "courtField": "devonDFJCourt",
+    "dfjArea": "DEVON"
+  },
+  {
+    "courtCode": "299",
+    "courtField": "southEastWalesDFJCourt",
+    "dfjArea": "SOUTH_EAST_WALES"
+  },
+  {
+    "courtCode": "274",
+    "courtField": "swanseaDFJCourt",
+    "dfjArea": "SWANSEA"
+  },
+  {
+    "courtCode": "302",
+    "courtField": "portsmouthDFJCourt",
+    "dfjArea": "PORTSMOUTH"
+  },
+  {
+    "courtCode": "308",
+    "courtField": "northWalesDFJCourt",
+    "dfjArea": "NORTH_WALES"
+  },
+  {
+    "courtCode": "303",
+    "courtField": "blackburnLancasterDFJCourt",
+    "dfjArea": "BLACKBURN_LANCASTER"
+  },
+  {
+    "courtCode": "305",
+    "courtField": "readingDFJCourt",
+    "dfjArea": "READING"
+  },
+  {
+    "courtCode": "320",
+    "courtField": "southYorkshireDFJCourt",
+    "dfjArea": "SOUTH_YORKSHIRE"
+  },
+  {
+    "courtCode": "338",
+    "courtField": "stoke-on-TrentDFJCourt",
+    "dfjArea": "STOKE_ON_TRENT"
+  },
+  {
+    "courtCode": "344",
+    "courtField": "swanseaDFJCourt",
+    "dfjArea": "SWANSEA"
+  },
+  {
+    "courtCode": "345",
+    "courtField": "swindonDFJCourt",
+    "dfjArea": "SWINDON"
+  },
+  {
+    "courtCode": "347",
+    "courtField": "tauntonDFJCourt",
+    "dfjArea": "TAUNTON"
+  },
+  {
+    "courtCode": "354",
+    "courtField": "truroDFJCourt",
+    "dfjArea": "TRURO"
+  },
+  {
+    "courtCode": "362",
+    "courtField": "watfordDFJCourt",
+    "dfjArea": "WATFORD"
+  },
+  {
+    "courtCode": "373",
+    "courtField": "carlisleDFJCourt",
+    "dfjArea": "CARLISLE"
+  },
+  {
+    "courtCode": "332",
+    "courtField": "westLondonDFJCourt",
+    "dfjArea": "WEST_LONDON"
+  },
+  {
+    "courtCode": "378",
+    "courtField": "wolverhamptonDFJCourt",
+    "dfjArea": "WOLVERHAMPTON"
+  },
+  {
+    "courtCode": "380",
+    "courtField": "worcesterDFJCourt",
+    "dfjArea": "WORCESTER"
+  },
+  {
+    "courtCode": "384",
+    "courtField": "northWalesDFJCourt",
+    "dfjArea": "NORTH_WALES"
+  },
+  {
+    "courtCode": "386",
+    "courtField": "northYorkshireDFJCourt",
+    "dfjArea": "NORTH_YORKSHIRE"
+  }
+]

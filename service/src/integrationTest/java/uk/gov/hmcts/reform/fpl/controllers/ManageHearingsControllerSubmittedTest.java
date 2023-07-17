@@ -242,7 +242,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             eq(CASE_ID),
             eq("populateSDO"));
 
-        verify(concurrencyHelper, times(2)).submitEvent(
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2)).submitEvent(
             any(),
             eq(CASE_ID),
             anyMap());
@@ -253,7 +253,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             eq(CASE_ID),
             eq("internal-update-case-summary"));
 
-        verify(concurrencyHelper).submitEvent(
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(
             any(),
             eq(CASE_ID),
             eq(caseSummary("Yes", "Case management", LocalDate.of(2050, 5, 20))));
@@ -354,6 +354,8 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         given(documentConversionService.convertToPdf(noticeOfHearing))
             .willReturn(noticeOfHearing);
+        given(documentConversionService.convertToPdfBytes(noticeOfHearing))
+            .willReturn(NOTICE_OF_HEARING_BINARY);
 
         given(otherRecipientsInbox.getNonSelectedRecipients(
             EMAIL,
@@ -366,7 +368,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .willReturn(new SendLetterResponse(LETTER_1_ID))
             .willReturn(new SendLetterResponse(LETTER_2_ID));
 
-        given(uploadDocumentService.uploadPDF(NOTICE_OF_HEARING_BINARY, noticeOfHearing.getFilename()))
+        given(uploadDocumentService.uploadPDF(NOTICE_OF_HEARING_BINARY, noticeOfHearing.getFilename() + ".pdf"))
             .willReturn(NOTICE_OF_HEARING_DOCUMENT);
         given(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY, COVERSHEET_PDF))
             .willReturn(COVERSHEET_REPRESENTATIVE);

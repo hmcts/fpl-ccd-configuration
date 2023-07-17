@@ -10,16 +10,19 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.model.DfjAreaCourtMapping;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthoritiesEventData;
 import uk.gov.hmcts.reform.fpl.service.CaseAssignmentService;
+import uk.gov.hmcts.reform.fpl.service.DfjAreaLookUpService;
 import uk.gov.hmcts.reform.fpl.service.ManageLocalAuthoritiesService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
@@ -48,6 +51,8 @@ public class ManageLocalAuthoritiesController extends CallbackController {
 
     private final ManageLocalAuthoritiesService service;
     private final CaseAssignmentService assignmentService;
+
+    private final DfjAreaLookUpService dfjAreaLookUpService;
     private final UserService userService;
 
     @PostMapping("/about-to-start")
@@ -180,6 +185,8 @@ public class ManageLocalAuthoritiesController extends CallbackController {
             caseDetails.getData().put("caseLocalAuthorityName", caseData.getCaseLocalAuthorityName());
             caseDetails.getData().put("localAuthorities", caseData.getLocalAuthorities());
 
+            updateDfjAreaCourtDetails(caseDetails, caseData.getCourt());
+
             removeTemporaryFields(caseDetails);
 
             final AboutToStartOrSubmitCallbackResponse updateDesignatedPolicy = assignmentService.replaceAsSystemUser(
@@ -200,10 +207,16 @@ public class ManageLocalAuthoritiesController extends CallbackController {
         }
 
         if (TRANSFER_COURT == action) {
-            Court oldCourt = caseData.getCourt();
+            final Court oldCourt = caseData.getCourt();
             Court courtTransferred = service.transferCourtWithoutTransferLA(caseData);
             caseDetails.getData().put(PAST_COURT_LIST_KEY, caseData.getPastCourtList());
             caseDetails.getData().put(COURT_KEY, courtTransferred);
+
+            // Add the caseManagementLocation for global search/challenged access
+            caseDetails.getData().put("caseManagementLocation", CaseLocation.builder()
+                .baseLocation(courtTransferred.getEpimmsId())
+                .region(courtTransferred.getRegionId())
+                .build());
 
             if (!isEmpty(courtTransferred) && RCJ_HIGH_COURT_CODE.equals(courtTransferred.getCode())) {
                 // transferred to the high court -> turn off sendToCtsc
@@ -213,7 +226,9 @@ public class ManageLocalAuthoritiesController extends CallbackController {
                 // we were in the high court, now we're not -> sendToCtsc again
                 caseDetails.getData().put("sendToCtsc", YesNo.YES.getValue());
             }
+            updateDfjAreaCourtDetails(caseDetails, courtTransferred);
         }
+
 
         return respond(removeTemporaryFields(caseDetails));
     }
@@ -240,5 +255,12 @@ public class ManageLocalAuthoritiesController extends CallbackController {
         final List<String> errors = service.validateTransferCourtWithoutTransferLA(
             caseData.getLocalAuthoritiesEventData());
         return respond(caseDetails, errors);
+    }
+
+    private void updateDfjAreaCourtDetails(CaseDetails caseDetails, Court court) {
+        DfjAreaCourtMapping dfjArea = dfjAreaLookUpService.getDfjArea(court.getCode());
+        caseDetails.getData().keySet().removeAll(dfjAreaLookUpService.getAllCourtFields());
+        caseDetails.getData().put("dfjArea", dfjArea.getDfjArea());
+        caseDetails.getData().put(dfjArea.getCourtField(), court.getCode());
     }
 }

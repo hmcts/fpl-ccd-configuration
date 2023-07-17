@@ -33,6 +33,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CAFCASS_EMAIL;
@@ -184,7 +185,7 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASOLICITOR);
         postSubmittedEvent(buildCallbackRequestForAddingCourtBundle());
 
-        verify(cafcassNotificationService).sendEmail(isA(CaseData.class),
+        verify(cafcassNotificationService, timeout(1000)).sendEmail(isA(CaseData.class),
             documentReferences.capture(),
             eq(COURT_BUNDLE),
             isA(CourtBundleData.class));
@@ -238,7 +239,7 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
             .caseDetailsBefore(caseDetailsBefore)
             .build());
 
-        verify(cafcassNotificationService).sendEmail(isA(CaseData.class),
+        verify(cafcassNotificationService, timeout(1000)).sendEmail(isA(CaseData.class),
             documentReferences.capture(),
             eq(COURT_BUNDLE),
             isA(CourtBundleData.class));
@@ -336,7 +337,7 @@ class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsController
         givenCaseRoles(TEST_CASE_ID, USER_ID, LASHARED);
         postSubmittedEvent(buildCallbackRequestForAddingCourtBundle());
 
-        verify(cafcassNotificationService).sendEmail(isA(CaseData.class),
+        verify(cafcassNotificationService, timeout(1000)).sendEmail(isA(CaseData.class),
             documentReferences.capture(),
             eq(COURT_BUNDLE),
             isA(CourtBundleData.class));

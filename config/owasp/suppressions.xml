@@ -263,6 +263,12 @@
     <vulnerabilityName>CVE-2023-20863</vulnerabilityName>
   </suppress>
   <suppress>
-    <vulnerabilityName>CVE-2021-46877</vulnerabilityName>
+    <vulnerabilityName>CVE-2023-20883</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <vulnerabilityName>CVE-2023-35116</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <vulnerabilityName>CVE-2023-2976</vulnerabilityName>
   </suppress>
 </suppressions>

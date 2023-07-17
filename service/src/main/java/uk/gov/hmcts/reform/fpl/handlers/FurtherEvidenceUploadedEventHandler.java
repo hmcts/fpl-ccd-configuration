@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
+import uk.gov.hmcts.reform.fpl.exceptions.EmailFailedSendException;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
@@ -132,6 +134,7 @@ public class FurtherEvidenceUploadedEventHandler {
             || (!DocumentUploaderType.SOLICITOR.equals(userType) && !DocumentUploaderType.BARRISTER.equals(userType)));
     }
 
+    @Async
     @EventListener
     public void sendDocumentsUploadedNotification(final FurtherEvidenceUploadedEvent event) {
         if (shouldNotSendNotification(event.getCaseData())) {
@@ -167,6 +170,7 @@ public class FurtherEvidenceUploadedEventHandler {
         });
     }
 
+    @Async
     @EventListener
     public void sendDocumentsByPost(final FurtherEvidenceUploadedEvent event) {
         if (shouldNotSendNotification(event.getCaseData())) {
@@ -187,6 +191,7 @@ public class FurtherEvidenceUploadedEventHandler {
         }
     }
 
+    @Async
     @EventListener
     public void sendCourtBundlesUploadedNotification(final FurtherEvidenceUploadedEvent event) {
         if (shouldNotSendNotification(event.getCaseData())) {
@@ -218,6 +223,7 @@ public class FurtherEvidenceUploadedEventHandler {
         }
     }
 
+    @Async
     @EventListener
     public void sendHearingDocumentsUploadedNotification(final FurtherEvidenceUploadedEvent event) {
         if (shouldNotSendNotification(event.getCaseData())) {
@@ -261,6 +267,8 @@ public class FurtherEvidenceUploadedEventHandler {
         }
     }
 
+    @Retryable(value = EmailFailedSendException.class)
+    @Async
     @EventListener
     public void sendHearingDocumentsToCafcass(final FurtherEvidenceUploadedEvent event) {
         if (shouldNotSendNotification(event.getCaseData())) {
@@ -314,6 +322,8 @@ public class FurtherEvidenceUploadedEventHandler {
                         .build()));
     }
 
+    @Retryable(value = EmailFailedSendException.class)
+    @Async
     @EventListener
     public void sendCourtBundlesToCafcass(final FurtherEvidenceUploadedEvent event) {
         if (shouldNotSendNotification(event.getCaseData())) {
@@ -344,6 +354,8 @@ public class FurtherEvidenceUploadedEventHandler {
         }
     }
 
+    @Retryable(value = EmailFailedSendException.class)
+    @Async
     @EventListener
     public void sendDocumentsToCafcass(final FurtherEvidenceUploadedEvent event) {
         if (shouldNotSendNotification(event.getCaseData())) {
