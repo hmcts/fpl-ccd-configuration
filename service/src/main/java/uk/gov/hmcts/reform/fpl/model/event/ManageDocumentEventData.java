@@ -8,9 +8,12 @@ import uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction;
 import uk.gov.hmcts.reform.fpl.model.Temp;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.reflect.FieldUtils.getFieldsListWithAnnotation;
 
 @Value
 @Jacksonized
@@ -23,5 +26,14 @@ public class ManageDocumentEventData {
     List<Element<UploadableDocumentBundle>> uploadableDocumentBundle;
     @Temp
     String hasConfidentialParty;
+    @Temp
+    List<String> documentAcknowledge;
+
+    public static List<String> temporaryFields() {
+        List<String> tempFields = getFieldsListWithAnnotation(ManageDocumentEventData.class, Temp.class).stream()
+            .map(Field::getName)
+            .collect(toList());
+        return tempFields;
+    }
 
 }

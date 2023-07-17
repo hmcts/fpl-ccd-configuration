@@ -3,9 +3,11 @@ package uk.gov.hmcts.reform.fpl.service.document;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
@@ -17,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.DocumentWithConfidentialAddress;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocument;
+import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.Placement;
@@ -34,6 +37,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
+import uk.gov.hmcts.reform.fpl.model.event.UploadableDocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.service.DynamicListService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
@@ -42,6 +46,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ConfidentialBundleHelper;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
+import java.beans.PropertyDescriptor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,6 +71,9 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.CTSC;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.LA;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.NON_CONFIDENTIAL;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -122,6 +130,53 @@ public class ManageDocumentService {
         bundle -> bundle.getValue().isUploadedByHMCTS();
     private static final Predicate<Element<SupportingEvidenceBundle>> SOLICITOR_FILTER =
         bundle -> bundle.getValue().isUploadedByRepresentativeSolicitor();
+
+    private ConfidentialLevel getConfidentialLevel(DocumentUploaderType uploaderType, boolean isConfidential) {
+        switch (uploaderType) {
+            case DESIGNATED_LOCAL_AUTHORITY:
+            case SECONDARY_LOCAL_AUTHORITY:
+                return isConfidential ? LA : NON_CONFIDENTIAL;
+            case HMCTS:
+                return isConfidential ? CTSC : NON_CONFIDENTIAL;
+            case SOLICITOR:
+            case BARRISTER:
+            default:
+                return NON_CONFIDENTIAL;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> uploadDocuments(CaseData caseData, DocumentUploaderType uploaderType,
+                                               List<Element<UploadableDocumentBundle>> elements) {
+        final Map<String, Object> ret = new HashMap<>();
+        elements.forEach(e -> {
+            DocumentType dt = DocumentType.valueOf(e.getValue().getDocumentTypeDynamicList().getValue().getCode());
+            String fieldName = dt.getBaseFieldNameResolver().apply(getConfidentialLevel(uploaderType,
+                YES.equals(YesNo.fromString(e.getValue().getConfidential()))));
+
+            PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(HearingDocuments.class, fieldName);
+            List<Element<HearingCourtBundle>> courtBundles = null;
+            if (ret.containsKey(fieldName)) {
+                courtBundles = (List<Element<HearingCourtBundle>>) ret.get(fieldName);
+            }
+            if (courtBundles == null) {
+                try {
+                    courtBundles = (List<Element<HearingCourtBundle>>) pd.getReadMethod()
+                        .invoke(caseData.getHearingDocuments());
+                } catch (Exception ex) {
+                    throw new RuntimeException("Unable to read bean property: " + fieldName);
+                }
+                if (courtBundles == null) {
+                    courtBundles = new ArrayList<>();
+                }
+            }
+            courtBundles.add(element(HearingCourtBundle.builder()
+                .courtBundle(List.of(element(CourtBundle.builder().document(e.getValue().getDocument()).build())))
+                .build()));
+            ret.put(fieldName, courtBundles);
+        });
+        return ret;
+    }
 
     public boolean isUploadable(DocumentType documentType, DocumentUploaderType uploaderType) {
         if (documentType.getBaseFieldNameResolver() == null) {

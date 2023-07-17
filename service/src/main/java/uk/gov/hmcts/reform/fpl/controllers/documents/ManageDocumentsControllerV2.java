@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
-import uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
@@ -23,7 +22,9 @@ import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASHARED;
@@ -31,6 +32,8 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.barristers;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.designatedSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction.UPLOAD_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData.temporaryFields;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -72,14 +75,14 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         ManageDocumentEventData eventData = caseData.getManageDocumentEventData();
-        ManageDocumentAction action = eventData.getManageDocumentAction();
 
-        if (UPLOAD_DOCUMENTS.equals(action)) {
+        if (UPLOAD_DOCUMENTS.equals(eventData.getManageDocumentAction())) {
             if (eventData.getUploadableDocumentBundle().stream().anyMatch(
                 bundle -> !manageDocumentService.isUploadable(
                     DocumentType.valueOf(bundle.getValue().getDocumentTypeDynamicList().getValueCode()),
                     getUploaderType(caseData)))) {
-                return respond(caseDetails, List.of("You cannot upload any document to this document type."));
+                return respond(caseDetails, List.of(
+                    "You cannot upload any document to the document type selected."));
             }
         }
 
@@ -90,11 +93,17 @@ public class ManageDocumentsControllerV2 extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        ManageDocumentEventData eventData = caseData.getManageDocumentEventData();
         CaseData caseDataBefore = getCaseDataBefore(request);
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
-        boolean isSolicitor = DocumentUploaderType.SOLICITOR.equals(getUploaderType(caseData));
 
-        // TODO
+        Map<String, Object> updatedData = new HashMap<>();
+        if (UPLOAD_DOCUMENTS.equals(eventData.getManageDocumentAction())) {
+            updatedData.putAll(manageDocumentService.uploadDocuments(caseData, getUploaderType(caseData),
+                eventData.getUploadableDocumentBundle()));
+        }
+        caseDetailsMap.putAll(updatedData);
+        removeTemporaryFields(caseDetailsMap, temporaryFields());
 
         return respond(caseDetailsMap);
     }
@@ -102,19 +111,6 @@ public class ManageDocumentsControllerV2 extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
         // TODO Notification Logic
-        /*
-        CaseData caseData = getCaseData(request);
-
-        DocumentUploaderType userType = getUploaderType(caseData.getId());
-
-        if (this.featureToggleService.isNewDocumentUploadNotificationEnabled()
-            || (!DocumentUploaderType.SOLICITOR.equals(userType) && !DocumentUploaderType.BARRISTER.equals(userType))) {
-            UserDetails userDetails = userService.getUserDetails();
-
-            publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request),
-                getCaseDataBefore(request), userType, userDetails));
-        }
-        */
     }
 
     private DocumentUploaderType getUploaderType(CaseData caseData) {
