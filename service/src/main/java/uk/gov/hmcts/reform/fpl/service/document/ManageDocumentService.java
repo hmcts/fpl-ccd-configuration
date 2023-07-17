@@ -6,6 +6,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
@@ -34,6 +35,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
+import uk.gov.hmcts.reform.fpl.model.event.UploadableDocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.service.DynamicListService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
@@ -122,6 +124,18 @@ public class ManageDocumentService {
         bundle -> bundle.getValue().isUploadedByHMCTS();
     private static final Predicate<Element<SupportingEvidenceBundle>> SOLICITOR_FILTER =
         bundle -> bundle.getValue().isUploadedByRepresentativeSolicitor();
+
+    public Map<String, Object> uploadDocuments(DocumentUploaderType uploaderType, List<Element<UploadableDocumentBundle>> elements) {
+        elements.forEach(e -> {
+            DocumentType dt = DocumentType.valueOf(e.getValue().getDocumentTypeDynamicList().getValue().getCode());
+            uploaderType
+
+            dt.getBaseFieldNameResolver().apply(ConfidentialLevel.NON_CONFIDENTIAL)
+        });
+
+        // TODO
+        return null;
+    }
 
     public boolean isUploadable(DocumentType documentType, DocumentUploaderType uploaderType) {
         if (documentType.getBaseFieldNameResolver() == null) {
