@@ -54,13 +54,12 @@ public class MigrateCaseController extends CallbackController {
     private final DfjAreaLookUpService dfjAreaLookUpService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1505", this::run1505,
-        "DFPL-1505Rollback", this::run1505Rollback,
+        "DFPL-1359", this::run1359,
+        "DFPL-1401", this::run1401,
+        "DFPL-1451", this::run1451,
         "DFPL-1466", this::run1466,
         "DFPL-1501", this::run1616,
         "DFPL-1584", this::run1612,
-        "DFPL-1124", this::run1124,
-        "DFPL-1124Rollback", this::run1124Rollback,
         "DFPL-1352", this::run1352,
         "DFPL-702", this::run702,
         "DFPL-702rollback", this::run702rollback
@@ -146,6 +145,30 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove("caseManagementCategory");
     }
 
+    private void run1359(CaseDetails caseDetails) {
+        migrateCaseService.doDocumentViewNCCheck(caseDetails.getId(), "DFPL-1359", caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(getCaseData(caseDetails)));
+    }
+
+    private void run1401(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1401";
+        var possibleCaseIds = List.of(1666959378667166L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().put("relatingLA", "NCC");
+    }
+
+    private void run1451(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1451";
+        var possibleCaseIds = List.of(1669909306379829L);
+        final UUID expectedOrderId = UUID.fromString("c93a824b-75ce-4ffd-ad30-ad7f42c01ed9");
+        final UUID expectedHearingOrderBundleId = UUID.fromString("ebdf7ea7-a2e8-4296-be98-109b9070348e");
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removeDraftUploadedCMOs(getCaseData(caseDetails),
+            migrationId, expectedOrderId));
+        caseDetails.getData().putAll(migrateCaseService.removeHearingOrdersBundlesDrafts(getCaseData(caseDetails),
+            migrationId, expectedHearingOrderBundleId));
+    }
+
     private void run1466(CaseDetails caseDetails) {
         var migrationId = "DFPL-1466";
         var possibleCaseIds = List.of(1665396049325141L);
@@ -175,38 +198,6 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove("urgentDirectionsOrder");
     }
 
-    private void run1124(CaseDetails caseDetails) {
-        log.info("Migrating case {}", caseDetails.getId());
-    }
-
-    private void run1124Rollback(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-        var caseId = caseData.getId();
-        if (Objects.nonNull(caseData.getDfjArea())) {
-            caseDetails.getData().remove("dfjArea");
-            caseDetails.getData().keySet().removeAll(dfjAreaLookUpService.getAllCourtFields());
-            log.info("Rollback {id = DFPL-1124, case reference = {}} removed dfj area and relevant court field",
-                caseId);
-        } else {
-            log.warn("Rollback {id = DFPL-1124, case reference = {}} doesn't have dfj area and relevant court field",
-                caseId);
-        }
-    }
-
-    private void run1505(CaseDetails caseDetails) {
-        caseDetails.getData().putAll(migrateCaseService.migrateApplicantWitnessStatements(getCaseData(caseDetails)));
-        caseDetails.getData().putAll(migrateCaseService.migrateGuardianReports(getCaseData(caseDetails)));
-        caseDetails.getData().putAll(migrateCaseService.migrateExpertReports(getCaseData(caseDetails)));
-        caseDetails.getData().putAll(migrateCaseService.migrateNoticeOfActingOrIssue(getCaseData(caseDetails)));
-    }
-
-    private void run1505Rollback(CaseDetails caseDetails) {
-        migrateCaseService.rollbackMigrateApplicantWitnessStatements(caseDetails);
-        migrateCaseService.rollbackMigrateGuardianReports(caseDetails);
-        migrateCaseService.rollbackMigrateExpertReports(caseDetails);
-        migrateCaseService.rollbackMigrateNoticeOfActingOrIssue(caseDetails);
-    }
-
     private void run1352(CaseDetails caseDetails) {
         var migrationId = "DFPL-1352";
 
@@ -226,4 +217,5 @@ public class MigrateCaseController extends CallbackController {
         }
         caseDetails.getData().put("sendToCtsc", "Yes");
     }
+
 }
