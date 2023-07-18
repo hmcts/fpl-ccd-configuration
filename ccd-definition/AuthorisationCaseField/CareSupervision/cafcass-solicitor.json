@@ -555,13 +555,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "correspondenceDocumentsNC",
-    "UserRole": "[CAFCASSSOLICITOR]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "courtBundleListV2",
     "UserRole": "[CAFCASSSOLICITOR]",
     "CRUD": "RU"
@@ -780,6 +773,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "correspondenceDocumentsSolicitor",
+    "UserRole": "[CAFCASSSOLICITOR]",
+    "CRUD": "CU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "correspondenceDocList",
     "UserRole": "[CAFCASSSOLICITOR]",
     "CRUD": "CRU"
   },

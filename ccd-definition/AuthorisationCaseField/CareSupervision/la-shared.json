@@ -1606,7 +1606,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "correspondenceDocumentsNC",
+    "CaseFieldID": "correspondenceDocList",
+    "UserRole": "[LASHARED]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "correspondenceDocListLA",
     "UserRole": "[LASHARED]",
     "CRUD": "R"
   },
@@ -1615,7 +1622,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "correspondenceDocumentsLA",
     "UserRole": "[LASHARED]",
-    "CRUD": "CRU"
+    "CRUD": "CU"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -2082,13 +2089,6 @@
     "CaseFieldID": "submittedFormNeedTranslation",
     "UserRole": "[LASHARED]",
     "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "correspondenceDocuments",
-    "UserRole": "[LASHARED]",
-    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
