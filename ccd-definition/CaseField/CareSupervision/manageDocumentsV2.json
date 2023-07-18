@@ -41,7 +41,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentRequirementLabel",
     "FieldType": "Label",
-    "Label": "Documents should be:<br /><ul><li>named with the document type, for example: applicant-name-B1-form</li><li>no more than 100MB (split and clearly name larger files)</li><li>uploaded separately, not in one large file</li></ul>",
+    "Label": "Documents should be:<br /><ul><li>named with the document type, for example: document type_name of person_ role</li><li>no more than 100MB (split and clearly name larger files)</li><li>uploaded separately, not in one large file</li></ul>",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
