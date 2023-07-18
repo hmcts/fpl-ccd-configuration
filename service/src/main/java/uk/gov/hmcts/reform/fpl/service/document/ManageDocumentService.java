@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
+import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
@@ -33,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -145,6 +147,63 @@ public class ManageDocumentService {
         }
     }
 
+    private String getDocumentListActualFieldName(String fieldName) {
+        String[] spliitedFieldName = fieldName.split("\\.");
+        if (spliitedFieldName.length == 2) {
+            return spliitedFieldName[1];
+        } else {
+            return fieldName;
+        }
+    }
+
+    private Object getDocumentListHolder(String fieldName, CaseData caseData) throws Exception {
+        String[] spliitedFieldName = fieldName.split("\\.");
+        if (spliitedFieldName.length == 2) {
+            return BeanUtils.getPropertyDescriptor(CaseData.class, spliitedFieldName[0]).getReadMethod()
+                .invoke(caseData);
+        } else {
+            return caseData;
+        }
+    }
+
+    private String getDocumentListHolderFieldName(String fieldName) {
+        String[] spliitedFieldName = fieldName.split("\\.");
+        if (spliitedFieldName.length == 2) {
+            return spliitedFieldName[1];
+        } else {
+            return fieldName;
+        }
+    }
+
+    private Class getDocumentListHolderClass(String fieldName) {
+        String[] spliitedFieldName = fieldName.split("\\.");
+        if (spliitedFieldName.length == 2) {
+            String parentFieldName = spliitedFieldName[0];
+            switch (parentFieldName) {
+                case "hearingDocuments":
+                    return HearingDocuments.class;
+                default:
+                    throw new IllegalStateException("unresolved target class: " + parentFieldName);
+            }
+        }
+        return CaseData.class;
+    }
+
+    private Object buildWithDocumentObject(String fieldName, DocumentReference document) {
+        String[] spliitedFieldName = fieldName.split("\\.");
+        if (spliitedFieldName.length == 2) {
+            String parentFieldName = spliitedFieldName[0];
+            switch (parentFieldName) {
+                case "hearingDocuments":
+                    return HearingCourtBundle.builder().courtBundle(List.of(
+                        element(CourtBundle.builder().document(document).build()))).build();
+                default:
+                    throw new IllegalStateException("unresolved target class: " + parentFieldName);
+            }
+        }
+        return ManagedDocument.builder().document(document).build();
+    }
+
     @SuppressWarnings("unchecked")
     public Map<String, Object> uploadDocuments(CaseData caseData, DocumentUploaderType uploaderType,
                                                List<Element<UploadableDocumentBundle>> elements) {
@@ -153,27 +212,30 @@ public class ManageDocumentService {
             DocumentType dt = DocumentType.valueOf(e.getValue().getDocumentTypeDynamicList().getValue().getCode());
             String fieldName = dt.getBaseFieldNameResolver().apply(getConfidentialLevel(uploaderType,
                 YES.equals(YesNo.fromString(e.getValue().getConfidential()))));
+            final String actualFieldName = getDocumentListActualFieldName(fieldName);
+            final DocumentReference document = e.getValue().getDocument();
 
-            PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(HearingDocuments.class, fieldName);
-            List<Element<HearingCourtBundle>> courtBundles = null;
-            if (ret.containsKey(fieldName)) {
-                courtBundles = (List<Element<HearingCourtBundle>>) ret.get(fieldName);
+            Class documentListHolderClass = getDocumentListHolderClass(fieldName);
+            String documentListHolderFieldName = getDocumentListHolderFieldName(fieldName);
+            PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(documentListHolderClass,
+                documentListHolderFieldName);
+            List<Element<?>> docs = null;
+            if (ret.containsKey(actualFieldName)) {
+                docs = (List<Element<?>>) ret.get(actualFieldName);
             }
-            if (courtBundles == null) {
+            if (docs == null) {
                 try {
-                    courtBundles = (List<Element<HearingCourtBundle>>) pd.getReadMethod()
-                        .invoke(caseData.getHearingDocuments());
+                    Object bean = getDocumentListHolder(fieldName, caseData);
+                    docs = (List<Element<?>>) pd.getReadMethod().invoke(bean);
                 } catch (Exception ex) {
                     throw new RuntimeException("Unable to read bean property: " + fieldName);
                 }
-                if (courtBundles == null) {
-                    courtBundles = new ArrayList<>();
+                if (docs == null) {
+                    docs = new ArrayList<>();
                 }
             }
-            courtBundles.add(element(HearingCourtBundle.builder()
-                .courtBundle(List.of(element(CourtBundle.builder().document(e.getValue().getDocument()).build())))
-                .build()));
-            ret.put(fieldName, courtBundles);
+            docs.add(element(buildWithDocumentObject(fieldName, document)));
+            ret.put(actualFieldName, docs);
         });
         return ret;
     }

@@ -12,7 +12,7 @@ public enum DocumentType {
     BUNDLE("Bundle", courtBundleResolver(),  false,
         true, true,
         10),
-    CASE_SUMMARY("Case Summary", standardResolver("caseSummaryList"), false,
+    CASE_SUMMARY("Case Summary", standardResolver("hearingDocuments.caseSummaryList"), false,
         true, true,
         20),
     THRESHOLD("Threshold", standardResolver("thresholdList"), false,
@@ -21,7 +21,7 @@ public enum DocumentType {
     DRAFT_ORDER_FOR_REVIEW("Draft order for review prior to hearing", null, true,
         false, false,
         40),
-    SKELETON_ARGUMENTS("Skeleton arguments", standardResolver("skeletonArgumentList"), false,
+    SKELETON_ARGUMENTS("Skeleton arguments", standardResolver("hearingDocuments.skeletonArgumentList"), false,
         true, true,
         50),
     APPLICATIONS("Applications", null, true,
@@ -58,10 +58,10 @@ public enum DocumentType {
         return confidentialLevel -> {
             switch (confidentialLevel) {
                 case NON_CONFIDENTIAL:
-                    return "courtBundleListV2";
+                    return "hearingDocuments.courtBundleListV2";
                 case LA:
                 case CTSC:
-                    return standardNaming(confidentialLevel, "courtBundleList");
+                    return standardNaming(confidentialLevel, "hearingDocuments.courtBundleList");
                 default:
                     throw new IllegalArgumentException("unrecognised confidential level:" + confidentialLevel);
             }
