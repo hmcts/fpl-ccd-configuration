@@ -786,14 +786,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "correspondenceDocumentsLA",
+    "CaseFieldID": "correspondenceDocList",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "correspondenceDocumentsSolicitor",
+    "CaseFieldID": "correspondenceDocListLA",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "R"
   },
@@ -1025,13 +1025,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "furtherEvidenceDocumentsNC",
-    "UserRole": "caseworker-publiclaw-cafcass",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "correspondenceDocumentsNC",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "R"
   },

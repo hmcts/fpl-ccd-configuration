@@ -1,0 +1,19 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CorrespondenceDocument",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "File",
+    "SecurityClassification": "Public",
+    "CategoryID": "courtCorrespondence"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CorrespondenceDocument",
+    "ListElementCode": "removalReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Reason for removal",
+    "SecurityClassification": "Public"
+  }
+]

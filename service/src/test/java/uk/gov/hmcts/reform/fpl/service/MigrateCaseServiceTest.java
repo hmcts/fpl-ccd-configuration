@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -58,6 +59,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
@@ -2313,6 +2315,83 @@ class MigrateCaseServiceTest {
             assertThat(caseDetails.getData()).extracting("skeletonArgumentList").asList()
                 .containsExactlyInAnyOrder(skeletonArgument, skeletonArgumentLA);
             assertThat(caseDetails.getData()).extracting("skeletonArgumentListLA").isNull();
+        }
+    }
+  
+    @Nested
+    class MigrateCorrespondence {
+        @Test
+        void shouldMigrateCorrespondenceDocuments() {
+            Element<SupportingEvidenceBundle> correspondenceAdmin = element(SupportingEvidenceBundle.builder()
+                .document(DocumentReference.builder().build()).confidential(List.of("CONFIDENTIAL"))
+                .build());
+
+            Element<SupportingEvidenceBundle> correspondenceAdminNC = element(SupportingEvidenceBundle.builder()
+                .document(DocumentReference.builder().build())
+                .build());
+
+            Element<SupportingEvidenceBundle> correspondenceLA = element(SupportingEvidenceBundle.builder()
+                .document(DocumentReference.builder().build()).confidential(List.of("CONFIDENTIAL"))
+                .build());
+
+            Element<SupportingEvidenceBundle> correspondenceLANC = element(SupportingEvidenceBundle.builder()
+                .document(DocumentReference.builder().build())
+                .build());
+
+            Element<SupportingEvidenceBundle> correspondenceSolicitor = element(SupportingEvidenceBundle.builder()
+                .document(DocumentReference.builder().build()).confidential(List.of("CONFIDENTIAL"))
+                .build());
+
+            Element<SupportingEvidenceBundle> correspondenceSolicitorNC = element(SupportingEvidenceBundle.builder()
+                .document(DocumentReference.builder().build())
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .correspondenceDocuments(List.of(correspondenceAdmin, correspondenceAdminNC))
+                .correspondenceDocumentsLA(List.of(correspondenceLA, correspondenceLANC))
+                .correspondenceDocumentsSolicitor(List.of(correspondenceSolicitor, correspondenceSolicitorNC))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateCorrespondenceDocuments(caseData);
+
+            List<Element<ManagedDocument>> expectedCorrespondenceDocList =
+                List.of(correspondenceAdminNC, correspondenceLANC, correspondenceSolicitorNC).stream()
+                    .map(docElm -> element(docElm.getId(),
+                        ManagedDocument.builder().document(docElm.getValue().getDocument()).build()))
+                    .collect(Collectors.toList());
+
+            assertThat(updatedFields).extracting("correspondenceDocList").asList()
+                .containsExactlyInAnyOrderElementsOf(expectedCorrespondenceDocList);
+
+            List<Element<ManagedDocument>> expectedCorrespondenceDocListLA =
+                List.of(correspondenceLA, correspondenceSolicitor).stream()
+                    .map(docElm -> element(docElm.getId(),
+                        ManagedDocument.builder().document(docElm.getValue().getDocument()).build()))
+                    .collect(Collectors.toList());
+
+            assertThat(updatedFields).extracting("correspondenceDocListLA").asList()
+                .containsExactlyInAnyOrderElementsOf(expectedCorrespondenceDocListLA);
+
+            assertThat(updatedFields).extracting("correspondenceDocListCTSC").asList()
+                .containsExactly(element(correspondenceAdmin.getId(),
+                    ManagedDocument.builder().document(correspondenceAdmin.getValue().getDocument()).build()));
+        }
+
+        @Test
+        void shouldRollbackMigrateCorrespondenceDocuments() {
+            Map<String, Object> caseDetailsMap = new HashMap<>();
+            caseDetailsMap.put("correspondenceDocList", List.of(element(ManagedDocument.builder().build())));
+            caseDetailsMap.put("correspondenceDocListLA", List.of(element(ManagedDocument.builder().build())));
+            caseDetailsMap.put("correspondenceDocListCTSC", List.of(element(ManagedDocument.builder().build())));
+
+            CaseDetails caseDetails = CaseDetails.builder().data(caseDetailsMap).build();
+
+            underTest.rollbackMigrateCorrespondenceDocuments(caseDetails);
+
+            assertThat(caseDetailsMap).extracting("correspondenceDocList").isNull();
+            assertThat(caseDetailsMap).extracting("correspondenceDocListLA").isNull();
+            assertThat(caseDetailsMap).extracting("correspondenceDocListCTSC").isNull();
         }
     }
 }
