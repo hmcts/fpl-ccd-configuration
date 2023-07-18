@@ -28,14 +28,26 @@ public enum DocumentType {
         false, false,
         70),
     APPLICANTS_DOCUMENTS("Applicant's documents", null, false,
-        true, false,
+        true, true,
         140),
     DOCUMENTS_FILED_ON_ISSUE("└─ Documents filed on issue", standardResolver("documentsFiledOnIssueList"), false,
         true,  false,
         150),
+    APPLICANTS_WITNESS_STATEMENTS("└─ Witness statements", standardResolver("applicantWitnessStmtList"), false,
+        true,  true,
+        160),
     CARE_PLAN("└─ Care plan", standardResolver("carePlanList"), false,
         true, false,
-        170);
+        170),
+    PARENT_ASSESSMENTS("└─ Parent assessments", standardResolver("parentAssessmentList"), false,
+        true, true,
+        180),
+    FAMILY_AND_VIABILITY_ASSESSMENTS("└─ Family and viability assessments", standardResolver("famAndViabilityList"), false,
+        true, true,
+        190),
+    APPLICANTS_OTHER_DOCUMENTS("└─ Applicant’s other documents", standardResolver("applicantOtherDocList"), false,
+        true, true,
+        200);
 
     @Getter
     private String description;
