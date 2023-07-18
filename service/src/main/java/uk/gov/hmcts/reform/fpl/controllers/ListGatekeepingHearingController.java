@@ -103,7 +103,6 @@ public class ListGatekeepingHearingController extends CallbackController {
         }
 
         caseDetails.getData().putAll(hearingsService.populateHearingLists(caseData));
-        caseDetails.getData().put("sendNoticeOfHearing", YES.getValue());
 
         setNewHearing(caseDetails);
 
@@ -261,7 +260,7 @@ public class ListGatekeepingHearingController extends CallbackController {
         final Element<HearingBooking> hearingBookingElement = element(hearingBooking);
 
         hearingsService.addOrUpdate(hearingBookingElement, eventData);
-        hearingsService.sendNoticeOfHearing(eventData, hearingBooking);
+        hearingsService.buildNoticeOfHearing(eventData, hearingBooking);
 
         caseData.put(SELECTED_HEARING_ID, hearingBookingElement.getId());
 
