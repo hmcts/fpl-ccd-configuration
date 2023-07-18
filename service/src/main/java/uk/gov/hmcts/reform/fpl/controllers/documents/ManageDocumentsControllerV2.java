@@ -59,6 +59,7 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
+        caseDetails.getData().put("allowMarkDocumentConfidential", YesNo.from(allowMarkDocumentConfidential(caseData)));
         caseDetails.getData().put("hasConfidentialParty", YesNo.from(caseData.hasConfidentialParty()));
         caseDetails.getData().put("uploadableDocumentBundle", List.of(
             element(UploadableDocumentBundle.builder()
@@ -94,7 +95,6 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         ManageDocumentEventData eventData = caseData.getManageDocumentEventData();
-        CaseData caseDataBefore = getCaseDataBefore(request);
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
 
         Map<String, Object> updatedData = new HashMap<>();
@@ -111,6 +111,11 @@ public class ManageDocumentsControllerV2 extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
         // TODO Notification Logic
+    }
+
+    private boolean allowMarkDocumentConfidential(CaseData caseData) {
+        return !List.of(DocumentUploaderType.SOLICITOR, DocumentUploaderType.BARRISTER)
+            .contains(getUploaderType(caseData));
     }
 
     private DocumentUploaderType getUploaderType(CaseData caseData) {

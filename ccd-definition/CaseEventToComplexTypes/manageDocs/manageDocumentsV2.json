@@ -24,7 +24,8 @@
     "CaseFieldID": "uploadableDocumentBundle",
     "ListElementCode": "confidential",
     "FieldDisplayOrder": "3",
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "allowMarkDocumentConfidential = \"YES\""
   },
   {
     "LiveFrom": "01/01/2017",

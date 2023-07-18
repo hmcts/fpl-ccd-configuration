@@ -28,6 +28,8 @@ public class ManageDocumentEventData {
     String hasConfidentialParty;
     @Temp
     List<String> documentAcknowledge;
+    @Temp
+    String allowMarkDocumentConfidential;
 
     public static List<String> temporaryFields() {
         List<String> tempFields = getFieldsListWithAnnotation(ManageDocumentEventData.class, Temp.class).stream()
