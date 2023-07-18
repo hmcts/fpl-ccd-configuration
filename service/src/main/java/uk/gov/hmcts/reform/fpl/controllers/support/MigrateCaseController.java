@@ -59,6 +59,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1466", this::run1466,
         "DFPL-1501", this::run1616,
         "DFPL-1584", this::run1612,
+        "DFPL-1124", this::run1124,
+        "DFPL-1124Rollback", this::run1124Rollback,
         "DFPL-1352", this::run1352,
         "DFPL-702", this::run702,
         "DFPL-702rollback", this::run702rollback
@@ -173,6 +175,24 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove("urgentDirectionsOrder");
     }
 
+    private void run1124(CaseDetails caseDetails) {
+        log.info("Migrating case {}", caseDetails.getId());
+    }
+
+    private void run1124Rollback(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        var caseId = caseData.getId();
+        if (Objects.nonNull(caseData.getDfjArea())) {
+            caseDetails.getData().remove("dfjArea");
+            caseDetails.getData().keySet().removeAll(dfjAreaLookUpService.getAllCourtFields());
+            log.info("Rollback {id = DFPL-1124, case reference = {}} removed dfj area and relevant court field",
+                caseId);
+        } else {
+            log.warn("Rollback {id = DFPL-1124, case reference = {}} doesn't have dfj area and relevant court field",
+                caseId);
+        }
+    }
+
     private void run1505(CaseDetails caseDetails) {
         caseDetails.getData().putAll(migrateCaseService.migrateApplicantWitnessStatements(getCaseData(caseDetails)));
         caseDetails.getData().putAll(migrateCaseService.migrateGuardianReports(getCaseData(caseDetails)));
@@ -206,5 +226,4 @@ public class MigrateCaseController extends CallbackController {
         }
         caseDetails.getData().put("sendToCtsc", "Yes");
     }
-    
 }
