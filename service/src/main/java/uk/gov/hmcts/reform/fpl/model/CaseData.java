@@ -697,8 +697,29 @@ public class CaseData extends CaseDataParent {
     private final ManageDocumentSubtypeList manageDocumentSubtypeList;
     private final String manageDocumentsRelatedToHearing;
     private final List<Element<SupportingEvidenceBundle>> supportingEvidenceDocumentsTemp;
+    /**
+     * Collection field for storing furtherEvidenceDocuments uploaded by HMCTS admin.
+     *
+     * @deprecated Data restructure due to CaseFileView change. Making use of new fields xxxList, xxxListLA and
+     *     xxxListCTSC in the future which are defined in CaseDataParent
+     */
+    @Deprecated(since = "DFPL-1438")
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments; //general evidence
+    /**
+     * Collection field for storing furtherEvidenceDocuments uploaded by LA.
+     *
+     * @deprecated Data restructure due to CaseFileView change. Making use of new fields xxxList, xxxListLA and
+     *     xxxListCTSC in the future which are defined in CaseDataParent
+     */
+    @Deprecated(since = "DFPL-1438")
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA; //general evidence
+    /**
+     * Collection field for storing furtherEvidenceDocuments uploaded by solicitor.
+     *
+     * @deprecated Data restructure due to CaseFileView change. Making use of new fields xxxList, xxxListLA and
+     *     xxxListCTSC in the future which are defined in CaseDataParent
+     */
+    @Deprecated(since = "DFPL-1438")
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsSolicitor; //general evidence
     private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
     @Deprecated(since = "DFPL-1438")
