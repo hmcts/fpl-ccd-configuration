@@ -70,7 +70,7 @@ rd_professional:
 
 judicial_ref_data:
   api:
-    url: http://localhost:8765
+    url: ${RD_JUDICIAL_API_URL:http://localhost:8765}
 
 am_role_assignment:
   api:

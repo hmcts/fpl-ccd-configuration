@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.am.model;
 
 import lombok.Builder;
 import lombok.Data;
-import org.joda.time.DateTime;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -24,13 +24,13 @@ public class RoleAssignment {
     private List<String> notes = List.of();
 
     @Builder.Default
-    private DateTime beginTime = DateTime.now();
+    private ZonedDateTime beginTime = ZonedDateTime.now();
 
     @Builder.Default
-    private DateTime endTime = DateTime.now().plusYears(10);
+    private ZonedDateTime endTime = ZonedDateTime.now().plusYears(10);
 
     @Builder.Default
-    private DateTime created = DateTime.now();
+    private ZonedDateTime created = ZonedDateTime.now();
 
     @Builder.Default
     private String status = "CREATE_REQUESTED";
@@ -44,7 +44,5 @@ public class RoleAssignment {
     private String roleName;
     private RoleType roleType;
     private boolean readOnly;
-
-
 
 }

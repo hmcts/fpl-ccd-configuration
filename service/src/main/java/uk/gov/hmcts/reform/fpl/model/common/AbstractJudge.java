@@ -5,8 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 
+import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
 
@@ -20,6 +22,7 @@ public abstract class AbstractJudge {
     private final String judgeLastName;
     private final String judgeFullName;
     private final String judgeEmailAddress;
+    private final YesNo judgeEnterManually;
     private final JudicialUser judgeJudicialUser;
 
 
@@ -39,5 +42,8 @@ public abstract class AbstractJudge {
         return judgeLastName;
     }
 
+    public YesNo getJudgeEnterManually() {
+        return !isEmpty(this.judgeEnterManually) ? this.judgeEnterManually : YesNo.YES;
+    }
 }
 

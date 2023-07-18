@@ -184,6 +184,7 @@ public class CaseData extends CaseDataParent {
     private String dfjArea;
 
     private final JudicialUser judicialUser;
+    private final YesNo enterManually;
 
     public List<Element<Court>> getPastCourtList() {
         return defaultIfNull(pastCourtList, new ArrayList<>());

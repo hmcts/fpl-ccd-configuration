@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.AbstractJudge;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
@@ -19,17 +20,21 @@ public class Judge extends AbstractJudge {
     private final String judgeLastName;
     private final String judgeFullName;
     private final String judgeEmailAddress;
+    private final YesNo judgeEnterManually;
     private final JudicialUser judgeJudicialUser;
 
     @Builder(toBuilder = true)
     private Judge(JudgeOrMagistrateTitle judgeTitle, String otherTitle, String judgeLastName,
-                  String judgeFullName, String judgeEmailAddress, JudicialUser judgeJudicialUser) {
-        super(judgeTitle, otherTitle, judgeLastName, judgeFullName, judgeEmailAddress, judgeJudicialUser);
+                  String judgeFullName, String judgeEmailAddress, YesNo judgeEnterManually,
+                  JudicialUser judgeJudicialUser) {
+        super(judgeTitle, otherTitle, judgeLastName, judgeFullName, judgeEmailAddress, judgeEnterManually,
+            judgeJudicialUser);
         this.judgeTitle = judgeTitle;
         this.otherTitle = otherTitle;
         this.judgeLastName = judgeLastName;
         this.judgeFullName = judgeFullName;
         this.judgeEmailAddress = judgeEmailAddress;
+        this.judgeEnterManually = judgeEnterManually;
         this.judgeJudicialUser = judgeJudicialUser;
     }
 
@@ -50,6 +55,21 @@ public class Judge extends AbstractJudge {
             .build();
     }
 
+    public static Judge fromJudicialUserProfile(JudicialUserProfile jup, YesNo judgeEnterManually) {
+        return Judge.builder()
+            .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+            .otherTitle(jup.getPostNominals())
+            .judgeLastName(jup.getSurname())
+            .judgeFullName(jup.getFullName())
+            .judgeEmailAddress(jup.getEmailId())
+            .judgeEnterManually(judgeEnterManually)
+            .judgeJudicialUser(JudicialUser.builder()
+                .idamId(jup.getSidamId())
+                .personalCode(jup.getPersonalCode())
+                .build())
+            .build();
+    }
+
     public static Judge fromJudicialUserProfile(JudicialUserProfile jup) {
         return Judge.builder()
             .judgeTitle(JudgeOrMagistrateTitle.OTHER)
@@ -57,10 +77,12 @@ public class Judge extends AbstractJudge {
             .judgeLastName(jup.getSurname())
             .judgeFullName(jup.getFullName())
             .judgeEmailAddress(jup.getEmailId())
+            .judgeEnterManually(YesNo.NO)
             .judgeJudicialUser(JudicialUser.builder()
                 .idamId(jup.getSidamId())
                 .personalCode(jup.getPersonalCode())
                 .build())
             .build();
     }
+
 }

@@ -88,5 +88,14 @@
     "ElementLabel": "Search for Judge",
     "SecurityClassification": "Public",
     "FieldShowCondition": "judgeEmailAddress=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisor",
+    "ListElementCode": "judgeEnterManually",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Enter details manually",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "judgeEmailAddress=\"DO_NOT_SHOW\""
   }
 ]

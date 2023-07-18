@@ -6,7 +6,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.JudicialUser;
+import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
@@ -23,12 +26,17 @@ public class JudgeAndLegalAdvisor extends AbstractJudge {
     private String useAllocatedJudge;
     private String judgeEmailAddress;
 
+    private YesNo judgeEnterManually;
+    private JudicialUser judgeJudicialUser;
+
     @Builder(toBuilder = true)
     @SuppressWarnings("java:S107")
     private JudgeAndLegalAdvisor(JudgeOrMagistrateTitle judgeTitle, String otherTitle, String judgeLastName,
                                  String judgeFullName, String legalAdvisorName, String allocatedJudgeLabel,
-                                 String useAllocatedJudge, String judgeEmailAddress) {
-        super(judgeTitle, otherTitle, judgeLastName, judgeFullName, judgeEmailAddress, null);
+                                 String useAllocatedJudge, String judgeEmailAddress, YesNo judgeEnterManually,
+                                 JudicialUser judgeJudicialUser) {
+        super(judgeTitle, otherTitle, judgeLastName, judgeFullName, judgeEmailAddress, judgeEnterManually,
+            judgeJudicialUser);
         this.judgeTitle = judgeTitle;
         this.otherTitle = otherTitle;
         this.judgeLastName = judgeLastName;
@@ -37,6 +45,8 @@ public class JudgeAndLegalAdvisor extends AbstractJudge {
         this.allocatedJudgeLabel = allocatedJudgeLabel;
         this.useAllocatedJudge = useAllocatedJudge;
         this.judgeEmailAddress = judgeEmailAddress;
+        this.judgeEnterManually = judgeEnterManually;
+        this.judgeJudicialUser = judgeJudicialUser;
     }
 
     @JsonIgnore
@@ -61,6 +71,20 @@ public class JudgeAndLegalAdvisor extends AbstractJudge {
         return JudgeAndLegalAdvisor.builder()
             .useAllocatedJudge(YES.getValue())
             .legalAdvisorName(legalAdvisorName)
+            .build();
+    }
+
+    public static Judge fromJudicialUserProfile(JudicialUserProfile jup) {
+        return Judge.builder()
+            .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+            .otherTitle(jup.getPostNominals())
+            .judgeLastName(jup.getSurname())
+            .judgeFullName(jup.getFullName())
+            .judgeEmailAddress(jup.getEmailId())
+            .judgeJudicialUser(JudicialUser.builder()
+                .idamId(jup.getSidamId())
+                .personalCode(jup.getPersonalCode())
+                .build())
             .build();
     }
 }
