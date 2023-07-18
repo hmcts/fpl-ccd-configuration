@@ -62,8 +62,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1584", this::run1612,
         "DFPL-1352", this::run1352,
         "DFPL-702", this::run702,
-        "DFPL-702rollback", this::run702rollback,
-        "DFPL-1507", this::run1507
+        "DFPL-702rollback", this::run702rollback
     );
 
     @PostMapping("/about-to-submit")
@@ -219,8 +218,4 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put("sendToCtsc", "Yes");
     }
 
-    private void run1507(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.migrateCorrespondenceDocuments(caseData));
-    }
 }
