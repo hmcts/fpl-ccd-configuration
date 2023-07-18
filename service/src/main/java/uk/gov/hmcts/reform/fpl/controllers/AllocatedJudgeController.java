@@ -36,9 +36,7 @@ public class AllocatedJudgeController extends CallbackController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        if (isEmpty(caseDetails.getData().get("allocatedJudge"))) {
-            caseDetails.getData().put("enterManually", YesNo.NO); // default choice to No
-        }
+        caseDetails.getData().put("enterManually", "No"); // default choice to No
         return respond(caseDetails);
     }
 
@@ -78,7 +76,8 @@ public class AllocatedJudgeController extends CallbackController {
             Optional<JudicialUserProfile> jup = judicialService.getJudge(caseData.getJudicialUser().getPersonalCode());
             if (jup.isPresent()) {
                 caseDetails.getData().put("allocatedJudge", Judge.fromJudicialUserProfile(jup.get()));
-                judicialService.assignAllocatedJudge(caseDetails.getId(), jup.get().getSidamId());
+                // todo - move this to submitted callback
+                // judicialService.assignAllocatedJudge(caseDetails.getId(), jup.get().getSidamId());
             } else {
                 return respond(caseDetails,
                     List.of("Could not fetch Judge details from JRD, please try again in a few minutes."));

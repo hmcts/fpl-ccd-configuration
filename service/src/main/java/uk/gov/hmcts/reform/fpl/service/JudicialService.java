@@ -7,26 +7,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.am.client.AmApi;
-import uk.gov.hmcts.reform.am.model.AssignmentRequest;
-import uk.gov.hmcts.reform.am.model.GrantType;
-import uk.gov.hmcts.reform.am.model.RoleAssignment;
-import uk.gov.hmcts.reform.am.model.RoleCategory;
-import uk.gov.hmcts.reform.am.model.RoleRequest;
-import uk.gov.hmcts.reform.am.model.RoleType;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 import uk.gov.hmcts.reform.rd.model.JudicialUserRequest;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
 
 @Slf4j
@@ -34,37 +29,18 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class JudicialService {
 
-    private final CaseAccessService caseAccessService;
     private final SystemUserService systemUserService;
     private final JudicialApi judicialApi;
-    private final AmApi amApi;
     private final AuthTokenGenerator authTokenGenerator;
+    private final IdamClient idamClient;
+    private final RoleAssignmentService roleAssignmentService;
 
     public void assignAllocatedJudge(Long caseId, String userId) {
-        // todo - WIP
-        String systemUserToken = systemUserService.getSysUserToken();
-        amApi.createRoleAssignment(systemUserToken, authTokenGenerator.generate(), AssignmentRequest.builder()
-                .requestedRoles(List.of(RoleAssignment.builder()
-                        .actorId(userId)
-                        .attributes(Map.of("caseId", caseId.toString(),
-                            "caseType", CASE_TYPE,
-                            "jurisdiction", JURISDICTION,
-                            "substantive", "Y"))
-                        .grantType(GrantType.STANDARD)
-                        .roleCategory(RoleCategory.JUDICIAL)
-                        .roleType(RoleType.CASE)
-                        .roleName("allocated-judge")
-                        .readOnly(false)
-                    .build()))
-                .roleRequest(RoleRequest.builder()
-                    .assignerId(systemUserService.getUserId(systemUserToken))
-                    .reference(caseId.toString())
-                    .build())
-            .build());
+        roleAssignmentService.assignJudgeRole(caseId, userId, ALLOCATED_JUDGE);
     }
 
     public void assignHearingJudge(Long caseId, String userId) {
-        caseAccessService.grantJudgeCaseRole(caseId, userId, HEARING_JUDGE);
+        roleAssignmentService.assignJudgeRole(caseId, userId, HEARING_JUDGE);
     }
 
     public boolean checkJudgeExists(String personalCode) {
@@ -91,6 +67,8 @@ public class JudicialService {
         return Optional.empty();
     }
 
+
+
     @Retryable(value = {FeignException.class}, label = "Search JRD for a judge by personal code")
     public Optional<JudicialUserProfile> getJudge(String personalCode) {
         if (isEmpty(personalCode)) {
@@ -106,6 +84,35 @@ public class JudicialService {
         } else {
             return Optional.of(judges.get(0));
         }
+    }
+
+    @Retryable(value = {FeignException.class}, label = "Search IDAM for a UUID by email address")
+    public Optional<String> getJudgeUserIdFromEmail(String email) {
+        List<UserDetails> users = idamClient.searchUsers(systemUserService.getSysUserToken(), "email:" + email);
+        if (users.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(users.get(0).getId());
+        }
+    }
+
+    public Optional<String> getAllocatedJudgeEmail(CaseData caseData) {
+        if (!isEmpty(caseData.getAllocatedJudge())
+            && !isEmpty(caseData.getAllocatedJudge().getJudgeEmailAddress())) {
+            return Optional.of(caseData.getAllocatedJudge().getJudgeEmailAddress());
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public Set<String> getHearingJudgeEmails(CaseData caseData) {
+        Set<String> hearingJudgeEmails = caseData.getAllHearings().stream()
+            .filter(hearing -> !isEmpty(hearing.getValue().getJudgeAndLegalAdvisor())
+                && !isEmpty(hearing.getValue().getJudgeAndLegalAdvisor().getJudgeEmailAddress()))
+            .map(hearing -> hearing.getValue().getJudgeAndLegalAdvisor().getJudgeEmailAddress())
+            .collect(Collectors.toSet());
+
+        return hearingJudgeEmails;
     }
 
 }

@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.DfjAreaLookUpService;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
@@ -21,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -38,6 +41,7 @@ public class MigrateCaseController extends CallbackController {
     private final MigrateCaseService migrateCaseService;
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
     private final DfjAreaLookUpService dfjAreaLookUpService;
+    private final JudicialService judicialService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-1359", this::run1359,
@@ -49,7 +53,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1124", this::run1124,
         "DFPL-1124Rollback", this::run1124Rollback,
         "DFPL-1352", this::run1352
-        );
+    );
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -69,6 +73,38 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        // Allocated judge
+        Optional<String> allocatedJudgeEmail = judicialService.getAllocatedJudgeEmail(caseData);
+        if (allocatedJudgeEmail.isPresent()) {
+            Optional<String> id = judicialService.getJudgeUserIdFromEmail(allocatedJudgeEmail.get());
+            if (id.isPresent()) {
+                judicialService.assignAllocatedJudge(caseData.getId(), id.get());
+            } else {
+                log.error("Could not assign allocated-judge on case {}, could not fetch userId from IDAM",
+                    caseData.getId());
+            }
+        } else {
+            log.error("Could not assign allocated-judge on case {}, no email found on the case", caseData.getId());
+        }
+
+        Set<String> hearingJudgeEmails = judicialService.getHearingJudgeEmails(caseData);
+        hearingJudgeEmails.forEach(email -> {
+                Optional<String> id = judicialService.getJudgeUserIdFromEmail(email);
+                if (id.isPresent()) {
+                    judicialService.assignHearingJudge(caseData.getId(), id.get());
+                } else {
+                    log.error("Could not assign hearing-judge on case {}, could not fetch userId from IDAM",
+                        caseData.getId());
+                }
+            }
+        );
     }
 
     private void run1359(CaseDetails caseDetails) {
