@@ -701,12 +701,36 @@ public class CaseData extends CaseDataParent {
     private final ManageDocumentEventData manageDocumentEventData = ManageDocumentEventData.builder().build();
     private final String manageDocumentsRelatedToHearing;
     private final List<Element<SupportingEvidenceBundle>> supportingEvidenceDocumentsTemp;
+    /**
+     * Collection field for storing furtherEvidenceDocuments uploaded by HMCTS admin.
+     *
+     * @deprecated Data restructure due to CaseFileView change. Making use of new fields xxxList, xxxListLA and
+     *     xxxListCTSC in the future which are defined in CaseDataParent
+     */
+    @Deprecated(since = "DFPL-1438")
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments; //general evidence
+    /**
+     * Collection field for storing furtherEvidenceDocuments uploaded by LA.
+     *
+     * @deprecated Data restructure due to CaseFileView change. Making use of new fields xxxList, xxxListLA and
+     *     xxxListCTSC in the future which are defined in CaseDataParent
+     */
+    @Deprecated(since = "DFPL-1438")
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA; //general evidence
+    /**
+     * Collection field for storing furtherEvidenceDocuments uploaded by solicitor.
+     *
+     * @deprecated Data restructure due to CaseFileView change. Making use of new fields xxxList, xxxListLA and
+     *     xxxListCTSC in the future which are defined in CaseDataParent
+     */
+    @Deprecated(since = "DFPL-1438")
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsSolicitor; //general evidence
     private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
+    @Deprecated(since = "DFPL-1438")
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
+    @Deprecated(since = "DFPL-1438")
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA;
+    @Deprecated(since = "DFPL-1438")
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsSolicitor;
     private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
     private final List<Element<CourtAdminDocument>> otherCourtAdminDocuments;
@@ -760,10 +784,12 @@ public class CaseData extends CaseDataParent {
         return defaultIfNull(manageDocumentsCourtBundle, new ArrayList<>());
     }
 
+    @Deprecated(since = "DFPL-1438")
     public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocuments() {
         return defaultIfNull(correspondenceDocuments, new ArrayList<>());
     }
 
+    @Deprecated(since = "DFPL-1438")
     public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocumentsSolicitor() {
         return defaultIfNull(correspondenceDocumentsSolicitor, new ArrayList<>());
     }
