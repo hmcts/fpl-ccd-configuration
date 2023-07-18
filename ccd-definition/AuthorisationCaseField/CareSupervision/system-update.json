@@ -1663,7 +1663,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documentsWithConfidentialAddress",
     "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "RU"
+    "CRUD": "U"
   },
   {
     "LiveFrom": "01/01/2017",
