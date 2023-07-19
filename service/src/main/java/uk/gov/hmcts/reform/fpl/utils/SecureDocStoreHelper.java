@@ -48,8 +48,11 @@ public class SecureDocStoreHelper {
         } catch (Exception t) {
             if (!featureToggleService.isSecureDocstoreEnabled()) {
                 log.error("↑ ↑ ↑ ↑ ↑ ↑ ↑ EXCEPTION CAUGHT (SECURE DOC STORE: DISABLED) ↑ ↑ ↑ ↑ ↑ ↑ ↑", t);
-            } else if (oldDmStoreApproach == null) {
-                throw t;
+            } else {
+                log.error("↑ ↑ ↑ ↑ ↑ ↑ ↑ EXCEPTION CAUGHT (SECURE DOC STORE: ENABLED) ↑ ↑ ↑ ↑ ↑ ↑ ↑", t);
+                if (oldDmStoreApproach == null) {
+                    throw t;
+                }
             }
         }
         if (!featureToggleService.isSecureDocstoreEnabled() && !isEmpty(oldDmStoreApproach)) {
