@@ -66,6 +66,11 @@ public class HearingDocuments {
     private final List<Element<SkeletonArgument>> skeletonArgumentListCTSC;
     private final List<Element<SkeletonArgument>> skeletonArgumentListRemoved;
 
+    private final List<Element<ManagedDocument>> posStmtList;
+    private final List<Element<ManagedDocument>> posStmtListLA;
+    private final List<Element<ManagedDocument>> posStmtListCTSC;
+    private final List<Element<ManagedDocument>> posStmtListRemoved;
+
     public static class HearingDocumentsBuilder {
         @Deprecated
         // for old case data without data migration
@@ -181,5 +186,17 @@ public class HearingDocuments {
 
     public List<Element<SkeletonArgument>> getSkeletonArgumentListCTSC() {
         return defaultIfNull(skeletonArgumentListCTSC, new ArrayList<>());
+    }
+
+    public List<Element<ManagedDocument>> getPosStmtList() {
+        return defaultIfNull(posStmtList, new ArrayList<>());
+    }
+
+    public List<Element<ManagedDocument>> getPosStmtListLA() {
+        return defaultIfNull(posStmtListLA, new ArrayList<>());
+    }
+
+    public List<Element<ManagedDocument>> getPosStmtListCTSC() {
+        return defaultIfNull(posStmtListCTSC, new ArrayList<>());
     }
 }

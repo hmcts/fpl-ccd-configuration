@@ -296,6 +296,46 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "posStmtList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatement",
+    "Label": "Position statement",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "posStmtListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatement",
+    "Label": "Position statement",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "posStmtListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatement",
+    "Label": "Position statement",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "posStmtListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatement",
+    "Label": "Position statement",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "skeletonArgumentList",
     "FieldType": "Collection",
     "FieldTypeParameter": "SkeletonArgument",

@@ -8,9 +8,11 @@ import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatementV2;
+import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static java.util.Objects.nonNull;
@@ -23,74 +25,90 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public enum DocumentType {
     BUNDLE("Bundle", courtBundleResolver(),  false,
         false, false, false,
-        document -> HearingCourtBundle.builder().courtBundle(List.of(
+        (document, documentUploaderType) -> HearingCourtBundle.builder().courtBundle(List.of(
                             element(CourtBundle.builder().document(document).build()))).build(),
         10),
     CASE_SUMMARY("Case Summary", standardResolver("hearingDocuments.caseSummaryList"), false,
         false, false, false,
-        document -> CaseSummary.builder().document(document).build(),
+        (document, documentUploaderType) -> CaseSummary.builder().document(document).build(),
         20),
+    POSITION_STATEMENTS("Position Statements", standardResolver("hearingDocuments.posStmtList"), false,
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        30),
     THRESHOLD("Threshold", standardResolver("thresholdList"), false,
         false, true, false,
-        document -> ManagedDocument.builder().document(document).build(),
-        30),
-    DRAFT_ORDER_FOR_REVIEW("Draft order for review prior to hearing", null, true,
-        true, true, true,
-        null,
+        defaultWithDocumentBuilder(),
         40),
     SKELETON_ARGUMENTS("Skeleton arguments", standardResolver("hearingDocuments.skeletonArgumentList"), false,
         false, false, false,
-        null,
+        (document, documentUploaderType) -> SkeletonArgument.builder().document(document).build(),
         50),
-    APPLICATIONS("Applications", null, true,
+    DRAFT_ORDER_FOR_REVIEW("Draft order for review prior to hearing", null, true,
         true, true, true,
         null,
-        70),
+        60),
+    ORDERS("Orders", null, false,
+        false, false, false,
+        null,
+        80),
+    JUDGEMENTS("└─ Judgements/facts and reasons", standardResolver("judgementList"), false,
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        90),
+    TRANSCRIPTS("└─ Transcripts", standardResolver("transcriptList"), false,
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        100),
     APPLICANTS_DOCUMENTS("Applicant's documents", null, false,
         false, false, false,
         null,
         140),
     DOCUMENTS_FILED_ON_ISSUE("└─ Documents filed on issue", standardResolver("documentsFiledOnIssueList"), false,
         false,  false, false,
-        document -> ManagedDocument.builder().document(document).build(),
+        defaultWithDocumentBuilder(),
         150),
     APPLICANTS_WITNESS_STATEMENTS("└─ Witness statements", standardResolver("applicantWitnessStmtList"), false,
         false, false, false,
-        document -> ManagedDocument.builder().document(document).build(),
+        defaultWithDocumentBuilder(),
         160),
     CARE_PLAN("└─ Care plan", standardResolver("carePlanList"), false,
         false, true, false,
-        document -> ManagedDocument.builder().document(document).build(),
+        defaultWithDocumentBuilder(),
         170),
     PARENT_ASSESSMENTS("└─ Parent assessments", standardResolver("parentAssessmentList"), false,
         false, false, false,
-        document -> ManagedDocument.builder().document(document).build(),
+        defaultWithDocumentBuilder(),
         180),
     FAMILY_AND_VIABILITY_ASSESSMENTS("└─ Family and viability assessments",
         standardResolver("famAndViabilityList"), false,
         false, false, false,
-        document -> ManagedDocument.builder().document(document).build(),
+        defaultWithDocumentBuilder(),
         190),
     APPLICANTS_OTHER_DOCUMENTS("└─ Applicant’s other documents", standardResolver("applicantOtherDocList"), false,
         false, false, false,
-        document -> ManagedDocument.builder().document(document).build(),
+        defaultWithDocumentBuilder(),
         200),
     MEETING_NOTES("└─ Meeting notes", standardResolver("meetingNoteList"), false,
         false, false, false,
-        document -> ManagedDocument.builder().document(document).build(),
+        defaultWithDocumentBuilder(),
         210),
     CONTACT_NOTES("└─ Contact notes", standardResolver("contactNoteList"), false,
         false, false, false,
-        document -> ManagedDocument.builder().document(document).build(),
+        defaultWithDocumentBuilder(),
         220),
     RESPONDENTS_STATEMENTS("Respondents' statements", standardResolver("respStmtList"), false,
         false, false, false,
-        document -> RespondentStatementV2.builder().document(document).build(),
+        (document, documentUploaderType) -> RespondentStatementV2.builder().document(document).build(),
         230),
     RESPONDENTS_WITNESS_STATEMENTS("└─ Witness statements", standardResolver("respWitnessStmtList"), false,
         false, false, false,
-        document -> ManagedDocument.builder().document(document).build(),
-        240);
+        defaultWithDocumentBuilder(),
+        240),
+    GUARDIAN_EVIDENCE("Guardian's evidence", standardResolver("guardianEvidenceList"), false,
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        250);
 
     @Getter
     private String description;
@@ -105,7 +123,7 @@ public enum DocumentType {
     @Getter
     private boolean hiddenFromSolicitorUpload;
     @Getter
-    private Function<DocumentReference, Object> withDocumentBuilder;
+    private BiFunction<DocumentReference, DocumentUploaderType, Object> withDocumentBuilder;
     @Getter
     private final int displayOrder;
 
@@ -161,4 +179,12 @@ public enum DocumentType {
     private static final Function<ConfidentialLevel, String> standardResolver(String baseFieldName) {
         return confidentialLevel -> standardNaming(confidentialLevel, baseFieldName);
     }
+
+    private static BiFunction<DocumentReference, DocumentUploaderType, Object> defaultWithDocumentBuilder() {
+        return (document, uploaderType) -> ManagedDocument.builder()
+            .document(document)
+            .uploaderType(uploaderType)
+            .build();
+    }
+
 }

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.interfaces.FurtherDocument;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithDocument;
@@ -20,6 +21,7 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOC
 @AllArgsConstructor
 public class ApplicationDocument implements FurtherDocument, WithDocument {
     private final DocumentReference document;
+    private DocumentUploaderType uploaderType;
     private final ApplicationDocumentType documentType;
     protected LocalDateTime dateTimeUploaded;
     private String uploadedBy;

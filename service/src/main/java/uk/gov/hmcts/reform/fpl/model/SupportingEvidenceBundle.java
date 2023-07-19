@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ExpertReportType;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.FurtherDocument;
@@ -46,6 +47,7 @@ public class SupportingEvidenceBundle implements TranslatableItem, FurtherDocume
     private final LocalDateTime dateTimeReceived;
     private LocalDateTime dateTimeUploaded;
     private final DocumentReference document;
+    private DocumentUploaderType uploaderType;
     private String uploadedBy;
     private List<String> confidential;
     private FurtherEvidenceType type;

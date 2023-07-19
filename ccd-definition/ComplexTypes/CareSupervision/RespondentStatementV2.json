@@ -67,7 +67,7 @@
     "FieldType": "Document",
     "ElementLabel": "File",
     "SecurityClassification": "Public",
-    "CategoryID": "respondentsStatements"
+    "CategoryID": "parent_respondentsStatements"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -76,7 +76,7 @@
     "FieldType": "Document",
     "ElementLabel": "Translated document",
     "SecurityClassification": "Public",
-    "CategoryID": "respondentsStatements"
+    "CategoryID": "parent_respondentsStatements"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -231,6 +231,15 @@
     "ListElementCode": "removalReason",
     "FieldType": "TextArea",
     "ElementLabel": "Reason for removal",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2",
+    "ListElementCode": "uploaderType",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "DocumentUploaderType",
+    "ElementLabel": "Document Uploader Type",
     "SecurityClassification": "Public"
   }
 ]

@@ -1381,5 +1381,12 @@
     "CaseFieldID": "previousProceedingList",
     "UserRole": "[BARRISTER]",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "posStmtList",
+    "UserRole": "[BARRISTER]",
+    "CRUD": "R"
   }
 ]

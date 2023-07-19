@@ -128,21 +128,19 @@ public class ManageDocumentService {
     private static final Predicate<Element<SupportingEvidenceBundle>> SOLICITOR_FILTER =
         bundle -> bundle.getValue().isUploadedByRepresentativeSolicitor();
 
-
-
     private String getDocumentListActualFieldName(String fieldName) {
-        String[] spliitedFieldName = fieldName.split("\\.");
-        if (spliitedFieldName.length == 2) {
-            return spliitedFieldName[1];
+        String[] splitFieldName = fieldName.split("\\.");
+        if (splitFieldName.length == 2) {
+            return splitFieldName[1];
         } else {
             return fieldName;
         }
     }
 
     private Object getDocumentListHolder(String fieldName, CaseData caseData) throws Exception {
-        String[] spliitedFieldName = fieldName.split("\\.");
-        if (spliitedFieldName.length == 2) {
-            return BeanUtils.getPropertyDescriptor(CaseData.class, spliitedFieldName[0]).getReadMethod()
+        String[] splitFieldName = fieldName.split("\\.");
+        if (splitFieldName.length == 2) {
+            return BeanUtils.getPropertyDescriptor(CaseData.class, splitFieldName[0]).getReadMethod()
                 .invoke(caseData);
         } else {
             return caseData;
@@ -150,18 +148,18 @@ public class ManageDocumentService {
     }
 
     private String getDocumentListHolderFieldName(String fieldName) {
-        String[] spliitedFieldName = fieldName.split("\\.");
-        if (spliitedFieldName.length == 2) {
-            return spliitedFieldName[1];
+        String[] splitFieldName = fieldName.split("\\.");
+        if (splitFieldName.length == 2) {
+            return splitFieldName[1];
         } else {
             return fieldName;
         }
     }
 
     private Class getDocumentListHolderClass(String fieldName) {
-        String[] spliitedFieldName = fieldName.split("\\.");
-        if (spliitedFieldName.length == 2) {
-            String parentFieldName = spliitedFieldName[0];
+        String[] splitFieldName = fieldName.split("\\.");
+        if (splitFieldName.length == 2) {
+            String parentFieldName = splitFieldName[0];
             switch (parentFieldName) {
                 case "hearingDocuments":
                     return HearingDocuments.class;
@@ -202,7 +200,7 @@ public class ManageDocumentService {
                     docs = new ArrayList<>();
                 }
             }
-            docs.add(element(dt.getWithDocumentBuilder().apply(document)));
+            docs.add(element(dt.getWithDocumentBuilder().apply(document, uploaderType)));
             ret.put(actualFieldName, docs);
         });
         return ret;

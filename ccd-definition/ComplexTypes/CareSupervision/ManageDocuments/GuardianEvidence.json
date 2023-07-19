@@ -11,6 +11,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GuardianEvidence",
+    "ListElementCode": "uploaderType",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "DocumentUploaderType",
+    "ElementLabel": "Document Uploader Type",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GuardianEvidence",
     "ListElementCode": "removalReason",
     "FieldType": "TextArea",
     "ElementLabel": "Reason for removal",

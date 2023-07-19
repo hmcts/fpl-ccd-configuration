@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentMetaData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithDocument;
@@ -25,6 +26,7 @@ public class HearingDocument extends DocumentMetaData implements WithDocument {
     private String removalReason;
     protected String hasConfidentialAddress;
     protected List<String> documentAcknowledge;
+    private DocumentUploaderType uploaderType;
 
     public String getHasConfidentialAddress() {
         return (document != null && (!YesNo.isYesOrNo(hasConfidentialAddress)))

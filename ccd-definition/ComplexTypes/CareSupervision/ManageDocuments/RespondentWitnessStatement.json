@@ -15,5 +15,14 @@
     "FieldType": "TextArea",
     "ElementLabel": "Reason for removal",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentWitnessStatement",
+    "ListElementCode": "uploaderType",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "DocumentUploaderType",
+    "ElementLabel": "Document Uploader Type",
+    "SecurityClassification": "Public"
   }
 ]
