@@ -38,6 +38,12 @@ resource "azurerm_key_vault_secret" "AZURE_APPINSGHTS_KEY" {
   key_vault_id = module.key-vault.key_vault_id
 }
 
+resource "azurerm_key_vault_secret" "AZURE_KEY_VAULT_SECRET" {
+  name         = "app-insights-connection-string"
+  value        = azurerm_application_insights.appinsights.connection_string
+  key_vault_id = module.key-vault.key_vault_id
+}
+
 module "key-vault" {
   source                  = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
   name                    = "fpl-${var.env}"
@@ -51,6 +57,7 @@ module "key-vault" {
 
   #aks migration
   managed_identity_object_id = var.managed_identity_object_id
+  create_managed_identity    = true
 }
 
 module "fpl-scheduler-db" {
