@@ -111,33 +111,36 @@ public class SendNoticeOfHearingHandler {
     @Async
     @EventListener
     public void notifyRepresentatives(final SendNoticeOfHearing event) {
-        final CaseData caseData = event.getCaseData();
+        if (!event.isGateKeepingHearing()) {
+            final CaseData caseData = event.getCaseData();
 
-        SERVING_PREFERENCES.forEach(servingPreference -> {
-            NotifyData notifyData = noticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
-                caseData, event.getSelectedHearing(), servingPreference
-            );
+            SERVING_PREFERENCES.forEach(servingPreference -> {
+                NotifyData notifyData = noticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
+                    caseData, event.getSelectedHearing(), servingPreference
+                );
 
-            representativeNotificationService.sendToRepresentativesExceptOthersByServedPreference(
-                servingPreference, NOTICE_OF_NEW_HEARING, notifyData, caseData
-            );
-        });
+                representativeNotificationService.sendToRepresentativesExceptOthersByServedPreference(
+                    servingPreference, NOTICE_OF_NEW_HEARING, notifyData, caseData
+                );
+            });
+        }
     }
 
     @Async
     @EventListener
     public void sendNoticeOfHearingByPost(final SendNoticeOfHearing event) {
+        if (!event.isGateKeepingHearing()) {
+            if (event.getSelectedHearing().getNeedTranslation() == YesNo.YES) {
+                return;
+            }
 
-        if (event.getSelectedHearing().getNeedTranslation() == YesNo.YES) {
-            return;
+            final CaseData caseData = event.getCaseData();
+            final DocumentReference noticeOfHearing = event.getSelectedHearing().getNoticeOfHearing();
+
+            final List<Recipient> recipients = sendDocumentService.getStandardRecipients(caseData);
+
+            sendDocumentService.sendDocuments(caseData, List.of(noticeOfHearing), recipients);
         }
-
-        final CaseData caseData = event.getCaseData();
-        final DocumentReference noticeOfHearing = event.getSelectedHearing().getNoticeOfHearing();
-
-        final List<Recipient> recipients = sendDocumentService.getStandardRecipients(caseData);
-
-        sendDocumentService.sendDocuments(caseData, List.of(noticeOfHearing), recipients);
     }
 
     @Async

@@ -316,7 +316,7 @@ public class ListGatekeepingHearingController extends CallbackController {
             hearingsService.findHearingBooking(caseData.getSelectedHearingId(), caseData.getHearingDetails())
                 .ifPresent(hearingBooking -> {
                     if (isNotEmpty(hearingBooking.getNoticeOfHearing())) {
-                        publishEvent(new SendNoticeOfHearing(caseData, hearingBooking));
+                        publishEvent(new SendNoticeOfHearing(caseData, hearingBooking, true));
                     }
 
                     if (needTemporaryHearingJudgeAllocated(caseData, hearingBooking)) {

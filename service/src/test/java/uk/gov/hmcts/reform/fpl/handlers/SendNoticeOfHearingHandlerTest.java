@@ -117,7 +117,7 @@ class SendNoticeOfHearingHandlerTest {
             .willReturn(DIGITAL_REP_NOTIFY_DATA);
 
 
-        underTest.notifyLocalAuthority(new SendNoticeOfHearing(CASE_DATA, HEARING));
+        underTest.notifyLocalAuthority(new SendNoticeOfHearing(CASE_DATA, HEARING, false));
 
         verify(notificationService).sendEmail(
             NOTICE_OF_NEW_HEARING, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS), DIGITAL_REP_NOTIFY_DATA, CASE_ID);
@@ -136,7 +136,7 @@ class SendNoticeOfHearingHandlerTest {
                 new CafcassLookupConfiguration.Cafcass("Cafcass Cymru", CAFCASS_EMAIL_ADDRESS))
             );
 
-        underTest.notifyCafcass(new SendNoticeOfHearing(CASE_DATA, HEARING));
+        underTest.notifyCafcass(new SendNoticeOfHearing(CASE_DATA, HEARING, false));
 
         verify(notificationService).sendEmail(
             NOTICE_OF_NEW_HEARING, CAFCASS_EMAIL_ADDRESS, EMAIL_REP_NOTIFY_DATA, CASE_ID
@@ -157,7 +157,7 @@ class SendNoticeOfHearingHandlerTest {
             );
         given(HEARING.getNoticeOfHearing()).willReturn(documentReference);
 
-        underTest.notifyCafcassSendGrid(new SendNoticeOfHearing(CASE_DATA, HEARING));
+        underTest.notifyCafcassSendGrid(new SendNoticeOfHearing(CASE_DATA, HEARING, false));
 
         verify(cafcassNotificationService).sendEmail(
                 eq(CASE_DATA),
@@ -179,7 +179,7 @@ class SendNoticeOfHearingHandlerTest {
         given(noticeOfHearingNoOtherAddressEmailContentProvider.buildNewNoticeOfHearingNoOtherAddressNotification(
             CASE_DATA, HEARING, OTHER)).willReturn(NO_OTHER_ADDRESS_NOTIFY_DATA);
 
-        underTest.notifyCtsc(new SendNoticeOfHearing(CASE_DATA, HEARING));
+        underTest.notifyCtsc(new SendNoticeOfHearing(CASE_DATA, HEARING, false));
 
         verify(notificationService).sendEmail(
             NOTICE_OF_NEW_HEARING_NO_OTHER_ADDRESS, CTSC_INBOX, NO_OTHER_ADDRESS_NOTIFY_DATA, CASE_ID);
@@ -196,7 +196,7 @@ class SendNoticeOfHearingHandlerTest {
         given(OTHER.hasAddressAdded()).willReturn(false);
         given(OTHER.getName()).willReturn(otherName);
 
-        underTest.notifyCtsc(new SendNoticeOfHearing(CASE_DATA, HEARING));
+        underTest.notifyCtsc(new SendNoticeOfHearing(CASE_DATA, HEARING, false));
 
         verifyNoInteractions(notificationService);
     }
@@ -212,7 +212,7 @@ class SendNoticeOfHearingHandlerTest {
         given(OTHER.isRepresented()).willReturn(isRepresented);
         given(OTHER.hasAddressAdded()).willReturn(hasAddressAdded);
 
-        underTest.notifyCtsc(new SendNoticeOfHearing(CASE_DATA, HEARING));
+        underTest.notifyCtsc(new SendNoticeOfHearing(CASE_DATA, HEARING, false));
 
         verify(notificationService, never()).sendEmail(
             NOTICE_OF_NEW_HEARING_NO_OTHER_ADDRESS, CTSC_INBOX, NO_OTHER_ADDRESS_NOTIFY_DATA, CASE_ID);
@@ -226,7 +226,7 @@ class SendNoticeOfHearingHandlerTest {
         given(contentProvider.buildNewNoticeOfHearingNotification(CASE_DATA, HEARING, EMAIL))
             .willReturn(EMAIL_REP_NOTIFY_DATA);
 
-        underTest.notifyRepresentatives(new SendNoticeOfHearing(CASE_DATA, HEARING));
+        underTest.notifyRepresentatives(new SendNoticeOfHearing(CASE_DATA, HEARING, false));
 
         verify(representativeNotificationService).sendToRepresentativesExceptOthersByServedPreference(
             RepresentativeServingPreferences.EMAIL,
@@ -253,7 +253,7 @@ class SendNoticeOfHearingHandlerTest {
         given(sendDocumentService.getStandardRecipients(CASE_DATA)).willReturn(recipients);
         given(HEARING.getNoticeOfHearing()).willReturn(noticeOfHearing);
 
-        underTest.sendNoticeOfHearingByPost(new SendNoticeOfHearing(CASE_DATA, HEARING));
+        underTest.sendNoticeOfHearingByPost(new SendNoticeOfHearing(CASE_DATA, HEARING, false));
 
         verify(sendDocumentService).sendDocuments(CASE_DATA, List.of(noticeOfHearing), recipients);
         verify(sendDocumentService).getStandardRecipients(CASE_DATA);
@@ -268,7 +268,7 @@ class SendNoticeOfHearingHandlerTest {
         given(sendDocumentService.getStandardRecipients(CASE_DATA)).willReturn(new ArrayList<>());
         given(HEARING.getNoticeOfHearing()).willReturn(noticeOfHearing);
 
-        underTest.sendNoticeOfHearingByPost(new SendNoticeOfHearing(CASE_DATA, HEARING));
+        underTest.sendNoticeOfHearingByPost(new SendNoticeOfHearing(CASE_DATA, HEARING, false));
 
         verify(sendDocumentService).sendDocuments(CASE_DATA, List.of(noticeOfHearing), List.of());
 
@@ -280,7 +280,7 @@ class SendNoticeOfHearingHandlerTest {
     void shouldNotSendNoticeOfHearingByPostIfTranslationNeeded() {
         underTest.sendNoticeOfHearingByPost(new SendNoticeOfHearing(CASE_DATA, HearingBooking.builder()
             .translationRequirements(LanguageTranslationRequirement.WELSH_TO_ENGLISH)
-            .build()));
+            .build(), false));
 
         verifyNoInteractions(sendDocumentService, otherRecipientsInbox, notificationService);
     }
@@ -293,7 +293,7 @@ class SendNoticeOfHearingHandlerTest {
                 .noticeOfHearing(NOTICE_OF_HEARING)
                 .startDate(START_DATE)
                 .translationRequirements(TRANSLATION_REQUIREMENTS)
-                .build())
+                .build(), false)
         );
 
         verify(translationRequestService).sendRequest(CASE_DATA,
@@ -307,12 +307,27 @@ class SendNoticeOfHearingHandlerTest {
             new SendNoticeOfHearing(CASE_DATA, HearingBooking.builder()
                 .startDate(START_DATE)
                 .noticeOfHearing(NOTICE_OF_HEARING)
-                .build())
+                .build(), false)
         );
 
         verify(translationRequestService).sendRequest(CASE_DATA,
             Optional.of(LanguageTranslationRequirement.NO),
             NOTICE_OF_HEARING, "Notice of hearing - 1 March 2012");
+    }
+
+    @Test
+    void shouldNotSendNotificationToRepresentativesWhenNewGatekeepingHearingIsAdded() {
+        underTest.notifyRepresentatives(new SendNoticeOfHearing(CASE_DATA, HEARING, true));
+
+        verifyNoInteractions(representativeNotificationService);
+    }
+
+    @Test
+    void shouldNotSendNoticeOfHearingToRepresentativesAndNotRepresentedRespondentsByPost() {
+        underTest.sendNoticeOfHearingByPost(new SendNoticeOfHearing(CASE_DATA, HEARING, true));
+
+        verifyNoMoreInteractions(sendDocumentService);
+        verifyNoInteractions(notificationService);
     }
 
     private static Stream<Arguments> shouldNotSendOtherSource() {
