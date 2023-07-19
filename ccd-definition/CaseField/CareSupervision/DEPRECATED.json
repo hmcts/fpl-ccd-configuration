@@ -552,6 +552,7 @@
   },
   {
     "ID": "correspondenceDocumentsLANC",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "Label": "Correspondence uploaded by local authority",
