@@ -489,6 +489,17 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "positionStatementRespondentList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatementRespondent",
+    "Label": "Position statement respondent",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Deprecated. To be removed once all case migrated"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "correspondenceDocuments",
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
@@ -516,17 +527,6 @@
     "Label": "Correspondence uploaded by local authority",
     "Searchable": "N",
     "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "positionStatementRespondentList",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "PositionStatementRespondent",
-    "Label": "Position statement respondent",
-    "SecurityClassification": "Public",
-    "Searchable": "N",
-    "Comment": "Deprecated. To be removed once all case migrated"
   },
   {
     "ID": "correspondenceDocumentsLANC",
