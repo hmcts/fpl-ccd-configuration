@@ -326,7 +326,7 @@ class SendNoticeOfHearingHandlerTest {
     void shouldNotSendNoticeOfHearingToRepresentativesAndNotRepresentedRespondentsByPost() {
         underTest.sendNoticeOfHearingByPost(new SendNoticeOfHearing(CASE_DATA, HEARING, true));
 
-        verifyNoMoreInteractions(sendDocumentService);
+        verifyNoInteractions(sendDocumentService);
         verifyNoInteractions(notificationService);
     }
 
