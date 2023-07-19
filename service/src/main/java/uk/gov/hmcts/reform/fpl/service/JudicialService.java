@@ -43,6 +43,7 @@ public class JudicialService {
         roleAssignmentService.assignJudgeRole(caseId, userId, HEARING_JUDGE);
     }
 
+    @Retryable(value = {FeignException.class}, label = "Check a judge exists in JRD")
     public boolean checkJudgeExists(String personalCode) {
         if (isEmpty(personalCode)) {
             return false;
@@ -66,8 +67,6 @@ public class JudicialService {
 
         return Optional.empty();
     }
-
-
 
     @Retryable(value = {FeignException.class}, label = "Search JRD for a judge by personal code")
     public Optional<JudicialUserProfile> getJudge(String personalCode) {
@@ -106,13 +105,10 @@ public class JudicialService {
     }
 
     public Set<String> getHearingJudgeEmails(CaseData caseData) {
-        Set<String> hearingJudgeEmails = caseData.getAllHearings().stream()
+        return caseData.getAllHearings().stream()
             .filter(hearing -> !isEmpty(hearing.getValue().getJudgeAndLegalAdvisor())
                 && !isEmpty(hearing.getValue().getJudgeAndLegalAdvisor().getJudgeEmailAddress()))
             .map(hearing -> hearing.getValue().getJudgeAndLegalAdvisor().getJudgeEmailAddress())
             .collect(Collectors.toSet());
-
-        return hearingJudgeEmails;
     }
-
 }
