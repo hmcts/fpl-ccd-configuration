@@ -2,68 +2,133 @@ package uk.gov.hmcts.reform.fpl.enums.cfv;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
+import uk.gov.hmcts.reform.fpl.model.CaseSummary;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
+import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatementV2;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
+import java.util.List;
 import java.util.function.Function;
 
 import static java.util.Objects.nonNull;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.CTSC;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.LA;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.NON_CONFIDENTIAL;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @AllArgsConstructor
 public enum DocumentType {
     BUNDLE("Bundle", courtBundleResolver(),  false,
-        true, true,
+        false, false, false,
+        document -> HearingCourtBundle.builder().courtBundle(List.of(
+                            element(CourtBundle.builder().document(document).build()))).build(),
         10),
     CASE_SUMMARY("Case Summary", standardResolver("hearingDocuments.caseSummaryList"), false,
-        true, true,
+        false, false, false,
+        document -> CaseSummary.builder().document(document).build(),
         20),
     THRESHOLD("Threshold", standardResolver("thresholdList"), false,
-        true, false,
+        false, true, false,
+        document -> ManagedDocument.builder().document(document).build(),
         30),
     DRAFT_ORDER_FOR_REVIEW("Draft order for review prior to hearing", null, true,
-        false, false,
+        true, true, true,
+        null,
         40),
     SKELETON_ARGUMENTS("Skeleton arguments", standardResolver("hearingDocuments.skeletonArgumentList"), false,
-        true, true,
+        false, false, false,
+        null,
         50),
     APPLICATIONS("Applications", null, true,
-        false, false,
+        true, true, true,
+        null,
         70),
     APPLICANTS_DOCUMENTS("Applicant's documents", null, false,
-        true, true,
+        false, false, false,
+        null,
         140),
     DOCUMENTS_FILED_ON_ISSUE("└─ Documents filed on issue", standardResolver("documentsFiledOnIssueList"), false,
-        true,  false,
+        false,  false, false,
+        document -> ManagedDocument.builder().document(document).build(),
         150),
     APPLICANTS_WITNESS_STATEMENTS("└─ Witness statements", standardResolver("applicantWitnessStmtList"), false,
-        true,  true,
+        false, false, false,
+        document -> ManagedDocument.builder().document(document).build(),
         160),
     CARE_PLAN("└─ Care plan", standardResolver("carePlanList"), false,
-        true, false,
+        false, true, false,
+        document -> ManagedDocument.builder().document(document).build(),
         170),
     PARENT_ASSESSMENTS("└─ Parent assessments", standardResolver("parentAssessmentList"), false,
-        true, true,
+        false, false, false,
+        document -> ManagedDocument.builder().document(document).build(),
         180),
-    FAMILY_AND_VIABILITY_ASSESSMENTS("└─ Family and viability assessments", standardResolver("famAndViabilityList"), false,
-        true, true,
+    FAMILY_AND_VIABILITY_ASSESSMENTS("└─ Family and viability assessments",
+        standardResolver("famAndViabilityList"), false,
+        false, false, false,
+        document -> ManagedDocument.builder().document(document).build(),
         190),
     APPLICANTS_OTHER_DOCUMENTS("└─ Applicant’s other documents", standardResolver("applicantOtherDocList"), false,
-        true, true,
-        200);
+        false, false, false,
+        document -> ManagedDocument.builder().document(document).build(),
+        200),
+    MEETING_NOTES("└─ Meeting notes", standardResolver("meetingNoteList"), false,
+        false, false, false,
+        document -> ManagedDocument.builder().document(document).build(),
+        210),
+    CONTACT_NOTES("└─ Contact notes", standardResolver("contactNoteList"), false,
+        false, false, false,
+        document -> ManagedDocument.builder().document(document).build(),
+        220),
+    RESPONDENTS_STATEMENTS("Respondents' statements", standardResolver("respStmtList"), false,
+        false, false, false,
+        document -> RespondentStatementV2.builder().document(document).build(),
+        230),
+    RESPONDENTS_WITNESS_STATEMENTS("└─ Witness statements", standardResolver("respWitnessStmtList"), false,
+        false, false, false,
+        document -> ManagedDocument.builder().document(document).build(),
+        240);
 
     @Getter
     private String description;
     @Getter
     private Function<ConfidentialLevel, String> baseFieldNameResolver;
     @Getter
-    private boolean hidden;
+    private boolean hiddenFromUpload;
     @Getter
-    private boolean uploadableByLA;
+    private boolean hiddenFromLAUpload;
     @Getter
-    private boolean uploadableByCTSC;
+    private boolean hiddenFromCTSCUpload;
+    @Getter
+    private boolean hiddenFromSolicitorUpload;
+    @Getter
+    private Function<DocumentReference, Object> withDocumentBuilder;
     @Getter
     private final int displayOrder;
 
     public boolean isUploadable() {
         return nonNull(baseFieldNameResolver);
+    }
+
+    public String getFieldName(DocumentUploaderType uploaderType, boolean confidential) {
+        return getBaseFieldNameResolver().apply(getConfidentialLevel(uploaderType,confidential));
+    }
+
+    private ConfidentialLevel getConfidentialLevel(DocumentUploaderType uploaderType, boolean isConfidential) {
+        switch (uploaderType) {
+            case DESIGNATED_LOCAL_AUTHORITY:
+            case SECONDARY_LOCAL_AUTHORITY:
+                return isConfidential ? LA : NON_CONFIDENTIAL;
+            case HMCTS:
+                return isConfidential ? CTSC : NON_CONFIDENTIAL;
+            case SOLICITOR:
+            case BARRISTER:
+            default:
+                return NON_CONFIDENTIAL;
+        }
     }
 
     private static final Function<ConfidentialLevel, String> courtBundleResolver() {

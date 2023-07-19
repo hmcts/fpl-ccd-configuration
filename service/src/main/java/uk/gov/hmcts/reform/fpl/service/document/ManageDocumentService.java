@@ -7,7 +7,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
@@ -22,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
-import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
@@ -73,9 +71,6 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.CTSC;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.LA;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.NON_CONFIDENTIAL;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -133,19 +128,7 @@ public class ManageDocumentService {
     private static final Predicate<Element<SupportingEvidenceBundle>> SOLICITOR_FILTER =
         bundle -> bundle.getValue().isUploadedByRepresentativeSolicitor();
 
-    private ConfidentialLevel getConfidentialLevel(DocumentUploaderType uploaderType, boolean isConfidential) {
-        switch (uploaderType) {
-            case DESIGNATED_LOCAL_AUTHORITY:
-            case SECONDARY_LOCAL_AUTHORITY:
-                return isConfidential ? LA : NON_CONFIDENTIAL;
-            case HMCTS:
-                return isConfidential ? CTSC : NON_CONFIDENTIAL;
-            case SOLICITOR:
-            case BARRISTER:
-            default:
-                return NON_CONFIDENTIAL;
-        }
-    }
+
 
     private String getDocumentListActualFieldName(String fieldName) {
         String[] spliitedFieldName = fieldName.split("\\.");
@@ -189,29 +172,14 @@ public class ManageDocumentService {
         return CaseData.class;
     }
 
-    private Object buildWithDocumentObject(String fieldName, DocumentReference document) {
-        String[] spliitedFieldName = fieldName.split("\\.");
-        if (spliitedFieldName.length == 2) {
-            String parentFieldName = spliitedFieldName[0];
-            switch (parentFieldName) {
-                case "hearingDocuments":
-                    return HearingCourtBundle.builder().courtBundle(List.of(
-                        element(CourtBundle.builder().document(document).build()))).build();
-                default:
-                    throw new IllegalStateException("unresolved target class: " + parentFieldName);
-            }
-        }
-        return ManagedDocument.builder().document(document).build();
-    }
-
     @SuppressWarnings("unchecked")
     public Map<String, Object> uploadDocuments(CaseData caseData, DocumentUploaderType uploaderType,
                                                List<Element<UploadableDocumentBundle>> elements) {
         final Map<String, Object> ret = new HashMap<>();
         elements.forEach(e -> {
             DocumentType dt = DocumentType.valueOf(e.getValue().getDocumentTypeDynamicList().getValue().getCode());
-            String fieldName = dt.getBaseFieldNameResolver().apply(getConfidentialLevel(uploaderType,
-                YES.equals(YesNo.fromString(e.getValue().getConfidential()))));
+            boolean confidential = YES.equals(YesNo.fromString(e.getValue().getConfidential()));
+            String fieldName = dt.getFieldName(uploaderType, confidential);
             final String actualFieldName = getDocumentListActualFieldName(fieldName);
             final DocumentReference document = e.getValue().getDocument();
 
@@ -234,24 +202,21 @@ public class ManageDocumentService {
                     docs = new ArrayList<>();
                 }
             }
-            docs.add(element(buildWithDocumentObject(fieldName, document)));
+            docs.add(element(dt.getWithDocumentBuilder().apply(document)));
             ret.put(actualFieldName, docs);
         });
         return ret;
     }
 
-    public boolean isUploadable(DocumentType documentType, DocumentUploaderType uploaderType) {
-        if (documentType.getBaseFieldNameResolver() == null) {
-            return false;
-        }
+    public boolean isVisible(DocumentType documentType, DocumentUploaderType uploaderType) {
         switch (uploaderType) {
             case SOLICITOR:
-                return documentType.isUploadable();
+                return !documentType.isHiddenFromSolicitorUpload();
             case DESIGNATED_LOCAL_AUTHORITY:
             case SECONDARY_LOCAL_AUTHORITY:
-                return documentType.isUploadable() && documentType.isUploadableByLA();
+                return !documentType.isHiddenFromLAUpload();
             case HMCTS:
-                return documentType.isUploadable() && documentType.isUploadableByCTSC();
+                return !documentType.isHiddenFromCTSCUpload();
             case BARRISTER:
                 return false;
             default:
@@ -261,7 +226,8 @@ public class ManageDocumentService {
 
     public DynamicList buildDocumentTypeDynamicList(DocumentUploaderType uploaderType) {
         final List<Pair<String, String>> courts = Arrays.stream(DocumentType.values())
-            .filter(documentType -> !documentType.isHidden() || isUploadable(documentType, uploaderType))
+            .filter(documentType -> isVisible(documentType, uploaderType))
+            .filter(documentType -> !documentType.isHiddenFromUpload())
             .sorted(comparing(DocumentType::getDisplayOrder))
             .map(dt -> Pair.of(dt.name(), dt.getDescription()))
             .collect(toList());

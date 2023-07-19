@@ -79,9 +79,8 @@ public class ManageDocumentsControllerV2 extends CallbackController {
 
         if (UPLOAD_DOCUMENTS.equals(eventData.getManageDocumentAction())) {
             if (eventData.getUploadableDocumentBundle().stream().anyMatch(
-                bundle -> !manageDocumentService.isUploadable(
-                    DocumentType.valueOf(bundle.getValue().getDocumentTypeDynamicList().getValueCode()),
-                    getUploaderType(caseData)))) {
+                bundle -> !DocumentType.valueOf(bundle.getValue().getDocumentTypeDynamicList().getValueCode())
+                    .isUploadable())) {
                 return respond(caseDetails, List.of(
                     "You cannot upload any document to the document type selected."));
             }
