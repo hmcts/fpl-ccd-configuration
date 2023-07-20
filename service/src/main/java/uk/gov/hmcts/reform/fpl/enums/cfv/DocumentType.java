@@ -36,10 +36,12 @@ public enum DocumentType {
         false, false, false,
         defaultWithDocumentBuilder(),
         30),
+    /*
     THRESHOLD("Threshold", standardResolver("thresholdList"), false,
         false, true, false,
         defaultWithDocumentBuilder(),
         40),
+     */
     SKELETON_ARGUMENTS("Skeleton arguments", standardResolver("hearingDocuments.skeletonArgumentList"), false,
         false, false, false,
         (document, documentUploaderType) -> SkeletonArgument.builder().document(document).build(),
@@ -64,18 +66,22 @@ public enum DocumentType {
         false, false, false,
         null,
         140),
+    /*
     DOCUMENTS_FILED_ON_ISSUE("└─ Documents filed on issue", standardResolver("documentsFiledOnIssueList"), false,
         false,  false, false,
         defaultWithDocumentBuilder(),
         150),
+     */
     APPLICANTS_WITNESS_STATEMENTS("└─ Witness statements", standardResolver("applicantWitnessStmtList"), false,
         false, false, false,
         defaultWithDocumentBuilder(),
         160),
+    /*
     CARE_PLAN("└─ Care plan", standardResolver("carePlanList"), false,
         false, true, false,
         defaultWithDocumentBuilder(),
         170),
+     */
     PARENT_ASSESSMENTS("└─ Parent assessments", standardResolver("parentAssessmentList"), false,
         false, false, false,
         defaultWithDocumentBuilder(),
@@ -108,7 +114,31 @@ public enum DocumentType {
     GUARDIAN_EVIDENCE("Guardian's evidence", standardResolver("guardianEvidenceList"), false,
         false, false, false,
         defaultWithDocumentBuilder(),
-        250);
+        250),
+    EXPERT_REPORTS("Expert Orders", standardResolver("expertReportList"), false,
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        260),
+    DRUG_AND_ALCOHOL_REPORTS("└─ Drug and alcohol reports", standardResolver("drugAndAlcoholReportList"), false,
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        270),
+    LETTER_OF_INSTRUCTION("└─ Letters of instruction/referrals", standardResolver("lettersOfInstructionList"), false,
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        280),
+    POLICE_DISCLOSURE("Police disclosure", standardResolver("policeDisclosureList"), false,
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        290),
+    MEDICAL_RECORDS("Medical records", standardResolver("medicalRecordList"), false,
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        300),
+    COURT_CORRESPONDENCE("Court correspondence", standardResolver("correspondenceDocList"), false,
+        false, false, false,
+        defaultWithDocumentBuilder(),
+        300);
 
     @Getter
     private String description;

@@ -56,6 +56,14 @@ public class CaseDataParent {
     protected final List<Element<ManagedDocument>> expertReportListLA;
     protected final List<Element<ManagedDocument>> expertReportListCTSC;
     protected final List<Element<ManagedDocument>> expertReportListRemoved;
+    protected final List<Element<ManagedDocument>> policeDisclosureList;
+    protected final List<Element<ManagedDocument>> policeDisclosureListLA;
+    protected final List<Element<ManagedDocument>> policeDisclosureListCTSC;
+    protected final List<Element<ManagedDocument>> policeDisclosureListRemoved;
+    protected final List<Element<ManagedDocument>> medicalRecordList;
+    protected final List<Element<ManagedDocument>> medicalRecordListLA;
+    protected final List<Element<ManagedDocument>> medicalRecordListCTSC;
+    protected final List<Element<ManagedDocument>> medicalRecordListRemoved;
     protected final List<Element<ManagedDocument>> noticeOfActingOrIssueList;
     protected final List<Element<ManagedDocument>> noticeOfActingOrIssueListLA;
     protected final List<Element<ManagedDocument>> noticeOfActingOrIssueListCTSC;
