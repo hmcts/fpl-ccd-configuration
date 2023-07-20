@@ -138,7 +138,11 @@ public enum DocumentType {
     COURT_CORRESPONDENCE("Court correspondence", standardResolver("correspondenceDocList"), false,
         false, false, false,
         defaultWithDocumentBuilder(),
-        300);
+        310),
+    NOTICE_OF_ACTING_OR_ISSUE("Notice of acting / notice of issue", standardResolver("noticeOfActingOrIssueList"), false,
+        false, false, false,
+    defaultWithDocumentBuilder(),
+        330);
 
     @Getter
     private String description;
