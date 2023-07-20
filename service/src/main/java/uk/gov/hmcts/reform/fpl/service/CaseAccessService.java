@@ -48,7 +48,6 @@ public class CaseAccessService {
         Set<String> users = getLocalAuthorityUsers(caseId, localAuthority, caseRole);
         users.add(creatorId);
 
-        grantCaseRoleToUser(caseId, creatorId, caseRole);
         try {
             grantCaseAccess(caseId, users, caseRole);
             log.info("Users {} granted {} to case {}", users, caseRole, caseId);
