@@ -13,7 +13,8 @@
     "ListElementCode": "response",
     "FieldType": "Document",
     "ElementLabel": "Notice of placement response",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "CategoryID": "placementApplicationsAndResponses"
   },
   {
     "LiveFrom": "01/01/2017",
