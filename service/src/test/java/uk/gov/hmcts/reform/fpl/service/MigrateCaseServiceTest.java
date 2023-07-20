@@ -2920,7 +2920,7 @@ class MigrateCaseServiceTest {
             assertThat(caseDetailsMap).extracting("correspondenceDocListCTSC").isNull();
         }
     }
-  
+
     @Nested
     class MigrateRelatingLA {
 
@@ -2945,5 +2945,6 @@ class MigrateCaseServiceTest {
 
             assertThat(updatedFields).extracting("relatingLA").isEqualTo("ABC");
         }
+
     }
 }
