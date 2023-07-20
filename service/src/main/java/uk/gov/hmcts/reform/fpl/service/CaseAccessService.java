@@ -48,8 +48,15 @@ public class CaseAccessService {
         Set<String> users = getLocalAuthorityUsers(caseId, localAuthority, caseRole);
         users.add(creatorId);
 
-        grantCaseAccess(caseId, users, caseRole);
-        log.info("Users {} granted {} to case {}", users, caseRole, caseId);
+        grantCaseRoleToUser(caseId, creatorId, caseRole);
+        try {
+            grantCaseAccess(caseId, users, caseRole);
+            log.info("Users {} granted {} to case {}", users, caseRole, caseId);
+        } catch (GrantCaseAccessException ex) {
+            // default back to just the default user
+            grantCaseRoleToUser(caseId, creatorId, caseRole);
+            log.info("ONLY Creator {} granted access {} to case {}", creatorId, caseRole, caseId);
+        }
     }
 
     public void revokeCaseRoleFromUser(Long caseId, String userId, CaseRole caseRole) {
