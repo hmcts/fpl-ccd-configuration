@@ -76,6 +76,7 @@ public class Placement implements SelectableItem {
         return placementBuilder.build();
     }
 
+    @JsonIgnore
     public DocumentReference getPlacementApplicationCopy() {
         return application;
     }
