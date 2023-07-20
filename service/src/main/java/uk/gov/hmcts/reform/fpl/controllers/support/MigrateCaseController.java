@@ -54,7 +54,6 @@ public class MigrateCaseController extends CallbackController {
     private final DfjAreaLookUpService dfjAreaLookUpService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1359", this::run1359,
         "DFPL-1401", this::run1401,
         "DFPL-1451", this::run1451,
         "DFPL-1466", this::run1466,
@@ -63,7 +62,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1352", this::run1352,
         "DFPL-702", this::run702,
         "DFPL-702rollback", this::run702rollback,
-        "DFPL-1506", this::run1506
+        "DFPL-1506", this::run1506,
+        "DFPL-1486", this::run1486
     );
 
     @PostMapping("/about-to-submit")
@@ -146,11 +146,6 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove("caseManagementCategory");
     }
 
-    private void run1359(CaseDetails caseDetails) {
-        migrateCaseService.doDocumentViewNCCheck(caseDetails.getId(), "DFPL-1359", caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(getCaseData(caseDetails)));
-    }
-
     private void run1401(CaseDetails caseDetails) {
         var migrationId = "DFPL-1401";
         var possibleCaseIds = List.of(1666959378667166L);
@@ -222,6 +217,11 @@ public class MigrateCaseController extends CallbackController {
     private void run1506(CaseDetails caseDetails) {
         caseDetails.getData().putAll(migrateCaseService.migratePositionStatementChild(getCaseData(caseDetails)));
         caseDetails.getData().putAll(migrateCaseService.migratePositionStatementRespondent(getCaseData(caseDetails)));
+    }
+
+    private void run1486(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1486";
+        caseDetails.getData().putAll(migrateCaseService.addRelatingLA(migrationId, caseDetails.getId()));
     }
 
 }
