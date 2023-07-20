@@ -108,6 +108,9 @@ class MigrateCaseServiceTest {
     @Mock
     private CourtService courtService;
 
+    @Mock
+    private MigrateRelatingLAService migrateRelatingLAService;
+
     @InjectMocks
     private MigrateCaseService underTest;
 
@@ -1357,7 +1360,7 @@ class MigrateCaseServiceTest {
                     + "or missing target invalid order type [EDUCATION_SUPERVISION__ORDER]");
         }
     }
-    
+
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class RemoveJudicialMessage {
@@ -3155,5 +3158,32 @@ class MigrateCaseServiceTest {
             assertThat(caseDetailsMap).extracting("correspondenceDocListLA").isNull();
             assertThat(caseDetailsMap).extracting("correspondenceDocListCTSC").isNull();
         }
+    }
+
+    @Nested
+    class MigrateRelatingLA {
+
+        CaseData caseData = CaseData.builder()
+            .id(1234L)
+            .build();
+
+        @Test
+        void shouldThrowExceptionIfCaseNotInConfig() {
+            when(migrateRelatingLAService.getRelatingLAString("1234")).thenReturn(Optional.empty());
+            assertThatThrownBy(() -> underTest.addRelatingLA(MIGRATION_ID, caseData.getId()))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, case not found in migration list",
+                    MIGRATION_ID, "1234"));
+        }
+
+        @Test
+        void shouldPopulateRelatingLAIfCaseNotInConfig() {
+            when(migrateRelatingLAService.getRelatingLAString("1234")).thenReturn(Optional.of("ABC"));
+
+            Map<String, Object> updatedFields = underTest.addRelatingLA(MIGRATION_ID, caseData.getId());
+
+            assertThat(updatedFields).extracting("relatingLA").isEqualTo("ABC");
+        }
+
     }
 }

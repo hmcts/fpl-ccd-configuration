@@ -62,7 +62,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1584", this::run1612,
         "DFPL-1352", this::run1352,
         "DFPL-702", this::run702,
-        "DFPL-702rollback", this::run702rollback
+        "DFPL-702rollback", this::run702rollback,
+        "DFPL-1486", this::run1486
     );
 
     @PostMapping("/about-to-submit")
@@ -217,5 +218,12 @@ public class MigrateCaseController extends CallbackController {
 
     private void run1493Rollback(CaseDetails caseDetails) {
         migrateCaseService.rollbackApplicationDocuments(caseDetails);
+    }
+
+
+    private void run1486(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1486";
+        caseDetails.getData().putAll(migrateCaseService.addRelatingLA(migrationId, caseDetails.getId()));
+
     }
 }
