@@ -870,7 +870,7 @@ class ManageHearingsServiceTest {
             .willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(eq(docmosisDocument.getBytes()), anyString())).willReturn(DOCUMENT);
 
-        service.sendNoticeOfHearing(caseData, hearingToUpdate);
+        service.buildNoticeOfHearingIfYes(caseData, hearingToUpdate);
 
         assertThat(hearingToUpdate.getNoticeOfHearing()).isEqualTo(DocumentReference.buildFromDocument(DOCUMENT));
 
@@ -898,7 +898,7 @@ class ManageHearingsServiceTest {
             .willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(eq(docmosisDocument.getBytes()), anyString())).willReturn(DOCUMENT);
 
-        service.sendNoticeOfHearing(caseData, hearingToUpdate);
+        service.buildNoticeOfHearingIfYes(caseData, hearingToUpdate);
 
         assertThat(hearingToUpdate.getNoticeOfHearing()).isEqualTo(DocumentReference.buildFromDocument(DOCUMENT));
         assertThat(hearingToUpdate.getTranslationRequirements()).isEqualTo(TRANSLATION_REQUIREMENTS);

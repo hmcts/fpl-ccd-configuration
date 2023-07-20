@@ -317,7 +317,7 @@ public class ManageHearingsService {
         }
     }
 
-    public void sendNoticeOfHearing(CaseData caseData, HearingBooking hearingBooking) {
+    public void buildNoticeOfHearingIfYes(CaseData caseData, HearingBooking hearingBooking) {
         if (YES.getValue().equals(caseData.getSendNoticeOfHearing())) {
             buildNoticeOfHearing(caseData, hearingBooking);
         }
