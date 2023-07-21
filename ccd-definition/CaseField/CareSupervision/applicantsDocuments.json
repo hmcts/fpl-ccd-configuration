@@ -282,6 +282,246 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "swetList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "SWET",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "swetListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "SWET",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "swetListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "SWET",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "swetListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "SWET",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "socialWorkChronList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "Social work chronology",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "socialWorkChronListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "Social work chronology",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "socialWorkChronListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "Social work chronology",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "socialWorkChronListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "Social work chronology",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "genogramList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "Genogram",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "genogramListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "Genogram",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "genogramListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "Genogram",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "genogramListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "Genogram",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "checklistDocList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "Checklist document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "checklistDocListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "Checklist document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "checklistDocListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "Checklist document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "checklistDocListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "Checklist document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "birthCertList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "Birth certificate",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "birthCertListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "Birth certificate",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "birthCertListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "Birth certificate",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "birthCertListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "Birth certificate",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherDocFiledList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "Other document filed on issue",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherDocFiledListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "Other document filed on issue",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherDocFiledListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "Other document filed on issue",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherDocFiledListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "Other document filed on issue",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "carePlanList",
     "FieldType": "Collection",
     "FieldTypeParameter": "CarePlan",
