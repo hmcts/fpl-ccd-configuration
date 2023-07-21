@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
@@ -52,9 +53,13 @@ public class GatekeepingOrderGenerationService extends
 
     public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData) {
         GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
-        HearingBooking firstHearing = caseData.getFirstHearingOfTypes(List.of(HearingType.CASE_MANAGEMENT,
-                HearingType.INTERIM_CARE_ORDER, HearingType.ACCELERATED_DISCHARGE_OF_CARE))
-            .orElse(null);
+
+        HearingBooking hearing = Optional.ofNullable(caseData.getSelectedHearingId())
+            .flatMap(caseData::findHearingBookingElement)
+            .map(Element::getValue)
+            .orElse(caseData.getFirstHearingOfTypes(List.of(HearingType.CASE_MANAGEMENT,
+                    HearingType.INTERIM_CARE_ORDER, HearingType.ACCELERATED_DISCHARGE_OF_CARE))
+                .orElse(null));
 
         GatekeepingOrderSealDecision gatekeepingOrderSealDecision = eventData.getGatekeepingOrderSealDecision();
 
@@ -77,7 +82,7 @@ public class GatekeepingOrderGenerationService extends
                 .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
                 .applicantName(dataService.getApplicantName(caseData))
                 .directions(buildDirections(caseData))
-                .hearingBooking(dataService.getHearingBookingData(firstHearing))
+                .hearingBooking(dataService.getHearingBookingData(hearing))
                 .orderDocumentTitle(orderDocumentTitle)
                 .isUrgentOrder(Objects.nonNull(caseData.getUrgentDirectionsRouter()))
                 .crest(getCrestData());
