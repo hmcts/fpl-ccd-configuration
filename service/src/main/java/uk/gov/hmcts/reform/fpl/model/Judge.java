@@ -71,18 +71,7 @@ public class Judge extends AbstractJudge {
     }
 
     public static Judge fromJudicialUserProfile(JudicialUserProfile jup) {
-        return Judge.builder()
-            .judgeTitle(JudgeOrMagistrateTitle.OTHER)
-            .otherTitle(jup.getPostNominals())
-            .judgeLastName(jup.getSurname())
-            .judgeFullName(jup.getFullName())
-            .judgeEmailAddress(jup.getEmailId())
-            .judgeEnterManually(YesNo.NO)
-            .judgeJudicialUser(JudicialUser.builder()
-                .idamId(jup.getSidamId())
-                .personalCode(jup.getPersonalCode())
-                .build())
-            .build();
+        return fromJudicialUserProfile(jup, YesNo.NO);
     }
 
 }

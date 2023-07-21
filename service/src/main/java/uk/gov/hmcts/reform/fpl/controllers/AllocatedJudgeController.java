@@ -13,8 +13,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Judge;
-import uk.gov.hmcts.reform.fpl.model.JudicialUser;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
@@ -23,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
 @Api
@@ -36,7 +35,7 @@ public class AllocatedJudgeController extends CallbackController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        caseDetails.getData().put("enterManually", "No"); // default choice to No
+        caseDetails.getData().put("enterManually", NO.getValue());
         return respond(caseDetails);
     }
 
@@ -45,16 +44,7 @@ public class AllocatedJudgeController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        Optional<String> error;
-
-        if (caseData.getEnterManually().equals(YesNo.NO)) {
-            // validate judge
-            error = judicialService.validateJudicialUserField(caseData);
-        } else {
-            // validate manual judge details
-            String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
-            error = validateEmailService.validate(email);
-        }
+        Optional<String> error = judicialService.validateAllocatedJudge(caseData);
 
         if (error.isPresent()) {
             return respond(caseDetails, List.of(error.get()));

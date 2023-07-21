@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
@@ -107,6 +109,8 @@ public class ListGatekeepingHearingController extends CallbackController {
 
         caseDetails.getData().putAll(hearingsService.populateHearingLists(caseData));
         caseDetails.getData().put("sendNoticeOfHearing", YES.getValue());
+        caseDetails.getData().put("enterManually", NO.getValue());
+        caseDetails.getData().put("enterManuallyHearingJudge", NO.getValue());
 
         setNewHearing(caseDetails);
 
@@ -141,7 +145,13 @@ public class ListGatekeepingHearingController extends CallbackController {
             "gatekeepingOrderHasHearing2",
             "gatekeepingOrderIssuingJudge",
             "customDirections",
-            "judicialUser"
+            "judicialUser",
+            "enterManually",
+            "judicialUserHearingJudge",
+            "enterManuallyHearingJudge",
+            "hearingJudge",
+            "allocatedJudgeLabel",
+            "useAllocatedJudge"
         );
 
         caseData.keySet().removeAll(hearingsService.caseFieldsToBeRemoved());
@@ -158,21 +168,39 @@ public class ListGatekeepingHearingController extends CallbackController {
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
 
-        Optional<JudicialUserProfile> judgeUser = judicialService.getJudge(
-            caseData.getJudicialUser().getPersonalCode());
+        Optional<String> error = judicialService.validateTempAllocatedJudge(caseData);
 
-        if (judgeUser.isEmpty()) {
-            return respond(caseDetails, List.of("Judge could not be found in Judicial Reference Data"));
+        if (error.isPresent()) {
+            return respond(caseDetails, List.of(error.get()));
         }
 
-        Judge allocatedJudge = Judge.fromJudicialUserProfile(judgeUser.get());
+        Judge allocatedJudge;
+        if (caseData.getEnterManually().equals(YesNo.NO)
+            && !ObjectUtils.isEmpty(caseData.getJudicialUser())
+            && !ObjectUtils.isEmpty(caseData.getJudicialUser().getPersonalCode())) {
 
-        caseDetails.getData().put("allocatedJudge", allocatedJudge);
+            Optional<JudicialUserProfile> jup = judicialService.getJudge(caseData.getJudicialUser().getPersonalCode());
+            if (jup.isPresent()) {
+                allocatedJudge = Judge.fromJudicialUserProfile(jup.get());
+                caseDetails.getData().put("allocatedJudge", allocatedJudge);
+            } else {
+                return respond(caseDetails,
+                    List.of("No Judge could be found, please retry your search or enter their details manually."));
+            }
+        } else {
+            // put the temporary manual entry into the proper field
+            allocatedJudge = caseData.getTempAllocatedJudge();
+            caseDetails.getData().put("allocatedJudge", caseData.getTempAllocatedJudge());
+        }
+
+        // todo - test removal of this, as we use the manual label field now on the hearing judge page
         caseDetails.getData().put(
             "judgeAndLegalAdvisor",
             JudgeAndLegalAdvisor.builder()
                 .allocatedJudgeLabel(buildAllocatedJudgeLabel(allocatedJudge))
                 .build());
+
+        caseDetails.getData().put("allocatedJudgeLabel", buildAllocatedJudgeLabel(allocatedJudge));
 
         return respond(caseDetails);
     }
@@ -208,18 +236,44 @@ public class ListGatekeepingHearingController extends CallbackController {
 
     @PostMapping("validate-judge-email/mid-event")
     public CallbackResponse validateJudgeEmailMidEvent(@RequestBody CallbackRequest callbackRequest) {
-
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
 
-        final JudgeAndLegalAdvisor tempJudge = caseData.getJudgeAndLegalAdvisor();
-
-        if (caseData.hasSelectedTemporaryJudge(tempJudge)) {
-            final Optional<String> error = validateEmailService.validate(tempJudge.getJudgeEmailAddress());
+        // todo - refactor me, triple nested if!!!
+        if (caseData.getUseAllocatedJudge().equals(NO)) {
+            final Optional<String> error = judicialService.validateHearingJudge(caseData);
 
             if (error.isPresent()) {
                 return respond(caseDetails, List.of(error.get()));
             }
+
+            if (caseData.getEnterManuallyHearingJudge().equals(NO)) {
+
+                Optional<JudicialUserProfile> jup = judicialService
+                    .getJudge(caseData.getJudicialUserHearingJudge().getPersonalCode());
+
+                if (jup.isPresent()) {
+                    caseDetails.getData().put("judgeAndLegalAdvisor",
+                        JudgeAndLegalAdvisor.fromJudicialUserProfile(jup.get()).toBuilder()
+                            .legalAdvisorName(caseData.getLegalAdvisorName())
+                            .build());
+                } else {
+                    return respond(caseDetails,
+                        List.of("No Judge could be found, please retry your search or enter their"
+                            + " details manually."));
+                }
+            } else {
+                // entered the judge manually
+                caseDetails.getData().put("judgeAndLegalAdvisor",
+                    JudgeAndLegalAdvisor.from(caseData.getHearingJudge()).toBuilder()
+                        .legalAdvisorName(caseData.getLegalAdvisorName())
+                        .build());
+            }
+        } else {
+            caseDetails.getData().put("judgeAndLegalAdvisor",
+                JudgeAndLegalAdvisor.from(caseData.getAllocatedJudge()).toBuilder()
+                    .legalAdvisorName(caseData.getLegalAdvisorName())
+                    .build());
         }
 
         return respond(caseDetails);

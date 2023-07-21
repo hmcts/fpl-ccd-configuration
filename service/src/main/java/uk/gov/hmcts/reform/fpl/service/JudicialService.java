@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
@@ -34,6 +36,7 @@ public class JudicialService {
     private final AuthTokenGenerator authTokenGenerator;
     private final IdamClient idamClient;
     private final RoleAssignmentService roleAssignmentService;
+    private final ValidateEmailService validateEmailService;
 
     public void assignAllocatedJudge(Long caseId, String userId) {
         roleAssignmentService.assignJudgeRole(caseId, userId, ALLOCATED_JUDGE);
@@ -56,12 +59,12 @@ public class JudicialService {
         return !judges.isEmpty();
     }
 
-    public Optional<String> validateJudicialUserField(CaseData caseData) {
-        if (isEmpty(caseData.getJudicialUser()) || isEmpty(caseData.getJudicialUser().getPersonalCode())) {
+    public Optional<String> validateJudicialUserField(JudicialUser judicialUser) {
+        if (isEmpty(judicialUser) || isEmpty(judicialUser.getPersonalCode())) {
             return Optional.of("You must search for a judge or enter their details manually");
         }
 
-        if (!this.checkJudgeExists(caseData.getJudicialUser().getPersonalCode())) {
+        if (!this.checkJudgeExists(judicialUser.getPersonalCode())) {
             return Optional.of("Judge could not be found, please search again or enter their details manually");
         }
 
@@ -111,4 +114,46 @@ public class JudicialService {
             .map(hearing -> hearing.getValue().getJudgeAndLegalAdvisor().getJudgeEmailAddress())
             .collect(Collectors.toSet());
     }
+
+    // TODO - see if these can be combined/parameterised somehow
+    public Optional<String> validateAllocatedJudge(CaseData caseData) {
+        Optional<String> error = Optional.empty();
+        if (caseData.getEnterManually().equals(YesNo.NO)) {
+            // validate judge
+            error = this.validateJudicialUserField(caseData.getJudicialUser());
+        } else {
+            // validate manual judge details
+            String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
+            error = validateEmailService.validate(email);
+        }
+        return error;
+    }
+
+    public Optional<String> validateTempAllocatedJudge(CaseData caseData) {
+        Optional<String> error = Optional.empty();
+        if (caseData.getEnterManually().equals(YesNo.NO)) {
+            // validate judge
+            error = this.validateJudicialUserField(caseData.getJudicialUser());
+        } else {
+            // validate manual judge details
+            String email = caseData.getTempAllocatedJudge().getJudgeEmailAddress();
+            error = validateEmailService.validate(email);
+        }
+        return error;
+    }
+
+
+    public Optional<String> validateHearingJudge(CaseData caseData) {
+        Optional<String> error = Optional.empty();
+        if (caseData.getEnterManuallyHearingJudge().equals(YesNo.NO)) {
+            // validate judge
+            error = this.validateJudicialUserField(caseData.getJudicialUserHearingJudge());
+        } else {
+            // validate manual judge details
+            String email = caseData.getHearingJudge().getJudgeEmailAddress();
+            error = validateEmailService.validate(email);
+        }
+        return error;
+    }
+
 }

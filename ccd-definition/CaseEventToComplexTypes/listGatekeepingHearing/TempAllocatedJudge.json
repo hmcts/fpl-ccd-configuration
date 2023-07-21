@@ -1,20 +1,20 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AllocatedJudge",
+    "ID": "TempAllocatedJudge",
     "CaseEventID": "listGatekeepingHearing",
-    "CaseFieldID": "allocatedJudge",
+    "CaseFieldID": "tempAllocatedJudge",
     "ListElementCode": "judgeJudicialUser",
     "EventElementLabel": "Search for Judge",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "allocatedJudge.judgeTitle = \"DO_NOT_SHOW\""
+    "FieldShowCondition": "tempAllocatedJudge.judgeTitle = \"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AllocatedJudge",
+    "ID": "TempAllocatedJudge",
     "CaseEventID": "listGatekeepingHearing",
-    "CaseFieldID": "allocatedJudge",
+    "CaseFieldID": "tempAllocatedJudge",
     "ListElementCode": "judgeTitle",
     "EventElementLabel": "Judge or magistrate's title",
     "FieldDisplayOrder": 2,
@@ -22,9 +22,9 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AllocatedJudge",
+    "ID": "TempAllocatedJudge",
     "CaseEventID": "listGatekeepingHearing",
-    "CaseFieldID": "allocatedJudge",
+    "CaseFieldID": "tempAllocatedJudge",
     "ListElementCode": "otherTitle",
     "EventElementLabel": "Title",
     "FieldDisplayOrder": 3,
@@ -32,9 +32,9 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AllocatedJudge",
+    "ID": "TempAllocatedJudge",
     "CaseEventID": "listGatekeepingHearing",
-    "CaseFieldID": "allocatedJudge",
+    "CaseFieldID": "tempAllocatedJudge",
     "ListElementCode": "judgeLastName",
     "EventElementLabel": "Last name",
     "FieldDisplayOrder": 4,
@@ -42,9 +42,9 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AllocatedJudge",
+    "ID": "TempAllocatedJudge",
     "CaseEventID": "listGatekeepingHearing",
-    "CaseFieldID": "allocatedJudge",
+    "CaseFieldID": "tempAllocatedJudge",
     "ListElementCode": "judgeFullName",
     "EventElementLabel": "Full name",
     "FieldDisplayOrder": 5,
@@ -52,9 +52,9 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AllocatedJudge",
+    "ID": "TempAllocatedJudge",
     "CaseEventID": "listGatekeepingHearing",
-    "CaseFieldID": "allocatedJudge",
+    "CaseFieldID": "tempAllocatedJudge",
     "ListElementCode": "judgeEmailAddress",
     "EventElementLabel": "Email Address",
     "FieldDisplayOrder": 6,

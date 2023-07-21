@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Data
@@ -62,6 +63,8 @@ public class JudgeAndLegalAdvisor extends AbstractJudge {
                 .otherTitle(allocatedJudge.getOtherTitle())
                 .judgeLastName(allocatedJudge.getJudgeLastName())
                 .judgeFullName(allocatedJudge.getJudgeFullName())
+                .judgeEnterManually(allocatedJudge.getJudgeEnterManually())
+                .judgeJudicialUser(allocatedJudge.getJudgeJudicialUser())
                 .judgeEmailAddress(allocatedJudge.getJudgeEmailAddress());
         }
         return judgeAndLegalAdvisorBuilder.build();
@@ -74,13 +77,14 @@ public class JudgeAndLegalAdvisor extends AbstractJudge {
             .build();
     }
 
-    public static Judge fromJudicialUserProfile(JudicialUserProfile jup) {
-        return Judge.builder()
+    public static JudgeAndLegalAdvisor fromJudicialUserProfile(JudicialUserProfile jup) {
+        return JudgeAndLegalAdvisor.builder()
             .judgeTitle(JudgeOrMagistrateTitle.OTHER)
             .otherTitle(jup.getPostNominals())
             .judgeLastName(jup.getSurname())
             .judgeFullName(jup.getFullName())
             .judgeEmailAddress(jup.getEmailId())
+            .judgeEnterManually(NO)
             .judgeJudicialUser(JudicialUser.builder()
                 .idamId(jup.getSidamId())
                 .personalCode(jup.getPersonalCode())
