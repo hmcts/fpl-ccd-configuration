@@ -52,7 +52,7 @@ public class PlacementNoticeController extends CallbackController {
         caseProperties.putIfNotEmpty("hasExistingPlacements",
             YesNo.from(!caseData.getPlacementEventData().getPlacements().isEmpty())
         );
-        caseProperties.put("placementList", asDynamicList(caseData.getPlacementEventData().getPlacements()));
+        caseProperties.put("`placementList`", asDynamicList(caseData.getPlacementEventData().getPlacements()));
 
         return respond(caseProperties);
     }

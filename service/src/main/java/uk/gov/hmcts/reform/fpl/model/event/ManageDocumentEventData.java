@@ -27,6 +27,8 @@ public class ManageDocumentEventData {
     @Temp
     String hasConfidentialParty;
     @Temp
+    String askForPlacementNoticeRecipientType;
+    @Temp
     List<String> documentAcknowledge;
     @Temp
     String allowMarkDocumentConfidential;

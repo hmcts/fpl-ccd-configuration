@@ -22,8 +22,28 @@
     "ID": "manageDocumentsV2_UploadableDocument",
     "CaseEventID": "manageDocumentsV2",
     "CaseFieldID": "uploadableDocumentBundle",
+    "ListElementCode": "placementList",
+    "FieldDisplayOrder": "4",
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "uploadableDocumentBundle.documentTypeDynamicList=\"PLACEMENT_RESPONSES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageDocumentsV2_UploadableDocument",
+    "CaseEventID": "manageDocumentsV2",
+    "CaseFieldID": "uploadableDocumentBundle",
+    "ListElementCode": "placementNoticeRecipientType",
+    "FieldDisplayOrder": "5",
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "uploadableDocumentBundle.documentTypeDynamicList=\"PLACEMENT_RESPONSES\" AND askForPlacementNoticeRecipientType=\"YES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageDocumentsV2_UploadableDocument",
+    "CaseEventID": "manageDocumentsV2",
+    "CaseFieldID": "uploadableDocumentBundle",
     "ListElementCode": "confidential",
-    "FieldDisplayOrder": "3",
+    "FieldDisplayOrder": "6",
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "allowMarkDocumentConfidential = \"YES\""
   },
@@ -33,7 +53,7 @@
     "CaseEventID": "manageDocumentsV2",
     "CaseFieldID": "uploadableDocumentBundle",
     "ListElementCode": "hasConfidentialAddress",
-    "FieldDisplayOrder": "4",
+    "FieldDisplayOrder": "7",
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "hasConfidentialParty = \"YES\""
   }

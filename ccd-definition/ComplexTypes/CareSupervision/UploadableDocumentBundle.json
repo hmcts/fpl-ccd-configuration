@@ -18,6 +18,25 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "UploadableDocumentBundle",
+    "ListElementCode": "placementList",
+    "FieldType": "DynamicList",
+    "ElementLabel": "Which placement application?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadableDocumentBundle",
+    "ListElementCode": "placementNoticeRecipientType",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "PlacementNoticeRecipientType",
+    "ElementLabel": "Recipient type",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadableDocumentBundle",
     "ListElementCode": "confidential",
     "FieldType": "YesOrNo",
     "ElementLabel": "Is this document confidential?",

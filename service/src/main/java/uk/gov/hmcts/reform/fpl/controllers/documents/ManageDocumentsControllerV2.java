@@ -13,9 +13,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadableDocumentBundle;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -32,10 +32,13 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.barristers;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.designatedSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction.UPLOAD_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PLACEMENT_RESPONSES;
 import static uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData.temporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Api
 @RestController
@@ -59,11 +62,19 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
+        final boolean hasPlacementNotice = caseData.getPlacementEventData().getPlacements().stream()
+            .anyMatch(el -> el.getValue().getPlacementNotice() != null);
+
         caseDetails.getData().put("allowMarkDocumentConfidential", YesNo.from(allowMarkDocumentConfidential(caseData)));
+        caseDetails.getData().put("askForPlacementNoticeRecipientType", YesNo.from(DocumentUploaderType
+            .HMCTS == getUploaderType(caseData)));
         caseDetails.getData().put("hasConfidentialParty", YesNo.from(caseData.hasConfidentialParty()));
         caseDetails.getData().put("uploadableDocumentBundle", List.of(
             element(UploadableDocumentBundle.builder()
-                .documentTypeDynamicList(manageDocumentService.buildDocumentTypeDynamicList(getUploaderType(caseData)))
+                .documentTypeDynamicList(manageDocumentService.buildDocumentTypeDynamicList(getUploaderType(caseData),
+                    hasPlacementNotice))
+                .placementList(asDynamicList(caseData.getPlacementEventData().getPlacements(), null,
+                    Placement::getChildName))
                 .build())
         ));
 
@@ -78,9 +89,9 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         ManageDocumentEventData eventData = caseData.getManageDocumentEventData();
 
         if (UPLOAD_DOCUMENTS.equals(eventData.getManageDocumentAction())) {
-            if (eventData.getUploadableDocumentBundle().stream().anyMatch(
-                bundle -> !DocumentType.valueOf(bundle.getValue().getDocumentTypeDynamicList().getValueCode())
-                    .isUploadable())) {
+            if (unwrapElements(eventData.getUploadableDocumentBundle()).stream().anyMatch(
+                bundle -> bundle.getDocumentTypeSelected() != PLACEMENT_RESPONSES
+                    && !bundle.getDocumentTypeSelected().isUploadable())) {
                 return respond(caseDetails, List.of(
                     "You cannot upload any document to the document type selected."));
             }
@@ -109,7 +120,7 @@ public class ManageDocumentsControllerV2 extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
-        // TODO Notification Logic
+        // TODO DFPL-1609 Notification Logic
     }
 
     private boolean allowMarkDocumentConfidential(CaseData caseData) {

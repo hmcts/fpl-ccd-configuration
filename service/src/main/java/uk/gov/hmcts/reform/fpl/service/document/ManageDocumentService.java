@@ -71,6 +71,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PLACEMENT_RESPONSES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -175,33 +176,77 @@ public class ManageDocumentService {
                                                List<Element<UploadableDocumentBundle>> elements) {
         final Map<String, Object> ret = new HashMap<>();
         elements.forEach(e -> {
-            DocumentType dt = DocumentType.valueOf(e.getValue().getDocumentTypeDynamicList().getValue().getCode());
-            boolean confidential = YES.equals(YesNo.fromString(e.getValue().getConfidential()));
-            String fieldName = dt.getFieldName(uploaderType, confidential);
-            final String actualFieldName = getDocumentListActualFieldName(fieldName);
-            final DocumentReference document = e.getValue().getDocument();
+            DocumentType dt = e.getValue().getDocumentTypeSelected();
+            if (dt == PLACEMENT_RESPONSES) {
+                boolean isLocalAuthority = uploaderType == DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY
+                    || uploaderType == DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY;
+                boolean isSolicitor = uploaderType == DocumentUploaderType.SOLICITOR;
+                if (isLocalAuthority || isSolicitor) {
+                    Map<String, Object>  initialisedPlacement = initialisePlacementHearingResponseFields(caseData,
+                        isSolicitor ? PlacementNoticeDocument.RecipientType.RESPONDENT
+                            : PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY);
+                    caseData.getPlacementEventData().setPlacement((Placement) initialisedPlacement.get("placement"));
+                    caseData.getPlacementEventData().getPlacement().setNoticeDocuments(
+                        (List<Element<PlacementNoticeDocument>>) initialisedPlacement.get("placementNoticeResponses")
+                    );
 
-            Class documentListHolderClass = getDocumentListHolderClass(fieldName);
-            String documentListHolderFieldName = getDocumentListHolderFieldName(fieldName);
-            PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(documentListHolderClass,
-                documentListHolderFieldName);
-            List<Element<?>> docs = null;
-            if (ret.containsKey(actualFieldName)) {
-                docs = (List<Element<?>>) ret.get(actualFieldName);
-            }
-            if (docs == null) {
-                try {
-                    Object bean = getDocumentListHolder(fieldName, caseData);
-                    docs = (List<Element<?>>) pd.getReadMethod().invoke(bean);
-                } catch (Exception ex) {
-                    throw new RuntimeException("Unable to read bean property: " + fieldName);
+
+                    if (isLocalAuthority) {
+                        PlacementEventData eventData = updatePlacementNoticesLA(caseData);
+                        ret.put("placements", eventData.getPlacements());
+                    } else {
+                        PlacementEventData eventData = updatePlacementNoticesSolicitor(caseData);
+                        ret.put("placements", eventData.getPlacements());
+                        caseData.getPlacementEventData().setPlacements(eventData.getPlacements());
+                        ret.put("placementsNonConfidential",
+                            eventData.getPlacementsNonConfidential(false));
+                        ret.put("placementsNonConfidentialNotices",
+                            eventData.getPlacementsNonConfidential(true));
+                        ;
+                    }
+                } else {
+                    Map<String, Object>  initialisedPlacement = initialisePlacementHearingResponseFields(caseData);
+                    caseData.getPlacementEventData().setPlacement((Placement) initialisedPlacement.get("placement"));
+                    caseData.getPlacementEventData().getPlacement().setNoticeDocuments(
+                        (List<Element<PlacementNoticeDocument>>) initialisedPlacement.get("placementNoticeResponses")
+                    );
+
+                    PlacementEventData eventData = updatePlacementNoticesAdmin(caseData);
+                    ret.put("placements", eventData.getPlacements());
+                    caseData.getPlacementEventData().setPlacements(eventData.getPlacements());
+                    ret.put("placementsNonConfidential",
+                        eventData.getPlacementsNonConfidential(false));
+                    ret.put("placementsNonConfidentialNotices",
+                        eventData.getPlacementsNonConfidential(true));;
+                }
+            } else {
+                boolean confidential = YES.equals(YesNo.fromString(e.getValue().getConfidential()));
+                String fieldName = dt.getFieldName(uploaderType, confidential);
+                final String actualFieldName = getDocumentListActualFieldName(fieldName);
+                final DocumentReference document = e.getValue().getDocument();
+
+                Class documentListHolderClass = getDocumentListHolderClass(fieldName);
+                String documentListHolderFieldName = getDocumentListHolderFieldName(fieldName);
+                PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(documentListHolderClass,
+                    documentListHolderFieldName);
+                List<Element<?>> docs = null;
+                if (ret.containsKey(actualFieldName)) {
+                    docs = (List<Element<?>>) ret.get(actualFieldName);
                 }
                 if (docs == null) {
-                    docs = new ArrayList<>();
+                    try {
+                        Object bean = getDocumentListHolder(fieldName, caseData);
+                        docs = (List<Element<?>>) pd.getReadMethod().invoke(bean);
+                    } catch (Exception ex) {
+                        throw new RuntimeException("Unable to read bean property: " + fieldName);
+                    }
+                    if (docs == null) {
+                        docs = new ArrayList<>();
+                    }
                 }
+                docs.add(element(dt.getWithDocumentBuilder().apply(document, uploaderType)));
+                ret.put(actualFieldName, docs);
             }
-            docs.add(element(dt.getWithDocumentBuilder().apply(document, uploaderType)));
-            ret.put(actualFieldName, docs);
         });
         return ret;
     }
@@ -222,10 +267,11 @@ public class ManageDocumentService {
         }
     }
 
-    public DynamicList buildDocumentTypeDynamicList(DocumentUploaderType uploaderType) {
+    public DynamicList buildDocumentTypeDynamicList(DocumentUploaderType uploaderType, boolean hasPlacementNotices) {
         final List<Pair<String, String>> courts = Arrays.stream(DocumentType.values())
             .filter(documentType -> isVisible(documentType, uploaderType))
             .filter(documentType -> !documentType.isHiddenFromUpload())
+            .filter(documentType -> PLACEMENT_RESPONSES == documentType ? hasPlacementNotices : true)
             .sorted(comparing(DocumentType::getDisplayOrder))
             .map(dt -> Pair.of(dt.name(), dt.getDescription()))
             .collect(toList());
