@@ -61,6 +61,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespon
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
@@ -92,6 +93,29 @@ class GatekeepingOrderGenerationServiceTest {
     void shouldGenerateSealedOrderWithLegacyApplicant() {
         DocmosisStandardDirectionOrder templateData = underTest.getTemplateData(caseDataForSealedWithLegacyApplicant());
         DocmosisStandardDirectionOrder expectedData = fullSealedOrderFromLegacyApplicant();
+
+        assertThat(templateData).isEqualTo(expectedData);
+    }
+
+    @Test
+    void shouldGenerateSealedOrderWithListedHearing() {
+        CaseData testData = caseDataForSealed();
+
+        LocalDate testDate = time.now().toLocalDate().plusDays(10);
+        Element<HearingBooking> selectedHearing =
+            element(createHearingBooking(testDate.atStartOfDay(), testDate.atTime(NOON)));
+
+        testData.addHearingBooking(selectedHearing);
+        testData = testData.toBuilder().selectedHearingId(selectedHearing.getId()).build();
+
+        DocmosisStandardDirectionOrder templateData = underTest.getTemplateData(testData);
+        DocmosisStandardDirectionOrder expectedData = fullSealedOrder();
+        expectedData = expectedData.toBuilder()
+                .hearingBooking(expectedData.getHearingBooking().toBuilder()
+                    .hearingDate(formatLocalDateToString(testDate, LONG))
+                    .hearingStartDate(formatLocalDateTimeBaseUsingFormat(testDate.atStartOfDay(), DATE_TIME))
+                    .hearingEndDate(formatLocalDateTimeBaseUsingFormat(testDate.atTime(NOON), DATE_TIME))
+                    .build()).build();
 
         assertThat(templateData).isEqualTo(expectedData);
     }
