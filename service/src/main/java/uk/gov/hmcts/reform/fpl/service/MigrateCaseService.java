@@ -1178,9 +1178,23 @@ public class MigrateCaseService {
         return migrateApplicationDocuments(caseData, List.of(THRESHOLD), "thresholdList");
     }
 
+    @SuppressWarnings("unchecked")
     public Map<String, Object> migrateApplicationDocumentsToDocumentsFiledOnIssueList(CaseData caseData) {
-        return migrateApplicationDocuments(caseData, List.of(SWET, SOCIAL_WORK_CHRONOLOGY, SOCIAL_WORK_STATEMENT,
-            GENOGRAM, CHECKLIST_DOCUMENT, BIRTH_CERTIFICATE, OTHER), "documentsFiledOnIssueList");
+        Map<String, Object> ret = new HashMap<>();
+        ret.putAll(migrateApplicationDocuments(caseData, List.of(SWET), "swetList"));
+        ret.putAll(migrateApplicationDocuments(caseData, List.of(SOCIAL_WORK_CHRONOLOGY), "socialWorkChronList"));
+        ret.putAll(migrateApplicationDocuments(caseData, List.of(SOCIAL_WORK_STATEMENT), "otherDocFiledList")); // TODO
+        ret.putAll(migrateApplicationDocuments(caseData, List.of(GENOGRAM), "genogramList"));
+        ret.putAll(migrateApplicationDocuments(caseData, List.of(CHECKLIST_DOCUMENT), "checklistDocList"));
+        ret.putAll(migrateApplicationDocuments(caseData, List.of(BIRTH_CERTIFICATE), "birthCertList"));
+        if (ret.containsKey("otherDocFiledList")) {
+            ((List) ret.get("otherDocFiledList")).addAll((List)
+                migrateApplicationDocuments(caseData, List.of(OTHER), "otherDocFiledList")
+                    .get("otherDocFiledList"));
+        } else {
+            ret.putAll(migrateApplicationDocuments(caseData, List.of(OTHER), "otherDocFiledList"));
+        }
+        return ret;
     }
 
     public Map<String, Object> migrateApplicationDocumentsToCarePlanList(CaseData caseData) {
@@ -1194,6 +1208,18 @@ public class MigrateCaseService {
         caseDetails.getData().remove("documentsFiledOnIssueListLA");
         caseDetails.getData().remove("carePlanList");
         caseDetails.getData().remove("carePlanListLA");
+        caseDetails.getData().remove("swetList");
+        caseDetails.getData().remove("swetListLA");
+        caseDetails.getData().remove("socialWorkChronList");
+        caseDetails.getData().remove("socialWorkChronListLA");
+        caseDetails.getData().remove("genogramList");
+        caseDetails.getData().remove("genogramListLA");
+        caseDetails.getData().remove("checklistDocList");
+        caseDetails.getData().remove("checklistDocListLA");
+        caseDetails.getData().remove("birthCertList");
+        caseDetails.getData().remove("birthCertListLA");
+        caseDetails.getData().remove("otherDocFiledList");
+        caseDetails.getData().remove("otherDocFiledListLA");
     }
 
     public Map<String, Object> migrateCorrespondenceDocuments(CaseData caseData) {

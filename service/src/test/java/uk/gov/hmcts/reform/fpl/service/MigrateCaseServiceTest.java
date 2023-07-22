@@ -2805,14 +2805,14 @@ class MigrateCaseServiceTest {
     class MigrateApplicationDocuments {
         private final Map<ApplicationDocumentType, String> applicationDocumentTypeFieldNameMap = Map.of(
             THRESHOLD, "thresholdList",
-            SWET, "documentsFiledOnIssueList",
+            SWET, "swetList",
             CARE_PLAN, "carePlanList",
-            SOCIAL_WORK_CHRONOLOGY, "documentsFiledOnIssueList",
-            SOCIAL_WORK_STATEMENT, "documentsFiledOnIssueList",
-            GENOGRAM, "documentsFiledOnIssueList",
-            CHECKLIST_DOCUMENT, "documentsFiledOnIssueList",
-            BIRTH_CERTIFICATE, "documentsFiledOnIssueList",
-            OTHER, "documentsFiledOnIssueList"
+            SOCIAL_WORK_CHRONOLOGY, "socialWorkChronList",
+            SOCIAL_WORK_STATEMENT, "otherDocFiledList",
+            GENOGRAM, "genogramList",
+            CHECKLIST_DOCUMENT, "checklistDocList",
+            BIRTH_CERTIFICATE, "birthCertList",
+            OTHER, "otherDocFiledList"
         );
 
         private final Map<ApplicationDocumentType, String> applicationDocumentTypeMethodMap = Map.of(
@@ -2981,16 +2981,19 @@ class MigrateCaseServiceTest {
                 element(doc1Id, ManagedDocument.builder().document(document1).build()));
             assertThat(updatedFields).extracting("thresholdList").asList().contains(
                 element(doc2Id, ManagedDocument.builder().document(document2).build()));
-
-            assertThat(updatedFields).extracting("documentsFiledOnIssueList").asList().contains(
-                element(doc3Id, ManagedDocument.builder().document(document3).build()),
-                element(doc5Id, ManagedDocument.builder().document(document5).build()),
-                element(doc6Id, ManagedDocument.builder().document(document6).build()),
-                element(doc7Id, ManagedDocument.builder().document(document7).build()),
-                element(doc8Id, ManagedDocument.builder().document(document8).build()),
-                element(doc10Id, ManagedDocument.builder().document(document10).build())
-            );
-            assertThat(updatedFields).extracting("documentsFiledOnIssueListLA").asList().contains(
+            assertThat(updatedFields).extracting("swetList").asList().contains(
+                element(doc3Id, ManagedDocument.builder().document(document3).build()));
+            assertThat(updatedFields).extracting("socialWorkChronList").asList().contains(
+                element(doc5Id, ManagedDocument.builder().document(document5).build()));
+            assertThat(updatedFields).extracting("otherDocFiledList").asList().contains(
+                element(doc6Id, ManagedDocument.builder().document(document6).build()));
+            assertThat(updatedFields).extracting("genogramList").asList().contains(
+                element(doc7Id, ManagedDocument.builder().document(document7).build()));
+            assertThat(updatedFields).extracting("checklistDocList").asList().contains(
+                element(doc8Id, ManagedDocument.builder().document(document8).build()));
+            assertThat(updatedFields).extracting("otherDocFiledList").asList().contains(
+                element(doc10Id, ManagedDocument.builder().document(document10).build()));
+            assertThat(updatedFields).extracting("birthCertListLA").asList().contains(
                 element(doc9Id, ManagedDocument.builder().document(document9).build()));
 
             assertThat(updatedFields).extracting("carePlanList").asList()
@@ -3014,6 +3017,18 @@ class MigrateCaseServiceTest {
             map.put("documentsFiledOnIssueListLA", List.of());
             map.put("thresholdList", List.of());
             map.put("thresholdListLA", List.of());
+            map.put("swetList", List.of());
+            map.put("swetListLA", List.of());
+            map.put("socialWorkChronList", List.of());
+            map.put("socialWorkChronListLA", List.of());
+            map.put("genogramList", List.of());
+            map.put("genogramListLA", List.of());
+            map.put("checklistDocList", List.of());
+            map.put("checklistDocListLA", List.of());
+            map.put("birthCertList", List.of());
+            map.put("birthCertListLA", List.of());
+            map.put("otherDocFiledList", List.of());
+            map.put("otherDocFiledListLA", List.of());
 
             CaseDetails caseDetails = CaseDetails.builder().data(map).build();
 
@@ -3027,6 +3042,18 @@ class MigrateCaseServiceTest {
             assertThat(caseDetails.getData()).doesNotContainKey("documentsFiledOnIssueListLA");
             assertThat(caseDetails.getData()).doesNotContainKey("thresholdList");
             assertThat(caseDetails.getData()).doesNotContainKey("thresholdListLA");
+            assertThat(caseDetails.getData()).doesNotContainKey("swetList");
+            assertThat(caseDetails.getData()).doesNotContainKey("swetListLA");
+            assertThat(caseDetails.getData()).doesNotContainKey("socialWorkChronList");
+            assertThat(caseDetails.getData()).doesNotContainKey("socialWorkChronListLA");
+            assertThat(caseDetails.getData()).doesNotContainKey("genogramList");
+            assertThat(caseDetails.getData()).doesNotContainKey("genogramListLA");
+            assertThat(caseDetails.getData()).doesNotContainKey("checklistDocList");
+            assertThat(caseDetails.getData()).doesNotContainKey("checklistDocListLA");
+            assertThat(caseDetails.getData()).doesNotContainKey("birthCertList");
+            assertThat(caseDetails.getData()).doesNotContainKey("birthCertListLA");
+            assertThat(caseDetails.getData()).doesNotContainKey("otherDocFiledList");
+            assertThat(caseDetails.getData()).doesNotContainKey("otherDocFiledListLA");
         }
     }
 
