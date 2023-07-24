@@ -73,7 +73,7 @@ public class ManageDocumentsControllerV2 extends CallbackController {
             element(UploadableDocumentBundle.builder()
                 .documentTypeDynamicList(manageDocumentService.buildDocumentTypeDynamicList(getUploaderType(caseData),
                     hasPlacementNotice))
-                .placementList(asDynamicList(caseData.getPlacementEventData().getPlacements(), null,
+                .availablePlacements(asDynamicList(caseData.getPlacementEventData().getPlacements(), null,
                     Placement::getChildName))
                 .build())
         ));

@@ -18,7 +18,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "UploadableDocumentBundle",
-    "ListElementCode": "placementList",
+    "ListElementCode": "availablePlacements",
     "FieldType": "DynamicList",
     "ElementLabel": "Which placement application?",
     "SecurityClassification": "Public",

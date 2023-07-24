@@ -22,7 +22,7 @@
     "ID": "manageDocumentsV2_UploadableDocument",
     "CaseEventID": "manageDocumentsV2",
     "CaseFieldID": "uploadableDocumentBundle",
-    "ListElementCode": "placementList",
+    "ListElementCode": "availablePlacements",
     "FieldDisplayOrder": "4",
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "uploadableDocumentBundle.documentTypeDynamicList=\"PLACEMENT_RESPONSES\""
