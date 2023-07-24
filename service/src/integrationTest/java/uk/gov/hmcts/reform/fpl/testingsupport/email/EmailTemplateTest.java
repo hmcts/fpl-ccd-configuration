@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.testingsupport.email;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.mockito.InjectMocks;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,9 +17,14 @@ import uk.gov.hmcts.reform.fpl.config.CtscTeamLeadLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
+import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.DocumentService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.utils.captor.ResultsCaptor;
@@ -33,6 +40,7 @@ import java.util.Set;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_EMAIL_ADDRESS;
@@ -82,12 +90,25 @@ public class EmailTemplateTest {
     @MockBean
     private RepresentativesInbox inbox;
 
+    @MockBean
+    private DocmosisDocumentGeneratorService documentGeneratorService;
+
+    @MockBean
+    private UploadDocumentService uploadDocumentService;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
+    @SpyBean
+    private DocumentService documentService;
+
     private final ResultsCaptor<SendEmailResponse> resultsCaptor = new ResultsCaptor<>();
 
     @BeforeEach
     void notificationMocks() throws NotificationClientException {
         when(documentDownloadService.downloadDocument(anyString()))
             .thenReturn("File --- content --- pdf --- attachment".getBytes());
+        when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(true);
         doAnswer(resultsCaptor).when(client).sendEmail(any(), any(), any(), any());
     }
 
