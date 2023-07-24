@@ -2,11 +2,11 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "3.32.0"
+      version = "3.65.0"
     }
     azuread = {
       source  = "hashicorp/azuread"
-      version = "1.6.0"
+      version = "2.40.0"
     }
   }
 }
@@ -57,6 +57,7 @@ module "key-vault" {
 
   #aks migration
   managed_identity_object_id = var.managed_identity_object_id
+  create_managed_identity    = true
 }
 
 module "fpl-scheduler-db" {
