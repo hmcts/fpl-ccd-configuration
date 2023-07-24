@@ -97,7 +97,7 @@ public class EmailTemplateTest {
     private UploadDocumentService uploadDocumentService;
 
     @MockBean
-    private FeatureToggleService featureToggleService;
+    protected FeatureToggleService featureToggleService;
 
     @SpyBean
     private DocumentService documentService;

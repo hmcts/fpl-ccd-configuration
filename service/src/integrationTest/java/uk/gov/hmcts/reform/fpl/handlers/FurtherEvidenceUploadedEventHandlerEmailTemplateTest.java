@@ -90,9 +90,6 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
     @MockBean
     private CafcassNotificationService cafcassNotificationService;
 
-    @MockBean
-    private FeatureToggleService featureToggleService;
-
     @Test
     void sendNotificationWhenNewDocumentUploadNotificationToggledOffForLA() {
 
