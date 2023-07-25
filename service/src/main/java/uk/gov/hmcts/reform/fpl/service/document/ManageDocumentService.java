@@ -193,6 +193,7 @@ public class ManageDocumentService {
                         .type(isSolicitor ? PlacementNoticeDocument.RecipientType.RESPONDENT
                             : PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
                         .response(e.getValue().getDocument())
+                        .uploaderType(uploaderType)
                         .build())));
                     if (ret.containsKey("placements")) {
                         caseData.getPlacementEventData().setPlacements((List<Element<Placement>>)
@@ -207,6 +208,7 @@ public class ManageDocumentService {
                     caseData.setPlacementNoticeResponses(List.of(element(PlacementNoticeDocument.builder()
                         .type(resolveType(e.getValue().getPlacementNoticeRecipientType()))
                         .response(e.getValue().getDocument())
+                        .uploaderType(uploaderType)
                         .build())));
                     if (ret.containsKey("placements")) {
                         caseData.getPlacementEventData().setPlacements((List<Element<Placement>>)

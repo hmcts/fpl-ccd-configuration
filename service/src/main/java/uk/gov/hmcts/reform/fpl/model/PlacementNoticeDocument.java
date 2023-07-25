@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class PlacementNoticeDocument {
     private String recipientName;
     private UUID respondentId;
     private List<String> documentAcknowledge;
+    private DocumentUploaderType uploaderType;
 
     @Getter
     @RequiredArgsConstructor
