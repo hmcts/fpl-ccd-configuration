@@ -11,6 +11,8 @@ import java.util.Map;
 @Builder
 public class RoleAssignment {
 
+    private String id;
+
     @Builder.Default
     private String actorIdType = "IDAM";
 
