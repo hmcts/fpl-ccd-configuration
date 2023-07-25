@@ -223,4 +223,15 @@ public class MigrateCaseController extends CallbackController {
         var migrationId = "DFPL-1486";
         caseDetails.getData().putAll(migrateCaseService.addRelatingLA(migrationId, caseDetails.getId()));
     }
+
+    private void run796(CaseDetails caseDetails) {
+        String migrationId = "DFPL-796";
+
+        CaseData caseData = getCaseData(caseDetails);
+        Long caseId = caseData.getId();
+
+        log.info("Migration {id = {}}, updating case {}", migrationId, caseId);
+
+        caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(caseData));
+    }
 }
