@@ -68,6 +68,4 @@ public interface AmApi {
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
         @PathVariable("assignmentId") String assignmentId
     );
-
-
 }
