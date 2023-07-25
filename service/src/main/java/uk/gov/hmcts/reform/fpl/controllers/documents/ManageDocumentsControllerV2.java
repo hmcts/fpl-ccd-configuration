@@ -50,12 +50,6 @@ public class ManageDocumentsControllerV2 extends CallbackController {
 
     private final ManageDocumentService manageDocumentService;
 
-    @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
-        CaseDetails caseDetails = request.getCaseDetails();
-        return respond(caseDetails);
-    }
-
     @PostMapping("/manage-document-action-selection/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleManageDocumentActionSelected(
         @RequestBody CallbackRequest request) {
