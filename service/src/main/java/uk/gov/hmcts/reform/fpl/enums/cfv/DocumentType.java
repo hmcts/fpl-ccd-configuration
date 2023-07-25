@@ -23,11 +23,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @AllArgsConstructor
 public enum DocumentType {
-    BUNDLE("Bundle", null,
-        false, false, false, false,
-        null,
-        0),
-    COURT_BUNDLE("└─ Court Bundle", courtBundleResolver(),
+    COURT_BUNDLE("Court Bundle", courtBundleResolver(),
         false, false, false, false,
         (document, documentUploaderType) -> HearingCourtBundle.builder().courtBundle(List.of(
                             element(CourtBundle.builder().document(document).build()))).build(),
