@@ -6,6 +6,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.PlacementNoticeRecipientType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
@@ -181,44 +182,44 @@ public class ManageDocumentService {
                 boolean isLocalAuthority = uploaderType == DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY
                     || uploaderType == DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY;
                 boolean isSolicitor = uploaderType == DocumentUploaderType.SOLICITOR;
+
+                PlacementEventData eventData = null;
                 if (isLocalAuthority || isSolicitor) {
                     Map<String, Object>  initialisedPlacement = initialisePlacementHearingResponseFields(caseData,
                         isSolicitor ? PlacementNoticeDocument.RecipientType.RESPONDENT
                             : PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY);
                     caseData.getPlacementEventData().setPlacement((Placement) initialisedPlacement.get("placement"));
-                    caseData.getPlacementEventData().getPlacement().setNoticeDocuments(
-                        (List<Element<PlacementNoticeDocument>>) initialisedPlacement.get("placementNoticeResponses")
-                    );
-
-
-                    if (isLocalAuthority) {
-                        PlacementEventData eventData = updatePlacementNoticesLA(caseData);
-                        ret.put("placements", eventData.getPlacements());
-                    } else {
-                        PlacementEventData eventData = updatePlacementNoticesSolicitor(caseData);
-                        ret.put("placements", eventData.getPlacements());
-                        caseData.getPlacementEventData().setPlacements(eventData.getPlacements());
-                        ret.put("placementsNonConfidential",
-                            eventData.getPlacementsNonConfidential(false));
-                        ret.put("placementsNonConfidentialNotices",
-                            eventData.getPlacementsNonConfidential(true));
-                        ;
+                    caseData.setPlacementNoticeResponses(List.of(element(PlacementNoticeDocument.builder()
+                        .type(isSolicitor ? PlacementNoticeDocument.RecipientType.RESPONDENT
+                            : PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
+                        .response(e.getValue().getDocument())
+                        .build())));
+                    if (ret.containsKey("placements")) {
+                        caseData.getPlacementEventData().setPlacements((List<Element<Placement>>)
+                            ret.get("placements"));
                     }
+
+                    eventData = isLocalAuthority ? updatePlacementNoticesLA(caseData) :
+                        updatePlacementNoticesSolicitor(caseData);
                 } else {
                     Map<String, Object>  initialisedPlacement = initialisePlacementHearingResponseFields(caseData);
                     caseData.getPlacementEventData().setPlacement((Placement) initialisedPlacement.get("placement"));
-                    caseData.getPlacementEventData().getPlacement().setNoticeDocuments(
-                        (List<Element<PlacementNoticeDocument>>) initialisedPlacement.get("placementNoticeResponses")
-                    );
+                    caseData.setPlacementNoticeResponses(List.of(element(PlacementNoticeDocument.builder()
+                        .type(resolveType(e.getValue().getPlacementNoticeRecipientType()))
+                        .response(e.getValue().getDocument())
+                        .build())));
+                    if (ret.containsKey("placements")) {
+                        caseData.getPlacementEventData().setPlacements((List<Element<Placement>>)
+                            ret.get("placements"));
+                    }
 
-                    PlacementEventData eventData = updatePlacementNoticesAdmin(caseData);
-                    ret.put("placements", eventData.getPlacements());
-                    caseData.getPlacementEventData().setPlacements(eventData.getPlacements());
-                    ret.put("placementsNonConfidential",
-                        eventData.getPlacementsNonConfidential(false));
-                    ret.put("placementsNonConfidentialNotices",
-                        eventData.getPlacementsNonConfidential(true));;
+                    eventData = updatePlacementNoticesAdmin(caseData);
                 }
+                ret.put("placements", eventData.getPlacements());
+                ret.put("placementsNonConfidential", eventData
+                    .getPlacementsNonConfidential(false));
+                ret.put("placementsNonConfidentialNotices", eventData
+                    .getPlacementsNonConfidential(true));
             } else {
                 boolean confidential = YES.equals(YesNo.fromString(e.getValue().getConfidential()));
                 String fieldName = dt.getFieldName(uploaderType, confidential);
@@ -249,6 +250,19 @@ public class ManageDocumentService {
             }
         });
         return ret;
+    }
+
+    private PlacementNoticeDocument.RecipientType resolveType(PlacementNoticeRecipientType t) {
+        switch (t) {
+            case LOCAL_AUTHORITY:
+                return PlacementNoticeDocument.RecipientType.RESPONDENT;
+            case CAFCASS:
+                return PlacementNoticeDocument.RecipientType.CAFCASS;
+            case RESPONDENT:
+                return PlacementNoticeDocument.RecipientType.RESPONDENT;
+            default:
+                throw new IllegalStateException("unrecognised type: " + t);
+        }
     }
 
     public boolean isVisible(DocumentType documentType, DocumentUploaderType uploaderType) {
