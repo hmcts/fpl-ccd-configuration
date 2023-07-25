@@ -1219,7 +1219,7 @@ public class CaseData extends CaseDataParent {
 
     private final DynamicList placementList;
 
-    private final List<Element<PlacementNoticeDocument>> placementNoticeResponses;
+    private List<Element<PlacementNoticeDocument>> placementNoticeResponses;
 
     @JsonIgnore
     public boolean isDischargeOfCareApplication() {
@@ -1334,5 +1334,9 @@ public class CaseData extends CaseDataParent {
     @JsonIgnore
     public String getCaseLaOrRelatingLa() {
         return isEmpty(caseLocalAuthority) ? relatingLA : caseLocalAuthority;
+    }
+
+    public void setPlacementNoticeResponses(List<Element<PlacementNoticeDocument>> placementNoticeResponses) {
+        this.placementNoticeResponses = placementNoticeResponses;
     }
 }
