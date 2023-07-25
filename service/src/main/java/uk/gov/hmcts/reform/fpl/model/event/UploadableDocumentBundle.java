@@ -18,7 +18,7 @@ public class UploadableDocumentBundle {
     private DynamicList documentTypeDynamicList;
     private DocumentReference document;
     private String confidential;
-    private DynamicList availablePlacements;
+    private DynamicList placementList;
     private PlacementNoticeRecipientType placementNoticeRecipientType;
 
     public DocumentType getDocumentTypeSelected() {
