@@ -6,6 +6,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.PlacementNoticeRecipientType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
@@ -56,6 +57,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -69,6 +71,9 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.BARRISTER;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASHARED;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.designatedSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -88,6 +93,7 @@ public class ManageDocumentService {
     private final UserService user;
     private final PlacementService placementService;
     private final DynamicListService dynamicListService;
+    private final UserService userService;
 
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_KEY = "correspondenceDocuments";
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_SOLICITOR_KEY = "correspondenceDocumentsSolicitor";
@@ -170,6 +176,31 @@ public class ManageDocumentService {
             }
         }
         return CaseData.class;
+    }
+
+    public DocumentUploaderType getUploaderType(CaseData caseData) {
+        final Set<CaseRole> caseRoles = userService.getCaseRoles(caseData.getId());
+        if (caseRoles.stream().anyMatch(representativeSolicitors()::contains)) {
+            return DocumentUploaderType.SOLICITOR;
+        }
+        if (caseRoles.contains(BARRISTER)) {
+            return DocumentUploaderType.BARRISTER;
+        }
+        if (caseRoles.contains(LASHARED)) {
+            return DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY;
+        }
+        if (userService.isHmctsUser()) {
+            return DocumentUploaderType.HMCTS;
+        }
+        if (caseRoles.stream().anyMatch(designatedSolicitors()::contains)) {
+            return DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
+        }
+        throw new RuntimeException("unresolved document uploader type");
+    }
+
+    public boolean allowMarkDocumentConfidential(CaseData caseData) {
+        return !List.of(DocumentUploaderType.SOLICITOR, DocumentUploaderType.BARRISTER)
+            .contains(getUploaderType(caseData));
     }
 
     @SuppressWarnings("unchecked")
@@ -283,9 +314,9 @@ public class ManageDocumentService {
         }
     }
 
-    public DynamicList buildDocumentTypeDynamicList(DocumentUploaderType uploaderType, boolean hasPlacementNotices) {
+    public DynamicList buildDocumentTypeDynamicList(CaseData caseData, boolean hasPlacementNotices) {
         final List<Pair<String, String>> courts = Arrays.stream(DocumentType.values())
-            .filter(documentType -> isVisible(documentType, uploaderType))
+            .filter(documentType -> isVisible(documentType, getUploaderType(caseData)))
             .filter(documentType -> !documentType.isHiddenFromUpload())
             .filter(documentType -> PLACEMENT_RESPONSES == documentType ? hasPlacementNotices : true)
             .sorted(comparing(DocumentType::getDisplayOrder))

@@ -11,26 +11,19 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadableDocumentBundle;
-import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.BARRISTER;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASHARED;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.designatedSolicitors;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction.UPLOAD_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PLACEMENT_RESPONSES;
 import static uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData.temporaryFields;
@@ -46,8 +39,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ManageDocumentsControllerV2 extends CallbackController {
 
-    private final UserService userService;
-
     private final ManageDocumentService manageDocumentService;
 
     @PostMapping("/manage-document-action-selection/mid-event")
@@ -59,14 +50,15 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         final boolean hasPlacementNotice = caseData.getPlacementEventData().getPlacements().stream()
             .anyMatch(el -> el.getValue().getPlacementNotice() != null);
 
-        caseDetails.getData().put("allowMarkDocumentConfidential", YesNo.from(allowMarkDocumentConfidential(caseData)));
+        caseDetails.getData().put("allowMarkDocumentConfidential", YesNo.from(manageDocumentService
+            .allowMarkDocumentConfidential(caseData)));
         caseDetails.getData().put("askForPlacementNoticeRecipientType", YesNo.from(DocumentUploaderType
-            .HMCTS == getUploaderType(caseData)));
+            .HMCTS == manageDocumentService.getUploaderType(caseData)));
         caseDetails.getData().put("hasConfidentialParty", YesNo.from(caseData.hasConfidentialParty()));
         caseDetails.getData().put("uploadableDocumentBundle", List.of(
             element(UploadableDocumentBundle.builder()
-                .documentTypeDynamicList(manageDocumentService.buildDocumentTypeDynamicList(getUploaderType(caseData),
-                    hasPlacementNotice))
+                .documentTypeDynamicList(manageDocumentService.buildDocumentTypeDynamicList(
+                    caseData, hasPlacementNotice))
                 .placementList(asDynamicList(caseData.getPlacementEventData().getPlacements(), null,
                     Placement::getChildName))
                 .build())
@@ -103,7 +95,8 @@ public class ManageDocumentsControllerV2 extends CallbackController {
 
         Map<String, Object> updatedData = new HashMap<>();
         if (UPLOAD_DOCUMENTS.equals(eventData.getManageDocumentAction())) {
-            updatedData.putAll(manageDocumentService.uploadDocuments(caseData, getUploaderType(caseData),
+            updatedData.putAll(manageDocumentService.uploadDocuments(caseData, manageDocumentService
+                    .getUploaderType(caseData),
                 eventData.getUploadableDocumentBundle()));
         }
         caseDetailsMap.putAll(updatedData);
@@ -115,30 +108,5 @@ public class ManageDocumentsControllerV2 extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
         // TODO DFPL-1609 Notification Logic
-    }
-
-    private boolean allowMarkDocumentConfidential(CaseData caseData) {
-        return !List.of(DocumentUploaderType.SOLICITOR, DocumentUploaderType.BARRISTER)
-            .contains(getUploaderType(caseData));
-    }
-
-    private DocumentUploaderType getUploaderType(CaseData caseData) {
-        final Set<CaseRole> caseRoles = userService.getCaseRoles(caseData.getId());
-        if (caseRoles.stream().anyMatch(representativeSolicitors()::contains)) {
-            return DocumentUploaderType.SOLICITOR;
-        }
-        if (caseRoles.contains(BARRISTER)) {
-            return DocumentUploaderType.BARRISTER;
-        }
-        if (caseRoles.contains(LASHARED)) {
-            return DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY;
-        }
-        if (userService.isHmctsUser()) {
-            return DocumentUploaderType.HMCTS;
-        }
-        if (caseRoles.stream().anyMatch(designatedSolicitors()::contains)) {
-            return DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
-        }
-        throw new RuntimeException("unresolved document uploader type");
     }
 }
