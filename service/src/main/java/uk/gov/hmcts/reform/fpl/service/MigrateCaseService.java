@@ -54,6 +54,7 @@ public class MigrateCaseService {
     private final CaseNoteService caseNoteService;
     private final CourtService courtService;
     private final DocumentListService documentListService;
+    public final MigrateRelatingLAService migrateRelatingLAService;
 
     public Map<String, Object> removeHearingOrderBundleDraft(CaseData caseData, String migrationId, UUID bundleId,
                                                              UUID orderId) {
@@ -314,6 +315,24 @@ public class MigrateCaseService {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, GateKeeping order - Urgent hearing order %s not found",
                 migrationId, caseData.getId(), fileName));
+        }
+    }
+
+    public void verifyUrgentDirectionsOrderExists(CaseData caseData, String migrationId, UUID documentId) {
+        if (caseData.getUrgentDirectionsOrder() == null || isEmpty(caseData.getUrgentDirectionsOrder())) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, GateKeeping order - Urgent directions order not found",
+                migrationId, caseData.getId()));
+        }
+
+        String caseDocumentUrl = caseData.getUrgentDirectionsOrder().getDocument().getUrl();
+
+        if (!documentId
+            .equals(UUID.fromString(caseDocumentUrl.substring(caseDocumentUrl.length() - 36)))) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s},"
+                + " GateKeeping order - Urgent directions order document with Id %s not found",
+                migrationId, caseData.getId(), documentId));
         }
     }
 
@@ -670,5 +689,18 @@ public class MigrateCaseService {
         } else {
             return Map.of("courtBundleListV2", listOfHearingCourtBundles);
         }
+    }
+
+    public Map<String, Object> addRelatingLA(String migrationId, Long caseId) {
+        // lookup in map
+        Optional<String> relatingLA = migrateRelatingLAService.getRelatingLAString(caseId.toString());
+
+        if (relatingLA.isEmpty()) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, case not found in migration list",
+                migrationId, caseId));
+        }
+
+        return Map.of("relatingLA", relatingLA.get());
     }
 }
